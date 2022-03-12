@@ -8,11 +8,10 @@ using Lucene.Net.Spatial.Prefix.Tree;
 using Lucene.Net.Spatial.Queries;
 using Lucene.Net.Spatial.Util;
 using Newtonsoft.Json.Linq;
-using Spatial4n.Core.Context;
-using Spatial4n.Core.Distance;
-using Spatial4n.Core.Shapes;
-using Spatial4n.Core.Shapes.Impl;
-using Spatial4n.Core.Util;
+using Spatial4n.Context;
+using Spatial4n.Distance;
+using Spatial4n.Shapes;
+using Spatial4n.Util;
 
 namespace OrchardCore.Lucene.QueryProviders.Filters
 {
@@ -37,7 +36,7 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
                 return null;
             }
 
-            var ctx = SpatialContext.GEO;
+            var ctx = SpatialContext.Geo;
 
             var maxLevels = 11; //results in sub-meter precision for geohash
 
@@ -111,40 +110,40 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
             {
                 case "mi":
                 case "miles":
-                    distanceDegrees = DistanceUtils.Dist2Degrees(distance, DistanceUtils.EARTH_MEAN_RADIUS_MI);
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance, DistanceUtils.EarthMeanRadiusMiles);
                     return true;
                 case "km":
                 case "kilometers":
-                    distanceDegrees = DistanceUtils.Dist2Degrees(distance, DistanceUtils.EARTH_MEAN_RADIUS_KM);
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance, DistanceUtils.EarthMeanRadiusKilometers);
                     return true;
                 case "ft":
                 case "feet":
-                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 5280, DistanceUtils.EARTH_MEAN_RADIUS_MI);
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 5280, DistanceUtils.EarthMeanRadiusMiles);
                     return true;
                 case "yd":
                 case "yards":
-                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 1760, DistanceUtils.EARTH_MEAN_RADIUS_MI);
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 1760, DistanceUtils.EarthMeanRadiusMiles);
                     return true;
                 case "in":
                 case "inch":
-                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 63360, DistanceUtils.EARTH_MEAN_RADIUS_MI);
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 63360, DistanceUtils.EarthMeanRadiusMiles);
                     return true;
                 case "m":
                 case "meters":
-                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 1000, DistanceUtils.EARTH_MEAN_RADIUS_KM);
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 1000, DistanceUtils.EarthMeanRadiusKilometers);
                     return true;
                 case "cm":
                 case "centimeters":
-                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 100000, DistanceUtils.EARTH_MEAN_RADIUS_KM);
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 100000, DistanceUtils.EarthMeanRadiusKilometers);
                     return true;
                 case "mm":
                 case "millimeters":
-                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 1000000, DistanceUtils.EARTH_MEAN_RADIUS_KM);
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 1000000, DistanceUtils.EarthMeanRadiusKilometers);
                     return true;
                 case "nm":
                 case "nmi":
                 case "nauticalmiles":
-                    distanceDegrees = DistanceUtils.Dist2Degrees(distance * 1.852, DistanceUtils.EARTH_MEAN_RADIUS_KM);
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance * 1.852, DistanceUtils.EarthMeanRadiusKilometers);
                     return true;
             }
 
@@ -155,7 +154,7 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
         {
             point = null;
 
-            var ctx = SpatialContext.GEO;
+            var ctx = SpatialContext.Geo;
 
             switch (geoToken.Type)
             {

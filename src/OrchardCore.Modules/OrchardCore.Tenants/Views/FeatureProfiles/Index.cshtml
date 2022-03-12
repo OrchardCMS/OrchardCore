@@ -20,8 +20,8 @@
                     <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
                     <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
-                <div class="btn-group float-right">
-                    <a asp-route-action="Create" class="btn btn-sm btn-secondary float-right create" role="button">@T["Add Feature Profile"]</a>
+                <div class="btn-group float-end">
+                    <a asp-route-action="Create" class="btn btn-sm btn-secondary float-end create" role="button">@T["Add Feature Profile"]</a>
                 </div>
             </div>
         </div>
@@ -40,7 +40,7 @@
                         </div>
                     </div>
                     <div class="form-group col-2 mb-n1" style="display:none" id="actions">
-                        <div class="dropdown float-right mt-1">
+                        <div class="dropdown float-end mt-1">
                             <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @T["Actions"]
                             </button>

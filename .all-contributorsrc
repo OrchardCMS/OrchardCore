@@ -2441,7 +2441,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/22633385?v=4",
       "profile": "https://bandism.net/",
       "contributions": [
-        "code"
+        "code",
+        "doc"
       ]
     },
     {
@@ -2487,6 +2488,42 @@
       "profile": "https://github.com/Tokyo1985",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "optiklab",
+      "name": "Anton Yarkov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/934368?v=4",
+      "profile": "http://optiklab.github.io/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "BanzragchUchral",
+      "name": "Uchral Banzragch",
+      "avatar_url": "https://avatars.githubusercontent.com/u/79921246?v=4",
+      "profile": "https://github.com/BanzragchUchral",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "DrewBrasher",
+      "name": "Drew Brasher",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9272802?v=4",
+      "profile": "https://drewbrasher.com/",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "momentum-tunis",
+      "name": "Mehdi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/58601327?v=4",
+      "profile": "https://github.com/momentum-tunis",
+      "contributions": [
+        "doc"
       ]
     }
   ],

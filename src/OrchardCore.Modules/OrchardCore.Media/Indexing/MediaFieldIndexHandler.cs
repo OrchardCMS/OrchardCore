@@ -33,15 +33,22 @@ namespace OrchardCore.Media.Indexing
             var options = context.Settings.ToOptions();
             var settings = context.ContentPartFieldDefinition.GetSettings<MediaFieldSettings>();
 
-            if (field.Paths.Length > 0)
+            if (field.Paths?.Length > 0)
             {
                 if (settings.AllowMediaText)
                 {
                     foreach (var key in context.Keys)
                     {
-                        foreach (var mediaText in field.MediaTexts)
+                        if (field.MediaTexts != null)
                         {
-                            context.DocumentIndex.Set(key + MediaTextKeySuffix, mediaText, options);
+                            foreach (var mediaText in field.MediaTexts)
+                            {
+                                context.DocumentIndex.Set(key + MediaTextKeySuffix, mediaText, options);
+                            }
+                        }
+                        else
+                        {
+                            context.DocumentIndex.Set(key + MediaTextKeySuffix, "NULL", options);
                         }
                     }
                 }

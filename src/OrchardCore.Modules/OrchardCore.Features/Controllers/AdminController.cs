@@ -112,6 +112,11 @@ namespace OrchardCore.Features.Controllers
         [HttpPost]
         public async Task<IActionResult> Disable(string id)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
+            {
+                return Forbid();
+            }
+
             var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
                 .FirstOrDefault(f => !f.IsTheme() && f.Id == id);
 
@@ -134,6 +139,11 @@ namespace OrchardCore.Features.Controllers
         [HttpPost]
         public async Task<IActionResult> Enable(string id)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
+            {
+                return Forbid();
+            }
+
             var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
                 .FirstOrDefault(f => !f.IsTheme() && f.Id == id);
 

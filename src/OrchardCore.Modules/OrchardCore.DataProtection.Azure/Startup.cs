@@ -65,7 +65,7 @@ namespace OrchardCore.DataProtection.Azure
 
                 // container name must be lowercase
                 containerName = template.Render(templateContext, NullEncoder.Default).ToLower();
-                containerName.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                containerName = containerName.Replace("\r", String.Empty).Replace("\n", String.Empty);
             }
             catch (Exception e)
             {
@@ -115,7 +115,7 @@ namespace OrchardCore.DataProtection.Azure
                     var template = _fluidParser.Parse(blobName);
 
                     blobName = template.Render(templateContext, NullEncoder.Default);
-                    blobName.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                    blobName = blobName.Replace("\r", String.Empty).Replace("\n", String.Empty);
                 }
                 catch (Exception e)
                 {
