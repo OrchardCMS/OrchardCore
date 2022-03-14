@@ -18,7 +18,7 @@
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.16.7",
     "assert": "^2.0.0",
-    "css-loader": "^6.7.0",
+    "css-loader": "^6.7.1",
     "null-loader": "^4.0.1",
     "prop-types": "15.8.1",
     "style-loader": "^3.3.1",
