@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -16,10 +15,12 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
+using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
@@ -37,6 +38,7 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IClock _clock;
         private readonly INotifier _notifier;
         private readonly ISiteService _siteService;
+        private readonly ITenantValidator _tenantValidator;
 
         private readonly dynamic New;
         private readonly IStringLocalizer S;
@@ -54,21 +56,23 @@ namespace OrchardCore.Tenants.Controllers
             IClock clock,
             INotifier notifier,
             ISiteService siteService,
+            ITenantValidator tenantValidator,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _shellHost = shellHost;
-            _authorizationService = authorizationService;
             _shellSettingsManager = shellSettingsManager;
             _databaseProviders = databaseProviders;
+            _authorizationService = authorizationService;
             _currentShellSettings = currentShellSettings;
-            _dataProtectorProvider = dataProtectorProvider;
             _featureProfilesService = featureProfilesService;
             _recipeHarvesters = recipeHarvesters;
+            _dataProtectorProvider = dataProtectorProvider;
             _clock = clock;
             _notifier = notifier;
             _siteService = siteService;
+            _tenantValidator = tenantValidator;
 
             New = shapeFactory;
             S = stringLocalizer;
@@ -82,7 +86,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -226,7 +230,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -291,7 +295,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -332,14 +336,14 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
 
             if (ModelState.IsValid)
             {
-                await ValidateViewModel(model, true);
+                await ValidateViewModelAsync(model, true);
             }
 
             if (ModelState.IsValid)
@@ -383,7 +387,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -439,14 +443,14 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
 
             if (ModelState.IsValid)
             {
-                await ValidateViewModel(model, false);
+                await ValidateViewModelAsync(model, false);
             }
 
             var shellSettings = _shellHost.GetAllSettings()
@@ -512,7 +516,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -552,7 +556,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -585,7 +589,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -608,66 +612,6 @@ namespace OrchardCore.Tenants.Controllers
             await _shellHost.ReloadShellContextAsync(shellSettings);
 
             return Redirect(redirectUrl);
-        }
-
-        private async Task ValidateViewModel(EditTenantViewModel model, bool newTenant)
-        {
-            var selectedProvider = _databaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
-
-            if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(model.ConnectionString))
-            {
-                ModelState.AddModelError(nameof(EditTenantViewModel.ConnectionString), S["The connection string is mandatory for this provider."]);
-            }
-
-            if (String.IsNullOrWhiteSpace(model.Name))
-            {
-                ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["The tenant name is mandatory."]);
-            }
-
-            if (!String.IsNullOrWhiteSpace(model.FeatureProfile))
-            {
-                var featureProfiles = await _featureProfilesService.GetFeatureProfilesAsync();
-                if (!featureProfiles.ContainsKey(model.FeatureProfile))
-                {
-                    ModelState.AddModelError(nameof(EditTenantViewModel.FeatureProfile), S["The feature profile does not exist.", model.FeatureProfile]);
-                }
-            }
-
-            var allSettings = _shellHost.GetAllSettings();
-
-            if (newTenant && allSettings.Any(tenant => String.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
-            {
-                ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["A tenant with the same name already exists.", model.Name]);
-            }
-
-            if (!String.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
-            {
-                ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["Invalid tenant name. Must contain characters only and no spaces."]);
-            }
-
-            if (!IsDefaultShell() && String.IsNullOrWhiteSpace(model.RequestUrlHost) && String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
-            {
-                ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]);
-            }
-
-            var allOtherShells = allSettings.Where(tenant => !string.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase));
-            if (allOtherShells.Any(tenant => String.Equals(tenant.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && String.Equals(tenant.RequestUrlHost, model.RequestUrlHost, StringComparison.OrdinalIgnoreCase)))
-            {
-                ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["A tenant with the same host and prefix already exists.", model.Name]);
-            }
-
-            if (!String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
-            {
-                if (model.RequestUrlPrefix.Contains('/'))
-                {
-                    ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]);
-                }
-            }
-        }
-
-        private bool IsDefaultShell()
-        {
-            return String.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
         }
 
         private void SetConfigurationShellValues(EditTenantViewModel model)
@@ -701,6 +645,13 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             return featureProfiles;
+        }
+
+        private async Task ValidateViewModelAsync(EditTenantViewModel model, bool newTenant)
+        {
+            model.IsNewTenant = newTenant;
+
+            ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
         }
     }
 }
