@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -16,8 +17,7 @@ namespace OrchardCore.Flows.ViewModels
         [BindNever]
         public BagPart BagPart { get; set; }
 
-        [System.Text.Json.Serialization.JsonIgnore]
-        [Newtonsoft.Json.JsonIgnore]
+        [IgnoreDataMember]
         [BindNever]
         public IUpdateModel Updater { get; set; }
 

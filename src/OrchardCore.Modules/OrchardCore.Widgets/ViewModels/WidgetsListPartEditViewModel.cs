@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Widgets.Models;
@@ -16,8 +17,7 @@ namespace OrchardCore.Widgets.ViewModels
 
         public WidgetsListPart WidgetsListPart { get; set; }
 
-        [System.Text.Json.Serialization.JsonIgnore]
-        [Newtonsoft.Json.JsonIgnore]
+        [IgnoreDataMember]
         [BindNever]
         public IUpdateModel Updater { get; set; }
     }

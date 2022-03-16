@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using System.Runtime.Serialization;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.Flows.Models;
 
@@ -8,8 +9,7 @@ namespace OrchardCore.Flows.ViewModels
     {
         public FlowPart FlowPart { get; set; }
 
-        [System.Text.Json.Serialization.JsonIgnore]
-        [Newtonsoft.Json.JsonIgnore]
+        [IgnoreDataMember]
         [BindNever]
         public BuildPartDisplayContext BuildPartDisplayContext { get; set; }
     }

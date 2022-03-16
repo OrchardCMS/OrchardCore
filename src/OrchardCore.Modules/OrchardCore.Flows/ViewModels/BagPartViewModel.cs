@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.Models;
@@ -10,9 +12,8 @@ namespace OrchardCore.Flows.ViewModels
     {
         public BagPart BagPart { get; set; }
         public IEnumerable<ContentItem> ContentItems => BagPart.ContentItems;
-        
-        [System.Text.Json.Serialization.JsonIgnore]
-        [Newtonsoft.Json.JsonIgnore]
+
+        [IgnoreDataMember]
         [BindNever]
         public BuildPartDisplayContext BuildPartDisplayContext { get; set; }
 
