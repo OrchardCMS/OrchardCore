@@ -122,7 +122,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (!String.IsNullOrWhiteSpace(options.Category))
             {
-                entries = entries.Where(t => t.Category.Equals(options.Category, StringComparison.OrdinalIgnoreCase)).ToList();
+                entries = entries.Where(t => t.Category?.Equals(options.Category, StringComparison.OrdinalIgnoreCase) == true).ToList();
             }
 
             switch (options.Status)
