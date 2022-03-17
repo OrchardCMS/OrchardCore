@@ -6,9 +6,13 @@ Most database configuration is handled automatically, but there are limited opti
 
 ### Sqlite
 
-#### `PoolConnections` (boolean)
+#### `UseConnectionPooling` (boolean)
 
-By default in `.Net 6`, Sqlite pools connections to the database. It achieves this by putting a lock on the database file (`yessql.db`) and leaving connections open to be reused. If the lock is preventing tasks like backups, this functionality can be disabled. There may be a performance penalty associated with disabling connection pooling.
+By default in `.Net 6`, `Microsoft.Data.Sqlite` pools connections to the database. It achieves this by putting locking the database file and leaving connections open to be reused. If the lock is preventing tasks like backups, this functionality can be disabled.
+
+There may be a performance penalty associated with disabling connection pooling.
+
+See the [`Microsoft.Data.Sqlite` documentation](https://docs.microsoft.com/en-us/dotnet/standard/data/sqlite/connection-strings#pooling) for more details.
 
 ##### `appsettings.json`
 

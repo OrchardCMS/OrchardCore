@@ -80,7 +80,7 @@ namespace Microsoft.Extensions.DependencyInjection
                             {
                                 DataSource = databaseFile,
                                 Cache = SqliteCacheMode.Shared,
-                                Pooling = sqliteOptions.PoolConnections
+                                Pooling = sqliteOptions.UseConnectionPooling
                             };
 
                             Directory.CreateDirectory(databaseFolder);

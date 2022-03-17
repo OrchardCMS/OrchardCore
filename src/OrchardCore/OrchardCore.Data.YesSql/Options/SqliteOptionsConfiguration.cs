@@ -6,7 +6,7 @@ namespace OrchardCore.Data
 {
     public class SqliteOptionsConfiguration : IConfigureOptions<SqliteOptions>
     {
-        private static readonly bool DefaultPoolConnections = true;
+        private static readonly bool DefaultUseConnectionPooling = true;
         private readonly IShellConfiguration _shellConfiguration;
 
         public SqliteOptionsConfiguration(IShellConfiguration shellConfiguration)
@@ -18,7 +18,7 @@ namespace OrchardCore.Data
         {
             var section = _shellConfiguration.GetSection("OrchardCore_Data_Sqlite");
 
-            options.PoolConnections = section.GetValue("PoolConnections", DefaultPoolConnections);
+            options.UseConnectionPooling = section.GetValue(nameof(options.UseConnectionPooling), DefaultUseConnectionPooling);
         }
     }
 }
