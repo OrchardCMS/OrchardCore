@@ -12,12 +12,12 @@ namespace OrchardCore.Resources
         private readonly ISiteService _siteService;
         private readonly IHostEnvironment _env;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly string _tenantPrefix;
+        private readonly string _pathBase;
 
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         // Versions
         private const string codeMirrorVersion = "5.65.2";
-        private const string monacoEditorVersion = "0.32.1";
+        private const string monacoEditorVersion = "0.33.0";
         // URLs
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
 
@@ -26,7 +26,7 @@ namespace OrchardCore.Resources
             _siteService = siteService;
             _env = env;
             _httpContextAccessor = httpContextAccessor;
-            _tenantPrefix = string.IsNullOrEmpty(shellSettings.RequestUrlPrefix) ? string.Empty : "/" + shellSettings.RequestUrlPrefix;
+            _pathBase = _httpContextAccessor.HttpContext.Request.PathBase;
         }
 
         ResourceManifest BuildManifest()
@@ -219,14 +219,14 @@ namespace OrchardCore.Resources
                 .DefineStyle("codemirror")
                 .SetUrl("~/OrchardCore.Resources/Styles/codemirror/codemirror.min.css", "~/OrchardCore.Resources/Styles/codemirror/codemirror.css")
                 .SetCdn(codeMirrorUrl + "codemirror.min.css", codeMirrorUrl + "codemirror.css")
-                .SetCdnIntegrity("sha384-K/FfhVUneW5TdId1iTRDHsOHhLGHoJekcX6UThyJhMRctwRxlL3XmSnTeWX2k3Qe", "sha384-KsbK45E17r4hdzdJB8hf/poBTYi0oDktKdCAyP67Uc9lE9Amf83NF+Vf6VJZ6mRK")
+                .SetCdnIntegrity("sha384-zaeBlB/vwYsDRSlFajnDd7OydJ0cWk+c2OWybl3eSUf6hW2EbhlCsQPqKr3gkznT", "sha384-bsaAhvdduZPAwUb7RRLRvDgtEtOsggrgjkr/EjPO1i/vdoi+DmdLaG79UOt6M5hD")
                 .SetVersion(codeMirrorVersion);
 
             manifest
                 .DefineScript("codemirror")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/codemirror.min.js", "~/OrchardCore.Resources/Scripts/codemirror/codemirror.js")
                 .SetCdn(codeMirrorUrl + "codemirror.min.js", codeMirrorUrl + "codemirror.js")
-                .SetCdnIntegrity("sha384-rzcLytDyan25531bcpTEaKPpozaQYGnFzr0JIOraZeKDsrKPkwrfBVrJ9fCLgbpJ", "sha384-ULdIy0tCFbR+CuSTv6S3zd2j98/10qEYGhXB3BSjn5fIPt70/P0B5PpkfzB/w0P5")
+                .SetCdnIntegrity("sha384-oG4CsOtmTEhYO9bKzsYPGRJyqcREeEElY9hokeI8NndemZlK5k6d+0LX0xY5HObE", "sha384-gT4Z797V6ID8zveVST5RzWz01m88EMv7Hax3kHQSPm9oRkCkatghZ831YnleCocm")
                 .SetVersion(codeMirrorVersion);
 
             manifest
@@ -363,23 +363,23 @@ namespace OrchardCore.Resources
             
             manifest
                 .DefineStyle("font-awesome")
-                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.css")
-                .SetCdnIntegrity("sha384-3B6NwesSXE7YJlcLI9RpRqGf2p/EgVH8BgoKTaUrmKNDkHPStTQ3EyoYjCGXaOTS", "sha384-bBS93S4vkIVormd4qMcA0EFedV0o8eCGCsXC1UJAyG0fT5T66ice3IUZP10OnVlp")
-                .SetVersion("6.0.0");
+                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.0/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.0/css/all.css")
+                .SetCdnIntegrity("sha384-eLT4eRYPHTmTsFGFAzjcCWX+wHfUInVWNm9YnwpiatljsZOwXtwV2Hh6sHM6zZD9", "sha384-Cu8YX447wZRZPy8Bmi5D0bqAanM2LdmQsk4ZwD07tDCCZomCsilxuqNcpaJ/AU0v")
+                .SetVersion("6.1.0");
 
             manifest
                 .DefineScript("font-awesome")
                 .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/js/all.js")
-                .SetCdnIntegrity("sha384-l+HksIGR+lyuyBo1+1zCBSRt6v4yklWu7RbG0Cv+jDLDD9WFcEIwZLHioVB4Wkau", "sha384-4739Lf8E1p87EqhaqLgMxvJEZ3KIrn0sPa4oLLRGIZzxgLmMl09RVbchHWigItN/")
-                .SetVersion("6.0.0");
+                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.0/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.0/js/all.js")
+                .SetCdnIntegrity("sha384-vLLEq/Un/eZFmXAu4Xxf8F00RSSMzPcI7iDiT6hpB4zFpezCEGhb5daeR8PLyrLI", "sha384-t3CcLjNYYE/sYMJDR/733kkJN0nSKamNB0sNmlZal55gg8WrmLiZBnS38WNd0N1+")
+                .SetVersion("6.1.0");
 
             manifest
                 .DefineScript("font-awesome-v4-shims")
                 .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/v4-shims.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/v4-shims.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/js/v4-shims.js")
-                .SetCdnIntegrity("sha384-ybkuz/OxDnyDU81HhdheMi5FjVHdKkPPnnfX2H5pClfR9x+aAMkenwEbVe0AdPt9", "sha384-KmmOv01hQj+eebyqiCfkkD+hmZBpeob7oObKKS8n21cUWakH7f9tVozk3CmmUltZ")
-                .SetVersion("6.0.0");
+                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.0/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.0/js/v4-shims.js")
+                .SetCdnIntegrity("sha384-WqC1w5exlfB7/5UiHTZp/YAnoS9Ovlzh55EwGjzaMxZZtL1omDGlh7KehDlpgKUr", "sha384-Ave/h+MJTfTJYz+gryHxubtFex94UBXfEDVXyF3HRW2mekNc9UsafGa9HqPW7Y5W")
+                .SetVersion("6.1.0");
 
             manifest
                 .DefineScript("jquery-resizable")
@@ -475,7 +475,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("monaco")
-                .SetAttribute("data-tenant-prefix", _tenantPrefix)
+                .SetAttribute("data-tenant-prefix", _pathBase)
                 .SetUrl("~/OrchardCore.Resources/Scripts/monaco/ocmonaco.js")
                 .SetDependencies("monaco-loader")
                 .SetVersion(monacoEditorVersion);

@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-271-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-272-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -372,6 +372,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/momentum-tunis"><img src="https://avatars.githubusercontent.com/u/58601327?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mehdi</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=momentum-tunis" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/kevinsmgov"><img src="https://avatars.githubusercontent.com/u/5798763?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Kevin Hobson</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=kevinsmgov" title="Code">💻</a></td>
   </tr>
 </table>
 
