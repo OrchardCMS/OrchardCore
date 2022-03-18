@@ -13,14 +13,14 @@
             <input type="text" class="form-control courier" v-model="optionValue" placeholder="@T["Enter a value"]" />
         </td>
         <td class="text-center align-middle">
-            <div class="custom-control custom-checkbox ml-2">
-                <input type="checkbox" class="custom-control-input"
+            <div class="form-check ms-2">
+                <input type="checkbox" class="form-check-input"
                         :id=" partId + '_' + option.key + '_id'"
                         :name = " partId + '_name' "
                         v-bind:value="optionCheck"
                         v-model="IsSelected"
                         >
-                <label :for=" partId + '_' + option.key + '_id'" class="custom-control-label" title="@T["Set as default"]" >
+                <label :for=" partId + '_' + option.key + '_id'" class="form-check-label" title="@T["Set as default"]" >
                     <span class="sr-only"></span>
                 </label>
             </div>

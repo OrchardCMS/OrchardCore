@@ -27,7 +27,7 @@
                                         @{
                                             var url = Url.Action("AddContentItem", "AddToDeploymentPlan", new { area = "OrchardCore.Contents", deploymentPlanId = deploymentPlan.Id, returnUrl = FullRequestPath });
                                         }
-                                        <div class="card-footer text-muted text-xs-right">
+                                        <div class="card-footer text-muted text-sm-right">
                                             <button type="button" class="add-to-deployment-plan text-white btn btn-primary btn-sm" data-bs-dismiss="modal" data-target-url="@url">@T["Select"]</button>
                                         </div>
                                     </div>

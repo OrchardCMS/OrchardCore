@@ -41,7 +41,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
                 if (tabIndex != tabs.Length - 1)
                 {
-                    linkTag.AddCssClass("pr-md-2");
+                    linkTag.AddCssClass("pe-md-2");
                 }
 
                 var aTag = new TagBuilder("a");

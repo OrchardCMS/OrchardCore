@@ -94,31 +94,25 @@
                     <span class="hint">@T["The encryption method used when connecting to mail server."]</span>
                 </div>
 
-                <div class="form-group" asp-validation-class-for="AutoSelectEncryption">
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" asp-for="AutoSelectEncryption">
-                        <span asp-validation-for="AutoSelectEncryption"></span>
-                        <label class="custom-control-label" asp-for="AutoSelectEncryption">@T["Auto Select Encryption method"]</label>
-                        <span class="hint dashed">@T["Check to let the system select the encryption method based on port."]</span>
-                    </div>
+                <div class="form-check" asp-validation-class-for="AutoSelectEncryption">
+                    <input type="checkbox" class="form-check-input" asp-for="AutoSelectEncryption">
+                    <span asp-validation-for="AutoSelectEncryption"></span>
+                    <label class="form-check-label" asp-for="AutoSelectEncryption">@T["Auto Select Encryption method"]</label>
+                    <span class="hint dashed">@T["Check to let the system select the encryption method based on port."]</span>
                 </div>
 
-                <div class="form-group clearfix" asp-validation-class-for="RequireCredentials">
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" asp-for="RequireCredentials" data-bs-toggle="collapse" data-bs-target=".requireCredential">
-                        <span asp-validation-for="RequireCredentials"></span>
-                        <label class="custom-control-label" asp-for="RequireCredentials">@T["Require credentials"] </label>
-                    </div>
+                <div class="form-check clearfix" asp-validation-class-for="RequireCredentials">
+                    <input type="checkbox" class="form-check-input" asp-for="RequireCredentials" data-bs-toggle="collapse" data-bs-target=".requireCredential">
+                    <span asp-validation-for="RequireCredentials"></span>
+                    <label class="form-check-label" asp-for="RequireCredentials">@T["Require credentials"] </label>
                 </div>
 
                 <div class="requireCredential collapse @(Model.RequireCredentials ? "show" : "")">
-                    <div class="form-group" asp-validation-class-for="UseDefaultCredentials">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" asp-for="UseDefaultCredentials" data-bs-toggle="collapse-toggle" data-bs-target=".useCustomCredential">
-                            <span asp-validation-for="UseDefaultCredentials"></span>
-                            <label class="custom-control-label" asp-for="UseDefaultCredentials">@T["Use Windows authentication"]</label>
-                            <span class="hint d-block">@T["When this option is selected, the application pool or host-process identity is used to authenticate with the mail server."]</span>
-                        </div>
+                    <div class="form-check" asp-validation-class-for="UseDefaultCredentials">
+                        <input type="checkbox" class="form-check-input" asp-for="UseDefaultCredentials" data-bs-toggle="collapse-toggle" data-bs-target=".useCustomCredential">
+                        <span asp-validation-for="UseDefaultCredentials"></span>
+                        <label class="form-check-label" asp-for="UseDefaultCredentials">@T["Use Windows authentication"]</label>
+                        <span class="hint d-block">@T["When this option is selected, the application pool or host-process identity is used to authenticate with the mail server."]</span>
                     </div>
 
                     <div class="useCustomCredential collapse @(Model.UseDefaultCredentials? "": "show")">
