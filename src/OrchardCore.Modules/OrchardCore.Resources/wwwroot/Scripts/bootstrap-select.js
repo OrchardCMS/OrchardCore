@@ -1241,7 +1241,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             clearButton = '';
 
         if (this.options.header) {
-          header = '<div class="' + classNames.POPOVERHEADER + '">' + '<button type="button" class="close" aria-hidden="true">&times;</button>' + this.options.header + '</div>';
+          header = '<div class="' + classNames.POPOVERHEADER + '">' + '<button type="button" class="btn btn-sm close float-end" aria-hidden="true">&times;</button>' + this.options.header + '</div>';
         }
 
         if (this.options.liveSearch) {
