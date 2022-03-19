@@ -8,7 +8,7 @@ Most database configuration is handled automatically, but there are limited opti
 
 #### `UseConnectionPooling` (boolean)
 
-By default in `.Net 6`, `Microsoft.Data.Sqlite` pools connections to the database. It achieves this by putting locking the database file and leaving connections open to be reused. If the lock is preventing tasks like backups, this functionality can be disabled.
+By default in `.NET 6`, `Microsoft.Data.Sqlite` pools connections to the database. It achieves this by putting locking the database file and leaving connections open to be reused. If the lock is preventing tasks like backups, this functionality can be disabled.
 
 There may be a performance penalty associated with disabling connection pooling.
 
