@@ -54,7 +54,7 @@ The below table lists the different libraries used as Resources:
 | [Material icons](https://github.com/marella/material-icons) | Latest icon fonts and CSS for self-hosting material design icons. | 1.10.8 | [Apache-2.0](https://github.com/marella/material-icons/blob/main/LICENSE) |
 | [Monaco Editor](https://microsoft.github.io/monaco-editor) | Lightweight source code editor | 0.33.0 | [MIT](https://github.com/microsoft/monaco-editor/blob/main/LICENSE.md) |
 | [Popper](https://github.com/popperjs/popper-core) | Positioning tooltips and popovers. | 2.10.2 | [MIT](https://github.com/popperjs/popper-core/blob/master/LICENSE.md) |
-| [Sortable](https://github.com/SortableJS/sortablejs) | Create and reorder lists with drag-and-drop. | 1.14.0 | [MIT](https://github.com/SortableJS/sortablejs/blob/master/LICENSE) |
+| [Sortable](https://github.com/SortableJS/sortablejs) | Create and reorder lists with drag-and-drop. | 1.15.0 | [MIT](https://github.com/SortableJS/sortablejs/blob/master/LICENSE) |
 | [Trumbowyg](https://github.com/Alex-D/Trumbowyg) | A lightweight and amazing WYSIWYG JavaScript editor. | 2.25.1 | [MIT](https://github.com/Alex-D/Trumbowyg/blob/develop/LICENSE) |
 | [vue-multiselect](https://github.com/shentao/vue-multiselect) | Universal select/multiselect/tagging component for Vue.js. | 2.1.6 | [MIT](https://github.com/shentao/vue-multiselect/blob/master/LICENSE) |
 | [Vue.Draggable](https://github.com/SortableJS/Vue.Draggable) | Vue drag-and-drop component based on Sortable.js. | 2.24.3 | [MIT](https://github.com/SortableJS/Vue.Draggable/blob/master/LICENSE) |

@@ -447,9 +447,9 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("Sortable")
                 .SetUrl("~/OrchardCore.Resources/Scripts/Sortable.min.js", "~/OrchardCore.Resources/Scripts/Sortable.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js", "https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.js")
-                .SetCdnIntegrity("sha384-vxc713BCZYoMxC6DlBK6K4M+gLAS8+63q7TtgB2+KZVn8GNafLKZCJ7Wk2S6ZEl1", "sha384-6dbyp5R22OLsNh2CMeCLIc+s0ZPLpCtBG2f38vvi5ghQIfUvVHIzKpz2S3qLx83I")
-                .SetVersion("1.14.0");
+                .SetCdn("https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js", "https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.js")
+                .SetCdnIntegrity("sha384-eeLEhtwdMwD3X9y+8P3Cn7Idl/M+w8H4uZqkgD/2eJVkWIN1yKzEj6XegJ9dL3q0", "sha384-OFIl93h6jYoAF+hATXncsLYMiLo81FpuReH3fgCI4wep7qNCmiA2I0bwcvVqHSBj")
+                .SetVersion("1.15.0");
 
             manifest
                 .DefineScript("vuedraggable")
