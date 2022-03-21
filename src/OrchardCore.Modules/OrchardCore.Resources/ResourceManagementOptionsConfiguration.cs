@@ -424,10 +424,10 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("vuejs")
-                .SetUrl("~/OrchardCore.Resources/Scripts/vue.min.js", "~/OrchardCore.Resources/Scripts/vue.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js", "https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js")
-                .SetCdnIntegrity("sha384-ULpZhk1pvhc/UK5ktA9kwb2guy9ovNSTyxPNHANnA35YjBQgdwI+AhLkixDvdlw4", "sha384-t1tHLsbM7bYMJCXlhr0//00jSs7ZhsAhxgm191xFsyzvieTMCbUWKMhFg9I6ci8q")
-                .SetVersion("2.6.14");
+                .SetUrl("~/OrchardCore.Resources/Scripts/vue.global.prod.js", "~/OrchardCore.Resources/Scripts/vue.global.js")
+                .SetCdn("https://cdn.jsdelivr.net/npm/vue@3.2.31/dist/vue.global.prod.js", "https://cdn.jsdelivr.net/npm/vue@3.2.31/dist/vue.global.js")
+                .SetCdnIntegrity("sha384-7Upc7W1WCZPT1Wedl0xz0Qf/gk9dxlIbTEcYz0tUoG/Hn+g9qQcjRAiaA8hJk7QX", "sha384-G0X+ECsBjU2Ha7N2iYaXgLhQLRqTXERPvAoao78HQWMzQjfoVJxMaUj1595qZw5+")
+                .SetVersion("3.2.31");
 
             manifest
                 .DefineScript("vue-multiselect")
@@ -454,10 +454,10 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("vuedraggable")
                 .SetDependencies("vuejs", "Sortable")
-                .SetUrl("~/OrchardCore.Resources/Scripts/vuedraggable.umd.min.js", "~/OrchardCore.Resources/Scripts/vuedraggable.umd.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/vuedraggable@2.24.3/dist/vuedraggable.umd.min.js", "https://cdn.jsdelivr.net/npm/vuedraggable@2.24.3/dist/vuedraggable.umd.js")
-                .SetCdnIntegrity("sha384-qUA1xXJiX23E4GOeW/XHtsBkV9MUcHLSjhi3FzO08mv8+W8bv5AQ1cwqLskycOTs", "sha384-+jB9vXc/EaIJTlNiZG2tv+TUpKm6GR9HCRZb3VkI3lscZWqrCYDbX2ZXffNJldL9")
-                .SetVersion("2.24.3");
+                .SetUrl("~/OrchardCore.Resources/Scripts/vue-draggable-next.global.prod.js", "~/OrchardCore.Resources/Scripts/vue-draggable-next.global.js")
+                .SetCdn("https://unpkg.com/vue-draggable-next@2.1.1/dist/vue-draggable-next.global.prod.js", "https://unpkg.com/vue-draggable-next@2.1.1/dist/vue-draggable-next.global.js")
+                .SetCdnIntegrity("sha384-NorK0A1dut9utqRnuadoNWg6YxAZJwrLWCuvQOHm1RwN15QkvZPh+I0HQ/sQHyji", "sha384-LULdGGLvMashG5zTp0PUXc+8Q+0KmE3eiT8Zd6INJVLPYqiiWwHYDqVRZg8HV3+4")
+                .SetVersion("2.1.1");
 
             manifest
                 .DefineScript("js-cookie")

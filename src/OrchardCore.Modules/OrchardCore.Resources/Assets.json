@@ -221,16 +221,16 @@
   {
     "copy": true,
     "inputs": [
-      "node_modules/vue/dist/vue.js"
+      "node_modules/vue/dist/vue.global.js"
     ],
-    "output": "wwwroot/Scripts/vue.js"
+    "output": "wwwroot/Scripts/vue.global.js"
   },
   {
     "copy": true,
     "inputs": [
-      "node_modules/vue/dist/vue.min.js"
+      "node_modules/vue/dist/vue.global.prod.js"
     ],
-    "output": "wwwroot/Scripts/vue.min.js"
+    "output": "wwwroot/Scripts/vue.global.prod.js"
   },
   {
     "copy": true,
@@ -263,7 +263,7 @@
   {
     "copy": true,
     "inputs": [
-      "node_modules/vuedraggable/dist/vuedraggable.umd.*"
+      "node_modules/vue-draggable-next/dist/vue-draggable-next.global.*"
     ],
     "output": "wwwroot/Scripts/@"
   },

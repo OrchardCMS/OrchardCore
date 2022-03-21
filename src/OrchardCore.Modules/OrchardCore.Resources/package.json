@@ -16,9 +16,9 @@
     "monaco-editor": "^0.33.0",
     "sortablejs": "^1.14.0",
     "trumbowyg": "2.25.1",
-    "vue": "^2.6.14",
-    "vue-multiselect": "^2.1.6",
-    "vuedraggable": "^2.24.3"
+    "vue": "^3.2.31",
+    "vue-draggable-next": "2.1.1",
+    "vue-multiselect": "^2.1.6"
   },
   "devDependencies": {
     "typescript-json-schema": "^0.51.0"
