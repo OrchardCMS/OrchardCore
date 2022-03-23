@@ -43,7 +43,7 @@
                     @await RenderSectionAsync("NavbarTop", required: false)
                     @if (adminSettings.DisplayDarkMode)
                     {
-                        <a id="btn-darkmode" class="ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])">
+                        <button id="btn-darkmode" class="ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])">
                             @if (darkMode)
                             {
                                 <i class="fas fa-sun" aria-hidden="true"></i>
@@ -52,7 +52,7 @@
                             {
                                 <i class="fas fa-moon" aria-hidden="true"></i>
                             }
-                        </a>
+                        </button>
                     }
                     <a href="@Url.Content("~/")" class="ml-3" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]">
                         <i class="fa fa-fw fa-external-link" aria-hidden="true"></i>
@@ -65,7 +65,7 @@
         <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
             @await RenderSectionAsync("Navigation", required: false)
             <div class="footer">
-                <a class="leftbar-compactor" title="@T["Collapse / expand menu"]"></a>
+                <button class="leftbar-compactor">@T["Collapse / expand menu"]</button>
             </div>
         </div>
 
