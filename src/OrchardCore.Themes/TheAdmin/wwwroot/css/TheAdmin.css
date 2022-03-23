@@ -22137,7 +22137,12 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
 :root[data-theme=default] .ta-navbar-top a {
   color: #495057;
   text-decoration: none;
-  cursor: pointer;
+}
+:root[data-theme=default] .ta-navbar-top button {
+  border: 0;
+  background-color: transparent;
+  color: #495057;
+  padding: 0;
 }
 [dir]:root[data-theme=default] .ta-badge {
   background-color: #e9ecef;
@@ -23214,8 +23219,6 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   cursor: pointer;
   transition-duration: 0.2s;
   transform: scale(2, 1);
-  text-align: center;
-  text-decoration: none;
 }
 [dir=ltr]:root[data-theme=default] .leftbar-compactor {
   float: right;
@@ -45607,7 +45610,12 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
 :root[data-theme=darkmode] .ta-navbar-top a {
   color: #dee2e6;
   text-decoration: none;
-  cursor: pointer;
+}
+:root[data-theme=darkmode] .ta-navbar-top button {
+    border: 0;
+    background-color: transparent;
+    color: #495057;
+    padding: 0;
 }
 [dir]:root[data-theme=darkmode] .ta-badge {
   background-color: #0c0d0e;
@@ -46684,8 +46692,6 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   cursor: pointer;
   transition-duration: 0.2s;
   transform: scale(2, 1);
-  text-align: center;
-  text-decoration: none;
 }
 [dir=ltr]:root[data-theme=darkmode] .leftbar-compactor {
   float: right;
