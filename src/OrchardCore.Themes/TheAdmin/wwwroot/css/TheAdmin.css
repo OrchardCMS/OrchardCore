@@ -23219,6 +23219,7 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   cursor: pointer;
   transition-duration: 0.2s;
   transform: scale(2, 1);
+  font-size: 0;
 }
 [dir=ltr]:root[data-theme=default] .leftbar-compactor {
   float: right;
@@ -23238,6 +23239,7 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
 }
 :root[data-theme=default] .leftbar-compactor:before {
   content: "⟪";
+  font-size: initial;
 }
 [dir]:root[data-theme=default] .left-sidebar-compact .leftbar-compactor {
   transition-duration: 0.2s;
@@ -46692,6 +46694,7 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   cursor: pointer;
   transition-duration: 0.2s;
   transform: scale(2, 1);
+  font-size: 0;
 }
 [dir=ltr]:root[data-theme=darkmode] .leftbar-compactor {
   float: right;
@@ -46711,6 +46714,7 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
 }
 :root[data-theme=darkmode] .leftbar-compactor:before {
   content: "⟪";
+  font-size: initial;
 }
 [dir]:root[data-theme=darkmode] .left-sidebar-compact .leftbar-compactor {
   transition-duration: 0.2s;
