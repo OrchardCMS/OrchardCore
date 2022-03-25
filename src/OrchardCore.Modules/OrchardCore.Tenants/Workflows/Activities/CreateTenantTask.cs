@@ -91,7 +91,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            if (ShellScope.Context.Settings.Name != ShellHelper.DefaultShellName)
+            if (!ShellScope.Context.Settings.IsDefaultShell())
             {
                 return Outcomes("Failed");
             }

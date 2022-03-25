@@ -105,7 +105,7 @@ namespace OrchardCore.Tenants.Controllers
                         Description = x["Description"],
                         Name = x.Name,
                         ShellSettings = x,
-                        IsDefaultTenant = String.Equals(x.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
+                        IsDefaultTenant = x.IsDefaultShell()
                     };
 
                     if (x.State == TenantState.Uninitialized && !String.IsNullOrEmpty(x["Secret"]))
@@ -251,7 +251,7 @@ namespace OrchardCore.Tenants.Controllers
                 switch (model.BulkAction.ToString())
                 {
                     case "Disable":
-                        if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
+                        if (shellSettings.IsDefaultShell())
                         {
                             await _notifier.WarningAsync(H["You cannot disable the default tenant."]);
                         }

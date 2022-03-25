@@ -17,7 +17,7 @@ namespace OrchardCore.Environment.Shell
 
         public void Add(ShellSettings settings)
         {
-            if (ShellHelper.DefaultShellName == settings.Name)
+            if (settings.IsDefaultShell())
             {
                 _default = settings;
             }
