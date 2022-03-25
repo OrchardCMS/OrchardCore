@@ -171,44 +171,54 @@ namespace OrchardCore.ContentManagement
             }
 
             ContentItem contentItem = null;
-
-            if (options.IsLatest)
-            {
-                contentItem = await _session
-                    .Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemId == contentItemId && x.Latest == true)
-                    .FirstOrDefaultAsync();
-            }
-            else if (options.IsDraft && !options.IsDraftRequired)
+            if (options.IsAllVersions)
             {
                 contentItem = await _session
                     .Query<ContentItem, ContentItemIndex>()
                     .Where(x =>
-                        x.ContentItemId == contentItemId &&
-                        x.Published == false &&
-                        x.Latest == true)
+                        x.ContentItemId == contentItemId)
                     .FirstOrDefaultAsync();
             }
-            else if (options.IsDraft || options.IsDraftRequired)
+            else
             {
-                // Loaded whatever is the latest as it will be cloned
-                contentItem = await _session
-                    .Query<ContentItem, ContentItemIndex>()
-                    .Where(x =>
-                        x.ContentItemId == contentItemId &&
-                        x.Latest == true)
-                    .FirstOrDefaultAsync();
-            }
-            else if (options.IsPublished)
-            {
-                // If the published version is requested and is already loaded, we can
-                // return it right away
-                if (_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
+                if (options.IsLatest)
                 {
-                    return contentItem;
+                    contentItem = await _session
+                        .Query<ContentItem, ContentItemIndex>()
+                        .Where(x => x.ContentItemId == contentItemId && x.Latest == true)
+                        .FirstOrDefaultAsync();
                 }
+                else if (options.IsDraft && !options.IsDraftRequired)
+                {
+                    contentItem = await _session
+                        .Query<ContentItem, ContentItemIndex>()
+                        .Where(x =>
+                            x.ContentItemId == contentItemId &&
+                            x.Published == false &&
+                            x.Latest == true)
+                        .FirstOrDefaultAsync();
+                }
+                else if (options.IsDraft || options.IsDraftRequired)
+                {
+                    // Loaded whatever is the latest as it will be cloned
+                    contentItem = await _session
+                        .Query<ContentItem, ContentItemIndex>()
+                        .Where(x =>
+                            x.ContentItemId == contentItemId &&
+                            x.Latest == true)
+                        .FirstOrDefaultAsync();
+                }
+                else if (options.IsPublished)
+                {
+                    // If the published version is requested and is already loaded, we can
+                    // return it right away
+                    if (_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
+                    {
+                        return contentItem;
+                    }
 
-                contentItem = await _session.ExecuteQuery(new PublishedContentItemById(contentItemId)).FirstOrDefaultAsync();
+                    contentItem = await _session.ExecuteQuery(new PublishedContentItemById(contentItemId)).FirstOrDefaultAsync();
+                }
             }
 
             if (contentItem == null)
