@@ -176,7 +176,7 @@ namespace OrchardCore.ContentManagement
                 contentItem = await _session
                     .Query<ContentItem, ContentItemIndex>()
                     .Where(x =>
-                        x.ContentItemId == contentItemId)
+                        x.ContentItemId == contentItemId && (x.Latest || x.Published))
                     .FirstOrDefaultAsync();
             }
             else
