@@ -530,7 +530,7 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            if (shellSettings.IsDefaultShell()))
+            if (shellSettings.IsDefaultShell())
             {
                 await _notifier.ErrorAsync(H["You cannot disable the default tenant."]);
                 return RedirectToAction(nameof(Index));
