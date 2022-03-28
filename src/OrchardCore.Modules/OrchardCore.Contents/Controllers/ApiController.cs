@@ -67,7 +67,7 @@ namespace OrchardCore.Contents.Controllers
                 return this.ChallengeOrForbid("Api");
             }
 
-            var contentItem = await _contentManager.GetAsync(contentItemId);
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
             if (contentItem == null)
             {
