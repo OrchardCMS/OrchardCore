@@ -27,7 +27,8 @@ namespace OrchardCore.Tests.Apis.Context
         {
             services.AddOrchardCms(builder =>
                 builder.AddSetupFeatures(
-                    "OrchardCore.Tenants"
+                    "OrchardCore.Tenants",
+                    "OrchardCore.Recipes"
                 )
                 .AddTenantFeatures(
                     "OrchardCore.Apis.GraphQL"
