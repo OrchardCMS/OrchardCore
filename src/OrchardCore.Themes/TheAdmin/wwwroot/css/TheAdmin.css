@@ -22144,6 +22144,9 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   color: #495057;
   padding: 0;
 }
+:root[data-theme=default] .ta-navbar-top button.ml-3 > span {
+  display: none;
+}
 [dir]:root[data-theme=default] .ta-badge {
   background-color: #e9ecef;
 }
@@ -23219,7 +23222,9 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   cursor: pointer;
   transition-duration: 0.2s;
   transform: scale(2, 1);
-  font-size: 0;
+}
+[dir]:root[data-theme=default] button.leftbar-compactor > span {
+  display: none;
 }
 [dir=ltr]:root[data-theme=default] .leftbar-compactor {
   float: right;
@@ -23239,7 +23244,6 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
 }
 :root[data-theme=default] .leftbar-compactor:before {
   content: "⟪";
-  font-size: initial;
 }
 [dir]:root[data-theme=default] .left-sidebar-compact .leftbar-compactor {
   transition-duration: 0.2s;
