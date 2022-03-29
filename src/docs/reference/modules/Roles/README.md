@@ -18,7 +18,7 @@ Orchard Core come up with the following predefined permission stereotypes:
 
 ## Roles Configuration
 
-Roles can be created and configured through the roles menu in the admin dashboard, but also through a recipe step. Note that the above-mentioned predefined permission stereotypes alone do not create the roles.
+Roles can be created and configured through the roles menu in the admin dashboard, but also through a recipe step. Note that roles for features are not predefined. They are created out of predefined permission stereotypes.
 
 A sample of a roles configuration step:
 
