@@ -22,7 +22,7 @@
     <script asp-name="font-awesome-v4-shims" at="Head" version="6"></script>
     <script asp-name="js-cookie" at="Foot"></script>
     <script asp-name="admin" version="1" at="Foot"></script>
-    <resources type="Header" />
+    <resources type="Header"></resources>
 
     <!-- This script can't wait till the footer -->
     <script asp-name="admin-head" version="1"></script>
@@ -43,7 +43,7 @@
                     @await RenderSectionAsync("NavbarTop", required: false)
                     @if (adminSettings.DisplayDarkMode)
                     {
-                        <button id="btn-darkmode" class="ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])">
+                        <button type="button" id="btn-darkmode" class="ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])">
                             @if (darkMode)
                             {
                                 <i class="fas fa-sun" aria-hidden="true"></i>
@@ -56,7 +56,7 @@
                             }
                         </button>
                     }
-                    <a href="@Url.Content("~/")" class="ml-3" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]">
+                    <a href="@Url.Content("~/")" class="ml-3" target="_blank" data-toggle="tooltip" aria-label="@T["Visit Site"]" title="@T["Visit Site"]">
                         <i class="fa fa-fw fa-external-link" aria-hidden="true"></i>
                     </a>
                     @await DisplayAsync(await New.UserMenu())
@@ -67,7 +67,7 @@
         <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
             @await RenderSectionAsync("Navigation", required: false)
             <div class="footer">
-                <button class="leftbar-compactor" title="@T["Collapse / expand menu"]">
+                <button type="button" class="leftbar-compactor" title="@T["Collapse / expand menu"]">
                     <span>@T["Collapse / expand menu"]</span>
                 </button>
             </div>
@@ -88,6 +88,6 @@
 
     </div>
     <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
-    <resources type="Footer" />
+    <resources type="Footer"></resources>
 </body>
 </html>
