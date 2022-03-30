@@ -11,5 +11,5 @@
 <div class="form-group">
     <label asp-for="Schema">@T["Schema"]</label>
     <textarea asp-for="Schema" rows="12" class="form-control" style="text-align:left"></textarea>
-    <span class="hint">@T["The schema the api will use to return results."]</span>
+    <span class="hint">@T["The schema the GraphQL API will use to return results."] <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Queries/#graphql" target="_blank">@T["See documentation"]</a></span>
 </div>

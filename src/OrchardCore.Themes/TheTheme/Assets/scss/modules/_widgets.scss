@@ -33,7 +33,7 @@
         @extend .widget-size-100;
 
         @include media-breakpoint-up(sm) {
-            @include make-col(round($wsize*12/100));
+            @include make-col(round(math.div($wsize * 12, 100)));
         }
     }
 
@@ -41,7 +41,7 @@
         @extend .widget-size-#{$wsize};
 
         @include media-breakpoint-up(md) {
-            @include make-col(round($wsize*12/100));
+            @include make-col(round(math.div($wsize * 12, 100)));
         }
     }
 }

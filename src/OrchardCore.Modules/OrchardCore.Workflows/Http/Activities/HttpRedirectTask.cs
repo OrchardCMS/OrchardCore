@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Http;
@@ -56,7 +55,7 @@ namespace OrchardCore.Workflows.Http.Activities
         {
             var location = await _expressionEvaluator.EvaluateAsync(Location, workflowContext, NullEncoder.Default);
 
-            _httpContextAccessor.HttpContext.Response.Redirect(Microsoft.AspNetCore.Mvc.ControllerExtensions.EscapeLocationHeader(location), Permanent);
+            _httpContextAccessor.HttpContext.Response.Redirect(location.ToUriComponents(), Permanent);
             _httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
 
             return Outcomes("Done");

@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
@@ -3600,22 +3600,24 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       };
     }
 
-    for (var i = 0; i < lineView.rest.length; i++) {
-      if (lineView.rest[i] == line) {
-        return {
-          map: lineView.measure.maps[i],
-          cache: lineView.measure.caches[i]
-        };
+    if (lineView.rest) {
+      for (var i = 0; i < lineView.rest.length; i++) {
+        if (lineView.rest[i] == line) {
+          return {
+            map: lineView.measure.maps[i],
+            cache: lineView.measure.caches[i]
+          };
+        }
       }
-    }
 
-    for (var i$1 = 0; i$1 < lineView.rest.length; i$1++) {
-      if (lineNo(lineView.rest[i$1]) > lineN) {
-        return {
-          map: lineView.measure.maps[i$1],
-          cache: lineView.measure.caches[i$1],
-          before: true
-        };
+      for (var i$1 = 0; i$1 < lineView.rest.length; i$1++) {
+        if (lineNo(lineView.rest[i$1]) > lineN) {
+          return {
+            map: lineView.measure.maps[i$1],
+            cache: lineView.measure.caches[i$1],
+            before: true
+          };
+        }
       }
     }
   } // Render a line into the hidden node display.externalMeasured. Used
@@ -3978,12 +3980,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
 
   function widgetTopHeight(lineObj) {
+    var ref = visualLine(lineObj);
+    var widgets = ref.widgets;
     var height = 0;
 
-    if (lineObj.widgets) {
-      for (var i = 0; i < lineObj.widgets.length; ++i) {
-        if (lineObj.widgets[i].above) {
-          height += widgetHeight(lineObj.widgets[i]);
+    if (widgets) {
+      for (var i = 0; i < widgets.length; ++i) {
+        if (widgets[i].above) {
+          height += widgetHeight(widgets[i]);
         }
       }
     }
@@ -4814,6 +4818,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         result = {};
     var curFragment = result.cursors = document.createDocumentFragment();
     var selFragment = result.selection = document.createDocumentFragment();
+    var customCursor = cm.options.$customCursor;
+
+    if (customCursor) {
+      primary = true;
+    }
 
     for (var i = 0; i < doc.sel.ranges.length; i++) {
       if (!primary && i == doc.sel.primIndex) {
@@ -4828,7 +4837,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
       var collapsed = range.empty();
 
-      if (collapsed || cm.options.showCursorWhenSelecting) {
+      if (customCursor) {
+        var head = customCursor(cm, range);
+
+        if (head) {
+          drawSelectionCursor(cm, head, curFragment);
+        }
+      } else if (collapsed || cm.options.showCursorWhenSelecting) {
         drawSelectionCursor(cm, range.head, curFragment);
       }
 
@@ -4852,9 +4867,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     if (/\bcm-fat-cursor\b/.test(cm.getWrapperElement().className)) {
       var charPos = _charCoords(cm, head, "div", null, null);
 
-      if (charPos.right - charPos.left > 0) {
-        cursor.style.width = charPos.right - charPos.left + "px";
-      }
+      var width = charPos.right - charPos.left;
+      cursor.style.width = (width > 0 ? width : cm.defaultCharWidth()) + "px";
     }
 
     if (pos.other) {
@@ -5545,6 +5559,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
       this.vert.firstChild.style.height = Math.max(0, measure.scrollHeight - measure.clientHeight + totalHeight) + "px";
     } else {
+      this.vert.scrollTop = 0;
       this.vert.style.display = "";
       this.vert.firstChild.style.height = "0";
     }
@@ -6720,7 +6735,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         dy = delta.y;
     var pixelsPerUnit = wheelPixelsPerUnit;
 
-    if (event.deltaMode === 0) {
+    if (e.deltaMode === 0) {
       dx = e.deltaX;
       dy = e.deltaY;
       pixelsPerUnit = 1;
@@ -12384,7 +12399,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
 
   function hiddenTextarea() {
-    var te = elt("textarea", null, null, "position: absolute; bottom: -1em; padding: 0; width: 1px; height: 1em; outline: none");
+    var te = elt("textarea", null, null, "position: absolute; bottom: -1em; padding: 0; width: 1px; height: 1em; min-height: 1em; outline: none");
     var div = elt("div", [te], null, "overflow: hidden; position: relative; width: 3px; height: 0px;"); // The textarea is kept positioned near the cursor to prevent the
     // fact that it'll be scrolled into view on input from scrolling
     // our fake cursor out of view. On webkit, when wrap=off, paste is
@@ -14704,6 +14719,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.63.1";
+  CodeMirror.version = "5.65.2";
   return CodeMirror;
 });

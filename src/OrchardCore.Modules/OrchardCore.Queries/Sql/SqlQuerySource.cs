@@ -44,7 +44,7 @@ namespace OrchardCore.Queries.Sql
             var sqlQuery = query as SqlQuery;
             var sqlQueryResults = new SQLQueryResults();
 
-            var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(sqlQuery.Template, NullEncoder.Default, 
+            var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(sqlQuery.Template, NullEncoder.Default,
                 parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
             var connection = _dbConnectionAccessor.CreateConnection();

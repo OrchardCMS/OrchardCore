@@ -22,6 +22,7 @@ using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
+using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
@@ -31,6 +32,7 @@ using OrchardCore.Media.Events;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
 using OrchardCore.Media.Handlers;
+using OrchardCore.Media.Indexing;
 using OrchardCore.Media.Liquid;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
@@ -137,7 +139,7 @@ namespace OrchardCore.Media
                 .AddProcessor<TokenCommandProcessor>();
 
             services.AddScoped<MediaTokenSettingsUpdater>();
-            services.AddScoped<IMediaTokenService, MediaTokenService>();
+            services.AddSingleton<IMediaTokenService, MediaTokenService>();
             services.AddTransient<IConfigureOptions<MediaTokenOptions>, MediaTokenOptionsConfiguration>();
             services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<MediaTokenSettingsUpdater>());
             services.AddScoped<IModularTenantEvents>(sp => sp.GetRequiredService<MediaTokenSettingsUpdater>());
@@ -150,6 +152,8 @@ namespace OrchardCore.Media
             services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
             services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
             services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IContentFieldIndexHandler, MediaFieldIndexHandler>();
+            services.AddMediaFileTextProvider<PdfMediaFileTextProvider>(".pdf");
 
             services.AddRecipeExecutionStep<MediaStep>();
 
@@ -393,6 +397,21 @@ namespace OrchardCore.Media
   <tr>
     <td></td>
     <td>class, alt</td>
+  </tr>
+</table>";
+                d.Categories = new string[] { "HTML Content", "Media" };
+            });
+
+            services.AddShortcode<AssetUrlShortcodeProvider>("asset_url", d =>
+            {
+                d.DefaultValue = "[asset_url] [/asset_url]";
+                d.Hint = "Return a url from the media library.";
+                d.Usage =
+@"[asset_url]foo.jpg[/asset_url]<br>
+<table>
+  <tr>
+    <td>Args:</td>
+    <td>width, height, mode</td>
   </tr>
 </table>";
                 d.Categories = new string[] { "HTML Content", "Media" };

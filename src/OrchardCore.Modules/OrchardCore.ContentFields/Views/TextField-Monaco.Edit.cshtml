@@ -1,7 +1,7 @@
 @model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
 
 @{
-    var settings = Model.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
     var monacoSettings = Model.PartFieldDefinition.GetSettings<TextFieldMonacoEditorSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
@@ -49,6 +49,11 @@
             window.addEventListener("submit", function () {
                 textArea.value = editor.getValue();
             });
+            editor.getModel().onDidChangeContent((event) => {
+                 textArea.value = editor.getValue();
+                 $(document).trigger('contentpreview:render');
+            }); 
+             
         });
     });
 </script>

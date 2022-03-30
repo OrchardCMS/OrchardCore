@@ -67,7 +67,7 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <param name="contentItem"></param>
         /// <returns>The validation <see cref="ContentValidateResult"/> result.</returns>
-        Task<ContentValidateResult> RestoreAsync(ContentItem contentItem);        
+        Task<ContentValidateResult> RestoreAsync(ContentItem contentItem);
 
         /// <summary>
         /// Gets the published content item with the specified id

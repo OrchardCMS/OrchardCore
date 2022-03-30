@@ -231,7 +231,7 @@ namespace OrchardCore.Navigation
                     var isAuthorized = true;
                     foreach (var permission in item.Permissions)
                     {
-                        if(!(await _authorizationService.AuthorizeAsync(user, permission, item.Resource)))
+                        if (!(await _authorizationService.AuthorizeAsync(user, permission, item.Resource)))
                         {
                             isAuthorized = false;
                             break;

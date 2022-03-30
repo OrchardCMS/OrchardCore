@@ -66,7 +66,7 @@ namespace OrchardCore.Security
             {
                 statusCodePagesFeature.Enabled = false;
             }
-            
+
             return Context.ForbidAsync(Options.ApiAuthenticationScheme);
         }
     }

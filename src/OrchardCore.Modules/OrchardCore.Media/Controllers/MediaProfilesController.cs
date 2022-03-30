@@ -145,7 +145,7 @@ namespace OrchardCore.Media.Controllers
             if (ModelState.IsValid)
             {
                 var isCustomWidth = model.SelectedWidth != 0 && Array.BinarySearch<int>(_mediaOptions.SupportedSizes, model.SelectedWidth) < 0;
-                var isCustomHeight = model.SelectedHeight != 0 &&Array.BinarySearch<int>(_mediaOptions.SupportedSizes, model.SelectedHeight) < 0;
+                var isCustomHeight = model.SelectedHeight != 0 && Array.BinarySearch<int>(_mediaOptions.SupportedSizes, model.SelectedHeight) < 0;
 
                 var mediaProfile = new MediaProfile
                 {
