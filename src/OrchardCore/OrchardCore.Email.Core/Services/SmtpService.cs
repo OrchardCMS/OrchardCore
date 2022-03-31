@@ -211,7 +211,12 @@ namespace OrchardCore.Email.Services
             return false;
         }
 
-        protected virtual async Task<string> SendOnlineMessageAsync(MimeMessage message)
+        protected virtual async Task OnMessageSendingAsync(SmtpClient client, MimeMessage message)
+        {
+            await Task.CompletedTask;
+        }
+
+        private async Task<string> SendOnlineMessageAsync(MimeMessage message)
         {
             var secureSocketOptions = SecureSocketOptions.Auto;
 
@@ -236,6 +241,9 @@ namespace OrchardCore.Email.Services
             using (var client = new SmtpClient())
             {
                 client.ServerCertificateValidationCallback = CertificateValidationCallback;
+
+                await OnMessageSendingAsync(client, message);
+
                 await client.ConnectAsync(_options.Host, _options.Port, secureSocketOptions);
                 var useDefaultCredentials = _options.RequireCredentials && _options.UseDefaultCredentials;
                 if (_options.RequireCredentials)
