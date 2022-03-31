@@ -245,6 +245,7 @@ namespace OrchardCore.Email.Services
                 await OnMessageSendingAsync(client, message);
 
                 await client.ConnectAsync(_options.Host, _options.Port, secureSocketOptions);
+                
                 var useDefaultCredentials = _options.RequireCredentials && _options.UseDefaultCredentials;
                 if (_options.RequireCredentials)
                 {
