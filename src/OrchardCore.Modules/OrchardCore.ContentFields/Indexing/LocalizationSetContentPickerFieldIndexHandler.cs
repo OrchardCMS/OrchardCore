@@ -12,11 +12,21 @@ namespace OrchardCore.ContentFields.Indexing
         {
             var options = DocumentIndexOptions.Store;
 
-            foreach (var localizationSet in field.LocalizationSets)
+            if (field.LocalizationSets.Length > 0)
+            {
+                foreach (var localizationSet in field.LocalizationSets)
+                {
+                    foreach (var key in context.Keys)
+                    {
+                        context.DocumentIndex.Set(key, localizationSet, options);
+                    }
+                }
+            }
+            else
             {
                 foreach (var key in context.Keys)
                 {
-                    context.DocumentIndex.Set(key, localizationSet, options);
+                    context.DocumentIndex.Set(key, "NULL", options);
                 }
             }
 
