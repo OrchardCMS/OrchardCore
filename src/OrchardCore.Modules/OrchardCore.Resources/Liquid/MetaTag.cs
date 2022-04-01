@@ -23,6 +23,7 @@ namespace OrchardCore.Resources.Liquid
             string httpEquiv = null;
             string charset = null;
             string separator = null;
+            bool replace = false;
 
             Dictionary<string, string> customAttributes = null;
 
@@ -36,6 +37,7 @@ namespace OrchardCore.Resources.Liquid
                     case "http_equiv": httpEquiv = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "charset": charset = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "separator": separator = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "replace": replace = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(); break;
                     default: (customAttributes ??= new Dictionary<string, string>())[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                 }
             }
@@ -50,7 +52,14 @@ namespace OrchardCore.Resources.Liquid
                 }
             }
 
-            resourceManager.AppendMeta(metaEntry, separator ?? ", ");
+            if (replace)
+            {
+                resourceManager.RegisterMeta(metaEntry);
+            }
+            else
+            {
+                resourceManager.AppendMeta(metaEntry, separator ?? ", ");
+            }
 
             return Completion.Normal;
         }

@@ -24,6 +24,8 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
         public string Separator { get; set; }
 
+        public bool Replace { get; set; }
+
         private readonly IResourceManager _resourceManager;
 
         public MetaTagHelper(IResourceManager resourceManager)
@@ -45,7 +47,14 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 metaEntry.SetAttribute(attribute.Name, attribute.Value.ToString());
             }
 
-            _resourceManager.AppendMeta(metaEntry, Separator ?? ", ");
+            if (Replace)
+            {
+                _resourceManager.RegisterMeta(metaEntry);
+            }
+            else
+            {
+                _resourceManager.AppendMeta(metaEntry, Separator ?? ", ");
+            }
 
             output.TagName = null;
         }

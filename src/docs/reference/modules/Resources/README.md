@@ -525,6 +525,7 @@ These properties are available:
 | `httpequiv`                  | The `http-equiv` attribute of the tag                                 |
 | `charset`                    | The `charset` attribute of the tag                                    |
 | `separator`                  | The separator to use when multiple tags are defined for the same name |
+| `replace`                    | Replace instead of append if a tag with the same name already exists  |
 
 ### Rendering
 
