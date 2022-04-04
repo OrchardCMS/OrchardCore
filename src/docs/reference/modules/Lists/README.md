@@ -86,7 +86,7 @@ The `list_items` filter loads published content items for a given `ContentItem` 
 
 ## Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/a3yyR27vdQQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/a3yyR27vdQQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Lucene Indexing
 
