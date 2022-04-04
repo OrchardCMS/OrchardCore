@@ -1,5 +1,5 @@
 using System.IO;
-using OrchardCore.Liquid;
+using OrchardCore.Abstractions;
 
 namespace OrchardCore.Media.Services
 {

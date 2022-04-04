@@ -22,6 +22,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore;
+using OrchardCore.Abstractions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
@@ -311,8 +312,9 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
                 var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
+                var slugService = serviceProvider.GetRequiredService<ISlugService>();
 
-                var cookieName = "orchantiforgery_" + HttpUtility.UrlEncode(settings.Name + environment.ContentRootPath);
+                var cookieName = "orchantiforgery_" + HttpUtility.UrlEncode(slugService.Slugify(settings.Name + environment.ContentRootPath, '_'));
 
                 // If uninitialized, we use the host services.
                 if (settings.State == TenantState.Uninitialized)

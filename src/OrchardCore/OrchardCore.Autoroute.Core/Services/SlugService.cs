@@ -1,15 +1,22 @@
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using Cysharp.Text;
+using OrchardCore.Abstractions;
 
-namespace OrchardCore.Liquid.Services
+namespace OrchardCore.Autoroute.Core.Services
 {
     public class SlugService : ISlugService
     {
-        private const char Hyphen = '-';
+        private char Hyphen = '-';
         private const int MaxLength = 1000;
+
+        public string Slugify(string text, char hyphen)
+        {
+            Hyphen = hyphen;
+
+            return Slugify(text);
+        }
 
         public string Slugify(string text)
         {
@@ -38,7 +45,7 @@ namespace OrchardCore.Liquid.Services
 
                     appendHyphen = true;
                 }
-                else if (currentChar is Hyphen)
+                else if (currentChar == Hyphen)
                 {
                     if (appendHyphen && i != normalizedText.Length - 1)
                     {
