@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using OrchardCore.Abstractions;
+using OrchardCore.Autoroute.Abstractions.Services;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Routing;
 

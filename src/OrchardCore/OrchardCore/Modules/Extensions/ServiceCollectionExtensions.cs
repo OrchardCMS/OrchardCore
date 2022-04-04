@@ -23,6 +23,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore;
 using OrchardCore.Abstractions;
+using OrchardCore.Autoroute.Abstractions.Services;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;

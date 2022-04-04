@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Text;
 using Cysharp.Text;
-using OrchardCore.Abstractions;
+using OrchardCore.Autoroute.Abstractions.Services;
 
 namespace OrchardCore.Autoroute.Core.Services
 {

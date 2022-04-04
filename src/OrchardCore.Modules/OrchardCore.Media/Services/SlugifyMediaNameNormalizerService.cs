@@ -1,5 +1,5 @@
 using System.IO;
-using OrchardCore.Abstractions;
+using OrchardCore.Autoroute.Abstractions.Services;
 
 namespace OrchardCore.Media.Services
 {

@@ -1,4 +1,4 @@
-namespace OrchardCore.Abstractions
+namespace OrchardCore.Autoroute.Abstractions.Services
 {
     public interface ISlugService
     {
