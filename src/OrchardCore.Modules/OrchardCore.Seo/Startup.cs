@@ -18,8 +18,6 @@ namespace OrchardCore.Seo
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IIndexProvider, SeoMetaPartIndexProvider>();
-
             services.AddContentPart<SeoMetaPart>()
                 .UseDisplayDriver<SeoMetaPartDisplayDriver>()
                 .AddHandler<SeoMetaPartHandler>();

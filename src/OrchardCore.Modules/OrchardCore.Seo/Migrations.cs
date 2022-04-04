@@ -42,16 +42,7 @@ namespace OrchardCore.Seo
 
             await _recipeMigrator.ExecuteAsync("socialmetasettings.recipe.json", this);
 
-            SchemaBuilder.CreateMapIndexTable<SeoMetaPartIndex>(table => table
-                .Column<string>("PageTitle", c => c.WithLength(ContentItemIndex.MaxContentFieldSize))
-                .Column<string>("MetaDescription", c => c.WithLength(ContentItemIndex.MaxContentFieldSize))
-                .Column<string>("MetaKeywords", c => c.WithLength(ContentItemIndex.MaxContentFieldSize)));
-
-            SchemaBuilder.AlterIndexTable<SeoMetaPartIndex>(table => table
-                .CreateIndex("IDX_SeoMetaPartIndex_DocumentId", "DocumentId", "PageTitle", "MetaDescription", "MetaKeywords")
-            );
-
-            return 3;
+            return 2;
         }
 
         public async Task<int> UpdateFrom1Async()
@@ -59,20 +50,6 @@ namespace OrchardCore.Seo
             await _recipeMigrator.ExecuteAsync("socialmetasettings.recipe.json", this);
 
             return 2;
-        }
-
-        public int UpdateFrom2()
-        {
-            SchemaBuilder.CreateMapIndexTable<SeoMetaPartIndex>(table => table
-                .Column<string>("PageTitle", c => c.WithLength(ContentItemIndex.MaxContentFieldSize))
-                .Column<string>("MetaDescription", c => c.WithLength(ContentItemIndex.MaxContentFieldSize))
-                .Column<string>("MetaKeywords", c => c.WithLength(ContentItemIndex.MaxContentFieldSize)));
-
-            SchemaBuilder.AlterIndexTable<SeoMetaPartIndex>(table => table
-                .CreateIndex("IDX_SeoMetaPartIndex_DocumentId", "DocumentId", "PageTitle", "MetaDescription", "MetaKeywords")
-            );
-
-            return 3;
         }
     }
 }

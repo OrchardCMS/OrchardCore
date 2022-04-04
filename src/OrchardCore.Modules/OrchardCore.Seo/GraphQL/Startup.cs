@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
-using OrchardCore.ContentManagement.GraphQL;
-using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
-using OrchardCore.Seo.Indexes;
 using OrchardCore.Seo.Models;
 
 namespace OrchardCore.Seo.GraphQL;
@@ -16,8 +13,5 @@ public class Startup : StartupBase
     {
         services.AddObjectGraphType<MetaEntry, MetaEntryQueryObjectType>();
         services.AddObjectGraphType<SeoMetaPart, SeoMetaQueryObjectType>();
-        services.AddInputObjectGraphType<SeoMetaPart, SeoMetaInputObjectType>();
-        services.AddTransient<IIndexAliasProvider, SeoMetaPartIndexAliasProvider>();
-        services.AddWhereInputIndexPropertyProvider<SeoMetaPartIndex>();
     }
 }
