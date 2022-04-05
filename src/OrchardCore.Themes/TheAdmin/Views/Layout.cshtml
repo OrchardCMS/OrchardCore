@@ -43,7 +43,7 @@
                     @await RenderSectionAsync("NavbarTop", required: false)
                     @if (adminSettings.DisplayDarkMode)
                     {
-                        <button id="btn-darkmode" class="unset ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])">
+                        <button type="button" id="btn-darkmode" class="unset ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])">
                             @if (darkMode)
                             {
                                 <i class="fas fa-sun" aria-hidden="true"></i>

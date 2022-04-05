@@ -1,7 +1,7 @@
 @inject IAuthorizationService AuthorizationService
 <div class="dropdown">
     <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline no-multisubmit">
-        <button class="unset ml-3 dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-toggle-tooltip="tooltip" title="@User.Identity.Name">
+        <button type="button" class="unset ml-3 dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-toggle-tooltip="tooltip" title="@User.Identity.Name">
             <i class="fa fa-fw fa-user" aria-hidden="true"></i>
             <span class="d-none">@T[User.Identity.Name]</span>
         </button>
