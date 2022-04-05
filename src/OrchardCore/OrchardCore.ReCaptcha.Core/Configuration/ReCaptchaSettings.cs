@@ -8,6 +8,10 @@ namespace OrchardCore.ReCaptcha.Configuration
 
         public string ReCaptchaScriptUri { get; set; } = Constants.ReCaptchaScriptUri;
 
+        public string ReCaptchaScriptType { get; set; }
+
+        public string ReCaptchaScriptClass { get; set; }
+
         public string ReCaptchaApiUri { get; set; } = Constants.ReCaptchaApiUri;
 
         /// <summary>

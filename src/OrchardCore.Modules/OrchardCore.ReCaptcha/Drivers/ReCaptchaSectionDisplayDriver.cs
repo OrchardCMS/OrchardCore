@@ -44,6 +44,8 @@ namespace OrchardCore.ReCaptcha.Drivers
                 {
                     model.SiteKey = settings.SiteKey;
                     model.SecretKey = settings.SecretKey;
+                    model.ReCaptchaScriptType = settings.ReCaptchaScriptType;
+                    model.ReCaptchaScriptClass = settings.ReCaptchaScriptClass;
                 })
                 .Location("Content")
                 .OnGroup(GroupId);
@@ -66,6 +68,8 @@ namespace OrchardCore.ReCaptcha.Drivers
                 {
                     section.SiteKey = model.SiteKey?.Trim();
                     section.SecretKey = model.SecretKey?.Trim();
+                    section.ReCaptchaScriptType = model.ReCaptchaScriptType?.Trim();
+                    section.ReCaptchaScriptClass = model.ReCaptchaScriptClass?.Trim();
 
                     // Release the tenant to apply settings.
                     await _shellHost.ReleaseShellContextAsync(_shellSettings);
