@@ -6,6 +6,8 @@ namespace OrchardCore.ReCaptcha.ViewModels
 
         public string SecretKey { get; set; }
 
+        public string ReCaptchaScriptId { get; set; }
+
         public string ReCaptchaScriptType { get; set; }
 
         public string ReCaptchaScriptClass { get; set; }

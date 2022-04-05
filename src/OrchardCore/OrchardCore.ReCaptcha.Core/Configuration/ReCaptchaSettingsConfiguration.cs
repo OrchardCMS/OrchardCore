@@ -21,6 +21,7 @@ namespace OrchardCore.ReCaptcha.Configuration
 
             options.SiteKey = settings.SiteKey;
             options.SecretKey = settings.SecretKey;
+            options.ReCaptchaScriptId = settings.ReCaptchaScriptId;
             options.ReCaptchaScriptType = settings.ReCaptchaScriptType;
             options.ReCaptchaScriptClass = settings.ReCaptchaScriptClass;
         }

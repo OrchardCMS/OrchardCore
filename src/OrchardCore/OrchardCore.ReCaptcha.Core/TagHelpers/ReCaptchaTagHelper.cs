@@ -76,6 +76,10 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             var builder = new TagBuilder("script");
             var cultureInfo = await GetCultureAsync();
 
+            if (!string.IsNullOrWhiteSpace(_settings.ReCaptchaScriptId))
+            {
+                builder.Attributes.Add("id", _settings.ReCaptchaScriptId);
+            }
             var settingsUrl = $"{_settings.ReCaptchaScriptUri}?hl={cultureInfo.TwoLetterISOLanguageName}";
             builder.Attributes.Add("src", settingsUrl);
             if (!string.IsNullOrWhiteSpace(_settings.ReCaptchaScriptType))

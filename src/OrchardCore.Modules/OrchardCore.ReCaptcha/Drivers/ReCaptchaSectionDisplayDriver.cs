@@ -44,6 +44,7 @@ namespace OrchardCore.ReCaptcha.Drivers
                 {
                     model.SiteKey = settings.SiteKey;
                     model.SecretKey = settings.SecretKey;
+                    model.ReCaptchaScriptId = settings.ReCaptchaScriptId;
                     model.ReCaptchaScriptType = settings.ReCaptchaScriptType;
                     model.ReCaptchaScriptClass = settings.ReCaptchaScriptClass;
                 })
@@ -68,6 +69,7 @@ namespace OrchardCore.ReCaptcha.Drivers
                 {
                     section.SiteKey = model.SiteKey?.Trim();
                     section.SecretKey = model.SecretKey?.Trim();
+                    section.ReCaptchaScriptId = model.ReCaptchaScriptId?.Trim();
                     section.ReCaptchaScriptType = model.ReCaptchaScriptType?.Trim();
                     section.ReCaptchaScriptClass = model.ReCaptchaScriptClass?.Trim();
 

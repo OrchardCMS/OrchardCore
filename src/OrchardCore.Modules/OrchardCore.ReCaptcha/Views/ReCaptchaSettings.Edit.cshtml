@@ -16,6 +16,13 @@
     <span class="hint">@T["Your Google's reCaptcha Secret Key."]</span>
 </div>
 
+<div class="form-group" asp-validation-class-for="ReCaptchaScriptId">
+    <label asp-for="ReCaptchaScriptId">@T["Script ID"]</label>
+    <input asp-for="ReCaptchaScriptId" class="form-control" type="text" />
+    <span asp-validation-for="ReCaptchaScriptId"></span>
+    <span class="hint">@T["Your Google's reCaptcha ID."]</span>
+</div>
+
 <div class="form-group" asp-validation-class-for="ReCaptchaScriptType">
     <label asp-for="ReCaptchaScriptType">@T["Script type"]</label>
     <input asp-for="ReCaptchaScriptType" class="form-control" type="text" />
