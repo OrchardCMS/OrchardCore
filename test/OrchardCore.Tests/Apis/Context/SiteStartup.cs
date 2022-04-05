@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Moq;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Recipes.Services;
@@ -17,18 +18,22 @@ namespace OrchardCore.Tests.Apis.Context
     public class SiteStartup
     {
         public static ConcurrentDictionary<string, PermissionsContext> PermissionsContexts;
+        private static Mock<IHttpContextAccessor> mockHttpContextAccessor;
 
         static SiteStartup()
         {
             PermissionsContexts = new ConcurrentDictionary<string, PermissionsContext>();
+            mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            var context = new DefaultHttpContext();
+            context.Request.Path = new PathString("/");
+            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOrchardCms(builder =>
                 builder.AddSetupFeatures(
-                    "OrchardCore.Tenants",
-                    "OrchardCore.Recipes"
+                    "OrchardCore.Tenants"
                 )
                 .AddTenantFeatures(
                     "OrchardCore.Apis.GraphQL"
@@ -39,7 +44,7 @@ namespace OrchardCore.Tests.Apis.Context
 
                     collection.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(sp =>
                     {
-                        return new PermissionContextAuthorizationHandler(sp.GetRequiredService<IHttpContextAccessor>(), PermissionsContexts);
+                        return new PermissionContextAuthorizationHandler(sp, mockHttpContextAccessor.Object, PermissionsContexts);
                     });
                 })
                 .Configure(appBuilder => appBuilder.UseAuthorization()));

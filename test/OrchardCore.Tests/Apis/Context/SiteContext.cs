@@ -1,13 +1,35 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Moq;
 using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.ContentManagement;
+using OrchardCore.Documents;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Indexing;
+using OrchardCore.Lucene;
+using OrchardCore.Lucene.Model;
+using OrchardCore.Lucene.Services;
+using OrchardCore.Modules;
+using OrchardCore.Recipes.Events;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Tests.Apis.Context
 {
     public class SiteContext : IDisposable
     {
+        private const string luceneRecipePath = "Areas/TheBlogTheme/Recipes";
+        private const string luceneRecipeName = "blog.lucene.recipe.json";
+
         private static readonly TablePrefixGenerator TablePrefixGenerator = new TablePrefixGenerator();
         public static OrchardTestFixture<SiteStartup> Site { get; }
         public static HttpClient DefaultTenantClient { get; }
@@ -82,6 +104,73 @@ namespace OrchardCore.Tests.Apis.Context
             GraphQLClient = new OrchardGraphQLClient(Client);
         }
 
+        public async Task RunLuceneRecipe(IShellHost shellHost)
+        {
+            var shellScope = await shellHost.GetScopeAsync(TenantName);
+            await shellScope.UsingAsync(async scope =>
+            {
+                var shellFeaturesManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
+                var recipeHarvesters = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeHarvester>>();
+
+                var recipeEventHandlers = new List<IRecipeEventHandler> { new RecipeEventHandler() };
+                var loggerMock = new Mock<ILogger<RecipeExecutor>>();
+
+                var recipeExecutor = new RecipeExecutor(
+                    shellHost,
+                    scope.ShellContext.Settings,
+                    recipeEventHandlers,
+                    loggerMock.Object);
+
+                var features = await shellFeaturesManager.GetAvailableFeaturesAsync();
+                var recipes = await GetRecipesAsync(features, recipeHarvesters);
+
+                var recipe = recipes
+                    .FirstOrDefault(c => c.RecipeFileInfo.Name == luceneRecipeName && c.BasePath == luceneRecipePath);
+
+                var executionId = Guid.NewGuid().ToString("n");
+
+                await recipeExecutor.ExecuteAsync(
+                    executionId,
+                    recipe,
+                    new Dictionary<string, object>(),
+                    CancellationToken.None);
+
+
+            });
+
+            shellScope = await shellHost.GetScopeAsync(TenantName);
+            await shellScope.UsingAsync(async scope =>
+            {
+                var luceneIndexSettingsService = new LuceneIndexSettingsService(
+                    scope.ServiceProvider.GetRequiredService<IDocumentManager<LuceneIndexSettingsDocument>>());
+                var shellOptions = scope.ServiceProvider.GetRequiredService<IOptions<ShellOptions>>();
+
+                var luceneIndexingService = new LuceneIndexingService(
+                    shellHost,
+                    scope.ShellContext.Settings,
+                    new LuceneIndexingState(
+                        shellOptions,
+                        scope.ShellContext.Settings),
+                    luceneIndexSettingsService,
+                    new LuceneIndexManager(
+                        scope.ServiceProvider.GetRequiredService<IClock>(),
+                        shellOptions,
+                        scope.ShellContext.Settings,
+                        scope.ServiceProvider.GetRequiredService<ILogger<LuceneIndexManager>>(),
+                        new LuceneAnalyzerManager(scope.ServiceProvider.GetRequiredService<IOptions<LuceneOptions>>()),
+                        luceneIndexSettingsService),
+                    scope.ServiceProvider.GetRequiredService<IIndexingTaskManager>(),
+                    scope.ServiceProvider.GetRequiredService<ISiteService>(),
+                    scope.ServiceProvider.GetRequiredService<ILogger<LuceneIndexingService>>());
+
+
+                var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync("Search");
+
+                luceneIndexingService.ResetIndex("Search");
+                await luceneIndexingService.ProcessContentItemsAsync("Search");
+            });
+        }
+
         public async Task<string> CreateContentItem(string contentType, Action<ContentItem> func, bool draft = false)
         {
             // Never generate a fake ContentItemId here as it should be created by the ContentManager.NewAsync() method.
@@ -108,6 +197,42 @@ namespace OrchardCore.Tests.Apis.Context
         public void Dispose()
         {
             Client?.Dispose();
+        }
+
+        private async Task<IEnumerable<RecipeDescriptor>> GetRecipesAsync(
+            IEnumerable<IFeatureInfo> features,
+            IEnumerable<IRecipeHarvester> recipeHarvesters)
+        {
+            var recipeCollections = await Task.WhenAll(recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
+            var recipes = recipeCollections.SelectMany(x => x)
+                .Where(r => r.IsSetupRecipe == false &&
+                    !r.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase) &&
+                    features.Any(f => r.BasePath.Contains(f.Extension.SubPath, StringComparison.OrdinalIgnoreCase)));
+
+            return recipes;
+        }
+
+        private class RecipeEventHandler : IRecipeEventHandler
+        {
+            public RecipeExecutionContext Context { get; private set; }
+
+            public Task RecipeStepExecutedAsync(RecipeExecutionContext context)
+            {
+                if (String.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
+                {
+                    Context = context;
+                }
+
+                return Task.CompletedTask;
+            }
+
+            public Task ExecutionFailedAsync(string executionId, RecipeDescriptor descriptor) => Task.CompletedTask;
+
+            public Task RecipeExecutedAsync(string executionId, RecipeDescriptor descriptor) => Task.CompletedTask;
+
+            public Task RecipeExecutingAsync(string executionId, RecipeDescriptor descriptor) => Task.CompletedTask;
+
+            public Task RecipeStepExecutingAsync(RecipeExecutionContext context) => Task.CompletedTask;
         }
     }
 
