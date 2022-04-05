@@ -21,12 +21,12 @@ namespace OrchardCore.Tests.Apis.Context
             await RunLuceneRecipe(ShellHost);
 
             var result = await GraphQLClient
-            .Content
-            .Query("blog", builder =>
-            {
-                builder
-                    .WithField("contentItemId");
-            });
+                .Content
+                .Query("blog", builder =>
+                {
+                    builder
+                        .WithField("contentItemId");
+                });
 
 
             BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();

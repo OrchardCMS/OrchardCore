@@ -33,7 +33,6 @@ namespace OrchardCore.Tests.Apis.Context
             await base.InitializeAsync();
             await RunLuceneRecipe(ShellHost);
 
-
             var result = await GraphQLClient
                 .Content
                 .Query("blogPost", builder =>
