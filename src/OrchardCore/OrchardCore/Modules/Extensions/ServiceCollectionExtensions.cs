@@ -22,7 +22,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore;
-using OrchardCore.Autoroute.Abstractions.Services;
 using OrchardCore.Autoroute.Core.Services;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
@@ -41,7 +40,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        private static readonly ISlugService _slugService = new SlugService();
+        private static readonly SlugService _slugService = new();
 
         /// <summary>
         /// Adds OrchardCore services to the host service collection.
@@ -131,8 +130,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 s.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
                 s.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
             });
-
-            services.AddScoped<ISlugService, SlugService>();
         }
 
         private static void AddShellServices(OrchardCoreBuilder builder)
