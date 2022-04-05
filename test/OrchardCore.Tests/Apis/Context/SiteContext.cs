@@ -134,8 +134,6 @@ namespace OrchardCore.Tests.Apis.Context
                     recipe,
                     new Dictionary<string, object>(),
                     CancellationToken.None);
-
-
             });
 
             shellScope = await shellHost.GetScopeAsync(TenantName);
@@ -162,7 +160,6 @@ namespace OrchardCore.Tests.Apis.Context
                     scope.ServiceProvider.GetRequiredService<IIndexingTaskManager>(),
                     scope.ServiceProvider.GetRequiredService<ISiteService>(),
                     scope.ServiceProvider.GetRequiredService<ILogger<LuceneIndexingService>>());
-
 
                 var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync("Search");
 
