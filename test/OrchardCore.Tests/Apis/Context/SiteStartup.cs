@@ -18,19 +18,19 @@ namespace OrchardCore.Tests.Apis.Context
     public class SiteStartup
     {
         public static ConcurrentDictionary<string, PermissionsContext> PermissionsContexts;
-        private static Mock<IHttpContextAccessor> mockHttpContextAccessor;
 
         static SiteStartup()
         {
             PermissionsContexts = new ConcurrentDictionary<string, PermissionsContext>();
-            mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-            var context = new DefaultHttpContext();
-            context.Request.Path = new PathString("/");
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            var context = new DefaultHttpContext();
+            context.Request.Path = new PathString("/");
+            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
+
             services.AddOrchardCms(builder =>
                 builder.AddSetupFeatures(
                     "OrchardCore.Tenants"
