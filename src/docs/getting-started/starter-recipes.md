@@ -82,20 +82,28 @@ TheBlogTheme is based on the [Start Bootstrap Clean Blog Theme](https://startboo
 - Liquid templates, in the TheBlogTheme source code
 - Bootstrap
 
-### Blog - Lucene Recipe
+### Blog - Lucene Query Recipe
 
-The Lucene recipe is an optional recipe in the TheBlogTheme. This recipe sets up
-Lucene indices and permissions. As an example, the recipe replaces the RecentBlogPosts
-SQL query with a Lucene query.
+The Lucene Query recipe is an optional recipe in the TheBlogTheme. 
+This recipe runs the Blog Search recipe and as an example,
+the recipe replaces the RecentBlogPosts SQL query with a Lucene query.
 
-#### Blog Lucene Recipe Contents
+#### Blog Lucene Query Recipe Contents
 
-- Enable Lucene
+- Runs the Blog Lucene Search recipe
+- Replace RecentBlogPosts SQL query with Lucene
+
+### Blog - Lucene Search Recipe
+
+The Lucene Search recipe is an optional recipe in the TheBlogTheme. 
+This recipe enables the Lucene feature and creates Search setting, Lucene indices and permissions.
+
+#### Blog Lucene Search Recipe Contents
+
+- Enables Lucene feature
 - Setup Lucene indices 
 - Create the search settings
 - Search index permission
-- Replace RecentBlogPosts SQL query with Lucene
-
 
 ### TheAgencyTheme and Agency Recipe
 

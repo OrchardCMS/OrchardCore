@@ -1,7 +1,7 @@
 {
-  "name": "Blog.Lucene",
-  "displayName": "Blog - Lucene",
-  "description": "Runs Lucene setup recipe and replaces RecentBlogPosts SQL query with Lucene.",
+  "name": "Blog.Lucene.Query",
+  "displayName": "Blog - Lucene Query",
+  "description": "Runs the Lucene Search recipe and replaces the RecentBlogPosts SQL Query with a Lucene Query.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",
@@ -15,7 +15,7 @@
       "Values": [
         {
           "executionid": "Blog",
-          "name": "Blog.Lucene.Setup"
+          "name": "Blog.Lucene.Search"
         }
       ]
     },
