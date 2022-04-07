@@ -1150,7 +1150,7 @@
           "Name": "RecentBlogPosts",
           "Template": "SELECT * FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC LIMIT 3",
           "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
-          "ReturnDocuments": true
+          "ReturnContentItems": true
         }
       ]
     },
