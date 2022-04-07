@@ -24,7 +24,7 @@ namespace OrchardCore.Tests.Apis.Context
             _permissionsContext = new PermissionsContext();
 
             var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-            var requestContext = httpContext != null ? httpContext.Request : mockHttpContextAccessor.HttpContext.Request;
+            var requestContext = httpContext != null ? httpContext.Request : httpContextAccessor.HttpContext.Request;
 
             if (requestContext?.Headers.ContainsKey("PermissionsContext") == true &&
                 permissionsContexts.TryGetValue(requestContext.Headers["PermissionsContext"], out var permissionsContext))
