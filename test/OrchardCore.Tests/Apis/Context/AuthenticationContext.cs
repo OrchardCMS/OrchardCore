@@ -18,7 +18,7 @@ namespace OrchardCore.Tests.Apis.Context
         // Used for http based graphql tests, marries a permission context to a request
         public PermissionContextAuthorizationHandler(
             IServiceProvider serviceProvider,
-            IHttpContextAccessor mockHttpContextAccessor,
+            IHttpContextAccessor httpContextAccessor,
             IDictionary<string, PermissionsContext> permissionsContexts)
         {
             _permissionsContext = new PermissionsContext();
