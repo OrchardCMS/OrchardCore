@@ -15,10 +15,6 @@ namespace OrchardCore.Tests.Apis.Context
 {
     public class BlogPostDeploymentContext : SiteContext
     {
-        private const string luceneRecipePath = "Areas/TheBlogTheme/Recipes";
-        private const string luceneRecipeName = "blog.lucene.query.recipe.json";
-        private const string luceneIndexName = "Search";
-
         public const string RemoteDeploymentClientName = "testserver";
         public const string RemoteDeploymentApiKey = "testkey";
         public static IShellHost ShellHost { get; }
@@ -35,8 +31,8 @@ namespace OrchardCore.Tests.Apis.Context
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
-            await RunRecipeAsync(ShellHost, luceneRecipeName, luceneRecipePath);
-            await ResetLuceneIndiciesAsync(ShellHost, luceneIndexName);
+            await RunRecipeAsync(ShellHost, BlogContext.luceneRecipeName, BlogContext.luceneRecipePath);
+            await ResetLuceneIndiciesAsync(ShellHost, BlogContext.luceneIndexName);
 
             var result = await GraphQLClient
                 .Content
