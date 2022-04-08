@@ -2535,6 +2535,18 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "mwpowellhtx",
+      "name": "Michael W. Powell",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1824187?v=4",
+      "profile": "https://github.com/mwpowellhtx",
+      "contributions": [
+        "code",
+        "doc",
+        "question",
+        "tutorial"
+      ]
     }
   ],
   "skipCi": true
