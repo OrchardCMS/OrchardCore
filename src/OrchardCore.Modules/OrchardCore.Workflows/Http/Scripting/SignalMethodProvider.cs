@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Scripting;
 using OrchardCore.Workflows.Http.Controllers;
@@ -23,8 +25,9 @@ namespace OrchardCore.Workflows.Http.Scripting
                 {
                     var payload = !String.IsNullOrWhiteSpace(workflowContext.CorrelationId) ? SignalPayload.ForCorrelation(signal, workflowContext.CorrelationId) : SignalPayload.ForWorkflow(signal, workflowContext.WorkflowId);
                     var token = securityTokenService.CreateToken(payload, TimeSpan.FromDays(7));
-                    var urlHelper = serviceProvider.GetRequiredService<IUrlHelper>();
-                    return urlHelper.Action("Trigger", "HttpWorkflow", new { area = "OrchardCore.Workflows", token });
+                    var urlHelperFactory = serviceProvider.GetRequiredService<IUrlHelperFactory>();
+                    var actionContextAccessor = serviceProvider.GetRequiredService<IActionContextAccessor>();
+                    return urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext).Action("Trigger", "HttpWorkflow", new { area = "OrchardCore.Workflows", token });
                 })
             };
         }
