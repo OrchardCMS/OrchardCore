@@ -85,7 +85,7 @@ TheBlogTheme is based on the [Start Bootstrap Clean Blog Theme](https://startboo
 ### Blog - Lucene Query Recipe
 
 The Lucene Query recipe is an optional recipe in the TheBlogTheme. 
-This recipe runs the Blog Search recipe and as an example,
+This recipe runs the Blog Lucene Search recipe and as an example,
 the recipe replaces the RecentBlogPosts SQL query with a Lucene query.
 
 #### Blog Lucene Query Recipe Contents
