@@ -10,7 +10,8 @@ namespace OrchardCore.Autoroute.Abstractions.Services
         string Slugify(string text);
 
         /// <summary>
-        /// Transforms specified text to the form suitable for URL slugs.
+        /// Transforms specified text to a custom form generally not suitable for URL slugs.
+        /// Allows you to use a specified separator char.
         /// </summary>
         /// <param name="text">The text to transform.</param>
         /// <param name="hyphen">The separator char</param>

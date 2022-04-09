@@ -8,17 +8,15 @@ namespace OrchardCore.Autoroute.Core.Services
 {
     public class SlugService : ISlugService
     {
-        private char Hyphen = '-';
+        private const char Hyphen = '-';
         private const int MaxLength = 1000;
 
-        public string Slugify(string text, char hyphen)
+        public string Slugify(string text)
         {
-            Hyphen = hyphen;
-
-            return Slugify(text);
+            return Slugify(text, Hyphen);
         }
 
-        public string Slugify(string text)
+        public string Slugify(string text, char hyphen)
         {
             if (String.IsNullOrEmpty(text))
             {
@@ -45,7 +43,7 @@ namespace OrchardCore.Autoroute.Core.Services
 
                     appendHyphen = true;
                 }
-                else if (currentChar == Hyphen)
+                else if (currentChar == hyphen)
                 {
                     if (appendHyphen && i != normalizedText.Length - 1)
                     {
@@ -61,7 +59,7 @@ namespace OrchardCore.Autoroute.Core.Services
                 {
                     if (appendHyphen)
                     {
-                        slug.Append(Hyphen);
+                        slug.Append(hyphen);
 
                         appendHyphen = false;
                     }

@@ -22,6 +22,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore;
+using OrchardCore.Autoroute.Abstractions.Services;
 using OrchardCore.Autoroute.Core.Services;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
@@ -40,8 +41,6 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        private static readonly SlugService _slugService = new();
-
         /// <summary>
         /// Adds OrchardCore services to the host service collection.
         /// </summary>
@@ -130,6 +129,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 s.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
                 s.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
             });
+
+            services.AddSingleton<ISlugService, SlugService>();
         }
 
         private static void AddShellServices(OrchardCoreBuilder builder)
@@ -314,8 +315,9 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
                 var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
+                var slugService = serviceProvider.GetRequiredService<ISlugService>();
 
-                var cookieName = "orchantiforgery_" + HttpUtility.UrlEncode(_slugService.Slugify(settings.Name + environment.ContentRootPath, '_'));
+                var cookieName = "orchantiforgery_" + HttpUtility.UrlEncode(slugService.Slugify(settings.Name + environment.ContentRootPath, '_'));
 
                 // If uninitialized, we use the host services.
                 if (settings.State == TenantState.Uninitialized)
