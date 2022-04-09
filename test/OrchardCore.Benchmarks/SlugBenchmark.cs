@@ -1,5 +1,5 @@
 using BenchmarkDotNet.Attributes;
-using OrchardCore.Autoroute.Core.Services;
+using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Benchmark
 {

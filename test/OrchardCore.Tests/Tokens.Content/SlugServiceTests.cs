@@ -1,4 +1,4 @@
-using OrchardCore.Autoroute.Core.Services;
+using OrchardCore.Modules.Services;
 using Xunit;
 
 namespace OrchardCore.Tests.Tokens.Content

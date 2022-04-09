@@ -431,8 +431,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Themes", "Orcha
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Autoroute.Core", "src\OrchardCore\OrchardCore.Autoroute.Core\OrchardCore.Autoroute.Core.csproj", "{7F31D1A5-2B6F-448A-9337-482F876B85EF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Autoroute.Abstractions", "src\OrchardCore\OrchardCore.Autoroute.Abstractions\OrchardCore.Autoroute.Abstractions.csproj", "{33548027-1943-489C-B2BA-2E488663F141}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1147,10 +1145,6 @@ Global
 		{7F31D1A5-2B6F-448A-9337-482F876B85EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F31D1A5-2B6F-448A-9337-482F876B85EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F31D1A5-2B6F-448A-9337-482F876B85EF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{33548027-1943-489C-B2BA-2E488663F141}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{33548027-1943-489C-B2BA-2E488663F141}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{33548027-1943-489C-B2BA-2E488663F141}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{33548027-1943-489C-B2BA-2E488663F141}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1350,7 +1344,6 @@ Global
 		{85EF279B-8F35-476D-9BBD-F503F20712B5} = {184139CF-C4AB-4FBE-AE19-54C8B3FE5C5E}
 		{21F459C1-494E-41C9-B221-6C102774A47F} = {184139CF-C4AB-4FBE-AE19-54C8B3FE5C5E}
 		{7F31D1A5-2B6F-448A-9337-482F876B85EF} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
-		{33548027-1943-489C-B2BA-2E488663F141} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Autoroute.Abstractions.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
@@ -34,7 +33,6 @@ namespace OrchardCore.Liquid
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ISlugService, Autoroute.Core.Services.SlugService>();
             services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
 
             services.Configure<TemplateOptions>(options =>

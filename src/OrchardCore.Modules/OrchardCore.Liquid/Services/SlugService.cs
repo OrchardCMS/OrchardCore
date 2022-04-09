@@ -2,11 +2,11 @@ using System;
 using System.Globalization;
 using System.Text;
 using Cysharp.Text;
-using OrchardCore.Autoroute.Abstractions.Services;
+using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Liquid.Services
 {
-    [Obsolete("This class has been deprecated and we will be removed in the next major release, please use OrchardCore.Autoroute.Core.Services instead.", false)]
+    [Obsolete("This class has been deprecated and we will be removed in the next major release, please use OrchardCore.Modules.Services instead.", false)]
     public class SlugService : ISlugService
     {
         private const char Hyphen = '-';
@@ -63,6 +63,11 @@ namespace OrchardCore.Liquid.Services
             }
 
             return new string(slug.AsSpan()[..Math.Min(slug.Length, MaxLength)]).Normalize(NormalizationForm.FormC);
+        }
+
+        public string Slugify(string text, char hyphen)
+        {
+            throw new NotImplementedException();
         }
     }
 }

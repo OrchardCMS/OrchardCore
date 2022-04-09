@@ -2,7 +2,6 @@ using System;
 using System.Globalization;
 using System.Text;
 using Cysharp.Text;
-using OrchardCore.Autoroute.Abstractions.Services;
 
 namespace OrchardCore.Modules.Services
 {
@@ -16,13 +15,6 @@ namespace OrchardCore.Modules.Services
             return Slugify(text, Hyphen);
         }
 
-        /// <summary>
-        /// Transforms specified text to a custom form generally not suitable for URL slugs.
-        /// Allows you to use a specified separator char.
-        /// </summary>
-        /// <param name="text">The text to transform.</param>
-        /// <param name="hyphen">The separator char</param>
-        /// <returns>The slug created from the input text.</returns>
         public string Slugify(string text, char hyphen)
         {
             if (String.IsNullOrEmpty(text))

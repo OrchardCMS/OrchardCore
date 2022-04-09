@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using OrchardCore.Autoroute.Abstractions.Services;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Routing;
+using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Autoroute.Handlers
 {

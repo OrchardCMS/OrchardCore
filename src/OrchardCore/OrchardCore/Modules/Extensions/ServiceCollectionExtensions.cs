@@ -129,7 +129,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 s.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
             });
 
-            services.AddSingleton<SlugService>();
+            services.AddSingleton<ISlugService, SlugService>();
         }
 
         private static void AddShellServices(OrchardCoreBuilder builder)
@@ -314,7 +314,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
                 var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
-                var slugService = serviceProvider.GetRequiredService<SlugService>();
+                var slugService = serviceProvider.GetRequiredService<ISlugService>();
 
                 var cookieName = "orchantiforgery_" + HttpUtility.UrlEncode(slugService.Slugify(settings.Name + environment.ContentRootPath, '_'));
 
