@@ -6,7 +6,7 @@ using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Liquid.Services
 {
-    [Obsolete("This class has been deprecated and we will be removed in the next major release, please use OrchardCore.Modules.Services instead.", false)]
+    [Obsolete("This class has been deprecated and will be removed in the next major release, please use OrchardCore.Modules.Services instead.", false)]
     public class SlugService : ISlugService
     {
         private const char Hyphen = '-';
