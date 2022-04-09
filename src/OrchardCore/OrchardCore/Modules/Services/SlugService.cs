@@ -4,7 +4,7 @@ using System.Text;
 using Cysharp.Text;
 using OrchardCore.Autoroute.Abstractions.Services;
 
-namespace OrchardCore.Autoroute.Core.Services
+namespace OrchardCore.Modules.Services
 {
     public class SlugService : ISlugService
     {
@@ -12,6 +12,18 @@ namespace OrchardCore.Autoroute.Core.Services
         private const int MaxLength = 1000;
 
         public string Slugify(string text)
+        {
+            return Slugify(text, Hyphen);
+        }
+
+        /// <summary>
+        /// Transforms specified text to a custom form generally not suitable for URL slugs.
+        /// Allows you to use a specified separator char.
+        /// </summary>
+        /// <param name="text">The text to transform.</param>
+        /// <param name="hyphen">The separator char</param>
+        /// <returns>The slug created from the input text.</returns>
+        public string Slugify(string text, char hyphen)
         {
             if (String.IsNullOrEmpty(text))
             {
@@ -38,7 +50,7 @@ namespace OrchardCore.Autoroute.Core.Services
 
                     appendHyphen = true;
                 }
-                else if (currentChar is Hyphen)
+                else if (currentChar == hyphen)
                 {
                     if (appendHyphen && i != normalizedText.Length - 1)
                     {
@@ -54,7 +66,7 @@ namespace OrchardCore.Autoroute.Core.Services
                 {
                     if (appendHyphen)
                     {
-                        slug.Append(Hyphen);
+                        slug.Append(hyphen);
 
                         appendHyphen = false;
                     }
