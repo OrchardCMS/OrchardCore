@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
@@ -17,14 +15,15 @@ namespace OrchardCore.Tests.Apis.Context
 
         // Used for http based graphql tests, marries a permission context to a request
         public PermissionContextAuthorizationHandler(
-            IServiceProvider serviceProvider,
             IHttpContextAccessor httpContextAccessor,
             IDictionary<string, PermissionsContext> permissionsContexts)
         {
             _permissionsContext = new PermissionsContext();
 
-            var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-            var requestContext = httpContext != null ? httpContext.Request : httpContextAccessor.HttpContext.Request;
+            if (httpContextAccessor.HttpContext == null)
+                return;
+
+            var requestContext = httpContextAccessor.HttpContext.Request;
 
             if (requestContext?.Headers.ContainsKey("PermissionsContext") == true &&
                 permissionsContexts.TryGetValue(requestContext.Headers["PermissionsContext"], out var permissionsContext))

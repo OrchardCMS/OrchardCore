@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Moq;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Recipes.Services;
@@ -26,11 +25,6 @@ namespace OrchardCore.Tests.Apis.Context
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-            var context = new DefaultHttpContext();
-            context.Request.Path = new PathString("/");
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
-
             services.AddOrchardCms(builder =>
                 builder.AddSetupFeatures(
                     "OrchardCore.Tenants"
@@ -44,7 +38,7 @@ namespace OrchardCore.Tests.Apis.Context
 
                     collection.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(sp =>
                     {
-                        return new PermissionContextAuthorizationHandler(sp, mockHttpContextAccessor.Object, PermissionsContexts);
+                        return new PermissionContextAuthorizationHandler(sp.GetRequiredService<IHttpContextAccessor>(), PermissionsContexts);
                     });
                 })
                 .Configure(appBuilder => appBuilder.UseAuthorization()));
