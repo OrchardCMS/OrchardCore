@@ -12,6 +12,11 @@ namespace OrchardCore.Liquid.Services
         private const char Hyphen = '-';
         private const int MaxLength = 1000;
 
+        public string Slugify(string text, char separator)
+        {
+            throw new NotImplementedException();
+        }
+
         public string Slugify(string text)
         {
             if (String.IsNullOrEmpty(text))
@@ -63,11 +68,6 @@ namespace OrchardCore.Liquid.Services
             }
 
             return new string(slug.AsSpan()[..Math.Min(slug.Length, MaxLength)]).Normalize(NormalizationForm.FormC);
-        }
-
-        public string Slugify(string text, char hyphen)
-        {
-            throw new NotImplementedException();
         }
     }
 }
