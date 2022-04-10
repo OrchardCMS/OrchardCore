@@ -10,19 +10,16 @@ namespace OrchardCore.Modules.Services
         private const char Hyphen = '-';
         private const int MaxLength = 1000;
 
-        public string Slugify(string text)
-        {
-            return Slugify(text, Hyphen);
-        }
+        public string Slugify(string text) => Slugify(text, Hyphen);
 
-        public string Slugify(string text, char hyphen)
+        public string Slugify(string text, char separator)
         {
             if (String.IsNullOrEmpty(text))
             {
                 return text;
             }
 
-            var appendHyphen = false;
+            var appendSeparator = false;
             var normalizedText = text.Normalize(NormalizationForm.FormKD);
 
             using var slug = ZString.CreateStringBuilder();
@@ -40,14 +37,14 @@ namespace OrchardCore.Modules.Services
                 {
                     slug.Append(currentChar);
 
-                    appendHyphen = true;
+                    appendSeparator = true;
                 }
-                else if (currentChar == hyphen)
+                else if (currentChar == separator)
                 {
-                    if (appendHyphen && i != normalizedText.Length - 1)
+                    if (appendSeparator && i != normalizedText.Length - 1)
                     {
                         slug.Append(currentChar);
-                        appendHyphen = false;
+                        appendSeparator = false;
                     }
                 }
                 else if (currentChar == '_' || currentChar == '~')
@@ -56,11 +53,11 @@ namespace OrchardCore.Modules.Services
                 }
                 else
                 {
-                    if (appendHyphen)
+                    if (appendSeparator)
                     {
-                        slug.Append(hyphen);
+                        slug.Append(separator);
 
-                        appendHyphen = false;
+                        appendSeparator = false;
                     }
                 }
             }
