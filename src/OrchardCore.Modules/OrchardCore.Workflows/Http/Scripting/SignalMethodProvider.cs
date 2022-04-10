@@ -26,6 +26,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                     var token = securityTokenService.CreateToken(payload, TimeSpan.FromDays(7));
                     var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
                     var linkGenerator = serviceProvider.GetRequiredService<LinkGenerator>();
+
                     return linkGenerator.GetPathByAction(httpContextAccessor.HttpContext, "Trigger", "HttpWorkflow", new { area = "OrchardCore.Workflows", token });
                 })
             };
