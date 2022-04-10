@@ -32,7 +32,6 @@ namespace OrchardCore.Tests.Apis.Context
         {
             await base.InitializeAsync();
             await RunRecipeAsync(ShellHost, BlogContext.luceneRecipeName, BlogContext.luceneRecipePath);
-            await ResetLuceneIndiciesAsync(ShellHost, BlogContext.luceneIndexName);
 
             var result = await GraphQLClient
                 .Content
