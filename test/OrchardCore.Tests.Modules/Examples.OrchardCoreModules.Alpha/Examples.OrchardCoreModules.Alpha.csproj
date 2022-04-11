@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.props" />
   <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.props" />
@@ -16,12 +16,35 @@
   </ItemGroup>
 
   <ItemGroup>
-    <OrchardCoreFeatures Include="$(MSBuildProjectName).One" Category="two" Priority="3" Description="four" Dependencies="five;six;seven" DefaultTenant="true" AlwaysEnabled="true" />
-    <OrchardCoreFeatures Include="$(MSBuildProjectName).Two" Category="three" Priority="4" Description="five" Dependencies="six;seven;eight" DefaultTenant="true" AlwaysEnabled="true" />
-  </ItemGroup>
+    <OrchardCoreAttributes Include="$(MSBuildProjectName).One"
+                           Type="feature"
+                           Category="two"
+                           Priority="3"
+                           Description="four"
+                           Dependencies="five;six;seven"
+                           DefaultTenant="true"
+                           AlwaysEnabled="true" />
 
-  <ItemGroup>
-    <OrchardCoreModules Include="$(MSBuildProjectName)" Category="three" Priority="4" Description="five" Author="six" Version="$(AssemblyVersion)" Website="oc://moduleandfeaturesmsbuilditemlists.prop" Dependencies="nine;ten;eleven" Tags="ten;eleven;twelve" DefaultTenant="true" AlwaysEnabled="true" />
+    <OrchardCoreAttributes Include="$(MSBuildProjectName).Two"
+                           Type="feature"
+                           Category="three"
+                           Priority="4"
+                           Description="five"
+                           Dependencies="six;seven;eight"
+                           DefaultTenant="true"
+                           AlwaysEnabled="true" />
+
+    <OrchardCoreAttributes Include="$(MSBuildProjectName)"
+                           Category="three"
+                           Priority="4"
+                           Description="five"
+                           Author="six"
+                           Version="$(AssemblyVersion)"
+                           Website="oc://moduleandfeaturesmsbuilditemlists.prop"
+                           Dependencies="nine;ten;eleven"
+                           Tags="ten;eleven;twelve"
+                           DefaultTenant="true"
+                           AlwaysEnabled="true" />
   </ItemGroup>
 
   <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.targets" />

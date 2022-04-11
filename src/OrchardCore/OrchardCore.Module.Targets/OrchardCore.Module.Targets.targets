@@ -30,7 +30,7 @@
           BeforeTargets="BeforeBuild">
     <Error
       Code="OC2001"
-      Condition="'@(RazorGenerate)' != '' and '$(ResolvedRazorCompileToolset)' != 'RazorSdk'"
+      Condition="!('@(RazorGenerate)' == '' or '$(ResolvedRazorCompileToolset)' == 'RazorSdk')"
       Text="The 'Microsoft.NET.Sdk.Razor' SDK is required on Themes and Modules for Razor files to be precompiled." />
   </Target>
 
@@ -62,7 +62,7 @@
         Condition="'%(ModuleAssetFiles.Link)' == '' and '%(ModuleAssetFiles.Filename)' != ''"/>
       <ModuleAssets
         Include="Areas\$(AssemblyName)\%(ModuleAssetFiles.Link)|%(ModuleAssetFiles.FullPath)"
-        Condition="'%(ModuleAssetFiles.Link)' != '' and '%(ModuleAssetFiles.Filename)' != ''" />
+        Condition="!('%(ModuleAssetFiles.Link)' == '' or '%(ModuleAssetFiles.Filename)' == '')" />
     </ItemGroup>
 
     <ItemGroup>
@@ -71,7 +71,7 @@
       <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' == '' and '%(Extension)' != '.resx'">
         <LogicalName>$([System.String]::new('$(AssemblyName).%(RelativeDir)%(FileName)%(Extension)').Replace('\', '>').Replace('/', '>'))</LogicalName>
       </EmbeddedResource>
-      <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' != '' and '%(Extension)' != '.resx'">
+      <EmbeddedResource Update="@(EmbeddedResource)" Condition="!('%(EmbeddedResource.Link)' == '' or '%(Extension)' == '.resx')">
         <LogicalName>$([System.String]::new('$(AssemblyName).%(EmbeddedResource.Link)').Replace('\', '>').Replace('/', '>'))</LogicalName>
       </EmbeddedResource>
     </ItemGroup>
@@ -103,6 +103,31 @@
     </ItemGroup>
   </Target>
 
+  <!-- Identify Features+Modules from the overall set of specified OrchardCore attributes -->
+  <Target Name="OrchardCoreFilterFeatures">
+    <!--<Message Importance="high" Text="Filtering features (@(OrchardCoreAttributes->Count()))..." />-->
+    <ItemGroup Condition="@(OrchardCoreFeatures->Count()) == 0">
+      <OrchardCoreFeatures Include="@(OrchardCoreAttributes)"
+                           Condition="(%(OrchardCoreAttributes.Type) == 'feature')" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="OrchardCoreFilterModules">
+    <!--<Message Importance="high" Text="Filtering modules (@(OrchardCoreAttributes->Count()))..." />-->
+    <ItemGroup Condition="@(OrchardCoreModules->Count()) == 0">
+      <!-- Modules specified as anything that is !(type == 'feature' || type == 'theme') -->
+      <OrchardCoreModules Include="@(OrchardCoreAttributes)"
+                          Condition="!((%(OrchardCoreAttributes.Type) == 'feature') or (%(OrchardCoreAttributes.Type) == 'theme'))" />
+    </ItemGroup>
+  </Target>
+
+  <!-- A bit of separation needed in order to appropriately filter feature attribute specs from overall OC ones -->
+  <Target Name="OrchardCoreErrorsFeatureNoErrors"
+          DependsOnTargets="OrchardCoreFilterFeatures"
+          BeforeTargets="BeforeBuild">
+    <!-- No errors are 'expected' for purposes of specifying features -->
+  </Target>
+
   <!-- Keyed on ItemGroup OrchardCoreFeatures list item, ctor args by position:
     1: string id
     2: , string name
@@ -114,6 +139,7 @@
     8: , object alwaysEnabled
     -->
   <Target Name="OrchardCoreEmbedFeatures"
+          DependsOnTargets="OrchardCoreErrorsFeatureNoErrors"
           AfterTargets="$(OrchardCoreEmbeddingAfterTargets)"
           BeforeTargets="$(OrchardCoreEmbeddingBeforeTargets)"
           Condition="@(OrchardCoreFeatures->Count()) > 0">
@@ -136,7 +162,8 @@
   </Target>
 
   <!-- Fail ASAP when one+ MODULE declaration has been detected. -->
-  <Target Name="OrchardCoreModuleAtMostOne"
+  <Target Name="OrchardCoreErrorsModuleAtMostOne"
+          DependsOnTargets="OrchardCoreFilterModules"
           BeforeTargets="BeforeBuild">
     <Error
       Code="OC2002"
@@ -160,18 +187,19 @@
     13: , object alwaysEnabled
     -->
   <Target Name="OrchardCoreEmbedModules"
+          DependsOnTargets="OrchardCoreErrorsModuleAtMostOne"
           AfterTargets="$(OrchardCoreEmbeddingAfterTargets)"
           BeforeTargets="$(OrchardCoreEmbeddingBeforeTargets)"
           Condition="@(OrchardCoreModules->Count()) > 0">
-    <!-- TODO: MWP: does touching the batch variable stop it from being further processed? -->
+    <!-- 'ModuleType' property consistent with other usage, i.e. 'ModuleMarkerAttribute' -->
     <Message Importance="high"
              Condition="'$(OrchardCoreDebugTargets)' == 'true'"
-             Text="Embedding '@(OrchardCoreModules)' module: {'id': '%(OrchardCoreModules.Identity)', 'name': '%(OrchardCoreModules.Name)', 'type': '%(OrchardCoreModules.Type)', 'category': '%(OrchardCoreModules.Category)', 'priority': '%(OrchardCoreModules.Priority)', 'description': '%(OrchardCoreModules.Description)', 'author': '%(OrchardCoreModules.Author)', 'version': '%(OrchardCoreModules.Version)', 'website': '%(OrchardCoreModules.Website)', 'dependencies': '%(OrchardCoreModules.Dependencies)', 'tags': '%(OrchardCoreModules.Tags)', 'defaultTenant': '%(OrchardCoreModules.DefaultTenant)', 'alwaysEnabled': '%(OrchardCoreModules.AlwaysEnabled)')}" />
+             Text="Embedding '@(OrchardCoreModules)' module: {'id': '%(OrchardCoreModules.Identity)', 'name': '%(OrchardCoreModules.Name)', 'type': '%(OrchardCoreModules.ModuleType)', 'category': '%(OrchardCoreModules.Category)', 'priority': '%(OrchardCoreModules.Priority)', 'description': '%(OrchardCoreModules.Description)', 'author': '%(OrchardCoreModules.Author)', 'version': '%(OrchardCoreModules.Version)', 'website': '%(OrchardCoreModules.Website)', 'dependencies': '%(OrchardCoreModules.Dependencies)', 'tags': '%(OrchardCoreModules.Tags)', 'defaultTenant': '%(OrchardCoreModules.DefaultTenant)', 'alwaysEnabled': '%(OrchardCoreModules.AlwaysEnabled)')}" />
     <ItemGroup>
       <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleAttribute">
         <_Parameter1>@(OrchardCoreModules)</_Parameter1>
         <_Parameter2>%(OrchardCoreModules.Name)</_Parameter2>
-        <_Parameter3>%(OrchardCoreModules.Type)</_Parameter3>
+        <_Parameter3>%(OrchardCoreModules.ModuleType)</_Parameter3>
         <_Parameter4>%(OrchardCoreModules.Category)</_Parameter4>
         <_Parameter5>%(OrchardCoreModules.Priority)</_Parameter5>
         <_Parameter6>%(OrchardCoreModules.Description)</_Parameter6>

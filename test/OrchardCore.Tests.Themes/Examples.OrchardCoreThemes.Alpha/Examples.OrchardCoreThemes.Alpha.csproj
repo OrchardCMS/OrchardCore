@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.props" />
   <Import Project="..\..\..\src\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.props" />
@@ -20,18 +20,19 @@
   <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
 
   <ItemGroup>
-    <OrchardCoreThemes Include="$(MSBuildProjectName)"
-                       Base="three"
-                       Category="four"
-                       Priority="5"
-                       Description="six"
-                       Author="seven"
-                       Version="$(AssemblyVersion)"
-                       Website="oc://msbuildthemeitemlists.prop"
-                       Dependencies="ten;eleven;twelve"
-                       Tags="eleven;twelve;thirteen"
-                       DefaultTenant="true"
-                       AlwaysEnabled="true" />
+    <OrchardCoreAttributes Include="$(MSBuildProjectName)"
+                           Type="theme"
+                           Base="three"
+                           Category="four"
+                           Priority="5"
+                           Description="six"
+                           Author="seven"
+                           Version="$(AssemblyVersion)"
+                           Website="oc://msbuildthemeitemlists.prop"
+                           Dependencies="ten;eleven;twelve"
+                           Tags="eleven;twelve;thirteen"
+                           DefaultTenant="true"
+                           AlwaysEnabled="true" />
   </ItemGroup>
 
   <ItemGroup>

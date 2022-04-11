@@ -7,8 +7,17 @@
     It also prevents VS from adding / keeping some unnecessary lines in the project file.
   -->
 
+  <!-- Identify Themes from the overall set of specified OrchardCore attributes -->
+  <Target Name="OrchardCoreFilterThemes">
+    <ItemGroup Condition="@(OrchardCoreThemes->Count()) == 0">
+      <OrchardCoreThemes Include="@(OrchardCoreAttributes)"
+                         Condition="(%(OrchardCoreAttributes.Type) == 'theme')" />
+    </ItemGroup>
+  </Target>
+
   <!-- Fail ASAP when one+ THEME declaration has been detected. -->
   <Target Name="OrchardCoreErrorsThemeAtMostOne"
+          DependsOnTargets="OrchardCoreFilterThemes"
           BeforeTargets="BeforeBuild">
     <Error
       Code="OC3001"
@@ -16,8 +25,9 @@
       Text="'$(MSBuildProjectName)' cannot declare itself to be more than one 'Theme' (@(OrchardCoreThemes->Count()))." />
   </Target>
 
-  <!-- Fail ASAP when MODULE+THEME declaration has been detected. -->
+  <!-- Fail ASAP when MODULE+THEME declaration has been detected, which also depends upon Modules having been filtered (see Modules targets). -->
   <Target Name="OrchardCoreErrorsThemeAndModuleRedundant"
+          DependsOnTargets="OrchardCoreFilterModules;OrchardCoreFilterThemes"
           BeforeTargets="BeforeBuild">
     <Error
       Code="OC3002"
@@ -43,6 +53,7 @@
   <!-- OrchardCoreEmbeddingAfter/BeforeTargets declared in the 'OrchardCore.Modules.Targets.targets' file;
     may be appended by consuming developer discretionary requirements. -->
   <Target Name="OrchardCoreEmbedThemes"
+          DependsOnTargets="OrchardCoreErrorsThemeAtMostOne;OrchardCoreErrorsThemeAndModuleRedundant"
           AfterTargets="$(OrchardCoreEmbeddingAfterTargets)"
           BeforeTargets="$(OrchardCoreEmbeddingBeforeTargets)"
           Condition="@(OrchardCoreThemes->Count()) > 0">
