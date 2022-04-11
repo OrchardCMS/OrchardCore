@@ -41,13 +41,11 @@ namespace OrchardCore.Modules
                 // TODO: MWP: so we are 'aware' multiple instances are popping up, then...
                 var moduleInfos = Assembly.GetCustomAttributes<ModuleAttribute>();
 
-                // TODO: MWP: why? why not simply throw an exception if we legit 'expect' a Module to appear?
-                // TODO: MWP: or better yet just rule out assemblies which did not have such an attribute...
-                // TODO: MWP: i.e. if 'absence of behavior' is the issue, make sure the attribute is there in your project...
                 ModuleInfo =
                     moduleInfos.Where(f => !(f is ModuleMarkerAttribute)).FirstOrDefault() ??
                     moduleInfos.Where(f => f is ModuleMarkerAttribute).FirstOrDefault() ??
-                    new ModuleAttribute(default, assyName, default, default, default, default, default, default, default, default);
+                    // This is better use the default parameterless ctor and assign the property
+                    new ModuleAttribute() { Name = assyName };
 
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
                     .Where(f => !(f is ModuleAttribute)).ToList();

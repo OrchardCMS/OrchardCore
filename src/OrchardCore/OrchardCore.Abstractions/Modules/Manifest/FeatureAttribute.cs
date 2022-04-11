@@ -178,7 +178,7 @@ namespace OrchardCore.Modules.Manifest
                 // Guards setting Id with strictly invalid values.
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new InvalidOperationException($"Property '{nameof(Id)}' is required")
+                    throw new InvalidOperationException($"When '{nameof(Id)}' has been provided it should not be null or empty.")
                     {
                         Data = {{nameof(value), value}}
                     };
