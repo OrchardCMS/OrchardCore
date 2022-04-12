@@ -316,7 +316,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
                 var slugService = serviceProvider.GetRequiredService<ISlugService>();
 
-                var cookieName = "orchantiforgery_" + HttpUtility.UrlEncode(slugService.Slugify(settings.Name + environment.ContentRootPath, '_'));
+                var cookieName = "orchantiforgery_" + settings.Name + Guid.NewGuid().ToString("N").ToString();
 
                 // If uninitialized, we use the host services.
                 if (settings.State == TenantState.Uninitialized)
