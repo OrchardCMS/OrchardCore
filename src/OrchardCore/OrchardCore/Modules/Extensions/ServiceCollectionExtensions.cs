@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -316,7 +315,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
                 var slugService = serviceProvider.GetRequiredService<ISlugService>();
 
-                var cookieName = "orchantiforgery_" + settings.Name + Guid.NewGuid().ToString("N").ToString();
+                var cookieName = "orchantiforgery_" + settings.Name + Guid.NewGuid().ToString("N");
 
                 // If uninitialized, we use the host services.
                 if (settings.State == TenantState.Uninitialized)
