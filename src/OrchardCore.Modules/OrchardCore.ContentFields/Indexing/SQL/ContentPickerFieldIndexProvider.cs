@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing.SQL
@@ -67,35 +67,23 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                         return null;
                     }
 
-                    var results = new List<ContentPickerFieldIndex>();
-
                     // Get all field values
-                    foreach (var fieldDefinition in fieldDefinitions)
-                    {
-                        if (contentItem.Content[fieldDefinition.PartDefinition.Name] is not JObject jPart ||
-                            jPart[fieldDefinition.Name] is not JObject jField ||
-                            jField.ToObject<ContentPickerField>() is not { } field)
-                        {
-                            continue;
-                        }
-
-                        foreach (var contentItemId in field.ContentItemIds)
-                        {
-                            results.Add(new ContentPickerFieldIndex
+                    return fieldDefinitions
+                        .GetContentFields<ContentPickerField>(contentItem)
+                        .SelectMany(pair =>
+                            pair.Field.ContentItemIds.Select(id => (pair.Definition, ContentItemId: id)))
+                        .Select(pair =>
+                            new ContentPickerFieldIndex
                             {
                                 Latest = contentItem.Latest,
                                 Published = contentItem.Published,
                                 ContentItemId = contentItem.ContentItemId,
                                 ContentItemVersionId = contentItem.ContentItemVersionId,
                                 ContentType = contentItem.ContentType,
-                                ContentPart = fieldDefinition.PartDefinition.Name,
-                                ContentField = fieldDefinition.Name,
-                                SelectedContentItemId = contentItemId,
+                                ContentPart = pair.Definition.PartDefinition.Name,
+                                ContentField = pair.Definition.Name,
+                                SelectedContentItemId = pair.ContentItemId,
                             });
-                        }
-                    }
-
-                    return results;
                 });
         }
     }
