@@ -16,7 +16,7 @@ namespace OrchardCore.ReCaptcha.Forms
         public int Create()
         {
             _contentDefinitionManager.AlterPartDefinition("ReCaptchaPart", part => part
-                .WithDescription("Provides recaptcha properties."));
+                .WithDescription("Provides reCaptcha properties."));
 
             _contentDefinitionManager.AlterTypeDefinition("ReCaptcha", type => type
                 .WithPart("ReCaptchaPart")
