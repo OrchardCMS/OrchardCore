@@ -22138,15 +22138,6 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   color: #495057;
   text-decoration: none;
 }
-:root[data-theme=default] .ta-navbar-top button {
-  border: 0;
-  background-color: transparent;
-  color: #495057;
-  padding: 0;
-}
-:root[data-theme=default] .ta-navbar-top button.ml-3 > span {
-  display: none;
-}
 [dir]:root[data-theme=default] .ta-badge {
   background-color: #e9ecef;
 }
@@ -23223,9 +23214,6 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   transition-duration: 0.2s;
   transform: scale(2, 1);
 }
-[dir]:root[data-theme=default] button.leftbar-compactor > span {
-  display: none;
-}
 [dir=ltr]:root[data-theme=default] .leftbar-compactor {
   float: right;
 }
@@ -23382,6 +23370,9 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
 }
 :root[data-theme=default] [dir=rtl] .btn-dropdown > .btn-group {
   right: calc(-14px + 50%);
+}
+:root[data-theme=default] .unset {
+  all: unset;
 }
 [dir]:root[data-theme=default] .bg-primary {
   background-color: #f8f9fa !important;
@@ -45617,15 +45608,6 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   color: #dee2e6;
   text-decoration: none;
 }
-:root[data-theme=darkmode] .ta-navbar-top button {
-  border: 0;
-  background-color: transparent;
-  color: #dee2e6;
-  padding: 0;
-}
-:root[data-theme=darkmode] .ta-navbar-top button.ml-3 > span {
-  display: none;
-}
 [dir]:root[data-theme=darkmode] .ta-badge {
   background-color: #0c0d0e;
 }
@@ -46702,9 +46684,6 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   transition-duration: 0.2s;
   transform: scale(2, 1);
 }
-[dir]:root[data-theme=darkmode] button.leftbar-compactor > span {
-  display: none;
-}
 [dir=ltr]:root[data-theme=darkmode] .leftbar-compactor {
   float: right;
 }
@@ -46861,6 +46840,9 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
 }
 :root[data-theme=darkmode] [dir=rtl] .btn-dropdown > .btn-group {
   right: calc(-14px + 50%);
+}
+:root[data-theme=darkmode] .unset {
+  all: unset;
 }
 [dir]:root[data-theme=darkmode] .bg-primary {
   background-color: #1b1e1f !important;
