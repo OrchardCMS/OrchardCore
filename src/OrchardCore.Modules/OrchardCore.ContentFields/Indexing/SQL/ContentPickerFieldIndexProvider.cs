@@ -18,7 +18,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
     public class ContentPickerFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
+        private readonly HashSet<string> _ignoredTypes = new();
         private IContentDefinitionManager _contentDefinitionManager;
 
         public ContentPickerFieldIndexProvider(IServiceProvider serviceProvider)
@@ -72,21 +72,12 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     // Get all field values
                     foreach (var fieldDefinition in fieldDefinitions)
                     {
-                        var jPart = (JObject)contentItem.Content[fieldDefinition.PartDefinition.Name];
-
-                        if (jPart == null)
+                        if (contentItem.Content[fieldDefinition.PartDefinition.Name] is not JObject jPart ||
+                            jPart[fieldDefinition.Name] is not JObject jField ||
+                            jField.ToObject<ContentPickerField>() is not { } field)
                         {
                             continue;
                         }
-
-                        var jField = (JObject)jPart[fieldDefinition.Name];
-
-                        if (jField == null)
-                        {
-                            continue;
-                        }
-
-                        var field = jField.ToObject<ContentPickerField>();
 
                         foreach (var contentItemId in field.ContentItemIds)
                         {
@@ -99,7 +90,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                                 ContentType = contentItem.ContentType,
                                 ContentPart = fieldDefinition.PartDefinition.Name,
                                 ContentField = fieldDefinition.Name,
-                                SelectedContentItemId = contentItemId
+                                SelectedContentItemId = contentItemId,
                             });
                         }
                     }
