@@ -43,16 +43,16 @@
                     @await RenderSectionAsync("NavbarTop", required: false)
                     @if (adminSettings.DisplayDarkMode)
                     {
-                        <button type="button" id="btn-darkmode" class="ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])">
+                        <button type="button" id="btn-darkmode" class="unset ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])">
                             @if (darkMode)
                             {
                                 <i class="fas fa-sun" aria-hidden="true"></i>
-                                <span>@T["Light mode"]</span>
+                                <span class="d-none">@T["Light mode"]</span>
                             }
                             else
                             {
                                 <i class="fas fa-moon" aria-hidden="true"></i>
-                                <span>@T["Dark mode"]</span>
+                                <span class="d-none">@T["Dark mode"]</span>
                             }
                         </button>
                     }
@@ -68,7 +68,7 @@
             @await RenderSectionAsync("Navigation", required: false)
             <div class="footer">
                 <button type="button" class="leftbar-compactor" title="@T["Collapse / expand menu"]">
-                    <span>@T["Collapse / expand menu"]</span>
+                    <span class="d-none">@T["Collapse / expand menu"]</span>
                 </button>
             </div>
         </div>

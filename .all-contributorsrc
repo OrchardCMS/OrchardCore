@@ -2535,6 +2535,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "DemeSzabolcs",
+      "name": "Szabolcs Deme",
+      "avatar_url": "https://avatars.githubusercontent.com/u/80963259?v=4",
+      "profile": "https://github.com/DemeSzabolcs",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true
