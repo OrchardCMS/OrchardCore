@@ -44,7 +44,6 @@ namespace OrchardCore.Lucene.Recipes
                     {
                         luceneIndexSettings.Value.IndexName = luceneIndexSettings.Key;
                         await _luceneIndexingService.CreateIndexAsync(luceneIndexSettings.Value);
-                        await _luceneIndexingService.ProcessContentItemsAsync(luceneIndexSettings.Key);
                     }
                 }
             }
