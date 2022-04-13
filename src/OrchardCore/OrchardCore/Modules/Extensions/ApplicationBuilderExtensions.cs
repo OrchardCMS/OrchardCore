@@ -25,7 +25,7 @@ namespace Microsoft.AspNetCore.Builder
             app.ApplicationServices.GetRequiredService<IWebHostEnvironment>()
                 .ContentRootFileProvider = env.ContentRootFileProvider;
 
-            app.UseMiddleware<PoweredByMiddleware>();
+            app.UsePoweredByOrchardCore();
 
             // Ensure the shell tenants are loaded when a request comes in
             // and replaces the current service provider for the tenant's one.

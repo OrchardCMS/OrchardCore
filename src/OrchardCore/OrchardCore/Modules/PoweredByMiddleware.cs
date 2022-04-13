@@ -1,48 +1,34 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Modules
 {
     /// <summary>
-    /// Adds the X-Powered-By header with values OrchardCore.
+    /// Represents a middlware that Adds X-Powered-By HTTP header with the value <c>Orchard Core</c>.
     /// </summary>
     public class PoweredByMiddleware
     {
+        private readonly PoweredByOptions _options;
         private readonly RequestDelegate _next;
-        private readonly IPoweredByMiddlewareOptions _options;
 
-        public PoweredByMiddleware(RequestDelegate next, IPoweredByMiddlewareOptions options)
+        /// <summary>
+        /// Creates an instance of <see cref="PoweredByMiddleware"/>.
+        /// </summary>
+        /// <param name="options">The <see cref="IOptions{TOptions}"/>.</param>
+        /// <param name="next">The <see cref="RequestDelegate"/>.</param>
+        public PoweredByMiddleware(IOptions<PoweredByOptions> options, RequestDelegate next)
         {
+            _options = options.Value;
             _next = next;
-            _options = options;
         }
 
+        /// <inheritdoc/>
         public Task Invoke(HttpContext httpContext)
         {
-            if (_options.Enabled)
-            {
-                httpContext.Response.Headers[_options.HeaderName] = _options.HeaderValue;
-            }
+            httpContext.Response.Headers.XPoweredBy = _options.Value;
 
             return _next.Invoke(httpContext);
         }
-    }
-
-    public interface IPoweredByMiddlewareOptions
-    {
-        bool Enabled { get; set; }
-        string HeaderName { get; }
-        string HeaderValue { get; set; }
-    }
-
-    internal class PoweredByMiddlewareOptions : IPoweredByMiddlewareOptions
-    {
-        private const string PoweredByHeaderName = "X-Powered-By";
-        private const string PoweredByHeaderValue = "OrchardCore";
-
-        public string HeaderName => PoweredByHeaderName;
-        public string HeaderValue { get; set; } = PoweredByHeaderValue;
-
-        public bool Enabled { get; set; } = true;
     }
 }

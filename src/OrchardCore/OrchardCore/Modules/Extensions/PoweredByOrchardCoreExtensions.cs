@@ -1,40 +1,41 @@
-using Microsoft.Extensions.DependencyInjection;
+using System;
+using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 
 namespace Microsoft.AspNetCore.Builder
 {
     public static class PoweredByOrchardCoreExtensions
     {
+        private const string DefaultPoweredByValue = "Orchard Core";
+
         /// <summary>
         /// Configures whether use or not the Header X-Powered-By.
         /// Default value is OrchardCore.
         /// </summary>
-        /// <param name="app">The modular application builder</param>
-        /// <param name="enabled">Boolean indicating if the header should be included in the response or not</param>
-        /// <returns>The modular application builder</returns>
-        public static IApplicationBuilder UsePoweredByOrchardCore(this IApplicationBuilder app, bool enabled)
-        {
-            var options = app.ApplicationServices.GetRequiredService<IPoweredByMiddlewareOptions>();
-            options.Enabled = enabled;
-
-            return app;
-        }
+        /// <param name="app">The <see cref="IApplicationBuilder"/>.</param>
+        public static IApplicationBuilder UsePoweredByOrchardCore(this IApplicationBuilder app)
+            => app.UsePoweredBy(DefaultPoweredByValue);
 
         /// <summary>
-        /// Configures whether use or not the Header X-Powered-By and its value.
-        /// Default value is OrchardCore.
+        /// Adds the <see cref="PoweredByMiddleware"/> to automatically set X-Powered-By HTTP header.
         /// </summary>
-        /// <param name="app">The modular application builder</param>
-        /// <param name="enabled">Boolean indicating if the header should be included in the response or not</param>
-        /// <param name="headerValue">Header's value</param>
-        /// <returns>The modular application builder</returns>
-        public static IApplicationBuilder UsePoweredBy(this IApplicationBuilder app, bool enabled, string headerValue)
+        /// <param name="app">The <see cref="IApplicationBuilder"/>.</param>
+        /// <param name="value">The value will be used in X-Powered-By HTTP header.</param>
+        public static IApplicationBuilder UsePoweredBy(this IApplicationBuilder app, string value)
         {
-            var options = app.ApplicationServices.GetRequiredService<IPoweredByMiddlewareOptions>();
-            options.Enabled = enabled;
-            options.HeaderValue = headerValue;
+            if (app is null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
 
-            return app;
+            if (String.IsNullOrEmpty(value))
+            {
+                throw new ArgumentException($"'{nameof(value)}' cannot be null or empty.", nameof(value));
+            }
+
+            var options = new PoweredByOptions { Value = value };
+
+            return app.UseMiddleware<PoweredByMiddleware>(Options.Create(options));
         }
     }
 }
