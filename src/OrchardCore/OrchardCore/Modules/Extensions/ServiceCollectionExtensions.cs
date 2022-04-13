@@ -311,9 +311,10 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices((services, serviceProvider) =>
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
+                var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
 
                 var md5Hasher = MD5.Create();
-                var data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(settings.Name));
+                var data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(environment.ContentRootPath));
                 var cookieName = "orchantiforgery_" + settings.Name.ToLower() + "_" + new Guid(data).ToString("N");
 
                 // If uninitialized, we use the host services.
