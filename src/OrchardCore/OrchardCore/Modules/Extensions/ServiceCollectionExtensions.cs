@@ -311,11 +311,10 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices((services, serviceProvider) =>
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
-                var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
 
-                MD5 md5Hasher = MD5.Create();
-                byte[] data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(environment.ContentRootPath));
-                var cookieName = "orchantiforgery_" + settings.Name + "_" + new Guid(data).ToString("N");
+                var md5Hasher = MD5.Create();
+                var data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(settings.Name));
+                var cookieName = "orchantiforgery_" + settings.Name.ToLower() + "_" + new Guid(data).ToString("N");
 
                 // If uninitialized, we use the host services.
                 if (settings.State == TenantState.Uninitialized)
