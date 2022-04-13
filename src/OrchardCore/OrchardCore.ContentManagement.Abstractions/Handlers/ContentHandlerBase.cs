@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OrchardCore.ContentManagement.Handlers
@@ -143,6 +144,16 @@ namespace OrchardCore.ContentManagement.Handlers
         }
 
         public virtual Task GetContentItemAspectAsync(ContentItemAspectContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task BeforeImportAsync(IEnumerable<ImportContentContext> contentItems)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task AfterImportAsync(IEnumerable<ImportContentContext> contentItems)
         {
             return Task.CompletedTask;
         }
