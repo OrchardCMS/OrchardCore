@@ -92,6 +92,7 @@ nav:
       - Follow the Guides: docs/guides/README.md
       - Create a modular application: docs/guides/create-modular-application-mvc/README.md
       - Create a website: docs/guides/create-cms-application/README.md
+      - Leverage CSPROJ meta information: docs/guides/leverage-csproj-meta-info/README.md
       - Create a Decoupled CMS site: docs/guides/decoupled-cms/README.md
       - Add an admin menu: docs/guides/add-admin-menu/README.md
       - Implement Full Text search: docs/guides/implement-fulltext-search/README.md
