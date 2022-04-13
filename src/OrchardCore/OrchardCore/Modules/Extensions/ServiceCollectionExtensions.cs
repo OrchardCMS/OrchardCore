@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -311,7 +313,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
                 var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
 
-                var cookieName = "orchantiforgery_" + settings.Name + Guid.NewGuid().ToString("N");
+                MD5 md5Hasher = MD5.Create();
+                byte[] data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(environment.ContentRootPath));
+                var cookieName = "orchantiforgery_" + settings.Name + "_" + new Guid(data).ToString("N");
 
                 // If uninitialized, we use the host services.
                 if (settings.State == TenantState.Uninitialized)
