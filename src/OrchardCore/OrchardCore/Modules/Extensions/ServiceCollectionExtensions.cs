@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -32,7 +33,6 @@ using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
-using OrchardCore.Modules.Services;
 using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -127,8 +127,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 s.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
                 s.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
             });
-
-            services.AddSingleton<ISlugService, SlugService>();
         }
 
         private static void AddShellServices(OrchardCoreBuilder builder)
@@ -313,9 +311,8 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
                 var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
-                var slugService = serviceProvider.GetRequiredService<ISlugService>();
 
-                var cookieName = "orchantiforgery_" + settings.Name + Guid.NewGuid().ToString("N");
+                var cookieName = "orchantiforgery_" + HttpUtility.UrlEncode(settings.Name + environment.ContentRootPath);
 
                 // If uninitialized, we use the host services.
                 if (settings.State == TenantState.Uninitialized)
