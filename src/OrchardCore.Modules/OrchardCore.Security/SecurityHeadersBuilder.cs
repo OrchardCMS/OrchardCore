@@ -6,8 +6,6 @@ namespace OrchardCore.Security
     {
         private readonly SecurityHeadersOptions _options;
 
-        private string _referrerPolicy;
-
         public SecurityHeadersBuilder(SecurityHeadersOptions options)
         {
             _options = options;
@@ -20,16 +18,11 @@ namespace OrchardCore.Security
                 throw new ArgumentException($"'{nameof(policyOption)}' cannot be null or empty.", nameof(policyOption));
             }
 
-            _referrerPolicy = policyOption;
+            _options.ReferrerPolicy = policyOption;
 
             return this;
         }
 
-        public SecurityHeadersOptions Build()
-        {
-            _options.ReferrerPolicy = _referrerPolicy;
-
-            return _options;
-        }
+        public SecurityHeadersOptions Build() => _options;
     }
 }
