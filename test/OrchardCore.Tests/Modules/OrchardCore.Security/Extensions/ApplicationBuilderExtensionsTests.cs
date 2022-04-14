@@ -60,43 +60,24 @@ namespace OrchardCore.Security.Tests
         }
 
         [Fact]
-        public void UseSecurityHeadersWithOptions()
-        {
-            // Arrange
-            var context = new DefaultHttpContext();
-            var options = new SecurityHeadersOptions
-            {
-                ReferrerPolicy = ReferrerPolicyOptions.SameOrigin
-            };
-            var applicationBuilder = CreateApplicationBuilder();
-
-            // Act
-            applicationBuilder.UseSecurityHeaders(options);
-
-            applicationBuilder
-                .Build()
-                .Invoke(context);
-
-            // Assert
-            Assert.Equal(ReferrerPolicyOptions.SameOrigin, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
-        }
-
-        [Fact]
-        public void UseSecurityHeadersWithConfigureOptions()
+        public void UseSecurityHeadersWithConfigureBuilder()
         {
             // Arrange
             var context = new DefaultHttpContext();
             var applicationBuilder = CreateApplicationBuilder();
 
             // Act
-            applicationBuilder.UseSecurityHeaders(options => options.ReferrerPolicy = ReferrerPolicyOptions.SameOrigin);
+            applicationBuilder.UseSecurityHeaders(config => config
+                .AddReferrerPolicy(ReferrerPolicyOptions.Origin)
+                .Build()
+            );
 
             applicationBuilder
                 .Build()
                 .Invoke(context);
 
             // Assert
-            Assert.Equal(ReferrerPolicyOptions.SameOrigin, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
+            Assert.Equal(ReferrerPolicyOptions.Origin, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
         }
 
         private static IApplicationBuilder CreateApplicationBuilder()
