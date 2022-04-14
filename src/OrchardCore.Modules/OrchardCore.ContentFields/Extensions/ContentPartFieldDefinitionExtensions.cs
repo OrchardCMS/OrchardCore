@@ -11,12 +11,16 @@ public static class ContentPartFieldDefinitionExtensions
     public static TField GetContentField<TField>(
         this ContentPartFieldDefinition fieldDefinition,
         ContentItem contentItem)
-        where TField : ContentField =>
-        contentItem.Content[fieldDefinition.PartDefinition.Name] is JObject jPart &&
-        jPart[fieldDefinition.Name] is JObject jField &&
-        jField.ToObject<TField>() is { } field
-            ? field
-            : null;
+        where TField : ContentField
+    {
+        if (contentItem.Content[fieldDefinition.PartDefinition.Name] is not JObject jPart ||
+            jPart[fieldDefinition.Name] is not JObject jField)
+        {
+            return null;
+        }
+
+        return jField.ToObject<TField>();
+    }
 
     /// <summary>
     /// Returns each field from <paramref name="fieldDefinitions"/> that exists in <paramref name="contentItem"/> in a
