@@ -312,7 +312,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
                 var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
 
-                var cookieName = "orchantiforgery_" + settings.VersionId;
+                var cookieName = "__orchantiforgery_" + settings.VersionId;
 
                 // If uninitialized, we use the host services.
                 if (settings.State == TenantState.Uninitialized)
