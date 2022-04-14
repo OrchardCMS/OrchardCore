@@ -48,6 +48,8 @@ namespace Microsoft.AspNetCore.Builder
 
             configureSecurityHeaders.Invoke(builder);
 
+            options = builder.Build();
+
             return app.UseReferrerPolicy(options.ReferrerPolicy);
         }
     }
