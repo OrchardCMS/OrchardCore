@@ -69,7 +69,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             .Take(pager.PageSize)
             .ToList();
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(taskEntries.Count);
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(_backgroundTasks.Count());
 
             var model = new BackgroundTaskIndexViewModel
             {

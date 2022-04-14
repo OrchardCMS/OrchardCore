@@ -164,7 +164,7 @@ namespace OrchardCore.AuditTrail.Services
 
         static DateTimeParser()
         {
-            var operators = OneOf(Literals.Text(">"), Literals.Text(">="), Literals.Text("<"), Literals.Text("<="));
+            var operators = OneOf(Literals.Text(">="), Literals.Text(">"), Literals.Text("<="), Literals.Text("<"));
 
             var arithmetic = Terms.Integer(NumberOptions.AllowSign);
             var range = Literals.Text("..");

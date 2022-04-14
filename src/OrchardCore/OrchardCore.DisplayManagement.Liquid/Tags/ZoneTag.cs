@@ -16,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var services = ((LiquidTemplateContext) context).Services;
+            var services = ((LiquidTemplateContext)context).Services;
             var layoutAccessor = services.GetRequiredService<ILayoutAccessor>();
 
             string position = null;

@@ -21,7 +21,7 @@ The Dockerfile that is provided in the Orchard Core source code is using an inte
 
 ```dockerfile
 # Create an intermediate image using .NET Core SDK
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
 LABEL stage=build-env
 WORKDIR /app
 

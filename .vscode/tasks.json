@@ -24,7 +24,35 @@
   },
   "tasks": [
     {
-      "label": "Dotnet Restore",
+      "label": "dotnet watch - net6.0",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "watch",
+        "run",
+        "${workspaceRoot}/src/OrchardCore.Cms.Web",
+        "-f",
+        "net6.0"
+      ],
+      "options": {
+        "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dotnet run",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceRoot}\\src\\OrchardCore.Cms.Web\\OrchardCore.Cms.Web.csproj",
+        "-f",
+        "net6.0"
+      ]
+    },
+    {
+      "label": "dotnet restore",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -32,7 +60,7 @@
       ]
     },
     {
-      "label": "Dotnet Restore Force",
+      "label": "dotnet restore force",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -41,7 +69,7 @@
       ]
     },
     {
-      "label": "Dotnet clean (debug)",
+      "label": "dotnet clean (debug)",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -51,7 +79,7 @@
       ]
     },
     {
-      "label": "Dotnet clean (release)",
+      "label": "dotnet clean (release)",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -61,7 +89,7 @@
       ]
     },
     {
-      "label": "Web App: Dotnet Build Debug - net5.0",
+      "label": "dotnet build (debug) - net6.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -70,12 +98,26 @@
         "-c",
         "Debug",
         "-f",
-        "net5.0"
+        "net6.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Web App: Dotnet Rebuild Debug - net5.0",
+      "label": "dotnet build (release) - net6.0",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceRoot}/src/OrchardCore.Cms.Web",
+        "-c",
+        "Release",
+        "-f",
+        "net6.0"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dotnet rebuild (debug) - net6.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -85,32 +127,27 @@
         "-c",
         "Debug",
         "-f",
-        "net5.0"
+        "net6.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Web App: Dotnet Build Release - net5.0",
+      "label": "dotnet rebuild (release) - net6.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
         "build",
         "${workspaceRoot}/src/OrchardCore.Cms.Web",
+        "--no-incremental",
         "-c",
         "Release",
         "-f",
-        "net5.0"
+        "net6.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Web App: Dotnet Run",
-      "args": [
-        "cd ${workspaceRoot}/src/OrchardCore.Cms.Web & dotnet run"
-      ]
-    },
-    {
-      "label": "Cleanup build folder",
+      "label": "cleanup publish folder",
       "type": "shell",
       "command": "rm",
       "windows": {
@@ -126,7 +163,7 @@
       ]
     },
     {
-      "label": "Dotnet Publish (self-contained) - net5.0",
+      "label": "dotnet publish (self-contained) - release - net6.0",
       "type": "shell",
       "command": "dotnet",
       "windows": {
@@ -140,7 +177,7 @@
           "win-x64",
           "--self-contained",
           "--framework",
-          "net5.0",
+          "net6.0",
           "--output",
           ".\\.build\\release"
         ]
@@ -154,14 +191,14 @@
         "linux-x64",
         "--self-contained",
         "--framework",
-        "net5.0",
+        "net6.0",
         "--output",
         "./.build/release"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Dotnet Publish (framework dependent) - net5.0",
+      "label": "dotnet publish (framework dependent) - release - net6.0",
       "type": "shell",
       "command": "dotnet",
       "windows": {
@@ -176,7 +213,7 @@
           "--self-contained",
           "false",
           "--framework",
-          "net5.0",
+          "net6.0",
           "--output",
           ".\\.build\\release"
         ]
@@ -191,30 +228,32 @@
         "--self-contained",
         "false",
         "--framework",
-        "net5.0",
+        "net6.0",
         "--output",
         "./.build/release"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Web App: Dotnet Publish (self-contained) - net5.0",
+      "label": "tasks: dotnet publish release (self-contained) - net6.0",
       "dependsOn": [
-        "Cleanup build folder",
-        "Dotnet Publish (self-contained) - net5.0"
+        "cleanup publish folder",
+        "dotnet publish (self-contained) - net6.0"
       ]
     },
     {
-      "label": "Web App: Dotnet Publish (framework dependent) - net5.0",
+      "label": "tasks: dotnet publish release (framework dependent) - net6.0",
       "dependsOn": [
-        "Cleanup build folder",
-        "Dotnet Publish (framework dependent) - net5.0"
+        "cleanup publish folder",
+        "dotnet publish (framework dependent) - net6.0"
       ]
     },
     {
-      "label": "Gulp Build",
+      "label": "gulp build",
+      "type": "shell",
+      "command": "gulp",
       "args": [
-        "gulp build"
+        "build"
       ],
       "problemMatcher": "$gulp-tsc"
     }

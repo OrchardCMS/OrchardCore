@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +11,7 @@ using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -34,6 +34,7 @@ namespace OrchardCore.Shortcodes.Controllers
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
+        private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly dynamic New;
 
         public AdminController(
@@ -44,7 +45,8 @@ namespace OrchardCore.Shortcodes.Controllers
             INotifier notifier,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer
+            IHtmlLocalizer<AdminController> htmlLocalizer,
+            IHtmlSanitizerService htmlSanitizerService
             )
         {
             _authorizationService = authorizationService;
@@ -55,6 +57,7 @@ namespace OrchardCore.Shortcodes.Controllers
             New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
+            _htmlSanitizerService = htmlSanitizerService;
         }
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
@@ -160,7 +163,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     Content = model.Content,
                     Hint = model.Hint,
-                    Usage = model.Usage,
+                    Usage = _htmlSanitizerService.Sanitize(model.Usage),
                     DefaultValue = model.DefaultValue,
                     Categories = JsonConvert.DeserializeObject<string[]>(model.SelectedCategories)
                 };
@@ -257,7 +260,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     Content = model.Content,
                     Hint = model.Hint,
-                    Usage = model.Usage,
+                    Usage = _htmlSanitizerService.Sanitize(model.Usage),
                     DefaultValue = model.DefaultValue,
                     Categories = JsonConvert.DeserializeObject<string[]>(model.SelectedCategories)
                 };

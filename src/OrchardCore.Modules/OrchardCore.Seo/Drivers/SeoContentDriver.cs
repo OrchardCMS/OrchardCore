@@ -1,4 +1,6 @@
 using System;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement;
@@ -16,11 +18,12 @@ using Shortcodes;
 namespace OrchardCore.Seo.Drivers
 {
     public class SeoContentDriver : ContentDisplayDriver
-    {       
+    {
         private readonly IContentManager _contentManager;
         private readonly IPageTitleBuilder _pageTitleBuilder;
         private readonly IResourceManager _resourceManager;
         private readonly IShortcodeService _shortcodeService;
+        private readonly HtmlEncoder _htmlEncoder;
 
         private bool _primaryContentRendered { get; set; }
 
@@ -28,13 +31,15 @@ namespace OrchardCore.Seo.Drivers
             IContentManager contentManager,
             IPageTitleBuilder pageTitleBuilder,
             IResourceManager resourceManager,
-            IShortcodeService shortcodeService
+            IShortcodeService shortcodeService,
+            HtmlEncoder htmlEncoder
             )
         {
             _contentManager = contentManager;
             _pageTitleBuilder = pageTitleBuilder;
             _resourceManager = resourceManager;
             _shortcodeService = shortcodeService;
+            _htmlEncoder = htmlEncoder;
         }
 
         public override async Task<IDisplayResult> DisplayAsync(ContentItem contentItem, BuildDisplayContext context)
@@ -54,15 +59,20 @@ namespace OrchardCore.Seo.Drivers
             }
 
             var aspect = await _contentManager.PopulateAspectAsync<SeoAspect>(contentItem);
-            
+
             if (!aspect.Render)
             {
                 return null;
             }
 
+            var shortCodeContext = new Context
+            {
+                ["ContentItem"] = contentItem
+            };
+
             if (!String.IsNullOrEmpty(aspect.PageTitle))
             {
-                _pageTitleBuilder.SetFixedTitle(new HtmlString(await RenderAsync(aspect.PageTitle, contentItem)));
+                _pageTitleBuilder.SetFixedTitle(new HtmlString(_htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.PageTitle, shortCodeContext))));
             }
 
             if (!String.IsNullOrEmpty(aspect.MetaDescription))
@@ -70,18 +80,18 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Name = "description",
-                    Content = await RenderAsync(aspect.MetaDescription, contentItem)
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.MetaDescription, shortCodeContext))
                 });
             }
 
             if (!String.IsNullOrEmpty(aspect.MetaKeywords))
-            {                   
+            {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Name = "keywords",
-                    Content = await RenderAsync(aspect.MetaKeywords, contentItem)
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.MetaKeywords, shortCodeContext))
                 });
-            }    
+            }
 
             if (!String.IsNullOrEmpty(aspect.Canonical))
             {
@@ -93,23 +103,23 @@ namespace OrchardCore.Seo.Drivers
             }
 
             if (!String.IsNullOrEmpty(aspect.MetaRobots))
-            {                   
+            {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Name = "robots",
-                    Content = await RenderAsync(aspect.MetaRobots, contentItem)
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.MetaRobots, shortCodeContext))
                 });
-            }                        
+            }
 
-            foreach(var customMetaTag in aspect.CustomMetaTags)
+            foreach (var customMetaTag in aspect.CustomMetaTags)
             {
                 // Generate a new meta entry as the builder is preopulated.
                 _resourceManager.RegisterMeta(new MetaEntry(
-                    await RenderAsync(customMetaTag.Name, contentItem), 
-                    await RenderAsync(customMetaTag.Property, contentItem), 
-                    await RenderAsync(customMetaTag.Content, contentItem), 
-                    await RenderAsync(customMetaTag.HttpEquiv, contentItem),
-                    await RenderAsync(customMetaTag.Charset, contentItem)));
+                    _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.Name, shortCodeContext)),
+                    _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.Property, shortCodeContext)),
+                    _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.Content, shortCodeContext)),
+                    _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.HttpEquiv, shortCodeContext)),
+                    _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.Charset, shortCodeContext))));
             }
 
             // OpenGraph.
@@ -117,8 +127,8 @@ namespace OrchardCore.Seo.Drivers
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "og:type", 
-                    Content = await RenderAsync(aspect.OpenGraphType, contentItem)
+                    Property = "og:type",
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphType, shortCodeContext))
                 });
             }
 
@@ -126,26 +136,26 @@ namespace OrchardCore.Seo.Drivers
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "og:title", 
-                    Content = await RenderAsync(aspect.OpenGraphTitle, contentItem)
+                    Property = "og:title",
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphTitle, shortCodeContext))
                 });
-            }  
+            }
 
             if (!String.IsNullOrEmpty(aspect.OpenGraphDescription))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "og:description", 
-                    Content = await RenderAsync(aspect.OpenGraphDescription, contentItem)
+                    Property = "og:description",
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphDescription, shortCodeContext))
                 });
-            }  
-            
+            }
+
             if (!String.IsNullOrEmpty(aspect.OpenGraphImage))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "og:image", 
-                    Content = await RenderAsync(aspect.OpenGraphImage, contentItem)
+                    Property = "og:image",
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphImage, shortCodeContext))
                 });
             }
 
@@ -153,35 +163,35 @@ namespace OrchardCore.Seo.Drivers
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "og:image:alt", 
-                    Content = await RenderAsync(aspect.OpenGraphImageAlt, contentItem)
+                    Property = "og:image:alt",
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphImageAlt, shortCodeContext))
                 });
-            }  
+            }
 
             if (!String.IsNullOrEmpty(aspect.OpenGraphUrl))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "og:url", 
-                    Content = await RenderAsync(aspect.OpenGraphUrl, contentItem)
+                    Property = "og:url",
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphUrl, shortCodeContext))
                 });
-            }   
+            }
 
             if (!String.IsNullOrEmpty(aspect.OpenGraphSiteName))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "og:site_name", 
-                    Content = await RenderAsync(aspect.OpenGraphSiteName, contentItem)
+                    Property = "og:site_name",
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphSiteName, shortCodeContext))
                 });
-            }       
+            }
 
             if (!String.IsNullOrEmpty(aspect.OpenGraphAppId))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "fb:app_id", 
-                    Content = await RenderAsync(aspect.OpenGraphAppId, contentItem)
+                    Property = "fb:app_id",
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphAppId, shortCodeContext))
                 });
             }
 
@@ -189,8 +199,8 @@ namespace OrchardCore.Seo.Drivers
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "og:locale", 
-                    Content = await RenderAsync(aspect.OpenGraphLocale, contentItem)
+                    Property = "og:locale",
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphLocale, shortCodeContext))
                 });
             }
 
@@ -199,8 +209,8 @@ namespace OrchardCore.Seo.Drivers
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "twitter:card", 
-                    Content = await RenderAsync(aspect.TwitterCard, contentItem)
+                    Property = "twitter:card",
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterCard, shortCodeContext))
                 });
             }
 
@@ -208,35 +218,35 @@ namespace OrchardCore.Seo.Drivers
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "twitter:site", 
-                    Content = await RenderAsync(aspect.TwitterSite, contentItem)
+                    Property = "twitter:site",
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterSite, shortCodeContext))
                 });
-            } 
+            }
 
             if (!String.IsNullOrEmpty(aspect.TwitterTitle))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Name = "twitter:title", 
-                    Content = await RenderAsync(aspect.TwitterTitle, contentItem)
+                    Name = "twitter:title",
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterTitle, shortCodeContext))
                 });
-            }     
+            }
 
             if (!String.IsNullOrEmpty(aspect.TwitterDescription))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Name = "twitter:description", 
-                    Content = await RenderAsync(aspect.TwitterDescription, contentItem)
+                    Name = "twitter:description",
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterDescription, shortCodeContext))
                 });
-            }                                    
+            }
 
             if (!String.IsNullOrEmpty(aspect.TwitterImage))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Name = "twitter:image",
-                    Content = await RenderAsync(aspect.TwitterImage, contentItem)
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterImage, shortCodeContext))
                 });
             }
 
@@ -245,7 +255,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Name = "twitter:image:alt",
-                    Content = await RenderAsync(aspect.TwitterImageAlt, contentItem)
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterImageAlt, shortCodeContext))
                 });
             }
 
@@ -253,8 +263,8 @@ namespace OrchardCore.Seo.Drivers
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Name = "twitter:creator", 
-                    Content = await RenderAsync(aspect.TwitterCreator, contentItem)
+                    Name = "twitter:creator",
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterCreator, shortCodeContext))
                 });
             }
 
@@ -262,24 +272,30 @@ namespace OrchardCore.Seo.Drivers
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Name = "twitter:url", 
-                    Content = await RenderAsync(aspect.TwitterUrl, contentItem)
+                    Name = "twitter:url",
+                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterUrl, shortCodeContext))
                 });
             }
 
             if (!String.IsNullOrEmpty(aspect.GoogleSchema))
             {
-                _resourceManager.RegisterHeadScript(new HtmlString($"<script type=\"application/ld+json\">\n{aspect.GoogleSchema}\n</script>"));
+                var json = await _shortcodeService.ProcessAsync(aspect.GoogleSchema, shortCodeContext);
+
+                try
+                {
+                    // Validate json format
+                    JsonDocument.Parse(json);
+                }
+                catch
+                {
+                    json = "{ \"error\": \"Invalid JSON content in SEO settings\" }";
+                }
+
+                _resourceManager.RegisterHeadScript(new HtmlString($"<script type=\"application/ld+json\">\n{json}\n</script>"));
+
             }
 
             return null;
         }
-
-        private ValueTask<string> RenderAsync(string template, ContentItem contentItem)
-            => _shortcodeService.ProcessAsync(template,
-                    new Context
-                    {
-                        ["ContentItem"] = contentItem
-                    });
     }
 }

@@ -12,11 +12,20 @@
 
 @functions
 {
-    public string GetEncodedUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
+    private string GetEncodedUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase, bool appendQuery = true)
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
         var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-        var hostString = host != null ? new HostString(host) : Context.Request.Host;
+
+        var hostString = Context.Request.Host;
+        if (host != null)
+        {
+            hostString = new HostString(host);
+            if (Context.Request.Host.Port.HasValue)
+            {
+                hostString = new HostString(hostString.Host, Context.Request.Host.Port.Value);
+            }
+        }
 
         var pathString = originalPathBase;
         if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
@@ -25,27 +34,12 @@
         }
 
         var queryString = QueryString.Empty;
-        if (!String.IsNullOrEmpty(shellSettingsEntry.Token))
+        if (appendQuery && !String.IsNullOrEmpty(shellSettingsEntry.Token))
         {
             queryString = QueryString.Create("token", shellSettingsEntry.Token);
         }
 
         return $"{Context.Request.Scheme}://{hostString + pathString + queryString}";
-    }
-
-    public string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
-    {
-        var shellSettings = shellSettingsEntry.ShellSettings;
-        var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-        var hostString = host != null ? new HostString(host) : Context.Request.Host;
-
-        var pathString = originalPathBase;
-        if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
-        {
-            pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
-        }
-
-        return $"{Context.Request.Scheme}://{hostString.Value + pathString.Value}";
     }
 }
 
@@ -97,7 +91,8 @@
                 </div>
                 <div class="form-group col mb-n1 filter">
                     <div class="btn-group float-right mt-1">
-                        <select asp-for="Options.Filter" asp-items="@Model.Options.TenantsStates" class="selectpicker show-tick mr-2" data-header="@T["Filter by state"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["State"]" data-style="btn-sm"></select>
+                        <select asp-for="Options.Category" asp-items="@Model.Options.TenantsCategories" class="selectpicker show-tick mr-2" data-header="@T["Filter by category"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Category"]" data-style="btn-sm"></select>
+                        <select asp-for="Options.Status" asp-items="@Model.Options.TenantsStates" class="selectpicker show-tick mr-2" data-header="@T["Filter by state"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["State"]" data-style="btn-sm"></select>
                         <select asp-for="Options.OrderBy" asp-items="@Model.Options.TenantsSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
                     </div>
                 </div>
@@ -116,6 +111,10 @@
                             </div>
                             <div class="d-inline">
                                 <a class="text-break" href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
+                                @if(!string.IsNullOrEmpty(entry.Category))
+                                {
+                                    <span class="badge ta-badge font-weight-normal"><i class="fa fa-tag text-info" aria-hidden="true"></i> @entry.Category</span>
+                                }
                                 @if (!string.IsNullOrEmpty(entry.ShellSettings["DatabaseProvider"]))
                                 {
                                     <span class="badge ta-badge font-weight-normal"><i class="fa fa-database text-info" aria-hidden="true"></i> @entry.ShellSettings["DatabaseProvider"]</span>
@@ -159,7 +158,7 @@
                                 <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm edit">@T["Edit"]</a>
                                 @if (entry.ShellSettings.State == TenantState.Running)
                                 {
-                                    <a class="btn btn-info btn-sm view" href="@GetDisplayUrl(entry, originalPathBase)" target="_blank">@T["View"]</a>
+                                    <a class="btn btn-info btn-sm view" href="@GetEncodedUrl(entry, originalPathBase, appendQuery:false)" target="_blank">@T["View"]</a>
                                 }
                                 @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
                                 {

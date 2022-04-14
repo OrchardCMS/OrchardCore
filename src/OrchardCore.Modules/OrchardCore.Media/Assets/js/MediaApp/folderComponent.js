@@ -71,8 +71,6 @@ Vue.component('folder', {
 
         bus.$on('addFolder', function (target, folder) {
             if (self.model == target) {
-
-                bus.$emit('beforeFolderAdded', self.model);
                 if (self.children !== null) {
                     self.children.push(folder);
                 }                

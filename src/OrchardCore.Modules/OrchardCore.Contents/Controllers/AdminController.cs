@@ -26,8 +26,8 @@ using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
 using YesSql;
-using YesSql.Services;
 using YesSql.Filters.Query;
+using YesSql.Services;
 
 namespace OrchardCore.Contents.Controllers
 {
@@ -138,7 +138,7 @@ namespace OrchardCore.Contents.Controllers
 
                     if (await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem))
                     {
-                        creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
+                        creatableList.Add(new SelectListItem(contentTypeDefinition.DisplayName, contentTypeDefinition.Name));
                     }
                 }
 
@@ -157,7 +157,7 @@ namespace OrchardCore.Contents.Controllers
 
                         if (await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem))
                         {
-                            creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
+                            creatableList.Add(new SelectListItem(contentTypeDefinition.DisplayName, contentTypeDefinition.Name));
                         }
                     }
                 }

@@ -83,10 +83,19 @@ namespace OrchardCore.Autoroute.Services
         {
             // Evict all entries related to a container item from autoroute entries.
             // This is necessary to account for deletions, disabling of an item, or disabling routing of contained items.
+            ILookup<string, AutorouteEntry> entriesByContainer = null;
             foreach (var entry in entries.Where(x => String.IsNullOrEmpty(x.ContainedContentItemId)))
             {
-                var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId &&
-                    !String.IsNullOrEmpty(x.ContainedContentItemId));
+                entriesByContainer ??= _paths.Values
+                    .Where(x => !String.IsNullOrEmpty(x.ContainedContentItemId))
+                    .ToLookup(x => x.ContentItemId);
+
+                if (!entriesByContainer.Contains(entry.ContentItemId))
+                {
+                    continue;
+                }
+
+                var entriesToRemove = entriesByContainer[entry.ContentItemId];
 
                 _paths = _paths.RemoveRange(entriesToRemove.Select(x => x.ContainedContentItemId));
                 _contentItemIds = _contentItemIds.RemoveRange(entriesToRemove.Select(x => x.Path));
@@ -147,7 +156,10 @@ namespace OrchardCore.Autoroute.Services
             {
                 if (_stateIdentifier != state.Identifier)
                 {
-                    var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Id > _lastIndexId).ListAsync();
+                    var indexes = await Session
+                        .QueryIndex<AutoroutePartIndex>(i => i.Id > _lastIndexId)
+                        .OrderBy(i => i.Id)
+                        .ListAsync();
 
                     // A draft is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
                     // so only if the entry 'DocumentId' matches, this because when a draft is saved more than once, the index
@@ -199,7 +211,11 @@ namespace OrchardCore.Autoroute.Services
                 {
                     var state = await _autorouteStateManager.GetOrCreateImmutableAsync();
 
-                    var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null).ListAsync();
+                    var indexes = await Session
+                        .QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null)
+                        .OrderBy(i => i.Id)
+                        .ListAsync();
+
                     var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath)
                     {
                         DocumentId = i.DocumentId
