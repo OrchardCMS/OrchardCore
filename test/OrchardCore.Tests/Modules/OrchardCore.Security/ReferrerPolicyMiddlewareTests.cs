@@ -11,7 +11,7 @@ namespace OrchardCore.Security.Tests
         public async Task AddReferrerPolicyHeader()
         {
             // Arrange
-            var middleware = new ReferrerPolicyMiddleware(ReferrerPolicy.SameOrigin, request);
+            var middleware = new ReferrerPolicyMiddleware(ReferrerPolicyOptions.SameOrigin, request);
             var context = new DefaultHttpContext();
 
             // Act
@@ -19,7 +19,7 @@ namespace OrchardCore.Security.Tests
 
             // Assert
             Assert.True(context.Response.Headers.ContainsKey(SecurityHeader.ReferrerPolicy));
-            Assert.Equal(ReferrerPolicy.SameOrigin, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
+            Assert.Equal(ReferrerPolicyOptions.SameOrigin, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
 
             static Task request(HttpContext context) => Task.CompletedTask;
         }

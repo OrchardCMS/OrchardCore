@@ -6,14 +6,19 @@ namespace Microsoft.AspNetCore.Builder
 {
     public static class ApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseReferrerPolicy(this IApplicationBuilder app, ReferrerPolicy policy)
+        public static IApplicationBuilder UseReferrerPolicy(this IApplicationBuilder app, string policyOption)
         {
             if (app is null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
 
-            return app.UseMiddleware<ReferrerPolicyMiddleware>(policy);
+            if (String.IsNullOrEmpty(policyOption))
+            {
+                throw new ArgumentException($"'{nameof(policyOption)}' cannot be null or empty.", nameof(policyOption));
+            }
+
+            return app.UseMiddleware<ReferrerPolicyMiddleware>(policyOption);
         }
 
         public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app)

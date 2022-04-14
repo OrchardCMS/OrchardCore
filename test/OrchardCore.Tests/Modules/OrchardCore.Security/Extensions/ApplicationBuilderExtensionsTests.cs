@@ -11,19 +11,19 @@ namespace OrchardCore.Security.Tests
         public static IEnumerable<object[]> Policies =>
             new List<object[]>
             {
-                new object[] { ReferrerPolicy.NoReferrer },
-                new object[] { ReferrerPolicy.NoReferrerWhenDowngrade },
-                new object[] { ReferrerPolicy.Origin },
-                new object[] { ReferrerPolicy.OriginWhenCrossOrigin },
-                new object[] { ReferrerPolicy.SameOrigin },
-                new object[] { ReferrerPolicy.StrictOrigin },
-                new object[] { ReferrerPolicy.StrictOriginWhenCrossOrigin },
-                new object[] { ReferrerPolicy.UnsafeUrl }
+                new object[] { ReferrerPolicyOptions.NoReferrer },
+                new object[] { ReferrerPolicyOptions.NoReferrerWhenDowngrade },
+                new object[] { ReferrerPolicyOptions.Origin },
+                new object[] { ReferrerPolicyOptions.OriginWhenCrossOrigin },
+                new object[] { ReferrerPolicyOptions.SameOrigin },
+                new object[] { ReferrerPolicyOptions.StrictOrigin },
+                new object[] { ReferrerPolicyOptions.StrictOriginWhenCrossOrigin },
+                new object[] { ReferrerPolicyOptions.UnsafeUrl }
             };
 
         [Theory]
         [MemberData(nameof(Policies))]
-        public void UseReferrerPolicy_ShouldAddReferrerPolicyHeaderWithProperValue(ReferrerPolicy policy)
+        public void UseReferrerPolicy_ShouldAddReferrerPolicyHeaderWithProperValue(string policy)
         {
             // Arrange
             var context = new DefaultHttpContext();
@@ -66,7 +66,7 @@ namespace OrchardCore.Security.Tests
             var context = new DefaultHttpContext();
             var options = new SecurityHeadersOptions
             {
-                ReferrerPolicy = ReferrerPolicy.SameOrigin
+                ReferrerPolicy = ReferrerPolicyOptions.SameOrigin
             };
             var applicationBuilder = CreateApplicationBuilder();
 
@@ -78,7 +78,7 @@ namespace OrchardCore.Security.Tests
                 .Invoke(context);
 
             // Assert
-            Assert.Equal(ReferrerPolicy.SameOrigin, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
+            Assert.Equal(ReferrerPolicyOptions.SameOrigin, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
         }
 
         [Fact]
@@ -89,14 +89,14 @@ namespace OrchardCore.Security.Tests
             var applicationBuilder = CreateApplicationBuilder();
 
             // Act
-            applicationBuilder.UseSecurityHeaders(options => options.ReferrerPolicy = ReferrerPolicy.SameOrigin);
+            applicationBuilder.UseSecurityHeaders(options => options.ReferrerPolicy = ReferrerPolicyOptions.SameOrigin);
 
             applicationBuilder
                 .Build()
                 .Invoke(context);
 
             // Assert
-            Assert.Equal(ReferrerPolicy.SameOrigin, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
+            Assert.Equal(ReferrerPolicyOptions.SameOrigin, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
         }
 
         private static IApplicationBuilder CreateApplicationBuilder()
