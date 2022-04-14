@@ -1,6 +1,5 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -21,17 +20,17 @@ namespace OrchardCore.Security
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, SecurityPermissions>();
-            services.AddScoped<IDisplayDriver<ISite>, SecurityHeadersSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<ISite>, SecuritySettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddSingleton<SecurityHeadersService>();
+            services.AddSingleton<ISecurityService, SecurityService>();
 
-            services.AddTransient<IConfigureOptions<SecurityHeadersOptions>, SecurityHeadersOptionsConfiguration>();
+            services.AddTransient<IConfigureOptions<SecuritySettings>, SecuritySettingsConfiguration>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var securityHeadersOptions = serviceProvider.GetRequiredService<IOptions<SecurityHeadersOptions>>().Value;
+            var securityHeadersOptions = serviceProvider.GetRequiredService<IOptions<SecuritySettings>>().Value;
 
             builder.UseSecurityHeaders(config =>
             {

@@ -1,6 +1,6 @@
 namespace OrchardCore.Security
 {
-    public class SecurityHeadersOptions
+    public class SecuritySettings
     {
         public string ReferrerPolicy { get; set; } = SecurityHeaderDefaults.ReferrerPolicy;
     }

@@ -11,13 +11,18 @@ namespace OrchardCore.Security.Middlewares
 
         public ReferrerPolicyMiddleware(string options, RequestDelegate next)
         {
+            if (String.IsNullOrEmpty(options))
+            {
+                throw new ArgumentException($"'{nameof(options)}' cannot be null or empty.", nameof(options));
+            }
+
             _options = options;
             _next = next ?? throw new ArgumentNullException(nameof(next));
         }
 
         public Task Invoke(HttpContext context)
         {
-            context.Response.Headers[SecurityHeader.ReferrerPolicy] = _options;
+            context.Response.Headers[SecurityHeaderNames.ReferrerPolicy] = _options;
 
             return _next.Invoke(context);
         }

@@ -5,11 +5,12 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Security.ViewModels;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Security.Drivers
 {
-    public class SecurityHeadersSettingsDisplayDriver : SectionDisplayDriver<ISite, SecurityHeadersOptions>
+    public class SecuritySettingsDisplayDriver : SectionDisplayDriver<ISite, SecuritySettings>
     {
         internal const string SettingsGroupId = "SecurityHeaders";
 
@@ -18,7 +19,7 @@ namespace OrchardCore.Security.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public SecurityHeadersSettingsDisplayDriver(
+        public SecuritySettingsDisplayDriver(
             IShellHost shellHost,
             ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
@@ -30,33 +31,33 @@ namespace OrchardCore.Security.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(SecurityHeadersOptions settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(SecuritySettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, SecurityPermissions.SecurityHeadersSettings))
+            if (!await _authorizationService.AuthorizeAsync(user, SecurityPermissions.ManageSecurityHeadersSettings))
             {
                 return null;
             }
 
-            return Initialize<SecurityHeadersOptions>("SecurityHeadersSettings_Edit", model =>
+            return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {
                 model.ReferrerPolicy = settings.ReferrerPolicy;
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SecurityHeadersOptions section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(SecuritySettings section, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, SecurityPermissions.SecurityHeadersSettings))
+            if (!await _authorizationService.AuthorizeAsync(user, SecurityPermissions.ManageSecurityHeadersSettings))
             {
                 return null;
             }
 
             if (context.GroupId == SettingsGroupId)
             {
-                var model = new SecurityHeadersOptions();
+                var model = new SecuritySettingsViewModel();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 

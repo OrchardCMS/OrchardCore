@@ -4,20 +4,20 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Security.Services
 {
-    public class SecurityHeadersService
+    public class SecurityService : ISecurityService
     {
         private readonly ISiteService _siteService;
 
-        public SecurityHeadersService(ISiteService siteService)
+        public SecurityService(ISiteService siteService)
         {
             _siteService = siteService;
         }
 
-        public async Task<SecurityHeadersOptions> GetSettingsAsync()
+        public async Task<SecuritySettings> GetSettingsAsync()
         {
             var securityHeadersSettings = await _siteService.GetSiteSettingsAsync();
 
-            return securityHeadersSettings.As<SecurityHeadersOptions>();
+            return securityHeadersSettings.As<SecuritySettings>();
         }
     }
 }

@@ -7,10 +7,10 @@ namespace OrchardCore.Security
 {
     public class SecurityPermissions : IPermissionProvider
     {
-        public static readonly Permission SecurityHeadersSettings = new("SecurityHeadersSettings", "Manage Security Headers Settings");
+        public static readonly Permission ManageSecurityHeadersSettings = new("ManageSecurityHeadersSettings", "Manage Security Headers Settings");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
-            => Task.FromResult(new[] { SecurityHeadersSettings }.AsEnumerable());
+            => Task.FromResult(new[] { ManageSecurityHeadersSettings }.AsEnumerable());
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
             => new[]
@@ -18,7 +18,7 @@ namespace OrchardCore.Security
                     new PermissionStereotype
                     {
                         Name = "Administrator",
-                        Permissions = new[] { SecurityHeadersSettings }
+                        Permissions = new[] { ManageSecurityHeadersSettings }
                     },
                 };
     }

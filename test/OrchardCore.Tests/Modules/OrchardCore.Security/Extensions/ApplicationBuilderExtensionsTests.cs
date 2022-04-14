@@ -37,8 +37,8 @@ namespace OrchardCore.Security.Tests
                 .Invoke(context);
 
             // Assert
-            Assert.True(context.Response.Headers.ContainsKey(SecurityHeader.ReferrerPolicy));
-            Assert.Equal(policy, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
+            Assert.True(context.Response.Headers.ContainsKey(SecurityHeaderNames.ReferrerPolicy));
+            Assert.Equal(policy, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace OrchardCore.Security.Tests
                 .Invoke(context);
 
             // Assert
-            Assert.Equal(SecurityHeaderDefaults.ReferrerPolicy, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
+            Assert.Equal(SecurityHeaderDefaults.ReferrerPolicy, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
         }
 
         [Fact]
@@ -77,7 +77,7 @@ namespace OrchardCore.Security.Tests
                 .Invoke(context);
 
             // Assert
-            Assert.Equal(ReferrerPolicyOptions.Origin, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
+            Assert.Equal(ReferrerPolicyOptions.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
         }
 
         private static IApplicationBuilder CreateApplicationBuilder()

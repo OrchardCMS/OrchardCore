@@ -43,14 +43,14 @@ namespace Microsoft.AspNetCore.Builder
                 throw new ArgumentNullException(nameof(configureSecurityHeaders));
             }
 
-            var options = new SecurityHeadersOptions();
-            var builder = new SecurityHeadersBuilder(options);
+            var settings = new SecuritySettings();
+            var builder = new SecurityHeadersBuilder(settings);
 
             configureSecurityHeaders.Invoke(builder);
 
-            options = builder.Build();
+            settings = builder.Build();
 
-            return app.UseReferrerPolicy(options.ReferrerPolicy);
+            return app.UseReferrerPolicy(settings.ReferrerPolicy);
         }
     }
 }

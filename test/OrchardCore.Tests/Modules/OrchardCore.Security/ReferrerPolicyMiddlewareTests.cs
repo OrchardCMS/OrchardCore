@@ -18,8 +18,8 @@ namespace OrchardCore.Security.Tests
             await middleware.Invoke(context);
 
             // Assert
-            Assert.True(context.Response.Headers.ContainsKey(SecurityHeader.ReferrerPolicy));
-            Assert.Equal(ReferrerPolicyOptions.SameOrigin, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
+            Assert.True(context.Response.Headers.ContainsKey(SecurityHeaderNames.ReferrerPolicy));
+            Assert.Equal(ReferrerPolicyOptions.SameOrigin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
 
             static Task request(HttpContext context) => Task.CompletedTask;
         }
