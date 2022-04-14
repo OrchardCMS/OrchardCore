@@ -5,7 +5,6 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Security.ViewModels;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Security.Drivers
