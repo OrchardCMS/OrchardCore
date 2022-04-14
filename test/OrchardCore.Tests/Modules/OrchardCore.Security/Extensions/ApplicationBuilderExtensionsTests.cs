@@ -41,6 +41,64 @@ namespace OrchardCore.Security.Tests
             Assert.Equal(policy, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
         }
 
+        [Fact]
+        public void UseSecurityHeadersWithDefaultHeaders()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            var applicationBuilder = CreateApplicationBuilder();
+
+            // Act
+            applicationBuilder.UseSecurityHeaders();
+
+            applicationBuilder
+                .Build()
+                .Invoke(context);
+
+            // Assert
+            Assert.Equal(SecurityHeaderDefaults.ReferrerPolicy, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
+        }
+
+        [Fact]
+        public void UseSecurityHeadersWithOptions()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            var options = new SecurityHeadersOptions
+            {
+                ReferrerPolicy = ReferrerPolicy.SameOrigin
+            };
+            var applicationBuilder = CreateApplicationBuilder();
+
+            // Act
+            applicationBuilder.UseSecurityHeaders(options);
+
+            applicationBuilder
+                .Build()
+                .Invoke(context);
+
+            // Assert
+            Assert.Equal(ReferrerPolicy.SameOrigin, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
+        }
+
+        [Fact]
+        public void UseSecurityHeadersWithConfigureOptions()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            var applicationBuilder = CreateApplicationBuilder();
+
+            // Act
+            applicationBuilder.UseSecurityHeaders(options => options.ReferrerPolicy = ReferrerPolicy.SameOrigin);
+
+            applicationBuilder
+                .Build()
+                .Invoke(context);
+
+            // Assert
+            Assert.Equal(ReferrerPolicy.SameOrigin, context.Response.Headers[SecurityHeader.ReferrerPolicy]);
+        }
+
         private static IApplicationBuilder CreateApplicationBuilder()
         {
             var services = new ServiceCollection();

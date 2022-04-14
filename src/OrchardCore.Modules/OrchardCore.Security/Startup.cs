@@ -16,7 +16,7 @@ namespace OrchardCore.Security
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-
+            builder.UseSecurityHeaders();
         }
     }
 }

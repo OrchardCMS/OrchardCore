@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
@@ -10,8 +11,8 @@ namespace OrchardCore.Security.Middlewares
 
         public ReferrerPolicyMiddleware(ReferrerPolicy policy, RequestDelegate next)
         {
-            _policy = policy;
-            _next = next;
+            _policy = policy ?? throw new ArgumentNullException(nameof(policy));
+            _next = next ?? throw new ArgumentNullException(nameof(next));
         }
 
         public Task Invoke(HttpContext context)
