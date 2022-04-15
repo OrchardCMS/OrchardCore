@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.DataLoader;
 
@@ -19,9 +18,15 @@ namespace OrchardCore.Apis.GraphQL
             return Task.WhenAll(tasks);
         }
 
-        public static Task<T[]> LoadAsync<TKey, T>(this IDataLoader<TKey, T> dataLoader, params TKey[] keys)
+        public static async Task<T[]> LoadAsync<TKey, T>(this IDataLoader<TKey, T> dataLoader, params TKey[] keys)
         {
-            return dataLoader.LoadAsync(keys.AsEnumerable());
+            var tasks = new T[keys.Length];
+            for (var i = 0; i < keys.Length; i++)
+            {
+                tasks[i] = await dataLoader.LoadAsync(keys[i]);
+            }
+
+            return tasks;
         }
     }
 }
