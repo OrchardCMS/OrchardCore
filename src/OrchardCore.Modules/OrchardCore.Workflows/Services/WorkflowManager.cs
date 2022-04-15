@@ -165,7 +165,18 @@ namespace OrchardCore.Workflows.Services
                 var blockingActivities = haltedWorkflow.BlockingActivities.Where(x => x.Name == name).ToArray();
                 foreach (var blockingActivity in blockingActivities)
                 {
-                    await ResumeWorkflowAsync(haltedWorkflow, blockingActivity, input);
+                    var workflowContext = await ResumeWorkflowAsync(haltedWorkflow, blockingActivity, input);
+
+                    // Break if any of signal is executed when WaitAny
+                    var outboundTransition = workflowContext.GetOutboundTransitions(blockingActivity.ActivityId).FirstOrDefault();
+                    if (outboundTransition != null && workflowContext.Status != WorkflowStatus.Halted)
+                    {
+                        var nextActivity = workflowContext.GetActivity(outboundTransition.DestinationActivityId).Activity;
+                        if (nextActivity is JoinTask joinTask && joinTask.Mode == JoinTask.JoinMode.WaitAny)
+                        {
+                            break;
+                        }
+                    }
                 }
             }
 
