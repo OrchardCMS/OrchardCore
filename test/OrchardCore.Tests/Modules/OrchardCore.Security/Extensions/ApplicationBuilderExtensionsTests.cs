@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace OrchardCore.Security.Tests
+namespace OrchardCore.Security.Extensions.Tests
 {
     public class ApplicationBuilderExtensionsTests
     {

@@ -21,14 +21,14 @@ namespace OrchardCore.Security
             return this;
         }
 
-        public SecurityHeadersBuilder AddXFrameOptions(string option)
+        public SecurityHeadersBuilder AddFrameOptions(string option)
         {
             if (String.IsNullOrEmpty(option))
             {
                 throw new ArgumentException($"'{nameof(option)}' cannot be null or empty.", nameof(option));
             }
 
-            _settings.XFrameOptions = option;
+            _settings.FrameOptions = option;
 
             return this;
         }

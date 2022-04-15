@@ -5,7 +5,7 @@ using Xunit;
 
 namespace OrchardCore.Security.Tests
 {
-    public class XFrameOptionsMiddlewareTests
+    public class FrameOptionsMiddlewareTests
     {
         [Fact]
         public async Task AddXFrameOptionsHeader()
