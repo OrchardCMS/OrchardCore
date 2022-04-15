@@ -30,11 +30,12 @@ namespace OrchardCore.Security
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var securityHeadersOptions = serviceProvider.GetRequiredService<IOptions<SecuritySettings>>().Value;
+            var securityOptions = serviceProvider.GetRequiredService<IOptions<SecuritySettings>>().Value;
 
             builder.UseSecurityHeaders(config =>
             {
-                config.AddReferrerPolicy(securityHeadersOptions.ReferrerPolicy);
+                config.AddReferrerPolicy(securityOptions.ReferrerPolicy);
+                config.AddXFrameOptions(securityOptions.XFrameOptions);
             });
         }
     }

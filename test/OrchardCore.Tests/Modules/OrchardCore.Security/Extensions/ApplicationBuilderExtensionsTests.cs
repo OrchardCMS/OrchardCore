@@ -8,7 +8,7 @@ namespace OrchardCore.Security.Tests
 {
     public class ApplicationBuilderExtensionsTests
     {
-        public static IEnumerable<object[]> Policies =>
+        public static IEnumerable<object[]> ReferrerPolicies =>
             new List<object[]>
             {
                 new object[] { ReferrerPolicyOptions.NoReferrer },
@@ -21,8 +21,15 @@ namespace OrchardCore.Security.Tests
                 new object[] { ReferrerPolicyOptions.UnsafeUrl }
             };
 
+        public static IEnumerable<object[]> FrameOptions =>
+            new List<object[]>
+            {
+                new object[] { Security.FrameOptions.Deny },
+                new object[] { Security.FrameOptions.SameOrigin }
+            };
+
         [Theory]
-        [MemberData(nameof(Policies))]
+        [MemberData(nameof(ReferrerPolicies))]
         public void UseReferrerPolicy_ShouldAddReferrerPolicyHeaderWithProperValue(string policy)
         {
             // Arrange
@@ -39,6 +46,26 @@ namespace OrchardCore.Security.Tests
             // Assert
             Assert.True(context.Response.Headers.ContainsKey(SecurityHeaderNames.ReferrerPolicy));
             Assert.Equal(policy, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
+        }
+
+        [Theory]
+        [MemberData(nameof(FrameOptions))]
+        public void UseFrameOptions_ShouldAddXFrameOptionsHeaderWithProperValue(string option)
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            var applicationBuilder = CreateApplicationBuilder();
+
+            // Act
+            applicationBuilder.UseFrameOptions(option);
+
+            applicationBuilder
+                .Build()
+                .Invoke(context);
+
+            // Assert
+            Assert.True(context.Response.Headers.ContainsKey(SecurityHeaderNames.XFrameOptions));
+            Assert.Equal(option, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
         }
 
         [Fact]

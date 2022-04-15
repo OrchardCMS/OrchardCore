@@ -21,6 +21,21 @@ namespace Microsoft.AspNetCore.Builder
             return app.UseMiddleware<ReferrerPolicyMiddleware>(policyOption);
         }
 
+        public static IApplicationBuilder UseFrameOptions(this IApplicationBuilder app, string option)
+        {
+            if (app is null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
+            if (String.IsNullOrEmpty(option))
+            {
+                throw new ArgumentException($"'{nameof(option)}' cannot be null or empty.", nameof(option));
+            }
+
+            return app.UseMiddleware<FrameOptionsMiddleware>(option);
+        }
+
         public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app)
         {
             if (app is null)
@@ -50,7 +65,10 @@ namespace Microsoft.AspNetCore.Builder
 
             settings = builder.Build();
 
-            return app.UseReferrerPolicy(settings.ReferrerPolicy);
+            app.UseReferrerPolicy(settings.ReferrerPolicy);
+            app.UseFrameOptions(settings.XFrameOptions);
+
+            return app;
         }
     }
 }
