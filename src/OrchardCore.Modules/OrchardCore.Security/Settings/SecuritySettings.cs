@@ -4,6 +4,6 @@ namespace OrchardCore.Security
     {
         public string ReferrerPolicy { get; set; } = SecurityHeaderDefaults.ReferrerPolicy;
 
-        public string XFrameOptions { get; set; } = SecurityHeaderDefaults.FrameOptions;
+        public string FrameOptions { get; set; } = SecurityHeaderDefaults.FrameOptions;
     }
 }

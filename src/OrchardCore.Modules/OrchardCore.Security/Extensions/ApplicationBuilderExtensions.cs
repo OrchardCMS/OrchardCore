@@ -66,7 +66,7 @@ namespace Microsoft.AspNetCore.Builder
             settings = builder.Build();
 
             app.UseReferrerPolicy(settings.ReferrerPolicy);
-            app.UseFrameOptions(settings.XFrameOptions);
+            app.UseFrameOptions(settings.FrameOptions);
 
             return app;
         }
