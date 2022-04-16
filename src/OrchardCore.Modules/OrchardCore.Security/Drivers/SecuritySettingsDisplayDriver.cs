@@ -44,7 +44,7 @@ namespace OrchardCore.Security.Drivers
             return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {
                 model.ReferrerPolicy = settings.ReferrerPolicy;
-                model.XFrameOptions = settings.FrameOptions;
+                model.FrameOptions = settings.FrameOptions;
                 model.PermissionsPolicy = settings.PermissionsPolicy;
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
@@ -65,7 +65,7 @@ namespace OrchardCore.Security.Drivers
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 section.ReferrerPolicy = model.ReferrerPolicy;
-                section.FrameOptions = model.XFrameOptions;
+                section.FrameOptions = model.FrameOptions;
                 section.PermissionsPolicy = model.PermissionsPolicy;
 
                 if (context.Updater.ModelState.IsValid)

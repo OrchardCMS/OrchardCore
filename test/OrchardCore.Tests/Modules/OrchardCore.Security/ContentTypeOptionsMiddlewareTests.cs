@@ -5,21 +5,21 @@ using Xunit;
 
 namespace OrchardCore.Security.Tests
 {
-    public class FrameOptionsMiddlewareTests
+    public class ContentTypeOptionsMiddlewareTests
     {
         [Fact]
-        public async Task AddFrameOptionsHeader()
+        public async Task AddContentTypeOptionsHeader()
         {
             // Arrange
-            var middleware = new FrameOptionsMiddleware(FrameOptions.SameOrigin, request);
+            var middleware = new ContentTypeOptionsMiddleware(ContentTypeOptions.NoSniff, request);
             var context = new DefaultHttpContext();
 
             // Act
             await middleware.Invoke(context);
 
             // Assert
-            Assert.True(context.Response.Headers.ContainsKey(SecurityHeaderNames.XFrameOptions));
-            Assert.Equal(FrameOptions.SameOrigin, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
+            Assert.True(context.Response.Headers.ContainsKey(SecurityHeaderNames.XContentTypeOptions));
+            Assert.Equal(ContentTypeOptions.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
 
             static Task request(HttpContext context) => Task.CompletedTask;
         }

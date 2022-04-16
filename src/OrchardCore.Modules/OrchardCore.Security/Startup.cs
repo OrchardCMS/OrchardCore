@@ -35,9 +35,10 @@ namespace OrchardCore.Security
             builder.UseSecurityHeaders(config =>
             {
                 config
-                    .AddReferrerPolicy(securityOptions.ReferrerPolicy)
+                    .AddContentTypeOptions(securityOptions.ContentTypeOptions)
                     .AddFrameOptions(securityOptions.FrameOptions)
-                    .AddPermissionsPolicy(securityOptions.PermissionsPolicy);
+                    .AddPermissionsPolicy(securityOptions.PermissionsPolicy)
+                    .AddReferrerPolicy(securityOptions.ReferrerPolicy);
             });
         }
     }

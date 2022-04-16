@@ -11,14 +11,14 @@ namespace OrchardCore.Security
         public SecurityHeadersBuilder(SecuritySettings settings)
             => _settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
-        public SecurityHeadersBuilder AddReferrerPolicy(string policyOption)
+        public SecurityHeadersBuilder AddContentTypeOptions(string option)
         {
-            if (String.IsNullOrEmpty(policyOption))
+            if (String.IsNullOrEmpty(option))
             {
-                throw new ArgumentException($"'{nameof(policyOption)}' cannot be null or empty.", nameof(policyOption));
+                throw new ArgumentException($"'{nameof(option)}' cannot be null or empty.", nameof(option));
             }
 
-            _settings.ReferrerPolicy = policyOption;
+            _settings.ContentTypeOptions = option;
 
             return this;
         }
@@ -43,6 +43,18 @@ namespace OrchardCore.Security
             }
 
             _settings.PermissionsPolicy = policyOptions.ToList();
+
+            return this;
+        }
+
+        public SecurityHeadersBuilder AddReferrerPolicy(string policyOption)
+        {
+            if (String.IsNullOrEmpty(policyOption))
+            {
+                throw new ArgumentException($"'{nameof(policyOption)}' cannot be null or empty.", nameof(policyOption));
+            }
+
+            _settings.ReferrerPolicy = policyOption;
 
             return this;
         }

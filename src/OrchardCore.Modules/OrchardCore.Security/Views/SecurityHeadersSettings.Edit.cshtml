@@ -6,48 +6,17 @@
     @T["The current tenant will be reloaded when the settings are saved."]
 </p>
 
-<div class="form-group" asp-validation-class-for="ReferrerPolicy">
-    <label asp-for="ReferrerPolicy">@T["Referrer Policy"]</label>
-    <select asp-for="ReferrerPolicy" class="form-control">
-        <option value="@ReferrerPolicyOptions.NoReferrer" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.NoReferrer)">
-            @T["No referrer"]
-        </option>
-        <option value="@ReferrerPolicyOptions.NoReferrerWhenDowngrade" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.NoReferrerWhenDowngrade)">
-            @T["No referrer when downgrade"]
-        </option>
-        <option value="@ReferrerPolicyOptions.Origin" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.Origin)">
-            @T["Origin"]
-        </option>
-        <option value="@ReferrerPolicyOptions.OriginWhenCrossOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.OriginWhenCrossOrigin)">
-            @T["Origin when cross origin"]
-        </option>
-        <option value="@ReferrerPolicyOptions.SameOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.SameOrigin)">
-            @T["Same origin"]
-        </option>
-        <option value="@ReferrerPolicyOptions.StrictOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.StrictOrigin)">
-            @T["Strict origin"]
-        </option>
-        <option value="@ReferrerPolicyOptions.StrictOriginWhenCrossOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.StrictOriginWhenCrossOrigin)">
-            @T["Strict origin when cross origin"]
-        </option>
-        <option value="@ReferrerPolicyOptions.UnsafeUrl" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.UnsafeUrl)">
-            @T["Unsafe URL"]
-        </option>
-    </select>
-    <span asp-validation-for="ReferrerPolicy"></span>
-    <span class="hint">@T["Controls how much referrer information (sent with the Referer header) should be included with requests."]</span>
-</div>
-<div class="form-group" asp-validation-class-for="XFrameOptions">
-    <label asp-for="XFrameOptions">@T["Frame Options"]</label>
-    <select asp-for="XFrameOptions" class="form-control">
-        <option value="@FrameOptions.Deny" selected="@(Model.XFrameOptions == FrameOptions.Deny)">
+<div class="form-group" asp-validation-class-for="FrameOptions">
+    <label asp-for="FrameOptions">@T["Frame Options"]</label>
+    <select asp-for="FrameOptions" class="form-control">
+        <option value="@FrameOptions.Deny" selected="@(Model.FrameOptions == FrameOptions.Deny)">
             @T["Deny"]
         </option>
-        <option value="@FrameOptions.SameOrigin" selected="@(Model.XFrameOptions == FrameOptions.SameOrigin)">
+        <option value="@FrameOptions.SameOrigin" selected="@(Model.FrameOptions == FrameOptions.SameOrigin)">
             @T["Same origin"]
         </option>
     </select>
-    <span asp-validation-for="XFrameOptions"></span>
+    <span asp-validation-for="FrameOptions"></span>
     <span class="hint">@T["Indicate whether or not a browser should be allowed to render a page in a &lt;frame&gt;, &lt;iframe&gt;, &lt;embed&gt; or &lt;object&gt;."]</span>
 </div>
 <div class="form-group" asp-validation-class-for="PermissionsPolicy">
@@ -110,4 +79,35 @@
     </select>
     <span asp-validation-for="PermissionsPolicy"></span>
     <span class="hint">@T["Communicates the permissions policy that should be enforced by the client."]</span>
+</div>
+<div class="form-group" asp-validation-class-for="ReferrerPolicy">
+    <label asp-for="ReferrerPolicy">@T["Referrer Policy"]</label>
+    <select asp-for="ReferrerPolicy" class="form-control">
+        <option value="@ReferrerPolicyOptions.NoReferrer" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.NoReferrer)">
+            @T["No referrer"]
+        </option>
+        <option value="@ReferrerPolicyOptions.NoReferrerWhenDowngrade" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.NoReferrerWhenDowngrade)">
+            @T["No referrer when downgrade"]
+        </option>
+        <option value="@ReferrerPolicyOptions.Origin" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.Origin)">
+            @T["Origin"]
+        </option>
+        <option value="@ReferrerPolicyOptions.OriginWhenCrossOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.OriginWhenCrossOrigin)">
+            @T["Origin when cross origin"]
+        </option>
+        <option value="@ReferrerPolicyOptions.SameOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.SameOrigin)">
+            @T["Same origin"]
+        </option>
+        <option value="@ReferrerPolicyOptions.StrictOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.StrictOrigin)">
+            @T["Strict origin"]
+        </option>
+        <option value="@ReferrerPolicyOptions.StrictOriginWhenCrossOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.StrictOriginWhenCrossOrigin)">
+            @T["Strict origin when cross origin"]
+        </option>
+        <option value="@ReferrerPolicyOptions.UnsafeUrl" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.UnsafeUrl)">
+            @T["Unsafe URL"]
+        </option>
+    </select>
+    <span asp-validation-for="ReferrerPolicy"></span>
+    <span class="hint">@T["Controls how much referrer information (sent with the Referer header) should be included with requests."]</span>
 </div>

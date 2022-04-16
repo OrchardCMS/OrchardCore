@@ -6,7 +6,7 @@ namespace OrchardCore.Security.ViewModels
     {
         public string ReferrerPolicy { get; set; }
 
-        public string XFrameOptions { get; set; }
+        public string FrameOptions { get; set; }
 
         public IList<string> PermissionsPolicy { get; set; }
     }
