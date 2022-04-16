@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -44,6 +45,7 @@ namespace OrchardCore.Security.Drivers
             {
                 model.ReferrerPolicy = settings.ReferrerPolicy;
                 model.XFrameOptions = settings.FrameOptions;
+                model.PermissionsPolicy = settings.PermissionsPolicy;
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -64,6 +66,7 @@ namespace OrchardCore.Security.Drivers
 
                 section.ReferrerPolicy = model.ReferrerPolicy;
                 section.FrameOptions = model.XFrameOptions;
+                section.PermissionsPolicy = model.PermissionsPolicy;
 
                 if (context.Updater.ModelState.IsValid)
                 {

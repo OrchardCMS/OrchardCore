@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OrchardCore.Security
 {
@@ -29,6 +31,30 @@ namespace OrchardCore.Security
             }
 
             _settings.FrameOptions = option;
+
+            return this;
+        }
+
+        public SecurityHeadersBuilder AddPermissionsPolicy(IEnumerable<string> policyOptions)
+        {
+            if (policyOptions is null)
+            {
+                throw new ArgumentNullException(nameof(policyOptions));
+            }
+
+            _settings.PermissionsPolicy = policyOptions.ToList();
+
+            return this;
+        }
+
+        internal SecurityHeadersBuilder AddPermissionsPolicy(string policyOption)
+        {
+            if (String.IsNullOrEmpty(policyOption))
+            {
+                throw new ArgumentException($"'{nameof(policyOption)}' cannot be null or empty.", nameof(policyOption));
+            }
+
+            _settings.PermissionsPolicy.Add(policyOption);
 
             return this;
         }

@@ -4,6 +4,8 @@ namespace OrchardCore.Security
     {
         public static readonly string ReferrerPolicy = "Referrer-Policy";
 
+        public static readonly string PermissionsPolicy = "Permissions-Policy";
+
         public static readonly string XFrameOptions = "XFrame-Options";
     }
 }

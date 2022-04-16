@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace OrchardCore.Security
 {
     public static class SecurityHeaderDefaults
@@ -6,5 +8,7 @@ namespace OrchardCore.Security
         public static readonly string ReferrerPolicy = ReferrerPolicyOptions.NoReferrer;
 
         public static readonly string FrameOptions = Security.FrameOptions.SameOrigin;
+
+        public static readonly IList<string> PermissionsPolicy = new List<string>();
     }
 }

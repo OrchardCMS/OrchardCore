@@ -37,6 +37,7 @@ namespace Microsoft.AspNetCore.Builder
 
             app.UseMiddleware<ReferrerPolicyMiddleware>(settings.ReferrerPolicy);
             app.UseMiddleware<FrameOptionsMiddleware>(settings.FrameOptions);
+            app.UseMiddleware<PermissionsPolicyMiddleware>(settings.PermissionsPolicy);
 
             return app;
         }

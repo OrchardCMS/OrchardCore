@@ -38,7 +38,8 @@ namespace OrchardCore.Security.Extensions.Tests
             {
                 config
                     .AddReferrerPolicy(ReferrerPolicyOptions.Origin)
-                    .AddFrameOptions(FrameOptions.Deny);
+                    .AddFrameOptions(FrameOptions.Deny)
+                    .AddPermissionsPolicy(new[] { PermissionsPolicyOptions.Camera, PermissionsPolicyOptions.Microphone });
             });
 
             applicationBuilder
@@ -46,8 +47,12 @@ namespace OrchardCore.Security.Extensions.Tests
                 .Invoke(context);
 
             // Assert
+            var permissionsPolicy = context.Response.Headers[SecurityHeaderNames.PermissionsPolicy].ToString();
+
             Assert.Equal(ReferrerPolicyOptions.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
             Assert.Equal(FrameOptions.Deny, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
+            Assert.True(permissionsPolicy.IndexOf(PermissionsPolicyOptions.Camera) > -1);
+            Assert.True(permissionsPolicy.IndexOf(PermissionsPolicyOptions.Microphone) > -1);
         }
 
         private static IApplicationBuilder CreateApplicationBuilder()

@@ -50,3 +50,64 @@
     <span asp-validation-for="XFrameOptions"></span>
     <span class="hint">@T["Indicate whether or not a browser should be allowed to render a page in a &lt;frame&gt;, &lt;iframe&gt;, &lt;embed&gt; or &lt;object&gt;."]</span>
 </div>
+<div class="form-group" asp-validation-class-for="PermissionsPolicy">
+    <label asp-for="PermissionsPolicy">@T["Permissions Policy"]</label>
+    <select asp-for="PermissionsPolicy" class="form-control" multiple>
+        <option value="@PermissionsPolicyOptions.Accelerometer" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Accelerometer))">
+            @T["Accelerometer"]
+        </option>
+        <option value="@PermissionsPolicyOptions.AmbientLightSensor" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.AmbientLightSensor))">
+            @T["Ambient Light Sensor"]
+        </option>
+        <option value="@PermissionsPolicyOptions.Autoplay" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Autoplay))">
+            @T["Autoplay"]
+        </option>
+        <option value="@PermissionsPolicyOptions.Camera" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Camera))">
+            @T["Camera"]
+        </option>
+        <option value="@PermissionsPolicyOptions.EncryptedMedia" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.EncryptedMedia))">
+            @T["Encrypted Media"]
+        </option>
+        <option value="@PermissionsPolicyOptions.FederatedLearningOfCohortsCalculation" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.FederatedLearningOfCohortsCalculation))">
+            @T["Federated Learning of Cohorts Calculation"]
+        </option>
+        <option value="@PermissionsPolicyOptions.FullScreen" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.FullScreen))">
+            @T["Full Screen"]
+        </option>
+        <option value="@PermissionsPolicyOptions.Geolocation" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Geolocation))">
+            @T["Geolocation"]
+        </option>
+        <option value="@PermissionsPolicyOptions.Gyroscope" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Gyroscope))">
+            @T["Gyroscope"]
+        </option>
+        <option value="@PermissionsPolicyOptions.Magnetometer" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Magnetometer))">
+            @T["Magnetometer"]
+        </option>
+        <option value="@PermissionsPolicyOptions.Microphone" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Microphone))">
+            @T["Microphone"]
+        </option>
+        <option value="@PermissionsPolicyOptions.Midi" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Midi))">
+            @T["Midi"]
+        </option>
+        <option value="@PermissionsPolicyOptions.Payment" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Payment))">
+            @T["Payment"]
+        </option>
+        <option value="@PermissionsPolicyOptions.PictureInPicture" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.PictureInPicture))">
+            @T["Picture in Picture"]
+        </option>
+        <option value="@PermissionsPolicyOptions.Speaker" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Speaker))">
+            @T["Speaker"]
+        </option>
+        <option value="@PermissionsPolicyOptions.SynchronousXhr" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.SynchronousXhr))">
+            @T["Synchronous XMLHttpRequest"]
+        </option>
+        <option value="@PermissionsPolicyOptions.Usb" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Usb))">
+            @T["USB"]
+        </option>
+        <option value="@PermissionsPolicyOptions.VR" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.VR))">
+            @T["VR"]
+        </option>
+    </select>
+    <span asp-validation-for="PermissionsPolicy"></span>
+    <span class="hint">@T["Communicates the permissions policy that should be enforced by the client."]</span>
+</div>

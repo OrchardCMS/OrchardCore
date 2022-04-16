@@ -39,6 +39,25 @@ namespace OrchardCore.Security.Extensions.Tests
         }
 
         [Fact]
+        public void AddPermissionsPolicyWithFluentAPIsConfiguration()
+        {
+            // Arrange
+            var settings = new SecuritySettings();
+            var builder = new SecurityHeadersBuilder(settings);
+
+            // Act
+            builder
+                .AddPermissionsPolicy()
+                .WithCamera()
+                .WithMicrophone();
+
+            // Assert
+            Assert.NotNull(settings);
+            Assert.Contains(PermissionsPolicyOptions.Camera, settings.PermissionsPolicy);
+            Assert.Contains(PermissionsPolicyOptions.Microphone, settings.PermissionsPolicy);
+        }
+
+        [Fact]
         public void AddSecurityHeadersWithFluentAPIsConfiguration()
         {
             // Arrange
@@ -50,12 +69,17 @@ namespace OrchardCore.Security.Extensions.Tests
                 .AddReferrerPolicy()
                     .WithSameOrigin()
                 .AddFrameOptions()
-                    .WithSameOrigin();
+                    .WithSameOrigin()
+                .AddPermissionsPolicy()
+                    .WithCamera()
+                    .WithMicrophone();
 
             // Assert
             Assert.NotNull(settings);
             Assert.Equal(ReferrerPolicyOptions.SameOrigin, settings.ReferrerPolicy);
             Assert.Equal(FrameOptions.SameOrigin, settings.FrameOptions);
+            Assert.Contains(PermissionsPolicyOptions.Camera, settings.PermissionsPolicy);
+            Assert.Contains(PermissionsPolicyOptions.Microphone, settings.PermissionsPolicy);
         }
     }
 }
