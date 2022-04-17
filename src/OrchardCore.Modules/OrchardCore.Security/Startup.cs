@@ -61,7 +61,8 @@ namespace OrchardCore.Security
                 {
                     Values = securityOptions.PermissionsPolicy
                         .Select(p => new PermissionsPolicyValue(p))
-                        .ToList()
+                        .ToList(),
+                    Origin = new PermissionsPolicyOriginValue(securityOptions.PermissionsPolicyOrigin)
                 });
             }
 

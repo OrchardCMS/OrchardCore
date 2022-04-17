@@ -93,6 +93,18 @@
     <span asp-validation-for="PermissionsPolicy"></span>
     <span class="hint">@T["Communicates the permissions policy that should be enforced by the client."]</span>
 </div>
+<div class="form-group" asp-validation-class-for="PermissionsPolicyOrigin">
+    <label asp-for="PermissionsPolicyOrigin">@T["Permissions Policy Origin"]</label>
+    <select asp-for="PermissionsPolicyOrigin" class="form-control">
+        <option value="@PermissionsPolicyOriginValue.Any" selected="@(Model.PermissionsPolicyOrigin == PermissionsPolicyOriginValue.Any)">
+            @T["Any"]
+        </option>
+        <option value="@PermissionsPolicyOriginValue.Self" selected="@(Model.PermissionsPolicyOrigin == PermissionsPolicyOriginValue.Self)">
+            @T["Self"]
+        </option>
+    </select>
+    <span asp-validation-for="PermissionsPolicyOrigin"></span>
+</div>
 <div class="form-group" asp-validation-class-for="ReferrerPolicy">
     <label asp-for="ReferrerPolicy">@T["Referrer Policy"]</label>
     <select asp-for="ReferrerPolicy" class="form-control">

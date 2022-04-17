@@ -50,6 +50,7 @@ namespace OrchardCore.Security.Drivers
                 model.AllowSniffing = settings.ContentTypeOptions != ContentTypeOptionsValue.NoSniff;
                 model.FrameOptions = settings.FrameOptions;
                 model.PermissionsPolicy = settings.PermissionsPolicy;
+                model.PermissionsPolicyOrigin = settings.PermissionsPolicyOrigin;
                 model.ReferrerPolicy = settings.ReferrerPolicy;
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
@@ -74,6 +75,7 @@ namespace OrchardCore.Security.Drivers
                     : ContentTypeOptionsValue.NoSniff;
                 section.FrameOptions = model.FrameOptions;
                 section.PermissionsPolicy = model.PermissionsPolicy ?? _defaultPermissionsPolicy;
+                section.PermissionsPolicyOrigin = model.PermissionsPolicyOrigin;
                 section.ReferrerPolicy = model.ReferrerPolicy;
 
                 if (context.Updater.ModelState.IsValid)

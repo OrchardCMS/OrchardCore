@@ -10,9 +10,10 @@ namespace OrchardCore.Security
 
         public ICollection<PermissionsPolicyValue> Values { get; set; }
 
-        // TODO: Implement various options: none, self and allowed origins (if there are supported)
+        public PermissionsPolicyOriginValue Origin { get; set; } = PermissionsPolicyOriginValue.Self;
+
         public override string ToString() => Values.Count == 0
             ? String.Empty
-            : String.Join(',', Values.Select(v => v + "=*"));
+            : String.Join(',', Values.Select(v => $"{v}={Origin}"));
     }
 }
