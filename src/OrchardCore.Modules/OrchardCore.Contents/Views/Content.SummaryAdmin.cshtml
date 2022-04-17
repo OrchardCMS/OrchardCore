@@ -12,7 +12,7 @@
         queryString = queryString.Add(new QueryString($"?Options.SelectedContentType={contentItem.ContentType}"));
     }
 
-    var fullRequestPath = Context.Request.PathBase + Context.Request.Path + queryString;
+    var contentTypeFullRequestPath = Context.Request.PathBase + Context.Request.Path + queryString;
 }
 
 <div class="row">
@@ -41,7 +41,7 @@
                 }
             </div>
             <div class="contenttype mr-1">
-                <span class="badge ta-badge font-weight-normal"><i class="far fa-file-alt text-secondary" aria-hidden="true"></i> <a href="@fullRequestPath" data-toggle="tooltip" title="@T["Content type"]">@contentItem.ContentType</a></span>
+                <span class="badge ta-badge font-weight-normal"><i class="far fa-file-alt text-secondary" aria-hidden="true"></i> <a href="@contentTypeFullRequestPath" data-toggle="tooltip" title="@T["Content type"]">@contentItem.ContentType</a></span>
             </div>
             @if (Model.Header != null)
             {
