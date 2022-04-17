@@ -1,8 +1,18 @@
 @using OrchardCore.Contents
 @using OrchardCore.ContentManagement
+@using Microsoft.AspNetCore.Http
 @inject IAuthorizationService AuthorizationService
+
 @{
     ContentItem contentItem = Model.ContentItem;
+
+    var queryString = Context.Request.QueryString;
+    if (!Context.Request.Query.ContainsKey("Options.SelectedContentType"))
+    {
+        queryString = queryString.Add(new QueryString($"?Options.SelectedContentType={contentItem.ContentType}"));
+    }
+
+    var fullRequestPath = Context.Request.PathBase + Context.Request.Path + queryString;
 }
 
 <div class="row">
@@ -23,7 +33,7 @@
             <div class="contentitem mr-2">
                 @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
                 {
-                    <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath"/>
+                    <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" />
                 }
                 else
                 {
@@ -31,7 +41,7 @@
                 }
             </div>
             <div class="contenttype mr-1">
-                <span class="badge ta-badge font-weight-normal"><i class="far fa-file-alt text-secondary" aria-hidden="true"></i> <a href="@(FullRequestPath)&Options.SelectedContentType=@contentItem.ContentType" data-toggle="tooltip" title="@T["Content type"]">@contentItem.ContentType</a></span>
+                <span class="badge ta-badge font-weight-normal"><i class="far fa-file-alt text-secondary" aria-hidden="true"></i> <a href="@fullRequestPath" data-toggle="tooltip" title="@T["Content type"]">@contentItem.ContentType</a></span>
             </div>
             @if (Model.Header != null)
             {
