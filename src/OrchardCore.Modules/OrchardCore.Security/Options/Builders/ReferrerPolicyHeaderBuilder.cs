@@ -10,27 +10,27 @@ namespace OrchardCore.Security
         }
 
         public SecurityHeadersBuilder WithNoReferrer()
-            => _securityHeadersBuilder.AddReferrerPolicy(ReferrerPolicyOptions.NoReferrer);
+            => _securityHeadersBuilder.AddReferrerPolicy(ReferrerPolicyValue.NoReferrer);
 
         public SecurityHeadersBuilder WithNoReferrerWhenDowngrade()
-            => _securityHeadersBuilder.AddReferrerPolicy(ReferrerPolicyOptions.NoReferrerWhenDowngrade);
+            => _securityHeadersBuilder.AddReferrerPolicy(ReferrerPolicyValue.NoReferrerWhenDowngrade);
 
         public SecurityHeadersBuilder WithOrigin()
-            => _securityHeadersBuilder.AddReferrerPolicy(ReferrerPolicyOptions.Origin);
+            => _securityHeadersBuilder.AddReferrerPolicy(ReferrerPolicyValue.Origin);
 
         public SecurityHeadersBuilder WithOriginWhenCrossOrigin()
-            => _securityHeadersBuilder.AddReferrerPolicy(ReferrerPolicyOptions.OriginWhenCrossOrigin);
+            => _securityHeadersBuilder.AddReferrerPolicy(ReferrerPolicyValue.OriginWhenCrossOrigin);
 
         public SecurityHeadersBuilder WithSameOrigin()
-            => _securityHeadersBuilder.AddReferrerPolicy(ReferrerPolicyOptions.SameOrigin);
+            => _securityHeadersBuilder.AddReferrerPolicy(ReferrerPolicyValue.SameOrigin);
 
         public SecurityHeadersBuilder WithStrictOrigin()
-            => _securityHeadersBuilder.AddReferrerPolicy(ReferrerPolicyOptions.StrictOrigin);
+            => _securityHeadersBuilder.AddReferrerPolicy(ReferrerPolicyValue.StrictOrigin);
 
         public SecurityHeadersBuilder WithStrictOriginWhenCrossOrigin()
-            => _securityHeadersBuilder.AddReferrerPolicy(ReferrerPolicyOptions.StrictOriginWhenCrossOrigin);
+            => _securityHeadersBuilder.AddReferrerPolicy(ReferrerPolicyValue.StrictOriginWhenCrossOrigin);
 
         public SecurityHeadersBuilder WithUnsafeUrl()
-            => _securityHeadersBuilder.AddReferrerPolicy(ReferrerPolicyOptions.UnsafeUrl);
+            => _securityHeadersBuilder.AddReferrerPolicy(ReferrerPolicyValue.UnsafeUrl);
     }
 }

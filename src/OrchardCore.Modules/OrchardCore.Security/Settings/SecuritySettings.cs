@@ -8,7 +8,7 @@ namespace OrchardCore.Security
 
         public string FrameOptions { get; set; } = SecurityHeaderDefaults.FrameOptions;
 
-        public IList<string> PermissionsPolicy { get; set; } = SecurityHeaderDefaults.PermissionsPolicy;
+        public ICollection<string> PermissionsPolicy { get; set; } = SecurityHeaderDefaults.PermissionsPolicy;
 
         public string ReferrerPolicy { get; set; } = SecurityHeaderDefaults.ReferrerPolicy;
     }

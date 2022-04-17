@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using OrchardCore.Security.Middlewares;
 using Xunit;
 
@@ -7,11 +9,20 @@ namespace OrchardCore.Security.Tests
 {
     public class FrameOptionsMiddlewareTests
     {
-        [Fact]
-        public async Task AddFrameOptionsHeader()
+        public static IEnumerable<object[]> FrameOptions =>
+            new List<object[]>
+            {
+                new object[] { FrameOptionsValue.Deny, "DENY" },
+                new object[] { FrameOptionsValue.SameOrigin, "SAMEORIGIN" }
+            };
+
+        [Theory]
+        [MemberData(nameof(FrameOptions))]
+        public async Task AddFrameOptionsHeader(FrameOptionsValue value, string expectedValue)
         {
             // Arrange
-            var middleware = new FrameOptionsMiddleware(FrameOptions.SameOrigin, request);
+            var options = Options.Create(new FrameOptionsOptions { Value = value });
+            var middleware = new FrameOptionsMiddleware(options, request);
             var context = new DefaultHttpContext();
 
             // Act
@@ -19,7 +30,7 @@ namespace OrchardCore.Security.Tests
 
             // Assert
             Assert.True(context.Response.Headers.ContainsKey(SecurityHeaderNames.XFrameOptions));
-            Assert.Equal(FrameOptions.SameOrigin, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
+            Assert.Equal(expectedValue, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
 
             static Task request(HttpContext context) => Task.CompletedTask;
         }

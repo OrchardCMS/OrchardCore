@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,13 +33,41 @@ namespace OrchardCore.Security
         {
             var securityOptions = serviceProvider.GetRequiredService<IOptions<SecuritySettings>>().Value;
 
-            builder.UseSecurityHeaders(config =>
+            //builder.UseSecurityHeaders(config =>
+            //{
+            //    config
+            //        .AddContentTypeOptions(securityOptions.ContentTypeOptions)
+            //        .AddFrameOptions(securityOptions.FrameOptions)
+            //        .AddPermissionsPolicy(securityOptions.PermissionsPolicy)
+            //        .AddReferrerPolicy(securityOptions.ReferrerPolicy);
+            //});
+
+            builder.UseContentTypeOptions(new ContentTypeOptionsOptions
             {
-                config
-                    .AddContentTypeOptions(securityOptions.ContentTypeOptions)
-                    .AddFrameOptions(securityOptions.FrameOptions)
-                    .AddPermissionsPolicy(securityOptions.PermissionsPolicy)
-                    .AddReferrerPolicy(securityOptions.ReferrerPolicy);
+                AllowSniffing = securityOptions.ContentTypeOptions != ContentTypeOptionsValue.NoSniff
+            });
+            builder.UseFrameOptions(new FrameOptionsOptions
+            {
+                Value = new FrameOptionsValue(securityOptions.FrameOptions)
+            });
+
+            if (securityOptions.PermissionsPolicy.Count == 0)
+            {
+                builder.UsePermissionsPolicy();
+            }
+            else
+            {
+                builder.UsePermissionsPolicy(new PermissionsPolicyOptions
+                {
+                    Values = securityOptions.PermissionsPolicy
+                        .Select(p => new PermissionsPolicyValue(p))
+                        .ToList()
+                });
+            }
+
+            builder.UseReferrerPolicy(new ReferrerPolicyOptions
+            {
+                Value = new ReferrerPolicyValue(securityOptions.ReferrerPolicy)
             });
         }
     }

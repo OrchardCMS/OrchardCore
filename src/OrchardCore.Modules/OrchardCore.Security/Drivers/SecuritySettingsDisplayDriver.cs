@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +16,8 @@ namespace OrchardCore.Security.Drivers
     public class SecuritySettingsDisplayDriver : SectionDisplayDriver<ISite, SecuritySettings>
     {
         internal const string SettingsGroupId = "SecurityHeaders";
+
+        private static readonly IList<string> _defaultPermissionsPolicy = new List<string>();
 
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
@@ -43,9 +47,10 @@ namespace OrchardCore.Security.Drivers
 
             return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {
-                model.ReferrerPolicy = settings.ReferrerPolicy;
+                model.AllowSniffing = settings.ContentTypeOptions != ContentTypeOptionsValue.NoSniff;
                 model.FrameOptions = settings.FrameOptions;
                 model.PermissionsPolicy = settings.PermissionsPolicy;
+                model.ReferrerPolicy = settings.ReferrerPolicy;
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -64,9 +69,12 @@ namespace OrchardCore.Security.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                section.ReferrerPolicy = model.ReferrerPolicy;
+                section.ContentTypeOptions = model.AllowSniffing
+                    ? String.Empty
+                    : ContentTypeOptionsValue.NoSniff;
                 section.FrameOptions = model.FrameOptions;
-                section.PermissionsPolicy = model.PermissionsPolicy;
+                section.PermissionsPolicy = model.PermissionsPolicy ?? _defaultPermissionsPolicy;
+                section.ReferrerPolicy = model.ReferrerPolicy;
 
                 if (context.Updater.ModelState.IsValid)
                 {

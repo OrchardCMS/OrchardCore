@@ -18,7 +18,7 @@ namespace OrchardCore.Security.Extensions.Tests
 
             // Assert
             Assert.NotNull(settings);
-            Assert.Equal(ContentTypeOptions.NoSniff, settings.ContentTypeOptions);
+            Assert.Equal(ContentTypeOptionsValue.NoSniff, settings.ContentTypeOptions);
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace OrchardCore.Security.Extensions.Tests
 
             // Assert
             Assert.NotNull(settings);
-            Assert.Equal(FrameOptions.SameOrigin, settings.FrameOptions);
+            Assert.Equal(FrameOptionsValue.SameOrigin, settings.FrameOptions);
         }
 
         [Fact]
@@ -53,8 +53,8 @@ namespace OrchardCore.Security.Extensions.Tests
 
             // Assert
             Assert.NotNull(settings);
-            Assert.Contains(PermissionsPolicyOptions.Camera, settings.PermissionsPolicy);
-            Assert.Contains(PermissionsPolicyOptions.Microphone, settings.PermissionsPolicy);
+            Assert.Contains(PermissionsPolicyValue.Camera, settings.PermissionsPolicy);
+            Assert.Contains(PermissionsPolicyValue.Microphone, settings.PermissionsPolicy);
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace OrchardCore.Security.Extensions.Tests
 
             // Assert
             Assert.NotNull(settings);
-            Assert.Equal(ReferrerPolicyOptions.SameOrigin, settings.ReferrerPolicy);
+            Assert.Equal(ReferrerPolicyValue.SameOrigin, settings.ReferrerPolicy);
         }
 
         [Fact]
@@ -96,11 +96,11 @@ namespace OrchardCore.Security.Extensions.Tests
 
             // Assert
             Assert.NotNull(settings);
-            Assert.Equal(ContentTypeOptions.NoSniff, settings.ContentTypeOptions);
-            Assert.Equal(FrameOptions.SameOrigin, settings.FrameOptions);
-            Assert.Contains(PermissionsPolicyOptions.Camera, settings.PermissionsPolicy);
-            Assert.Contains(PermissionsPolicyOptions.Microphone, settings.PermissionsPolicy);
-            Assert.Equal(ReferrerPolicyOptions.SameOrigin, settings.ReferrerPolicy);
+            Assert.Equal(ContentTypeOptionsValue.NoSniff, settings.ContentTypeOptions);
+            Assert.Equal(FrameOptionsValue.SameOrigin, settings.FrameOptions);
+            Assert.Contains(PermissionsPolicyValue.Camera, settings.PermissionsPolicy);
+            Assert.Contains(PermissionsPolicyValue.Microphone, settings.PermissionsPolicy);
+            Assert.Equal(ReferrerPolicyValue.SameOrigin, settings.ReferrerPolicy);
         }
     }
 }

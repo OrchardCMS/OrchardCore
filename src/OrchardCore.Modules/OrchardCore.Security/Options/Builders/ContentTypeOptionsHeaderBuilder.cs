@@ -10,6 +10,6 @@ namespace OrchardCore.Security
         }
 
         public SecurityHeadersBuilder WithNoSniff()
-            => _securityHeadersBuilder.AddFrameOptions(ContentTypeOptions.NoSniff);
+            => _securityHeadersBuilder.AddFrameOptions(ContentTypeOptionsValue.NoSniff);
     }
 }

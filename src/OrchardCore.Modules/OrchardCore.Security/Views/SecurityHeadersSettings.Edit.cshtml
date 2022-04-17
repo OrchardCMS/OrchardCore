@@ -6,13 +6,20 @@
     @T["The current tenant will be reloaded when the settings are saved."]
 </p>
 
+<div class="form-group" asp-validation-class-for="AllowSniffing">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="AllowSniffing" />
+        <label class="custom-control-label" asp-for="AllowSniffing">@T["Allow Sniffing"]</label>
+        <span class="hint dashed">@T["Allow a request if the request destination is of type style and the MIME type is not text/css, or of type script and the MIME type is not a JavaScript MIME type."]</span>
+    </div>
+</div>
 <div class="form-group" asp-validation-class-for="FrameOptions">
     <label asp-for="FrameOptions">@T["Frame Options"]</label>
     <select asp-for="FrameOptions" class="form-control">
-        <option value="@FrameOptions.Deny" selected="@(Model.FrameOptions == FrameOptions.Deny)">
+        <option value="@FrameOptionsValue.Deny" selected="@(Model.FrameOptions == FrameOptionsValue.Deny)">
             @T["Deny"]
         </option>
-        <option value="@FrameOptions.SameOrigin" selected="@(Model.FrameOptions == FrameOptions.SameOrigin)">
+        <option value="@FrameOptionsValue.SameOrigin" selected="@(Model.FrameOptions == FrameOptionsValue.SameOrigin)">
             @T["Same origin"]
         </option>
     </select>
@@ -22,58 +29,64 @@
 <div class="form-group" asp-validation-class-for="PermissionsPolicy">
     <label asp-for="PermissionsPolicy">@T["Permissions Policy"]</label>
     <select asp-for="PermissionsPolicy" class="form-control" multiple>
-        <option value="@PermissionsPolicyOptions.Accelerometer" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Accelerometer))">
+        <option value="@PermissionsPolicyValue.Accelerometer" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Accelerometer))">
             @T["Accelerometer"]
         </option>
-        <option value="@PermissionsPolicyOptions.AmbientLightSensor" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.AmbientLightSensor))">
+        <option value="@PermissionsPolicyValue.AmbientLightSensor" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.AmbientLightSensor))">
             @T["Ambient Light Sensor"]
         </option>
-        <option value="@PermissionsPolicyOptions.Autoplay" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Autoplay))">
+        <option value="@PermissionsPolicyValue.Autoplay" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Autoplay))">
             @T["Autoplay"]
         </option>
-        <option value="@PermissionsPolicyOptions.Camera" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Camera))">
+        <option value="@PermissionsPolicyValue.Camera" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Camera))">
             @T["Camera"]
         </option>
-        <option value="@PermissionsPolicyOptions.EncryptedMedia" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.EncryptedMedia))">
+        <option value="@PermissionsPolicyValue.EncryptedMedia" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.EncryptedMedia))">
             @T["Encrypted Media"]
         </option>
-        <option value="@PermissionsPolicyOptions.FederatedLearningOfCohortsCalculation" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.FederatedLearningOfCohortsCalculation))">
-            @T["Federated Learning of Cohorts Calculation"]
-        </option>
-        <option value="@PermissionsPolicyOptions.FullScreen" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.FullScreen))">
+        <option value="@PermissionsPolicyValue.FullScreen" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.FullScreen))">
             @T["Full Screen"]
         </option>
-        <option value="@PermissionsPolicyOptions.Geolocation" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Geolocation))">
+        <option value="@PermissionsPolicyValue.Geolocation" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Geolocation))">
             @T["Geolocation"]
         </option>
-        <option value="@PermissionsPolicyOptions.Gyroscope" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Gyroscope))">
+        <option value="@PermissionsPolicyValue.Gyroscope" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Gyroscope))">
             @T["Gyroscope"]
         </option>
-        <option value="@PermissionsPolicyOptions.Magnetometer" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Magnetometer))">
+        <option value="@PermissionsPolicyValue.Magnetometer" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Magnetometer))">
             @T["Magnetometer"]
         </option>
-        <option value="@PermissionsPolicyOptions.Microphone" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Microphone))">
+        <option value="@PermissionsPolicyValue.Microphone" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Microphone))">
             @T["Microphone"]
         </option>
-        <option value="@PermissionsPolicyOptions.Midi" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Midi))">
+        <option value="@PermissionsPolicyValue.Midi" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Midi))">
             @T["Midi"]
         </option>
-        <option value="@PermissionsPolicyOptions.Payment" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Payment))">
+         <option value="@PermissionsPolicyValue.Notification" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Notification))">
+            @T["Notification"]
+        </option>
+        <option value="@PermissionsPolicyValue.Payment" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Payment))">
             @T["Payment"]
         </option>
-        <option value="@PermissionsPolicyOptions.PictureInPicture" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.PictureInPicture))">
+        <option value="@PermissionsPolicyValue.PictureInPicture" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.PictureInPicture))">
             @T["Picture in Picture"]
         </option>
-        <option value="@PermissionsPolicyOptions.Speaker" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Speaker))">
+        <option value="@PermissionsPolicyValue.Push" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Push))">
+            @T["Push"]
+        </option>
+        <option value="@PermissionsPolicyValue.Speaker" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Speaker))">
             @T["Speaker"]
         </option>
-        <option value="@PermissionsPolicyOptions.SynchronousXhr" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.SynchronousXhr))">
+        <option value="@PermissionsPolicyValue.SynchronousXhr" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.SynchronousXhr))">
             @T["Synchronous XMLHttpRequest"]
         </option>
-        <option value="@PermissionsPolicyOptions.Usb" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.Usb))">
+        <option value="@PermissionsPolicyValue.Usb" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Usb))">
             @T["USB"]
         </option>
-        <option value="@PermissionsPolicyOptions.VR" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyOptions.VR))">
+        <option value="@PermissionsPolicyValue.Vibrate" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Vibrate))">
+            @T["Vibrate"]
+        </option>
+        <option value="@PermissionsPolicyValue.VR" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.VR))">
             @T["VR"]
         </option>
     </select>
@@ -83,28 +96,28 @@
 <div class="form-group" asp-validation-class-for="ReferrerPolicy">
     <label asp-for="ReferrerPolicy">@T["Referrer Policy"]</label>
     <select asp-for="ReferrerPolicy" class="form-control">
-        <option value="@ReferrerPolicyOptions.NoReferrer" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.NoReferrer)">
+        <option value="@ReferrerPolicyValue.NoReferrer" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.NoReferrer)">
             @T["No referrer"]
         </option>
-        <option value="@ReferrerPolicyOptions.NoReferrerWhenDowngrade" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.NoReferrerWhenDowngrade)">
+        <option value="@ReferrerPolicyValue.NoReferrerWhenDowngrade" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.NoReferrerWhenDowngrade)">
             @T["No referrer when downgrade"]
         </option>
-        <option value="@ReferrerPolicyOptions.Origin" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.Origin)">
+        <option value="@ReferrerPolicyValue.Origin" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.Origin)">
             @T["Origin"]
         </option>
-        <option value="@ReferrerPolicyOptions.OriginWhenCrossOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.OriginWhenCrossOrigin)">
+        <option value="@ReferrerPolicyValue.OriginWhenCrossOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.OriginWhenCrossOrigin)">
             @T["Origin when cross origin"]
         </option>
-        <option value="@ReferrerPolicyOptions.SameOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.SameOrigin)">
+        <option value="@ReferrerPolicyValue.SameOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.SameOrigin)">
             @T["Same origin"]
         </option>
-        <option value="@ReferrerPolicyOptions.StrictOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.StrictOrigin)">
+        <option value="@ReferrerPolicyValue.StrictOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.StrictOrigin)">
             @T["Strict origin"]
         </option>
-        <option value="@ReferrerPolicyOptions.StrictOriginWhenCrossOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.StrictOriginWhenCrossOrigin)">
+        <option value="@ReferrerPolicyValue.StrictOriginWhenCrossOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.StrictOriginWhenCrossOrigin)">
             @T["Strict origin when cross origin"]
         </option>
-        <option value="@ReferrerPolicyOptions.UnsafeUrl" selected="@(Model.ReferrerPolicy == ReferrerPolicyOptions.UnsafeUrl)">
+        <option value="@ReferrerPolicyValue.UnsafeUrl" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.UnsafeUrl)">
             @T["Unsafe URL"]
         </option>
     </select>

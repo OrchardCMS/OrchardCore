@@ -10,9 +10,9 @@ namespace OrchardCore.Security
         }
 
         public SecurityHeadersBuilder WithDeny()
-            => _securityHeadersBuilder.AddFrameOptions(FrameOptions.Deny);
+            => _securityHeadersBuilder.AddFrameOptions(FrameOptionsValue.Deny);
 
         public SecurityHeadersBuilder WithSameOrigin()
-            => _securityHeadersBuilder.AddFrameOptions(FrameOptions.SameOrigin);
+            => _securityHeadersBuilder.AddFrameOptions(FrameOptionsValue.SameOrigin);
     }
 }
