@@ -17,7 +17,7 @@
         </option>
     </select>
     <span asp-validation-for="FrameOptions"></span>
-    <span class="hint">@T["Indicate whether or not a browser should be allowed to render a page in a &lt;frame&gt;, &lt;iframe&gt;, &lt;embed&gt; or &lt;object&gt;."]</span>
+    <span class="hint">@T["Tells the browser whether you want to allow your site to be framed or not."]</span>
 </div>
 <div class="form-group" asp-validation-class-for="PermissionsPolicy">
     <label asp-for="PermissionsPolicy">@T["Permissions Policy"]</label>
@@ -84,7 +84,7 @@
         </option>
     </select>
     <span asp-validation-for="PermissionsPolicy"></span>
-    <span class="hint">@T["Communicates the permissions policy that should be enforced by the client."]</span>
+    <span class="hint">@T["Allows a site to control which features and APIs can be used in the browser."]</span>
 </div>
 <div class="form-group" asp-validation-class-for="PermissionsPolicyOrigin">
     <label asp-for="PermissionsPolicyOrigin">@T["Permissions Policy Origin"]</label>
@@ -127,5 +127,5 @@
         </option>
     </select>
     <span asp-validation-for="ReferrerPolicy"></span>
-    <span class="hint">@T["Controls how much referrer information (sent with the Referer header) should be included with requests."]</span>
+    <span class="hint">@T["Allows a site to control how much information the browser includes with navigations away from a document and should be set by all sites."]</span>
 </div>
