@@ -10,7 +10,7 @@ namespace OrchardCore.Security
 
         public ICollection<string> PermissionsPolicy { get; set; } = SecurityHeaderDefaults.PermissionsPolicy;
 
-        public string PermissionsPolicyOrigin { get; set; }
+        public string PermissionsPolicyOrigin { get; set; } = PermissionsPolicyOriginValue.Self;
 
         public string ReferrerPolicy { get; set; } = SecurityHeaderDefaults.ReferrerPolicy;
 

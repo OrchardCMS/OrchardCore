@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +8,7 @@ namespace OrchardCore.Security.Extensions.Tests
 {
     public class ApplicationBuilderExtensionsTests
     {
-        [Fact(Skip = "Unskip the test if UseSecurityHeaders() is ready.")]
+        [Fact]
         public void UseSecurityHeadersWithDefaultHeaders()
         {
             // Arrange
@@ -22,11 +23,14 @@ namespace OrchardCore.Security.Extensions.Tests
                 .Invoke(context);
 
             // Assert
-            Assert.Equal(SecurityHeaderDefaults.ReferrerPolicy, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
+            Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
             Assert.Equal(SecurityHeaderDefaults.FrameOptions, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
+            Assert.Equal(String.Empty, context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
+            Assert.Equal(SecurityHeaderDefaults.ReferrerPolicy, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
+            Assert.Equal($"max-age={SecurityHeaderDefaults.StrictTransportSecurityOptions.MaxAge.TotalSeconds}; includeSubDomains", context.Response.Headers[SecurityHeaderNames.StrictTransportSecurity]);
         }
 
-        [Fact(Skip = "Unskip the test if UseSecurityHeaders() is ready.")]
+        [Fact]
         public void UseSecurityHeadersWithConfigureBuilder()
         {
             // Arrange
@@ -37,9 +41,11 @@ namespace OrchardCore.Security.Extensions.Tests
             applicationBuilder.UseSecurityHeaders(config =>
             {
                 config
-                    .AddReferrerPolicy(ReferrerPolicyValue.Origin)
+                    .AddContentTypeOptions()
                     .AddFrameOptions(FrameOptionsValue.Deny)
-                    .AddPermissionsPolicy(new[] { PermissionsPolicyValue.Camera.ToString(), PermissionsPolicyValue.Microphone.ToString() });
+                    .AddPermissionsPolicy(new[] { PermissionsPolicyValue.Camera.ToString(), PermissionsPolicyValue.Microphone.ToString() })
+                    .AddReferrerPolicy(ReferrerPolicyValue.Origin)
+                    .AddStrictTransportSecurity(options => options.MaxAge = TimeSpan.FromMinutes(1));
             });
 
             applicationBuilder
@@ -47,12 +53,11 @@ namespace OrchardCore.Security.Extensions.Tests
                 .Invoke(context);
 
             // Assert
-            var permissionsPolicy = context.Response.Headers[SecurityHeaderNames.PermissionsPolicy].ToString();
-
-            Assert.Equal(ReferrerPolicyValue.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
+            Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
             Assert.Equal(FrameOptionsValue.Deny, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
-            Assert.True(permissionsPolicy.IndexOf(PermissionsPolicyValue.Camera) > -1);
-            Assert.True(permissionsPolicy.IndexOf(PermissionsPolicyValue.Microphone) > -1);
+            Assert.Equal("camera=self,microphone=self", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
+            Assert.Equal(ReferrerPolicyValue.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
+            Assert.Equal($"max-age=60; includeSubDomains", context.Response.Headers[SecurityHeaderNames.StrictTransportSecurity]);
         }
 
         private static IApplicationBuilder CreateApplicationBuilder()

@@ -11,62 +11,74 @@ namespace OrchardCore.Security
         public SecurityHeadersBuilder(SecuritySettings settings)
             => _settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
-        public SecurityHeadersBuilder AddContentTypeOptions(string option)
+        public SecurityHeadersBuilder AddContentTypeOptions()
         {
-            if (String.IsNullOrEmpty(option))
-            {
-                throw new ArgumentException($"'{nameof(option)}' cannot be null or empty.", nameof(option));
-            }
-
-            _settings.ContentTypeOptions = option;
+            _settings.ContentTypeOptions = ContentTypeOptionsValue.NoSniff;
 
             return this;
         }
 
-        public SecurityHeadersBuilder AddFrameOptions(string option)
+        public FrameOptionsHeaderBuilder AddFrameOptions() => new(this);
+
+        public SecurityHeadersBuilder AddFrameOptions(string value)
         {
-            if (String.IsNullOrEmpty(option))
+            if (String.IsNullOrEmpty(value))
             {
-                throw new ArgumentException($"'{nameof(option)}' cannot be null or empty.", nameof(option));
+                throw new ArgumentException($"'{nameof(value)}' cannot be null or empty.", nameof(value));
             }
 
-            _settings.FrameOptions = option;
+            _settings.FrameOptions = value;
 
             return this;
         }
 
-        public SecurityHeadersBuilder AddPermissionsPolicy(IEnumerable<string> policyOptions)
+        public SecurityHeadersBuilder AddPermissionsPolicy(ICollection<string> policies)
         {
-            if (policyOptions is null)
+            if (policies is null)
             {
-                throw new ArgumentNullException(nameof(policyOptions));
+                throw new ArgumentNullException(nameof(policies));
             }
 
-            _settings.PermissionsPolicy = policyOptions.ToList();
+            _settings.PermissionsPolicy = policies;
 
             return this;
         }
 
-        public SecurityHeadersBuilder AddReferrerPolicy(string policyOption)
+        public SecurityHeadersBuilder AddPermissionsPolicy(PermissionsPolicyOptions options)
         {
-            if (String.IsNullOrEmpty(policyOption))
+            if (options is null)
             {
-                throw new ArgumentException($"'{nameof(policyOption)}' cannot be null or empty.", nameof(policyOption));
+                throw new ArgumentNullException(nameof(options));
             }
 
-            _settings.ReferrerPolicy = policyOption;
+            _settings.PermissionsPolicy = options.Values.Select(v => v.ToString()).ToList();
+            _settings.PermissionsPolicyOrigin = options.Origin;
 
             return this;
         }
 
-        internal SecurityHeadersBuilder AddPermissionsPolicy(string policyOption)
+        public ReferrerPolicyHeaderBuilder AddReferrerPolicy() => new(this);
+
+        public SecurityHeadersBuilder AddReferrerPolicy(string policy)
         {
-            if (String.IsNullOrEmpty(policyOption))
+            if (String.IsNullOrEmpty(policy))
             {
-                throw new ArgumentException($"'{nameof(policyOption)}' cannot be null or empty.", nameof(policyOption));
+                throw new ArgumentException($"'{nameof(policy)}' cannot be null or empty.", nameof(policy));
             }
 
-            _settings.PermissionsPolicy.Add(policyOption);
+            _settings.ReferrerPolicy = policy;
+
+            return this;
+        }
+
+        public SecurityHeadersBuilder AddStrictTransportSecurity(StrictTransportSecurityOptions options)
+        {
+            if (options is null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            _settings.StrictTransportSecurity = options;
 
             return this;
         }

@@ -33,42 +33,24 @@ namespace OrchardCore.Security
         {
             var securityOptions = serviceProvider.GetRequiredService<IOptions<SecuritySettings>>().Value;
 
-            //builder.UseSecurityHeaders(config =>
-            //{
-            //    config
-            //        .AddContentTypeOptions(securityOptions.ContentTypeOptions)
-            //        .AddFrameOptions(securityOptions.FrameOptions)
-            //        .AddPermissionsPolicy(securityOptions.PermissionsPolicy)
-            //        .AddReferrerPolicy(securityOptions.ReferrerPolicy);
-            //});
-
-            builder.UseContentTypeOptions();
-            builder.UseFrameOptions(new FrameOptionsOptions
+            builder.UseSecurityHeaders(config =>
             {
-                Value = new FrameOptionsValue(securityOptions.FrameOptions)
-            });
-
-            if (securityOptions.PermissionsPolicy.Count == 0)
-            {
-                builder.UsePermissionsPolicy();
-            }
-            else
-            {
-                builder.UsePermissionsPolicy(new PermissionsPolicyOptions
+                var permissionsPolicyOptions = new PermissionsPolicyOptions();
+                if (securityOptions.PermissionsPolicy.Count > 0)
                 {
-                    Values = securityOptions.PermissionsPolicy
+                    permissionsPolicyOptions.Values = securityOptions.PermissionsPolicy
                         .Select(p => new PermissionsPolicyValue(p))
-                        .ToList(),
-                    Origin = new PermissionsPolicyOriginValue(securityOptions.PermissionsPolicyOrigin)
-                });
-            }
+                        .ToList();
+                    permissionsPolicyOptions.Origin = new PermissionsPolicyOriginValue(securityOptions.PermissionsPolicyOrigin);
+                }
 
-            builder.UseReferrerPolicy(new ReferrerPolicyOptions
-            {
-                Value = new ReferrerPolicyValue(securityOptions.ReferrerPolicy)
+                config
+                    .AddContentTypeOptions()
+                    .AddFrameOptions(securityOptions.FrameOptions)
+                    .AddPermissionsPolicy(permissionsPolicyOptions)
+                    .AddReferrerPolicy(securityOptions.ReferrerPolicy)
+                    .AddStrictTransportSecurity(securityOptions.StrictTransportSecurity);
             });
-
-            builder.UseStrictTransportSecurity(securityOptions.StrictTransportSecurity);
         }
     }
 }

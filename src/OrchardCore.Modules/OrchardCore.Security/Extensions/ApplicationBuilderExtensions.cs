@@ -1,6 +1,6 @@
 using System;
+using System.Linq;
 using OrchardCore.Security;
-using OrchardCore.Security.Middlewares;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -35,10 +35,29 @@ namespace Microsoft.AspNetCore.Builder
 
             settings = builder.Build();
 
-            app.UseMiddleware<ContentTypeOptionsMiddleware>(settings.ContentTypeOptions);
-            app.UseMiddleware<FrameOptionsMiddleware>(settings.FrameOptions);
-            app.UseMiddleware<PermissionsPolicyMiddleware>(settings.PermissionsPolicy);
-            app.UseMiddleware<ReferrerPolicyMiddleware>(settings.ReferrerPolicy);
+            app.UseContentTypeOptions();
+            app.UseFrameOptions(new FrameOptionsOptions
+            {
+                Value = new FrameOptionsValue(settings.FrameOptions)
+            });
+
+            var permissionsPolicyOptions = new PermissionsPolicyOptions();
+            if (settings.PermissionsPolicy.Count > 0)
+            {
+                permissionsPolicyOptions.Values = settings.PermissionsPolicy
+                    .Select(p => new PermissionsPolicyValue(p))
+                    .ToList();
+                permissionsPolicyOptions.Origin = new PermissionsPolicyOriginValue(settings.PermissionsPolicyOrigin);
+            }
+
+            app.UsePermissionsPolicy(permissionsPolicyOptions);
+
+            app.UseReferrerPolicy(new ReferrerPolicyOptions
+            {
+                Value = new ReferrerPolicyValue(settings.ReferrerPolicy)
+            });
+
+            app.UseStrictTransportSecurity(settings.StrictTransportSecurity);
 
             return app;
         }

@@ -1,3 +1,4 @@
+using System;
 using Xunit;
 
 namespace OrchardCore.Security.Extensions.Tests
@@ -12,9 +13,7 @@ namespace OrchardCore.Security.Extensions.Tests
             var builder = new SecurityHeadersBuilder(settings);
 
             // Act
-            builder
-                .AddContentTypeOptions()
-                .WithNoSniff();
+            builder.AddContentTypeOptions();
 
             // Assert
             Assert.NotNull(settings);
@@ -39,7 +38,7 @@ namespace OrchardCore.Security.Extensions.Tests
         }
 
         [Fact]
-        public void AddPermissionsPolicyWithFluentAPIsConfiguration()
+        public void AddPermissionsPolicyWithOptionsAndFluentAPIsConfiguration()
         {
             // Arrange
             var settings = new SecuritySettings();
@@ -47,14 +46,20 @@ namespace OrchardCore.Security.Extensions.Tests
 
             // Act
             builder
-                .AddPermissionsPolicy()
-                .WithCamera()
-                .WithMicrophone();
+                .AddPermissionsPolicy(options =>
+                {
+                    options
+                        .AllowCamera()
+                        .AllowMicrophone()
+                        .WithSelfOrigin();
+                });
 
             // Assert
-            Assert.NotNull(settings);
+            Assert.NotNull(settings.PermissionsPolicy);
+            Assert.Equal(2, settings.PermissionsPolicy.Count);
             Assert.Contains(PermissionsPolicyValue.Camera, settings.PermissionsPolicy);
             Assert.Contains(PermissionsPolicyValue.Microphone, settings.PermissionsPolicy);
+            Assert.Equal(PermissionsPolicyOriginValue.Self, settings.PermissionsPolicyOrigin);
         }
 
         [Fact]
@@ -75,6 +80,29 @@ namespace OrchardCore.Security.Extensions.Tests
         }
 
         [Fact]
+        public void AddStrictTransportSecurityWithOptionsConfiguration()
+        {
+            // Arrange
+            var settings = new SecuritySettings();
+            var builder = new SecurityHeadersBuilder(settings);
+
+            // Act
+            builder
+                .AddStrictTransportSecurity(options =>
+                {
+                    options.MaxAge = TimeSpan.FromMinutes(1);
+                    options.IncludeSubDomains = false;
+                    options.Preload = true;
+                });
+
+            // Assert
+            Assert.NotNull(settings.StrictTransportSecurity);
+            Assert.Equal(60, settings.StrictTransportSecurity.MaxAge.TotalSeconds);
+            Assert.False(settings.StrictTransportSecurity.IncludeSubDomains);
+            Assert.True(settings.StrictTransportSecurity.Preload);
+        }
+
+        [Fact]
         public void AddSecurityHeadersWithFluentAPIsConfiguration()
         {
             // Arrange
@@ -84,23 +112,28 @@ namespace OrchardCore.Security.Extensions.Tests
             // Act
             builder
                 .AddContentTypeOptions()
-                    .WithNoSniff()
                 .AddFrameOptions()
                     .WithSameOrigin()
-                .AddPermissionsPolicy()
-                    .WithCamera()
-                    .WithMicrophone()
-                    .Build()
+                .AddPermissionsPolicy(options => options.AllowCamera().AllowMicrophone())
                 .AddReferrerPolicy()
-                    .WithSameOrigin();
+                    .WithSameOrigin()
+                .AddStrictTransportSecurity(options =>
+                {
+                    options.MaxAge = TimeSpan.FromMinutes(1);
+                    options.IncludeSubDomains = false;
+                });
 
             // Assert
             Assert.NotNull(settings);
             Assert.Equal(ContentTypeOptionsValue.NoSniff, settings.ContentTypeOptions);
             Assert.Equal(FrameOptionsValue.SameOrigin, settings.FrameOptions);
+            Assert.Equal(PermissionsPolicyOriginValue.Self, settings.PermissionsPolicyOrigin);
             Assert.Contains(PermissionsPolicyValue.Camera, settings.PermissionsPolicy);
             Assert.Contains(PermissionsPolicyValue.Microphone, settings.PermissionsPolicy);
             Assert.Equal(ReferrerPolicyValue.SameOrigin, settings.ReferrerPolicy);
+            Assert.Equal(60, settings.StrictTransportSecurity.MaxAge.TotalSeconds);
+            Assert.False(settings.StrictTransportSecurity.IncludeSubDomains);
+            Assert.False(settings.StrictTransportSecurity.Preload);
         }
     }
 }
