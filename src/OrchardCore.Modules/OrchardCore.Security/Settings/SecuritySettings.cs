@@ -13,5 +13,7 @@ namespace OrchardCore.Security
         public string PermissionsPolicyOrigin { get; set; }
 
         public string ReferrerPolicy { get; set; } = SecurityHeaderDefaults.ReferrerPolicy;
+
+        public StrictTransportSecurityOptions StrictTransportSecurity { get; set; } = SecurityHeaderDefaults.StrictTransportSecurityOptions;
     }
 }

@@ -67,6 +67,8 @@ namespace OrchardCore.Security
             {
                 Value = new ReferrerPolicyValue(securityOptions.ReferrerPolicy)
             });
+
+            builder.UseStrictTransportSecurity(securityOptions.StrictTransportSecurity);
         }
     }
 }

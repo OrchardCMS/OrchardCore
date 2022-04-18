@@ -11,5 +11,11 @@ namespace OrchardCore.Security.ViewModels
         public string PermissionsPolicyOrigin { get; set; }
 
         public string ReferrerPolicy { get; set; }
+
+        public int StrictTransportSecurityMaxAge { get; set; }
+
+        public bool StrictTransportSecurityIncludeSubDomains { get; set; }
+
+        public bool StrictTransportSecurityPreload { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace OrchardCore.Security
@@ -12,5 +13,11 @@ namespace OrchardCore.Security
         public static readonly ICollection<string> PermissionsPolicy = new List<string>();
 
         public static readonly ReferrerPolicyValue ReferrerPolicy = ReferrerPolicyValue.NoReferrer;
+
+        public static readonly StrictTransportSecurityOptions StrictTransportSecurityOptions = new()
+        {
+            MaxAge = TimeSpan.FromDays(365),
+            IncludeSubDomains = true
+        };
     }
 }
