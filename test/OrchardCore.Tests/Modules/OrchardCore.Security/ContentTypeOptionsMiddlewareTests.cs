@@ -8,13 +8,11 @@ namespace OrchardCore.Security.Tests
 {
     public class ContentTypeOptionsMiddlewareTests
     {
-        [Theory]
-        [InlineData(false, "nosniff")]
-        [InlineData(true, "")]
-        public async Task AddContentTypeOptionsHeader(bool allowSniffing, string expectedValue)
+        [Fact]
+        public async Task AddContentTypeOptionsHeader()
         {
             // Arrange
-            var options = Options.Create(new ContentTypeOptionsOptions { AllowSniffing = allowSniffing });
+            var options = Options.Create(new ContentTypeOptionsOptions());
             var middleware = new ContentTypeOptionsMiddleware(options, request);
             var context = new DefaultHttpContext();
 
@@ -23,7 +21,7 @@ namespace OrchardCore.Security.Tests
 
             // Assert
             Assert.True(context.Response.Headers.ContainsKey(SecurityHeaderNames.XContentTypeOptions));
-            Assert.Equal(expectedValue, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
+            Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
 
             static Task request(HttpContext context) => Task.CompletedTask;
         }

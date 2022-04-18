@@ -47,7 +47,6 @@ namespace OrchardCore.Security.Drivers
 
             return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {
-                model.AllowSniffing = settings.ContentTypeOptions != ContentTypeOptionsValue.NoSniff;
                 model.FrameOptions = settings.FrameOptions;
                 model.PermissionsPolicy = settings.PermissionsPolicy;
                 model.PermissionsPolicyOrigin = settings.PermissionsPolicyOrigin;
@@ -70,9 +69,6 @@ namespace OrchardCore.Security.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                section.ContentTypeOptions = model.AllowSniffing
-                    ? String.Empty
-                    : ContentTypeOptionsValue.NoSniff;
                 section.FrameOptions = model.FrameOptions;
                 section.PermissionsPolicy = model.PermissionsPolicy ?? _defaultPermissionsPolicy;
                 section.PermissionsPolicyOrigin = model.PermissionsPolicyOrigin;

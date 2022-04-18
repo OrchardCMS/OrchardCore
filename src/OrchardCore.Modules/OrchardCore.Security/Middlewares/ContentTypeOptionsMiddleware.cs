@@ -23,9 +23,7 @@ namespace OrchardCore.Security.Middlewares
 
         public Task Invoke(HttpContext context)
         {
-            context.Response.Headers[SecurityHeaderNames.XContentTypeOptions] = _options.AllowSniffing
-                ? String.Empty
-                : ContentTypeOptionsValue.NoSniff;
+            context.Response.Headers[SecurityHeaderNames.XContentTypeOptions] = _options.Value;
 
             return _next.Invoke(context);
         }

@@ -6,13 +6,6 @@
     @T["The current tenant will be reloaded when the settings are saved."]
 </p>
 
-<div class="form-group" asp-validation-class-for="AllowSniffing">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="AllowSniffing" />
-        <label class="custom-control-label" asp-for="AllowSniffing">@T["Allow Sniffing"]</label>
-        <span class="hint dashed">@T["Allow a request if the request destination is of type style and the MIME type is not text/css, or of type script and the MIME type is not a JavaScript MIME type."]</span>
-    </div>
-</div>
 <div class="form-group" asp-validation-class-for="FrameOptions">
     <label asp-for="FrameOptions">@T["Frame Options"]</label>
     <select asp-for="FrameOptions" class="form-control">

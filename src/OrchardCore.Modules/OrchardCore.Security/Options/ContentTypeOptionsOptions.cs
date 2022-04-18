@@ -2,6 +2,6 @@ namespace OrchardCore.Security
 {
     public class ContentTypeOptionsOptions
     {
-        public bool AllowSniffing { get; set; }
+        public ContentTypeOptionsValue Value { get; set; } = SecurityHeaderDefaults.ContentTypeOptions;
     }
 }

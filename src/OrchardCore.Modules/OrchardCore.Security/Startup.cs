@@ -42,10 +42,7 @@ namespace OrchardCore.Security
             //        .AddReferrerPolicy(securityOptions.ReferrerPolicy);
             //});
 
-            builder.UseContentTypeOptions(new ContentTypeOptionsOptions
-            {
-                AllowSniffing = securityOptions.ContentTypeOptions != ContentTypeOptionsValue.NoSniff
-            });
+            builder.UseContentTypeOptions();
             builder.UseFrameOptions(new FrameOptionsOptions
             {
                 Value = new FrameOptionsValue(securityOptions.FrameOptions)
