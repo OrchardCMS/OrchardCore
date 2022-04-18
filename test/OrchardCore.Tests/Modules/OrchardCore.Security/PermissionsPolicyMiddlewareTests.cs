@@ -12,35 +12,40 @@ namespace OrchardCore.Security.Tests
         public static IEnumerable<object[]> Policies =>
             new List<object[]>
             {
-                new object[] { new[] { PermissionsPolicyValue.Accelerometer }, "accelerometer=*" },
-                new object[] { new[] { PermissionsPolicyValue.AmbientLightSensor }, "ambient-light-sensor=*" },
-                new object[] { new[] { PermissionsPolicyValue.Autoplay }, "autoplay=*" },
-                new object[] { new[] { PermissionsPolicyValue.Camera }, "camera=*" },
-                new object[] { new[] { PermissionsPolicyValue.EncryptedMedia }, "encrypted-media=*" },
-                new object[] { new[] { PermissionsPolicyValue.FullScreen }, "fullscreen=*" },
-                new object[] { new[] { PermissionsPolicyValue.Geolocation }, "geolocation=*" },
-                new object[] { new[] { PermissionsPolicyValue.Gyroscope }, "gyroscope=*" },
-                new object[] { new[] { PermissionsPolicyValue.Magnetometer }, "magnetometer=*" },
-                new object[] { new[] { PermissionsPolicyValue.Microphone }, "microphone=*" },
-                new object[] { new[] { PermissionsPolicyValue.Midi }, "midi=*" },
-                new object[] { new[] { PermissionsPolicyValue.Notification }, "notification=*" },
-                new object[] { new[] { PermissionsPolicyValue.Payment }, "payment=*" },
-                new object[] { new[] { PermissionsPolicyValue.PictureInPicture }, "picture-in-picture=*" },
-                new object[] { new[] { PermissionsPolicyValue.Push }, "push=*" },
-                new object[] { new[] { PermissionsPolicyValue.Speaker }, "speaker=*" },
-                new object[] { new[] { PermissionsPolicyValue.SynchronousXhr }, "sync-xhr=*" },
-                new object[] { new[] { PermissionsPolicyValue.Usb }, "usb=*" },
-                new object[] { new[] { PermissionsPolicyValue.Vibrate }, "vibrate=*" },
-                new object[] { new[] { PermissionsPolicyValue.VR }, "vr=*" },
-                new object[] { new[] { PermissionsPolicyValue.Camera, PermissionsPolicyValue.Speaker }, "camera=*,speaker=*" },
+                new object[] { new[] { PermissionsPolicyValue.Accelerometer }, PermissionsPolicyOriginValue.Any, "accelerometer=*" },
+                new object[] { new[] { PermissionsPolicyValue.AmbientLightSensor }, PermissionsPolicyOriginValue.Any, "ambient-light-sensor=*" },
+                new object[] { new[] { PermissionsPolicyValue.Autoplay }, PermissionsPolicyOriginValue.Any, "autoplay=*" },
+                new object[] { new[] { PermissionsPolicyValue.Camera }, PermissionsPolicyOriginValue.Any, "camera=*" },
+                new object[] { new[] { PermissionsPolicyValue.EncryptedMedia }, PermissionsPolicyOriginValue.Any, "encrypted-media=*" },
+                new object[] { new[] { PermissionsPolicyValue.FullScreen }, PermissionsPolicyOriginValue.Any, "fullscreen=*" },
+                new object[] { new[] { PermissionsPolicyValue.Geolocation }, PermissionsPolicyOriginValue.Any, "geolocation=*" },
+                new object[] { new[] { PermissionsPolicyValue.Gyroscope }, PermissionsPolicyOriginValue.Any, "gyroscope=*" },
+                new object[] { new[] { PermissionsPolicyValue.Magnetometer }, PermissionsPolicyOriginValue.Any, "magnetometer=*" },
+                new object[] { new[] { PermissionsPolicyValue.Microphone }, PermissionsPolicyOriginValue.Any, "microphone=*" },
+                new object[] { new[] { PermissionsPolicyValue.Midi }, PermissionsPolicyOriginValue.Any, "midi=*" },
+                new object[] { new[] { PermissionsPolicyValue.Notification }, PermissionsPolicyOriginValue.Any, "notification=*" },
+                new object[] { new[] { PermissionsPolicyValue.Payment }, PermissionsPolicyOriginValue.Any, "payment=*" },
+                new object[] { new[] { PermissionsPolicyValue.PictureInPicture }, PermissionsPolicyOriginValue.Any, "picture-in-picture=*" },
+                new object[] { new[] { PermissionsPolicyValue.Push }, PermissionsPolicyOriginValue.Any, "push=*" },
+                new object[] { new[] { PermissionsPolicyValue.Speaker }, PermissionsPolicyOriginValue.Any, "speaker=*" },
+                new object[] { new[] { PermissionsPolicyValue.SynchronousXhr }, PermissionsPolicyOriginValue.Any, "sync-xhr=*" },
+                new object[] { new[] { PermissionsPolicyValue.Usb }, PermissionsPolicyOriginValue.Any, "usb=*" },
+                new object[] { new[] { PermissionsPolicyValue.Vibrate }, PermissionsPolicyOriginValue.Any, "vibrate=*" },
+                new object[] { new[] { PermissionsPolicyValue.VR }, PermissionsPolicyOriginValue.Any, "vr=*" },
+                new object[] { new[] { PermissionsPolicyValue.Camera, PermissionsPolicyValue.Speaker }, PermissionsPolicyOriginValue.Any, "camera=*,speaker=*" },
+                new object[] { new[] { PermissionsPolicyValue.Camera, PermissionsPolicyValue.Speaker }, PermissionsPolicyOriginValue.Self, "camera=self,speaker=self" }
             };
 
         [Theory]
         [MemberData(nameof(Policies))]
-        public async Task AddPermissionsPolicyHeader(ICollection<PermissionsPolicyValue> values, string expectedValue)
+        public async Task AddPermissionsPolicyHeader(ICollection<PermissionsPolicyValue> values, PermissionsPolicyOriginValue origin, string expectedValue)
         {
             // Arrange
-            var options = Options.Create(new PermissionsPolicyOptions { Values = values });
+            var options = Options.Create(new PermissionsPolicyOptions
+            {
+                Values = values,
+                Origin = origin
+            });
             var middleware = new PermissionsPolicyMiddleware(options, request);
             var context = new DefaultHttpContext();
 
