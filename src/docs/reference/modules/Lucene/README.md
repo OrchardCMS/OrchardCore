@@ -83,7 +83,7 @@ See : https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.
 
 Query filters are used to retrieve records from Lucene without taking care of the boost values on them. So, it is retrieving records just like a SQL database would do. 
 
-Here is an example of a filtered query : 
+Here is an example of a filtered query: 
 
 ```json
 {
@@ -118,7 +118,7 @@ With a must query in the bool Query. "finding specific content type(s)"
 
 As you can see it allows to filter on multiple query types. All of the Query types that are available in Lucene or also filters.
 
-So you can use : 
+So you can use: 
 
 `fuzzy`  
 `match`  
@@ -132,7 +132,7 @@ So you can use :
 `geo_distance`  
 `geo_bounding_box`  
 
-See ElasticSearch documentation for more details : 
+See ElasticSearch documentation for more details: 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html
 
 ## Video
