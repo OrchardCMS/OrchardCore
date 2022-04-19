@@ -77,7 +77,7 @@ If you are running on Azure App Services or if you are using Elasticsearch, then
 ## Lucene Queries
 
 The Lucene module provides a management UI and APIs for querying Lucene data using ElasticSearch Queries.
-See : https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
+See: https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
 
 ### Query Filters
 
@@ -116,6 +116,34 @@ With a must query in the bool Query. "finding specific content type(s)"
 }
 ```
 
+Using the `parsed` Lucene query with the [Query Parser Syntax](https://lucene.apache.org/core/2_9_4/queryparsersyntax.html) (with syntax like `"exact match"` and `should AND contain`):
+
+```json
+{
+  "query":
+  {
+    "parsed": {
+      "Content.ContentItem.FullText": {
+        "query": "\"exploration\""
+      }
+    }
+  }
+}
+```
+
+Or in a simplified way:
+
+```json
+{
+  "query":
+  {
+    "parsed": {
+      "Content.ContentItem.FullText": "\"other exploration\""
+    }
+  }
+}
+```
+
 As you can see it allows to filter on multiple query types. All of the Query types that are available in Lucene or also filters.
 
 So you can use: 
@@ -124,6 +152,7 @@ So you can use:
 `match`  
 `match_phrase`  
 `match_all`  
+`parsed`
 `prefix`  
 `range`  
 `term`  
