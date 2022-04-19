@@ -10,7 +10,7 @@ namespace OrchardCore.Security
 
         public static readonly FrameOptionsValue FrameOptions = FrameOptionsValue.SameOrigin;
 
-        public static readonly ICollection<string> PermissionsPolicy = new List<string>();
+        public static readonly ICollection<string> PermissionsPolicy = new [] { "fullscreen" };
 
         public static readonly ReferrerPolicyValue ReferrerPolicy = ReferrerPolicyValue.NoReferrer;
 

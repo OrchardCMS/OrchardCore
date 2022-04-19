@@ -25,7 +25,7 @@ namespace OrchardCore.Security.Extensions.Tests
             // Assert
             Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
             Assert.Equal(SecurityHeaderDefaults.FrameOptions, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
-            Assert.Equal(String.Empty, context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
+            Assert.Equal("fullscreen=self", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
             Assert.Equal(SecurityHeaderDefaults.ReferrerPolicy, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
             Assert.Equal($"max-age={SecurityHeaderDefaults.StrictTransportSecurityOptions.MaxAge.TotalSeconds}; includeSubDomains", context.Response.Headers[SecurityHeaderNames.StrictTransportSecurity]);
         }
