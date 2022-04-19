@@ -144,7 +144,7 @@ Or in a simplified way:
 }
 ```
 
-As you can see it allows to filter on multiple query types. All of the Query types that are available in Lucene or also filters.
+As you can see it allows to filter on multiple query types. All of the Query types that are available in Lucene are also filters.
 
 So you can use: 
 
