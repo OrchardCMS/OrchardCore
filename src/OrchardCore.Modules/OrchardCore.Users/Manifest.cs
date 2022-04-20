@@ -53,3 +53,11 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Users" },
     Category = "Settings"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Users.AuditTrail",
+    Name = "Users Audit Trail",
+    Description = "The users audit trail feature allows logging of user events.",
+    Dependencies = new[] { "OrchardCore.AuditTrail", "OrchardCore.Users" },
+    Category = "Security"
+)]

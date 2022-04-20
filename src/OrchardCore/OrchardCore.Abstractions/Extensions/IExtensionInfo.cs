@@ -26,7 +26,7 @@ namespace OrchardCore.Environment.Extensions
         IEnumerable<IFeatureInfo> Features { get; }
 
         /// <summary>
-        /// Wether this extension info exists
+        /// Whether this extension info exists
         /// </summary>
         bool Exists { get; }
     }

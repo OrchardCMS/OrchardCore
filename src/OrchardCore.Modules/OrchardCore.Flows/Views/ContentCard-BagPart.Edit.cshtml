@@ -11,7 +11,7 @@
     <div class="widget-editor-header card-header text-muted py-1 pl-3 pr-1">
         @if (Model.CanMove != false)
         {
-            <div class="widget-editor-handle"><i class="fas fa-arrows-alt"></i></div>
+            <div class="widget-editor-handle"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div>
         }
         <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
         <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand"><i class="fa fa-angle-@(Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left")" aria-hidden="true"></i></button>

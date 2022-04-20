@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -18,9 +17,11 @@ using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
+using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
@@ -40,6 +41,7 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly IdentityOptions _identityOptions;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
+        private readonly ITenantValidator _tenantValidator;
         private readonly IStringLocalizer S;
 
         public ApiController(
@@ -53,7 +55,8 @@ namespace OrchardCore.Tenants.Controllers
             IEmailAddressValidator emailAddressValidator,
             IOptions<IdentityOptions> identityOptions,
             IEnumerable<DatabaseProvider> databaseProviders,
-            IStringLocalizer<AdminController> stringLocalizer)
+            ITenantValidator tenantValidator,
+            IStringLocalizer<ApiController> stringLocalizer)
         {
             _shellHost = shellHost;
             _currentShellSettings = currentShellSettings;
@@ -65,6 +68,7 @@ namespace OrchardCore.Tenants.Controllers
             _emailAddressValidator = emailAddressValidator;
             _identityOptions = identityOptions.Value;
             _databaseProviders = databaseProviders;
+            _tenantValidator = tenantValidator;
             S = stringLocalizer;
         }
 
@@ -72,7 +76,7 @@ namespace OrchardCore.Tenants.Controllers
         [Route("create")]
         public async Task<IActionResult> Create(CreateApiViewModel model)
         {
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -80,11 +84,6 @@ namespace OrchardCore.Tenants.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
                 return this.ChallengeOrForbid("Api");
-            }
-
-            if (!String.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
-            {
-                ModelState.AddModelError(nameof(CreateApiViewModel.Name), S["Invalid tenant name. Must contain characters only and no spaces."]);
             }
 
             // Creates a default shell settings based on the configuration.
@@ -100,19 +99,11 @@ namespace OrchardCore.Tenants.Controllers
             shellSettings["DatabaseProvider"] = model.DatabaseProvider;
             shellSettings["Secret"] = Guid.NewGuid().ToString();
             shellSettings["RecipeName"] = model.RecipeName;
+            shellSettings["FeatureProfile"] = model.FeatureProfile;
 
-            if (String.IsNullOrWhiteSpace(shellSettings.RequestUrlHost) && String.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
-            {
-                ModelState.AddModelError(nameof(CreateApiViewModel.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]);
-            }
+            model.IsNewTenant = true;
 
-            if (!String.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
-            {
-                if (shellSettings.RequestUrlPrefix.Contains('/'))
-                {
-                    ModelState.AddModelError(nameof(CreateApiViewModel.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]);
-                }
-            }
+            ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
 
             if (ModelState.IsValid)
             {
@@ -141,7 +132,7 @@ namespace OrchardCore.Tenants.Controllers
         [Route("setup")]
         public async Task<ActionResult> Setup(SetupApiViewModel model)
         {
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return this.ChallengeOrForbid("Api");
             }
@@ -293,11 +284,6 @@ namespace OrchardCore.Tenants.Controllers
             return Ok(executionId);
         }
 
-        private bool IsDefaultShell()
-        {
-            return String.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
-        }
-
         private string GetEncodedUrl(ShellSettings shellSettings, string token)
         {
             var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
@@ -323,6 +309,7 @@ namespace OrchardCore.Tenants.Controllers
             // Create a public url to setup the new tenant
             var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
             var token = dataProtector.Protect(shellSettings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
+
             return token;
         }
     }

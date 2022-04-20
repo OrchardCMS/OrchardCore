@@ -14,10 +14,18 @@ namespace OrchardCore.DisplayManagement.Razor
     /// </summary>
     public class RazorViewActionFilter : IAsyncViewActionFilter
     {
-        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        public Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            await OnActionExecutionAsync(context);
-            await next();
+            static async Task Awaited(Task task, ActionExecutionDelegate next)
+            {
+                await task;
+                await next();
+            }
+
+            var task = OnActionExecutionAsync(context);
+            return !task.IsCompletedSuccessfully
+                ? Awaited(task, next)
+                : next();
         }
 
         public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)

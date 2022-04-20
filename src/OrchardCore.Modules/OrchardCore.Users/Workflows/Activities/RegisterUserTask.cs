@@ -55,7 +55,7 @@ namespace OrchardCore.Users.Workflows.Activities
         public override LocalizedString DisplayText => S["Register User Task"];
 
         // The category to which this activity belongs. The activity picker groups activities by this category.
-        public override LocalizedString Category => S["Content"];
+        public override LocalizedString Category => S["User"];
 
         // The message to display.
         public bool SendConfirmationEmail
@@ -74,6 +74,11 @@ namespace OrchardCore.Users.Workflows.Activities
         public WorkflowExpression<string> ConfirmationEmailTemplate
         {
             get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+        public bool RequireModeration
+        {
+            get => GetProperty(() => false);
             set => SetProperty(value);
         }
 
@@ -101,10 +106,12 @@ namespace OrchardCore.Users.Workflows.Activities
             {
                 var userName = form["UserName"];
                 if (string.IsNullOrWhiteSpace(userName))
-                    userName = email;
+                {
+                    userName = email.Replace('@', '+');
+                }
 
                 var errors = new Dictionary<string, string>();
-                var user = (User)await _userService.CreateUserAsync(new User() { UserName = userName, Email = email }, null, (key, message) => errors.Add(key, message));
+                var user = (User)await _userService.CreateUserAsync(new User() { UserName = userName, Email = email, IsEnabled = !RequireModeration }, null, (key, message) => errors.Add(key, message));
                 if (errors.Count > 0)
                 {
                     var updater = _updateModelAccessor.ModelUpdater;
@@ -127,15 +134,14 @@ namespace OrchardCore.Users.Workflows.Activities
                     workflowContext.Properties["EmailConfirmationUrl"] = uri;
 
                     var subject = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailSubject, workflowContext, null);
-                    var localizedSubject = new LocalizedString(nameof(RegisterUserTask), subject);
 
                     var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, workflowContext, _htmlEncoder);
-                    var localizedBody = new LocalizedHtmlString(nameof(RegisterUserTask), body);
+
                     var message = new MailMessage()
                     {
                         To = email,
-                        Subject = localizedSubject.ResourceNotFound ? subject : localizedSubject.Value,
-                        Body = localizedBody.IsResourceNotFound ? body : localizedBody.Value,
+                        Subject = subject,
+                        Body = body,
                         IsBodyHtml = true
                     };
                     var smtpService = _httpContextAccessor.HttpContext.RequestServices.GetService<ISmtpService>();

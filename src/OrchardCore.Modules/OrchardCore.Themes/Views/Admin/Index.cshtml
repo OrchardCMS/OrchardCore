@@ -21,17 +21,17 @@ else
                             <ul class="list-group list-group-flush">
                                 @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Author))
                                 {
-                                    <li class="list-group-item"><small><i class="fa fa-user fa-fw"></i> @themeEntry.Extension.Manifest.Author</small></li>
+                                    <li class="list-group-item"><small><i class="fa fa-user fa-fw" aria-hidden="true"></i> @themeEntry.Extension.Manifest.Author</small></li>
                                 }
                                 @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Website))
                                 {
-                                    <li class="list-group-item"><small><i class="fa fa-external-link fa-fw"></i> <a href="@themeEntry.Extension.Manifest.Website" target="_blank">@themeEntry.Extension.Manifest.Website</a></small></li>
+                                    <li class="list-group-item"><small><i class="fa fa-external-link fa-fw" aria-hidden="true"></i> <a href="@themeEntry.Extension.Manifest.Website" target="_blank">@themeEntry.Extension.Manifest.Website</a></small></li>
                                 }
                                 @if (themeEntry.Extension.Manifest.Tags.Any())
                                 {
-                                    <li class="list-group-item"><small><i class="fa fa-tags fa-fw"></i> @string.Join(", ", themeEntry.Extension.Manifest.Tags.ToArray())</small></li>
+                                    <li class="list-group-item"><small><i class="fa fa-tags fa-fw" aria-hidden="true"></i> @string.Join(", ", themeEntry.Extension.Manifest.Tags.ToArray())</small></li>
                                 }
-                                <li class="list-group-item"><small><i class="fa fa-code-branch fa-fw"></i> @themeEntry.Extension.Manifest.Version</small></li>
+                                <li class="list-group-item"><small><i class="fa fa-code-branch fa-fw" aria-hidden="true"></i> @themeEntry.Extension.Manifest.Version</small></li>
                             </ul>
                         </p>
                     </div>
@@ -40,7 +40,7 @@ else
                         {
                             <div class="row">
                                 <div class="col-sm-6">
-                                    <form asp-route-action="SetCurrentTheme" asp-route-id="@themeEntry.Extension.Id" method="post">
+                                    <form asp-route-action="SetCurrentTheme" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
                                         <button type="submit" class="btn btn-sm btn-primary">@T["Make Current"]</button>
                                     </form>
                                 </div>
@@ -48,13 +48,13 @@ else
                                     <div class="float-right">
                                         @if (themeEntry.Enabled)
                                         {
-                                            <form asp-route-action="Disable" asp-route-id="@themeEntry.Extension.Id" method="post">
+                                            <form asp-route-action="Disable" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
                                                 <button type="submit" class="btn btn-sm btn-secondary">@T["Disable"]</button>
                                             </form>
                                         }
                                         else
                                         {
-                                            <form asp-route-action="Enable" asp-route-id="@themeEntry.Extension.Id" method="post">
+                                            <form asp-route-action="Enable" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
                                                 <button type="submit" class="btn btn-sm btn-secondary">@T["Enable"]</button>
                                             </form>
                                         }

@@ -11,7 +11,7 @@
 
     <p class="lead text-left">@T["Do you want to grant <strong>{0}</strong> access to your data? (scopes requested: {1})", Model.ApplicationName, Model.Scope]</p>
 
-    <form asp-controller="Access" asp-action="Authorize" method="post">
+    <form asp-controller="Access" asp-action="Authorize" method="post" class="no-multisubmit">
         @* Flow the request parameters so they can be received by the Accept/Reject actions: *@
         @foreach (var parameter in Context.Request.HasFormContentType ?
           (IEnumerable<KeyValuePair<string, StringValues>>) Context.Request.Form : Context.Request.Query)

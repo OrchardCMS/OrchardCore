@@ -4,5 +4,5 @@
 @model ActivityViewModel<ValidateUserTask>
 
 <header>
-    <h4><i class="fa fa-user"></i>@Model.Activity.GetTitleOrDefault(() => T["Validate User"])</h4>
+    <h4><i class="fa fa-user" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Validate User"])</h4>
 </header>

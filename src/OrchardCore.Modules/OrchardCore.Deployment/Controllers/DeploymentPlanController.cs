@@ -140,7 +140,7 @@ namespace OrchardCore.Deployment.Controllers
                         {
                             _session.Delete(item);
                         }
-                        _notifier.Success(H["Deployment plans successfully deleted."]);
+                        await _notifier.SuccessAsync(H["Deployment plans successfully deleted."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -298,7 +298,7 @@ namespace OrchardCore.Deployment.Controllers
 
                 _session.Save(deploymentPlan);
 
-                _notifier.Success(H["Deployment plan updated successfully."]);
+                await _notifier.SuccessAsync(H["Deployment plan updated successfully."]);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -324,7 +324,7 @@ namespace OrchardCore.Deployment.Controllers
 
             _session.Delete(deploymentPlan);
 
-            _notifier.Success(H["Deployment plan deleted successfully."]);
+            await _notifier.SuccessAsync(H["Deployment plan deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }

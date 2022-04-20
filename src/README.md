@@ -58,10 +58,8 @@ Orchard Core CMS supports all major site building strategies:
 
 ## Status
 
-The latest released version of Orchard Core is `1.0.0-rc2`.
-The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/1.0.0-rc2>
-
-The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs.
+The latest released version of Orchard Core is `1.3.0`.
+The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/v1.3.0>
 
 Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki/Roadmap).
 
@@ -88,7 +86,7 @@ You can also read the [Code Generation Templates documentation](docs/getting-sta
 
 For more details on the various development tools we recommend for using with Orchard Core check out [the Development Tools documentation page](docs/resources/development-tools/README.md).
 
-- Download Visual Studio 2019 (any edition) from <https://www.visualstudio.com/downloads/>.
+- Download Visual Studio 2022 (any edition) from <https://www.visualstudio.com/downloads/>.
 - Open `OrchardCore.sln` and wait for Visual Studio to restore all Nuget packages.
 - Ensure `OrchardCore.Cms.Web` is the startup project and run it.
 - Optionally install the [Lombiq Orchard Visual Studio Extension](https://marketplace.visualstudio.com/items?itemName=LombiqVisualStudioExtension.LombiqOrchardVisualStudioExtension) to add some useful utilities to your Visual Studio such as an error log watcher or a dependency injector.
@@ -99,3 +97,7 @@ For more details on the various development tools we recommend for using with Or
 - Run `docker run --name orchardcms orchardproject/orchardcore-cms-linux:latest`
 
 Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>
+
+## Showcasing Orchard Core CMS
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Gfy5SCACyL8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -3,7 +3,7 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Media Profile"])</h1></zone>
 @* TODO Trigger preview. *@
 <div asp-validation-summary="All"></div>
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" class="no-multisubmit">
     <input type="hidden" value="@Model.Name" name="sourceName" />
     <div class="form-group " asp-validation-class-for="Name">
         <div class="w-100 w-md-50">

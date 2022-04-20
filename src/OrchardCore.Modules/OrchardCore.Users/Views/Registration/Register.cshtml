@@ -5,7 +5,7 @@
 }
 
 <h2>@T["Register"]</h2>
-<form asp-controller="Registration" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+<form asp-controller="Registration" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal no-multisubmit">
     <h4>@T["Create a new account."]</h4>
     <hr />
     <div asp-validation-summary="All" class="text-danger"></div>

@@ -21,6 +21,8 @@
 <select id="@fieldId" name="@fieldName" class="@fieldClass">
     @foreach(var option in Model.Value.Options)
     {
-        <option value="@option.Value" selected="@(option.Value == fieldValue ? "selected" : null)">@option.Text</option>        
+        var optionValue = !string.IsNullOrWhiteSpace(option.Value) ? option.Value : option.Text;
+        var isOptionSelected = optionValue == fieldValue;
+        <option value="@optionValue" selected="@isOptionSelected">@option.Text</option>
     }
 </select>

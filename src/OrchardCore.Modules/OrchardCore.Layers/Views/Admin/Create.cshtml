@@ -2,7 +2,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Create Layer"])</h1></zone>
 
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" class="no-multisubmit">
     <div class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>
         <input asp-for="Name" class="form-control" type="text" />

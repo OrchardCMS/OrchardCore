@@ -43,7 +43,7 @@
                     </td>
                     <td class="text-right">
                         <a v-on:click="remove(index)" title="@T["Remove culture"]" href="javascript:void(0)" class="btn btn-secondary btn-sm" style="cursor:pointer">
-                            <i class="fas fa-trash"></i>
+                            <i class="fas fa-trash" aria-hidden="true"></i>
                         </a>
                     </td>
                 </tr>
@@ -59,7 +59,7 @@
                 </select>
             </div>
             <div class="col">
-                <a v-on:click="add()" href="javascript:void(0)" class="btn btn-success"><i class="fas fa-plus small"></i> @T["Add culture"]</a>
+                <a v-on:click="add()" href="javascript:void(0)" class="btn btn-success"><i class="fas fa-plus small" aria-hidden="true"></i> @T["Add culture"]</a>
             </div>
         </div>
 

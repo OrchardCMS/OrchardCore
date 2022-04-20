@@ -1,7 +1,7 @@
 @*TODO: Replace by display name*@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit {0}", (string)Model.ContentItem.ContentType])</h1></zone>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" class="no-multisubmit">
     @Html.ValidationSummary()
     @await DisplayAsync(Model)
 

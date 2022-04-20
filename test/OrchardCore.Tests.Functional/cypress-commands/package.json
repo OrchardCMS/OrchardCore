@@ -1,0 +1,35 @@
+{
+  "name": "cypress-orchardcore",
+  "version": "0.4.7",
+  "author": "The Orchard Team",
+  "description": "Cypress commands for Orchard Core",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "homepage": "https://github.com/OrchardCms/OrchardCore#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OrchardCMS/OrchardCore.git"
+  },
+  "bugs": {
+    "url": "https://github.com/OrchardCMS/OrchardCore/issues"
+  },
+  "keywords": [
+    "cypress",
+    "orchard-core",
+    "cms",
+    "dotnet-core",
+    "testing"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -c -w"
+  },
+  "dependencies": {
+    "fs-extra": "^10.0.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^21.0.2",
+    "rollup": "^2.69.1"
+  }
+}

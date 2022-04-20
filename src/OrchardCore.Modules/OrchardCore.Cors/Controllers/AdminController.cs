@@ -107,7 +107,7 @@ namespace OrchardCore.Cors.Controllers
                     AllowedHeaders = settingViewModel.AllowedHeaders,
                     AllowedMethods = settingViewModel.AllowedMethods,
                     AllowedOrigins = settingViewModel.AllowedOrigins,
-                    IsDefaultPolicy =settingViewModel.IsDefaultPolicy
+                    IsDefaultPolicy = settingViewModel.IsDefaultPolicy
 
                 });
             }
@@ -119,7 +119,7 @@ namespace OrchardCore.Cors.Controllers
 
             await _corsService.UpdateSettingsAsync(corsSettings);
 
-            _notifier.Success(TH["The CORS settings have updated successfully."]);
+            await _notifier.SuccessAsync(TH["The CORS settings have updated successfully."]);
 
             return View(model);
         }

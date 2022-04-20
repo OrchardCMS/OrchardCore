@@ -81,14 +81,14 @@ namespace OrchardCore.Deployment.Controllers
                     }
                     else
                     {
-                        _notifier.Error(H["Only zip or json files are supported."]);
+                        await _notifier.ErrorAsync(H["Only zip or json files are supported."]);
 
                         return RedirectToAction(nameof(Index));
                     }
 
                     await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
 
-                    _notifier.Success(H["Deployment package imported."]);
+                    await _notifier.SuccessAsync(H["Deployment package imported."]);
                 }
                 finally
                 {
@@ -105,7 +105,7 @@ namespace OrchardCore.Deployment.Controllers
             }
             else
             {
-                _notifier.Error(H["Please add a file to import."]);
+                await _notifier.ErrorAsync(H["Please add a file to import."]);
             }
 
             return RedirectToAction(nameof(Index));
@@ -145,7 +145,7 @@ namespace OrchardCore.Deployment.Controllers
 
                     await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
 
-                    _notifier.Success(H["Recipe imported."]);
+                    await _notifier.SuccessAsync(H["Recipe imported."]);
                 }
                 finally
                 {

@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
@@ -54,7 +53,7 @@ namespace OrchardCore.Deployment.Controllers
 
             using (var fileBuilder = new TemporaryFileBuilder())
             {
-                archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename);
+                archiveFileName = fileBuilder.Folder + ".zip";
 
                 var recipeDescriptor = new RecipeDescriptor();
                 var recipeFileDeploymentStep = deploymentPlan.DeploymentSteps.FirstOrDefault(ds => ds.Name == nameof(RecipeFileDeploymentStep)) as RecipeFileDeploymentStep;

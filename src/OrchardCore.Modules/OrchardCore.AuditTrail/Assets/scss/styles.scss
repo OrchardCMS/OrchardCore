@@ -1,0 +1,227 @@
+/**
+ * GHColors theme by Avi Aryan (http://aviaryan.in)
+ * Inspired by Github syntax coloring
+ */
+
+ code[class*="language-"],
+ pre[class*="language-"] {
+   color: #393A34;
+   font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+   direction: ltr;
+   text-align: left;
+   white-space: pre;
+   word-spacing: normal;
+   word-break: normal;
+   font-size: 0.95em;
+   line-height: 1.2em;
+   -moz-tab-size: 4;
+   -o-tab-size: 4;
+   tab-size: 4;
+   -webkit-hyphens: none;
+   -moz-hyphens: none;
+   -ms-hyphens: none;
+   hyphens: none;
+ }
+ 
+ pre[class*="language-"]::-moz-selection,
+ pre[class*="language-"] ::-moz-selection,
+ code[class*="language-"]::-moz-selection,
+ code[class*="language-"] ::-moz-selection {
+   background: #b3d4fc;
+ }
+ 
+ pre[class*="language-"]::selection,
+ pre[class*="language-"] ::selection,
+ code[class*="language-"]::selection,
+ code[class*="language-"] ::selection {
+   background: #b3d4fc;
+ }
+ 
+ /* Code blocks */
+ 
+ pre[class*="language-"] {
+   padding: 1em;
+   margin: .5em 0;
+   overflow: auto;
+   border: 1px solid #dddddd;
+   background-color: white;
+ }
+ 
+ :not(pre)>code[class*="language-"],
+ pre[class*="language-"] {}
+ 
+ /* Inline code */
+ 
+ :not(pre)>code[class*="language-"] {
+   padding: .2em;
+   padding-top: 1px;
+   padding-bottom: 1px;
+   background: #f8f8f8;
+   border: 1px solid #dddddd;
+ }
+ 
+ .token.comment,
+ .token.prolog,
+ .token.doctype,
+ .token.cdata {
+   color: #999988;
+   font-style: italic;
+ }
+ 
+ .token.namespace {
+   opacity: .7;
+ }
+ 
+ .token.string,
+ .token.attr-value {
+   color: #e3116c;
+ }
+ 
+ .token.punctuation,
+ .token.operator {
+   color: #3bf5d4;
+   /* no highlight */
+ }
+ 
+ .token.entity,
+ .token.url,
+ .token.symbol,
+ .token.number,
+ .token.boolean,
+ .token.variable,
+ .token.constant,
+ .token.property,
+ .token.regex,
+ .token.inserted {
+   color: #36acaa;
+ }
+ 
+ .token.atrule,
+ .token.keyword,
+ .token.attr-name,
+ .language-autohotkey .token.selector {
+   color: #00a4db;
+ }
+ 
+ .token.function,
+ .token.deleted,
+ .language-autohotkey .token.tag {
+   color: #069071;
+ }
+ 
+ .token.tag,
+ .token.selector,
+ .language-autohotkey .token.keyword {
+   color: #ff9292;
+ }
+ 
+ .token.important,
+ .token.function,
+ .token.bold {
+   font-weight: bold;
+ }
+ 
+ .token.italic {
+   font-style: italic;
+ }
+ 
+ @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700,800');
+ 
+ body {
+   font-family: 'Poppins', sans-serif;
+   background-color: #262831;
+ }
+ 
+ .diff-viewer {
+   a {
+     color: #125dec;
+     text-decoration: none;
+   }
+ 
+   .banner {
+     padding: 70px 15px;
+     text-align: center;
+ 
+     .img-container {
+       text-align: center;
+       margin: 100px auto 60px;
+       max-width: 700px;
+ 
+       img {
+         width: 100%;
+ 
+         &.mobile {
+           display: none;
+         }
+       }
+     }
+ 
+     .cta {
+       margin-top: 60px;
+ 
+       a {
+         &:last-child {
+           button {
+             margin-right: 0;
+           }
+         }
+       }
+ 
+       button {
+         font-size: 14px;
+         background: #125dec;
+         border: none;
+         cursor: pointer;
+ 
+         &:focus {
+           background: #125dec;
+         }
+       }
+     }
+ 
+     p {
+       max-width: 700px;
+       font-size: 18px;
+       margin: 0 auto;
+       color: #FFF;
+     }
+   }
+ 
+   .controls {
+     margin: 50px 15px 15px;
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+ 
+     label {
+       margin-left: 30px;
+     }
+ 
+     select {
+       background-color: transparent;
+       padding: 5px 15px;
+       border-radius: 4px;
+       border: 2px solid #ddd;
+     }
+   }
+
+//    .diff-header {
+//      background: rgb(250, 251, 252);
+//    }
+ 
+   .diff-viewer {
+     max-width: 90%;
+     margin: 0 auto;
+     border-radius: 8px;
+     overflow-x: auto;
+     overflow-y: hidden;
+     white-space: nowrap;
+     box-shadow: 0 0 30px #1c1e25;
+ 
+     a {
+       color: inherit;
+     }
+   }
+ }
+ 
+ 

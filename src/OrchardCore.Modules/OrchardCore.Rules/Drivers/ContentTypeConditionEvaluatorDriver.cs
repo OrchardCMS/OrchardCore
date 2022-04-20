@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
@@ -16,8 +15,8 @@ namespace OrchardCore.Rules.Drivers
     /// </summary>
     public class ContentTypeConditionEvaluatorDriver : ContentDisplayDriver, IConditionEvaluator
     {
-        private static ValueTask<bool> True = new ValueTask<bool>(true);
-        private static ValueTask<bool> False = new ValueTask<bool>(false);
+        private static ValueTask<bool> True => new ValueTask<bool>(true);
+        private static ValueTask<bool> False => new ValueTask<bool>(false);
 
         private readonly IConditionOperatorResolver _operatorResolver;
 
@@ -35,7 +34,7 @@ namespace OrchardCore.Rules.Drivers
             if (context.DisplayType == "Detail" && !context.Shape.TryGetProperty(nameof(ContentTypeSettings.Stereotype), out string _))
             {
                 _contentTypes.Add(contentItem.ContentType);
-            }            
+            }
 
             return Task.FromResult<IDisplayResult>(null);
         }

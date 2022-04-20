@@ -69,7 +69,7 @@ namespace OrchardCore.Users.Controllers
 
                 if (controller.ModelState.IsValid)
                 {
-                    var user = await userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, EmailConfirmed = !settings.UsersMustValidateEmail }, model.Password, (key, message) => controller.ModelState.AddModelError(key, message)) as User;
+                    var user = await userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, EmailConfirmed = !settings.UsersMustValidateEmail, IsEnabled = !settings.UsersAreModerated }, model.Password, (key, message) => controller.ModelState.AddModelError(key, message)) as User;
 
                     if (user != null && controller.ModelState.IsValid)
                     {
@@ -79,7 +79,7 @@ namespace OrchardCore.Users.Controllers
                             // Send an email with this link
                             await controller.SendEmailConfirmationTokenAsync(user, confirmationEmailSubject);
                         }
-                        else
+                        else if (!(settings.UsersAreModerated && !user.IsEnabled))
                         {
                             await signInManager.SignInAsync(user, isPersistent: false);
                         }

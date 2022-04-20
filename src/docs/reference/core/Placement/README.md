@@ -134,7 +134,7 @@ Note: you need to add `@addTagHelper *, OrchardCore.Contents.TagHelpers` to your
 === "Liquid"
 
     ``` liquid
-    {% contentitem alias:"alias:main-menu" display_type="Detail" %}
+    {% contentitem alias: "alias:main-menu", display_type: "Detail" %}
     ```
 
 #### Manipulating shape metadata
@@ -310,4 +310,4 @@ We also specify that the `Content` column will take 9 columns, of the default 12
 
 ## Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/h0lZMQkUApo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/h0lZMQkUApo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -32,7 +32,7 @@
             <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="bulk-action-menu-button">
                 @foreach (var item in Model.Creatable)
                 {
-                    <a class="dropdown-item add-list-widget btn-sm" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[item.Text]</a>
+                    <a class="dropdown-item add-list-widget btn-sm" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[Html.Encode(item.Text)]</a>
                 }
             </div>
         </div>
@@ -45,7 +45,7 @@
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
-    <form id="dashboard-undo-form" asp-action="Update" method="POST">
+    <form id="dashboard-undo-form" asp-action="Update" method="POST" class="no-multisubmit">
         @for (int index = 0; index < Model.Dashboards.Count(); index++)
         {
             <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)" name="parts[@(index)].ContentItemId" value="@Model.Dashboards[index].Dashboard.ContentItemId" />

@@ -1,0 +1,43 @@
+@model ContentAuditTrailSettingsViewModel
+@using OrchardCore.Contents.AuditTrail.ViewModels
+
+<section>
+    <div class="form-group check-all-content-container" asp-validation-class-for="AllowedContentTypes">
+        <label asp-for="AllowedContentTypes">@T["Allowed content types"]</label>
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input check-all-master" id="select-all" />
+            <label class="custom-control-label" for="select-all">@T["Select all"]</label>
+        </div>
+        <div class="check-all-content-slave">
+            @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.AllowedContentTypes, htmlName = Html.NameFor(m => m.AllowedContentTypes) })
+        </div>
+        <span asp-validation-for="AllowedContentTypes"></span>
+        <span class="hint">@T["The types of content whose events are recorded."]</span>
+    </div>
+</section>
+
+<script at="Foot" type="text/javascript">
+    $(function () {
+        $('.check-all-content-container').each(function () {
+            var container = $(this);
+            var master = container.find('input[type="checkbox"].check-all-master');
+            var slaves = container.find('.check-all-content-slave input[type="checkbox"]:not(:disabled)');
+
+            var updateMaster = function () {
+                var allChecked = slaves.filter(':not(:checked)').length == 0;
+                master.prop('checked', allChecked);
+            }
+
+            master.on('change', function () {
+                var isChecked = $(this).is(':checked');
+                slaves.prop('checked', isChecked);
+            });
+
+            slaves.on('change', function () {
+                updateMaster();
+            });
+
+            updateMaster();
+        });
+    });
+</script>

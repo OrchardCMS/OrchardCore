@@ -68,7 +68,7 @@ namespace OrchardCore.Features.Services
             var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force);
             foreach (var enabledFeature in enabledFeatures)
             {
-                _notifier.Success(H["{0} was enabled.", enabledFeature.Name]);
+                await _notifier.SuccessAsync(H["{0} was enabled.", enabledFeature.Name]);
             }
         }
 
@@ -95,7 +95,7 @@ namespace OrchardCore.Features.Services
             var features = await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force);
             foreach (var feature in features)
             {
-                _notifier.Success(H["{0} was disabled.", feature.Name]);
+                await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name]);
             }
         }
 

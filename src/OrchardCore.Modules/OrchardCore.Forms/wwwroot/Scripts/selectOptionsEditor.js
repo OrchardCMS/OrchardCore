@@ -3,83 +3,163 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function initializeSelectOptionsEditor(elem, data, defaultValue, modalBodyElement) {
-  var previouslyChecked;
-  var store = {
-    debug: false,
-    state: {
-      options: data,
-      "default": defaultValue
-    },
-    addOption: function addOption() {
-      if (this.debug) {
-        console.log('add option triggered');
-      }
+function initializeSelectOptionsEditor(elemId, optionsData, defaultValue) {
+  var keyId = 1; //Add Key ID
 
-      ;
-      this.state.options.push({
-        text: '',
-        value: ''
-      });
+  optionsData = optionsData.map(function (x) {
+    x.key = keyId;
+    keyId++;
+    return x;
+  });
+  var selectOptionsRow = {
+    name: "select-options-row",
+    template: "#select-options-row",
+    props: ["option", "defaultValue"],
+    data: function data() {
+      return {
+        partId: elemId
+      };
     },
-    removeOption: function removeOption(index) {
-      if (this.debug) {
-        console.log('remove option triggered with', index);
+    methods: {
+      remove: function remove() {
+        this.$emit("remove-option", this.option);
       }
-
-      ;
-      this.state.options.splice(index, 1);
     },
-    getOptionsFormattedList: function getOptionsFormattedList() {
-      if (this.debug) {
-        console.log('getOptionsFormattedList triggered');
-      }
+    computed: {
+      IsSelected: {
+        get: function get() {
+          if (!IsNullOrWhiteSpace(this.option.value)) {
+            return this.option.value == this.defaultValue;
+          } else {
+            return this.option.text == this.defaultValue;
+          }
+        },
+        set: function set(val) {
+          if (val) {
+            this.$emit("set-default", this.option);
+          } else {
+            this.$emit("set-default", null);
+          }
+        }
+      },
+      optionValue: {
+        get: function get() {
+          return this.option.value;
+        },
+        set: function set(val) {
+          var isSelected = this.IsSelected;
+          this.option.value = val;
 
-      ;
-      return JSON.stringify(this.state.options.filter(function (x) {
-        return !IsNullOrWhiteSpace(x.text);
-      }));
+          if (isSelected) {
+            this.$emit("set-default", this.option);
+          } else {
+            this.$emit("reorder-option");
+          }
+        }
+      },
+      optionText: {
+        get: function get() {
+          return this.option.text;
+        },
+        set: function set(val) {
+          var isSelected = this.IsSelected;
+          this.option.text = val;
+
+          if (isSelected) {
+            this.$emit("set-default", this.option);
+          } else {
+            this.$emit("reorder-option");
+          }
+        }
+      },
+      optionCheck: {
+        get: function get() {
+          if (IsNullOrWhiteSpace(this.option.value)) {
+            return this.option.text;
+          } else {
+            return this.option.value;
+          }
+        }
+      }
     }
   };
   var selectOptionsTable = {
-    template: '#select-options-table',
-    props: ['data'],
-    name: 'select-options-table',
+    name: "select-options-table",
+    components: {
+      selectOptionsRow: selectOptionsRow
+    },
+    template: "#select-options-table",
+    props: ["data"],
+    data: function data() {
+      return {
+        partId: elemId
+      };
+    },
     methods: {
       add: function add() {
-        store.addOption();
+        this.$emit("add-option");
       },
-      remove: function remove(index) {
-        store.removeOption(index);
-      },
-      uncheck: function uncheck(index) {
-        if (index == previouslyChecked) {
-          $('#customRadio_' + index)[0].checked = false;
-          store.state["default"] = null;
-          previouslyChecked = null;
-        } else {
-          previouslyChecked = index;
-        }
-      },
-      getOptionsFormattedList: function getOptionsFormattedList() {
-        return store.getOptionsFormattedList();
+      onDragEnd: function onDragEnd() {
+        this.$emit("reorder-option");
       }
     }
   };
   var selectOptionsModal = {
-    template: '#select-options-modal',
-    props: ['data'],
-    name: 'select-options-modal',
+    name: "select-options-modal",
+    template: "#select-options-modal",
+    props: ["data", "showModal", "validOptions"],
+    data: function data() {
+      return {
+        optionsFormattedList: "[]",
+        partId: elemId,
+        defaultValue: "",
+        isValid: false,
+        jsonOptions: []
+      };
+    },
     methods: {
-      getOptionsFormattedList: function getOptionsFormattedList() {
-        return store.getOptionsFormattedList();
+      closeModal: function closeModal(save) {
+        if (save) {
+          this.$emit("modal-save", {
+            options: this.jsonOptions,
+            defaultValue: this.defaultValue
+          });
+        } else {
+          this.$emit("modal-cancel");
+        }
       },
-      showModal: function showModal() {
-        $(modalBodyElement).modal();
+      showStart: function showStart(params) {
+        this.$refs.modal.classList.toggle('d-block');
+        this.$refs.backdrop.classList.toggle('d-block');
       },
-      closeModal: function closeModal() {
-        var modal = $(modalBodyElement).modal();
-        modal.modal('hide');
+      showEnd: function showEnd(params) {
+        this.$refs.modal.classList.toggle('show');
+        this.$refs.backdrop.classList.toggle('show');
+      }
+    },
+    watch: {
+      showModal: function showModal(newval) {
+        if (newval) {
+          this.optionsFormattedList = JSON.stringify(this.validOptions, null, 2);
+          this.defaultValue = this.data.defaultValue;
+        } else {
+          this.optionsFormattedList = "[]";
+          this.defaultValue = "";
+        }
+      },
+      optionsFormattedList: function optionsFormattedList(newval) {
+        try {
+          var parsed = JSON.parse(newval);
+
+          if (!!newval && parsed instanceof Array) {
+            this.jsonOptions = parsed;
+            this.isValid = true;
+          } else {
+            this.isValid = false;
+          }
+        } catch (e) {
+          this.isValid = false;
+        }
       }
     }
   };
@@ -88,18 +168,97 @@ function initializeSelectOptionsEditor(elem, data, defaultValue, modalBodyElemen
       selectOptionsTable: selectOptionsTable,
       selectOptionsModal: selectOptionsModal
     },
-    data: {
-      sharedState: store.state
+    data: function data() {
+      return {
+        state: {
+          options: optionsData,
+          defaultValue: defaultValue,
+          partId: elemId
+        },
+        debounceTimeout: null,
+        showModal: false
+      };
     },
-    el: elem,
+    el: "#" + elemId,
     methods: {
-      showModal: function showModal() {
-        selectOptionsModal.methods.showModal();
+      cancelChanges: function cancelChanges() {
+        this.showModal = false;
+      },
+      updateChanges: function updateChanges(changes) {
+        this.state.options = changes.options.filter(function (y) {
+          return !IsNullOrWhiteSpace(y.text);
+        }).map(function (x) {
+          x.key = keyId++;
+          return x;
+        });
+        this.state.defaultValue = changes.defaultValue;
+        this.showModal = false;
+        this.debouncePreview();
+      },
+      setDefaultValue: function setDefaultValue(opt) {
+        if (opt == null) {
+          this.state.defaultValue = "";
+        } else {
+          if (!IsNullOrWhiteSpace(opt.value)) {
+            this.state.defaultValue = opt.value;
+          } else {
+            this.state.defaultValue = opt.text;
+          }
+        }
+
+        this.debouncePreview();
+      },
+      addOption: function addOption() {
+        this.state.options.push({
+          text: "",
+          value: "",
+          key: keyId++
+        });
+        this.debouncePreview();
+      },
+      removeOption: function removeOption(opt) {
+        var index = this.state.options.findIndex(function (c) {
+          return c.key == opt.key;
+        });
+
+        if (index > -1) {
+          this.state.options.splice(index, 1);
+          this.debouncePreview();
+        }
+      },
+      reorderOption: function reorderOption(evt) {
+        this.debouncePreview();
+      },
+      debouncePreview: function debouncePreview(params) {
+        if (this.debounceTimeout) clearTimeout(this.debounceTimeout);
+        this.debounceTimeout = setTimeout(function () {
+          var previewEvent = new Event("contentpreview:render");
+          document.dispatchEvent(previewEvent);
+        }, 500);
+      }
+    },
+    computed: {
+      stringify: function stringify() {
+        return JSON.stringify(this.validOptions);
+      },
+      validOptions: function validOptions() {
+        return this.state.options.map(function (x) {
+          return {
+            text: x.text,
+            value: x.value
+          };
+        }).filter(function (x) {
+          return !IsNullOrWhiteSpace(x.text);
+        });
       }
     }
   });
-}
 
-function IsNullOrWhiteSpace(str) {
-  return str === null || str.match(/^ *$/) !== null;
+  function IsNullOrWhiteSpace(str) {
+    return str == null || str.match(/^ *$/) !== null;
+  }
+
+  function EmptyIfNullOrWhiteSpace(str) {
+    return str == null || str.trim() == "" ? "" : str.trim();
+  }
 }

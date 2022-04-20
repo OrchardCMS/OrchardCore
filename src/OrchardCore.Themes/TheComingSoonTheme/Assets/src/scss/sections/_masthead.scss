@@ -46,16 +46,17 @@
         .input-group-newsletter {
             input {
                 height: auto;
+                width: 100%;
                 font-size: 1rem;
                 padding: 1rem;
             }
 
             button {
-                font-size: 0.8rem;
+                font-size: 0.85rem;
                 font-weight: 700;
                 text-transform: uppercase;
                 letter-spacing: 1px;
-                padding: 1rem;
+                padding: calc(1rem + 2px);
             }
         }
     }

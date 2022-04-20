@@ -5,5 +5,18 @@
       "Assets/scss/Contents.scss"
     ],
     "output": "wwwroot/Styles/Contents.css"
+  },
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/scss/audittrail-disabledcontent.scss"
+    ],
+    "output": "wwwroot/Styles/audittrail-disabledcontent.css"
+  },
+  {
+    "inputs": [
+      "Assets/js/audittrail-disabledcontent.js"
+    ],
+    "output": "wwwroot/Scripts/audittrail-disabledcontent.js"
   }
 ]

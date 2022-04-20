@@ -55,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Zones
     /// <remarks>
     /// Returns a ZoneOnDemand object the first time the indexer is invoked.
     /// If an item is added to the ZoneOnDemand then the zoneFactory is invoked to create a zone shape and this item is added to the zone.
-    /// Then the zone shape is assigned in palce of the ZoneOnDemand. A ZoneOnDemand returns true when compared to null such that we can
+    /// Then the zone shape is assigned in place of the ZoneOnDemand. A ZoneOnDemand returns true when compared to null such that we can
     /// do Zones["Foo"] == null to see if anything has been added to a zone, without instantiating a zone when accessing the indexer.
     /// </remarks>
     public class Zones : Composite
@@ -118,6 +118,7 @@ namespace OrchardCore.DisplayManagement.Zones
         private readonly Func<ValueTask<IShape>> _zoneFactory;
         private readonly ZoneHolding _parent;
         private readonly string _potentialZoneName;
+        private IShape _zone;
 
         public ZoneOnDemand(Func<ValueTask<IShape>> zoneFactory, ZoneHolding parent, string potentialZoneName)
         {
@@ -213,15 +214,23 @@ namespace OrchardCore.DisplayManagement.Zones
         {
             if (item == null)
             {
-                return _parent;
+                if (_zone != null)
+                {
+                    return _zone;
+                }
+
+                return this;
             }
 
-            var zone = await _zoneFactory();
-            zone.Properties["Parent"] = _parent;
-            zone.Properties["ZoneName"] = _potentialZoneName;
-            _parent.Properties[_potentialZoneName] = zone;
+            if (_zone == null)
+            {
+                _zone = await _zoneFactory();
+                _zone.Properties["Parent"] = _parent;
+                _zone.Properties["ZoneName"] = _potentialZoneName;
+                _parent.Properties[_potentialZoneName] = _zone;
+            }
 
-            return await zone.AddAsync(item, position);
+            return _zone = await _zone.AddAsync(item, position);
         }
     }
 }

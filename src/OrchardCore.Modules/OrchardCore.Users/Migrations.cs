@@ -1,6 +1,7 @@
-using System.Threading.Tasks;
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using YesSql;
@@ -10,13 +11,6 @@ namespace OrchardCore.Users
 {
     public class Migrations : DataMigration
     {
-        private readonly ISession _session;
-
-        public Migrations(ISession session)
-        {
-            _session = session;
-        }
-
         // This is a sequenced migration. On a new schemas this is complete after UpdateFrom2.
         public int Create()
         {
@@ -36,10 +30,17 @@ namespace OrchardCore.Users
                     "UserId",
                     "NormalizedUserName",
                     "NormalizedEmail",
-                    "IsEnabled",
+                    "IsEnabled"
+                    )
+            );
+
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
+                .CreateIndex("IDX_UserIndex_Lockout",
+                    "DocumentId",
                     "IsLockoutEnabled",
                     "LockoutEndUtc",
-                    "AccessFailedCount")
+                    "AccessFailedCount"
+                    )
             );
 
             SchemaBuilder.CreateReduceIndexTable<UserByRoleNameIndex>(table => table
@@ -76,7 +77,7 @@ namespace OrchardCore.Users
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 11;
+            return 12;
         }
 
         // This code can be removed in a later version.
@@ -123,14 +124,19 @@ namespace OrchardCore.Users
         // The UserName property rather than the NormalizedUserName is used as the ContentItem.Owner property matches the UserName.
         // New users will be created with a generated Id.
         // This code can be removed in a later version.
-        public async Task<int> UpdateFrom5Async()
+        public int UpdateFrom5()
         {
-            var users = await _session.Query<User>().ListAsync();
-            foreach (var user in users)
+            // Defer this until after the subsequent migrations have succeded as the schema has changed.
+            ShellScope.AddDeferredTask(async scope =>
             {
-                user.UserId = user.UserName;
-                _session.Save(user);
-            }
+                var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                var users = await session.Query<User>().ListAsync();
+                foreach (var user in users)
+                {
+                    user.UserId = user.UserName;
+                    session.Save(user);
+                }
+            });
 
             return 6;
         }
@@ -144,15 +150,20 @@ namespace OrchardCore.Users
 
         // Migrate any user names replacing '@' with '+' as user names can no longer be an email address.
         // This code can be removed in a later version.
-        public async Task<int> UpdateFrom7Async()
+        public int UpdateFrom7()
         {
-            var users = await _session.Query<User, UserIndex>(u => u.NormalizedUserName.Contains("@")).ListAsync();
-            foreach (var user in users)
+            // Defer this until after the subsequent migrations have succeded as the schema has changed.
+            ShellScope.AddDeferredTask(async scope =>
             {
-                user.UserName = user.UserName.Replace('@', '+');
-                user.NormalizedUserName = user.NormalizedUserName.Replace('@', '+');
-                _session.Save(user);
-            }
+                var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                var users = await session.Query<User, UserIndex>(u => u.NormalizedUserName.Contains("@")).ListAsync();
+                foreach (var user in users)
+                {
+                    user.UserName = user.UserName.Replace('@', '+');
+                    user.NormalizedUserName = user.NormalizedUserName.Replace('@', '+');
+                    session.Save(user);
+                }
+            });
 
             return 8;
         }
@@ -166,10 +177,7 @@ namespace OrchardCore.Users
                     "UserId",
                     "NormalizedUserName",
                     "NormalizedEmail",
-                    "IsEnabled",
-                    "IsLockoutEnabled",
-                    "LockoutEndUtc",
-                    "AccessFailedCount")
+                    "IsEnabled")
             );
 
             SchemaBuilder.AlterIndexTable<UserByLoginInfoIndex>(table => table
@@ -188,7 +196,7 @@ namespace OrchardCore.Users
 
             return 9;
         }
-        
+
         // This code can be removed in a later version.
         public int UpdateFrom9()
         {
@@ -199,7 +207,7 @@ namespace OrchardCore.Users
 
             return 10;
         }
-        
+
         public int UpdateFrom10()
         {
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
@@ -212,6 +220,20 @@ namespace OrchardCore.Users
                 .AddColumn<int>(nameof(UserIndex.AccessFailedCount), c => c.NotNull().WithDefault(0)));
 
             return 11;
-        }      
+        }
+
+        public int UpdateFrom11()
+        {
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
+                .CreateIndex("IDX_UserIndex_Lockout",
+                    "DocumentId",
+                    "IsLockoutEnabled",
+                    "LockoutEndUtc",
+                    "AccessFailedCount"
+                    )
+            );
+
+            return 12;
+        }
     }
 }

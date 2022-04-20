@@ -10,8 +10,8 @@ Vue.component('folder', {
                   <span v-on:click.stop="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i v-if="open" class="fas fa-chevron-${document.dir == "ltr" ? "right" : "left"}"></i></span> 
                   <div class="folder-name ml-2">{{model.name}}</div>
                     <div class="btn-group folder-actions" >
-                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder" v-if="isSelected || isRoot"><i class="fas fa-plus"></i></a>
-                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder" v-if="isSelected && !isRoot"><i class="fas fa-trash"></i></a>
+                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder" v-if="isSelected || isRoot"><i class="fas fa-plus" aria-hidden="true"></i></a>
+                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder" v-if="isSelected && !isRoot"><i class="fas fa-trash" aria-hidden="true"></i></a>
                     </div>
                 </a>
             </div>
@@ -71,8 +71,6 @@ Vue.component('folder', {
 
         bus.$on('addFolder', function (target, folder) {
             if (self.model == target) {
-
-                bus.$emit('beforeFolderAdded', self.model);
                 if (self.children !== null) {
                     self.children.push(folder);
                 }                

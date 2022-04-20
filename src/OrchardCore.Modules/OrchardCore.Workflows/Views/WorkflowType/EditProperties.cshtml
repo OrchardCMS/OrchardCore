@@ -3,7 +3,7 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Workflow"])</h1></zone>
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="EditProperties" method="post">
+<form asp-action="EditProperties" method="post" class="no-multisubmit">
     <input type="hidden" asp-for="ReturnUrl" />
 
     <ul class="nav nav-tabs">

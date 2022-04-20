@@ -18,24 +18,23 @@ All script or stylesheet resources should be prefixed with the `~` character.
 
 Resource Settings are configured through the site admin.
 
-### AppendVersion
+### `AppendVersion`
 
 Enabling `AppendVersion` or Resources cache busting will automatically append a version hash to all local scripts and style sheets.
 This is turned on by default.
 
-### UseCdn
+### `UseCdn`
 
 Enabling UseCdn will configure the `IResourceManager` to provide any scripts or styles, such as `jQuery`, from the configured CDN.
 
-### ResourceDebugMode
+### `ResourceDebugMode`
 
 When enabled will serve scripts or styles, that have a CDN configured, or a debug-src, from the local server in non minified format.  
-This will also disabled the CdnBaseUrl prepending.
+This will also disable the `CdnBaseUrl` prepending.
 
-### CdnBaseUrl
+### `CdnBaseUrl`
 
-When supplied this will prepend local resources served via the `IResourceManager` or Tag Helpers with the absolute url provided. This will
-be disabled in `ResourceDebugMode`
+When supplied this will prepend local resources served via the `IResourceManager` or Tag Helpers with the absolute url provided. This will be disabled in `ResourceDebugMode`
 
 ## Named Resources
 
@@ -51,27 +50,27 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | jquery.easing         | Script | 1.4.1         | -              |
 | jquery-resizable-dom  | Script | 0.35.0        | -              |
-| js-cookie             | Script | 2.2.1         | jQuery         |
+| js-cookie             | Script | 3.0.1         | jQuery         |
 | popper                | Script | 1.16.1        | -              |
-| popperjs              | Script | 2.9.2         | -              |
-| bootstrap             | Script | 4.6.0         | popper         |
-| bootstrap             | Script | 5.0.1         | popperjs       |
-| bootstrap             | Style  | 4.6.0, 5.0.1  | -              |
+| popperjs              | Script | 2.10.2        | -              |
+| bootstrap             | Script | 4.6.1         | popper         |
+| bootstrap             | Script | 5.1.3         | popperjs       |
+| bootstrap             | Style  | 4.6.1, 5.1.3  | -              |
 | bootstrap-select      | Script | 1.13.18       | -              |
 | bootstrap-select      | Style  | 1.13.18       | -              |
 | bootstrap-slider      | Script | 11.0.2        | -              |
 | bootstrap-slider      | Style  | 11.0.2        | -              |
-| codemirror            | Script | 5.61.1        | -              |
-| codemirror            | Style  | 5.61.1        | -              |
-| font-awesome          | Style  | 5.15.3        | -              |
-| font-awesome          | Script | 5.15.3        | -              |
-| font-awesome-v4-shims | Script | 5.15.3        | -              |
+| codemirror            | Script | 5.65.2        | -              |
+| codemirror            | Style  | 5.65.2        | -              |
+| font-awesome          | Style  | 6.0.0         | -              |
+| font-awesome          | Script | 6.0.0         | -              |
+| font-awesome-v4-shims | Script | 6.0.0         | -              |
 | Sortable              | Script | 1.10.2        | -              |
-| trumbowyg             | Script | 2.23.0        | -              |
+| trumbowyg             | Script | 2.25.1        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
-| monaco-loader         | Script | 0.24.0        | -              |
-| monaco                | Script | 0.24.0        | monaco-loader  |
+| monaco-loader         | Script | 0.32.1        | -              |
+| monaco                | Script | 0.32.1        | monaco-loader  |
 
 ### Registering a Resource Manifest
 
@@ -113,9 +112,37 @@ We set the Cdn Integrity Hashes and the version to `3.4.1`
 
 This script will then be available for the tag helper or API to register by name. 
 
+Additionally, we can use the `SetDependencies` method to ensure the script or style is loaded after their dependency. 
+
+```csharp
+public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+{
+    private static ResourceManifest _manifest;
+
+    static ResourceManagementOptionsConfiguration()
+    {
+        _manifest = new ResourceManifest();
+
+        _manifest
+            .DefineStyle("ModuleName-Bootstrap-Select")
+            .SetUrl("~/ModuleName/bootstrap-select.min.css", "~/ModuleName/bootstrap-select.css")
+            .SetDependencies("bootstrap:4");
+    }
+
+    public void Configure(ResourceManagementOptions options)
+    {
+        options.ResourceManifests.Add(_manifest);
+    }
+}
+
+```
+
+In this example, we define a style that depends on Bootstrap version 4. In this case, the latest available minor version of bootstrap version 4 will be added. Alternatively, you can set a specific version of your choice or the latest version available. [See Inline definition](#inline-definition) for more details about versioning usage.
+
 !!! note "Registration"
     Make sure to register this `IConfigureOptions<ResourceManagementOptions>` in the `Startup` or your theme or module.
     `serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();`
+  
 
 ## Usage
 
@@ -347,7 +374,7 @@ When rendering the scripts the resource manager will order the output based on t
 3. `bar`
 
 !!! note
-    You do not have to define a name for your script or style unless you want to reference it as a dependency, or declare it as `Inline`.
+    You do not have to define a name for your script or style unless you want to reference it as a dependency, or declare it as `Inline`. Hence why the above inline examples all include a name.
 
 #### Custom scripts
 

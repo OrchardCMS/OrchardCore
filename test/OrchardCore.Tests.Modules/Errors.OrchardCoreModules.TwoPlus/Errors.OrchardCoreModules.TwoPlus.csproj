@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.props" />
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\OrchardCore\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Should error on Type="module" with or without the property, i.e. defaults to "module" -->
+    <OrchardCoreAttributes Include="$(MSBuildProjectName).One"
+                           Type="module"
+                           ModuleType="two"
+                           Category="three"
+                           Priority="4"
+                           Description="five"
+                           Author="six"
+                           Version="7.8.9"
+                           Website="oc://twoormoremodules.prop"
+                           Dependencies="nine;ten;eleven"
+                           Tags="ten;eleven;twelve" />
+    <OrchardCoreAttributes Include="$(MSBuildProjectName).Two"
+                           ModuleType="three"
+                           Category="four"
+                           Priority="5"
+                           Description="six"
+                           Author="seven"
+                           Version="8.9.10"
+                           Website="oc://twoormoremodules.prop"
+                           Dependencies="ten;eleven;twelve"
+                           Tags="eleven;twelve;thirteen" />
+  </ItemGroup>
+
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.targets" />
+  <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>OrchardCore.Abstractions.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

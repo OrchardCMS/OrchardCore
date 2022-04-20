@@ -4,7 +4,7 @@
     ViewLayout = "Layout__Login";
 }
 
-<form asp-controller="Account" asp-action="LinkExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+<form asp-controller="Account" asp-action="LinkExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal no-multisubmit">
     <h4>@T["Link your account."]</h4>
     <p class="text-info">
         @T["You've successfully authenticated with <strong>{0}</strong>. You already have an account with this email address. Enter your local account password and click the Register button to link the accounts and finish logging in.", ViewData["LoginProvider"]]

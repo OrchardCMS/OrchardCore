@@ -145,7 +145,7 @@ namespace OrchardCore.Media.Controllers
             if (ModelState.IsValid)
             {
                 var isCustomWidth = model.SelectedWidth != 0 && Array.BinarySearch<int>(_mediaOptions.SupportedSizes, model.SelectedWidth) < 0;
-                var isCustomHeight = model.SelectedHeight != 0 &&Array.BinarySearch<int>(_mediaOptions.SupportedSizes, model.SelectedHeight) < 0;
+                var isCustomHeight = model.SelectedHeight != 0 && Array.BinarySearch<int>(_mediaOptions.SupportedSizes, model.SelectedHeight) < 0;
 
                 var mediaProfile = new MediaProfile
                 {
@@ -286,7 +286,7 @@ namespace OrchardCore.Media.Controllers
 
             await _mediaProfilesManager.RemoveMediaProfileAsync(name);
 
-            _notifier.Success(H["Media profile deleted successfully."]);
+            await _notifier.SuccessAsync(H["Media profile deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -313,7 +313,7 @@ namespace OrchardCore.Media.Controllers
                         {
                             await _mediaProfilesManager.RemoveMediaProfileAsync(item.Key);
                         }
-                        _notifier.Success(H["Media profiles successfully removed."]);
+                        await _notifier.SuccessAsync(H["Media profiles successfully removed."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

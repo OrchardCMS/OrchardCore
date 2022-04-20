@@ -27,12 +27,22 @@ namespace OrchardCore.ContentLocalization
             builder
                 .Add(S["Configuration"], localization => localization
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Content Culture Picker"], S["Content Culture Picker"].PrefixPosition(), registration => registration
-                        .AddClass("contentculturepicker").Id("contentculturepicker")
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ContentCulturePickerSettingsDriver.GroupId })
-                            .Permission(Permissions.ManageContentCulturePicker)
-                            .LocalNav()
-                        )));
+                        .Add(S["Localization"], localization => localization
+                            .Add(S["Content Request Culture Provider"], S["Content Request Culture Provider"].PrefixPosition(), registration => registration
+                                .AddClass("contentrequestcultureprovider").Id("contentrequestcultureprovider")
+                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ContentRequestCultureProviderSettingsDriver.GroupId })
+                                .Permission(Permissions.ManageContentCulturePicker)
+                                .LocalNav()
+                            )
+                            .Add(S["Content Culture Picker"], S["Content Culture Picker"].PrefixPosition(), registration => registration
+                                .AddClass("contentculturepicker").Id("contentculturepicker")
+                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ContentCulturePickerSettingsDriver.GroupId })
+                                .Permission(Permissions.ManageContentCulturePicker)
+                                .LocalNav()
+                            )
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }

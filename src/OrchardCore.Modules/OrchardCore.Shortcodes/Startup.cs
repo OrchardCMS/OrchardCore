@@ -48,7 +48,7 @@ namespace OrchardCore.Shortcodes
                     };
                 });
 
-                o.MemberAccessStrategy.Register<Sc.Arguments, object>((obj, name) => obj.NamedOrDefault(name));
+                o.MemberAccessStrategy.Register<Sc.Arguments, object>((obj, name) => obj.Named(name));
             });
 
             services.AddScoped<IShortcodeService, ShortcodeService>();

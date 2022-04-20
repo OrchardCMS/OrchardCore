@@ -84,7 +84,9 @@ namespace OrchardCore.Users.Controllers
                 // send email with callback link
                 await this.SendEmailAsync(user.Email, S["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl });
 
-                await _passwordRecoveryFormEvents.InvokeAsync(i => i.PasswordRecoveredAsync(), _logger);
+                var context = new PasswordRecoveryContext(user);
+
+                await _passwordRecoveryFormEvents.InvokeAsync((handler, context) => handler.PasswordRecoveredAsync(context), context, _logger);
 
                 return RedirectToLocal(Url.Action("ForgotPasswordConfirmation", "ResetPassword"));
             }
@@ -131,8 +133,6 @@ namespace OrchardCore.Users.Controllers
             {
                 if (await _userService.ResetPasswordAsync(model.Email, Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken)), model.NewPassword, (key, message) => ModelState.AddModelError(key, message)))
                 {
-                    await _passwordRecoveryFormEvents.InvokeAsync(i => i.PasswordResetAsync(), _logger);
-
                     return RedirectToLocal(Url.Action("ResetPasswordConfirmation", "ResetPassword"));
                 }
             }

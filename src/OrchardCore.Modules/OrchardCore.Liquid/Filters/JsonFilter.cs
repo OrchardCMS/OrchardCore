@@ -21,7 +21,7 @@ namespace OrchardCore.Liquid.Filters
             switch (input.Type)
             {
                 case FluidValues.Array:
-                    return new ValueTask<FluidValue>(new StringValue(JsonConvert.SerializeObject(input.Enumerate().Select(o => o.ToObjectValue()), formatting)));
+                    return new ValueTask<FluidValue>(new StringValue(JsonConvert.SerializeObject(input.Enumerate(context).Select(o => o.ToObjectValue()), formatting)));
 
                 case FluidValues.Boolean:
                     return new ValueTask<FluidValue>(new StringValue(JsonConvert.SerializeObject(input.ToBooleanValue(), formatting)));

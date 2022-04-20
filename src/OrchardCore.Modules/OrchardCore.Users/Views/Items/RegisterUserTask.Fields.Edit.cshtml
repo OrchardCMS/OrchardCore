@@ -22,3 +22,9 @@
     <span asp-validation-for="ConfirmationEmailTemplate"></span>
     <span class="hint">@T["The message to send. Access email confirmation url with Workflow.Properties.EmailConfirmationUrl liquid property."]</span>
 </div>
+
+<div class="form-group form-check" asp-validation-class-for="RequireModeration">
+    <input type="checkbox" asp-for="RequireModeration" class="form-check-input" />
+    <span asp-validation-for="RequireModeration"></span>
+    <label asp-for="RequireModeration" class="form-check-label">@T["Users must be approved before they can log in"]</label>
+</div>

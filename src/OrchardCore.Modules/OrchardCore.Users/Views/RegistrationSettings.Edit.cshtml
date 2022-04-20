@@ -14,7 +14,16 @@
     <select asp-for="UsersCanRegister" class="form-control">
         @foreach (UserRegistrationType option in Enum.GetValues(typeof(UserRegistrationType)))
         {
-            <option value="@option" selected="@(Model.UsersCanRegister == option)">@T[option.ToString()]</option>
+            <option value="@option" selected="@(Model.UsersCanRegister == option)">
+                @{
+                    switch (option)
+                    {
+                        case UserRegistrationType.NoRegistration: @T["NoRegistration"]; break;
+                        case UserRegistrationType.AllowRegistration: @T["AllowRegistration"]; break;
+                        case UserRegistrationType.AllowOnlyExternalUsers: @T["AllowOnlyExternalUsers"]; break;
+                    }
+                }
+            </option>
         }
     </select>
     <span asp-validation-for="UsersCanRegister"></span>
@@ -37,6 +46,14 @@
 </div>
 
 <div class="alert alert-warning collapse" id="warnEmailValidation">@T["The users whose email address has not been confirmed will not be able to login or reset their password."]</div>
+
+<div class="form-group" asp-validation-class-for="UsersAreModerated">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="UsersAreModerated" />
+        <span asp-validation-for="UsersAreModerated"></span>
+        <label class="custom-control-label" asp-for="UsersAreModerated">@T["Users must be approved before they can log in"]</label>
+    </div>
+</div>
 
 <div class="form-group" asp-validation-class-for="UseSiteTheme">
     <div class="custom-control custom-checkbox">
@@ -76,8 +93,9 @@
 *    Description                                                                           *
 * ---------------------------------------------------------------------------------------- *
 *    Use the loginProvider and externalClaims properties of the context variable to        *
-*    inspect who authenticated the user and with what claims. Set the userName property    *
-*    to the desired value                                                                  *
+*    inspect who authenticated the user and with what claims. If you do not set the        *
+*    context.userName property, a username will be generated.                              *
+*                                                                                          *
 ********************************************************************************************
 </pre>
 </div>
@@ -129,12 +147,16 @@
         if (!keepText) {
             editor.doc.setValue(
                 '/* Uncomment to map AzureAD\n' +
+                '// Uncomment to output the context variable in the logs\n' +
+                '// log("warning", JSON.stringify(context));\n' +
                 'switch (context.loginProvider) {\n' +
                 '    case "AzureAD":\n' +
-                '        context.userName = "azad" + Date.now().toString();\n' +
+                '        context.userName = "azad" + uuid();\n' +
                 '        break;\n' +
                 '    default:\n' +
-                '        log("Warning", "Provider " + loginProvider + " was not handled");\n' +
+                '        log("Warning", "Provider " + context.loginProvider + " was not handled");\n' +
+                '        // Uncomment to generate a username as a uuid\n' +
+                '        // context.userName = "u" + uuid();\n' +
                 '        break;\n' +
                 '}\n' +
                 '*/\n'

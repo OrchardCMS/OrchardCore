@@ -4,7 +4,7 @@
   "description": "Blank site for testing razor pages.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
-  "version": "1.0.0-rc2",
+  "version": "1.0.0",
   "issetuprecipe": true,
   "categories": [ "default" ],
   "tags": [ "blank" ],

@@ -62,7 +62,7 @@ namespace OrchardCore.AdminMenu.Services
         {
             foreach (MenuItem node in tree.MenuItems)
             {
-                var nodeBuilder = _nodeBuilders.Where(x => x.Name == node.GetType().Name).FirstOrDefault();
+                var nodeBuilder = _nodeBuilders.FirstOrDefault(x => x.Name == node.GetType().Name);
 
                 if (nodeBuilder != null)
                 {

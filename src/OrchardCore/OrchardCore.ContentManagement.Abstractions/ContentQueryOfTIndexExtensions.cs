@@ -17,7 +17,16 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         public static async Task<ContentItem> FirstOrDefaultAsync<TIndex>(this IQuery<ContentItem, TIndex> query, IContentManager contentManager)
             where TIndex : class, IIndex
-            => await contentManager.LoadAsync(await query.FirstOrDefaultAsync());
+        {
+            var contentItem = await query.FirstOrDefaultAsync();
+
+            if (contentItem == null)
+            {
+                return null;
+            }
+
+            return await contentManager.LoadAsync(contentItem);
+        }
 
         /// <summary>
         /// Executes this <see cref="IQuery{ContentItem, TIndex}"/> to return all matching <see cref="ContentItem"/>s

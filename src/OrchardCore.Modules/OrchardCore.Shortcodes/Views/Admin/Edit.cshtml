@@ -37,7 +37,7 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Shortcode"])</h1></zone>
 
 <div asp-validation-summary="All"></div>
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" class="no-multisubmit">
 
     <input type="hidden" value="@Model.Name" name="sourceName" />
 

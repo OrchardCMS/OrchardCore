@@ -199,6 +199,16 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             {
                 return Task.FromResult(_extensionManager.GetExtensions());
             }
+
+            public Task<IEnumerable<IFeatureInfo>> GetAvailableFeaturesAsync()
+            {
+                return Task.FromResult(_extensionManager.GetFeatures());
+            }
+
+            public Task<IEnumerable<IExtensionInfo>> GetAvailableExtensionsAsync()
+            {
+                return Task.FromResult(_extensionManager.GetExtensions());
+            }
         }
 
         public class TestExtensionManager : IExtensionManager
