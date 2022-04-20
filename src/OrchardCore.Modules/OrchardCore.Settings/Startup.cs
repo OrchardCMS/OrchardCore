@@ -15,6 +15,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
+using OrchardCore.ResourceManagement.Abstractions;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Settings.Drivers;
@@ -94,6 +95,8 @@ namespace OrchardCore.Settings
             services.AddScoped<IDisplayDriver<DeploymentStep>, SiteSettingsDeploymentStepDriver>();
 
             services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSiteNameProvider>();
+
+            services.AddTransient<IResourceSettingProvider, ResourceSettingProvider>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

@@ -3,13 +3,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.ResourceManagement;
+using OrchardCore.ResourceManagement.Abstractions;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Resources
 {
     public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
     {
-        private readonly ISiteService _siteService;
+        private readonly IResourceSettingProvider _resourceSettingProvider;
         private readonly IHostEnvironment _env;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _tenantPrefix;
@@ -21,12 +22,12 @@ namespace OrchardCore.Resources
         // URLs
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
 
-        public ResourceManagementOptionsConfiguration(ISiteService siteService, IHostEnvironment env, IHttpContextAccessor httpContextAccessor, ShellSettings shellSettings)
+        public ResourceManagementOptionsConfiguration(IResourceSettingProvider resourceSettingProvider, IHostEnvironment env, IHttpContextAccessor httpContextAccessor, ShellSettings shellSettings)
         {
-            _siteService = siteService;
+            _resourceSettingProvider = resourceSettingProvider;
             _env = env;
             _httpContextAccessor = httpContextAccessor;
-            _tenantPrefix = string.IsNullOrEmpty(shellSettings.RequestUrlPrefix) ? string.Empty : "/" + shellSettings.RequestUrlPrefix;
+            _tenantPrefix = System.String.IsNullOrEmpty(shellSettings.RequestUrlPrefix) ? System.String.Empty : "/" + shellSettings.RequestUrlPrefix;
         }
 
         ResourceManifest BuildManifest()
@@ -469,7 +470,7 @@ namespace OrchardCore.Resources
         {
             options.ResourceManifests.Add(BuildManifest());
 
-            var settings = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
+            var settings = _resourceSettingProvider.GetAsync().GetAwaiter().GetResult();
 
             switch (settings.ResourceDebugMode)
             {
