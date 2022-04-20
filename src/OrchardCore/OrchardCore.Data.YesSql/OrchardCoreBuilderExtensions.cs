@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Data;
 using System.IO;
 using System.Linq;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Data.Documents;
@@ -37,6 +38,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
                 services.AddOptions<StoreCollectionOptions>();
+                services.AddTransient<IConfigureOptions<SqliteOptions>, SqliteOptionsConfiguration>();
 
                 // Adding supported databases
                 services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
@@ -70,12 +72,20 @@ namespace Microsoft.Extensions.DependencyInjection
                             break;
                         case "Sqlite":
                             var shellOptions = sp.GetService<IOptions<ShellOptions>>();
+                            var sqliteOptions = sp.GetService<IOptions<SqliteOptions>>()?.Value ?? new SqliteOptions();
                             var option = shellOptions.Value;
                             var databaseFolder = Path.Combine(option.ShellsApplicationDataPath, option.ShellsContainerName, shellSettings.Name);
                             var databaseFile = Path.Combine(databaseFolder, "yessql.db");
+                            var connectionStringBuilder = new SqliteConnectionStringBuilder
+                            {
+                                DataSource = databaseFile,
+                                Cache = SqliteCacheMode.Shared,
+                                Pooling = sqliteOptions.UseConnectionPooling
+                            };
+
                             Directory.CreateDirectory(databaseFolder);
                             storeConfiguration
-                                .UseSqLite($"Data Source={databaseFile};Cache=Shared", IsolationLevel.ReadUncommitted)
+                                .UseSqLite(connectionStringBuilder.ToString(), IsolationLevel.ReadUncommitted)
                                 .UseDefaultIdGenerator();
                             break;
                         case "MySql":
