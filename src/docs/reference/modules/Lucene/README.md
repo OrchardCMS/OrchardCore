@@ -116,29 +116,41 @@ With a must query in the bool Query. "finding specific content type(s)"
 }
 ```
 
-Using the `parsed` Lucene query with the [Query Parser Syntax](https://lucene.apache.org/core/2_9_4/queryparsersyntax.html) (with syntax like `"exact match"` and `should AND contain`):
+Using the [`query_string` Lucene query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html) with the [Query Parser Syntax](https://lucene.apache.org/core/2_9_4/queryparsersyntax.html) (with syntax like `"exact match"` and `should AND contain`):
 
 ```json
 {
   "query":
   {
-    "parsed": {
-      "Content.ContentItem.FullText": {
-        "query": "\"exploration\""
-      }
+    "query_string": {
+      "query": "Content.ContentItem.FullText:\"exploration\""
     }
   }
 }
 ```
 
-Or in a simplified way:
+Or in a way that you don't have to select the fields in the query (to allow users to do simpler search):
 
 ```json
 {
   "query":
   {
-    "parsed": {
-      "Content.ContentItem.FullText": "\"other exploration\""
+    "query_string": {
+      "query": "\"exploration\"",
+      "default_field": "Content.ContentItem.FullText"
+    }
+  }
+}
+```
+
+An alternative to the previous one with [`simple_query_string`](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html):
+
+```json
+{
+  "query": {
+    "simple_query_string" : {
+        "query": "\"exploration\"",
+        "fields": ["Content.ContentItem.FullText"]
     }
   }
 }
