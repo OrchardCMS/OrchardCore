@@ -6,7 +6,6 @@ namespace OrchardCore.Security
 {
     public static class SecurityHeaderDefaults
     {
-        // TODO: Set the default security headers values
         public static readonly ContentTypeOptionsValue ContentTypeOptions = ContentTypeOptionsValue.NoSniff;
 
         public static readonly FrameOptionsValue FrameOptions = FrameOptionsValue.SameOrigin;

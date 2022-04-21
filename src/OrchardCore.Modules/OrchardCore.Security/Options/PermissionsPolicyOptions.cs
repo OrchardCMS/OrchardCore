@@ -8,10 +8,6 @@ namespace OrchardCore.Security.Options
     {
         private static readonly string _separator = ", ";
 
-        public PermissionsPolicyOptions() => Values = new List<PermissionsPolicyValue>();
-
-        public ICollection<PermissionsPolicyValue> Values { get; set; }
-
         public PermissionsPolicyOriginValue Origin { get; set; } = PermissionsPolicyOriginValue.Self;
 
         public PermissionsPolicyOptionsBase Accelerometer { get; set; } = new AccelerometerPermissionsPolicyOptions();
