@@ -5,7 +5,7 @@ using Xunit;
 
 namespace OrchardCore.Security.Extensions.Tests
 {
-    public class ReferrerPolicyBuilderExtensionsTests
+    public class ReferrerPolicyApplicationBuilderExtensionsTests
     {
         [Fact]
         public void UseReferrerPolicyWithoutOptionsShouldInjectDefaultHeader()
@@ -35,6 +35,27 @@ namespace OrchardCore.Security.Extensions.Tests
 
             // Act
             applicationBuilder.UseReferrerPolicy(options);
+
+            applicationBuilder
+                .Build()
+                .Invoke(context);
+
+            // Assert
+            Assert.Equal(ReferrerPolicyValue.SameOrigin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
+        }
+
+        [Fact]
+        public void UseReferrerPolicyWithBuilderConfiguration()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            var applicationBuilder = CreateApplicationBuilder();
+
+            // Act
+            applicationBuilder.UseReferrerPolicy(config =>
+            {
+                config.WithSameOrigin();
+            });
 
             applicationBuilder
                 .Build()

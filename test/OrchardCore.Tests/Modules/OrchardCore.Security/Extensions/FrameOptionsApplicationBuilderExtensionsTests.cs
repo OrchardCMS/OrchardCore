@@ -5,7 +5,7 @@ using Xunit;
 
 namespace OrchardCore.Security.Extensions.Tests
 {
-    public class FrameOptionsBuilderExtensionsTests
+    public class FrameOptionsApplicationBuilderExtensionsTests
     {
         [Fact]
         public void UseFrameOptionsWithoutOptionsShouldInjectDefaultHeader()
@@ -35,6 +35,27 @@ namespace OrchardCore.Security.Extensions.Tests
 
             // Act
             applicationBuilder.UseFrameOptions(options);
+
+            applicationBuilder
+                .Build()
+                .Invoke(context);
+
+            // Assert
+            Assert.Equal(FrameOptionsValue.SameOrigin, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
+        }
+
+        [Fact]
+        public void UseFrameOptionsWithBuilderConfiguration()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            var applicationBuilder = CreateApplicationBuilder();
+
+            // Act
+            applicationBuilder.UseFrameOptions(config =>
+            {
+                config.WithSameOrigin();
+            });
 
             applicationBuilder
                 .Build()

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,22 +34,116 @@ namespace OrchardCore.Security
 
             builder.UseSecurityHeaders(config =>
             {
-                var permissionsPolicyOptions = new PermissionsPolicyOptions();
-                if (securityOptions.PermissionsPolicy.Count > 0)
-                {
-                    permissionsPolicyOptions.Values = securityOptions.PermissionsPolicy
-                        .Select(p => new PermissionsPolicyValue(p))
-                        .ToList();
-                    permissionsPolicyOptions.Origin = new PermissionsPolicyOriginValue(securityOptions.PermissionsPolicyOrigin);
-                }
+                var permissionsPolicyOptions = GetPermissionsPolicyOptions(securityOptions);
 
-                config
-                    .AddContentTypeOptions()
-                    .AddFrameOptions(securityOptions.FrameOptions)
-                    .AddPermissionsPolicy(permissionsPolicyOptions)
-                    .AddReferrerPolicy(securityOptions.ReferrerPolicy)
-                    .AddStrictTransportSecurity(securityOptions.StrictTransportSecurity);
+                config.AddContentTypeOptions();
+                config.AddFrameOptions(new FrameOptionsOptions { Value = new FrameOptionsValue(securityOptions.FrameOptions) });
+                config.AddReferrerPolicy(new ReferrerPolicyOptions { Value = new ReferrerPolicyValue(securityOptions.ReferrerPolicy) });
+                config.AddPermissionsPolicy(permissionsPolicyOptions);
+                config.AddStrictTransportSecurity(securityOptions.StrictTransportSecurity);
             });
+        }
+
+        private static PermissionsPolicyOptions GetPermissionsPolicyOptions(SecuritySettings securitySettings)
+        {
+            var options = new PermissionsPolicyOptions();
+            var builder = new PermissionsPolicyOptionsBuilder(options);
+            var origin = new PermissionsPolicyOriginValue(securitySettings.PermissionsPolicyOrigin);
+
+            if (securitySettings.PermissionsPolicy == null)
+            {
+                return options;
+            }
+
+            foreach (var policy in securitySettings.PermissionsPolicy)
+            {
+                if (policy == PermissionsPolicyValue.Accelerometer)
+                {
+                    builder.AllowAccelerometer(origin);
+                }
+                else if (policy == PermissionsPolicyValue.AmbientLightSensor)
+                {
+                    builder.AllowAmbientLightSensor(origin);
+                }
+                else if (policy == PermissionsPolicyValue.Autoplay)
+                {
+                    builder.AllowAutoplay(origin);
+                }
+                else if (policy == PermissionsPolicyValue.Camera)
+                {
+                    builder.AllowCamera(origin);
+                }
+                else if (policy == PermissionsPolicyValue.EncryptedMedia)
+                {
+                    builder.AllowEncryptedMedia(origin);
+                }
+                else if (policy == PermissionsPolicyValue.FullScreen)
+                {
+                    builder.AllowFullScreen(origin);
+                }
+                else if (policy == PermissionsPolicyValue.Geolocation)
+                {
+                    builder.AllowGeolocation(origin);
+                }
+                else if (policy == PermissionsPolicyValue.Gyroscope)
+                {
+                    builder.AllowGyroscope(origin);
+                }
+                else if (policy == PermissionsPolicyValue.Magnetometer)
+                {
+                    builder.AllowMagnetometer(origin);
+                }
+                else if (policy == PermissionsPolicyValue.Microphone)
+                {
+                    builder.AllowMicrophone(origin);
+                }
+                else if (policy == PermissionsPolicyValue.Midi)
+                {
+                    builder.AllowMidi(origin);
+                }
+                else if (policy == PermissionsPolicyValue.Notifications)
+                {
+                    builder.AllowNotifications(origin);
+                }
+                else if (policy == PermissionsPolicyValue.Payment)
+                {
+                    builder.AllowPayment(origin);
+                }
+                else if (policy == PermissionsPolicyValue.PictureInPicture)
+                {
+                    builder.AllowPictureInPicture(origin);
+                }
+                else if (policy == PermissionsPolicyValue.Push)
+                {
+                    builder.AllowPush(origin);
+                }
+                else if (policy == PermissionsPolicyValue.Notifications)
+                {
+                    builder.AllowNotifications(origin);
+                }
+                else if (policy == PermissionsPolicyValue.Speaker)
+                {
+                    builder.AllowSpeaker(origin);
+                }
+                else if (policy == PermissionsPolicyValue.SyncXhr)
+                {
+                    builder.AllowSyncXhr(origin);
+                }
+                else if (policy == PermissionsPolicyValue.Usb)
+                {
+                    builder.AllowUsb(origin);
+                }
+                else if (policy == PermissionsPolicyValue.Vibrate)
+                {
+                    builder.AllowVibrate(origin);
+                }
+                else if (policy == PermissionsPolicyValue.VR)
+                {
+                    builder.AllowVR(origin);
+                }
+            }
+
+            return options;
         }
     }
 }

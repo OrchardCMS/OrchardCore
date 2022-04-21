@@ -5,7 +5,7 @@ using OrchardCore.Security.Middlewares;
 
 namespace Microsoft.AspNetCore.Builder
 {
-    public static class ContentTypeOptionsBuilderExtensions
+    public static class ContentTypeOptionsApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseContentTypeOptions(this IApplicationBuilder app)
         {

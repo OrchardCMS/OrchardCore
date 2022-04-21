@@ -8,6 +8,8 @@ namespace OrchardCore.Security
 
         public static readonly PermissionsPolicyOriginValue Any = new("*");
 
+        public static readonly PermissionsPolicyOriginValue None = new("()");
+
         public static readonly PermissionsPolicyOriginValue Self = new("self");
 
         public static implicit operator string(PermissionsPolicyOriginValue option) => option.ToString();

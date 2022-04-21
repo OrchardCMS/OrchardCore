@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,48 +5,43 @@ using Xunit;
 
 namespace OrchardCore.Security.Extensions.Tests
 {
-    public class StrictTransportSecurityBuilderExtensionsTests
+    public class ContentTypeOptionsApplicationBuilderExtensionsTests
     {
         [Fact]
-        public void UseStrictTransportSecurityWithoutOptionsShouldInjectDefaultHeader()
+        public void UseContentTypeOptionsWithoutOptionsShouldInjectDefaultHeader()
         {
             // Arrange
             var context = new DefaultHttpContext();
             var applicationBuilder = CreateApplicationBuilder();
 
             // Act
-            applicationBuilder.UseStrictTransportSecurity();
+            applicationBuilder.UseContentTypeOptions();
 
             applicationBuilder
                 .Build()
                 .Invoke(context);
 
             // Assert
-            Assert.Equal("max-age=31536000; includeSubDomains", context.Response.Headers[SecurityHeaderNames.StrictTransportSecurity]);
+            Assert.Equal(SecurityHeaderDefaults.ContentTypeOptions, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
         }
 
         [Fact]
-        public void UseStrictTransportSecurityWithOptions()
+        public void UseContentTypeOptionsWithOptions()
         {
             // Arrange
             var context = new DefaultHttpContext();
-            var options = new StrictTransportSecurityOptions
-            {
-                MaxAge = TimeSpan.FromHours(1),
-                IncludeSubDomains = false,
-                Preload = true
-            };
+            var options = new ContentTypeOptionsOptions();
             var applicationBuilder = CreateApplicationBuilder();
 
             // Act
-            applicationBuilder.UseStrictTransportSecurity(options);
+            applicationBuilder.UseContentTypeOptions(options);
 
             applicationBuilder
                 .Build()
                 .Invoke(context);
 
             // Assert
-            Assert.Equal("max-age=3600; preload", context.Response.Headers[SecurityHeaderNames.StrictTransportSecurity]);
+            Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
         }
 
         private static IApplicationBuilder CreateApplicationBuilder()

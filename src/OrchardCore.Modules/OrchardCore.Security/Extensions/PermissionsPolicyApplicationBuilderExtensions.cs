@@ -5,7 +5,7 @@ using OrchardCore.Security.Middlewares;
 
 namespace Microsoft.AspNetCore.Builder
 {
-    public static class PermissionsPolicyBuilderExtensions
+    public static class PermissionsPolicyApplicationBuilderExtensions
     {
         public static IApplicationBuilder UsePermissionsPolicy(this IApplicationBuilder app)
         {
@@ -32,6 +32,26 @@ namespace Microsoft.AspNetCore.Builder
             }
 
             return app.UseMiddleware<PermissionsPolicyMiddleware>(Options.Create(options));
+        }
+
+        public static IApplicationBuilder UsePermissionsPolicy(this IApplicationBuilder app, Action<PermissionsPolicyOptionsBuilder> actions)
+        {
+            if (app is null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
+            if (actions is null)
+            {
+                throw new ArgumentNullException(nameof(actions));
+            }
+
+            var options = new PermissionsPolicyOptions();
+            var builder = new PermissionsPolicyOptionsBuilder(options);
+
+            actions(builder);
+
+            return app.UsePermissionsPolicy(options);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace OrchardCore.Security
 
         public static readonly PermissionsPolicyValue Midi = new("midi");
 
-        public static readonly PermissionsPolicyValue Notification = new("notification");
+        public static readonly PermissionsPolicyValue Notifications = new("notifications");
 
         public static readonly PermissionsPolicyValue Payment = new("payment");
 
@@ -40,7 +40,7 @@ namespace OrchardCore.Security
 
         public static readonly PermissionsPolicyValue Speaker = new("speaker");
 
-        public static readonly PermissionsPolicyValue SynchronousXhr = new("sync-xhr");
+        public static readonly PermissionsPolicyValue SyncXhr = new("sync-xhr");
 
         public static readonly PermissionsPolicyValue Usb = new("usb");
 

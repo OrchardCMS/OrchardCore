@@ -5,7 +5,7 @@ using OrchardCore.Security.Middlewares;
 
 namespace Microsoft.AspNetCore.Builder
 {
-    public static class ReferrerPolicyBuilderExtensions
+    public static class ReferrerPolicyApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseReferrerPolicy(this IApplicationBuilder app)
         {
@@ -32,6 +32,26 @@ namespace Microsoft.AspNetCore.Builder
             }
 
             return app.UseMiddleware<ReferrerPolicyMiddleware>(Options.Create(options));
+        }
+
+        public static IApplicationBuilder UseReferrerPolicy(this IApplicationBuilder app, Action<ReferrerPolicyOptionsBuilder> actions)
+        {
+            if (app is null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
+            if (actions is null)
+            {
+                throw new ArgumentNullException(nameof(actions));
+            }
+
+            var options = new ReferrerPolicyOptions();
+            var builder = new ReferrerPolicyOptionsBuilder(options);
+
+            actions(builder);
+
+            return app.UseReferrerPolicy(options);
         }
     }
 }
