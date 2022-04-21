@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Drivers;
+using OrchardCore.Security.Options;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 using OrchardCore.Settings;

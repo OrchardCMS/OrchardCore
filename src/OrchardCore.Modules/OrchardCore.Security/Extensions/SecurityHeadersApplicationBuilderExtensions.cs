@@ -1,5 +1,5 @@
 using System;
-using OrchardCore.Security;
+using OrchardCore.Security.Options;
 
 namespace Microsoft.AspNetCore.Builder
 {

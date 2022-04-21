@@ -1,6 +1,6 @@
 using System;
 using Microsoft.Extensions.Options;
-using OrchardCore.Security;
+using OrchardCore.Security.Options;
 using OrchardCore.Security.Middlewares;
 
 namespace Microsoft.AspNetCore.Builder

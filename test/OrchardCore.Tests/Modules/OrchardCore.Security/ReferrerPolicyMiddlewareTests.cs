@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
+using MicrosoftOptions = Microsoft.Extensions.Options.Options;
+using OrchardCore.Security.Options;
 using OrchardCore.Security.Middlewares;
 using Xunit;
 
@@ -27,7 +28,7 @@ namespace OrchardCore.Security.Tests
         public async Task AddReferrerPolicyHeader(ReferrerPolicyValue value, string expectedValue)
         {
             // Arrange
-            var options = Options.Create(new ReferrerPolicyOptions { Value = value });
+            var options = MicrosoftOptions.Create(new ReferrerPolicyOptions { Value = value });
             var middleware = new ReferrerPolicyMiddleware(options, request);
             var context = new DefaultHttpContext();
 

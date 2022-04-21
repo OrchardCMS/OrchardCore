@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OrchardCore.Security
+namespace OrchardCore.Security.Options
 {
     public class PermissionsPolicyOptions
     {

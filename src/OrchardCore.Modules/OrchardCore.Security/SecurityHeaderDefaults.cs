@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using OrchardCore.Security.Options;
 
 namespace OrchardCore.Security
 {

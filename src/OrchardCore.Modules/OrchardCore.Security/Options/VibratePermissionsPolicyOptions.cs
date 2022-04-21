@@ -1,4 +1,4 @@
-namespace OrchardCore.Security
+namespace OrchardCore.Security.Options
 {
     public class VibratePermissionsPolicyOptions : PermissionsPolicyOptionsBase
     {

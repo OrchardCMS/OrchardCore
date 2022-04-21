@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
+using MicrosoftOptions = Microsoft.Extensions.Options.Options;
+using OrchardCore.Security.Options;
 using OrchardCore.Security.Middlewares;
 using Xunit;
 
@@ -41,7 +42,7 @@ namespace OrchardCore.Security.Tests
         public async Task AddPermissionsPolicyHeader(PermissionsPolicyOptions options, string expectedValue)
         {
             // Arrange
-            var middleware = new PermissionsPolicyMiddleware(Options.Create(options), request);
+            var middleware = new PermissionsPolicyMiddleware(MicrosoftOptions.Create(options), request);
             var context = new DefaultHttpContext();
 
             // Act

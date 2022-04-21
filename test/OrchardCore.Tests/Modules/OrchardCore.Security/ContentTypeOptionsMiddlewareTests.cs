@@ -1,7 +1,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
+using MicrosoftOptions = Microsoft.Extensions.Options.Options;
 using OrchardCore.Security.Middlewares;
+using OrchardCore.Security.Options;
 using Xunit;
 
 namespace OrchardCore.Security.Tests
@@ -12,7 +13,7 @@ namespace OrchardCore.Security.Tests
         public async Task AddContentTypeOptionsHeader()
         {
             // Arrange
-            var options = Options.Create(new ContentTypeOptionsOptions());
+            var options = MicrosoftOptions.Create(new ContentTypeOptionsOptions());
             var middleware = new ContentTypeOptionsMiddleware(options, request);
             var context = new DefaultHttpContext();
 

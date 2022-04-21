@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
+using MicrosoftOptions = Microsoft.Extensions.Options.Options;
+using OrchardCore.Security.Options;
 using OrchardCore.Security.Middlewares;
 using Xunit;
 
@@ -21,7 +22,7 @@ namespace OrchardCore.Security.Tests
         public async Task AddFrameOptionsHeader(FrameOptionsValue value, string expectedValue)
         {
             // Arrange
-            var options = Options.Create(new FrameOptionsOptions { Value = value });
+            var options = MicrosoftOptions.Create(new FrameOptionsOptions { Value = value });
             var middleware = new FrameOptionsMiddleware(options, request);
             var context = new DefaultHttpContext();
 

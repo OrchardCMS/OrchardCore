@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Primitives;
 
-namespace OrchardCore.Security
+namespace OrchardCore.Security.Options
 {
     public class ReferrerPolicyValue
     {

@@ -1,7 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
+using MicrosoftOptions = Microsoft.Extensions.Options.Options;
+using OrchardCore.Security.Options;
 using OrchardCore.Security.Middlewares;
 using Xunit;
 
@@ -19,7 +20,7 @@ namespace OrchardCore.Security.Tests
         public async Task AddStrictTransportSecurityHeader(int maxAge, bool includeSubDomains, bool preload, string expectedValue)
         {
             // Arrange
-            var options = Options.Create(new StrictTransportSecurityOptions
+            var options = MicrosoftOptions.Create(new StrictTransportSecurityOptions
             {
                 MaxAge = TimeSpan.FromSeconds(maxAge),
                 IncludeSubDomains = includeSubDomains,
