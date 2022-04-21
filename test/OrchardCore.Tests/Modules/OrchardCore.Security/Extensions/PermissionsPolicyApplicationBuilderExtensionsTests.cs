@@ -8,7 +8,7 @@ namespace OrchardCore.Security.Extensions.Tests
     public class PermissionsPolicyApplicationBuilderExtensionsTests
     {
         [Fact]
-        public void UsePermissionsPolicyWithOptionsShouldInjectDefaultHeader()
+        public void UsePermissionsPolicyWithOptionsInjectDefaultHeader()
         {
             // Arrange
             var context = new DefaultHttpContext();

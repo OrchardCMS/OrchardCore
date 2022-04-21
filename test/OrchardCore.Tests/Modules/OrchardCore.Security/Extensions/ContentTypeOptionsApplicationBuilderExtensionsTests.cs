@@ -8,7 +8,7 @@ namespace OrchardCore.Security.Extensions.Tests
     public class ContentTypeOptionsApplicationBuilderExtensionsTests
     {
         [Fact]
-        public void UseContentTypeOptionsWithoutOptionsShouldInjectDefaultHeader()
+        public void UseContentTypeOptionsWithoutOptionsInjectDefaultHeader()
         {
             // Arrange
             var context = new DefaultHttpContext();

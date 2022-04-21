@@ -5,7 +5,7 @@ using OrchardCore.Modules.Manifest;
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Description = "The security module adds the required security headers for the best practices.",
+    Description = "The Security module adds HTTP headers to follow security best practices.",
     Category = "Security",
     IsAlwaysEnabled = true
 )]

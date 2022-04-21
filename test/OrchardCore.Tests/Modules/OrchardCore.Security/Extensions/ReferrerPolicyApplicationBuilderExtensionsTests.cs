@@ -8,7 +8,7 @@ namespace OrchardCore.Security.Extensions.Tests
     public class ReferrerPolicyApplicationBuilderExtensionsTests
     {
         [Fact]
-        public void UseReferrerPolicyWithoutOptionsShouldInjectDefaultHeader()
+        public void UseReferrerPolicyWithoutOptionsInjectDefaultHeader()
         {
             // Arrange
             var context = new DefaultHttpContext();

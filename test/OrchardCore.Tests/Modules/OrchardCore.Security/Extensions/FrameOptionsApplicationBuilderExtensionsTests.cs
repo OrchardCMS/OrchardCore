@@ -8,7 +8,7 @@ namespace OrchardCore.Security.Extensions.Tests
     public class FrameOptionsApplicationBuilderExtensionsTests
     {
         [Fact]
-        public void UseFrameOptionsWithoutOptionsShouldInjectDefaultHeader()
+        public void UseFrameOptionsWithoutOptionsInjectDefaultHeader()
         {
             // Arrange
             var context = new DefaultHttpContext();

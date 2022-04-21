@@ -9,7 +9,7 @@ namespace OrchardCore.Security.Extensions.Tests
     public class StrictTransportSecurityApplicationBuilderExtensionsTests
     {
         [Fact]
-        public void UseStrictTransportSecurityWithoutOptionsShouldInjectDefaultHeader()
+        public void UseStrictTransportSecurityWithoutOptionsInjectDefaultHeader()
         {
             // Arrange
             var context = new DefaultHttpContext();

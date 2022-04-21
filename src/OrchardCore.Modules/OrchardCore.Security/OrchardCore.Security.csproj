@@ -7,7 +7,7 @@
     <Description>
       $(OCCMSDescription)
 
-      The security module adds the required security headers for the best practices.
+      The Security module adds HTTP headers to follow security best practices.
     </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
