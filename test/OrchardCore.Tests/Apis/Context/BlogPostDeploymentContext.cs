@@ -31,6 +31,7 @@ namespace OrchardCore.Tests.Apis.Context
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
+            await RunRecipeAsync(ShellHost, BlogContext.luceneRecipeName, BlogContext.luceneRecipePath);
 
             var result = await GraphQLClient
                 .Content

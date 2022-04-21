@@ -95,17 +95,20 @@ namespace OrchardCore.ContentFields.Drivers
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["The url is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
-                else if (!String.IsNullOrWhiteSpace(field.Url) && !Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
+                else if (!String.IsNullOrWhiteSpace(field.Url))
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["{0} is an invalid url.", field.Url]);
-                }
-                else
-                {
-                    var link = $"<a href=\"{_htmlencoder.Encode(urlToValidate)}\"></a>";
-
-                    if (!String.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
+                    if (!Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
                     {
                         updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["{0} is an invalid url.", field.Url]);
+                    }
+                    else
+                    {
+                        var link = $"<a href=\"{_htmlencoder.Encode(urlToValidate)}\"></a>";
+
+                        if (!String.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
+                        {
+                            updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["{0} is an invalid url.", field.Url]);
+                        }
                     }
                 }
 
