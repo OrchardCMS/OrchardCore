@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -13,13 +12,8 @@ namespace OrchardCore.Security.Middlewares
 
         public StrictTransportSecurityMiddleware(IOptions<StrictTransportSecurityOptions> options, RequestDelegate next)
         {
-            if (options is null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
             _options = options.Value;
-            _next = next ?? throw new ArgumentNullException(nameof(next));
+            _next = next;
         }
 
         public Task Invoke(HttpContext context)
