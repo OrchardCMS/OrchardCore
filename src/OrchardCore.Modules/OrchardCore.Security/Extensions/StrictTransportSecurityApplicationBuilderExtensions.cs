@@ -9,25 +9,15 @@ namespace Microsoft.AspNetCore.Builder
     {
         public static IApplicationBuilder UseStrictTransportSecurity(this IApplicationBuilder app)
         {
-            if (app is null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
+            ArgumentNullException.ThrowIfNull(app, nameof(app));
 
             return app.UseStrictTransportSecurity(new StrictTransportSecurityOptions());
         }
 
         public static IApplicationBuilder UseStrictTransportSecurity(this IApplicationBuilder app, StrictTransportSecurityOptions options)
         {
-            if (app is null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
-
-            if (options is null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            ArgumentNullException.ThrowIfNull(app, nameof(app));
+            ArgumentNullException.ThrowIfNull(options, nameof(options));
 
             return app.UseMiddleware<StrictTransportSecurityMiddleware>(Options.Create(options));
         }

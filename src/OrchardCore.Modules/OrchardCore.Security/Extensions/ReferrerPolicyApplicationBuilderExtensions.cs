@@ -9,10 +9,7 @@ namespace Microsoft.AspNetCore.Builder
     {
         public static IApplicationBuilder UseReferrerPolicy(this IApplicationBuilder app)
         {
-            if (app is null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
+            ArgumentNullException.ThrowIfNull(app, nameof(app));
 
             var options = new ReferrerPolicyOptions { Value = ReferrerPolicyValue.NoReferrer };
 
@@ -21,35 +18,21 @@ namespace Microsoft.AspNetCore.Builder
 
         public static IApplicationBuilder UseReferrerPolicy(this IApplicationBuilder app, ReferrerPolicyOptions options)
         {
-            if (app is null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
-
-            if (options is null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            ArgumentNullException.ThrowIfNull(app, nameof(app));
+            ArgumentNullException.ThrowIfNull(options, nameof(options));
 
             return app.UseMiddleware<ReferrerPolicyMiddleware>(Options.Create(options));
         }
 
-        public static IApplicationBuilder UseReferrerPolicy(this IApplicationBuilder app, Action<ReferrerPolicyOptionsBuilder> actions)
+        public static IApplicationBuilder UseReferrerPolicy(this IApplicationBuilder app, Action<ReferrerPolicyOptionsBuilder> action)
         {
-            if (app is null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
-
-            if (actions is null)
-            {
-                throw new ArgumentNullException(nameof(actions));
-            }
+            ArgumentNullException.ThrowIfNull(app, nameof(app));
+            ArgumentNullException.ThrowIfNull(action, nameof(action));
 
             var options = new ReferrerPolicyOptions();
             var builder = new ReferrerPolicyOptionsBuilder(options);
 
-            actions(builder);
+            action(builder);
 
             return app.UseReferrerPolicy(options);
         }

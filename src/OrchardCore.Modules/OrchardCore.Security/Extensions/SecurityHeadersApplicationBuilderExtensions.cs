@@ -7,20 +7,15 @@ namespace Microsoft.AspNetCore.Builder
     {
         public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app)
         {
-            if (app is null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
+            ArgumentNullException.ThrowIfNull(app, nameof(app));
 
             return app.UseSecurityHeaders(new SecurityHeadersOptions());
         }
 
         public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app, SecurityHeadersOptions options)
         {
-            if (app is null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
+            ArgumentNullException.ThrowIfNull(app, nameof(app));
+            ArgumentNullException.ThrowIfNull(options, nameof(options));
 
             app.UseContentTypeOptions();
             app.UseFrameOptions(options.FrameOptions);
@@ -33,15 +28,8 @@ namespace Microsoft.AspNetCore.Builder
 
         public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app, Action<SecurityHeadersOptionsBuilder> action)
         {
-            if (app is null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
-
-            if (action is null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
+            ArgumentNullException.ThrowIfNull(app, nameof(app));
+            ArgumentNullException.ThrowIfNull(action, nameof(action));
 
             var options = new SecurityHeadersOptions();
             var optionsBuilder = new SecurityHeadersOptionsBuilder(options);

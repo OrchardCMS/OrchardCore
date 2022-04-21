@@ -9,10 +9,7 @@ namespace Microsoft.AspNetCore.Builder
     {
         public static IApplicationBuilder UsePermissionsPolicy(this IApplicationBuilder app)
         {
-            if (app is null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
+            ArgumentNullException.ThrowIfNull(app, nameof(app));
 
             var options = new PermissionsPolicyOptions();
 
@@ -21,35 +18,21 @@ namespace Microsoft.AspNetCore.Builder
 
         public static IApplicationBuilder UsePermissionsPolicy(this IApplicationBuilder app, PermissionsPolicyOptions options)
         {
-            if (app is null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
-
-            if (options is null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            ArgumentNullException.ThrowIfNull(app, nameof(app));
+            ArgumentNullException.ThrowIfNull(options, nameof(options));
 
             return app.UseMiddleware<PermissionsPolicyMiddleware>(Options.Create(options));
         }
 
-        public static IApplicationBuilder UsePermissionsPolicy(this IApplicationBuilder app, Action<PermissionsPolicyOptionsBuilder> actions)
+        public static IApplicationBuilder UsePermissionsPolicy(this IApplicationBuilder app, Action<PermissionsPolicyOptionsBuilder> action)
         {
-            if (app is null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
-
-            if (actions is null)
-            {
-                throw new ArgumentNullException(nameof(actions));
-            }
+            ArgumentNullException.ThrowIfNull(app, nameof(app));
+            ArgumentNullException.ThrowIfNull(action, nameof(action));
 
             var options = new PermissionsPolicyOptions();
             var builder = new PermissionsPolicyOptionsBuilder(options);
 
-            actions(builder);
+            action(builder);
 
             return app.UsePermissionsPolicy(options);
         }

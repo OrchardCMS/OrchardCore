@@ -9,10 +9,7 @@ namespace Microsoft.AspNetCore.Builder
     {
         public static IApplicationBuilder UseContentTypeOptions(this IApplicationBuilder app)
         {
-            if (app is null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
+            ArgumentNullException.ThrowIfNull(app, nameof(app));
 
             var options = new ContentTypeOptionsOptions();
 
@@ -21,15 +18,8 @@ namespace Microsoft.AspNetCore.Builder
 
         public static IApplicationBuilder UseContentTypeOptions(this IApplicationBuilder app, ContentTypeOptionsOptions options)
         {
-            if (app is null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
-
-            if (options is null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            ArgumentNullException.ThrowIfNull(app, nameof(app));
+            ArgumentNullException.ThrowIfNull(options, nameof(options));
 
             return app.UseMiddleware<ContentTypeOptionsMiddleware>(Options.Create(options));
         }
