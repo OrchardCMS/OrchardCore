@@ -15,8 +15,6 @@ namespace OrchardCore.Security
 {
     public class Startup : StartupBase
     {
-        public override int Order => -1;
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, SecurityPermissions>();
