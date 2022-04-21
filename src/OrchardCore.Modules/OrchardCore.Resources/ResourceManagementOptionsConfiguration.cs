@@ -14,7 +14,6 @@ namespace OrchardCore.Resources
         private readonly IHostEnvironment _env;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _pathBase;
-
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         // Versions
         private const string codeMirrorVersion = "5.65.2";
@@ -27,7 +26,6 @@ namespace OrchardCore.Resources
             _resourceSettingProvider = resourceSettingProvider;
             _env = env;
             _httpContextAccessor = httpContextAccessor;
-            _tenantPrefix = System.String.IsNullOrEmpty(shellSettings.RequestUrlPrefix) ? System.String.Empty : "/" + shellSettings.RequestUrlPrefix;
             _pathBase = _httpContextAccessor.HttpContext.Request.PathBase;
         }
 
@@ -362,7 +360,7 @@ namespace OrchardCore.Resources
                 .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/js/v4-shims.js")
                 .SetCdnIntegrity("sha384-bx00wqJq+zY9QLCMa/zViZPu1f0GJ3VXwF4GSw3GbfjwO28QCFr4qadCrNmJQ/9N", "sha384-SGuqaGE4bcW7Xl5T06BsUPUA91qaNtT53uGOcGpavQMje3goIFJbDsC0VAwtgL5g")
                 .SetVersion("5.15.4");
-            
+
             manifest
                 .DefineStyle("font-awesome")
                 .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.css")
@@ -512,7 +510,7 @@ namespace OrchardCore.Resources
 
             options.AppendVersion = settings.AppendVersion;
 
-            options.ContentBasePath = _httpContextAccessor.HttpContext.Request.PathBase.Value;
+            options.ContentBasePath = _pathBase;
         }
     }
 }
