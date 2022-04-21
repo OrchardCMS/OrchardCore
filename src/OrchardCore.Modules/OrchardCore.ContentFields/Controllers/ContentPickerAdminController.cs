@@ -59,8 +59,6 @@ namespace OrchardCore.ContentFields.Controllers
                 DisplayAllContentTypes = fieldSettings.DisplayAllContentTypes,
                 ContentTypes = fieldSettings.DisplayedContentTypes,
                 PartFieldDefinition = partFieldDefinition,
-                TitlePattern = fieldSettings.TitlePattern,
-                DescriptionPattern = fieldSettings.DescriptionPattern
             });
 
             return new ObjectResult(results.Select(r => new VueMultiselectItemViewModel() { Id = r.ContentItemId, DisplayText = r.DisplayText, Description = r.Description, HasPublished = r.HasPublished }));

@@ -1,17 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fluid;
-using Fluid.Values;
-using Microsoft.Extensions.Localization;
-using OrchardCore.ContentFields.ViewModels;
+using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Models;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Liquid;
-using OrchardCore.Localization;
 using YesSql;
 using YesSql.Services;
 
@@ -19,19 +15,15 @@ namespace OrchardCore.ContentFields.Services
 {
     public class DefaultContentPickerResultProvider : IContentPickerResultProvider
     {
-        private readonly ILiquidTemplateManager _templateManager;
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
-        private readonly IStringLocalizer S;
 
-        public DefaultContentPickerResultProvider(IContentManager contentManager, IContentDefinitionManager contentDefinitionManager, ISession session, IStringLocalizer<DefaultContentPickerResultProvider> localizer, ILiquidTemplateManager templateManager)
+        public DefaultContentPickerResultProvider(IContentManager contentManager, IContentDefinitionManager contentDefinitionManager, ISession session)
         {
-            _templateManager = templateManager;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
             _session = session;
-            S = localizer;
         }
 
         public string Name => "Default";
@@ -59,14 +51,18 @@ namespace OrchardCore.ContentFields.Services
             var contentItems = await query.Take(50).ListAsync();
 
             var results = new List<ContentPickerResult>();
+            var settings = searchContext.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
 
             foreach (var contentItem in contentItems)
             {
+                var cultureAspect = await _contentManager.PopulateAspectAsync(contentItem, new CultureAspect());
+                var aspect = await _contentManager.PopulateAspectAsync(contentItem, new ContentPickerAspect(settings, cultureAspect.Culture));
+
                 results.Add(new ContentPickerResult
                 {
                     ContentItemId = contentItem.ContentItemId,
-                    DisplayText = await GetContentPickerItemDescription(contentItem, searchContext.TitlePattern, contentItem.DisplayText),
-                    Description = await GetContentPickerItemDescription(contentItem, searchContext.DescriptionPattern, string.Empty),
+                    DisplayText = aspect.Title,
+                    Description = aspect.Description,
                     HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
                 });
             }
@@ -74,20 +70,6 @@ namespace OrchardCore.ContentFields.Services
             return results.OrderBy(x => x.DisplayText);
         }
 
-        public async Task<string> GetContentPickerItemDescription(ContentItem contentItem, string pattern, string defaultValue)
-        {
-            var description = defaultValue;
-            if (!string.IsNullOrEmpty(pattern))
-            {
-                var cultureAspect = await _contentManager.PopulateAspectAsync(contentItem, new CultureAspect());
-                using (CultureScope.Create(cultureAspect.Culture))
-                {
-                    description = await _templateManager.RenderStringAsync(pattern, NullEncoder.Default, contentItem,
-                        new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) });
-                }
-            }
 
-            return description;
-        }
     }
 }

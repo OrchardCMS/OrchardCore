@@ -5,10 +5,12 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
+using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
@@ -19,25 +21,22 @@ namespace OrchardCore.ContentFields.Drivers
     {
         private readonly IContentManager _contentManager;
         private readonly IStringLocalizer S;
-        private readonly IContentPickerResultProvider _contentPickerResultProvider;
 
         public ContentPickerFieldDisplayDriver(
             IContentManager contentManager,
-            IStringLocalizer<ContentPickerFieldDisplayDriver> localizer,
-            IContentPickerResultProvider contentPickerResultProvider)
+            IStringLocalizer<ContentPickerFieldDisplayDriver> localizer)
         {
             _contentManager = contentManager;
             S = localizer;
-            _contentPickerResultProvider = contentPickerResultProvider;
         }
 
-        public override IDisplayResult Display(ContentPickerField field, BuildFieldDisplayContext context)
+        public override IDisplayResult Display(ContentPickerField field, BuildFieldDisplayContext fieldDisplayContext)
         {
-            return Initialize<DisplayContentPickerFieldViewModel>(GetDisplayShapeType(context), model =>
+            return Initialize<DisplayContentPickerFieldViewModel>(GetDisplayShapeType(fieldDisplayContext), model =>
             {
                 model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
+                model.Part = fieldDisplayContext.ContentPart;
+                model.PartFieldDefinition = fieldDisplayContext.PartFieldDefinition;
             })
             .Location("Detail", "Content")
             .Location("Summary", "Content");
@@ -54,7 +53,6 @@ namespace OrchardCore.ContentFields.Drivers
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
                 model.SelectedItems = new List<VueMultiselectItemViewModel>();
-
                 var settings = context.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
 
                 foreach (var contentItemId in field.ContentItemIds)
@@ -66,11 +64,14 @@ namespace OrchardCore.ContentFields.Drivers
                         continue;
                     }
 
+                    var cultureAspect = await _contentManager.PopulateAspectAsync(contentItem, new CultureAspect());
+                    var aspect = await _contentManager.PopulateAspectAsync(contentItem, new ContentPickerAspect(settings, cultureAspect.Culture));
+
                     model.SelectedItems.Add(new VueMultiselectItemViewModel
                     {
                         Id = contentItemId,
-                        DisplayText = await _contentPickerResultProvider.GetContentPickerItemDescription(contentItem, settings.TitlePattern, contentItem.ToString()),
-                        Description = await _contentPickerResultProvider.GetContentPickerItemDescription(contentItem, settings.DescriptionPattern, string.Empty),
+                        DisplayText = aspect.Title,
+                        Description = aspect.Description,
                         HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
                     });
                 }
@@ -104,6 +105,6 @@ namespace OrchardCore.ContentFields.Drivers
             }
 
             return Edit(field, context);
-        }  
+        }
     }
 }
