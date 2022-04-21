@@ -1,5 +1,29 @@
 # Data (`OrchardCore.Data`)
 
+## Configuring Databases
+
+Most database configuration is handled automatically, but there are limited options which can affect the way the database works.
+
+### Sqlite
+
+#### `UseConnectionPooling` (boolean)
+
+By default in `.NET 6`, `Microsoft.Data.Sqlite` pools connections to the database. It achieves this by putting locking the database file and leaving connections open to be reused. If the lock is preventing tasks like backups, this functionality can be disabled.
+
+There may be a performance penalty associated with disabling connection pooling.
+
+See the [`Microsoft.Data.Sqlite` documentation](https://docs.microsoft.com/en-us/dotnet/standard/data/sqlite/connection-strings#pooling) for more details.
+
+##### `appsettings.json`
+
+```json
+{
+    "OrchardCore_Data_Sqlite": {
+        "PoolConnections": false
+    }
+}
+```
+
 ## Running SQL queries
 
 ### Creating a `DbConnection` instance

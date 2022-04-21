@@ -851,7 +851,8 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/1881482?v=4",
       "profile": "http://www.johnrom.com",
       "contributions": [
-        "code"
+        "code",
+        "doc"
       ]
     },
     {
@@ -2533,6 +2534,15 @@
       "profile": "https://github.com/kevinsmgov",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "DemeSzabolcs",
+      "name": "Szabolcs Deme",
+      "avatar_url": "https://avatars.githubusercontent.com/u/80963259?v=4",
+      "profile": "https://github.com/DemeSzabolcs",
+      "contributions": [
+        "doc"
       ]
     }
   ],
