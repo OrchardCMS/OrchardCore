@@ -12147,8 +12147,7 @@ html[data-theme=default] select.selectpicker {
   display: none !important;
 }
 html[data-theme=default] .bootstrap-select {
-  width: 220px \0 ;
-  /*IE9 and below*/
+  width: 220px;
   vertical-align: middle;
 }
 html[data-theme=default] .bootstrap-select > .dropdown-toggle {
@@ -29052,6 +29051,9 @@ html[data-theme=default] .btn:hover, html[data-theme=default] .button:hover {
 html[data-theme=default] .dropdown-item:hover {
   text-decoration: none !important;
 }
+html[data-theme=default] .unset {
+  all: unset;
+}
 html[dir][data-theme=default] .bg-primary {
   background-color: #f8f9fa !important;
 }
@@ -41516,8 +41518,7 @@ html[data-theme=darkmode] select.selectpicker {
   display: none !important;
 }
 html[data-theme=darkmode] .bootstrap-select {
-  width: 220px \0 ;
-  /*IE9 and below*/
+  width: 220px;
   vertical-align: middle;
 }
 html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle {
@@ -58417,6 +58418,9 @@ html[data-theme=darkmode] .btn:hover, html[data-theme=darkmode] .button:hover {
 }
 html[data-theme=darkmode] .dropdown-item:hover {
   text-decoration: none !important;
+}
+html[data-theme=darkmode] .unset {
+  all: unset;
 }
 html[dir][data-theme=darkmode] .bg-primary {
   background-color: #1b1e1f !important;

@@ -32,13 +32,12 @@
     ],
     "output": "wwwroot/Styles/bootstrap-select.css"
   },
-  // Disabled because a little hack for BS5 (close button) has been added in bootstrap-select.js and bootstrap-select.min.js (cdn not used anymore)
-  //{
-  //  "inputs": [
-  //    "node_modules/bootstrap-select/dist/js/bootstrap-select.js"
-  //  ],
-  //  "output": "wwwroot/Scripts/bootstrap-select.js"
-  //},
+ {
+    "inputs": [
+      "node_modules/bootstrap-select/dist/js/bootstrap-select.js"
+    ],
+    "output": "wwwroot/Scripts/bootstrap-select.js"
+  },
   {
     "generateRTL": true,
     "inputs": [
