@@ -148,18 +148,21 @@ As you can see it allows to filter on multiple query types. All of the Query typ
 
 So you can use: 
 
-`fuzzy`  
-`match`  
-`match_phrase`  
-`match_all`  
-`parsed`
-`prefix`  
-`range`  
-`term`  
-`terms`  
-`wildcard`
-`geo_distance`  
-`geo_bounding_box`  
+- `bool`
+- `geo_distance`
+- `geo_bounding_box`
+- `fuzzy`
+- `match`
+- `match_all`
+- `match_phrase`
+- `prefix`
+- `query_string`
+- `range`
+- `regexp`
+- `simple_query_string`
+- `term`
+- `terms`
+- `wildcard`
 
 See ElasticSearch documentation for more details: 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html
