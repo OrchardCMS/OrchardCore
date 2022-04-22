@@ -188,7 +188,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="parameters-textarea">@T["Parameters"]</label>
                         <textarea id="parameters-textarea" name="parameters-textarea" rows="8" class="form-control" v-bind:value="JSON.stringify(data.parameters)" v-on:input="data.parameters = JSON.parse($event.target.value)"></textarea>
                         <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { name: 'First parameter', value: 'parameter1' }, { name: 'Second parameter', value: 'parameter2' } ]"]</span>

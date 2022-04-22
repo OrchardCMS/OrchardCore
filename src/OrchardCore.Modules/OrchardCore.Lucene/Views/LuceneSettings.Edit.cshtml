@@ -2,7 +2,7 @@
 
 @if (Model.SearchIndexes.Any())
 {
-    <div class="form-group" asp-validation-class-for="SearchIndex">
+    <div class="mb-3" asp-validation-class-for="SearchIndex">
         <label asp-for="SearchIndex">@T["Default search index"]</label>
         <select asp-for="SearchIndex" class="form-select">
             <option value="" selected="@(Model.SearchIndex == null)">@T["Select a search index"]</option>
