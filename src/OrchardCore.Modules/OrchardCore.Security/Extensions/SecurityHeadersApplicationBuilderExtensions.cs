@@ -1,4 +1,6 @@
 using System;
+using Microsoft.Extensions.Options;
+using OrchardCore.Security;
 using OrchardCore.Security.Options;
 
 namespace Microsoft.AspNetCore.Builder
@@ -17,10 +19,7 @@ namespace Microsoft.AspNetCore.Builder
             ArgumentNullException.ThrowIfNull(app, nameof(app));
             ArgumentNullException.ThrowIfNull(options, nameof(options));
 
-            app.UseContentTypeOptions();
-            app.UseFrameOptions(options.FrameOptions);
-            app.UsePermissionsPolicy(options.PermissionsPolicy);
-            app.UseReferrerPolicy(options.ReferrerPolicy);
+            app.UseMiddleware<SecurityHeadersMiddleware>(Options.Create(options));
 
             return app;
         }
