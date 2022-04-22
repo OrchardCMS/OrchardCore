@@ -1,7 +1,7 @@
 using System;
 using OrchardCore.Settings;
 
-namespace OrchardCore.ResourceManagement.Abstractions;
+namespace OrchardCore.ResourceManagement.Core;
 
 public class ResourceSetting
 {

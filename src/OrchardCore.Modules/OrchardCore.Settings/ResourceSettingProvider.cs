@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.ResourceManagement.Abstractions;
+using OrchardCore.ResourceManagement.Core;
 
 namespace OrchardCore.Settings;
 

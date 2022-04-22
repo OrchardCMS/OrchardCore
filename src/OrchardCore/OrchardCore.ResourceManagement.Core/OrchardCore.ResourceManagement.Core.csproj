@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.ResourceManagement</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Roles Core</Title>
+    <Description>
+      $(OCCMSDescription)
+
+      Core implementation for ResourceManagement module.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.ResourceManagement.Abstractions\OrchardCore.ResourceManagement.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

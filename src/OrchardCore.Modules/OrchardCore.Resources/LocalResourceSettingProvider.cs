@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.ResourceManagement.Abstractions;
+using OrchardCore.ResourceManagement.Core;
 
 namespace OrchardCore.Resources;
 

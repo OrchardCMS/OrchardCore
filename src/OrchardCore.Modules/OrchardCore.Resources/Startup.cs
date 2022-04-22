@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
-using OrchardCore.ResourceManagement.Abstractions;
+using OrchardCore.ResourceManagement.Core;
 using OrchardCore.Resources.Liquid;
 
 namespace OrchardCore.Resources

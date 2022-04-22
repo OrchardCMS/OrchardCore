@@ -15,7 +15,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
-using OrchardCore.ResourceManagement.Abstractions;
+using OrchardCore.ResourceManagement.Core;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Settings.Drivers;

@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
 using OrchardCore.ResourceManagement;
-using OrchardCore.ResourceManagement.Abstractions;
+using OrchardCore.ResourceManagement.Core;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Resources
@@ -21,7 +20,7 @@ namespace OrchardCore.Resources
         // URLs
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
 
-        public ResourceManagementOptionsConfiguration(IResourceSettingProvider resourceSettingProvider, IHostEnvironment env, IHttpContextAccessor httpContextAccessor, ShellSettings shellSettings)
+        public ResourceManagementOptionsConfiguration(IResourceSettingProvider resourceSettingProvider, IHostEnvironment env, IHttpContextAccessor httpContextAccessor)
         {
             _resourceSettingProvider = resourceSettingProvider;
             _env = env;
