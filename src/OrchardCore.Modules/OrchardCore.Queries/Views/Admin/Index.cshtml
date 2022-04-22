@@ -92,7 +92,7 @@
                 }
                 else
                 {
-                    <div class="card-columns">
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
                         @foreach (var source in Model.QuerySourceNames)
                         {
                             OrchardCore.DisplayManagement.IShape shape = await New.Query_Link(Name: source);
