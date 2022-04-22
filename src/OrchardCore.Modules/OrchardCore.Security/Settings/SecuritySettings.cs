@@ -8,8 +8,6 @@ namespace OrchardCore.Security
 
         public string[] PermissionsPolicy { get; set; }
 
-        public string PermissionsPolicyOrigin { get; set; }
-
         public string ReferrerPolicy { get; set; }
     }
 }
