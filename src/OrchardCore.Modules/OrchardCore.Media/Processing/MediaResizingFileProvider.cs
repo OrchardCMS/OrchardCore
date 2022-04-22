@@ -47,12 +47,7 @@ namespace OrchardCore.Media.Processing
         /// <inheritdoc/>
         public bool IsValidRequest(HttpContext context)
         {
-            if (_formatUtilities.GetExtensionFromUri(context.Request.GetDisplayUrl()) == null)
-            {
-                return false;
-            }
-
-            return true;
+            return _formatUtilities.TryGetExtensionFromUri(context.Request.GetDisplayUrl(), out string extension);
         }
 
         /// <inheritdoc/>
@@ -70,8 +65,8 @@ namespace OrchardCore.Media.Processing
             }
 
             // We don't care about the content type nor cache control max age here.
-            var metadata = new ImageMetadata(fileInfo.LastModified.UtcDateTime, fileInfo.Length);
-            return Task.FromResult<IImageResolver>(new PhysicalFileSystemResolver(fileInfo, metadata));
+            //var metadata = new ImageMetadata(fileInfo.LastModified.UtcDateTime, fileInfo.Length);
+            return Task.FromResult<IImageResolver>(new FileProviderImageResolver(fileInfo));
         }
 
         private bool IsMatch(HttpContext context)

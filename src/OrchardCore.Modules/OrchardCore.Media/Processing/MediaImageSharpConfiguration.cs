@@ -25,7 +25,7 @@ namespace OrchardCore.Media.Processing
             options.Configuration = Configuration.Default;
             options.BrowserMaxAge = TimeSpan.FromDays(_mediaOptions.MaxBrowserCacheDays);
             options.CacheMaxAge = TimeSpan.FromDays(_mediaOptions.MaxCacheDays);
-            options.CachedNameLength = 12;
+            options.CacheHashLength = 12;
             options.OnParseCommandsAsync = context =>
             {
                 if (context.Commands.Count == 0)
@@ -72,11 +72,11 @@ namespace OrchardCore.Media.Processing
                 context.Commands.Remove(ResizeWebProcessor.Anchor);
 
                 // When only a version command is applied pass on this request.
-                if (context.Commands.Count == 1 && context.Commands.ContainsKey(ImageVersionProcessor.VersionCommand))
+                if (context.Commands.Count == 1 && context.Commands.IndexOf(ImageVersionProcessor.VersionCommand) > -1)
                 {
                     context.Commands.Clear();
                 }
-                else if (!context.Commands.ContainsKey(ResizeWebProcessor.Mode))
+                else if (!context.Commands.IndexOf(ResizeWebProcessor.Mode) > -1)
                 {
                     context.Commands[ResizeWebProcessor.Mode] = "max";
                 }
