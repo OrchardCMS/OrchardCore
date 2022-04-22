@@ -36,8 +36,8 @@ namespace OrchardCore.Security
                 var permissionsPolicyOptions = GetPermissionsPolicyOptions(securityOptions);
 
                 config.AddContentTypeOptions();
-                config.AddFrameOptions(new FrameOptionsOptions { Value = new FrameOptionsValue(securityOptions.FrameOptions) });
-                config.AddReferrerPolicy(new ReferrerPolicyOptions { Value = new ReferrerPolicyValue(securityOptions.ReferrerPolicy) });
+                config.AddFrameOptions(new FrameOptionsOptions { Value = securityOptions.FrameOptions });
+                config.AddReferrerPolicy(new ReferrerPolicyOptions { Value = securityOptions.ReferrerPolicy });
                 config.AddPermissionsPolicy(permissionsPolicyOptions);
             });
         }
@@ -46,7 +46,7 @@ namespace OrchardCore.Security
         {
             var options = new PermissionsPolicyOptions();
             var builder = new PermissionsPolicyOptionsBuilder(options);
-            var origin = new PermissionsPolicyOriginValue(securitySettings.PermissionsPolicyOrigin);
+            var origin = securitySettings.PermissionsPolicyOrigin;
 
             if (securitySettings.PermissionsPolicy == null)
             {

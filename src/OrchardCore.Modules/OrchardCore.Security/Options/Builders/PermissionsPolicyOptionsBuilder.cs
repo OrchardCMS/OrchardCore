@@ -9,140 +9,140 @@ namespace OrchardCore.Security.Options
         public PermissionsPolicyOptionsBuilder(PermissionsPolicyOptions options)
             => _options = options ?? throw new ArgumentNullException(nameof(options));
 
-        public PermissionsPolicyOptionsBuilder AllowAccelerometer(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowAccelerometer(string origin)
         {
             _options.Accelerometer.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowAmbientLightSensor(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowAmbientLightSensor(string origin)
         {
             _options.AmbientLightSensor.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowAutoplay(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowAutoplay(string origin)
         {
             _options.Autoplay.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowCamera(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowCamera(string origin)
         {
             _options.Camera.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowEncryptedMedia(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowEncryptedMedia(string origin)
         {
             _options.EncryptedMedia.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowFullScreen(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowFullScreen(string origin)
         {
             _options.FullScreen.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowGeolocation(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowGeolocation(string origin)
         {
             _options.Geolocation.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowGyroscope(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowGyroscope(string origin)
         {
             _options.Gyroscope.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowMagnetometer(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowMagnetometer(string origin)
         {
             _options.Magnetometer.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowMicrophone(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowMicrophone(string origin)
         {
             _options.Microphone.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowMidi(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowMidi(string origin)
         {
             _options.Midi.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowNotifications(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowNotifications(string origin)
         {
             _options.Notifications.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowPayment(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowPayment(string origin)
         {
             _options.Payment.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowPictureInPicture(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowPictureInPicture(string origin)
         {
             _options.Accelerometer.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowPush(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowPush(string origin)
         {
             _options.Push.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowSpeaker(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowSpeaker(string origin)
         {
             _options.Speaker.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowSyncXhr(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowSyncXhr(string origin)
         {
             _options.SyncXhr.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowUsb(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowUsb(string origin)
         {
             _options.Usb.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowVibrate(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowVibrate(string origin)
         {
             _options.Vibrate.Origin = origin;
 
             return this;
         }
 
-        public PermissionsPolicyOptionsBuilder AllowVR(PermissionsPolicyOriginValue origin)
+        public PermissionsPolicyOptionsBuilder AllowVR(string origin)
         {
             _options.VR.Origin = origin;
 

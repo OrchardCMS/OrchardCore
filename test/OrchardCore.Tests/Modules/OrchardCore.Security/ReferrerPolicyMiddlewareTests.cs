@@ -25,7 +25,7 @@ namespace OrchardCore.Security.Tests
 
         [Theory]
         [MemberData(nameof(Policies))]
-        public async Task AddReferrerPolicyHeader(ReferrerPolicyValue value, string expectedValue)
+        public async Task AddReferrerPolicyHeader(string value, string expectedValue)
         {
             // Arrange
             var options = MicrosoftOptions.Create(new ReferrerPolicyOptions { Value = value });

@@ -1,33 +1,21 @@
-using Microsoft.Extensions.Primitives;
-
 namespace OrchardCore.Security.Options
 {
     public class ReferrerPolicyValue
     {
-        private readonly string _policy;
+        public static readonly string NoReferrer = "no-referrer";
 
-        internal ReferrerPolicyValue(string policy) => _policy = policy;
+        public static readonly string NoReferrerWhenDowngrade = "no-referrer-when-downgrade";
 
-        public static readonly ReferrerPolicyValue NoReferrer = new("no-referrer");
+        public static readonly string Origin = "origin";
 
-        public static readonly ReferrerPolicyValue NoReferrerWhenDowngrade = new("no-referrer-when-downgrade");
+        public static readonly string OriginWhenCrossOrigin = "origin-when-cross-origin";
 
-        public static readonly ReferrerPolicyValue Origin = new("origin");
+        public static readonly string SameOrigin = "same-origin";
 
-        public static readonly ReferrerPolicyValue OriginWhenCrossOrigin = new("origin-when-cross-origin");
+        public static readonly string StrictOrigin = "strict-origin";
 
-        public static readonly ReferrerPolicyValue SameOrigin = new("same-origin");
+        public static readonly string StrictOriginWhenCrossOrigin = "strict-origin-when-cross-origin";
 
-        public static readonly ReferrerPolicyValue StrictOrigin = new("strict-origin");
-
-        public static readonly ReferrerPolicyValue StrictOriginWhenCrossOrigin = new("strict-origin-when-cross-origin");
-
-        public static readonly ReferrerPolicyValue UnsafeUrl = new("unsafe-url");
-
-        public static implicit operator StringValues(ReferrerPolicyValue policy) => policy.ToString();
-
-        public static implicit operator string(ReferrerPolicyValue policy) => policy.ToString();
-
-        public override string ToString() => _policy;
+        public static readonly string UnsafeUrl = "unsafe-url";
     }
 }

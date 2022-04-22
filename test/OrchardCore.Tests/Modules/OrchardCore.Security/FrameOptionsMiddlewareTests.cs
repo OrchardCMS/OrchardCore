@@ -19,7 +19,7 @@ namespace OrchardCore.Security.Tests
 
         [Theory]
         [MemberData(nameof(FrameOptions))]
-        public async Task AddFrameOptionsHeader(FrameOptionsValue value, string expectedValue)
+        public async Task AddFrameOptionsHeader(string value, string expectedValue)
         {
             // Arrange
             var options = MicrosoftOptions.Create(new FrameOptionsOptions { Value = value });

@@ -2,6 +2,6 @@ namespace OrchardCore.Security.Options
 {
     public class ReferrerPolicyOptions
     {
-        public ReferrerPolicyValue Value { get; set; }
+        public string Value { get; set; }
     }
 }

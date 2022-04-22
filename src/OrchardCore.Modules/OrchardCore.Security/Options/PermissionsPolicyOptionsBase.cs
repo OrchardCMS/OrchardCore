@@ -4,6 +4,6 @@ namespace OrchardCore.Security.Options
     {
         public abstract string Name { get; }
 
-        public PermissionsPolicyOriginValue Origin { get; set; } = PermissionsPolicyOriginValue.None;
+        public string Origin { get; set; } = PermissionsPolicyOriginValue.None;
     }
 }

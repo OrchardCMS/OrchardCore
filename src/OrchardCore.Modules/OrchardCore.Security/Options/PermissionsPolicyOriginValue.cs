@@ -2,18 +2,10 @@ namespace OrchardCore.Security.Options
 {
     public class PermissionsPolicyOriginValue
     {
-        private readonly string _value;
+        public static readonly string Any = "*";
 
-        internal PermissionsPolicyOriginValue(string value) => _value = value;
+        public static readonly string None = "()";
 
-        public static readonly PermissionsPolicyOriginValue Any = new("*");
-
-        public static readonly PermissionsPolicyOriginValue None = new("()");
-
-        public static readonly PermissionsPolicyOriginValue Self = new("self");
-
-        public static implicit operator string(PermissionsPolicyOriginValue option) => option.ToString();
-
-        public override string ToString() => _value;
+        public static readonly string Self = "self";
     }
 }
