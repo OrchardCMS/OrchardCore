@@ -28,7 +28,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         [HtmlAttributeName(NameAttribute)]
         public string Name { get; set; }
 
-        public async override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             if (String.IsNullOrEmpty(Name))
             {
