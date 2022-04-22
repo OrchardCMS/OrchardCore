@@ -1,6 +1,97 @@
+@using Microsoft.AspNetCore.Mvc.Localization
 @using OrchardCore.Security.Options
 @using OrchardCore.Security.ViewModels
 @model SecuritySettingsViewModel
+
+@functions
+{
+    public LocalizedHtmlString GetPolicyName(string value)
+    {
+        LocalizedHtmlString name = null;
+        if(value == PermissionsPolicyValue.Accelerometer)
+        {
+            name = T["Accelerometer"];
+        }
+        else if(value == PermissionsPolicyValue.AmbientLightSensor)
+        {
+            name = T["Ambient Light Sensor"];
+        }
+        else if(value == PermissionsPolicyValue.Autoplay)
+        {
+            name = T["Autoplay"];
+        }
+        else if(value == PermissionsPolicyValue.Camera)
+        {
+            name = T["Camera"];
+        }
+        else if(value == PermissionsPolicyValue.EncryptedMedia)
+        {
+            name = T["Encrypted Media"];
+        }
+        else if(value == PermissionsPolicyValue.FullScreen)
+        {
+            name = T["Full Screen"];
+        }
+        else if(value == PermissionsPolicyValue.Geolocation)
+        {
+            name = T["Geolocation"];
+        }
+        else if(value == PermissionsPolicyValue.Gyroscope)
+        {
+            name = T["Gyroscope"];
+        }
+        else if(value == PermissionsPolicyValue.Magnetometer)
+        {
+            name = T["Magnetometer"];
+        }
+        else if(value == PermissionsPolicyValue.Microphone)
+        {
+            name = T["Microphone"];
+        }
+        else if(value == PermissionsPolicyValue.Midi)
+        {
+            name = T["Midi"];
+        }
+        else if(value == PermissionsPolicyValue.Notifications)
+        {
+            name = T["Notifications"];
+        }
+        else if(value == PermissionsPolicyValue.Payment)
+        {
+            name = T["Payment"];
+        }
+        else if(value == PermissionsPolicyValue.PictureInPicture)
+        {
+            name = T["Picture In Picture"];
+        }
+        else if(value == PermissionsPolicyValue.Push)
+        {
+            name = T["Push"];
+        }
+        else if(value == PermissionsPolicyValue.Speaker)
+        {
+            name = T["Speaker"];
+        }
+        else if(value == PermissionsPolicyValue.SyncXhr)
+        {
+            name = T["Synchronous XML Http Request"];
+        }
+        else if(value == PermissionsPolicyValue.Usb)
+        {
+            name = T["USB"];
+        }
+        else if(value == PermissionsPolicyValue.Vibrate)
+        {
+            name = T["Vibrate"];
+        }
+        else if(value == PermissionsPolicyValue.VR)
+        {
+            name = T["VR"];
+        }
+
+        return name;
+    }
+}
 
 <p class="alert alert-warning">
     @T["The current tenant will be reloaded when the settings are saved."]
@@ -19,84 +110,55 @@
     <span asp-validation-for="FrameOptions"></span>
     <span class="hint">@T["Tells the browser whether you want to allow your site to be displayed in a frame or not."]</span>
 </div>
-<div class="form-group" asp-validation-class-for="PermissionsPolicy">
+<div class="form-group">
     <label asp-for="PermissionsPolicy">@T["Permissions Policy"]</label>
-    <select asp-for="PermissionsPolicy" class="form-control" multiple>
-        <option value="@PermissionsPolicyValue.Accelerometer" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Accelerometer))">
-            @T["Accelerometer"]
-        </option>
-        <option value="@PermissionsPolicyValue.AmbientLightSensor" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.AmbientLightSensor))">
-            @T["Ambient Light Sensor"]
-        </option>
-        <option value="@PermissionsPolicyValue.Autoplay" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Autoplay))">
-            @T["Autoplay"]
-        </option>
-        <option value="@PermissionsPolicyValue.Camera" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Camera))">
-            @T["Camera"]
-        </option>
-        <option value="@PermissionsPolicyValue.EncryptedMedia" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.EncryptedMedia))">
-            @T["Encrypted Media"]
-        </option>
-        <option value="@PermissionsPolicyValue.FullScreen" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.FullScreen))">
-            @T["Full Screen"]
-        </option>
-        <option value="@PermissionsPolicyValue.Geolocation" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Geolocation))">
-            @T["Geolocation"]
-        </option>
-        <option value="@PermissionsPolicyValue.Gyroscope" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Gyroscope))">
-            @T["Gyroscope"]
-        </option>
-        <option value="@PermissionsPolicyValue.Magnetometer" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Magnetometer))">
-            @T["Magnetometer"]
-        </option>
-        <option value="@PermissionsPolicyValue.Microphone" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Microphone))">
-            @T["Microphone"]
-        </option>
-        <option value="@PermissionsPolicyValue.Midi" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Midi))">
-            @T["Midi"]
-        </option>
-         <option value="@PermissionsPolicyValue.Notifications" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Notifications))">
-            @T["Notifications"]
-        </option>
-        <option value="@PermissionsPolicyValue.Payment" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Payment))">
-            @T["Payment"]
-        </option>
-        <option value="@PermissionsPolicyValue.PictureInPicture" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.PictureInPicture))">
-            @T["Picture in Picture"]
-        </option>
-        <option value="@PermissionsPolicyValue.Push" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Push))">
-            @T["Push"]
-        </option>
-        <option value="@PermissionsPolicyValue.Speaker" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Speaker))">
-            @T["Speaker"]
-        </option>
-        <option value="@PermissionsPolicyValue.SyncXhr" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.SyncXhr))">
-            @T["Synchronous XMLHttpRequest"]
-        </option>
-        <option value="@PermissionsPolicyValue.Usb" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Usb))">
-            @T["USB"]
-        </option>
-        <option value="@PermissionsPolicyValue.Vibrate" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.Vibrate))">
-            @T["Vibrate"]
-        </option>
-        <option value="@PermissionsPolicyValue.VR" selected="@(Model.PermissionsPolicy.Contains(PermissionsPolicyValue.VR))">
-            @T["VR"]
-        </option>
-    </select>
-    <span asp-validation-for="PermissionsPolicy"></span>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>@T["Name"]</th>
+                <th>@T["None"]</th>
+                <th>@T["Any"]</th>
+                <th>@T["Self"]</th>
+                <th style="width:40%"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (var i = 0; i < Model.PermissionsPolicy.Length; i++)
+            {
+                var policyParts = Model.PermissionsPolicy[i].Split('=');
+                var originsPart = policyParts[1];
+                var originParts = originsPart.Split(' ');
+                var originType = originParts[0];
+                var allowedOrigins = originParts.Length == 2 ? originParts[1] : String.Empty;
+                var name = GetPolicyName(policyParts[0]);
+                <tr>
+                    <td>@name</td>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="@name" value="None" @(originType == PermissionsPolicyOriginValue.None ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.None');">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="@name" value="Any" @(originType == PermissionsPolicyOriginValue.Any ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.Any');">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="@name" value="Self" @(originType == PermissionsPolicyOriginValue.Self ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.Self');">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group mb-0">
+                            <input class="form-control d-@(originType == PermissionsPolicyOriginValue.Self ? "block" : "none")" id="@(name)AllowedOrigins" placeholder="https://www.domain.com https://www.another.domain.com" value="@allowedOrigins" oninput="changeAllowedOrigins(this)" />
+                            @Html.HiddenFor(m => m.PermissionsPolicy[i])
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
     <span class="hint">@T["Allows a site to control which features and APIs can be used in the browser."]</span>
-</div>
-<div class="form-group" asp-validation-class-for="PermissionsPolicyOrigin">
-    <label asp-for="PermissionsPolicyOrigin">@T["Permissions Policy Origin"]</label>
-    <select asp-for="PermissionsPolicyOrigin" class="form-control">
-        <option value="@PermissionsPolicyOriginValue.Any" selected="@(Model.PermissionsPolicyOrigin == PermissionsPolicyOriginValue.Any)">
-            @T["Any"]
-        </option>
-        <option value="@PermissionsPolicyOriginValue.Self" selected="@(Model.PermissionsPolicyOrigin == PermissionsPolicyOriginValue.Self)">
-            @T["Self"]
-        </option>
-    </select>
-    <span asp-validation-for="PermissionsPolicyOrigin"></span>
 </div>
 <div class="form-group" asp-validation-class-for="ReferrerPolicy">
     <label asp-for="ReferrerPolicy">@T["Referrer Policy"]</label>
@@ -129,3 +191,34 @@
     <span asp-validation-for="ReferrerPolicy"></span>
     <span class="hint">@T["Allows a site to control how much information the browser includes when navigating away from a page."]</span>
 </div>
+<script>
+    const allowedOrigins = 'AllowedOrigins';
+
+    function changeOrigin(e, origin) {
+        var ele = $('#' + e.name + allowedOrigins);
+        var originPart = origin;
+
+        if(e.value == "Self") {
+            ele.removeClass('d-none').addClass('d-block');
+            originPart += ' ' + ele.val();
+        }
+        else {
+            ele.removeClass('d-block').addClass('d-none');
+        }
+
+        setPermission(ele, originPart);
+    }
+
+    function changeAllowedOrigins(e) {
+        var id = $(e).attr('id');
+        var origin = id.substr(0, id.indexOf(allowedOrigins))
+
+        setPermission($(e), origin + ' ' + e.value);
+    }
+
+    function setPermission(e, origin) {
+        var permission = e.siblings().val();
+
+        e.siblings().val(permission.substr(0, permission.indexOf('=') + 1) +  origin);
+    } 
+</script>

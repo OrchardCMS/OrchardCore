@@ -1,26 +1,24 @@
-using System;
-
 namespace OrchardCore.Security.Options
 {
     public class FrameOptionsOptionsBuilder
     {
-        private readonly FrameOptionsOptions _options;
+        private readonly SecurityHeadersOptions _options;
 
-        public FrameOptionsOptionsBuilder(FrameOptionsOptions options)
-            => _options = options ?? throw new ArgumentNullException(nameof(options));
+        public FrameOptionsOptionsBuilder(SecurityHeadersOptions options)
+            => _options = options;
 
-        public FrameOptionsOptionsBuilder WithDeny()
+        public SecurityHeadersOptions WithDeny()
         {
-            _options.Value = FrameOptionsValue.Deny;
+            _options.FrameOptions = FrameOptionsValue.Deny;
 
-            return this;
+            return _options;
         }
 
-        public FrameOptionsOptionsBuilder WithSameOrigin()
+        public SecurityHeadersOptions WithSameOrigin()
         {
-            _options.Value = FrameOptionsValue.SameOrigin;
+            _options.FrameOptions = FrameOptionsValue.SameOrigin;
 
-            return this;
+            return _options;
         }
     }
 }

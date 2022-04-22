@@ -24,15 +24,14 @@ namespace Microsoft.AspNetCore.Builder
             return app;
         }
 
-        public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app, Action<SecurityHeadersOptionsBuilder> action)
+        public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app, Action<SecurityHeadersOptions> optionsAction)
         {
             ArgumentNullException.ThrowIfNull(app, nameof(app));
-            ArgumentNullException.ThrowIfNull(action, nameof(action));
+            ArgumentNullException.ThrowIfNull(optionsAction, nameof(optionsAction));
 
             var options = new SecurityHeadersOptions();
-            var optionsBuilder = new SecurityHeadersOptionsBuilder(options);
 
-            action.Invoke(optionsBuilder);
+            optionsAction.Invoke(options);
 
             return app.UseSecurityHeaders(options);
         }

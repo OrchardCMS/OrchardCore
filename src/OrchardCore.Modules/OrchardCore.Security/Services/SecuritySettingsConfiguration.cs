@@ -17,7 +17,6 @@ namespace OrchardCore.Security.Services
             options.ContentTypeOptions = securitySettings.ContentTypeOptions;
             options.FrameOptions = securitySettings.FrameOptions;
             options.PermissionsPolicy = securitySettings.PermissionsPolicy;
-            options.PermissionsPolicyOrigin = securitySettings.PermissionsPolicyOrigin;
             options.ReferrerPolicy = securitySettings.ReferrerPolicy;
         }
     }

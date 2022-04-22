@@ -1,18 +1,15 @@
-using System.Collections.Generic;
-using OrchardCore.Security.Options;
-
 namespace OrchardCore.Security
 {
     public class SecuritySettings
     {
-        public string ContentTypeOptions { get; set; } = SecurityHeaderDefaults.ContentTypeOptions;
+        public string ContentTypeOptions { get; set; }
 
-        public string FrameOptions { get; set; } = SecurityHeaderDefaults.FrameOptions;
+        public string FrameOptions { get; set; }
 
-        public ICollection<string> PermissionsPolicy { get; set; } = SecurityHeaderDefaults.PermissionsPolicy;
+        public string[] PermissionsPolicy { get; set; }
 
-        public string PermissionsPolicyOrigin { get; set; } = PermissionsPolicyOriginValue.Self;
+        public string PermissionsPolicyOrigin { get; set; }
 
-        public string ReferrerPolicy { get; set; } = SecurityHeaderDefaults.ReferrerPolicy;
+        public string ReferrerPolicy { get; set; }
     }
 }

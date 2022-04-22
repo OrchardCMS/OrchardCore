@@ -1,68 +1,66 @@
-using System;
-
 namespace OrchardCore.Security.Options
 {
     public class ReferrerPolicyOptionsBuilder
     {
-        private readonly ReferrerPolicyOptions _options;
+        private readonly SecurityHeadersOptions _options;
 
-        public ReferrerPolicyOptionsBuilder(ReferrerPolicyOptions options)
-            => _options = options ?? throw new ArgumentNullException(nameof(options));
+        public ReferrerPolicyOptionsBuilder(SecurityHeadersOptions options)
+            => _options = options;
 
-        public ReferrerPolicyOptionsBuilder WithNoReferrer()
+        public SecurityHeadersOptions WithNoReferrer()
         {
-            _options.Value = ReferrerPolicyValue.NoReferrer;
+            _options.ReferrerPolicy = ReferrerPolicyValue.NoReferrer;
 
-            return this;
+            return _options;
         }
 
-        public ReferrerPolicyOptionsBuilder WithNoReferrerWhenDowngrade()
+        public SecurityHeadersOptions WithNoReferrerWhenDowngrade()
         {
-            _options.Value = ReferrerPolicyValue.NoReferrerWhenDowngrade;
+            _options.ReferrerPolicy = ReferrerPolicyValue.NoReferrerWhenDowngrade;
 
-            return this;
+            return _options;
         }
 
-        public ReferrerPolicyOptionsBuilder WithOrigin()
+        public SecurityHeadersOptions WithOrigin()
         {
-            _options.Value = ReferrerPolicyValue.Origin;
+            _options.ReferrerPolicy = ReferrerPolicyValue.Origin;
 
-            return this;
+            return _options;
         }
 
-        public ReferrerPolicyOptionsBuilder WithOriginWhenCrossOrigin()
+        public SecurityHeadersOptions WithOriginWhenCrossOrigin()
         {
-            _options.Value = ReferrerPolicyValue.OriginWhenCrossOrigin;
+            _options.ReferrerPolicy = ReferrerPolicyValue.OriginWhenCrossOrigin;
 
-            return this;
+            return _options;
         }
 
-        public ReferrerPolicyOptionsBuilder WithSameOrigin()
+        public SecurityHeadersOptions WithSameOrigin()
         {
-            _options.Value = ReferrerPolicyValue.SameOrigin;
+            _options.ReferrerPolicy = ReferrerPolicyValue.SameOrigin;
 
-            return this;
+            return _options;
         }
 
-        public ReferrerPolicyOptionsBuilder WithStrictOrigin()
+        public SecurityHeadersOptions WithStrictOrigin()
         {
-            _options.Value = ReferrerPolicyValue.StrictOrigin;
+            _options.ReferrerPolicy = ReferrerPolicyValue.StrictOrigin;
 
-            return this;
+            return _options;
         }
 
-        public ReferrerPolicyOptionsBuilder WithStrictOriginWhenCrossOrigin()
+        public SecurityHeadersOptions WithStrictOriginWhenCrossOrigin()
         {
-            _options.Value = ReferrerPolicyValue.StrictOriginWhenCrossOrigin;
+            _options.ReferrerPolicy = ReferrerPolicyValue.StrictOriginWhenCrossOrigin;
 
-            return this;
+            return _options;
         }
 
-        public ReferrerPolicyOptionsBuilder WithUnsafeUrl()
+        public SecurityHeadersOptions WithUnsafeUrl()
         {
-            _options.Value = ReferrerPolicyValue.UnsafeUrl;
+            _options.ReferrerPolicy = ReferrerPolicyValue.UnsafeUrl;
 
-            return this;
+            return _options;
         }
     }
 }

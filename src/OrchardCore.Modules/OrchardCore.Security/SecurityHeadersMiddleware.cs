@@ -18,10 +18,10 @@ namespace OrchardCore.Security
 
         public Task Invoke(HttpContext context)
         {
-            context.Response.Headers[SecurityHeaderNames.XContentTypeOptions] = _options.ContentTypeOptions.Value;
-            context.Response.Headers[SecurityHeaderNames.XFrameOptions] = _options.FrameOptions.Value;
-            context.Response.Headers[SecurityHeaderNames.PermissionsPolicy] = _options.PermissionsPolicy.ToString();
-            context.Response.Headers[SecurityHeaderNames.ReferrerPolicy] = _options.ReferrerPolicy.Value;
+            foreach (var provider in _options.HeaderPolicyProviders)
+            {
+                provider.ApplyPolicy(context);
+            }
 
             return _next.Invoke(context);
         }

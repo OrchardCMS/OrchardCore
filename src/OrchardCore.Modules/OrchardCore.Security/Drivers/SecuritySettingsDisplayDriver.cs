@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,8 +13,6 @@ namespace OrchardCore.Security.Drivers
     public class SecuritySettingsDisplayDriver : SectionDisplayDriver<ISite, SecuritySettings>
     {
         internal const string SettingsGroupId = "SecurityHeaders";
-
-        private static readonly IList<string> _defaultPermissionsPolicy = new List<string>();
 
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
@@ -48,7 +44,6 @@ namespace OrchardCore.Security.Drivers
             {
                 model.FrameOptions = settings.FrameOptions;
                 model.PermissionsPolicy = settings.PermissionsPolicy;
-                model.PermissionsPolicyOrigin = settings.PermissionsPolicyOrigin;
                 model.ReferrerPolicy = settings.ReferrerPolicy;
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
@@ -69,8 +64,7 @@ namespace OrchardCore.Security.Drivers
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 section.FrameOptions = model.FrameOptions;
-                section.PermissionsPolicy = model.PermissionsPolicy ?? _defaultPermissionsPolicy;
-                section.PermissionsPolicyOrigin = model.PermissionsPolicyOrigin;
+                section.PermissionsPolicy = model.PermissionsPolicy;
                 section.ReferrerPolicy = model.ReferrerPolicy;
 
                 if (context.Updater.ModelState.IsValid)
