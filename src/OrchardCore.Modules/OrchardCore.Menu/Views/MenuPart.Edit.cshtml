@@ -50,7 +50,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row">
+                <div class="row row-cols-1 row-cols-md-2 g-2">
                     @foreach (var type in Model.MenuItemContentTypes)
                     {
                         var menuItem = await ContentManager.NewAsync(type.Name);
@@ -58,7 +58,7 @@
                         thumbnail.MenuItemType = type.Name;
                         thumbnail.MenuItemTypeDisplayName = type.DisplayName;
                         thumbnail.MenuContentItemId = Model.MenuPart.ContentItem.ContentItemId;
-                        <div class="col-sm-6">
+                        <div class="col">
                             @await DisplayAsync(thumbnail)
                         </div>
                     }

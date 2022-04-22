@@ -16,11 +16,11 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="row">
+                        <div class="row row-cols-1 row-cols-md-2 g-2">
                             @foreach (var deploymentPlan in deploymentPlans)
                             {
-                                <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
-                                    <div class="card w-100 mb-3">
+                                <div class="col">
+                                    <div class="card h-100 mb-3">
                                         <div class="card-body">
                                             <h4 class="card-title">@deploymentPlan.Name</h4>
                                         </div>

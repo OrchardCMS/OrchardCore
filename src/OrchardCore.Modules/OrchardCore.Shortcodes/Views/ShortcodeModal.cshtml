@@ -61,7 +61,7 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
                                 </ul>
                             </div>
                             <div class="col-sm-9 col-md-9 col-lg-10">
-                                <div class="tab-content row row-cols-1 row-cols-md-2 g-4">
+                                <div class="tab-content row row-cols-1 row-cols-md-2 g-2">
                                     @foreach (var descriptor in shortcodeDescriptors)
                                     {
                                         var summary = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");
