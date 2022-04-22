@@ -21,7 +21,6 @@ namespace Microsoft.AspNetCore.Builder
             app.UseFrameOptions(options.FrameOptions);
             app.UsePermissionsPolicy(options.PermissionsPolicy);
             app.UseReferrerPolicy(options.ReferrerPolicy);
-            app.UseStrictTransportSecurity(options.StrictTransportSecurity);
 
             return app;
         }

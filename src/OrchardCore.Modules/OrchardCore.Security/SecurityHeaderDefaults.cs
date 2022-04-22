@@ -13,11 +13,5 @@ namespace OrchardCore.Security
         public static readonly ICollection<string> PermissionsPolicy = new [] { "fullscreen" };
 
         public static readonly ReferrerPolicyValue ReferrerPolicy = ReferrerPolicyValue.NoReferrer;
-
-        public static readonly StrictTransportSecurityOptions StrictTransportSecurityOptions = new()
-        {
-            MaxAge = TimeSpan.FromDays(365),
-            IncludeSubDomains = true
-        };
     }
 }

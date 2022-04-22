@@ -96,32 +96,5 @@ namespace OrchardCore.Security.Options
 
             return AddReferrerPolicy(options);
         }
-
-        public SecurityHeadersOptionsBuilder AddStrictTransportSecurity(StrictTransportSecurityOptions options)
-        {
-            if (options is null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            _options.StrictTransportSecurity = options;
-
-            return this;
-        }
-
-        public SecurityHeadersOptionsBuilder AddStrictTransportSecurity(Action<StrictTransportSecurityOptionsBuilder> action)
-        {
-            if (action is null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
-
-            var options = new StrictTransportSecurityOptions();
-            var builder = new StrictTransportSecurityOptionsBuilder(options);
-
-            action(builder);
-
-            return AddStrictTransportSecurity(options);
-        }
     }
 }

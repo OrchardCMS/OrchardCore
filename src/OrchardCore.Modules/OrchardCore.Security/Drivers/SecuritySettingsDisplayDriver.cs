@@ -50,9 +50,6 @@ namespace OrchardCore.Security.Drivers
                 model.PermissionsPolicy = settings.PermissionsPolicy;
                 model.PermissionsPolicyOrigin = settings.PermissionsPolicyOrigin;
                 model.ReferrerPolicy = settings.ReferrerPolicy;
-                model.StrictTransportSecurityMaxAge = settings.StrictTransportSecurity.MaxAge.Days;
-                model.StrictTransportSecurityIncludeSubDomains = settings.StrictTransportSecurity.IncludeSubDomains;
-                model.StrictTransportSecurityPreload = settings.StrictTransportSecurity.Preload;
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -75,9 +72,6 @@ namespace OrchardCore.Security.Drivers
                 section.PermissionsPolicy = model.PermissionsPolicy ?? _defaultPermissionsPolicy;
                 section.PermissionsPolicyOrigin = model.PermissionsPolicyOrigin;
                 section.ReferrerPolicy = model.ReferrerPolicy;
-                section.StrictTransportSecurity.MaxAge = TimeSpan.FromDays(model.StrictTransportSecurityMaxAge);
-                section.StrictTransportSecurity.IncludeSubDomains = model.StrictTransportSecurityIncludeSubDomains;
-                section.StrictTransportSecurity.Preload = model.StrictTransportSecurityPreload;
 
                 if (context.Updater.ModelState.IsValid)
                 {

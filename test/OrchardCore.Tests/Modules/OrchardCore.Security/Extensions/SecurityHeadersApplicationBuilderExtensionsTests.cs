@@ -28,7 +28,6 @@ namespace OrchardCore.Security.Extensions.Tests
             Assert.Equal(SecurityHeaderDefaults.FrameOptions, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
             Assert.Equal("accelerometer=(), ambient-light-sensor=(), autoplay=(), camera=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), notifications=(), payment=(), picture-in-picture=(), push=(), speaker=(), sync-xhr=(), usb=(), vibrate=(), vr=()", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
             Assert.Equal(SecurityHeaderDefaults.ReferrerPolicy, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
-            Assert.Equal($"max-age={SecurityHeaderDefaults.StrictTransportSecurityOptions.MaxAge.TotalSeconds}; includeSubDomains", context.Response.Headers[SecurityHeaderNames.StrictTransportSecurity]);
         }
 
         [Fact]
@@ -45,8 +44,7 @@ namespace OrchardCore.Security.Extensions.Tests
                     Camera = new CameraPermissionsPolicyOptions { Origin = PermissionsPolicyOriginValue.Self },
                     Microphone = new MicrophonePermissionsPolicyOptions { Origin = PermissionsPolicyOriginValue.Any }
                 },
-                ReferrerPolicy = new ReferrerPolicyOptions { Value = ReferrerPolicyValue.Origin },
-                StrictTransportSecurity = new StrictTransportSecurityOptions { MaxAge = TimeSpan.FromSeconds(60) }
+                ReferrerPolicy = new ReferrerPolicyOptions { Value = ReferrerPolicyValue.Origin }
             };
             var applicationBuilder = CreateApplicationBuilder();
 
@@ -62,7 +60,6 @@ namespace OrchardCore.Security.Extensions.Tests
             Assert.Equal(FrameOptionsValue.Deny, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
             Assert.Equal("accelerometer=(), ambient-light-sensor=(), autoplay=(), camera=self, encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=*, midi=(), notifications=(), payment=(), picture-in-picture=(), push=(), speaker=(), sync-xhr=(), usb=(), vibrate=(), vr=()", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
             Assert.Equal(ReferrerPolicyValue.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
-            Assert.Equal($"max-age=60; includeSubDomains", context.Response.Headers[SecurityHeaderNames.StrictTransportSecurity]);
         }
 
         [Fact]
@@ -84,8 +81,7 @@ namespace OrchardCore.Security.Extensions.Tests
                             .AllowCamera(PermissionsPolicyOriginValue.Self)
                             .AllowMicrophone(PermissionsPolicyOriginValue.Any);
                     })
-                    .AddReferrerPolicy(options => options .WithOrigin())
-                    .AddStrictTransportSecurity(options => options.WithMaxAge(TimeSpan.FromMinutes(1)));
+                    .AddReferrerPolicy(options => options .WithOrigin());
             });
 
             applicationBuilder
@@ -97,7 +93,6 @@ namespace OrchardCore.Security.Extensions.Tests
             Assert.Equal(FrameOptionsValue.Deny, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
             Assert.Equal("accelerometer=(), ambient-light-sensor=(), autoplay=(), camera=self, encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=*, midi=(), notifications=(), payment=(), picture-in-picture=(), push=(), speaker=(), sync-xhr=(), usb=(), vibrate=(), vr=()", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
             Assert.Equal(ReferrerPolicyValue.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
-            Assert.Equal($"max-age=60; includeSubDomains", context.Response.Headers[SecurityHeaderNames.StrictTransportSecurity]);
         }
 
         private static IApplicationBuilder CreateApplicationBuilder()

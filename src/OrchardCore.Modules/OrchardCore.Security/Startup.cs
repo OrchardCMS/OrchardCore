@@ -39,7 +39,6 @@ namespace OrchardCore.Security
                 config.AddFrameOptions(new FrameOptionsOptions { Value = new FrameOptionsValue(securityOptions.FrameOptions) });
                 config.AddReferrerPolicy(new ReferrerPolicyOptions { Value = new ReferrerPolicyValue(securityOptions.ReferrerPolicy) });
                 config.AddPermissionsPolicy(permissionsPolicyOptions);
-                config.AddStrictTransportSecurity(securityOptions.StrictTransportSecurity);
             });
         }
 

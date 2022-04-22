@@ -8,7 +8,6 @@ namespace OrchardCore.Security.Options
             FrameOptions = new FrameOptionsOptions { Value = FrameOptionsValue.SameOrigin };
             PermissionsPolicy = new PermissionsPolicyOptions();
             ReferrerPolicy = new ReferrerPolicyOptions { Value = ReferrerPolicyValue.NoReferrer };
-            StrictTransportSecurity = new StrictTransportSecurityOptions();
         }
 
         public ContentTypeOptionsOptions ContentTypeOptions { get; set; }
@@ -18,7 +17,5 @@ namespace OrchardCore.Security.Options
         public PermissionsPolicyOptions PermissionsPolicy { get; set; }
 
         public ReferrerPolicyOptions ReferrerPolicy { get; set; }
-
-        public StrictTransportSecurityOptions StrictTransportSecurity { get; set; }
     }
 }
