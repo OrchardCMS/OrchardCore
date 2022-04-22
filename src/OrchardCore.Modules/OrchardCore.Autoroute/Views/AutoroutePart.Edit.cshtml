@@ -29,16 +29,12 @@
         <div class="input-group">
             @if (!String.IsNullOrWhiteSpace(site.BaseUrl))
             {
-                <div class="input-group-prepend">
-                    <div class="input-group-text">@site.BaseUrl</div>
-                </div>
+                <div class="input-group-text">@site.BaseUrl</div>
             }
             <input asp-for="Path" class="form-control" disabled="@(!Model.Settings.AllowCustomPath)" />
             @if (hasPublished)
             {
-                <div class="input-group-append">
-                    <div class="input-group-text"><a display-for="@contentItem" class="text-info" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a></div>
-                </div>
+                <div class="input-group-text"><a display-for="@contentItem" class="text-info" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a></div>
             }
             <span asp-validation-for="Path"></span>
         </div>
