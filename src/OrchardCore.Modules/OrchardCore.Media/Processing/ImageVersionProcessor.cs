@@ -22,7 +22,12 @@ namespace OrchardCore.Media.Processing
         public IEnumerable<string> Commands
             => VersionCommands;
 
-        public FormattedImage Process(FormattedImage image, ILogger logger, IDictionary<string, string> commands, CommandParser parser, CultureInfo culture)
+        IEnumerable<string> IImageWebProcessor.Commands => throw new System.NotImplementedException();
+
+        public FormattedImage Process(FormattedImage image, ILogger logger, CommandCollection commands, CommandParser parser, CultureInfo culture)
             => image;
+
+        public bool RequiresTrueColorPixelFormat(CommandCollection commands, CommandParser parser, CultureInfo culture)
+            => true;
     }
 }
