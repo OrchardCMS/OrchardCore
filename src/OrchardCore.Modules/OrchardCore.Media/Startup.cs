@@ -138,6 +138,10 @@ namespace OrchardCore.Media
                 .RemoveProvider<PhysicalFileSystemProvider>()
                 // For multitenancy we must use an absolute path to prevent leakage across tenants on different hosts.
                 .SetCacheKey<BackwardsCompatibleCacheKey>()
+                .Configure<PhysicalFileSystemCacheOptions>(options =>
+                {
+                    options.CacheFolderDepth = 12;
+                })
                 .AddProvider<MediaResizingFileProvider>()
                 .AddProcessor<ImageVersionProcessor>()
                 .AddProcessor<TokenCommandProcessor>();
