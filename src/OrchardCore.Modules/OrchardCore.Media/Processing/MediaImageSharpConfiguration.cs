@@ -70,7 +70,6 @@ namespace OrchardCore.Media.Processing
                 context.Commands.Remove(ResizeWebProcessor.Compand);
                 context.Commands.Remove(ResizeWebProcessor.Sampler);
                 context.Commands.Remove(ResizeWebProcessor.Anchor);
-                // TODO there is a new command orient to allow for probably somewhere in the ui / razor helpers.
 
                 // When only a version command is applied pass on this request.
                 if (context.Commands.Count == 1 && context.Commands.IndexOf(ImageVersionProcessor.VersionCommand) != -1)
