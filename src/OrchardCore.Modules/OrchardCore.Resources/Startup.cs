@@ -26,7 +26,7 @@ namespace OrchardCore.Resources
 
             serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
 
-            serviceCollection.TryAddTransient<IResourceSettingProvider, LocalResourceSettingProvider>();
+            serviceCollection.TryAddTransient<IConfigureOptions<ResourceSetting>, LocalResourceConfigureOptions>();
         }
     }
 }
