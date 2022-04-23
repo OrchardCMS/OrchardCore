@@ -33,6 +33,7 @@ namespace OrchardCore.Security
             builder.UseSecurityHeaders(options =>
             {
                 options
+                    .AddContentSecurityPolicy(securityOptions.ContentSecurityPolicy)
                     .AddContentTypeOptions()
                     .AddFrameOptions(securityOptions.FrameOptions)
                     .AddPermissionsPolicy(securityOptions.PermissionsPolicy)

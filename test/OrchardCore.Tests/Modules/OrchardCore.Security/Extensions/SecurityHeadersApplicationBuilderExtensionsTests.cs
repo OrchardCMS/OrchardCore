@@ -23,6 +23,7 @@ namespace OrchardCore.Security.Extensions.Tests
                 .Invoke(context);
 
             // Assert
+            Assert.Equal("base-uri 'none', child-src 'none', connect-src 'none', default-src 'none', font-src 'self', form-action 'self', frame-ancestors 'self', frame-src 'self', img-src 'self', manifest-src 'self', media-src 'self', object-src 'self', sandbox, script-src 'self', style-src 'self', upgrade-insecure-requests", context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
             Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
             Assert.Equal(SecurityHeaderDefaults.FrameOptions, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
             Assert.Equal("accelerometer=(), ambient-light-sensor=(), autoplay=(), camera=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), notifications=(), payment=(), picture-in-picture=(), push=(), speaker=(), sync-xhr=(), usb=(), vibrate=(), vr=()", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);

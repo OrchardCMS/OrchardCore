@@ -4,6 +4,26 @@ namespace OrchardCore.Security
 {
     public static class SecurityHeaderDefaults
     {
+        public static readonly string[] ContentSecurityPolicy = new[]
+        {
+            $"{ContentSecurityPolicyValue.BaseUri} {ContentSecurityPolicyOriginValue.None}",
+            $"{ContentSecurityPolicyValue.ChildSource} {ContentSecurityPolicyOriginValue.None}",
+            $"{ContentSecurityPolicyValue.ConnectSource} {ContentSecurityPolicyOriginValue.None}",
+            $"{ContentSecurityPolicyValue.DefaultSource} {ContentSecurityPolicyOriginValue.None}",
+            $"{ContentSecurityPolicyValue.FontSource} {ContentSecurityPolicyOriginValue.Self}",
+            $"{ContentSecurityPolicyValue.FormAction} {ContentSecurityPolicyOriginValue.Self}",
+            $"{ContentSecurityPolicyValue.FrameAncestors} {ContentSecurityPolicyOriginValue.Self}",
+            $"{ContentSecurityPolicyValue.FrameSource} {ContentSecurityPolicyOriginValue.Self}",
+            $"{ContentSecurityPolicyValue.ImageSource} {ContentSecurityPolicyOriginValue.Self}",
+            $"{ContentSecurityPolicyValue.ManifestSource} {ContentSecurityPolicyOriginValue.Self}",
+            $"{ContentSecurityPolicyValue.MediaSource} {ContentSecurityPolicyOriginValue.Self}",
+            $"{ContentSecurityPolicyValue.ObjectSource} {ContentSecurityPolicyOriginValue.Self}",
+            $"{ContentSecurityPolicyValue.Sandbox}",
+            $"{ContentSecurityPolicyValue.ScriptSource} {ContentSecurityPolicyOriginValue.Self}",
+            $"{ContentSecurityPolicyValue.StyleSource} {ContentSecurityPolicyOriginValue.Self}",
+            $"{ContentSecurityPolicyValue.UpgradeInsecureRequests}",
+        };
+
         public static readonly string ContentTypeOptions = ContentTypeOptionsValue.NoSniff;
 
         public static readonly string FrameOptions = FrameOptionsValue.SameOrigin;

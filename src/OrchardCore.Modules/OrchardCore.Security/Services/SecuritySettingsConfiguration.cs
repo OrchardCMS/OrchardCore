@@ -14,6 +14,7 @@ namespace OrchardCore.Security.Services
             var securitySettings = _securityService.GetSettingsAsync()
                 .GetAwaiter().GetResult();
 
+            options.ContentSecurityPolicy = securitySettings.ContentSecurityPolicy;
             options.ContentTypeOptions = securitySettings.ContentTypeOptions;
             options.FrameOptions = securitySettings.FrameOptions;
             options.PermissionsPolicy = securitySettings.PermissionsPolicy;

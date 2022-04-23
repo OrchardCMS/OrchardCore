@@ -9,6 +9,19 @@ namespace OrchardCore.Security.Tests
 {
     public class SecurityMiddlewareTests
     {
+        public static IEnumerable<object[]> ContentSecurityPolicies =>
+            new List<object[]>
+            {
+                new object[] { new[] { $"{ContentSecurityPolicyValue.BaseUri} {ContentSecurityPolicyOriginValue.None}"}, "base-uri 'none'" },
+                new object[] { new[] { $"{ContentSecurityPolicyValue.BaseUri} {ContentSecurityPolicyOriginValue.Self}"}, "base-uri 'self'" },
+                new object[] { new[] { $"{ContentSecurityPolicyValue.ConnectSource} {ContentSecurityPolicyOriginValue.Self} https://www.domain.com/" }, "connect-src 'self' https://www.domain.com/" },
+                new object[] { new[] { $"{ContentSecurityPolicyValue.ConnectSource} {ContentSecurityPolicyOriginValue.Self} https://www.domain1.com/ https://www.domain2.com/" }, "connect-src 'self' https://www.domain1.com/ https://www.domain2.com/" },
+                new object[] { new[] { $"{ContentSecurityPolicyValue.ScriptSource} {ContentSecurityPolicyOriginValue.Self} https://www.domain.com/", $"{ContentSecurityPolicyValue.StyleSource} {ContentSecurityPolicyOriginValue.Self} https://www.domain.com/" }, "script-src 'self' https://www.domain.com/, style-src 'self' https://www.domain.com/" },
+                new object[] { new[] { $"{ContentSecurityPolicyValue.Sandbox}"}, "sandbox" },
+                new object[] { new[] { $"{ContentSecurityPolicyValue.Sandbox} {SandboxContentSecurityPolicyValue.AllowScripts}" }, "sandbox allow-scripts" },
+                new object[] { new[] { $"{ContentSecurityPolicyValue.UpgradeInsecureRequests}"}, "upgrade-insecure-requests" },
+            };
+
         public static IEnumerable<object[]> FrameOptions =>
             new List<object[]>
             {
@@ -41,6 +54,26 @@ namespace OrchardCore.Security.Tests
                 new object[] { ReferrerPolicyValue.StrictOriginWhenCrossOrigin, "strict-origin-when-cross-origin" },
                 new object[] { ReferrerPolicyValue.UnsafeUrl, "unsafe-url" }
             };
+
+        [Theory]
+        [MemberData(nameof(ContentSecurityPolicies))]
+        public async Task AddContentSecurityPolicyHeader(string[] contentSecurityPolicies, string expectedValue)
+        {
+            // Arrange
+            var options = MicrosoftOptions.Create(new SecurityHeadersOptions
+            {
+                ContentSecurityPolicy = contentSecurityPolicies
+            });
+            var middleware = new SecurityHeadersMiddleware(options, Request);
+            var context = new DefaultHttpContext();
+
+            // Act
+            await middleware.Invoke(context);
+
+            // Assert
+            Assert.True(context.Response.Headers.ContainsKey(SecurityHeaderNames.ContentSecurityPolicy));
+            Assert.Equal(expectedValue, context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
+        }
 
         [Fact]
         public async Task AddContentTypeOptionsHeader()
@@ -83,12 +116,12 @@ namespace OrchardCore.Security.Tests
 
         [Theory]
         [MemberData(nameof(PermissionsPolicies))]
-        public async Task AddPermissionsPolicyHeader(string[] permissionsOptions, string expectedValue)
+        public async Task AddPermissionsPolicyHeader(string[] permissionsPolicies, string expectedValue)
         {
             // Arrange
             var options = MicrosoftOptions.Create(new SecurityHeadersOptions
             {
-                PermissionsPolicy = permissionsOptions
+                PermissionsPolicy = permissionsPolicies
             });
             var middleware = new SecurityHeadersMiddleware(options, Request);
             var context = new DefaultHttpContext();

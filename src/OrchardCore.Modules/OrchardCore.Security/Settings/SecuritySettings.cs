@@ -2,6 +2,8 @@ namespace OrchardCore.Security
 {
     public class SecuritySettings
     {
+        public string ContentSecurityPolicy { get; set; }
+
         public string ContentTypeOptions { get; set; }
 
         public string FrameOptions { get; set; }

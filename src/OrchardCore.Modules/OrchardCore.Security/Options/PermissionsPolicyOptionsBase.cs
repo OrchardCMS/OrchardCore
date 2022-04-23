@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Security.Options
 {
     public abstract class PermissionsPolicyOptionsBase

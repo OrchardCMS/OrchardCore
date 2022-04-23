@@ -10,12 +10,15 @@ namespace OrchardCore.Security.Options
         {
             HeaderPolicyProviders = new List<IHeaderPolicyProvider>
             {
+                new ContentSecurityPolicyHeaderPolicyProvider { Options = this },
                 new ContentTypeOptionsHeaderPolicyProvider { Options = this },
                 new FrameOptionsHeaderPolicyProvider { Options = this },
                 new PermissionsHeaderPolicyProvider { Options = this },
                 new ReferrerHeaderPolicyProvider { Options = this }
             };
         }
+
+        public string[] ContentSecurityPolicy { get; set; } = SecurityHeaderDefaults.ContentSecurityPolicy;
 
         public string ContentTypeOptions { get; set; } = SecurityHeaderDefaults.ContentTypeOptions;
 
@@ -26,6 +29,16 @@ namespace OrchardCore.Security.Options
         public string ReferrerPolicy { get; set; } = SecurityHeaderDefaults.ReferrerPolicy;
 
         public IList<IHeaderPolicyProvider> HeaderPolicyProviders { get; set; }
+
+        public SecurityHeadersOptions AddContentSecurityPolicy(string policies)
+            => AddContentSecurityPolicy(policies.Split(ContentSecurityPolicyOptions.Separator));
+
+        public SecurityHeadersOptions AddContentSecurityPolicy(params string[] policies)
+        {
+            ContentSecurityPolicy = policies;
+
+            return this;
+        }
 
         public SecurityHeadersOptions AddContentTypeOptions()
         {
