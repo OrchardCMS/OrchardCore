@@ -25,7 +25,7 @@ namespace OrchardCore.Media.Processing
             options.Configuration = Configuration.Default;
             options.BrowserMaxAge = TimeSpan.FromDays(_mediaOptions.MaxBrowserCacheDays);
             options.CacheMaxAge = TimeSpan.FromDays(_mediaOptions.MaxCacheDays);
-            options.CacheHashLength = 5;
+            options.CacheHashLength = 12;
             options.OnParseCommandsAsync = context =>
             {
                 if (context.Commands.Count == 0)
