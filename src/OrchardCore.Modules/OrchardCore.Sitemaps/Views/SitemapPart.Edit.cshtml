@@ -8,7 +8,7 @@
         </div>
     </div>
     <div class="col-12">
-        <div class="form-check sitemap-form-group" style="@(Model.OverrideSitemapConfig ? "" : "display: none")">
+        <div class="form-check sitemap-form-g" style="@(Model.OverrideSitemapConfig ? "" : "display: none")">
             <input asp-for="Exclude" class="form-check-input" />
             <label asp-for="Exclude" class="form-check-label">@T["Exclude"]</label>
             <span class="hint dashed">@T["Check to exclude this content item from the site map."]</span>
@@ -16,14 +16,14 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-xl-6 mb-3 sitemap-form-group" asp-validation-class-for="ChangeFrequency" style="@(Model.OverrideSitemapConfig ? "" : "display: none")">
+    <div class="col-xl-6 mb-3 sitemap-form-g" asp-validation-class-for="ChangeFrequency" style="@(Model.OverrideSitemapConfig ? "" : "display: none")">
         <label asp-for="ChangeFrequency">@T["Change Frequency"] </label>
         <select asp-for="ChangeFrequency" class="form-select" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
         <span class="hint">@T["The frequency this content item is likely to change."]</span>
     </div>
 </div>
 <div class="row">
-    <div class="col-xl-6 mb-3 sitemap-form-group" asp-validation-class-for="Priority" style="@(Model.OverrideSitemapConfig ? "" : "display: none")">
+    <div class="col-xl-6 mb-3 sitemap-form-g" asp-validation-class-for="Priority" style="@(Model.OverrideSitemapConfig ? "" : "display: none")">
         <label asp-for="Priority">@T["Priority"] </label>
         <select asp-for="Priority" class="form-select">
             <option value="0">@T["0.0"]</option>
@@ -45,7 +45,7 @@
 <script at="Foot" depends-on="jquery">
     $('#@Html.IdFor(i => i.OverrideSitemapConfig)').change(function (e) {
         var checked = $(e.target).prop('checked');
-        $('.sitemap-form-group').each(function () {
+        $('.sitemap-form-g').each(function () {
             checked ? $(this).show() : $(this).hide();
         });
     });

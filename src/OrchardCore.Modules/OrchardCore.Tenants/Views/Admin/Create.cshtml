@@ -12,7 +12,7 @@
             <span asp-validation-for="Name" class="text-danger"></span>
             <span class="hint">@T["The name of the tenant."]</span>
         </div>
-        <div class="form-group col-md-6">
+        <div class="mb-3 col-md-6">
             <label asp-for="Category">@T["Category"]</label>
             <input asp-for="Category" class="form-control" />
             <span class="hint">@T["The category of the tenant."]</span>
@@ -103,7 +103,7 @@
             <span class="text-muted form-text small">@T["Optionally specify which feature profile should be applied to this tenant."]</span>
         </h6>
         <div class="row" asp-validation-class-for="FeatureProfile">
-            <div class="form-group col-md-6">
+            <div class="mb-3 col-md-6">
                 <select asp-for="FeatureProfile" asp-items="Model.FeatureProfiles" class="form-control"></select>
             </div>
         </div>
