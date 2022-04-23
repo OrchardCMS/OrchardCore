@@ -2,21 +2,21 @@ namespace OrchardCore.Security.Options
 {
     public class FrameOptionsOptionsBuilder
     {
-        private readonly SecurityHeadersOptions _options;
+        private readonly FrameOptionsOptions _options;
 
-        public FrameOptionsOptionsBuilder(SecurityHeadersOptions options)
+        public FrameOptionsOptionsBuilder(FrameOptionsOptions options)
             => _options = options;
 
-        public SecurityHeadersOptions WithDeny()
+        public FrameOptionsOptions WithDeny()
         {
-            _options.FrameOptions = FrameOptionsValue.Deny;
+            _options.Option = FrameOptionsValue.Deny;
 
             return _options;
         }
 
-        public SecurityHeadersOptions WithSameOrigin()
+        public FrameOptionsOptions WithSameOrigin()
         {
-            _options.FrameOptions = FrameOptionsValue.SameOrigin;
+            _options.Option = FrameOptionsValue.SameOrigin;
 
             return _options;
         }

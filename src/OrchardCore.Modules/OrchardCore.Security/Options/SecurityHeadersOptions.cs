@@ -34,7 +34,14 @@ namespace OrchardCore.Security.Options
             return this;
         }
 
-        public FrameOptionsOptionsBuilder AddFrameOptions() => new(this);
+        public SecurityHeadersOptions AddFrameOptions(Action<FrameOptionsOptionsBuilder> optionsAction)
+        {
+            var options = new FrameOptionsOptions();
+            var builder = new FrameOptionsOptionsBuilder(options);
+            optionsAction.Invoke(builder);
+
+            return AddFrameOptions(options.Option);
+        }
 
         public SecurityHeadersOptions AddFrameOptions(string options)
         {
@@ -62,7 +69,14 @@ namespace OrchardCore.Security.Options
             return AddPermissionsPolicy(options.ToString());
         }
 
-        public ReferrerPolicyOptionsBuilder AddReferrerPolicy() => new(this);
+        public SecurityHeadersOptions AddReferrerPolicy(Action<ReferrerPolicyOptionsBuilder> optionsAction)
+        {
+            var options = new ReferrerPolicyOptions();
+            var builder = new ReferrerPolicyOptionsBuilder(options);
+            optionsAction.Invoke(builder);
+
+            return AddReferrerPolicy(options.Policy);
+        }
 
         public SecurityHeadersOptions AddReferrerPolicy(string policy)
         {

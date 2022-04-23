@@ -102,17 +102,15 @@ namespace OrchardCore.Security.Extensions.Tests
             {
                 config
                     .AddContentTypeOptions()
-                    .AddFrameOptions()
-                        .WithDeny()
-                    .AddPermissionsPolicy(options =>
+                    .AddFrameOptions(config => config.WithDeny())
+                    .AddPermissionsPolicy(config =>
                     {
-                        options
+                        config
                             .AllowCamera(PermissionsPolicyOriginValue.Self)
                             .AllowMicrophone(PermissionsPolicyOriginValue.Any)
                             .AllowSpeaker(PermissionsPolicyOriginValue.Self, "https://domain1.com", "https://domain2.com");
                     })
-                    .AddReferrerPolicy()
-                        .WithOrigin();
+                    .AddReferrerPolicy(options => options.WithOrigin());
             });
 
             applicationBuilder

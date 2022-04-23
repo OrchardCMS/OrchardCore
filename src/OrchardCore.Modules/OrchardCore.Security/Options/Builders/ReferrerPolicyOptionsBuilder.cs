@@ -2,63 +2,63 @@ namespace OrchardCore.Security.Options
 {
     public class ReferrerPolicyOptionsBuilder
     {
-        private readonly SecurityHeadersOptions _options;
+        private readonly ReferrerPolicyOptions _options;
 
-        public ReferrerPolicyOptionsBuilder(SecurityHeadersOptions options)
+        public ReferrerPolicyOptionsBuilder(ReferrerPolicyOptions options)
             => _options = options;
 
-        public SecurityHeadersOptions WithNoReferrer()
+        public ReferrerPolicyOptions WithNoReferrer()
         {
-            _options.ReferrerPolicy = ReferrerPolicyValue.NoReferrer;
+            _options.Policy = ReferrerPolicyValue.NoReferrer;
 
             return _options;
         }
 
-        public SecurityHeadersOptions WithNoReferrerWhenDowngrade()
+        public ReferrerPolicyOptions WithNoReferrerWhenDowngrade()
         {
-            _options.ReferrerPolicy = ReferrerPolicyValue.NoReferrerWhenDowngrade;
+            _options.Policy = ReferrerPolicyValue.NoReferrerWhenDowngrade;
 
             return _options;
         }
 
-        public SecurityHeadersOptions WithOrigin()
+        public ReferrerPolicyOptions WithOrigin()
         {
-            _options.ReferrerPolicy = ReferrerPolicyValue.Origin;
+            _options.Policy = ReferrerPolicyValue.Origin;
 
             return _options;
         }
 
-        public SecurityHeadersOptions WithOriginWhenCrossOrigin()
+        public ReferrerPolicyOptions WithOriginWhenCrossOrigin()
         {
-            _options.ReferrerPolicy = ReferrerPolicyValue.OriginWhenCrossOrigin;
+            _options.Policy = ReferrerPolicyValue.OriginWhenCrossOrigin;
 
             return _options;
         }
 
-        public SecurityHeadersOptions WithSameOrigin()
+        public ReferrerPolicyOptions WithSameOrigin()
         {
-            _options.ReferrerPolicy = ReferrerPolicyValue.SameOrigin;
+            _options.Policy = ReferrerPolicyValue.SameOrigin;
 
             return _options;
         }
 
-        public SecurityHeadersOptions WithStrictOrigin()
+        public ReferrerPolicyOptions WithStrictOrigin()
         {
-            _options.ReferrerPolicy = ReferrerPolicyValue.StrictOrigin;
+            _options.Policy = ReferrerPolicyValue.StrictOrigin;
 
             return _options;
         }
 
-        public SecurityHeadersOptions WithStrictOriginWhenCrossOrigin()
+        public ReferrerPolicyOptions WithStrictOriginWhenCrossOrigin()
         {
-            _options.ReferrerPolicy = ReferrerPolicyValue.StrictOriginWhenCrossOrigin;
+            _options.Policy = ReferrerPolicyValue.StrictOriginWhenCrossOrigin;
 
             return _options;
         }
 
-        public SecurityHeadersOptions WithUnsafeUrl()
+        public ReferrerPolicyOptions WithUnsafeUrl()
         {
-            _options.ReferrerPolicy = ReferrerPolicyValue.UnsafeUrl;
+            _options.Policy = ReferrerPolicyValue.UnsafeUrl;
 
             return _options;
         }
