@@ -1,9 +1,10 @@
+@model FeatureProfileViewModel
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Feature Profile"])</h1></zone>
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
-    
-    @await DisplayAsync(Model.Content)
+
+    @Html.EditorForModel()
 
     <div class="form-group">
         <div class="btn-group">

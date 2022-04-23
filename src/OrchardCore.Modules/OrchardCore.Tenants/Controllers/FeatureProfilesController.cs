@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -17,6 +18,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
+using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
@@ -114,43 +116,28 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shape = await _displayManager.BuildEditorAsync(new FeatureProfile(), _updateModelAccessor.ModelUpdater, true);
+            var viewModel = new FeatureProfileViewModel()
+            {
+                Id = IdGenerator.GenerateId(),
+            };
 
-            return View(shape);
+            //var shape = await _displayManager.BuildEditorAsync(new FeatureProfile(), _updateModelAccessor.ModelUpdater, true);
+
+            return View(viewModel);
         }
 
         [HttpPost, ActionName("Create")]
-        public async Task<IActionResult> CreatePost(string submit)
+        public async Task<IActionResult> CreatePost(FeatureProfileViewModel model, string submit)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
-            {
-                return Forbid();
-            }
-
-            var profile = new FeatureProfile();
-
-            var shape = await _displayManager.UpdateEditorAsync(profile, _updateModelAccessor.ModelUpdater, true);
-
-            if (ModelState.IsValid)
+            return await ProcessSaveAsync(model, submit, true, async (profile) =>
             {
                 await _featureProfilesManager.UpdateFeatureProfileAsync(profile.Id, profile);
-
-                if (submit == "SaveAndContinue")
-                {
-                    return RedirectToAction(nameof(Edit), new { profile.Id });
-                }
-
-                return RedirectToAction(nameof(Index));
-
-            }
-
-            // If we got this far, something failed, redisplay form
-            return View(shape);
+            });
         }
 
         public async Task<IActionResult> Edit(string id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (String.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
@@ -167,13 +154,32 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            var shape = await _displayManager.BuildEditorAsync(featureProfile, _updateModelAccessor.ModelUpdater, false);
+            var viewModel = new FeatureProfileViewModel()
+            {
+                // For backward compatibility, we use the name as id where id does not exists
+                // the id is immutable whereas the name is mutable
+                Id = featureProfile.Id ?? featureProfile.Name,
+                Name = featureProfile.Name,
+                FeatureRules = JsonConvert.SerializeObject(featureProfile.FeatureRules, Formatting.Indented),
+            };
 
-            return View(shape);
+            //var shape = await _displayManager.BuildEditorAsync(featureProfile, _updateModelAccessor.ModelUpdater, false);
+
+            return View(viewModel);
         }
 
         [HttpPost, ActionName(nameof(Edit))]
-        public async Task<IActionResult> EditPost(string submit)
+        public async Task<IActionResult> EditPost(FeatureProfileViewModel model, string submit)
+        {
+            return await ProcessSaveAsync(model, submit, false, async (profile) =>
+           {
+               await _featureProfilesManager.RemoveFeatureProfileAsync(profile.Id);
+
+               await _featureProfilesManager.UpdateFeatureProfileAsync(profile.Id, profile);
+           });
+        }
+
+        private async Task<IActionResult> ProcessSaveAsync(FeatureProfileViewModel model, string submit, bool isNew, Func<FeatureProfile, Task> onSuccessAsync)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
             {
@@ -182,23 +188,40 @@ namespace OrchardCore.Tenants.Controllers
 
             var profile = new FeatureProfile();
 
-            var shape = await _displayManager.UpdateEditorAsync(profile, _updateModelAccessor.ModelUpdater, false);
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    profile.Id = model.Id;
+                    profile.Name = model.Name;
+                    profile.FeatureRules = JsonConvert.DeserializeObject<List<FeatureRule>>(model.FeatureRules);
+
+                    var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
+
+                    if (FeatureExists(profile, featureProfilesDocument, isNew))
+                    {
+                        ModelState.AddModelError(nameof(FeatureProfileViewModel.Name), S["A feature profile with the same name already exists."]);
+                    }
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["Invalid json supplied."]);
+                }
+            }
 
             if (ModelState.IsValid)
             {
-                await _featureProfilesManager.RemoveFeatureProfileAsync(profile.Id);
-
-                await _featureProfilesManager.UpdateFeatureProfileAsync(profile.Id, profile);
+                await onSuccessAsync(profile);
 
                 if (submit == "SaveAndContinue")
                 {
-                    return RedirectToAction(nameof(Edit), new { name = profile.Name, id = profile.Id });
+                    return RedirectToAction(nameof(Edit), new { id = profile.Id });
                 }
 
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(shape);
+            return View(model);
         }
 
         [HttpPost]
@@ -253,6 +276,14 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private static bool FeatureExists(FeatureProfile model, FeatureProfilesDocument featureProfilesDocument, bool isNew)
+        {
+            // For backward compatibility, we use the key value as the name when the new name property isn't set
+            var profiles = featureProfilesDocument.FeatureProfiles.Where(x => (x.Value.Name ?? x.Key).Equals(model.Name, StringComparison.OrdinalIgnoreCase));
+
+            return profiles.Any(x => isNew || x.Key != model.Id);
         }
     }
 }

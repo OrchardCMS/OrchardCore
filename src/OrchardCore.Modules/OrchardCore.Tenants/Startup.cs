@@ -21,7 +21,6 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Setup;
 using OrchardCore.Tenants.Controllers;
 using OrchardCore.Tenants.Deployment;
-using OrchardCore.Tenants.Drivers;
 using OrchardCore.Tenants.Recipes;
 using OrchardCore.Tenants.Services;
 
@@ -158,7 +157,7 @@ namespace OrchardCore.Tenants
             services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
 
             services.AddScoped<IDisplayManager<FeatureProfile>, DisplayManager<FeatureProfile>>();
-            services.AddScoped<IDisplayDriver<FeatureProfile>, FeatureProfileDisplayDriver>();
+            //services.AddScoped<IDisplayDriver<FeatureProfile>, FeatureProfileDisplayDriver>();
             services.AddRecipeExecutionStep<FeatureProfilesStep>();
         }
 

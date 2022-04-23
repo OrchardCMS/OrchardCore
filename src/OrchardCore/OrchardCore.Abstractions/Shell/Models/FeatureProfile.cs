@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Environment.Shell.Models
 {
@@ -13,7 +12,7 @@ namespace OrchardCore.Environment.Shell.Models
         public List<FeatureRule> FeatureRules = new List<FeatureRule>();
 
         // should we inherit from Entity instead?
-        public JObject Properties { get; set; } = new JObject();
+        // public JObject Properties { get; set; } = new JObject();
 
     }
 

@@ -3,8 +3,8 @@
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
-   
-    @await DisplayAsync(Model.Content)
+
+    @Html.EditorForModel()
 
     <div class="form-group">
         <div class="btn-group">
