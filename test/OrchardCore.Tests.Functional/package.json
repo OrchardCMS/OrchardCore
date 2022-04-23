@@ -1,9 +1,9 @@
 {
   "devDependencies": {
-    "cypress": "^9.3.1",
+    "cypress": "^9.5.4",
     "cypress-orchardcore": "file:cypress-commands",
-    "faker": "^6.6.6",
-    "fs-extra": "^10.0.0"
+    "faker": "^5.5.3",
+    "fs-extra": "^10.0.1"
   },
   "scripts": {
     "mvc:test": "cd mvc-tests && node -e \"require('cypress-orchardcore/dist/test-runner').e2e('../../../src/OrchardCore.Mvc.Web', 'OrchardCore.Mvc.Web.dll')\"",

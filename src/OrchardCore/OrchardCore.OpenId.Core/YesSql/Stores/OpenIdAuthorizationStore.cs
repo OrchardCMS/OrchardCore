@@ -377,7 +377,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             IList<Exception> exceptions = null;
 
-            for (var offset = 0; offset < 100_000; offset += 1_000)
+            for (var i = 0; i < 1000; i++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -388,7 +388,12 @@ namespace OrchardCore.OpenId.YesSql.Stores
                                      authorization.AuthorizationId.IsNotIn<OpenIdTokenIndex>(
                                          token => token.AuthorizationId,
                                          token => token.Id != 0))),
-                    collection: OpenIdCollection).Skip(offset).Take(1_000).ListAsync();
+                    collection: OpenIdCollection).Take(100).ListAsync();
+
+                if (!authorizations.Any())
+                {
+                    return;
+                }
 
                 foreach (var authorization in authorizations)
                 {

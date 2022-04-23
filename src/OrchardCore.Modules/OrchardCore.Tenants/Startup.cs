@@ -39,6 +39,7 @@ namespace OrchardCore.Tenants
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<ITenantValidator, TenantValidator>();
             services.AddSetup();
         }
 

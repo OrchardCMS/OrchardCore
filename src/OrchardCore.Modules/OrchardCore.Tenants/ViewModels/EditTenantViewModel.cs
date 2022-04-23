@@ -4,9 +4,9 @@ using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Tenants.ViewModels
 {
-    public class EditTenantViewModel
+    public class EditTenantViewModel : TenantViewModel
     {
-        public string Description { get; set; }
+        public string Category { get; set; }
 
         public string Name { get; set; }
 
@@ -21,12 +21,17 @@ namespace OrchardCore.Tenants.ViewModels
         public string TablePrefix { get; set; }
 
         public string RecipeName { get; set; }
+        
         public string[] FeatureProfiles { get; set; }
+        
         public List<SelectListItem> FeatureProfileItems { get; set; }
-
+        
+        public List<SelectListItem> FeatureProfiles { get; set; }
+        
         public IEnumerable<RecipeDescriptor> Recipes { get; set; }
 
         public bool CanEditDatabasePresets { get; set; }
+
         public bool DatabaseConfigurationPreset { get; set; }
     }
 }

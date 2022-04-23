@@ -29,6 +29,12 @@
     <None Include="buildMultiTargeting\OrchardCore.Theme.Targets.props" Pack="true">
       <PackagePath>buildMultiTargeting\OrchardCore.Theme.Targets.props</PackagePath>
     </None>
+    <None Include="OrchardCore.Theme.Targets.targets" Pack="true">
+      <PackagePath>build\OrchardCore.Theme.Targets.targets</PackagePath>
+    </None>
+    <None Include="buildMultiTargeting\OrchardCore.Theme.Targets.targets" Pack="true">
+      <PackagePath>buildMultiTargeting\OrchardCore.Theme.Targets.targets</PackagePath>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" PrivateAssets="none" />
