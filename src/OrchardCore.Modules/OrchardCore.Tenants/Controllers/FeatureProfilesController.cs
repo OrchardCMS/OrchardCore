@@ -47,9 +47,7 @@ namespace OrchardCore.Tenants.Controllers
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IDisplayManager<FeatureProfile> displayManager,
-            IUpdateModelAccessor updateModelAccessor)
-            IStringLocalizer<FeatureProfilesController> stringLocalizer,
-            IHtmlLocalizer<FeatureProfilesController> htmlLocalizer
+            IUpdateModelAccessor updateModelAccessor
             )
         {
             _displayManager = displayManager;

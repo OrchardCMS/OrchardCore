@@ -43,6 +43,7 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly ITenantValidator _tenantValidator;
         private readonly IStringLocalizer S;
+        private readonly IFeatureProfilesService _featueProfilesService;
 
         public ApiController(
             IShellHost shellHost,
@@ -56,7 +57,9 @@ namespace OrchardCore.Tenants.Controllers
             IOptions<IdentityOptions> identityOptions,
             IEnumerable<DatabaseProvider> databaseProviders,
             ITenantValidator tenantValidator,
-            IStringLocalizer<ApiController> stringLocalizer)
+            IStringLocalizer<ApiController> stringLocalizer,
+            IFeatureProfilesService featueProfileService
+            )
         {
             _shellHost = shellHost;
             _currentShellSettings = currentShellSettings;
@@ -70,6 +73,7 @@ namespace OrchardCore.Tenants.Controllers
             _databaseProviders = databaseProviders;
             _tenantValidator = tenantValidator;
             S = stringLocalizer;
+            _featueProfilesService = featueProfileService;
         }
 
         [HttpPost]
@@ -103,7 +107,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (!String.IsNullOrWhiteSpace(model.FeatureProfile))
             {
-                var featureProfiles = await _featureProfilesService.GetFeatureProfilesAsync();
+                var featureProfiles = await _featueProfilesService.GetFeatureProfilesAsync();
                 if (!featureProfiles.ContainsKey(model.FeatureProfile))
                 {
                     ModelState.AddModelError(nameof(CreateApiViewModel.FeatureProfile), S["The feature profile {0} does not exist.", model.FeatureProfile]);
