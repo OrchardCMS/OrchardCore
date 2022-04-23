@@ -6,9 +6,7 @@ namespace OrchardCore.Security.Options
 {
     public class PermissionsPolicyOptions
     {
-        private static readonly string _separator = ", ";
-
-        public string Origin { get; set; } = PermissionsPolicyOriginValue.Self;
+        internal static readonly string Separator = ", ";
 
         public PermissionsPolicyOptionsBase Accelerometer { get; set; } = new AccelerometerPermissionsPolicyOptions();
 
@@ -52,7 +50,7 @@ namespace OrchardCore.Security.Options
 
         public override string ToString()
         {
-            var optionValues = new List<PermissionsPolicyOptionsBase>
+            var options = new List<PermissionsPolicyOptionsBase>
             {
                 Accelerometer,
                 AmbientLightSensor,
@@ -76,7 +74,10 @@ namespace OrchardCore.Security.Options
                 VR
             };
 
-            return String.Join(_separator, optionValues.Select(v => $"{v.Name}={v.Origin}"));
+            return String.Join(Separator, options
+                .Select(o => o.Origin == PermissionsPolicyOriginValue.Self && o.AllowedOrigins.Length > 0
+                    ? $"{o.Name}={o.Origin} {String.Join(' ', o.AllowedOrigins)}"
+                    : $"{o.Name}={o.Origin}"));
         }
     }
 }

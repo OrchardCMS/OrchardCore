@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using OrchardCore.Security.Services;
 
@@ -5,8 +6,6 @@ namespace OrchardCore.Security.Options
 {
     public class SecurityHeadersOptions
     {
-        private static readonly string _permissionsPolicySeparator = ", ";
-
         public SecurityHeadersOptions()
         {
             HeaderPolicyProviders = new List<IHeaderPolicyProvider>
@@ -45,13 +44,22 @@ namespace OrchardCore.Security.Options
         }
 
         public SecurityHeadersOptions AddPermissionsPolicy(string policies)
-            => AddPermissionsPolicy(policies.Split(_permissionsPolicySeparator));
+            => AddPermissionsPolicy(policies.Split(PermissionsPolicyOptions.Separator));
 
         public SecurityHeadersOptions AddPermissionsPolicy(params string[] policies)
         {
             PermissionsPolicy = policies;
 
             return this;
+        }
+
+        public SecurityHeadersOptions AddPermissionsPolicy(Action<PermissionsPolicyOptionsBuilder> optionsAction)
+        {
+            var options = new PermissionsPolicyOptions();
+            var builder = new PermissionsPolicyOptionsBuilder(options);
+            optionsAction.Invoke(builder);
+
+            return AddPermissionsPolicy(options.ToString());
         }
 
         public ReferrerPolicyOptionsBuilder AddReferrerPolicy() => new(this);
