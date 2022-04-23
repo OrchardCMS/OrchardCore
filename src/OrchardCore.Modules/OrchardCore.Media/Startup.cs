@@ -137,7 +137,7 @@ namespace OrchardCore.Media
                 .AddImageSharp()
                 .RemoveProvider<PhysicalFileSystemProvider>()
                 // For multitenancy we must use an absolute path to prevent leakage across tenants on different hosts.
-                .SetCacheKey<UriAbsoluteLowerInvariantCacheKey>()
+                .SetCacheKey<BackwardsCompatibleCacheKey>()
                 .AddProvider<MediaResizingFileProvider>()
                 .AddProcessor<ImageVersionProcessor>()
                 .AddProcessor<TokenCommandProcessor>();
