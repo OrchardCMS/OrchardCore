@@ -10,7 +10,7 @@
 
       Core implementation for ResourceManagement module.
     </Description>
-    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
+    <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
