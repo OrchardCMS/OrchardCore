@@ -316,7 +316,7 @@ namespace OrchardCore.Users.Controllers
 
         [HttpPost]
         [ActionName(nameof(Create))]
-        public async Task<IActionResult> CreatePost()
+        public async Task<IActionResult> CreatePost([Bind(Prefix = "User.Password")] string password)
         {
             var user = new User();
 
@@ -332,7 +332,7 @@ namespace OrchardCore.Users.Controllers
                 return View(shape);
             }
 
-            await _userService.CreateUserAsync(user, null, ModelState.AddModelError);
+            await _userService.CreateUserAsync(user, password, ModelState.AddModelError);
 
             if (!ModelState.IsValid)
             {
