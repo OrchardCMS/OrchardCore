@@ -1,3 +1,5 @@
+using System;
+
 namespace OrchardCore.Security.Options
 {
     public class SandboxContentSecurityPolicyOptions : ContentSecurityPolicyOptionsBase
@@ -6,6 +8,31 @@ namespace OrchardCore.Security.Options
 
         public override string Name => ContentSecurityPolicyValue.Sandbox;
 
-        public override string ToString() => Name + Separator + Value.TrimStart();
+        public string Value { get; set; }
+        //public bool AllowDownloads { get; set; }
+
+        //public bool AllowForms { get; set; }
+
+        //public bool AllowModals { get; set; }
+
+        //public bool AllowOrientationLock { get; set; }
+
+        //public bool AllowForms { get; set; }
+
+        //public bool AllowForms { get; set; }
+
+        //public bool AllowForms { get; set; }
+
+        //public bool AllowForms { get; set; }
+
+        //public bool AllowForms { get; set; }
+
+        //public bool AllowForms { get; set; }
+
+        //public bool AllowForms { get; set; }
+
+        public override string ToString() => String.IsNullOrEmpty(Value)
+            ? Name
+            : Name + Separator + Value.TrimStart();
     }
 }

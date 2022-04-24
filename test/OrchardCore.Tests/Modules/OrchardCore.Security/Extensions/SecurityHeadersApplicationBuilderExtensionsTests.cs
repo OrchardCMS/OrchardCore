@@ -37,13 +37,19 @@ namespace OrchardCore.Security.Extensions.Tests
             var context = new DefaultHttpContext();
             var options = new SecurityHeadersOptions
             {
+                ContentSecurityPolicy = new []
+                {
+                    $"{ContentSecurityPolicyValue.ChildSource} {ContentSecurityPolicySourceValue.None}",
+                    $"{ContentSecurityPolicyValue.ConnectSource} {ContentSecurityPolicySourceValue.Self} https://www.domain1.com https://www.domain2.com",
+                    $"{ContentSecurityPolicyValue.DefaultSource} {ContentSecurityPolicySourceValue.Any}",
+                },
                 ContentTypeOptions = ContentTypeOptionsValue.NoSniff,
                 FrameOptions = FrameOptionsValue.Deny,
                 PermissionsPolicy = new []
                 {
                     $"{PermissionsPolicyValue.Camera}={PermissionsPolicyOriginValue.Self}",
                     $"{PermissionsPolicyValue.Microphone}={PermissionsPolicyOriginValue.Any}",
-                    $"{PermissionsPolicyValue.Speaker}={PermissionsPolicyOriginValue.Self} https://domain1.com https://domain2.com"
+                    $"{PermissionsPolicyValue.Speaker}={PermissionsPolicyOriginValue.Self} https://www.domain1.com https://www.domain2.com"
                 },
                 ReferrerPolicy = ReferrerPolicyValue.Origin
             };
@@ -57,9 +63,10 @@ namespace OrchardCore.Security.Extensions.Tests
                 .Invoke(context);
 
             // Assert
+            Assert.Equal("child-src 'none', connect-src 'self' https://www.domain1.com https://www.domain2.com, default-src *", context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
             Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
             Assert.Equal(FrameOptionsValue.Deny, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
-            Assert.Equal("camera=self, microphone=*, speaker=self https://domain1.com https://domain2.com", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
+            Assert.Equal("camera=self, microphone=*, speaker=self https://www.domain1.com https://www.domain2.com", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
             Assert.Equal(ReferrerPolicyValue.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
         }
 
@@ -74,9 +81,10 @@ namespace OrchardCore.Security.Extensions.Tests
             applicationBuilder.UseSecurityHeaders(config =>
             {
                 config
+                    .AddContentSecurityPolicy("child-src 'none'", "connect-src 'self' https://www.domain1.com https://www.domain2.com", "default-src *")
                     .AddContentTypeOptions()
                     .AddFrameOptions(FrameOptionsValue.Deny)
-                    .AddPermissionsPolicy("camera=self", "microphone=*", "speaker=self https://domain1.com https://domain2.com")
+                    .AddPermissionsPolicy("camera=self", "microphone=*", "speaker=self https://www.domain1.com https://www.domain2.com")
                     .AddReferrerPolicy(ReferrerPolicyValue.Origin);
             });
 
@@ -85,14 +93,15 @@ namespace OrchardCore.Security.Extensions.Tests
                 .Invoke(context);
 
             // Assert
+            Assert.Equal("child-src 'none', connect-src 'self' https://www.domain1.com https://www.domain2.com, default-src *", context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
             Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
             Assert.Equal(FrameOptionsValue.Deny, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
-            Assert.Equal("camera=self, microphone=*, speaker=self https://domain1.com https://domain2.com", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
+            Assert.Equal("camera=self, microphone=*, speaker=self https://www.domain1.com https://www.domain2.com", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
             Assert.Equal(ReferrerPolicyValue.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
         }
 
         [Fact]
-        public void UseSecurityHeadersWithFulentApisConfiguration()
+        public void UseSecurityHeadersWithFluentApisConfiguration()
         {
             // Arrange
             var context = new DefaultHttpContext();
@@ -102,6 +111,13 @@ namespace OrchardCore.Security.Extensions.Tests
             applicationBuilder.UseSecurityHeaders(config =>
             {
                 config
+                    .AddContentSecurityPolicy(config =>
+                    {
+                        config
+                            .AllowChildSource(ContentSecurityPolicySourceValue.None)
+                            .AllowConnectSource(ContentSecurityPolicySourceValue.Self, "https://www.domain1.com", "https://www.domain2.com")
+                            .AllowDefaultSource(ContentSecurityPolicySourceValue.Any);
+                    })
                     .AddContentTypeOptions()
                     .AddFrameOptions(config => config.WithDeny())
                     .AddPermissionsPolicy(config =>
@@ -119,6 +135,7 @@ namespace OrchardCore.Security.Extensions.Tests
                 .Invoke(context);
 
             // Assert
+            Assert.Equal("base-uri 'none', child-src 'none', connect-src 'self' https://www.domain1.com https://www.domain2.com, default-src *, font-src 'self', form-action 'self', frame-ancestors 'self', frame-src 'self', img-src 'self', manifest-src 'self', media-src 'self', object-src 'self', sandbox, script-src 'self', style-src 'self', upgrade-insecure-requests", context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
             Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
             Assert.Equal(FrameOptionsValue.Deny, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
             Assert.Equal("accelerometer=(), ambient-light-sensor=(), autoplay=(), camera=self, encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=*, midi=(), notifications=(), payment=(), picture-in-picture=(), push=(), speaker=self https://domain1.com https://domain2.com, sync-xhr=(), usb=(), vibrate=(), vr=()", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);

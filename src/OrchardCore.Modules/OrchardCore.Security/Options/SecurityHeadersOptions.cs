@@ -40,6 +40,15 @@ namespace OrchardCore.Security.Options
             return this;
         }
 
+        public SecurityHeadersOptions AddContentSecurityPolicy(Action<ContentSecurityPolicyOptionsBuilder> optionsAction)
+        {
+            var options = new ContentSecurityPolicyOptions();
+            var builder = new ContentSecurityPolicyOptionsBuilder(options);
+            optionsAction.Invoke(builder);
+
+            return AddContentSecurityPolicy(options.ToString());
+        }
+
         public SecurityHeadersOptions AddContentTypeOptions()
         {
             ContentTypeOptions = ContentTypeOptionsValue.NoSniff;

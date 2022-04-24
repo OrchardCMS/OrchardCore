@@ -8,7 +8,7 @@ namespace OrchardCore.Security.Options
     {
         internal static readonly string Separator = ", ";
 
-        public ContentSecurityPolicyOptionsBase BaseUri { get; set; } = new BaseUriContentSecurityPolicyOptions();
+        public SourceContentSecurityPolicyOptionsBase BaseUri { get; set; } = new BaseUriContentSecurityPolicyOptions();
 
         public SourceContentSecurityPolicyOptionsBase ChildSource { get; set; } = new ChildSourceContentSecurityPolicyOptions();
 
@@ -18,11 +18,11 @@ namespace OrchardCore.Security.Options
 
         public SourceContentSecurityPolicyOptionsBase FontSource { get; set; } = new FontSourceContentSecurityPolicyOptions();
 
-        public ContentSecurityPolicyOptionsBase FormAction { get; set; } = new FormActionContentSecurityPolicyOptions();
+        public SourceContentSecurityPolicyOptionsBase FormAction { get; set; } = new FormActionContentSecurityPolicyOptions();
 
         public SourceContentSecurityPolicyOptionsBase FrameSource { get; set; } = new FrameSourceContentSecurityPolicyOptions();
 
-        public ContentSecurityPolicyOptionsBase FrameAncestors { get; set; } = new FrameAncestorsContentSecurityPolicyOptions();
+        public SourceContentSecurityPolicyOptionsBase FrameAncestors { get; set; } = new FrameAncestorsContentSecurityPolicyOptions();
 
         public SourceContentSecurityPolicyOptionsBase ImageSource { get; set; } = new ImageSourceContentSecurityPolicyOptions();
 
@@ -44,37 +44,35 @@ namespace OrchardCore.Security.Options
 
         public override string ToString()
         {
-            var sourceOptions = new List<SourceContentSecurityPolicyOptionsBase>
+            var options = new List<ContentSecurityPolicyOptionsBase>
             {
+                BaseUri,
                 ChildSource,
+                ConnectSource,
                 DefaultSource,
                 FontSource,
+                FormAction,
+                FrameAncestors,
                 FrameSource,
                 ImageSource,
                 MediaSource,
                 ManifestSource,
                 ObjectSource,
+                Sandbox,
                 ScriptSource,
                 StyleSource,
-            };
-            var nonSourceOptions = new List<ContentSecurityPolicyOptionsBase>
-            {
-                FormAction,
-                FrameAncestors,
-                ReportUri,
-                Sandbox,
                 UpgradeInsecureRequests
             };
 
-            var sourceOptionsValues = sourceOptions.Select(o => o.Origin == ContentSecurityPolicyOriginValue.None
-                ? $"{o.Name}={o.Origin}"
-                : $"{o.Name}={o.Origin} {String.Join(' ', o.AllowedOrigins)}");
+            //var sourceOptionsValues = sourceOptions.Select(o => o.Source == ContentSecurityPolicyOriginValue.None
+            //    ? $"{o.Name} {o.Source}"
+            //    : $"{o.Name} {o.Source} {String.Join(' ', o.AllowedSources)}");
 
-            var nonSourceOptionsValues = sourceOptions.Select(o => String.IsNullOrEmpty(o.Value)
-                ? o.Name
-                : $"{o.Name} {o.Value}");
+            //var nonSourceOptionsValues = nonSourceOptions.Select(o => String.IsNullOrEmpty(o.Value)
+            //    ? o.Name
+            //    : $"{o.Name} {o.Value}");
 
-            return String.Join(Separator, sourceOptionsValues.Union(nonSourceOptionsValues));
+            return String.Join(Separator, options.Select(o => o.ToString()));
         }
     }
 }

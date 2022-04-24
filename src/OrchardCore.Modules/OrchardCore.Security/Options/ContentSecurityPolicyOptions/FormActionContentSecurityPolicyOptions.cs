@@ -1,6 +1,6 @@
 namespace OrchardCore.Security.Options
 {
-    public class FormActionContentSecurityPolicyOptions : ContentSecurityPolicyOptionsBase
+    public class FormActionContentSecurityPolicyOptions : SourceContentSecurityPolicyOptionsBase
     {
         public override string Name => ContentSecurityPolicyValue.FormAction;
     }
