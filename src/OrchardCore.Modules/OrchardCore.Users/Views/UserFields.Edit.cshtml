@@ -1,58 +1,6 @@
 @model EditUserViewModel
 @using OrchardCore.Entities;
 @using OrchardCore.Users.Models;
-@using Microsoft.AspNetCore.Identity;
-@using Microsoft.AspNetCore.Html;
-@inject Microsoft.Extensions.Options.IOptions<IdentityOptions> IdentityOptions
-@{
-    var options = IdentityOptions.Value;
-    var passwordOptions = new HtmlContentBuilder();
-    IHtmlContent separator = HtmlString.Empty;
-    string passwordRegex = "";
-
-    if (options.Password.RequireNonAlphanumeric)
-    {
-        passwordOptions.AppendHtml(separator).AppendHtml(T["one non-alphanumeric"]);
-        separator = new HtmlString(", ");
-        passwordRegex += @"(?=.*[^A-Za-z0-9])";
-    }
-
-    if (options.Password.RequireUppercase)
-    {
-        passwordOptions.AppendHtml(separator).AppendHtml(T["one uppercase"]);
-        separator = new HtmlString(", ");
-        passwordRegex += @"(?=.*[A-Z])";
-    }
-
-    if (options.Password.RequireLowercase)
-    {
-        passwordOptions.AppendHtml(separator).AppendHtml(T["one lowercase"]);
-        separator = T[", "];
-        passwordRegex += @"(?=.*[a-z])";
-    }
-
-    if (options.Password.RequireDigit)
-    {
-        passwordOptions.AppendHtml(separator).AppendHtml(T["one digit"]);
-        separator = new HtmlString(", ");
-        passwordRegex += @"(?=.*[0-9])";
-    }
-
-    if (separator != HtmlString.Empty)
-    {
-        separator = T[" and "];
-    }
-
-    passwordOptions.AppendHtml(separator).AppendHtml(T["{0} characters in total", options.Password.RequiredLength]);
-    passwordRegex += $".{{{options.Password.RequiredLength},}}";
-
-    if (options.Password.RequiredUniqueChars > 1)
-    {
-        passwordOptions.AppendHtml(T[", with {0} unique characters", options.Password.RequiredUniqueChars]);
-    }
-
-    var passwordTooltip = T["Password must have at least {0}.", passwordOptions];
-}
 
 @if (Site.As<RegistrationSettings>().UsersMustValidateEmail)
 {
@@ -75,54 +23,27 @@
 
 @if (Model.IsNewRequest)
 {
-    <div class="row">
-        <div class="form-group col-md-6" asp-validation-class-for="Password">
-            <label asp-for="Password">@T["Password"]</label>
-            <div class="input-group">
-                <input type="password" asp-for="Password" class="form-control" data-bs-toggle="popover" data-bs-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-content="@passwordTooltip" required pattern="@passwordRegex" />
-                <button tabindex="-1" class="btn btn-secondary" type="button" id="togglePassword"><i class="icon fa fa-eye"></i></button>
+    <div class="form-group">
+        <label asp-for="Password">@T["Password"]</label>
+        <div class="input-group row col-md-4">
+            <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-lock prefix"></i></span>
             </div>
-            <div id="passwordStrength"></div>
+            <input asp-for="Password" class="form-control" placeholder="@T["Password"]" />
             <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-
-        <div class="form-group col-md-6" asp-validation-class-for="PasswordConfirmation">
-            <label asp-for="PasswordConfirmation">@T["Password Confirmation"]</label>
-            <div class="input-group">
-                <input type="password" asp-for="PasswordConfirmation" class="form-control" title="@passwordTooltip" required pattern="@passwordRegex" />
-                <button tabindex="-1" class="btn btn-secondary" type="button" id="togglePasswordConfirmation"><i class="icon fa fa-eye"></i></button>
-            </div>
-            <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
         </div>
     </div>
 
-    <script at="Foot">
-        window.addEventListener('DOMContentLoaded', function(){
-
-            function toggleField(field) {
-                if(field.type == 'password') {
-                    field.type = 'text';
-
-                    return;
-                }
-
-                field.type = 'password';
-            }
-
-            let togglePasswordConfirmation = document.getElementById('togglePasswordConfirmation');
-            let passwordConfirmation = document.getElementById('User_PasswordConfirmation');
-            togglePasswordConfirmation.addEventListener('click', function(){
-                toggleField(passwordConfirmation);
-            });
-
-            let togglePassword = document.getElementById('togglePassword');
-            let password = document.getElementById('User_Password');
-            togglePassword.addEventListener('click', function(){
-                toggleField(password);
-            });
-
-        });
-
-    </script>
-
+    <div class="form-group">
+        <label asp-for="PasswordConfirmation" class="sr-only">@T["Password Confirmation"]</label>
+        <div class="input-group row col-md-4">
+            <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-lock prefix"></i></span>
+            </div>
+            <input asp-for="PasswordConfirmation" class="form-control" placeholder="@T["Password confirmation"]" />
+            <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
+        </div>
+    </div>
 }
+
+
