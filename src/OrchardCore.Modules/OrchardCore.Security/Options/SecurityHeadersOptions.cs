@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using OrchardCore.Security.Services;
 
@@ -31,7 +30,7 @@ namespace OrchardCore.Security.Options
         public IList<IHeaderPolicyProvider> HeaderPolicyProviders { get; set; }
 
         public SecurityHeadersOptions AddContentSecurityPolicy(string policies)
-            => AddContentSecurityPolicy(policies.Split(ContentSecurityPolicyOptions.Separator));
+            => AddContentSecurityPolicy(policies.Split(SecurityHeaderDefaults.PoliciesSeparater));
 
         public SecurityHeadersOptions AddContentSecurityPolicy(params string[] policies)
         {
@@ -40,29 +39,11 @@ namespace OrchardCore.Security.Options
             return this;
         }
 
-        public SecurityHeadersOptions AddContentSecurityPolicy(Action<ContentSecurityPolicyOptionsBuilder> optionsAction)
-        {
-            var options = new ContentSecurityPolicyOptions();
-            var builder = new ContentSecurityPolicyOptionsBuilder(options);
-            optionsAction.Invoke(builder);
-
-            return AddContentSecurityPolicy(options.ToString());
-        }
-
         public SecurityHeadersOptions AddContentTypeOptions()
         {
             ContentTypeOptions = ContentTypeOptionsValue.NoSniff;
 
             return this;
-        }
-
-        public SecurityHeadersOptions AddFrameOptions(Action<FrameOptionsOptionsBuilder> optionsAction)
-        {
-            var options = new FrameOptionsOptions();
-            var builder = new FrameOptionsOptionsBuilder(options);
-            optionsAction.Invoke(builder);
-
-            return AddFrameOptions(options.Option);
         }
 
         public SecurityHeadersOptions AddFrameOptions(string options)
@@ -73,31 +54,13 @@ namespace OrchardCore.Security.Options
         }
 
         public SecurityHeadersOptions AddPermissionsPolicy(string policies)
-            => AddPermissionsPolicy(policies.Split(PermissionsPolicyOptions.Separator));
+            => AddPermissionsPolicy(policies.Split(SecurityHeaderDefaults.PoliciesSeparater));
 
         public SecurityHeadersOptions AddPermissionsPolicy(params string[] policies)
         {
             PermissionsPolicy = policies;
 
             return this;
-        }
-
-        public SecurityHeadersOptions AddPermissionsPolicy(Action<PermissionsPolicyOptionsBuilder> optionsAction)
-        {
-            var options = new PermissionsPolicyOptions();
-            var builder = new PermissionsPolicyOptionsBuilder(options);
-            optionsAction.Invoke(builder);
-
-            return AddPermissionsPolicy(options.ToString());
-        }
-
-        public SecurityHeadersOptions AddReferrerPolicy(Action<ReferrerPolicyOptionsBuilder> optionsAction)
-        {
-            var options = new ReferrerPolicyOptions();
-            var builder = new ReferrerPolicyOptionsBuilder(options);
-            optionsAction.Invoke(builder);
-
-            return AddReferrerPolicy(options.Policy);
         }
 
         public SecurityHeadersOptions AddReferrerPolicy(string policy)

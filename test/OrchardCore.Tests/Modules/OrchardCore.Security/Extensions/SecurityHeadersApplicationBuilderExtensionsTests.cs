@@ -100,48 +100,6 @@ namespace OrchardCore.Security.Extensions.Tests
             Assert.Equal(ReferrerPolicyValue.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
         }
 
-        [Fact]
-        public void UseSecurityHeadersWithFluentApisConfiguration()
-        {
-            // Arrange
-            var context = new DefaultHttpContext();
-            var applicationBuilder = CreateApplicationBuilder();
-
-            // Act
-            applicationBuilder.UseSecurityHeaders(config =>
-            {
-                config
-                    .AddContentSecurityPolicy(config =>
-                    {
-                        config
-                            .AllowChildSource(ContentSecurityPolicySourceValue.None)
-                            .AllowConnectSource(ContentSecurityPolicySourceValue.Self, "https://www.domain1.com", "https://www.domain2.com")
-                            .AllowDefaultSource(ContentSecurityPolicySourceValue.Any);
-                    })
-                    .AddContentTypeOptions()
-                    .AddFrameOptions(config => config.WithDeny())
-                    .AddPermissionsPolicy(config =>
-                    {
-                        config
-                            .AllowCamera(PermissionsPolicyOriginValue.Self)
-                            .AllowMicrophone(PermissionsPolicyOriginValue.Any)
-                            .AllowSpeaker(PermissionsPolicyOriginValue.Self, "https://domain1.com", "https://domain2.com");
-                    })
-                    .AddReferrerPolicy(options => options.WithOrigin());
-            });
-
-            applicationBuilder
-                .Build()
-                .Invoke(context);
-
-            // Assert
-            Assert.Equal("base-uri 'none', child-src 'none', connect-src 'self' https://www.domain1.com https://www.domain2.com, default-src *, font-src 'self', form-action 'self', frame-ancestors 'self', frame-src 'self', img-src 'self', manifest-src 'self', media-src 'self', object-src 'self', sandbox, script-src 'self', style-src 'self', upgrade-insecure-requests", context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
-            Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
-            Assert.Equal(FrameOptionsValue.Deny, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
-            Assert.Equal("accelerometer=(), ambient-light-sensor=(), autoplay=(), camera=self, encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=*, midi=(), notifications=(), payment=(), picture-in-picture=(), push=(), speaker=self https://domain1.com https://domain2.com, sync-xhr=(), usb=(), vibrate=(), vr=()", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
-            Assert.Equal(ReferrerPolicyValue.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
-        }
-
         private static IApplicationBuilder CreateApplicationBuilder()
         {
             var services = new ServiceCollection();

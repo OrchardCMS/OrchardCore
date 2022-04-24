@@ -4,6 +4,8 @@ namespace OrchardCore.Security
 {
     public static class SecurityHeaderDefaults
     {
+        internal static readonly string PoliciesSeparater = ", ";
+
         public static readonly string[] ContentSecurityPolicy = new[]
         {
             $"{ContentSecurityPolicyValue.BaseUri} {ContentSecurityPolicySourceValue.None}",
