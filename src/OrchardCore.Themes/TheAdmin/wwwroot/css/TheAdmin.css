@@ -2572,7 +2572,7 @@ html[data-theme=default] .btn-check {
   clip: rect(0, 0, 0, 0);
   pointer-events: none;
 }
-html[data-theme=default] .btn-check[disabled] + .btn, html[data-theme=default] html[data-theme=darkmode] .btn-check[disabled] + .button, html[data-theme=default] .btn-check[disabled] + .button, html[data-theme=default] .btn-check:disabled + .btn, html[data-theme=default] html[data-theme=darkmode] .btn-check:disabled + .button, html[data-theme=default] .btn-check:disabled + .button {
+html[data-theme=default] .btn-check[disabled] + .btn, html[data-theme=default] html[data-theme=darkmode] .btn-check[disabled] + .button, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-check[disabled] + .close, html[data-theme=default] .btn-check[disabled] + .button, html[data-theme=default] .bootstrap-select .popover-header .btn-check[disabled] + .close, html[data-theme=default] .btn-check:disabled + .btn, html[data-theme=default] html[data-theme=darkmode] .btn-check:disabled + .button, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-check:disabled + .close, html[data-theme=default] .btn-check:disabled + .button, html[data-theme=default] .bootstrap-select .popover-header .btn-check:disabled + .close {
   pointer-events: none;
   filter: none;
   opacity: 0.65;
@@ -2756,11 +2756,11 @@ html[data-theme=default] .input-group > .form-control:focus,
 html[data-theme=default] .input-group > .form-select:focus {
   z-index: 3;
 }
-html[data-theme=default] .input-group .btn, html[data-theme=default] .input-group .button {
+html[data-theme=default] .input-group .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .input-group .close, html[data-theme=default] .input-group .button, html[data-theme=default] .input-group .bootstrap-select .popover-header .close, html[data-theme=default] .bootstrap-select .popover-header .input-group .close {
   position: relative;
   z-index: 2;
 }
-html[data-theme=default] .input-group .btn:focus, html[data-theme=default] .input-group .button:focus {
+html[data-theme=default] .input-group .btn:focus, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .input-group .close:focus, html[data-theme=default] .input-group .button:focus, html[data-theme=default] .input-group .bootstrap-select .popover-header .close:focus, html[data-theme=default] .bootstrap-select .popover-header .input-group .close:focus {
   z-index: 3;
 }
 html[data-theme=default] .input-group-text {
@@ -2784,10 +2784,12 @@ html[data-theme=default] .input-group-lg > .form-select,
 html[data-theme=default] .input-group-lg > .input-group-text,
 html[data-theme=default] .input-group-lg > .btn,
 html[data-theme=default] html[data-theme=darkmode] .input-group-lg > .button,
-html[data-theme=default] .input-group-lg > .button {
+html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .input-group-lg > .close,
+html[data-theme=default] .input-group-lg > .button,
+html[data-theme=default] .bootstrap-select .popover-header .input-group-lg > .close {
   font-size: 1.25rem;
 }
-html[dir][data-theme=default] .input-group-lg > .form-control, html[dir][data-theme=default] .input-group-lg > .form-select, html[dir][data-theme=default] .input-group-lg > .input-group-text, html[dir][data-theme=default] .input-group-lg > .btn, html[dir][data-theme=default] html[data-theme=darkmode] .input-group-lg > .button, html[dir][data-theme=default] .input-group-lg > .button {
+html[dir][data-theme=default] .input-group-lg > .form-control, html[dir][data-theme=default] .input-group-lg > .form-select, html[dir][data-theme=default] .input-group-lg > .input-group-text, html[dir][data-theme=default] .input-group-lg > .btn, html[dir][data-theme=default] html[data-theme=darkmode] .input-group-lg > .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .input-group-lg > .close, html[dir][data-theme=default] .input-group-lg > .button, html[dir][data-theme=default] .bootstrap-select .popover-header .input-group-lg > .close {
   padding: 0.5rem 1rem;
   border-radius: 0.3rem;
 }
@@ -2796,10 +2798,12 @@ html[data-theme=default] .input-group-sm > .form-select,
 html[data-theme=default] .input-group-sm > .input-group-text,
 html[data-theme=default] .input-group-sm > .btn,
 html[data-theme=default] html[data-theme=darkmode] .input-group-sm > .button,
-html[data-theme=default] .input-group-sm > .button {
+html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .input-group-sm > .close,
+html[data-theme=default] .input-group-sm > .button,
+html[data-theme=default] .bootstrap-select .popover-header .input-group-sm > .close {
   font-size: 0.875rem;
 }
-html[dir][data-theme=default] .input-group-sm > .form-control, html[dir][data-theme=default] .input-group-sm > .form-select, html[dir][data-theme=default] .input-group-sm > .input-group-text, html[dir][data-theme=default] .input-group-sm > .btn, html[dir][data-theme=default] html[data-theme=darkmode] .input-group-sm > .button, html[dir][data-theme=default] .input-group-sm > .button {
+html[dir][data-theme=default] .input-group-sm > .form-control, html[dir][data-theme=default] .input-group-sm > .form-select, html[dir][data-theme=default] .input-group-sm > .input-group-text, html[dir][data-theme=default] .input-group-sm > .btn, html[dir][data-theme=default] html[data-theme=darkmode] .input-group-sm > .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .input-group-sm > .close, html[dir][data-theme=default] .input-group-sm > .button, html[dir][data-theme=default] .bootstrap-select .popover-header .input-group-sm > .close {
   padding: 0.25rem 0.5rem;
   border-radius: 0.2rem;
 }
@@ -3047,7 +3051,7 @@ html[data-theme=default] .input-group .form-select.has-validation-error:focus,
 html[data-theme=default] .input-group .form-select.input-validation-error:focus {
   z-index: 3;
 }
-html[data-theme=default] .btn, html[data-theme=default] .button {
+html[data-theme=default] .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close, html[data-theme=default] .button, html[data-theme=default] .bootstrap-select .popover-header .close {
   display: inline-block;
   font-weight: 400;
   line-height: 1.5;
@@ -3058,7 +3062,7 @@ html[data-theme=default] .btn, html[data-theme=default] .button {
   font-size: 1rem;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
-html[dir][data-theme=default] .btn, html[dir][data-theme=default] .button {
+html[dir][data-theme=default] .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close, html[dir][data-theme=default] .button, html[dir][data-theme=default] .bootstrap-select .popover-header .close {
   text-align: center;
   cursor: pointer;
   background-color: transparent;
@@ -3067,20 +3071,20 @@ html[dir][data-theme=default] .btn, html[dir][data-theme=default] .button {
   border-radius: 0.25rem;
 }
 @media (prefers-reduced-motion: reduce) {
-  html[data-theme=default] .btn, html[data-theme=default] .button {
+  html[data-theme=default] .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close, html[data-theme=default] .button, html[data-theme=default] .bootstrap-select .popover-header .close {
     transition: none;
   }
 }
-html[data-theme=default] .btn:hover, html[data-theme=default] .button:hover {
+html[data-theme=default] .btn:hover, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:hover, html[data-theme=default] .button:hover, html[data-theme=default] .bootstrap-select .popover-header .close:hover {
   color: #212529;
 }
-.btn-check:focus + html[data-theme=default] .btn, .btn-check:focus + html[data-theme=default] .button, html[data-theme=default] .btn:focus, html[data-theme=default] .button:focus {
+.btn-check:focus + html[data-theme=default] .btn, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-check:focus + html[data-theme=default] .close, .btn-check:focus + html[data-theme=default] .button, .btn-check:focus + html[data-theme=default] .bootstrap-select .popover-header .close, html[data-theme=default] .btn:focus, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:focus, html[data-theme=default] .button:focus, html[data-theme=default] .bootstrap-select .popover-header .close:focus {
   outline: 0;
 }
-[dir] .btn-check:focus + html[data-theme=default] .btn, [dir] .btn-check:focus + html[data-theme=default] .button, html[dir][data-theme=default] .btn:focus, html[dir][data-theme=default] .button:focus {
+[dir] .btn-check:focus + html[data-theme=default] .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-check:focus + html[data-theme=default] .close, [dir] .btn-check:focus + html[data-theme=default] .button, [dir] .btn-check:focus + html[data-theme=default] .bootstrap-select .popover-header .close, html[dir][data-theme=default] .btn:focus, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:focus, html[dir][data-theme=default] .button:focus, html[dir][data-theme=default] .bootstrap-select .popover-header .close:focus {
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
-html[data-theme=default] .btn:disabled, html[data-theme=default] .button:disabled, html[data-theme=default] .btn.disabled, html[data-theme=default] .disabled.button, fieldset:disabled html[data-theme=default] .btn, fieldset:disabled html[data-theme=default] .button {
+html[data-theme=default] .btn:disabled, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:disabled, html[data-theme=default] .button:disabled, html[data-theme=default] .bootstrap-select .popover-header .close:disabled, html[data-theme=default] .btn.disabled, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .disabled.close, html[data-theme=default] .disabled.button, html[data-theme=default] .bootstrap-select .popover-header .disabled.close, fieldset:disabled html[data-theme=default] .btn, html[data-theme=darkmode] .bootstrap-select .popover-header fieldset:disabled html[data-theme=default] .close, fieldset:disabled html[data-theme=default] .button, fieldset:disabled html[data-theme=default] .bootstrap-select .popover-header .close {
   pointer-events: none;
   opacity: 0.65;
 }
@@ -3663,17 +3667,17 @@ html[data-theme=default] .btn-link:hover {
 html[data-theme=default] .btn-link:disabled, html[data-theme=default] .btn-link.disabled {
   color: #6c757d;
 }
-html[data-theme=default] .btn-lg, html[data-theme=default] html[data-theme=darkmode] .btn-group-lg > .btn, html[data-theme=default] html[data-theme=darkmode] .btn-group-lg > .button, html[data-theme=default] .btn-group-lg > .btn, html[data-theme=default] .btn-group-lg > .button {
+html[data-theme=default] .btn-lg, html[data-theme=default] html[data-theme=darkmode] .btn-group-lg > .btn, html[data-theme=default] html[data-theme=darkmode] .btn-group-lg > .button, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-lg > .close, html[data-theme=default] .btn-group-lg > .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-lg > .close, html[data-theme=default] .btn-group-lg > .button, html[data-theme=default] .bootstrap-select .popover-header .btn-group-lg > .close {
   font-size: 1.25rem;
 }
-html[dir][data-theme=default] .btn-lg, html[dir][data-theme=default] html[data-theme=darkmode] .btn-group-lg > .btn, html[dir][data-theme=default] html[data-theme=darkmode] .btn-group-lg > .button, html[dir][data-theme=default] .btn-group-lg > .btn, html[dir][data-theme=default] .btn-group-lg > .button {
+html[dir][data-theme=default] .btn-lg, html[dir][data-theme=default] html[data-theme=darkmode] .btn-group-lg > .btn, html[dir][data-theme=default] html[data-theme=darkmode] .btn-group-lg > .button, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-lg > .close, html[dir][data-theme=default] .btn-group-lg > .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-lg > .close, html[dir][data-theme=default] .btn-group-lg > .button, html[dir][data-theme=default] .bootstrap-select .popover-header .btn-group-lg > .close {
   padding: 0.5rem 1rem;
   border-radius: 0.3rem;
 }
-html[data-theme=default] .btn-sm, html[data-theme=default] html[data-theme=darkmode] .btn-group-sm > .btn, html[data-theme=default] html[data-theme=darkmode] .btn-group-sm > .button, html[data-theme=default] .btn-group-sm > .btn, html[data-theme=default] .btn-group-sm > .button {
+html[data-theme=default] .btn-sm, html[data-theme=default] html[data-theme=darkmode] .btn-group-sm > .btn, html[data-theme=default] html[data-theme=darkmode] .btn-group-sm > .button, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-sm > .close, html[data-theme=default] .btn-group-sm > .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-sm > .close, html[data-theme=default] .btn-group-sm > .button, html[data-theme=default] .bootstrap-select .popover-header .btn-group-sm > .close {
   font-size: 0.875rem;
 }
-html[dir][data-theme=default] .btn-sm, html[dir][data-theme=default] html[data-theme=darkmode] .btn-group-sm > .btn, html[dir][data-theme=default] html[data-theme=darkmode] .btn-group-sm > .button, html[dir][data-theme=default] .btn-group-sm > .btn, html[dir][data-theme=default] .btn-group-sm > .button {
+html[dir][data-theme=default] .btn-sm, html[dir][data-theme=default] html[data-theme=darkmode] .btn-group-sm > .btn, html[dir][data-theme=default] html[data-theme=darkmode] .btn-group-sm > .button, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-sm > .close, html[dir][data-theme=default] .btn-group-sm > .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-sm > .close, html[dir][data-theme=default] .btn-group-sm > .button, html[dir][data-theme=default] .bootstrap-select .popover-header .btn-group-sm > .close {
   padding: 0.25rem 0.5rem;
   border-radius: 0.2rem;
 }
@@ -4158,44 +4162,68 @@ html[data-theme=default] .btn-group-vertical {
   display: inline-flex;
   vertical-align: middle;
 }
-html[data-theme=default] .btn-group > .btn, html[data-theme=default] html[data-theme=darkmode] .btn-group > .button, html[data-theme=default] .btn-group > .button,
+html[data-theme=default] .btn-group > .btn, html[data-theme=default] html[data-theme=darkmode] .btn-group > .button, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close, html[data-theme=default] .btn-group > .button, html[data-theme=default] .bootstrap-select .popover-header .btn-group > .close,
 html[data-theme=default] .btn-group-vertical > .btn,
 html[data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button,
-html[data-theme=default] .btn-group-vertical > .button {
+html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close,
+html[data-theme=default] .btn-group-vertical > .button,
+html[data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close {
   position: relative;
   flex: 1 1 auto;
 }
-html[data-theme=default] .btn-group > .btn-check:checked + .btn, html[data-theme=default] .btn-group > .btn-check:checked + .button,
+html[data-theme=default] .btn-group > .btn-check:checked + .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .btn-check:checked + .close, html[data-theme=default] .btn-group > .btn-check:checked + .button, html[data-theme=default] .bootstrap-select .popover-header .btn-group > .btn-check:checked + .close,
 html[data-theme=default] .btn-group > .btn-check:focus + .btn,
+html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .btn-check:focus + .close,
 html[data-theme=default] .btn-group > .btn-check:focus + .button,
+html[data-theme=default] .bootstrap-select .popover-header .btn-group > .btn-check:focus + .close,
 html[data-theme=default] .btn-group > .btn:hover,
 html[data-theme=default] html[data-theme=darkmode] .btn-group > .button:hover,
+html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:hover,
 html[data-theme=default] .btn-group > .button:hover,
+html[data-theme=default] .bootstrap-select .popover-header .btn-group > .close:hover,
 html[data-theme=default] .btn-group > .btn:focus,
 html[data-theme=default] html[data-theme=darkmode] .btn-group > .button:focus,
+html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:focus,
 html[data-theme=default] .btn-group > .button:focus,
+html[data-theme=default] .bootstrap-select .popover-header .btn-group > .close:focus,
 html[data-theme=default] .btn-group > .btn:active,
 html[data-theme=default] html[data-theme=darkmode] .btn-group > .button:active,
+html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:active,
 html[data-theme=default] .btn-group > .button:active,
+html[data-theme=default] .bootstrap-select .popover-header .btn-group > .close:active,
 html[data-theme=default] .btn-group > .btn.active,
 html[data-theme=default] html[data-theme=darkmode] .btn-group > .active.button,
+html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .active.close,
 html[data-theme=default] .btn-group > .active.button,
+html[data-theme=default] .bootstrap-select .popover-header .btn-group > .active.close,
 html[data-theme=default] .btn-group-vertical > .btn-check:checked + .btn,
+html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .btn-check:checked + .close,
 html[data-theme=default] .btn-group-vertical > .btn-check:checked + .button,
+html[data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .btn-check:checked + .close,
 html[data-theme=default] .btn-group-vertical > .btn-check:focus + .btn,
+html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .btn-check:focus + .close,
 html[data-theme=default] .btn-group-vertical > .btn-check:focus + .button,
+html[data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .btn-check:focus + .close,
 html[data-theme=default] .btn-group-vertical > .btn:hover,
 html[data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button:hover,
+html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close:hover,
 html[data-theme=default] .btn-group-vertical > .button:hover,
+html[data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close:hover,
 html[data-theme=default] .btn-group-vertical > .btn:focus,
 html[data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button:focus,
+html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close:focus,
 html[data-theme=default] .btn-group-vertical > .button:focus,
+html[data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close:focus,
 html[data-theme=default] .btn-group-vertical > .btn:active,
 html[data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button:active,
+html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close:active,
 html[data-theme=default] .btn-group-vertical > .button:active,
+html[data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close:active,
 html[data-theme=default] .btn-group-vertical > .btn.active,
 html[data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .active.button,
-html[data-theme=default] .btn-group-vertical > .active.button {
+html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .active.close,
+html[data-theme=default] .btn-group-vertical > .active.button,
+html[data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .active.close {
   z-index: 1;
 }
 html[data-theme=default] .btn-toolbar {
@@ -4206,25 +4234,25 @@ html[data-theme=default] .btn-toolbar {
 html[data-theme=default] .btn-toolbar .input-group {
   width: auto;
 }
-html[dir=ltr][data-theme=default] .btn-group > .btn:not(:first-child), html[dir=ltr][data-theme=default] html[data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=default] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:first-child) {
+html[dir=ltr][data-theme=default] .btn-group > .btn:not(:first-child), html[dir=ltr][data-theme=default] html[data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:not(:first-child), html[dir=ltr][data-theme=default] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:not(:first-child), html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:first-child) {
   margin-left: -1px;
 }
-html[dir=rtl][data-theme=default] .btn-group > .btn:not(:first-child), html[dir=rtl][data-theme=default] html[data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=default] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:first-child) {
+html[dir=rtl][data-theme=default] .btn-group > .btn:not(:first-child), html[dir=rtl][data-theme=default] html[data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:not(:first-child), html[dir=rtl][data-theme=default] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:not(:first-child), html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:first-child) {
   margin-right: -1px;
 }
-html[dir=ltr][data-theme=default] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] html[data-theme=darkmode] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:last-child) > .button {
+html[dir=ltr][data-theme=default] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] html[data-theme=darkmode] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .btn-group:not(:last-child) > .close, html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:last-child) > .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .btn-group:not(:last-child) > .close {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
-html[dir=rtl][data-theme=default] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] html[data-theme=darkmode] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:last-child) > .button {
+html[dir=rtl][data-theme=default] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] html[data-theme=darkmode] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .btn-group:not(:last-child) > .close, html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:last-child) > .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > .btn-group:not(:last-child) > .close {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-html[dir=ltr][data-theme=default] .btn-group > .btn:nth-child(n+3), html[dir=ltr][data-theme=default] html[data-theme=darkmode] .btn-group > .button:nth-child(n+3), html[dir=ltr][data-theme=default] .btn-group > .button:nth-child(n+3), html[dir=ltr][data-theme=default] .btn-group > :not(.btn-check) + .btn, html[dir=ltr][data-theme=default] .btn-group > :not(.btn-check) + .button, html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:first-child) > .btn, html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:first-child) > .button {
+html[dir=ltr][data-theme=default] .btn-group > .btn:nth-child(n+3), html[dir=ltr][data-theme=default] html[data-theme=darkmode] .btn-group > .button:nth-child(n+3), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:nth-child(n+3), html[dir=ltr][data-theme=default] .btn-group > .button:nth-child(n+3), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:nth-child(n+3), html[dir=ltr][data-theme=default] .btn-group > :not(.btn-check) + .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > :not(.btn-check) + .close, html[dir=ltr][data-theme=default] .btn-group > :not(.btn-check) + .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > :not(.btn-check) + .close, html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:first-child) > .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .btn-group:not(:first-child) > .close, html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:first-child) > .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .btn-group:not(:first-child) > .close {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-html[dir=rtl][data-theme=default] .btn-group > .btn:nth-child(n+3), html[dir=rtl][data-theme=default] html[data-theme=darkmode] .btn-group > .button:nth-child(n+3), html[dir=rtl][data-theme=default] .btn-group > .button:nth-child(n+3), html[dir=rtl][data-theme=default] .btn-group > :not(.btn-check) + .btn, html[dir=rtl][data-theme=default] .btn-group > :not(.btn-check) + .button, html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:first-child) > .btn, html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:first-child) > .button {
+html[dir=rtl][data-theme=default] .btn-group > .btn:nth-child(n+3), html[dir=rtl][data-theme=default] html[data-theme=darkmode] .btn-group > .button:nth-child(n+3), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:nth-child(n+3), html[dir=rtl][data-theme=default] .btn-group > .button:nth-child(n+3), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:nth-child(n+3), html[dir=rtl][data-theme=default] .btn-group > :not(.btn-check) + .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > :not(.btn-check) + .close, html[dir=rtl][data-theme=default] .btn-group > :not(.btn-check) + .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > :not(.btn-check) + .close, html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:first-child) > .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .btn-group:not(:first-child) > .close, html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:first-child) > .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > .btn-group:not(:first-child) > .close {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
@@ -4248,19 +4276,19 @@ html[dir=rtl][data-theme=default] .dropdown-toggle-split::after, [dir=rtl] .drop
 [dir=rtl] .dropstart html[data-theme=default] .dropdown-toggle-split::before {
   margin-left: 0;
 }
-html[dir=ltr][data-theme=default] .btn-sm + .dropdown-toggle-split, html[dir=ltr][data-theme=default] .btn-group-sm > .btn + .dropdown-toggle-split, html[dir=ltr][data-theme=default] .btn-group-sm > .button + .dropdown-toggle-split {
+html[dir=ltr][data-theme=default] .btn-sm + .dropdown-toggle-split, html[dir=ltr][data-theme=default] .btn-group-sm > .btn + .dropdown-toggle-split, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-sm > .close + .dropdown-toggle-split, html[dir=ltr][data-theme=default] .btn-group-sm > .button + .dropdown-toggle-split, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group-sm > .close + .dropdown-toggle-split {
   padding-right: 0.375rem;
   padding-left: 0.375rem;
 }
-html[dir=rtl][data-theme=default] .btn-sm + .dropdown-toggle-split, html[dir=rtl][data-theme=default] .btn-group-sm > .btn + .dropdown-toggle-split, html[dir=rtl][data-theme=default] .btn-group-sm > .button + .dropdown-toggle-split {
+html[dir=rtl][data-theme=default] .btn-sm + .dropdown-toggle-split, html[dir=rtl][data-theme=default] .btn-group-sm > .btn + .dropdown-toggle-split, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-sm > .close + .dropdown-toggle-split, html[dir=rtl][data-theme=default] .btn-group-sm > .button + .dropdown-toggle-split, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group-sm > .close + .dropdown-toggle-split {
   padding-left: 0.375rem;
   padding-right: 0.375rem;
 }
-html[dir=ltr][data-theme=default] .btn-lg + .dropdown-toggle-split, html[dir=ltr][data-theme=default] .btn-group-lg > .btn + .dropdown-toggle-split, html[dir=ltr][data-theme=default] .btn-group-lg > .button + .dropdown-toggle-split {
+html[dir=ltr][data-theme=default] .btn-lg + .dropdown-toggle-split, html[dir=ltr][data-theme=default] .btn-group-lg > .btn + .dropdown-toggle-split, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-lg > .close + .dropdown-toggle-split, html[dir=ltr][data-theme=default] .btn-group-lg > .button + .dropdown-toggle-split, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group-lg > .close + .dropdown-toggle-split {
   padding-right: 0.75rem;
   padding-left: 0.75rem;
 }
-html[dir=rtl][data-theme=default] .btn-lg + .dropdown-toggle-split, html[dir=rtl][data-theme=default] .btn-group-lg > .btn + .dropdown-toggle-split, html[dir=rtl][data-theme=default] .btn-group-lg > .button + .dropdown-toggle-split {
+html[dir=rtl][data-theme=default] .btn-lg + .dropdown-toggle-split, html[dir=rtl][data-theme=default] .btn-group-lg > .btn + .dropdown-toggle-split, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-lg > .close + .dropdown-toggle-split, html[dir=rtl][data-theme=default] .btn-group-lg > .button + .dropdown-toggle-split, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group-lg > .close + .dropdown-toggle-split {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
 }
@@ -4269,26 +4297,26 @@ html[data-theme=default] .btn-group-vertical {
   align-items: flex-start;
   justify-content: center;
 }
-html[data-theme=default] .btn-group-vertical > .btn, html[data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button, html[data-theme=default] .btn-group-vertical > .button,
+html[data-theme=default] .btn-group-vertical > .btn, html[data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close, html[data-theme=default] .btn-group-vertical > .button, html[data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close,
 html[data-theme=default] .btn-group-vertical > .btn-group {
   width: 100%;
 }
-html[dir][data-theme=default] .btn-group-vertical > .btn:not(:first-child), html[dir][data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button:not(:first-child), html[dir][data-theme=default] .btn-group-vertical > .button:not(:first-child), html[dir][data-theme=default] .btn-group-vertical > .btn-group:not(:first-child) {
+html[dir][data-theme=default] .btn-group-vertical > .btn:not(:first-child), html[dir][data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button:not(:first-child), html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close:not(:first-child), html[dir][data-theme=default] .btn-group-vertical > .button:not(:first-child), html[dir][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:first-child), html[dir][data-theme=default] .btn-group-vertical > .btn-group:not(:first-child) {
   margin-top: -1px;
 }
-html[dir=ltr][data-theme=default] .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .button {
+html[dir=ltr][data-theme=default] .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .close, html[dir=ltr][data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .btn-group:not(:last-child) > .close {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
-html[dir=rtl][data-theme=default] .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .btn, html[dir=rtl][data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .button {
+html[dir=rtl][data-theme=default] .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .close, html[dir=rtl][data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .btn-group:not(:last-child) > .close {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
-html[dir=ltr][data-theme=default] .btn-group-vertical > .btn ~ .btn, html[dir=ltr][data-theme=default] .btn-group-vertical > .button ~ .btn, html[dir=ltr][data-theme=default] .btn-group-vertical > .btn ~ .button, html[dir=ltr][data-theme=default] .btn-group-vertical > .button ~ .button, html[dir=ltr][data-theme=default] .btn-group-vertical > .btn-group:not(:first-child) > .btn, html[dir=ltr][data-theme=default] .btn-group-vertical > .btn-group:not(:first-child) > .button {
+html[dir=ltr][data-theme=default] .btn-group-vertical > .btn ~ .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close ~ .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close ~ .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .btn ~ .close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .button ~ .close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close ~ .close, html[dir=ltr][data-theme=default] .btn-group-vertical > .button ~ .btn, html[dir=ltr][data-theme=default] .btn-group-vertical > .btn ~ .button, html[dir=ltr][data-theme=default] .btn-group-vertical > .button ~ .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close ~ .btn, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close ~ .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .btn ~ .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .button ~ .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close ~ .close, html[dir=ltr][data-theme=default] .btn-group-vertical > .btn-group:not(:first-child) > .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .btn-group:not(:first-child) > .close, html[dir=ltr][data-theme=default] .btn-group-vertical > .btn-group:not(:first-child) > .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .btn-group:not(:first-child) > .close {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
-html[dir=rtl][data-theme=default] .btn-group-vertical > .btn ~ .btn, html[dir=rtl][data-theme=default] .btn-group-vertical > .button ~ .btn, html[dir=rtl][data-theme=default] .btn-group-vertical > .btn ~ .button, html[dir=rtl][data-theme=default] .btn-group-vertical > .button ~ .button, html[dir=rtl][data-theme=default] .btn-group-vertical > .btn-group:not(:first-child) > .btn, html[dir=rtl][data-theme=default] .btn-group-vertical > .btn-group:not(:first-child) > .button {
+html[dir=rtl][data-theme=default] .btn-group-vertical > .btn ~ .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close ~ .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close ~ .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .btn ~ .close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .button ~ .close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close ~ .close, html[dir=rtl][data-theme=default] .btn-group-vertical > .button ~ .btn, html[dir=rtl][data-theme=default] .btn-group-vertical > .btn ~ .button, html[dir=rtl][data-theme=default] .btn-group-vertical > .button ~ .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close ~ .btn, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close ~ .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .btn ~ .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .button ~ .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close ~ .close, html[dir=rtl][data-theme=default] .btn-group-vertical > .btn-group:not(:first-child) > .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .btn-group:not(:first-child) > .close, html[dir=rtl][data-theme=default] .btn-group-vertical > .btn-group:not(:first-child) > .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .btn-group:not(:first-child) > .close {
   border-top-right-radius: 0;
   border-top-left-radius: 0;
 }
@@ -5588,7 +5616,7 @@ html[dir][data-theme=default] .badge {
 html[data-theme=default] .badge:empty {
   display: none;
 }
-html[data-theme=default] .btn .badge, html[data-theme=default] .button .badge {
+html[data-theme=default] .btn .badge, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close .badge, html[data-theme=default] .button .badge, html[data-theme=default] .bootstrap-select .popover-header .close .badge {
   position: relative;
   top: -1px;
 }
@@ -5613,18 +5641,18 @@ html[dir=ltr][data-theme=default] .alert-dismissible {
 html[dir=rtl][data-theme=default] .alert-dismissible {
   padding-left: 3rem;
 }
-html[data-theme=default] .alert-dismissible .btn-close {
+html[data-theme=default] .alert-dismissible .btn-close, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .alert-dismissible .close, html[data-theme=default] .alert-dismissible .bootstrap-select .popover-header .close, html[data-theme=default] .bootstrap-select .popover-header .alert-dismissible .close {
   position: absolute;
   top: 0;
   z-index: 2;
 }
-html[dir][data-theme=default] .alert-dismissible .btn-close {
+html[dir][data-theme=default] .alert-dismissible .btn-close, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .alert-dismissible .close, html[dir][data-theme=default] .alert-dismissible .bootstrap-select .popover-header .close, html[dir][data-theme=default] .bootstrap-select .popover-header .alert-dismissible .close {
   padding: 1.25rem 1rem;
 }
-html[dir=ltr][data-theme=default] .alert-dismissible .btn-close {
+html[dir=ltr][data-theme=default] .alert-dismissible .btn-close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .alert-dismissible .close, html[dir=ltr][data-theme=default] .alert-dismissible .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .alert-dismissible .close {
   right: 0;
 }
-html[dir=rtl][data-theme=default] .alert-dismissible .btn-close {
+html[dir=rtl][data-theme=default] .alert-dismissible .btn-close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .alert-dismissible .close, html[dir=rtl][data-theme=default] .alert-dismissible .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .alert-dismissible .close {
   left: 0;
 }
 html[data-theme=default] .alert-primary {
@@ -6260,32 +6288,32 @@ html[dir][data-theme=default] .list-group-item-dark.list-group-item-action.activ
   background-color: #141619;
   border-color: #141619;
 }
-html[data-theme=default] .btn-close {
+html[data-theme=default] .btn-close, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close, html[data-theme=default] .bootstrap-select .popover-header .close {
   box-sizing: content-box;
   width: 1em;
   height: 1em;
   color: #000;
   opacity: 0.5;
 }
-html[dir][data-theme=default] .btn-close {
+html[dir][data-theme=default] .btn-close, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close, html[dir][data-theme=default] .bootstrap-select .popover-header .close {
   padding: 0.25em 0.25em;
   background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
   border: 0;
   border-radius: 0.25rem;
 }
-html[data-theme=default] .btn-close:hover {
+html[data-theme=default] .btn-close:hover, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:hover, html[data-theme=default] .bootstrap-select .popover-header .close:hover {
   color: #000;
   text-decoration: none;
   opacity: 0.75;
 }
-html[data-theme=default] .btn-close:focus {
+html[data-theme=default] .btn-close:focus, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:focus, html[data-theme=default] .bootstrap-select .popover-header .close:focus {
   outline: 0;
   opacity: 1;
 }
-html[dir][data-theme=default] .btn-close:focus {
+html[dir][data-theme=default] .btn-close:focus, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:focus, html[dir][data-theme=default] .bootstrap-select .popover-header .close:focus {
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
-html[data-theme=default] .btn-close:disabled, html[data-theme=default] .btn-close.disabled {
+html[data-theme=default] .btn-close:disabled, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:disabled, html[data-theme=default] .bootstrap-select .popover-header .close:disabled, html[data-theme=default] .btn-close.disabled, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .disabled.close, html[data-theme=default] .bootstrap-select .popover-header .disabled.close {
   pointer-events: none;
   user-select: none;
   opacity: 0.25;
@@ -6339,11 +6367,11 @@ html[dir=rtl][data-theme=default] .toast-header {
   border-top-right-radius: calc(0.25rem - 1px);
   border-top-left-radius: calc(0.25rem - 1px);
 }
-html[dir=ltr][data-theme=default] .toast-header .btn-close {
+html[dir=ltr][data-theme=default] .toast-header .btn-close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .toast-header .close, html[dir=ltr][data-theme=default] .toast-header .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .toast-header .close {
   margin-right: -0.375rem;
   margin-left: 0.75rem;
 }
-html[dir=rtl][data-theme=default] .toast-header .btn-close {
+html[dir=rtl][data-theme=default] .toast-header .btn-close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .toast-header .close, html[dir=rtl][data-theme=default] .toast-header .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .toast-header .close {
   margin-left: -0.375rem;
   margin-right: 0.75rem;
 }
@@ -6464,13 +6492,13 @@ html[dir=rtl][data-theme=default] .modal-header {
   border-top-right-radius: calc(0.3rem - 1px);
   border-top-left-radius: calc(0.3rem - 1px);
 }
-html[dir][data-theme=default] .modal-header .btn-close {
+html[dir][data-theme=default] .modal-header .btn-close, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .modal-header .close, html[dir][data-theme=default] .modal-header .bootstrap-select .popover-header .close, html[dir][data-theme=default] .bootstrap-select .popover-header .modal-header .close {
   padding: 0.5rem 0.5rem;
 }
-html[dir=ltr][data-theme=default] .modal-header .btn-close {
+html[dir=ltr][data-theme=default] .modal-header .btn-close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .modal-header .close, html[dir=ltr][data-theme=default] .modal-header .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .modal-header .close {
   margin: -0.5rem -0.5rem -0.5rem auto;
 }
-html[dir=rtl][data-theme=default] .modal-header .btn-close {
+html[dir=rtl][data-theme=default] .modal-header .btn-close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .modal-header .close, html[dir=rtl][data-theme=default] .modal-header .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .modal-header .close {
   margin: -0.5rem auto -0.5rem -0.5rem;
 }
 html[data-theme=default] .modal-title {
@@ -7359,15 +7387,15 @@ html[data-theme=default] .offcanvas-header {
 html[dir][data-theme=default] .offcanvas-header {
   padding: 1rem 1rem;
 }
-html[dir][data-theme=default] .offcanvas-header .btn-close {
+html[dir][data-theme=default] .offcanvas-header .btn-close, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .offcanvas-header .close, html[dir][data-theme=default] .offcanvas-header .bootstrap-select .popover-header .close, html[dir][data-theme=default] .bootstrap-select .popover-header .offcanvas-header .close {
   padding: 0.5rem 0.5rem;
   margin-top: -0.5rem;
   margin-bottom: -0.5rem;
 }
-html[dir=ltr][data-theme=default] .offcanvas-header .btn-close {
+html[dir=ltr][data-theme=default] .offcanvas-header .btn-close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .offcanvas-header .close, html[dir=ltr][data-theme=default] .offcanvas-header .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .offcanvas-header .close {
   margin-right: -0.5rem;
 }
-html[dir=rtl][data-theme=default] .offcanvas-header .btn-close {
+html[dir=rtl][data-theme=default] .offcanvas-header .btn-close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .offcanvas-header .close, html[dir=rtl][data-theme=default] .offcanvas-header .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .offcanvas-header .close {
   margin-left: -0.5rem;
 }
 html[data-theme=default] .offcanvas-title {
@@ -7457,7 +7485,7 @@ html[dir][data-theme=default] .placeholder {
   cursor: wait;
   background-color: currentColor;
 }
-html[data-theme=default] .placeholder.btn::before, html[data-theme=default] .placeholder.button::before {
+html[data-theme=default] .placeholder.btn::before, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .placeholder.close::before, html[data-theme=default] .placeholder.button::before, html[data-theme=default] .bootstrap-select .popover-header .placeholder.close::before {
   display: inline-block;
   content: "";
 }
@@ -7732,10 +7760,10 @@ html[dir=ltr][data-theme=default] .float-start {
 html[dir=rtl][data-theme=default] .float-start {
   float: right !important;
 }
-html[dir=ltr][data-theme=default] .float-end, html[dir=ltr][data-theme=default] .related {
+html[dir=ltr][data-theme=default] .float-end, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close, html[dir=ltr][data-theme=default] .related, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .close {
   float: right !important;
 }
-html[dir=rtl][data-theme=default] .float-end, html[dir=rtl][data-theme=default] .related {
+html[dir=rtl][data-theme=default] .float-end, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close, html[dir=rtl][data-theme=default] .related, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .close {
   float: left !important;
 }
 html[dir][data-theme=default] .float-none {
@@ -12736,6 +12764,16 @@ html[dir=ltr][data-theme=default] .multiselect__content-wrapper ul {
 }
 html[dir=rtl][data-theme=default] .multiselect__content-wrapper ul {
   padding-right: unset;
+}
+html[dir][data-theme=default] .bootstrap-select .popover-header .close {
+  padding-top: 0px;
+  background: unset;
+}
+html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .close {
+  padding-right: 0px;
+}
+html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .close {
+  padding-left: 0px;
 }
 html[data-theme=default] .slider {
   display: inline-block;
@@ -28177,7 +28215,7 @@ html[dir][data-theme=default] .ta-navbar-top .breadcrumb {
   background-color: transparent;
   margin-top: 1rem;
 }
-html[data-theme=default] .ta-navbar-top .btn.nav-link, html[data-theme=default] .ta-navbar-top .nav-link.button {
+html[data-theme=default] .ta-navbar-top .btn.nav-link, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .ta-navbar-top .nav-link.close, html[data-theme=default] .ta-navbar-top .nav-link.button, html[data-theme=default] .ta-navbar-top .bootstrap-select .popover-header .nav-link.close, html[data-theme=default] .bootstrap-select .popover-header .ta-navbar-top .nav-link.close {
   display: inline-block;
 }
 @media (min-width: 576px) {
@@ -29511,7 +29549,7 @@ html[data-theme=default] [dir=ltr] .btn-dropdown > .btn-group {
 html[data-theme=default] [dir=rtl] .btn-dropdown > .btn-group {
   right: calc(-14px + 50%);
 }
-html[data-theme=default] .btn:hover, html[data-theme=default] .button:hover {
+html[data-theme=default] .btn:hover, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:hover, html[data-theme=default] .button:hover, html[data-theme=default] .bootstrap-select .popover-header .close:hover {
   text-decoration: none;
 }
 html[data-theme=default] .dropdown-item:hover {
@@ -29522,6 +29560,9 @@ html[data-theme=default] .unset {
 }
 html[dir][data-theme=default] .bg-primary {
   background-color: #f8f9fa !important;
+}
+html[data-theme=default] .bootstrap-select .popover-header .close {
+  color: black;
 }
 html[data-theme=default] .hint {
   overflow-wrap: break-word;
@@ -32187,7 +32228,7 @@ html[data-theme=darkmode] .btn-check {
   clip: rect(0, 0, 0, 0);
   pointer-events: none;
 }
-html[data-theme=darkmode] .btn-check[disabled] + .btn, html[data-theme=darkmode] .btn-check[disabled] + .button, html[data-theme=darkmode] html[data-theme=default] .btn-check[disabled] + .button, html[data-theme=darkmode] .btn-check:disabled + .btn, html[data-theme=darkmode] .btn-check:disabled + .button, html[data-theme=darkmode] html[data-theme=default] .btn-check:disabled + .button {
+html[data-theme=darkmode] .btn-check[disabled] + .btn, html[data-theme=darkmode] .btn-check[disabled] + .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-check[disabled] + .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-check[disabled] + .close, html[data-theme=darkmode] html[data-theme=default] .btn-check[disabled] + .button, html[data-theme=darkmode] .btn-check:disabled + .btn, html[data-theme=darkmode] .btn-check:disabled + .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-check:disabled + .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-check:disabled + .close, html[data-theme=darkmode] html[data-theme=default] .btn-check:disabled + .button {
   pointer-events: none;
   filter: none;
   opacity: 0.65;
@@ -32371,11 +32412,11 @@ html[data-theme=darkmode] .input-group > .form-control:focus,
 html[data-theme=darkmode] .input-group > .form-select:focus {
   z-index: 3;
 }
-html[data-theme=darkmode] .input-group .btn, html[data-theme=darkmode] .input-group .button {
+html[data-theme=darkmode] .input-group .btn, html[data-theme=darkmode] .input-group .button, html[data-theme=darkmode] .input-group .bootstrap-select .popover-header .close, html[data-theme=darkmode] .bootstrap-select .popover-header .input-group .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .input-group .close {
   position: relative;
   z-index: 2;
 }
-html[data-theme=darkmode] .input-group .btn:focus, html[data-theme=darkmode] .input-group .button:focus {
+html[data-theme=darkmode] .input-group .btn:focus, html[data-theme=darkmode] .input-group .button:focus, html[data-theme=darkmode] .input-group .bootstrap-select .popover-header .close:focus, html[data-theme=darkmode] .bootstrap-select .popover-header .input-group .close:focus, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .input-group .close:focus {
   z-index: 3;
 }
 html[data-theme=darkmode] .input-group-text {
@@ -32399,10 +32440,12 @@ html[data-theme=darkmode] .input-group-lg > .form-select,
 html[data-theme=darkmode] .input-group-lg > .input-group-text,
 html[data-theme=darkmode] .input-group-lg > .btn,
 html[data-theme=darkmode] .input-group-lg > .button,
+html[data-theme=darkmode] .bootstrap-select .popover-header .input-group-lg > .close,
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .input-group-lg > .close,
 html[data-theme=darkmode] html[data-theme=default] .input-group-lg > .button {
   font-size: 1.25rem;
 }
-html[dir][data-theme=darkmode] .input-group-lg > .form-control, html[dir][data-theme=darkmode] .input-group-lg > .form-select, html[dir][data-theme=darkmode] .input-group-lg > .input-group-text, html[dir][data-theme=darkmode] .input-group-lg > .btn, html[dir][data-theme=darkmode] .input-group-lg > .button, html[dir][data-theme=darkmode] html[data-theme=default] .input-group-lg > .button {
+html[dir][data-theme=darkmode] .input-group-lg > .form-control, html[dir][data-theme=darkmode] .input-group-lg > .form-select, html[dir][data-theme=darkmode] .input-group-lg > .input-group-text, html[dir][data-theme=darkmode] .input-group-lg > .btn, html[dir][data-theme=darkmode] .input-group-lg > .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .input-group-lg > .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .input-group-lg > .close, html[dir][data-theme=darkmode] html[data-theme=default] .input-group-lg > .button {
   padding: 0.5rem 1rem;
   border-radius: 0.3rem;
 }
@@ -32411,10 +32454,12 @@ html[data-theme=darkmode] .input-group-sm > .form-select,
 html[data-theme=darkmode] .input-group-sm > .input-group-text,
 html[data-theme=darkmode] .input-group-sm > .btn,
 html[data-theme=darkmode] .input-group-sm > .button,
+html[data-theme=darkmode] .bootstrap-select .popover-header .input-group-sm > .close,
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .input-group-sm > .close,
 html[data-theme=darkmode] html[data-theme=default] .input-group-sm > .button {
   font-size: 0.875rem;
 }
-html[dir][data-theme=darkmode] .input-group-sm > .form-control, html[dir][data-theme=darkmode] .input-group-sm > .form-select, html[dir][data-theme=darkmode] .input-group-sm > .input-group-text, html[dir][data-theme=darkmode] .input-group-sm > .btn, html[dir][data-theme=darkmode] .input-group-sm > .button, html[dir][data-theme=darkmode] html[data-theme=default] .input-group-sm > .button {
+html[dir][data-theme=darkmode] .input-group-sm > .form-control, html[dir][data-theme=darkmode] .input-group-sm > .form-select, html[dir][data-theme=darkmode] .input-group-sm > .input-group-text, html[dir][data-theme=darkmode] .input-group-sm > .btn, html[dir][data-theme=darkmode] .input-group-sm > .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .input-group-sm > .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .input-group-sm > .close, html[dir][data-theme=darkmode] html[data-theme=default] .input-group-sm > .button {
   padding: 0.25rem 0.5rem;
   border-radius: 0.2rem;
 }
@@ -32662,7 +32707,7 @@ html[data-theme=darkmode] .input-group .form-select.has-validation-error:focus,
 html[data-theme=darkmode] .input-group .form-select.input-validation-error:focus {
   z-index: 3;
 }
-html[data-theme=darkmode] .btn, html[data-theme=darkmode] .button {
+html[data-theme=darkmode] .btn, html[data-theme=darkmode] .button, html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close {
   display: inline-block;
   font-weight: 400;
   line-height: 1.5;
@@ -32673,7 +32718,7 @@ html[data-theme=darkmode] .btn, html[data-theme=darkmode] .button {
   font-size: 1rem;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
-html[dir][data-theme=darkmode] .btn, html[dir][data-theme=darkmode] .button {
+html[dir][data-theme=darkmode] .btn, html[dir][data-theme=darkmode] .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close {
   text-align: center;
   cursor: pointer;
   background-color: transparent;
@@ -32682,20 +32727,20 @@ html[dir][data-theme=darkmode] .btn, html[dir][data-theme=darkmode] .button {
   border-radius: 0.25rem;
 }
 @media (prefers-reduced-motion: reduce) {
-  html[data-theme=darkmode] .btn, html[data-theme=darkmode] .button {
+  html[data-theme=darkmode] .btn, html[data-theme=darkmode] .button, html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close {
     transition: none;
   }
 }
-html[data-theme=darkmode] .btn:hover, html[data-theme=darkmode] .button:hover {
+html[data-theme=darkmode] .btn:hover, html[data-theme=darkmode] .button:hover, html[data-theme=darkmode] .bootstrap-select .popover-header .close:hover, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:hover {
   color: #fff;
 }
-.btn-check:focus + html[data-theme=darkmode] .btn, .btn-check:focus + html[data-theme=darkmode] .button, html[data-theme=darkmode] .btn:focus, html[data-theme=darkmode] .button:focus {
+.btn-check:focus + html[data-theme=darkmode] .btn, .btn-check:focus + html[data-theme=darkmode] .button, .btn-check:focus + html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[data-theme=default] .bootstrap-select .popover-header .btn-check:focus + html[data-theme=darkmode] .close, html[data-theme=darkmode] .btn:focus, html[data-theme=darkmode] .button:focus, html[data-theme=darkmode] .bootstrap-select .popover-header .close:focus, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:focus {
   outline: 0;
 }
-[dir] .btn-check:focus + html[data-theme=darkmode] .btn, [dir] .btn-check:focus + html[data-theme=darkmode] .button, html[dir][data-theme=darkmode] .btn:focus, html[dir][data-theme=darkmode] .button:focus {
+[dir] .btn-check:focus + html[data-theme=darkmode] .btn, [dir] .btn-check:focus + html[data-theme=darkmode] .button, [dir] .btn-check:focus + html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[dir][data-theme=default] .bootstrap-select .popover-header .btn-check:focus + html[data-theme=darkmode] .close, html[dir][data-theme=darkmode] .btn:focus, html[dir][data-theme=darkmode] .button:focus, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .close:focus, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:focus {
   box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
 }
-html[data-theme=darkmode] .btn:disabled, html[data-theme=darkmode] .button:disabled, html[data-theme=darkmode] .btn.disabled, html[data-theme=darkmode] .disabled.button, fieldset:disabled html[data-theme=darkmode] .btn, fieldset:disabled html[data-theme=darkmode] .button {
+html[data-theme=darkmode] .btn:disabled, html[data-theme=darkmode] .button:disabled, html[data-theme=darkmode] .bootstrap-select .popover-header .close:disabled, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:disabled, html[data-theme=darkmode] .btn.disabled, html[data-theme=darkmode] .disabled.button, html[data-theme=darkmode] .bootstrap-select .popover-header .disabled.close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .disabled.close, fieldset:disabled html[data-theme=darkmode] .btn, fieldset:disabled html[data-theme=darkmode] .button, fieldset:disabled html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[data-theme=default] .bootstrap-select .popover-header fieldset:disabled html[data-theme=darkmode] .close {
   pointer-events: none;
   opacity: 0.65;
 }
@@ -33278,17 +33323,17 @@ html[data-theme=darkmode] .btn-link:hover {
 html[data-theme=darkmode] .btn-link:disabled, html[data-theme=darkmode] .btn-link.disabled {
   color: #888;
 }
-html[data-theme=darkmode] .btn-lg, html[data-theme=darkmode] .btn-group-lg > .btn, html[data-theme=darkmode] .btn-group-lg > .button, html[data-theme=darkmode] html[data-theme=default] .btn-group-lg > .button, html[data-theme=darkmode] html[data-theme=default] .btn-group-lg > .btn {
+html[data-theme=darkmode] .btn-lg, html[data-theme=darkmode] .btn-group-lg > .btn, html[data-theme=darkmode] .btn-group-lg > .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-lg > .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-lg > .close, html[data-theme=darkmode] html[data-theme=default] .btn-group-lg > .button, html[data-theme=darkmode] html[data-theme=default] .btn-group-lg > .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-lg > .close {
   font-size: 1.25rem;
 }
-html[dir][data-theme=darkmode] .btn-lg, html[dir][data-theme=darkmode] .btn-group-lg > .btn, html[dir][data-theme=darkmode] .btn-group-lg > .button, html[dir][data-theme=darkmode] html[data-theme=default] .btn-group-lg > .button, html[dir][data-theme=darkmode] html[data-theme=default] .btn-group-lg > .btn {
+html[dir][data-theme=darkmode] .btn-lg, html[dir][data-theme=darkmode] .btn-group-lg > .btn, html[dir][data-theme=darkmode] .btn-group-lg > .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-lg > .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-lg > .close, html[dir][data-theme=darkmode] html[data-theme=default] .btn-group-lg > .button, html[dir][data-theme=darkmode] html[data-theme=default] .btn-group-lg > .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-lg > .close {
   padding: 0.5rem 1rem;
   border-radius: 0.3rem;
 }
-html[data-theme=darkmode] .btn-sm, html[data-theme=darkmode] .btn-group-sm > .btn, html[data-theme=darkmode] .btn-group-sm > .button, html[data-theme=darkmode] html[data-theme=default] .btn-group-sm > .button, html[data-theme=darkmode] html[data-theme=default] .btn-group-sm > .btn {
+html[data-theme=darkmode] .btn-sm, html[data-theme=darkmode] .btn-group-sm > .btn, html[data-theme=darkmode] .btn-group-sm > .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-sm > .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-sm > .close, html[data-theme=darkmode] html[data-theme=default] .btn-group-sm > .button, html[data-theme=darkmode] html[data-theme=default] .btn-group-sm > .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-sm > .close {
   font-size: 0.875rem;
 }
-html[dir][data-theme=darkmode] .btn-sm, html[dir][data-theme=darkmode] .btn-group-sm > .btn, html[dir][data-theme=darkmode] .btn-group-sm > .button, html[dir][data-theme=darkmode] html[data-theme=default] .btn-group-sm > .button, html[dir][data-theme=darkmode] html[data-theme=default] .btn-group-sm > .btn {
+html[dir][data-theme=darkmode] .btn-sm, html[dir][data-theme=darkmode] .btn-group-sm > .btn, html[dir][data-theme=darkmode] .btn-group-sm > .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-sm > .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-sm > .close, html[dir][data-theme=darkmode] html[data-theme=default] .btn-group-sm > .button, html[dir][data-theme=darkmode] html[data-theme=default] .btn-group-sm > .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-sm > .close {
   padding: 0.25rem 0.5rem;
   border-radius: 0.2rem;
 }
@@ -33773,43 +33818,67 @@ html[data-theme=darkmode] .btn-group-vertical {
   display: inline-flex;
   vertical-align: middle;
 }
-html[data-theme=darkmode] .btn-group > .btn, html[data-theme=darkmode] .btn-group > .button, html[data-theme=darkmode] html[data-theme=default] .btn-group > .button,
+html[data-theme=darkmode] .btn-group > .btn, html[data-theme=darkmode] .btn-group > .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close, html[data-theme=darkmode] html[data-theme=default] .btn-group > .button,
 html[data-theme=darkmode] .btn-group-vertical > .btn,
 html[data-theme=darkmode] .btn-group-vertical > .button,
+html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close,
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close,
 html[data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button {
   position: relative;
   flex: 1 1 auto;
 }
-html[data-theme=darkmode] .btn-group > .btn-check:checked + .btn, html[data-theme=darkmode] .btn-group > .btn-check:checked + .button,
+html[data-theme=darkmode] .btn-group > .btn-check:checked + .btn, html[data-theme=darkmode] .btn-group > .btn-check:checked + .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .btn-check:checked + .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .btn-check:checked + .close,
 html[data-theme=darkmode] .btn-group > .btn-check:focus + .btn,
 html[data-theme=darkmode] .btn-group > .btn-check:focus + .button,
+html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .btn-check:focus + .close,
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .btn-check:focus + .close,
 html[data-theme=darkmode] .btn-group > .btn:hover,
 html[data-theme=darkmode] .btn-group > .button:hover,
+html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:hover,
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:hover,
 html[data-theme=darkmode] html[data-theme=default] .btn-group > .button:hover,
 html[data-theme=darkmode] .btn-group > .btn:focus,
 html[data-theme=darkmode] .btn-group > .button:focus,
+html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:focus,
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:focus,
 html[data-theme=darkmode] html[data-theme=default] .btn-group > .button:focus,
 html[data-theme=darkmode] .btn-group > .btn:active,
 html[data-theme=darkmode] .btn-group > .button:active,
+html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:active,
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:active,
 html[data-theme=darkmode] html[data-theme=default] .btn-group > .button:active,
 html[data-theme=darkmode] .btn-group > .btn.active,
 html[data-theme=darkmode] .btn-group > .active.button,
+html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .active.close,
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .active.close,
 html[data-theme=darkmode] html[data-theme=default] .btn-group > .active.button,
 html[data-theme=darkmode] .btn-group-vertical > .btn-check:checked + .btn,
 html[data-theme=darkmode] .btn-group-vertical > .btn-check:checked + .button,
+html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .btn-check:checked + .close,
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .btn-check:checked + .close,
 html[data-theme=darkmode] .btn-group-vertical > .btn-check:focus + .btn,
 html[data-theme=darkmode] .btn-group-vertical > .btn-check:focus + .button,
+html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .btn-check:focus + .close,
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .btn-check:focus + .close,
 html[data-theme=darkmode] .btn-group-vertical > .btn:hover,
 html[data-theme=darkmode] .btn-group-vertical > .button:hover,
+html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close:hover,
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close:hover,
 html[data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button:hover,
 html[data-theme=darkmode] .btn-group-vertical > .btn:focus,
 html[data-theme=darkmode] .btn-group-vertical > .button:focus,
+html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close:focus,
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close:focus,
 html[data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button:focus,
 html[data-theme=darkmode] .btn-group-vertical > .btn:active,
 html[data-theme=darkmode] .btn-group-vertical > .button:active,
+html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close:active,
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close:active,
 html[data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button:active,
 html[data-theme=darkmode] .btn-group-vertical > .btn.active,
 html[data-theme=darkmode] .btn-group-vertical > .active.button,
+html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .active.close,
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .active.close,
 html[data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .active.button {
   z-index: 1;
 }
@@ -33821,25 +33890,25 @@ html[data-theme=darkmode] .btn-toolbar {
 html[data-theme=darkmode] .btn-toolbar .input-group {
   width: auto;
 }
-html[dir=ltr][data-theme=darkmode] .btn-group > .btn:not(:first-child), html[dir=ltr][data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=darkmode] html[data-theme=default] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) {
+html[dir=ltr][data-theme=darkmode] .btn-group > .btn:not(:first-child), html[dir=ltr][data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:not(:first-child), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:not(:first-child), html[dir=ltr][data-theme=darkmode] html[data-theme=default] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) {
   margin-left: -1px;
 }
-html[dir=rtl][data-theme=darkmode] .btn-group > .btn:not(:first-child), html[dir=rtl][data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=darkmode] html[data-theme=default] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) {
+html[dir=rtl][data-theme=darkmode] .btn-group > .btn:not(:first-child), html[dir=rtl][data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:not(:first-child), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:not(:first-child), html[dir=rtl][data-theme=darkmode] html[data-theme=default] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) {
   margin-right: -1px;
 }
-html[dir=ltr][data-theme=darkmode] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] html[data-theme=default] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .button {
+html[dir=ltr][data-theme=darkmode] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] html[data-theme=default] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .btn-group:not(:last-child) > .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .close {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
-html[dir=rtl][data-theme=darkmode] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] html[data-theme=default] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .button {
+html[dir=rtl][data-theme=darkmode] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] html[data-theme=default] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .btn-group:not(:last-child) > .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .close {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-html[dir=ltr][data-theme=darkmode] .btn-group > .btn:nth-child(n+3), html[dir=ltr][data-theme=darkmode] .btn-group > .button:nth-child(n+3), html[dir=ltr][data-theme=darkmode] html[data-theme=default] .btn-group > .button:nth-child(n+3), html[dir=ltr][data-theme=darkmode] .btn-group > :not(.btn-check) + .btn, html[dir=ltr][data-theme=darkmode] .btn-group > :not(.btn-check) + .button, html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .btn, html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .button {
+html[dir=ltr][data-theme=darkmode] .btn-group > .btn:nth-child(n+3), html[dir=ltr][data-theme=darkmode] .btn-group > .button:nth-child(n+3), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:nth-child(n+3), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:nth-child(n+3), html[dir=ltr][data-theme=darkmode] html[data-theme=default] .btn-group > .button:nth-child(n+3), html[dir=ltr][data-theme=darkmode] .btn-group > :not(.btn-check) + .btn, html[dir=ltr][data-theme=darkmode] .btn-group > :not(.btn-check) + .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > :not(.btn-check) + .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > :not(.btn-check) + .close, html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .btn, html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .btn-group:not(:first-child) > .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .close {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-html[dir=rtl][data-theme=darkmode] .btn-group > .btn:nth-child(n+3), html[dir=rtl][data-theme=darkmode] .btn-group > .button:nth-child(n+3), html[dir=rtl][data-theme=darkmode] html[data-theme=default] .btn-group > .button:nth-child(n+3), html[dir=rtl][data-theme=darkmode] .btn-group > :not(.btn-check) + .btn, html[dir=rtl][data-theme=darkmode] .btn-group > :not(.btn-check) + .button, html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .btn, html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .button {
+html[dir=rtl][data-theme=darkmode] .btn-group > .btn:nth-child(n+3), html[dir=rtl][data-theme=darkmode] .btn-group > .button:nth-child(n+3), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:nth-child(n+3), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:nth-child(n+3), html[dir=rtl][data-theme=darkmode] html[data-theme=default] .btn-group > .button:nth-child(n+3), html[dir=rtl][data-theme=darkmode] .btn-group > :not(.btn-check) + .btn, html[dir=rtl][data-theme=darkmode] .btn-group > :not(.btn-check) + .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > :not(.btn-check) + .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > :not(.btn-check) + .close, html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .btn, html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .btn-group:not(:first-child) > .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .close {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
@@ -33863,19 +33932,19 @@ html[dir=rtl][data-theme=darkmode] .dropdown-toggle-split::after, [dir=rtl] .dro
 [dir=rtl] .dropstart html[data-theme=darkmode] .dropdown-toggle-split::before {
   margin-left: 0;
 }
-html[dir=ltr][data-theme=darkmode] .btn-sm + .dropdown-toggle-split, html[dir=ltr][data-theme=darkmode] .btn-group-sm > .btn + .dropdown-toggle-split, html[dir=ltr][data-theme=darkmode] .btn-group-sm > .button + .dropdown-toggle-split {
+html[dir=ltr][data-theme=darkmode] .btn-sm + .dropdown-toggle-split, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-sm > .close + .dropdown-toggle-split, html[dir=ltr][data-theme=darkmode] .btn-group-sm > .btn + .dropdown-toggle-split, html[dir=ltr][data-theme=darkmode] .btn-group-sm > .button + .dropdown-toggle-split, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-sm > .close + .dropdown-toggle-split {
   padding-right: 0.375rem;
   padding-left: 0.375rem;
 }
-html[dir=rtl][data-theme=darkmode] .btn-sm + .dropdown-toggle-split, html[dir=rtl][data-theme=darkmode] .btn-group-sm > .btn + .dropdown-toggle-split, html[dir=rtl][data-theme=darkmode] .btn-group-sm > .button + .dropdown-toggle-split {
+html[dir=rtl][data-theme=darkmode] .btn-sm + .dropdown-toggle-split, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-sm > .close + .dropdown-toggle-split, html[dir=rtl][data-theme=darkmode] .btn-group-sm > .btn + .dropdown-toggle-split, html[dir=rtl][data-theme=darkmode] .btn-group-sm > .button + .dropdown-toggle-split, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-sm > .close + .dropdown-toggle-split {
   padding-left: 0.375rem;
   padding-right: 0.375rem;
 }
-html[dir=ltr][data-theme=darkmode] .btn-lg + .dropdown-toggle-split, html[dir=ltr][data-theme=darkmode] .btn-group-lg > .btn + .dropdown-toggle-split, html[dir=ltr][data-theme=darkmode] .btn-group-lg > .button + .dropdown-toggle-split {
+html[dir=ltr][data-theme=darkmode] .btn-lg + .dropdown-toggle-split, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-lg > .close + .dropdown-toggle-split, html[dir=ltr][data-theme=darkmode] .btn-group-lg > .btn + .dropdown-toggle-split, html[dir=ltr][data-theme=darkmode] .btn-group-lg > .button + .dropdown-toggle-split, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-lg > .close + .dropdown-toggle-split {
   padding-right: 0.75rem;
   padding-left: 0.75rem;
 }
-html[dir=rtl][data-theme=darkmode] .btn-lg + .dropdown-toggle-split, html[dir=rtl][data-theme=darkmode] .btn-group-lg > .btn + .dropdown-toggle-split, html[dir=rtl][data-theme=darkmode] .btn-group-lg > .button + .dropdown-toggle-split {
+html[dir=rtl][data-theme=darkmode] .btn-lg + .dropdown-toggle-split, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-lg > .close + .dropdown-toggle-split, html[dir=rtl][data-theme=darkmode] .btn-group-lg > .btn + .dropdown-toggle-split, html[dir=rtl][data-theme=darkmode] .btn-group-lg > .button + .dropdown-toggle-split, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-lg > .close + .dropdown-toggle-split {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
 }
@@ -33884,26 +33953,26 @@ html[data-theme=darkmode] .btn-group-vertical {
   align-items: flex-start;
   justify-content: center;
 }
-html[data-theme=darkmode] .btn-group-vertical > .btn, html[data-theme=darkmode] .btn-group-vertical > .button, html[data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button,
+html[data-theme=darkmode] .btn-group-vertical > .btn, html[data-theme=darkmode] .btn-group-vertical > .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close, html[data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button,
 html[data-theme=darkmode] .btn-group-vertical > .btn-group {
   width: 100%;
 }
-html[dir][data-theme=darkmode] .btn-group-vertical > .btn:not(:first-child), html[dir][data-theme=darkmode] .btn-group-vertical > .button:not(:first-child), html[dir][data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button:not(:first-child), html[dir][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:first-child) {
+html[dir][data-theme=darkmode] .btn-group-vertical > .btn:not(:first-child), html[dir][data-theme=darkmode] .btn-group-vertical > .button:not(:first-child), html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:first-child), html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close:not(:first-child), html[dir][data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button:not(:first-child), html[dir][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:first-child) {
   margin-top: -1px;
 }
-html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .button {
+html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .btn-group:not(:last-child) > .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .close {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
-html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .btn, html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .button {
+html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .btn, html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .btn-group:not(:last-child) > .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .close {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
-html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn ~ .btn, html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .button ~ .btn, html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn ~ .button, html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .button ~ .button, html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:first-child) > .btn, html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:first-child) > .button {
+html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn ~ .btn, html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .button ~ .btn, html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn ~ .button, html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .button ~ .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close ~ .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close ~ .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .btn ~ .close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .button ~ .close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close ~ .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close ~ .btn, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close ~ .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .btn ~ .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .button ~ .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close ~ .close, html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:first-child) > .btn, html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:first-child) > .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .btn-group:not(:first-child) > .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .btn-group:not(:first-child) > .close {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
-html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn ~ .btn, html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .button ~ .btn, html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn ~ .button, html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .button ~ .button, html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:first-child) > .btn, html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:first-child) > .button {
+html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn ~ .btn, html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .button ~ .btn, html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn ~ .button, html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .button ~ .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close ~ .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close ~ .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .btn ~ .close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .button ~ .close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close ~ .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close ~ .btn, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close ~ .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .btn ~ .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .button ~ .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close ~ .close, html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:first-child) > .btn, html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:first-child) > .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .btn-group:not(:first-child) > .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .btn-group:not(:first-child) > .close {
   border-top-right-radius: 0;
   border-top-left-radius: 0;
 }
@@ -35425,7 +35494,7 @@ html[dir][data-theme=darkmode] .badge {
 html[data-theme=darkmode] .badge:empty {
   display: none;
 }
-html[data-theme=darkmode] .btn .badge, html[data-theme=darkmode] .button .badge {
+html[data-theme=darkmode] .btn .badge, html[data-theme=darkmode] .button .badge, html[data-theme=darkmode] .bootstrap-select .popover-header .close .badge, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close .badge {
   position: relative;
   top: -1px;
 }
@@ -35450,18 +35519,18 @@ html[dir=ltr][data-theme=darkmode] .alert-dismissible {
 html[dir=rtl][data-theme=darkmode] .alert-dismissible {
   padding-left: 3rem;
 }
-html[data-theme=darkmode] .alert-dismissible .btn-close {
+html[data-theme=darkmode] .alert-dismissible .btn-close, html[data-theme=darkmode] .alert-dismissible .bootstrap-select .popover-header .close, html[data-theme=darkmode] .bootstrap-select .popover-header .alert-dismissible .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .alert-dismissible .close {
   position: absolute;
   top: 0;
   z-index: 2;
 }
-html[dir][data-theme=darkmode] .alert-dismissible .btn-close {
+html[dir][data-theme=darkmode] .alert-dismissible .btn-close, html[dir][data-theme=darkmode] .alert-dismissible .bootstrap-select .popover-header .close, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .alert-dismissible .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .alert-dismissible .close {
   padding: 1.25rem 1rem;
 }
-html[dir=ltr][data-theme=darkmode] .alert-dismissible .btn-close {
+html[dir=ltr][data-theme=darkmode] .alert-dismissible .btn-close, html[dir=ltr][data-theme=darkmode] .alert-dismissible .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .alert-dismissible .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .alert-dismissible .close {
   right: 0;
 }
-html[dir=rtl][data-theme=darkmode] .alert-dismissible .btn-close {
+html[dir=rtl][data-theme=darkmode] .alert-dismissible .btn-close, html[dir=rtl][data-theme=darkmode] .alert-dismissible .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .alert-dismissible .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .alert-dismissible .close {
   left: 0;
 }
 html[data-theme=darkmode] .alert-primary {
@@ -36097,32 +36166,32 @@ html[dir][data-theme=darkmode] .list-group-item-dark.list-group-item-action.acti
   background-color: #0e1010;
   border-color: #0e1010;
 }
-html[data-theme=darkmode] .btn-close {
+html[data-theme=darkmode] .btn-close, html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close {
   box-sizing: content-box;
   width: 1em;
   height: 1em;
   color: #000;
   opacity: 0.5;
 }
-html[dir][data-theme=darkmode] .btn-close {
+html[dir][data-theme=darkmode] .btn-close, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close {
   padding: 0.25em 0.25em;
   background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
   border: 0;
   border-radius: 0.25rem;
 }
-html[data-theme=darkmode] .btn-close:hover {
+html[data-theme=darkmode] .btn-close:hover, html[data-theme=darkmode] .bootstrap-select .popover-header .close:hover, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:hover {
   color: #000;
   text-decoration: none;
   opacity: 0.75;
 }
-html[data-theme=darkmode] .btn-close:focus {
+html[data-theme=darkmode] .btn-close:focus, html[data-theme=darkmode] .bootstrap-select .popover-header .close:focus, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:focus {
   outline: 0;
   opacity: 1;
 }
-html[dir][data-theme=darkmode] .btn-close:focus {
+html[dir][data-theme=darkmode] .btn-close:focus, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .close:focus, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:focus {
   box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
 }
-html[data-theme=darkmode] .btn-close:disabled, html[data-theme=darkmode] .btn-close.disabled {
+html[data-theme=darkmode] .btn-close:disabled, html[data-theme=darkmode] .bootstrap-select .popover-header .close:disabled, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:disabled, html[data-theme=darkmode] .btn-close.disabled, html[data-theme=darkmode] .bootstrap-select .popover-header .disabled.close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .disabled.close {
   pointer-events: none;
   user-select: none;
   opacity: 0.25;
@@ -36176,11 +36245,11 @@ html[dir=rtl][data-theme=darkmode] .toast-header {
   border-top-right-radius: calc(0.25rem - 1px);
   border-top-left-radius: calc(0.25rem - 1px);
 }
-html[dir=ltr][data-theme=darkmode] .toast-header .btn-close {
+html[dir=ltr][data-theme=darkmode] .toast-header .btn-close, html[dir=ltr][data-theme=darkmode] .toast-header .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .toast-header .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .toast-header .close {
   margin-right: -0.375rem;
   margin-left: 0.75rem;
 }
-html[dir=rtl][data-theme=darkmode] .toast-header .btn-close {
+html[dir=rtl][data-theme=darkmode] .toast-header .btn-close, html[dir=rtl][data-theme=darkmode] .toast-header .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .toast-header .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .toast-header .close {
   margin-left: -0.375rem;
   margin-right: 0.75rem;
 }
@@ -36301,13 +36370,13 @@ html[dir=rtl][data-theme=darkmode] .modal-header {
   border-top-right-radius: calc(0.3rem - 1px);
   border-top-left-radius: calc(0.3rem - 1px);
 }
-html[dir][data-theme=darkmode] .modal-header .btn-close {
+html[dir][data-theme=darkmode] .modal-header .btn-close, html[dir][data-theme=darkmode] .modal-header .bootstrap-select .popover-header .close, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .modal-header .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .modal-header .close {
   padding: 0.5rem 0.5rem;
 }
-html[dir=ltr][data-theme=darkmode] .modal-header .btn-close {
+html[dir=ltr][data-theme=darkmode] .modal-header .btn-close, html[dir=ltr][data-theme=darkmode] .modal-header .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .modal-header .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .modal-header .close {
   margin: -0.5rem -0.5rem -0.5rem auto;
 }
-html[dir=rtl][data-theme=darkmode] .modal-header .btn-close {
+html[dir=rtl][data-theme=darkmode] .modal-header .btn-close, html[dir=rtl][data-theme=darkmode] .modal-header .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .modal-header .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .modal-header .close {
   margin: -0.5rem auto -0.5rem -0.5rem;
 }
 html[data-theme=darkmode] .modal-title {
@@ -37196,15 +37265,15 @@ html[data-theme=darkmode] .offcanvas-header {
 html[dir][data-theme=darkmode] .offcanvas-header {
   padding: 1rem 1rem;
 }
-html[dir][data-theme=darkmode] .offcanvas-header .btn-close {
+html[dir][data-theme=darkmode] .offcanvas-header .btn-close, html[dir][data-theme=darkmode] .offcanvas-header .bootstrap-select .popover-header .close, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .offcanvas-header .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .offcanvas-header .close {
   padding: 0.5rem 0.5rem;
   margin-top: -0.5rem;
   margin-bottom: -0.5rem;
 }
-html[dir=ltr][data-theme=darkmode] .offcanvas-header .btn-close {
+html[dir=ltr][data-theme=darkmode] .offcanvas-header .btn-close, html[dir=ltr][data-theme=darkmode] .offcanvas-header .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .offcanvas-header .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .offcanvas-header .close {
   margin-right: -0.5rem;
 }
-html[dir=rtl][data-theme=darkmode] .offcanvas-header .btn-close {
+html[dir=rtl][data-theme=darkmode] .offcanvas-header .btn-close, html[dir=rtl][data-theme=darkmode] .offcanvas-header .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .offcanvas-header .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .offcanvas-header .close {
   margin-left: -0.5rem;
 }
 html[data-theme=darkmode] .offcanvas-title {
@@ -37294,7 +37363,7 @@ html[dir][data-theme=darkmode] .placeholder {
   cursor: wait;
   background-color: currentColor;
 }
-html[data-theme=darkmode] .placeholder.btn::before, html[data-theme=darkmode] .placeholder.button::before {
+html[data-theme=darkmode] .placeholder.btn::before, html[data-theme=darkmode] .placeholder.button::before, html[data-theme=darkmode] .bootstrap-select .popover-header .placeholder.close::before, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .placeholder.close::before {
   display: inline-block;
   content: "";
 }
@@ -37569,10 +37638,10 @@ html[dir=ltr][data-theme=darkmode] .float-start {
 html[dir=rtl][data-theme=darkmode] .float-start {
   float: right !important;
 }
-html[dir=ltr][data-theme=darkmode] .float-end, html[dir=ltr][data-theme=darkmode] .related {
+html[dir=ltr][data-theme=darkmode] .float-end, html[dir=ltr][data-theme=darkmode] .related, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close {
   float: right !important;
 }
-html[dir=rtl][data-theme=darkmode] .float-end, html[dir=rtl][data-theme=darkmode] .related {
+html[dir=rtl][data-theme=darkmode] .float-end, html[dir=rtl][data-theme=darkmode] .related, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close {
   float: left !important;
 }
 html[dir][data-theme=darkmode] .float-none {
@@ -42573,6 +42642,16 @@ html[dir=ltr][data-theme=darkmode] .multiselect__content-wrapper ul {
 }
 html[dir=rtl][data-theme=darkmode] .multiselect__content-wrapper ul {
   padding-right: unset;
+}
+html[dir][data-theme=darkmode] .bootstrap-select .popover-header .close {
+  padding-top: 0px;
+  background: unset;
+}
+html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .close {
+  padding-right: 0px;
+}
+html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .close {
+  padding-left: 0px;
 }
 html[data-theme=darkmode] .slider {
   display: inline-block;
@@ -58014,7 +58093,7 @@ html[dir][data-theme=darkmode] .ta-navbar-top .breadcrumb {
   background-color: transparent;
   margin-top: 1rem;
 }
-html[data-theme=darkmode] .ta-navbar-top .btn.nav-link, html[data-theme=darkmode] .ta-navbar-top .nav-link.button {
+html[data-theme=darkmode] .ta-navbar-top .btn.nav-link, html[data-theme=darkmode] .ta-navbar-top .nav-link.button, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .ta-navbar-top .nav-link.close, html[data-theme=darkmode] .ta-navbar-top .bootstrap-select .popover-header .nav-link.close, html[data-theme=darkmode] .bootstrap-select .popover-header .ta-navbar-top .nav-link.close {
   display: inline-block;
 }
 @media (min-width: 576px) {
@@ -59345,7 +59424,7 @@ html[data-theme=darkmode] [dir=ltr] .btn-dropdown > .btn-group {
 html[data-theme=darkmode] [dir=rtl] .btn-dropdown > .btn-group {
   right: calc(-14px + 50%);
 }
-html[data-theme=darkmode] .btn:hover, html[data-theme=darkmode] .button:hover {
+html[data-theme=darkmode] .btn:hover, html[data-theme=darkmode] .button:hover, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:hover, html[data-theme=darkmode] .bootstrap-select .popover-header .close:hover {
   text-decoration: none;
 }
 html[data-theme=darkmode] .dropdown-item:hover {
@@ -59625,4 +59704,7 @@ html[data-theme=darkmode] .btn-dark {
 }
 html[data-theme=darkmode] .btn-dark:hover, html[data-theme=darkmode] .btn-dark:focus {
   color: #FFF;
+}
+html[data-theme=darkmode] .bootstrap-select .popover-header .close {
+  color: white;
 }
