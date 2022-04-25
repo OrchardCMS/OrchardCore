@@ -72,11 +72,11 @@ namespace OrchardCore.Media.Processing
                 context.Commands.Remove(ResizeWebProcessor.Anchor);
 
                 // When only a version command is applied pass on this request.
-                if (context.Commands.Count == 1 && context.Commands.IndexOf(ImageVersionProcessor.VersionCommand) != -1)
+                if (context.Commands.Count == 1 && context.Commands.Contains(ImageVersionProcessor.VersionCommand))
                 {
                     context.Commands.Clear();
                 }
-                else if (context.Commands.IndexOf(ResizeWebProcessor.Mode) == -1)
+                else if (!context.Commands.Contains(ResizeWebProcessor.Mode))
                 {
                     context.Commands[ResizeWebProcessor.Mode] = "max";
                 }
