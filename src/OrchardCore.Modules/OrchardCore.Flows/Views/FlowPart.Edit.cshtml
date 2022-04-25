@@ -112,7 +112,17 @@
 
     <script at="Foot">
     function toggleWidgets(){
-        $('.toggleAll > svg').toggleClass('fa-angle-double-up fa-angle-double-down');
+        var icon = $('.dot');
+
+        if(icon.attr('data-icon') == 'angles-up')
+        {
+            icon.attr('data-icon', 'angles-down')
+        }
+        else
+        {
+            icon.attr('data-icon', 'angles-up')
+        }
+
         $('.widget.widget-editor.card').toggleClass('collapsed');
     }
 

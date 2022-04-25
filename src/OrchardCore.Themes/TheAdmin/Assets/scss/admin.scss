@@ -5,7 +5,8 @@ html[data-theme='default'] {
     @import "../../node_modules/bootstrap/scss/bootstrap";
 
     @import "../../node_modules/bootstrap-select/sass/bootstrap-select.scss";
-    //@import "../../node_modules/bootstrap-slider/src/sass/bootstrap-slider.scss";
+    @import "modules/admin/_bootstrap-select.scss";
+    @import "../../node_modules/bootstrap-slider/src/sass/bootstrap-slider.scss";
 
     @import "mixins/_grid.scss";
     @import "mixins/_sizes.scss";
@@ -30,7 +31,8 @@ html[data-theme='darkmode'] {
     @import "../../node_modules/bootstrap/scss/bootstrap";
 
     @import "../../node_modules/bootstrap-select/sass/bootstrap-select.scss";
-    //@import "../../node_modules/bootstrap-slider/src/sass/bootstrap-slider.scss";
+    @import "modules/admin/_bootstrap-select.scss";
+    @import "../../node_modules/bootstrap-slider/src/sass/bootstrap-slider.scss";
 
     @import "mixins/_grid.scss";
     @import "mixins/_sizes.scss";

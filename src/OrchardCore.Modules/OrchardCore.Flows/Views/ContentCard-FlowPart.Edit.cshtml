@@ -30,11 +30,11 @@
                 @if (Model.CanInsert != false)
                 {
                     <div class="btn-group">
-                        <button class="toggleAll btn btn-secondary btn-sm" onclick="toggleWidgets(); return false;" title="@T["Toggle all widgets"]">
-                            <i class="fa fa-angle-double-up" aria-hidden="true"></i>
+                        <button type="button" class="toggleAll btn btn-secondary btn-sm" onclick="toggleWidgets();" title="@T["Toggle all widgets"]">
+                            <i class="fas fa-angles-up dot" aria-hidden="true"></i>
                         </button>
                         <button type="button" title="@T["Insert Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            <i class="fas fa-plus" aria-hidden="true"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
