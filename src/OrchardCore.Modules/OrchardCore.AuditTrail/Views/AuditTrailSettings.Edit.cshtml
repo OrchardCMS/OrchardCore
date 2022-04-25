@@ -28,9 +28,11 @@
                             <td colspan="2">
                                 <strong>@category.Name</strong>
                             </td>
-                            <td class="form-check">
-                                <input type="checkbox" class="form-check-input check-all-master" id="@category.Name" />
-                                <label class="form-check-label" for="@category.Name">@T["Select all"]</label>
+                            <td>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input check-all-master" id="@category.Name" />
+                                    <label class="form-check-label" for="@category.Name">@T["Select all"]</label>
+                                </div>
                             </td>
                         </tr>
                         @{
@@ -44,12 +46,11 @@
                                         @auditTrailEvent.LocalizedName
                                     </td>
                                     <td>@auditTrailEvent.Description</td>
-                                    <td class="form-check check-all-slave">
-                                        <input type="checkbox" class="form-check-input"
-                               asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled"
-                               disabled="@Model.Categories[categoriesIndex].Events[eventsIndex].IsMandatory" />
-
-                                        <label class="form-check-label" asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled">@auditTrailEvent.LocalizedName</label>
+                                    <td>
+                                        <div class="form-check check-all-slave">
+                                            <input type="checkbox" class="form-check-input" asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled" disabled="@Model.Categories[categoriesIndex].Events[eventsIndex].IsMandatory" />
+                                            <label class="form-check-label" asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled">@auditTrailEvent.LocalizedName</label>
+                                        </div>
                                     </td>
                                 </tr>
                                 eventsIndex++;
