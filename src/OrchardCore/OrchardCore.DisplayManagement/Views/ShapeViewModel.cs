@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,11 @@ namespace OrchardCore.DisplayManagement.Views
 
         public ShapeViewModel(string shapeType)
         {
+            if (String.IsNullOrEmpty(shapeType))
+            {
+                throw new ArgumentException($"The {nameof(shapeType)} cannot be empty");
+            }
+
             Metadata.Type = shapeType;
         }
 
