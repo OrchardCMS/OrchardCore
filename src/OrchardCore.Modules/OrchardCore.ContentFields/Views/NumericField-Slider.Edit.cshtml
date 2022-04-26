@@ -12,7 +12,7 @@
     string serverDecimalSeparator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
 }
 
-<script asp-name="bootstrap-slider" at="Foot" version="11"></script>
+<script asp-name="nouislider" at="Foot" version="15.5.1"></script>
 
 <div class="mb-3">
     <div class="row">
@@ -36,7 +36,8 @@
         {
             <span class="ms-1 me-3">@min</span>
         }
-        <input id="@(id)-slider" type="text" data-slider-min="@min" data-slider-max="@max" data-slider-step="@step" data-slider-value="@Model.Value" />
+        
+        <div id="@(id)-nouislider" class="w-100 w-md-50 ms-3 me-3"></div>
         @if (settings.Maximum.HasValue)
         {
             <span class="ms-3 me-1">@max</span>
@@ -50,8 +51,29 @@
 
 <script at="Foot">
 
-    $('#@(id)-slider').bootstrapSlider({ tooltip: 'show' }).on('change', function (ev) {
+@*     $('#@(id)-slider').bootstrapSlider({ tooltip: 'show' }).on('change', function (ev) {
         let value = ev.value.newValue.toString();
+        @if (javascriptDecimalSeparator != serverDecimalSeparator)
+        {
+            <text>value = value.replace('@(javascriptDecimalSeparator)', '@(serverDecimalSeparator)');</text>
+        }
+        $('#@(id)').val(value);
+    }); *@
+    var slider = document.getElementById('@(id)-nouislider');
+
+    noUiSlider.create(slider, {
+        start: [@min],
+        connect: true,
+        range: {
+            'min': @min,
+            'max': @max
+        }
+    });
+
+    slider.noUiSlider.set("@Model.Value");
+
+    slider.noUiSlider.on('change', function () { 
+        let value = slider.noUiSlider.get();
         @if (javascriptDecimalSeparator != serverDecimalSeparator)
         {
             <text>value = value.replace('@(javascriptDecimalSeparator)', '@(serverDecimalSeparator)');</text>
@@ -59,14 +81,14 @@
         $('#@(id)').val(value);
     });
 
-    $('#@(id)').change(function () {
+    $('#@(id)').on('keyup', function () {
         let value = this.value;
         @if (javascriptDecimalSeparator != serverDecimalSeparator)
         {
             <text>value = value.replace('@(serverDecimalSeparator)', '@(javascriptDecimalSeparator)');</text>
         }
         value = (Number(value) || 0);
-        $('#@(id)-slider').bootstrapSlider('setValue', value);
+        slider.noUiSlider.set(value);
     });
 
 </script>
