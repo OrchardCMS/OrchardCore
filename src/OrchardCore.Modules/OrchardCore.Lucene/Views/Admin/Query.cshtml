@@ -61,31 +61,32 @@
     <div class="mb-3">
         <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Lucene", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
     </div>
-
-    <table class="table table-striped table-hover table-responsive">
-        <thead>
-            <tr>
-                <th>#</th>
-                @foreach (var name in fieldNames)
-                {
-                    <th>@name</th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @{ int row = 1; }
-            @foreach (var document in Model.Documents)
-            {
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
                 <tr>
-                    <th scope="row">@(row++)</th>
+                    <th>#</th>
                     @foreach (var name in fieldNames)
                     {
-                        <td>@(document.GetField(name)?.GetStringValue() ?? String.Empty)</td>
+                        <th>@name</th>
                     }
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @{ int row = 1; }
+                @foreach (var document in Model.Documents)
+                {
+                    <tr>
+                        <th scope="row">@(row++)</th>
+                        @foreach (var name in fieldNames)
+                        {
+                            <td>@(document.GetField(name)?.GetStringValue() ?? String.Empty)</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 <script at="Foot">
     $(function() {
