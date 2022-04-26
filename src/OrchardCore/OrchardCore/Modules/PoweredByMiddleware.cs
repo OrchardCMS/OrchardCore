@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 namespace OrchardCore.Modules
 {
     /// <summary>
-    /// Represents a middlware that Adds X-Powered-By HTTP header with the value <c>Orchard Core</c>.
+    /// Represents a middleware that Adds X-Powered-By HTTP header with the value <c>Orchard Core</c>.
     /// </summary>
     public class PoweredByMiddleware
     {
