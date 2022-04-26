@@ -1,6 +1,6 @@
 namespace OrchardCore.Security.Options
 {
-    public class ContentSecurityPolicySourceValue
+    public class ContentSecurityPolicyOriginValue
     {
         public static readonly string Any = "*";
 

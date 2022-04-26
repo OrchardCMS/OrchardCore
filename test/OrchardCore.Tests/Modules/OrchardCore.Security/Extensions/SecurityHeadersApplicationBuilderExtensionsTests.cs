@@ -39,9 +39,9 @@ namespace OrchardCore.Security.Extensions.Tests
             {
                 ContentSecurityPolicy = new []
                 {
-                    $"{ContentSecurityPolicyValue.ChildSource} {ContentSecurityPolicySourceValue.None}",
-                    $"{ContentSecurityPolicyValue.ConnectSource} {ContentSecurityPolicySourceValue.Self} https://www.domain1.com https://www.domain2.com",
-                    $"{ContentSecurityPolicyValue.DefaultSource} {ContentSecurityPolicySourceValue.Any}",
+                    $"{ContentSecurityPolicyValue.ChildSource} {ContentSecurityPolicyOriginValue.None}",
+                    $"{ContentSecurityPolicyValue.ConnectSource} {ContentSecurityPolicyOriginValue.Self} https://www.domain1.com https://www.domain2.com",
+                    $"{ContentSecurityPolicyValue.DefaultSource} {ContentSecurityPolicyOriginValue.Any}",
                 },
                 ContentTypeOptions = ContentTypeOptionsValue.NoSniff,
                 FrameOptions = FrameOptionsValue.Deny,

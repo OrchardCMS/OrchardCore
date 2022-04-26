@@ -12,12 +12,12 @@ namespace OrchardCore.Security.Tests
         public static IEnumerable<object[]> ContentSecurityPolicies =>
             new List<object[]>
             {
-                new object[] { new[] { $"{ContentSecurityPolicyValue.BaseUri} {ContentSecurityPolicySourceValue.None}"}, "base-uri 'none'" },
-                new object[] { new[] { $"{ContentSecurityPolicyValue.ChildSource} {ContentSecurityPolicySourceValue.Self}"}, "child-src 'self'" },
-                new object[] { new[] { $"{ContentSecurityPolicyValue.ConnectSource} {ContentSecurityPolicySourceValue.Self} https://www.domain.com/" }, "connect-src 'self' https://www.domain.com/" },
-                new object[] { new[] { $"{ContentSecurityPolicyValue.DefaultSource} {ContentSecurityPolicySourceValue.Self} https://www.domain1.com/ https://www.domain2.com/" }, "default-src 'self' https://www.domain1.com/ https://www.domain2.com/" },
-                new object[] { new[] { $"{ContentSecurityPolicyValue.FontSource} {ContentSecurityPolicySourceValue.Any}"}, "font-src *" },
-                new object[] { new[] { $"{ContentSecurityPolicyValue.ScriptSource} {ContentSecurityPolicySourceValue.Self} https://www.domain.com/", $"{ContentSecurityPolicyValue.StyleSource} {ContentSecurityPolicySourceValue.Self} https://www.domain.com/" }, "script-src 'self' https://www.domain.com/, style-src 'self' https://www.domain.com/" },
+                new object[] { new[] { $"{ContentSecurityPolicyValue.BaseUri} {ContentSecurityPolicyOriginValue.None}"}, "base-uri 'none'" },
+                new object[] { new[] { $"{ContentSecurityPolicyValue.ChildSource} {ContentSecurityPolicyOriginValue.Self}"}, "child-src 'self'" },
+                new object[] { new[] { $"{ContentSecurityPolicyValue.ConnectSource} {ContentSecurityPolicyOriginValue.Self} https://www.domain.com/" }, "connect-src 'self' https://www.domain.com/" },
+                new object[] { new[] { $"{ContentSecurityPolicyValue.DefaultSource} {ContentSecurityPolicyOriginValue.Self} https://www.domain1.com/ https://www.domain2.com/" }, "default-src 'self' https://www.domain1.com/ https://www.domain2.com/" },
+                new object[] { new[] { $"{ContentSecurityPolicyValue.FontSource} {ContentSecurityPolicyOriginValue.Any}"}, "font-src *" },
+                new object[] { new[] { $"{ContentSecurityPolicyValue.ScriptSource} {ContentSecurityPolicyOriginValue.Self} https://www.domain.com/", $"{ContentSecurityPolicyValue.StyleSource} {ContentSecurityPolicyOriginValue.Self} https://www.domain.com/" }, "script-src 'self' https://www.domain.com/, style-src 'self' https://www.domain.com/" },
                 new object[] { new[] { $"{ContentSecurityPolicyValue.Sandbox}"}, "sandbox" },
                 new object[] { new[] { $"{ContentSecurityPolicyValue.Sandbox} allow-scripts" }, "sandbox allow-scripts" },
                 new object[] { new[] { $"{ContentSecurityPolicyValue.UpgradeInsecureRequests}"}, "upgrade-insecure-requests" },
