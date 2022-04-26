@@ -9,52 +9,50 @@
     var index = 0;
 }
 
-<li class="menu-item" id="menu-id-@Model.Index" data-index="@Model.Index">
-    <div class="menu-item menu-item-title list-group-item">
-        <div class="w-100">
-            <div class="float-end">
-                <a asp-action="Edit"
-                   asp-controller="Admin"
-                   asp-route-area="OrchardCore.Taxonomies"
-                   asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
-                   asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
-                   class="btn btn-success btn-sm">
-                    @T["Edit"]
-                </a>
-                <a class="btn btn-primary btn-sm"
-                    asp-route-action="Create"
-                    asp-route-controller="Admin"
-                    asp-route-id="@Model.TaxonomyPart.TermContentType"
-                    asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
-                    asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
-                    asp-route-area="OrchardCore.Taxonomies">
-                    @T["Add"]
-                </a>
-                <a asp-action="Delete"
-                   asp-controller="Admin"
-                   asp-route-area="OrchardCore.Taxonomies"
-                   asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
-                   asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
-                   data-url-af="RemoveUrl UnsafeUrl"
-                   class="btn btn-danger btn-sm">
-                    @T["Delete"]
-                </a>
-            </div>
-
-            <span>@contentItem</span>
-
-            @if (Model.Content != null)
-            {
-                @await DisplayAsync(Model.Content)
-            }
+<li class="menu-item list-group-item d-flex justify-content-between align-items-start" id="menu-id-@Model.Index" data-index="@Model.Index">
+    <div class="menu-item menu-item-title w-100">
+        <div class="float-end">
+            <a asp-action="Edit"
+                asp-controller="Admin"
+                asp-route-area="OrchardCore.Taxonomies"
+                asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+                asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
+                class="btn btn-success btn-sm">
+                @T["Edit"]
+            </a>
+            <a class="btn btn-primary btn-sm"
+                asp-route-action="Create"
+                asp-route-controller="Admin"
+                asp-route-id="@Model.TaxonomyPart.TermContentType"
+                asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+                asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
+                asp-route-area="OrchardCore.Taxonomies">
+                @T["Add"]
+            </a>
+            <a asp-action="Delete"
+                asp-controller="Admin"
+                asp-route-area="OrchardCore.Taxonomies"
+                asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+                asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
+                data-url-af="RemoveUrl UnsafeUrl"
+                class="btn btn-danger btn-sm">
+                @T["Delete"]
+            </a>
         </div>
+
+        <span>@contentItem</span>
+
+        @if (Model.Content != null)
+        {
+            @await DisplayAsync(Model.Content)
+        }
     </div>
 
-    <ol class="menu-item menu-item-links">
-        @if (termsArray != null)
-        {
-            var updater = ModelUpdaterAccessor.ModelUpdater;
+    @if (termsArray != null)
+    {
+        var updater = ModelUpdaterAccessor.ModelUpdater;
 
+        <ol class="menu-item menu-item-links">
             @foreach (JObject termObject in termsArray)
             {
                 var term = termObject.ToObject<ContentItem>();
@@ -63,6 +61,7 @@
                 termShape.Index = Model.Index + "-" + index++;
                 @await DisplayAsync(termShape)
             }
-        }
-    </ol>
+        </ol>
+    }
+    
 </li>
