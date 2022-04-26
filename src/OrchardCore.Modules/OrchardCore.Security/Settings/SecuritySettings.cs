@@ -2,7 +2,7 @@ namespace OrchardCore.Security
 {
     public class SecuritySettings
     {
-        public string ContentSecurityPolicy { get; set; }
+        public string[] ContentSecurityPolicy { get; set; }
 
         public string ContentTypeOptions { get; set; }
 
