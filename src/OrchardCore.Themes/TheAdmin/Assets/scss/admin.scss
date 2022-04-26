@@ -25,7 +25,7 @@ html[data-theme='default'] {
 
     @import "modules/theme/default/_bootswatch.scss";
 }
-
+ 
 html[data-theme='darkmode'] {
     @import "modules/theme/darkmode/_variables.scss";
     @import "../../node_modules/bootstrap/scss/bootstrap";

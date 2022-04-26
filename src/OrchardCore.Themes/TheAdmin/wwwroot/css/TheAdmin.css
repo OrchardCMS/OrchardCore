@@ -33997,7 +33997,7 @@ html[data-theme=darkmode] .nav-link {
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
 html[dir][data-theme=darkmode] .nav-link {
-  padding: 0.5rem 2rem;
+  padding: 0.5rem 1rem;
 }
 @media (prefers-reduced-motion: reduce) {
   html[data-theme=darkmode] .nav-link {
@@ -59594,22 +59594,6 @@ html[data-theme=darkmode] .input-group-addon {
 }
 html[data-theme=darkmode] .form-floating > label {
   color: rgba(140, 130, 115, 0.13);
-}
-html[data-theme=darkmode] .nav-tabs .nav-link,
-html[data-theme=darkmode] .nav-tabs .nav-link.active,
-html[data-theme=darkmode] .nav-tabs .nav-link.active:focus,
-html[data-theme=darkmode] .nav-tabs .nav-link.active:hover,
-html[data-theme=darkmode] .nav-tabs .nav-item.open .nav-link,
-html[data-theme=darkmode] .nav-tabs .nav-item.open .nav-link:focus,
-html[data-theme=darkmode] .nav-tabs .nav-item.open .nav-link:hover,
-html[data-theme=darkmode] .nav-pills .nav-link,
-html[data-theme=darkmode] .nav-pills .nav-link.active,
-html[data-theme=darkmode] .nav-pills .nav-link.active:focus,
-html[data-theme=darkmode] .nav-pills .nav-link.active:hover,
-html[data-theme=darkmode] .nav-pills .nav-item.open .nav-link,
-html[data-theme=darkmode] .nav-pills .nav-item.open .nav-link:focus,
-html[data-theme=darkmode] .nav-pills .nav-item.open .nav-link:hover {
-  color: #000;
 }
 html[data-theme=darkmode] .breadcrumb a {
   color: #fff;
