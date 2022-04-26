@@ -57,8 +57,8 @@
             @foreach (var entry in Model.DeploymentPlans)
             {
                 <li class="list-group-item">
-                    <div class="properties">
-                        <div class="related">
+                    <div class="w-100">
+                        <div class="float-end">
                             <a asp-action="Edit" asp-route-id="@entry.DeploymentPlan.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
                             <a asp-action="Delete" asp-route-id="@entry.DeploymentPlan.Id" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>

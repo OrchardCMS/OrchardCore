@@ -57,12 +57,12 @@
             @foreach (var entry in Model.MediaProfiles)
             {
                 <li class="list-group-item">
-                    <div class="properties">
+                    <div class="w-100">
                         <div class="form-check float-start">
                             <input type="checkbox" class="form-check-input" value="@entry.Name" name="itemIds" id="itemIds-@entry.Name">
                             <label class="form-check-label" for="itemIds-@entry.Name">&nbsp;</label>
                         </div>
-                        <div class="related">
+                        <div class="float-end">
                             <a asp-action="Edit" asp-route-name="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
                             <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>

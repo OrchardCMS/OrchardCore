@@ -65,8 +65,8 @@
                         <input type="checkbox" class="form-check-input" value="@entry.SitemapId" name="itemIds" id="itemIds-@entry.SitemapId">
                         <label class="form-check-label" for="itemIds-@entry.SitemapId">&nbsp;</label>
                     </div>
-                    <div class="properties">
-                        <div class="related">
+                    <div class="w-100">
+                        <div class="float-end">
                             @if (entry.Enabled)
                             {
                                 <a asp-action="Index" asp-controller="Sitemap" asp-area="OrchardCore.Sitemaps" asp-route-sitemapId="@entry.SitemapId" target="_blank" class="btn btn-success btn-sm">@T["View"]</a>

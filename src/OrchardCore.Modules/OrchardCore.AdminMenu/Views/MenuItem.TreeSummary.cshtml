@@ -24,7 +24,7 @@
     <div class="menu-item menu-item-title border rounded p-2 ps-3 mb-1 d-flex flex-row justify-content-between align-items-center @disabledClass" title="@Model.MenuItem.UniqueId">
         @if (Model.Content.Items.Count < 1)
         {
-            <div class="related">
+            <div class="float-end">
                 <a asp-action="Delete"
                     asp-controller="Node"
                     asp-route-id="@Model.AdminMenuId"
@@ -37,7 +37,7 @@
         else
         {
             @await DisplayAsync(Model.Content)
-            <div class="related">
+            <div class="float-end">
                 <a asp-action="Edit"
                     asp-controller="Node"
                     asp-route-id="@Model.AdminMenuId"

@@ -63,7 +63,7 @@
                         <input type="checkbox" class="form-check-input" value="@entry.AdminMenu.Id" name="itemIds" id="itemIds-@entry.AdminMenu.Id">
                         <label class="form-check-label" for="itemIds-@entry.AdminMenu.Id">&nbsp;</label>
                     </div>
-                    <div class="related">
+                    <div class="float-end">
                         <a asp-controller="Node" asp-action="List" asp-route-id="@entry.AdminMenu.Id" class="btn btn-secondary btn-sm">@T["Edit Nodes"]</a>
                         <a asp-action="Edit" asp-route-id="@entry.AdminMenu.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
                         <div class="btn-group btn-group-sm">

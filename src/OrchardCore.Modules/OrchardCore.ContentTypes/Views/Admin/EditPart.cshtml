@@ -32,8 +32,8 @@
                 @foreach (var field in orderedFields)
                 {
                     <li class="list-group-item">
-                        <div class="properties">
-                            <div class="related">
+                        <div class="w-100">
+                            <div class="float-end">
                                 <a asp-route-action="EditField" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
                                 <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>

@@ -61,8 +61,8 @@
                         <input type="checkbox" class="form-check-input" value="@entry.ShapeType" name="itemIds" id="itemIds-@entry.ShapeType">
                         <label class="form-check-label" for="itemIds-@entry.ShapeType">&nbsp;</label>
                     </div>
-                    <div class="properties">
-                        <div class="related">
+                    <div class="w-100">
+                        <div class="float-end">
                             <a asp-action="Edit" asp-route-shapeType="@entry.ShapeType" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
                             <a asp-action="Delete" asp-route-shapeType="@entry.ShapeType" asp-route-returnUrl="@FullRequestPath" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>

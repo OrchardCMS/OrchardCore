@@ -56,7 +56,7 @@
             @foreach (var entry in Model.Indexes)
             {
                 <li class="list-group-item">
-                    <div class="properties">
+                    <div class="w-100">
                         <div class="form-check float-start">
                             <input type="checkbox" class="form-check-input" value="@entry.Name" name="itemIds" id="itemIds-@entry.Name">
                             <label class="form-check-label" for="itemIds-@entry.Name">&nbsp;</label>
@@ -65,7 +65,7 @@
                             <h5>@entry.Name</h5>
                             <p>@entry.AnalyzerName</p>
                         </div>
-                        <div class="related">
+                        <div class="float-end">
                             <a asp-action="Query" asp-route-IndexName="@entry.Name" class="btn btn-success btn-sm">@T["Query"]</a>
                             <a asp-action="Reset" asp-route-id="@entry.Name" class="btn btn-primary btn-sm" data-title="@T["Reset Index"]" data-message="@T["This will restart the indexing of all content items. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" data-url-af="UnsafeUrl">@T["Reset"]</a>
                             <a asp-action="Rebuild" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" data-title="@T["Rebuild Index"]" data-message="@T["Your index will be rebuilt, which might alter some services during the process. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl">@T["Rebuild"]</a>

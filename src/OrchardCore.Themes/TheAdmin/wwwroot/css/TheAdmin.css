@@ -7760,10 +7760,10 @@ html[dir=ltr][data-theme=default] .float-start {
 html[dir=rtl][data-theme=default] .float-start {
   float: right !important;
 }
-html[dir=ltr][data-theme=default] .float-end, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close, html[dir=ltr][data-theme=default] .related, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .close {
+html[dir=ltr][data-theme=default] .float-end, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .close {
   float: right !important;
 }
-html[dir=rtl][data-theme=default] .float-end, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close, html[dir=rtl][data-theme=default] .related, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .close {
+html[dir=rtl][data-theme=default] .float-end, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .close {
   float: left !important;
 }
 html[dir][data-theme=default] .float-none {
@@ -8015,7 +8015,7 @@ html[data-theme=default] .w-50 {
 html[data-theme=default] .w-75 {
   width: 75% !important;
 }
-html[data-theme=default] .w-100, html[data-theme=default] .properties {
+html[data-theme=default] .w-100 {
   width: 100% !important;
 }
 html[data-theme=default] .w-auto {
@@ -37638,10 +37638,10 @@ html[dir=ltr][data-theme=darkmode] .float-start {
 html[dir=rtl][data-theme=darkmode] .float-start {
   float: right !important;
 }
-html[dir=ltr][data-theme=darkmode] .float-end, html[dir=ltr][data-theme=darkmode] .related, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close {
+html[dir=ltr][data-theme=darkmode] .float-end, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close {
   float: right !important;
 }
-html[dir=rtl][data-theme=darkmode] .float-end, html[dir=rtl][data-theme=darkmode] .related, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close {
+html[dir=rtl][data-theme=darkmode] .float-end, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close {
   float: left !important;
 }
 html[dir][data-theme=darkmode] .float-none {
@@ -37893,7 +37893,7 @@ html[data-theme=darkmode] .w-50 {
 html[data-theme=darkmode] .w-75 {
   width: 75% !important;
 }
-html[data-theme=darkmode] .w-100, html[data-theme=darkmode] .properties {
+html[data-theme=darkmode] .w-100 {
   width: 100% !important;
 }
 html[data-theme=darkmode] .w-auto {
