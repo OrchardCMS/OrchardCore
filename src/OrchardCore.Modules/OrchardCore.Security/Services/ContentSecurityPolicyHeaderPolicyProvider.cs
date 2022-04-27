@@ -7,7 +7,7 @@ namespace OrchardCore.Security.Services
     {
         public override void ApplyPolicy(HttpContext httpContext)
         {
-            if (!Options.ContentSecurityPolicy.Equals(SecurityHeaderDefaults.ContentSecurityPolicy))
+            if (Options.ContentSecurityPolicy.Length > 0)
             {
                 httpContext.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy] = String.Join(SecurityHeaderDefaults.PoliciesSeparater, Options.ContentSecurityPolicy);
             }
