@@ -89,7 +89,9 @@ namespace OrchardCore.Security.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                var hasSandboxPolicyWithoutValues = model.ContentSecurityPolicyValues.Any(p => p == ContentSecurityPolicyValue.Sandbox);
+                var sandboxPolicy = model.ContentSecurityPolicyValues.SingleOrDefault(p => p.StartsWith(ContentSecurityPolicyValue.Sandbox));
+                var hasSandboxPolicyWithoutValues = sandboxPolicy == ContentSecurityPolicyValue.Sandbox;
+                var upgradeInsecureRequestsPolicy = model.ContentSecurityPolicyValues.SingleOrDefault(p => p == ContentSecurityPolicyValue.UpgradeInsecureRequests);
 
                 model.ContentSecurityPolicyValues.RemoveAll(p => _contentSecurityPolicyNames.Contains(p));
 
@@ -98,14 +100,19 @@ namespace OrchardCore.Security.Drivers
                     model.ContentSecurityPolicyValues.Add(ContentSecurityPolicyValue.Sandbox);
                 }
 
-                if (!model.EnableSandbox)
+                if (!model.EnableSandbox && sandboxPolicy != null)
                 {
-                    model.ContentSecurityPolicyValues.Remove(model.ContentSecurityPolicyValues.Last());
+                    model.ContentSecurityPolicyValues.Remove(sandboxPolicy);
                 }
 
                 if (model.UpgradeInsecureRequests)
                 {
                     model.ContentSecurityPolicyValues.Add(ContentSecurityPolicyValue.UpgradeInsecureRequests);
+                }
+
+                if(!model.UpgradeInsecureRequests && upgradeInsecureRequestsPolicy != null)
+                {
+                    model.ContentSecurityPolicyValues.Remove(ContentSecurityPolicyValue.UpgradeInsecureRequests);
                 }
 
                 section.ContentSecurityPolicy = model.ContentSecurityPolicyValues.ToArray();
