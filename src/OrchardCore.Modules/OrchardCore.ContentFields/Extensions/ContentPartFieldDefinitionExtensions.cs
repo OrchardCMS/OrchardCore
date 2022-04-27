@@ -34,7 +34,10 @@ public static class ContentPartFieldDefinitionExtensions
         foreach (var fieldDefinition in fieldDefinitions)
         {
             var field = fieldDefinition.GetContentField<TField>(contentItem);
-            if (field is not null) yield return (fieldDefinition, field);
+            if (field is not null)
+            {
+                yield return (fieldDefinition, field);
+            }
         }
     }
 }
