@@ -5,6 +5,73 @@
 
 @functions
 {
+    public LocalizedHtmlString GetContentSecurityPolicyName(string value)
+    {
+        LocalizedHtmlString name = null;
+        if(value == ContentSecurityPolicyValue.BaseUri)
+        {
+            name = T["Base URI"];
+        }
+        else if(value == ContentSecurityPolicyValue.ChildSource)
+        {
+            name = T["Child Source"];
+        }
+        else if(value == ContentSecurityPolicyValue.ConnectSource)
+        {
+            name = T["Connect Source"];
+        }
+        else if(value == ContentSecurityPolicyValue.DefaultSource)
+        {
+            name = T["Default Source"];
+        }
+        else if(value == ContentSecurityPolicyValue.FontSource)
+        {
+            name = T["Font Source"];
+        }
+        else if(value == ContentSecurityPolicyValue.FormAction)
+        {
+            name = T["Form Action"];
+        }
+        else if(value == ContentSecurityPolicyValue.FrameAncestors)
+        {
+            name = T["Frame Ancestors"];
+        }
+        else if(value == ContentSecurityPolicyValue.FrameSource)
+        {
+            name = T["Frame Source"];
+        }
+        else if(value == ContentSecurityPolicyValue.ImageSource)
+        {
+            name = T["Image Source"];
+        }
+        else if(value == ContentSecurityPolicyValue.ManifestSource)
+        {
+            name = T["Manifest Source"];
+        }
+        else if(value == ContentSecurityPolicyValue.MediaSource)
+        {
+            name = T["Media Source"];
+        }
+        else if(value == ContentSecurityPolicyValue.ObjectSource)
+        {
+            name = T["Object Source"];
+        }
+        else if(value == ContentSecurityPolicyValue.Sandbox)
+        {
+            name = T["Sandbox"];
+        }
+        else if(value == ContentSecurityPolicyValue.ScriptSource)
+        {
+            name = T["Script Source"];
+        }
+        else if(value == ContentSecurityPolicyValue.StyleSource)
+        {
+            name = T["Style Source"];
+        }
+
+        return name;
+    }
+
     public LocalizedHtmlString GetPermissionPolicyName(string value)
     {
         LocalizedHtmlString name = null;
@@ -97,6 +164,57 @@
     @T["The current tenant will be reloaded when the settings are saved."]
 </p>
 
+<div class="form-group">
+    <label asp-for="ContentSecurityPolicy">@T["Content Security Policy"]</label>
+    <div class="form-group" asp-validation-class-for="EnableSandbox">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="EnableSandbox" />
+            <label class="custom-control-label" asp-for="EnableSandbox">@T["Enable Sandbox"]</label>
+        </div>
+    </div>
+    <div class="form-group" asp-validation-class-for="UpgradeInsecureRequests">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="UpgradeInsecureRequests" />
+            <label class="custom-control-label" asp-for="UpgradeInsecureRequests">@T["Upgrade Insecure Requests"]</label>
+        </div>
+    </div>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>@T["Name"]</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (var i = 0; i < Model.ContentSecurityPolicyValues.Count; i++)
+            {
+                var key = Model.ContentSecurityPolicyValues[i];
+                var value = "";
+                var policy = Model.ContentSecurityPolicy.SingleOrDefault(p => p.StartsWith(Model.ContentSecurityPolicyValues[i]));
+                
+                if (policy != null)
+                {
+                    var keyValueSeparatorIndex = policy.IndexOf(' ');
+
+                    if (keyValueSeparatorIndex > -1) {
+                        key = policy.Substring(0, keyValueSeparatorIndex);
+                        value = policy.Substring(keyValueSeparatorIndex + 1);
+                    }
+                }
+                <tr>
+                    <td>@GetContentSecurityPolicyName(key)</td>
+                    <td>
+                        <div class="form-group mb-0">
+                            <input class="form-control" id="@key" value="@value" oninput="changeContentSecurityPolicy(this)" />
+                            <input id="@Html.IdFor(m => m.ContentSecurityPolicyValues[i])" name="@Html.NameFor(m => m.ContentSecurityPolicyValues[i])" type="hidden" value="@(policy == null ? key : $"{key} {value}")"/>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <span class="hint">@T["Allows administrators to control resources the user agent is allowed to load for a given page."]</span>
+</div>
 <div class="form-group" asp-validation-class-for="FrameOptions">
     <label asp-for="FrameOptions">@T["Frame Options"]</label>
     <select asp-for="FrameOptions" class="form-control">
@@ -227,5 +345,15 @@
         }
 
         permissionValue.val(value + e.value);
+    }
+
+    function changeContentSecurityPolicy(e, name) {
+        var value = $(e).attr('id');
+
+        if (e.value != '') {
+            value += ' ' + e.value;
+        }
+
+        $(e).siblings().val(value);
     }
 </script>

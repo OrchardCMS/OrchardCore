@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -5,6 +7,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Security.Options;
 using OrchardCore.Security.ViewModels;
 using OrchardCore.Settings;
 
@@ -13,6 +16,25 @@ namespace OrchardCore.Security.Drivers
     public class SecuritySettingsDisplayDriver : SectionDisplayDriver<ISite, SecuritySettings>
     {
         internal const string SettingsGroupId = "SecurityHeaders";
+
+        private static readonly List<string> _contentSecurityPolicyNames = new()
+        {
+            ContentSecurityPolicyValue.BaseUri,
+            ContentSecurityPolicyValue.ChildSource,
+            ContentSecurityPolicyValue.ConnectSource,
+            ContentSecurityPolicyValue.DefaultSource,
+            ContentSecurityPolicyValue.FontSource,
+            ContentSecurityPolicyValue.FormAction,
+            ContentSecurityPolicyValue.FrameAncestors,
+            ContentSecurityPolicyValue.FrameSource,
+            ContentSecurityPolicyValue.ImageSource,
+            ContentSecurityPolicyValue.ManifestSource,
+            ContentSecurityPolicyValue.MediaSource,
+            ContentSecurityPolicyValue.ObjectSource,
+            ContentSecurityPolicyValue.ScriptSource,
+            ContentSecurityPolicyValue.StyleSource,
+            ContentSecurityPolicyValue.Sandbox
+        };
 
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
@@ -42,9 +64,13 @@ namespace OrchardCore.Security.Drivers
 
             return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {
+                model.ContentSecurityPolicy = settings.ContentSecurityPolicy;
+                model.ContentSecurityPolicyValues = _contentSecurityPolicyNames;
                 model.FrameOptions = settings.FrameOptions ?? SecurityHeaderDefaults.FrameOptions;
                 model.PermissionsPolicy = settings.PermissionsPolicy ?? SecurityHeaderDefaults.PermissionsPolicy;
                 model.ReferrerPolicy = settings.ReferrerPolicy ?? SecurityHeaderDefaults.ReferrerPolicy;
+                model.EnableSandbox = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.Any(p => p.StartsWith(ContentSecurityPolicyValue.Sandbox));
+                model.UpgradeInsecureRequests = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.Any(p => p == ContentSecurityPolicyValue.UpgradeInsecureRequests);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -63,6 +89,26 @@ namespace OrchardCore.Security.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+                var hasSandboxPolicyWithoutValues = model.ContentSecurityPolicyValues.Any(p => p == ContentSecurityPolicyValue.Sandbox);
+
+                model.ContentSecurityPolicyValues.RemoveAll(p => _contentSecurityPolicyNames.Contains(p));
+
+                if (model.EnableSandbox && hasSandboxPolicyWithoutValues)
+                {
+                    model.ContentSecurityPolicyValues.Add(ContentSecurityPolicyValue.Sandbox);
+                }
+
+                if (!model.EnableSandbox)
+                {
+                    model.ContentSecurityPolicyValues.Remove(model.ContentSecurityPolicyValues.Last());
+                }
+
+                if (model.UpgradeInsecureRequests)
+                {
+                    model.ContentSecurityPolicyValues.Add(ContentSecurityPolicyValue.UpgradeInsecureRequests);
+                }
+
+                section.ContentSecurityPolicy = model.ContentSecurityPolicyValues.ToArray();
                 section.FrameOptions = model.FrameOptions;
                 section.PermissionsPolicy = model.PermissionsPolicy;
                 section.ReferrerPolicy = model.ReferrerPolicy;

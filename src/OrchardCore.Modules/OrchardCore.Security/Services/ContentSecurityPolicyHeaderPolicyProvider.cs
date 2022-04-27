@@ -9,7 +9,7 @@ namespace OrchardCore.Security.Services
         {
             if (!Options.ContentSecurityPolicy.Equals(SecurityHeaderDefaults.ContentSecurityPolicy))
             {
-                httpContext.Response.Headers[SecurityHeaderNames.PermissionsPolicy] = String.Join(SecurityHeaderDefaults.PoliciesSeparater, Options.ContentSecurityPolicy);
+                httpContext.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy] = String.Join(SecurityHeaderDefaults.PoliciesSeparater, Options.ContentSecurityPolicy);
             }
         }
     }

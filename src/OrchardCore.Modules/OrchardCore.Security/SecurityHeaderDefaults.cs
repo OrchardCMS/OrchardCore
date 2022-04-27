@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.Security.Options;
 
 namespace OrchardCore.Security
@@ -6,25 +7,7 @@ namespace OrchardCore.Security
     {
         internal static readonly string PoliciesSeparater = ", ";
 
-        public static readonly string[] ContentSecurityPolicy = new[]
-        {
-            $"{ContentSecurityPolicyValue.BaseUri} {ContentSecurityPolicyOriginValue.Any}",
-            $"{ContentSecurityPolicyValue.ChildSource} {ContentSecurityPolicyOriginValue.Any}",
-            $"{ContentSecurityPolicyValue.ConnectSource} {ContentSecurityPolicyOriginValue.Any}",
-            $"{ContentSecurityPolicyValue.DefaultSource} {ContentSecurityPolicyOriginValue.None}",
-            $"{ContentSecurityPolicyValue.FontSource} {ContentSecurityPolicyOriginValue.Any}",
-            $"{ContentSecurityPolicyValue.FormAction} {ContentSecurityPolicyOriginValue.Any}",
-            $"{ContentSecurityPolicyValue.FrameAncestors} {ContentSecurityPolicyOriginValue.Any}",
-            $"{ContentSecurityPolicyValue.FrameSource} {ContentSecurityPolicyOriginValue.Any}",
-            $"{ContentSecurityPolicyValue.ImageSource} {ContentSecurityPolicyOriginValue.Any}",
-            $"{ContentSecurityPolicyValue.ManifestSource} {ContentSecurityPolicyOriginValue.Any}",
-            $"{ContentSecurityPolicyValue.MediaSource} {ContentSecurityPolicyOriginValue.Any}",
-            $"{ContentSecurityPolicyValue.ObjectSource} {ContentSecurityPolicyOriginValue.Any}",
-            $"{ContentSecurityPolicyValue.Sandbox} {SandboxContentSecurityPolicyValue.AllowSameOrigin} {SandboxContentSecurityPolicyValue.AllowScripts}",
-            $"{ContentSecurityPolicyValue.ScriptSource} {ContentSecurityPolicyOriginValue.Self}",
-            $"{ContentSecurityPolicyValue.StyleSource} {ContentSecurityPolicyOriginValue.Self}",
-            $"{ContentSecurityPolicyValue.UpgradeInsecureRequests}",
-        };
+        public static readonly string[] ContentSecurityPolicy = Array.Empty<string>();
 
         public static readonly string ContentTypeOptions = ContentTypeOptionsValue.NoSniff;
 
