@@ -42,9 +42,9 @@ namespace OrchardCore.Security.Drivers
 
             return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {
-                model.FrameOptions = settings.FrameOptions;
-                model.PermissionsPolicy = settings.PermissionsPolicy;
-                model.ReferrerPolicy = settings.ReferrerPolicy;
+                model.FrameOptions = settings.FrameOptions ?? SecurityHeaderDefaults.FrameOptions;
+                model.PermissionsPolicy = settings.PermissionsPolicy ?? SecurityHeaderDefaults.PermissionsPolicy;
+                model.ReferrerPolicy = settings.ReferrerPolicy ?? SecurityHeaderDefaults.ReferrerPolicy;
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 

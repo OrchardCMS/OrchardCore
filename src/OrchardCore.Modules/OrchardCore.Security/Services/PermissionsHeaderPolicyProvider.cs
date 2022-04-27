@@ -7,7 +7,10 @@ namespace OrchardCore.Security.Services
     {
         public override void ApplyPolicy(HttpContext httpContext)
         {
-            httpContext.Response.Headers[SecurityHeaderNames.PermissionsPolicy] = String.Join(SecurityHeaderDefaults.PoliciesSeparater, Options.PermissionsPolicy);
+            if (!Options.PermissionsPolicy.Equals(SecurityHeaderDefaults.PermissionsPolicy))
+            {
+                httpContext.Response.Headers[SecurityHeaderNames.PermissionsPolicy] = String.Join(SecurityHeaderDefaults.PoliciesSeparater, Options.PermissionsPolicy);
+            }
         }
     }
 }
