@@ -6,7 +6,7 @@ using Lucene.Net.Spatial.Prefix.Tree;
 using Lucene.Net.Spatial.Queries;
 using Lucene.Net.Spatial.Util;
 using Newtonsoft.Json.Linq;
-using Spatial4n.Core.Context;
+using Spatial4n.Context;
 
 namespace OrchardCore.Lucene.QueryProviders.Filters
 {
@@ -27,7 +27,7 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
             var queryObj = filter as JObject;
             var first = queryObj.Properties().First();
 
-            var ctx = SpatialContext.GEO;
+            var ctx = SpatialContext.Geo;
 
             var maxLevels = 11; //results in sub-meter precision for geohash
 

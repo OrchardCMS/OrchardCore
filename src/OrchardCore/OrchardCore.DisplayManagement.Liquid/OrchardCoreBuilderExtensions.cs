@@ -57,10 +57,11 @@ namespace Microsoft.Extensions.DependencyInjection
                         {
                             return new ObjectValue(s);
                         }
-                        if (!(o is IShape) && o is IHtmlContent c)
+                        else if (x is IHtmlContent c)
                         {
                             return new HtmlContentValue(c);
                         }
+
                         return null;
                     });
 

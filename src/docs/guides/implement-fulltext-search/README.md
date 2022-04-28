@@ -105,6 +105,20 @@ By clicking on the "Use custom full-text", we allow you to set any Liquid script
 As the example states, you could add `{{ Model.Content.BlogPost.Subtitle.Text }}` if you would like to also find this content item by its *Subtitle* field.  
 You can do many things with this Liquid field: Index identifiers, fixed text or numeric values, etc.
 
+We can use the "Use custom full-text" to include the content of widgets or bags inside the full text search index. For example, for widgets inside a FlowPart we should use this Liquid script:
+
+```html
+{% for contentItem in Model.Content.FlowPart.Widgets %}
+  {{ contentItem | full_text_aspect }}
+{% endfor %}
+```
+
+Or simply use:
+
+```html
+{{ Model.Content.FlowPart.Widgets | full_text_aspect }}
+```
+
 ## Optional : Search templates customization
 
 Also, you can customize these templates for your specific needs in your theme by overriding these files : 

@@ -1,10 +1,13 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using YesSql;
+using IHttpContextAccessor = Microsoft.AspNetCore.Http.IHttpContextAccessor;
 
 namespace OrchardCore.Demo.Controllers
 {
@@ -14,17 +17,23 @@ namespace OrchardCore.Demo.Controllers
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ContentController(
             IContentManager contentManager,
             IContentItemDisplayManager contentDisplay,
             ISession session,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor,
+            IAuthorizationService authorizationService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _contentManager = contentManager;
             _contentDisplay = contentDisplay;
             _session = session;
             _updateModelAccessor = updateModelAccessor;
+            _authorizationService = authorizationService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ActionResult> Display(string contentItemId)
@@ -34,6 +43,11 @@ namespace OrchardCore.Demo.Controllers
             if (contentItem == null)
             {
                 return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ViewContent, contentItem))
+            {
+                return Forbid();
             }
 
             var shape = await _contentDisplay.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);
@@ -50,6 +64,11 @@ namespace OrchardCore.Demo.Controllers
                 return NotFound();
             }
 
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.EditContent, contentItem))
+            {
+                return Forbid();
+            }
+
             var shape = await _contentDisplay.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
             return View(shape);
         }
@@ -62,6 +81,11 @@ namespace OrchardCore.Demo.Controllers
             if (contentItem == null)
             {
                 return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.EditContent, contentItem))
+            {
+                return Forbid();
             }
 
             var shape = await _contentDisplay.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
