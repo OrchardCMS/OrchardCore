@@ -4,11 +4,12 @@ using System.Linq;
 using System.Net;
 using System.Net.Mime;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Execution;
-using GraphQL.NewtonsoftJson;
+using GraphQL.SystemTextJson;
 using GraphQL.Validation;
 using GraphQL.Validation.Complexity;
 using Microsoft.AspNetCore.Authentication;
@@ -31,6 +32,7 @@ namespace OrchardCore.Apis.GraphQL
         internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
         private readonly static MediaType _jsonMediaType = new MediaType("application/json");
         private readonly static MediaType _graphQlMediaType = new MediaType("application/graphql");
+        private readonly static JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions { WriteIndented = false, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
         public GraphQLMiddleware(
             RequestDelegate next,
@@ -89,10 +91,11 @@ namespace OrchardCore.Apis.GraphQL
 
                     if (mediaType.IsSubsetOf(_jsonMediaType) || mediaType.IsSubsetOf(_graphQlMediaType))
                     {
-                        using var sr = new StreamReader(context.Request.Body);
 
                         if (mediaType.IsSubsetOf(_graphQlMediaType))
                         {
+                            using var sr = new StreamReader(context.Request.Body);
+
                             request = new GraphQLRequest
                             {
                                 Query = await sr.ReadToEndAsync()
@@ -100,8 +103,7 @@ namespace OrchardCore.Apis.GraphQL
                         }
                         else
                         {
-                            var json = await sr.ReadToEndAsync();
-                            request = JObject.Parse(json).ToObject<GraphQLRequest>();
+                            request = await JsonSerializer.DeserializeAsync<GraphQLRequest>(context.Request.Body, _jsonSerializerOptions);
                         }
                     }
                     else
@@ -140,7 +142,6 @@ namespace OrchardCore.Apis.GraphQL
 
             var schema = await schemaService.GetSchemaAsync();
             var dataLoaderDocumentListener = context.RequestServices.GetRequiredService<IDocumentExecutionListener>();
-
             var result = await _executer.ExecuteAsync(_ =>
             {
                 _.Schema = schema;
@@ -168,20 +169,7 @@ namespace OrchardCore.Apis.GraphQL
 
             context.Response.ContentType = MediaTypeNames.Application.Json;
 
-            await WriteAsync(context.Response.Body, result, documentWriter);
-        }
-
-        private async Task WriteAsync<T>(Stream stream2, T value, IDocumentWriter documentWriter, CancellationToken cancellationToken = default)
-        {
-            // needs to be always async, otherwise __schema request is not working, direct write into response does not work as serialize is using sync method inside
-            cancellationToken.ThrowIfCancellationRequested();
-
-            using (MemoryStream stream = new MemoryStream())
-            {
-                await documentWriter.WriteAsync(stream, value);
-                stream.Seek(0, SeekOrigin.Begin);
-                await stream.CopyToAsync(stream2, cancellationToken);
-            }
+            await documentWriter.WriteAsync(context.Response.Body, result);
         }
 
         private static GraphQLRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
@@ -203,7 +191,7 @@ namespace OrchardCore.Apis.GraphQL
 
             if (context.Request.Query.ContainsKey("variables"))
             {
-                request.Variables = JObject.Parse(context.Request.Query["variables"]);
+                request.Variables = JsonSerializer.Deserialize<JsonElement>(context.Request.Query["variables"], _jsonSerializerOptions);
             }
 
             if (context.Request.Query.ContainsKey("operationName"))
