@@ -46,7 +46,6 @@
         "OrchardCore.Flows",
         "OrchardCore.Indexing",
         "OrchardCore.Layers",
-        "OrchardCore.Lucene",
         "OrchardCore.Lists",
         "OrchardCore.Markdown",
         "OrchardCore.Media",
