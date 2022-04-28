@@ -6,7 +6,6 @@ html[data-theme='default'] {
 
     @import "../../node_modules/bootstrap-select/sass/bootstrap-select.scss";
     @import "modules/admin/_bootstrap-select.scss";
-    @import "modules/admin/_nouislider.scss";
 
     @import "mixins/_grid.scss";
     @import "mixins/_sizes.scss";
@@ -32,7 +31,6 @@ html[data-theme='darkmode'] {
 
     @import "../../node_modules/bootstrap-select/sass/bootstrap-select.scss";
     @import "modules/admin/_bootstrap-select.scss";
-    @import "modules/admin/_nouislider.scss";
 
     @import "mixins/_grid.scss";
     @import "mixins/_sizes.scss";
@@ -51,3 +49,5 @@ html[data-theme='darkmode'] {
 
     @import "modules/theme/darkmode/_bootswatch.scss";
 } 
+
+@import "modules/admin/_nouislider.scss";

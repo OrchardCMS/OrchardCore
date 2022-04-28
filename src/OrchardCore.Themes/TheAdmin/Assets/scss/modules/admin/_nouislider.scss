@@ -48,6 +48,7 @@
 }
 /* Offset direction
  */
+/*! rtl:ignore */
 .noUi-txt-dir-rtl.noUi-horizontal .noUi-origin {
   left: 0;
   right: auto;
@@ -99,6 +100,7 @@
   right: -6px;
   bottom: -17px;
 }
+/*! rtl:ignore */
 .noUi-txt-dir-rtl.noUi-horizontal .noUi-handle {
   left: -17px;
   right: auto;
@@ -223,6 +225,7 @@
   -webkit-transform: translate(-50%, 50%);
   transform: translate(-50%, 50%);
 }
+/*! rtl:ignore */
 .noUi-rtl .noUi-value-horizontal {
   -webkit-transform: translate(50%, 50%);
   transform: translate(50%, 50%);
@@ -252,6 +255,7 @@
   transform: translate(0, -50%);
   padding-left: 25px;
 }
+/*! rtl:ignore */
 .noUi-rtl .noUi-value-vertical {
   -webkit-transform: translate(0, 50%);
   transform: translate(0, 50%);
