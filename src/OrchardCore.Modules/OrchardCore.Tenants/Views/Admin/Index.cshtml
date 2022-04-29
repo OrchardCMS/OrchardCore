@@ -143,14 +143,6 @@
                                             break;
                                     }
                                 </a>
-                                @if (!string.IsNullOrEmpty(entry.ShellSettings.RequestUrlHost))
-                                {
-                                    <p class="mb-0"><code data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Url host"]">@entry.ShellSettings.RequestUrlHost</code></p>
-                                }
-                                @if (!string.IsNullOrEmpty(entry.Description))
-                                {
-                                    <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
-                                }
                             </div>
                         </div>
                         <div class="col-lg-6 col-sm-12 float-end">
@@ -174,6 +166,18 @@
                                 }
                                 <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm reload" data-url-af="UnsafeUrl">@T["Reload"]</a>
                             </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            @if (!string.IsNullOrEmpty(entry.Description))
+                            {
+                                <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
+                            }
+                            @if (!string.IsNullOrEmpty(entry.ShellSettings.RequestUrlHost))
+                            {
+                                <p class="mb-0"><code class="text-break" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Url host"]">@entry.ShellSettings.RequestUrlHost</code></p>
+                            }
                         </div>
                     </div>
                 </li>
