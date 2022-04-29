@@ -10,13 +10,13 @@
 </span>
 
 <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["User Name"]">
-    <i class="fa fa-user text-secondary mr-1" aria-hidden="true"></i>@Model.AuditTrailEvent.UserName
+    <i class="fa fa-user text-secondary me-1" aria-hidden="true"></i>@Model.AuditTrailEvent.UserName
 </span>
 
 
 @if (!String.IsNullOrEmpty(Model.AuditTrailEvent.ClientIpAddress))
 {
     <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Client IP Address"]">
-        <i class="fas fa-wifi text-secondary mr-1" aria-hidden="true"></i>@Model.AuditTrailEvent.ClientIpAddress
+        <i class="fas fa-wifi text-secondary me-1" aria-hidden="true"></i>@Model.AuditTrailEvent.ClientIpAddress
     </span>
 }
