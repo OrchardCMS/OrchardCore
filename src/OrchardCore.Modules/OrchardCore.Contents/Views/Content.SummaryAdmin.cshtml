@@ -1,5 +1,6 @@
 @using OrchardCore.Contents
 @using OrchardCore.ContentManagement
+@using Microsoft.AspNetCore.Html
 @inject IAuthorizationService AuthorizationService
 @{
     ContentItem contentItem = Model.ContentItem;
@@ -23,7 +24,7 @@
             <div class="contentitem mr-2">
                 @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
                 {
-                    <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath"/>
+                    <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" />
                 }
                 else
                 {
@@ -61,14 +62,19 @@
             }
             @if (Model.ActionsMenu != null)
             {
-                <div class="btn-group" title="@T["Actions"]">
-                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span>@T["Actions"]</span>
-                    </button>
-                    <div class="actions-menu dropdown-menu dropdown-menu-right">
-                        @await DisplayAsync(Model.ActionsMenu)
+                IHtmlContent buttons = await DisplayAsync(Model.ActionsMenu);
+
+                @if (HasHtml(buttons))
+                {
+                    <div class="btn-group" title="@T["Actions"]">
+                        <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span>@T["Actions"]</span>
+                        </button>
+                        <div class="actions-menu dropdown-menu dropdown-menu-right">
+                            @buttons
+                        </div>
                     </div>
-                </div>
+                }
             }
         </div>
     </div>
@@ -81,4 +87,23 @@
             @await DisplayAsync(Model.Content)
         </div>
     </div>
+}
+
+
+@functions
+{
+    public bool HasHtml(IHtmlContent content)
+    {
+        if (content is HtmlString htmlString)
+        {
+            return !String.IsNullOrWhiteSpace(htmlString.Value?.Trim());
+        }
+
+        using var writer = new System.IO.StringWriter();
+
+        content.WriteTo(writer, System.Text.Encodings.Web.HtmlEncoder.Default);
+        var value = writer.ToString()?.Trim();
+
+        return !String.IsNullOrWhiteSpace(value);
+    }
 }

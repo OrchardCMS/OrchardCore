@@ -5,7 +5,7 @@
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    bool hasDraft = contentItem.HasDraft();
+    var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
 }
 
 @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
@@ -13,12 +13,12 @@
     <a edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-primary edit"><span>@T["Edit"]</span></a>
 }
 
-@if (!hasDraft)
+@if (hasPublished)
 {
     <a display-for="@contentItem" target="_blank" class="btn btn-sm btn-success view"><span>@T["View"]</span></a>
 }
 
-@if (hasDraft && await AuthorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent, contentItem))
+@if (contentItem.HasDraft() && await AuthorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent, contentItem))
 {
     <a asp-action="Preview" asp-controller="Item" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" target="_blank" class="btn btn-sm btn-primary preview"><span>@T["Preview Draft"]</span></a>
 }
