@@ -9,8 +9,14 @@
     var index = 0;
 }
 
-<li class="menu-item list-group-item d-flex justify-content-between align-items-start" id="menu-id-@Model.Index" data-index="@Model.Index">
-    <div class="menu-item menu-item-title w-100">
+<li class="menu-item list-group-item" id="menu-id-@Model.Index" data-index="@Model.Index">
+    <div class="menu-item menu-item-title border rounded p-2 ps-3 mb-1 d-flex flex-row justify-content-between align-items-center">
+        <span>@contentItem</span>
+
+        @if (Model.Content != null)
+        {
+            @await DisplayAsync(Model.Content)
+        }
         <div class="float-end">
             <a asp-action="Edit"
                 asp-controller="Admin"
@@ -39,13 +45,6 @@
                 @T["Delete"]
             </a>
         </div>
-
-        <span>@contentItem</span>
-
-        @if (Model.Content != null)
-        {
-            @await DisplayAsync(Model.Content)
-        }
     </div>
 
     @if (termsArray != null)

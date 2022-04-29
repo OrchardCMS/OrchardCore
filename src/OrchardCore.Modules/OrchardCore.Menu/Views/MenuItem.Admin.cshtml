@@ -17,8 +17,17 @@
     var index = 0;
 }
 
-<li class="menu-item list-group-item d-flex justify-content-between align-items-start" id="menu-id-@Model.Index" data-index="@Model.Index">
-    <div class="menu-item menu-item-title w-100">
+<li class="menu-item list-group-item" id="menu-id-@Model.Index" data-index="@Model.Index">
+    <div class="menu-item menu-item-title border rounded p-2 ps-3 mb-1 d-flex flex-row justify-content-between align-items-center">
+        @if (Model.Content != null)
+        {
+            @await DisplayAsync(Model.Content)
+        }
+        else
+        {
+            @*For dynamically created menus that do not have a driver*@
+            <span>@contentItem.DisplayText <span class="text-muted dashed">@contentItem.ContentType</span></span>
+        }
         <div class="float-end">
             <a asp-action="Edit"
                 asp-controller="Admin"
@@ -41,15 +50,6 @@
                 @T["Delete"]
             </a>
         </div>
-        @if (Model.Content != null)
-        {
-            @await DisplayAsync(Model.Content)
-        }
-        else
-        {
-            @*For dynamically created menus that do not have a driver*@
-            <span>@contentItem.DisplayText <span class="text-muted dashed">@contentItem.ContentType</span></span>
-        }
     </div>
     
     @if (menuItems != null)

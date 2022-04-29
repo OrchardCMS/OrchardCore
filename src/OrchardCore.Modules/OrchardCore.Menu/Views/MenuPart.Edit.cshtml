@@ -26,20 +26,18 @@
         </button>
     </div>
 </div>
-<p>
-    <ol id="menu">
-        @foreach (var menuItem in Model.MenuPart.ContentItem.As<MenuItemsListPart>().MenuItems)
+<ol id="menu" class="list-group my-3">
+    @foreach (var menuItem in Model.MenuPart.ContentItem.As<MenuItemsListPart>().MenuItems)
+    {
+        if (Model.MenuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
         {
-            if (Model.MenuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
-            {
-                dynamic menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
-                menuItemShape.MenuPart = Model.MenuPart;
-                menuItemShape.Index = index++;
-                @await DisplayAsync(menuItemShape);
-            }
+            dynamic menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
+            menuItemShape.MenuPart = Model.MenuPart;
+            menuItemShape.Index = index++;
+            @await DisplayAsync(menuItemShape);
         }
-    </ol>
-</p>
+    }
+</ol>
 
 <!-- Modal -->
 <div class="modal fade" id="modalMenuItems" tabindex="-1" role="dialog" aria-labelledby="available-menu-items-title" aria-hidden="true">
