@@ -51,3 +51,10 @@ html[data-theme='darkmode'] {
 } 
 
 @import "modules/admin/_nouislider.scss";
+
+// needs to be fixed in bootstrap-select repository
+html[dir="rtl"] .bootstrap-select .bs-ok-default:after
+{
+    border-width: 0 0.26em 0.26em 0 !important;
+    transform: rotate(45deg) !important;
+}

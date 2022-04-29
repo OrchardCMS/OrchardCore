@@ -59257,3 +59257,8 @@ html[dir][data-theme=darkmode] .modal-header .btn-close, html[dir][data-theme=de
 [dir=rtl] .noUi-vertical .noUi-origin > .noUi-tooltip {
   left: 28px;
 }
+
+html[dir=rtl] .bootstrap-select .bs-ok-default:after {
+  border-width: 0 0.26em 0.26em 0 !important;
+  transform: rotate(45deg) !important;
+}
