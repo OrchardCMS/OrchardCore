@@ -5,7 +5,7 @@ using OrchardCore.ResourceManagement.Core;
 
 namespace OrchardCore.Resources;
 
-public class LocalResourceConfigureOptions : IConfigureOptions<ResourceSetting>
+public class LocalResourceConfigureOptions : IConfigureOptions<ResourceOptions>
 {
     private readonly IConfiguration _configuration;
 
@@ -14,7 +14,7 @@ public class LocalResourceConfigureOptions : IConfigureOptions<ResourceSetting>
         _configuration = configuration;
     }
 
-    public void Configure(ResourceSetting options)
+    public void Configure(ResourceOptions options)
     {
         _configuration.GetSectionCompat("OrchardCore:Site_Settings").Bind(options);
     }

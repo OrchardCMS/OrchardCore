@@ -3,7 +3,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.ResourceManagement.Core;
 
-public class ResourceSetting
+public class ResourceOptions
 {
     public ResourceDebugMode ResourceDebugMode { get; set; }
     public bool UseCdn { get; set; }

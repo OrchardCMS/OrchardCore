@@ -9,7 +9,7 @@ namespace OrchardCore.Resources
 {
     public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
     {
-        private readonly ResourceSetting _resourceSetting;
+        private readonly ResourceOptions _resourceSetting;
         private readonly IHostEnvironment _env;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _pathBase;
@@ -20,7 +20,7 @@ namespace OrchardCore.Resources
         // URLs
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
 
-        public ResourceManagementOptionsConfiguration(IOptions<ResourceSetting> resourceSettingOptions, IHostEnvironment env, IHttpContextAccessor httpContextAccessor)
+        public ResourceManagementOptionsConfiguration(IOptions<ResourceOptions> resourceSettingOptions, IHostEnvironment env, IHttpContextAccessor httpContextAccessor)
         {
             _resourceSetting = resourceSettingOptions.Value;
             _env = env;

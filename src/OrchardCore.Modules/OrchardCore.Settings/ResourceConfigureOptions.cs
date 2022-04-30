@@ -4,18 +4,18 @@ using OrchardCore.ResourceManagement.Core;
 
 namespace OrchardCore.Settings;
 
-public class ResourceSettingConfigureOptions : IConfigureOptions<ResourceSetting>
+public class ResourceConfigureOptions : IConfigureOptions<ResourceOptions>
 {
     private readonly ISiteService _siteService;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public ResourceSettingConfigureOptions(ISiteService siteService, IHttpContextAccessor httpContextAccessor)
+    public ResourceConfigureOptions(ISiteService siteService, IHttpContextAccessor httpContextAccessor)
     {
         _siteService = siteService;
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public void Configure(ResourceSetting options)
+    public void Configure(ResourceOptions options)
     {
         var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
 
