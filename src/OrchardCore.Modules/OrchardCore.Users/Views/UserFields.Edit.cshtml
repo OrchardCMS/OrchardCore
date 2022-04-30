@@ -43,7 +43,52 @@
             <input asp-for="PasswordConfirmation" class="form-control" placeholder="@T["Password confirmation"]" />
             <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
         </div>
+
+        <div class="pt-2">
+            <div class="btn btn-warning btn-sm" id="generatePassword">@T["Generate strong password"]</div>
+            <div class="btn btn-info btn-sm" id="copyPassword">@T["Copy password"]</div>
+        </div>
     </div>
+
+
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            var strongPasswordLength = 12;
+            var password = document.getElementById('@Html.IdFor(p => p.Password)');
+            var passwordConfirmation = document.getElementById('@Html.IdFor(p => p.PasswordConfirmation)');
+
+            var generate = document.getElementById("generatePassword");
+            var copy = document.getElementById("copyPassword");
+
+            generate.addEventListener('click', function(){
+                var newPassword = genPassword();
+                password.value = newPassword;
+                passwordConfirmation.value = newPassword;
+            });
+
+            copy.addEventListener('click', function(){
+                copyPassword(password);
+            });
+
+            function genPassword() {
+                var chars = '0123456789abcdefghijklmnopqrstuvwxyz!@@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                var passwordLength = strongPasswordLength;
+                var password = '';
+                for (var i = 0; i <= passwordLength; i++) {
+                    var randomNumber = Math.floor(Math.random() * chars.length);
+                    password += chars.substring(randomNumber, randomNumber + 1);
+                }
+
+                return password;
+            }
+
+            function copyPassword(copyText) {
+                copyText.select();
+                copyText.setSelectionRange(0, 999);
+                document.execCommand("copy");
+            }
+        }, false);
+    </script>
 }
 
 
