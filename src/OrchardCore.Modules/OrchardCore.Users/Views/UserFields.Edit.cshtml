@@ -27,9 +27,9 @@
         <label asp-for="Password">@T["Password"]</label>
         <div class="input-group row col-md-4">
             <div class="input-group-prepend">
-                <span class="input-group-text"><i class="fas fa-lock prefix"></i></span>
+                <span class="input-group-text"><span class="fas fa-eye prefix" id="passwordToggle"></span></span>
             </div>
-            <input asp-for="Password" class="form-control" placeholder="@T["Password"]" />
+            <input asp-for="Password" type="password" class="form-control" placeholder="@T["Password"]" />
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
     </div>
@@ -38,9 +38,9 @@
         <label asp-for="PasswordConfirmation" class="sr-only">@T["Password Confirmation"]</label>
         <div class="input-group row col-md-4">
             <div class="input-group-prepend">
-                <span class="input-group-text"><i class="fas fa-lock prefix"></i></span>
+                <span class="input-group-text"><span class="fas fa-eye prefix" id="passwordConfirmationToggle"></span></span>
             </div>
-            <input asp-for="PasswordConfirmation" class="form-control" placeholder="@T["Password confirmation"]" />
+            <input asp-for="PasswordConfirmation" type="password" class="form-control" placeholder="@T["Password confirmation"]" />
             <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
         </div>
 
@@ -53,28 +53,44 @@
 
     <script>
         window.addEventListener('DOMContentLoaded', function() {
-            var strongPasswordLength = 12;
-            var password = document.getElementById('@Html.IdFor(p => p.Password)');
-            var passwordConfirmation = document.getElementById('@Html.IdFor(p => p.PasswordConfirmation)');
+            const strongPasswordLength = 12;
+            let password = document.getElementById('@Html.IdFor(p => p.Password)');
+            let passwordConfirmation = document.getElementById('@Html.IdFor(p => p.PasswordConfirmation)');
+            let passwordToggle = document.getElementById('passwordToggle');
+            let passwordConfirmationToggle = document.getElementById('passwordConfirmationToggle');
+            let generate = document.getElementById('generatePassword');
+            let copy = document.getElementById('copyPassword');
 
-            var generate = document.getElementById("generatePassword");
-            var copy = document.getElementById("copyPassword");
+            function toggetIcons(element) {
+                if (element.classList.contains('fa-eye')) {
+                    element.classList.remove('fa-eye');
+                    element.classList.add('fa-eye-slash');
 
-            generate.addEventListener('click', function(){
-                var newPassword = genPassword();
-                password.value = newPassword;
-                passwordConfirmation.value = newPassword;
-            });
+                    return;
+                }
 
-            copy.addEventListener('click', function(){
-                copyPassword(password);
-            });
+                element.classList.remove('fa-eye-slash');
+                element.classList.add('fa-eye');
+            }
 
-            function genPassword() {
-                var chars = '0123456789abcdefghijklmnopqrstuvwxyz!@@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                var passwordLength = strongPasswordLength;
-                var password = '';
-                for (var i = 0; i <= passwordLength; i++) {
+            function toggleFieldType(element) {
+
+                console.log('toggle fields...');
+
+                if(element.type == 'password')
+                {
+                    element.type = 'text';
+
+                    return;
+                }
+
+                element.type = 'password';
+            }
+
+            function generatePassword() {
+                const chars = '0123456789abcdefghijklmnopqrstuvwxyz!@@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                let password = '';
+                for (var i = 0; i <= strongPasswordLength; i++) {
                     var randomNumber = Math.floor(Math.random() * chars.length);
                     password += chars.substring(randomNumber, randomNumber + 1);
                 }
@@ -83,10 +99,30 @@
             }
 
             function copyPassword(copyText) {
-                copyText.select();
-                copyText.setSelectionRange(0, 999);
-                document.execCommand("copy");
+                navigator.clipboard.writeText(copyText);
             }
+
+            function togglePasswordFieldState() {
+                console.log('toggle password..');
+                toggleFieldType(password);
+                toggleFieldType(passwordConfirmation);
+
+                toggetIcons(passwordToggle);
+                toggetIcons(passwordConfirmationToggle);
+            }
+
+            generate.addEventListener('click', function(){
+                var newPassword = generatePassword();
+                password.value = newPassword;
+                passwordConfirmation.value = newPassword;
+            });
+
+            copy.addEventListener('click', function(){
+                copyPassword(password.value);
+            });
+
+            passwordToggle.addEventListener('click', togglePasswordFieldState);
+            passwordConfirmationToggle.addEventListener('click', togglePasswordFieldState);
         }, false);
     </script>
 }
