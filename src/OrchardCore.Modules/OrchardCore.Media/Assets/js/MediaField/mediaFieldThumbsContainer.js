@@ -11,7 +11,7 @@ Vue.component('mediaFieldThumbsContainer', {
          <draggable :list="mediaItems" tag="ol" class="row media-items-grid" >\
             <li v-for="media in mediaItems"\
                 :key="media.vuekey" \
-                class="media-container-main-list-item card"\
+                class="media-container-main-list-item card p-0"\
                 :style="{width: thumbSize + 2 + \'px\'}"\
                 :class="{selected: selectedMedia == media}"\
                 v-on:click="selectMedia(media)" v-if="!media.isRemoved">\

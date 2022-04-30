@@ -4,7 +4,7 @@ Vue.component('media-items-grid', {
         <ol class="row media-items-grid">
                 <li v-for="media in filteredMediaItems"
                     :key="media.name" 
-                    class="media-item media-container-main-list-item card"
+                    class="media-item media-container-main-list-item card p-0"
                     :style="{width: thumbSize + 2 + 'px'}"
                     :class="{selected: isMediaSelected(media)}"
                     v-on:click.stop="toggleSelectionOfMedia(media)"
