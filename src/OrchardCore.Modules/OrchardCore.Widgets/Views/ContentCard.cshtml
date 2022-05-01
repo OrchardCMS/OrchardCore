@@ -49,7 +49,7 @@
         {
             //Just Create Preview
             dynamic contentDisplay = await ContentItemDisplayManager.BuildDisplayAsync(contentItem, updater, Model.DisplayType ?? "Detail");
-            Model.ChildContent = contentDisplay;
+            Model.ContentPreview = contentDisplay;
 
             //Hide the Delete
             Model.CanDelete = false;
@@ -58,7 +58,7 @@
             Model.Metadata.Alternates.Clear();
             Model.Metadata.Type = "ContentCard_Preview";
 
-            contentCardFrame.ContentPreview = Model;
+            contentCardFrame.ChildContent = Model;
         }
         //Display Outer Frame
         @await DisplayAsync(contentCardFrame)

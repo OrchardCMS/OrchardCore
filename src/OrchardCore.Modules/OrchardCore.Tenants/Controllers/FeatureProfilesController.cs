@@ -40,8 +40,8 @@ namespace OrchardCore.Tenants.Controllers
             ISiteService siteService,
             INotifier notifier,
             IShapeFactory shapeFactory,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer
+            IStringLocalizer<FeatureProfilesController> stringLocalizer,
+            IHtmlLocalizer<FeatureProfilesController> htmlLocalizer
             )
         {
             _authorizationService = authorizationService;

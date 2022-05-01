@@ -85,6 +85,11 @@ namespace OrchardCore.Roles.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateRoleViewModel model)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
+            {
+                return Forbid();
+            }
+
             if (ModelState.IsValid)
             {
                 model.RoleName = model.RoleName.Trim();

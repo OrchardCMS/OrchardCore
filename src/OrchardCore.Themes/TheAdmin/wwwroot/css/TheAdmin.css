@@ -23371,6 +23371,9 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
 :root[data-theme=default] [dir=rtl] .btn-dropdown > .btn-group {
   right: calc(-14px + 50%);
 }
+:root[data-theme=default] .unset {
+  all: unset;
+}
 [dir]:root[data-theme=default] .bg-primary {
   background-color: #f8f9fa !important;
 }
@@ -46837,6 +46840,9 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
 }
 :root[data-theme=darkmode] [dir=rtl] .btn-dropdown > .btn-group {
   right: calc(-14px + 50%);
+}
+:root[data-theme=darkmode] .unset {
+  all: unset;
 }
 [dir]:root[data-theme=darkmode] .bg-primary {
   background-color: #1b1e1f !important;
