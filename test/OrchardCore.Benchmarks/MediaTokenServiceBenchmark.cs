@@ -33,7 +33,7 @@ namespace OrchardCore.Benchmark
                 new ResizeWebProcessor(),
                 new FormatWebProcessor(Options.Create(new ImageSharpMiddlewareOptions())),
                 new BackgroundColorWebProcessor(),
-                new JpegQualityWebProcessor(),
+                new QualityWebProcessor(),
                 new ImageVersionProcessor(),
                 new TokenCommandProcessor()
             };
