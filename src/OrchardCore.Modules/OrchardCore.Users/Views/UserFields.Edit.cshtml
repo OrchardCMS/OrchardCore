@@ -4,12 +4,12 @@
 
 @if (Site.As<RegistrationSettings>().UsersMustValidateEmail)
 {
-        <div class="form-group">
-            <div class="custom-control custom-checkbox">
-                <input asp-for="EmailConfirmed" type="checkbox" class="custom-control-input" asp-is-disabled="@Model.IsEditingDisabled">
-                <label class="custom-control-label" asp-for="EmailConfirmed">@T["Email confirmed"]</label>
-            </div>
+    <div class="form-group">
+        <div class="custom-control custom-checkbox">
+            <input asp-for="EmailConfirmed" type="checkbox" class="custom-control-input" asp-is-disabled="@Model.IsEditingDisabled">
+            <label class="custom-control-label" asp-for="EmailConfirmed">@T["Email confirmed"]</label>
         </div>
+    </div>
 }
 
 <div class="form-group">
@@ -22,100 +22,99 @@
 
 @if (Model.IsNewRequest)
 {
-        <div class="form-group">
-            <label asp-for="Password">@T["Password"]</label>
-            <div class="input-group row col-md-4">
-                <div class="input-group-prepend">
-                    <span class="input-group-text"><span class="fas fa-eye prefix" id="passwordToggle"></span></span>
-                </div>
-                <input asp-for="Password" type="password" class="form-control" placeholder="@T["Password"]" />
-                <span asp-validation-for="Password" class="text-danger"></span>
+    <div class="form-group">
+        <label asp-for="Password">@T["Password"]</label>
+        <div class="input-group row col-md-4">
+            <div class="input-group-prepend">
+                <span class="input-group-text"><span class="fas fa-eye prefix" id="passwordToggle"></span></span>
             </div>
+            <input asp-for="Password" type="password" class="form-control" placeholder="@T["Password"]" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PasswordConfirmation" class="sr-only">@T["Password Confirmation"]</label>
+        <div class="input-group row col-md-4">
+            <div class="input-group-prepend">
+                <span class="input-group-text"><span class="fas fa-eye prefix" id="passwordConfirmationToggle"></span></span>
+            </div>
+            <input asp-for="PasswordConfirmation" type="password" class="form-control" placeholder="@T["Password confirmation"]" />
+            <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
         </div>
 
-        <div class="form-group">
-            <label asp-for="PasswordConfirmation" class="sr-only">@T["Password Confirmation"]</label>
-            <div class="input-group row col-md-4">
-                <div class="input-group-prepend">
-                    <span class="input-group-text"><span class="fas fa-eye prefix" id="passwordConfirmationToggle"></span></span>
-                </div>
-                <input asp-for="PasswordConfirmation" type="password" class="form-control" placeholder="@T["Password confirmation"]" />
-                <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
-            </div>
-
-            <div class="pt-2">
-                <div class="btn btn-warning btn-sm" id="generatePassword">@T["Generate password"]</div>
-                <div class="btn btn-info btn-sm" id="copyPassword">@T["Copy password"]</div>
-            </div>
+        <div class="pt-2">
+            <div class="btn btn-warning btn-sm" id="generatePassword">@T["Generate password"]</div>
+            <div class="btn btn-info btn-sm" id="copyPassword">@T["Copy password"]</div>
         </div>
+    </div>
 
-        <script at="Foot" asp-name="PasswordGenerator">
-            window.addEventListener('DOMContentLoaded', function() {
-                const strongPasswordLength = 12;
-                let password = document.getElementById('@Html.IdFor(p => p.Password)');
-                let passwordConfirmation = document.getElementById('@Html.IdFor(p => p.PasswordConfirmation)');
-                let passwordToggle = document.getElementById('passwordToggle');
-                let passwordConfirmationToggle = document.getElementById('passwordConfirmationToggle');
-                let generate = document.getElementById('generatePassword');
-                let copy = document.getElementById('copyPassword');
+    <script at="Foot" asp-name="userFieldsPassword">
+        document.addEventListener('DOMContentLoaded', function() {
+            const strongPasswordLength = 12;
+            let password = document.getElementById('@Html.IdFor(p => p.Password)');
+            let passwordConfirmation = document.getElementById('@Html.IdFor(p => p.PasswordConfirmation)');
+            let passwordToggle = document.getElementById('passwordToggle');
+            let passwordConfirmationToggle = document.getElementById('passwordConfirmationToggle');
+            let generate = document.getElementById('generatePassword');
+            let copy = document.getElementById('copyPassword');
 
-                function toggetIcons(element) {
-                    if (element.classList.contains('fa-eye')) {
-                        element.classList.remove('fa-eye');
-                        element.classList.add('fa-eye-slash');
+            function toggetIcons(element) {
+                if (element.classList.contains('fa-eye')) {
+                    element.classList.remove('fa-eye');
+                    element.classList.add('fa-eye-slash');
 
-                        return;
-                    }
-
-                    element.classList.remove('fa-eye-slash');
-                    element.classList.add('fa-eye');
+                    return;
                 }
 
-                function toggleFieldType(element) {
-                    if(element.type == 'password')
-                    {
-                        element.type = 'text';
+                element.classList.remove('fa-eye-slash');
+                element.classList.add('fa-eye');
+            }
 
-                        return;
-                    }
+            function toggleFieldType(element) {
+                if(element.type == 'password') {
+                    element.type = 'text';
 
-                    element.type = 'password';
+                    return;
                 }
 
-                function generatePassword() {
-                    const chars = '0123456789abcdefghijklmnopqrstuvwxyz!@@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                    let password = '';
-                    for (var i = 0; i <= strongPasswordLength; i++) {
-                        var randomNumber = Math.floor(Math.random() * chars.length);
-                        password += chars.substring(randomNumber, randomNumber + 1);
-                    }
+                element.type = 'password';
+            }
 
-                    return password;
+            function generatePassword() {
+                const chars = '0123456789abcdefghijklmnopqrstuvwxyz!@@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                let password = '';
+                for (var i = 0; i <= strongPasswordLength; i++) {
+                    var randomNumber = Math.floor(Math.random() * chars.length);
+                    password += chars.substring(randomNumber, randomNumber + 1);
                 }
 
-                function copyPassword(copyText) {
-                    navigator.clipboard.writeText(copyText);
-                }
+                return password;
+            }
 
-                function togglePasswordFieldState() {
-                    toggleFieldType(password);
-                    toggleFieldType(passwordConfirmation);
-                    toggetIcons(passwordToggle);
-                    toggetIcons(passwordConfirmationToggle);
-                }
+            function copyPassword(text) {
+                navigator.clipboard.writeText(text);
+            }
 
-                generate.addEventListener('click', function(){
-                    var newPassword = generatePassword();
-                    password.value = newPassword;
-                    passwordConfirmation.value = newPassword;
-                });
+            function togglePasswordFieldState() {
+                toggleFieldType(password);
+                toggleFieldType(passwordConfirmation);
+                toggetIcons(passwordToggle);
+                toggetIcons(passwordConfirmationToggle);
+            }
 
-                copy.addEventListener('click', function(){
-                    copyPassword(password.value);
-                });
+            generate.addEventListener('click', function() {
+                var newPassword = generatePassword();
+                password.value = newPassword;
+                passwordConfirmation.value = newPassword;
+            });
 
-                passwordToggle.addEventListener('click', togglePasswordFieldState);
-                passwordConfirmationToggle.addEventListener('click', togglePasswordFieldState);
-            }, false);
-        </script>
+            copy.addEventListener('click', function() {
+                copyPassword(password.value);
+            });
+
+            passwordToggle.addEventListener('click', togglePasswordFieldState);
+            passwordConfirmationToggle.addEventListener('click', togglePasswordFieldState);
+        });
+    </script>
 }
