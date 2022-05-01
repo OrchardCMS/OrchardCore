@@ -7,11 +7,11 @@ namespace OrchardCore.ReverseProxy
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ReverseProxySettings = new Permission("ReverseProxySettings", "Manage Reverse Proxy Settings");
+        public static readonly Permission ManageReverseProxySettings = new Permission("ManageReverseProxySettings", "Manage Reverse Proxy Settings");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return Task.FromResult(new[] { ReverseProxySettings }.AsEnumerable());
+            return Task.FromResult(new[] { ManageReverseProxySettings }.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -21,7 +21,7 @@ namespace OrchardCore.ReverseProxy
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ReverseProxySettings }
+                    Permissions = new[] { ManageReverseProxySettings }
                 },
             };
         }
