@@ -1,6 +1,6 @@
 @model EditUserViewModel
-@using OrchardCore.Entities;
-@using OrchardCore.Users.Models;
+@using OrchardCore.Entities
+@using OrchardCore.Users.Models
 
 @if (Site.As<RegistrationSettings>().UsersMustValidateEmail)
 {
@@ -19,7 +19,6 @@
         <span class="hint dashed">@T["Uncheck to disable this user account."]</span>
     </div>
 </div>
-
 
 @if (Model.IsNewRequest)
 {
@@ -45,13 +44,13 @@
         </div>
 
         <div class="pt-2">
-            <div class="btn btn-warning btn-sm" id="generatePassword">@T["Generate strong password"]</div>
+            <div class="btn btn-warning btn-sm" id="generatePassword">@T["Generate password"]</div>
             <div class="btn btn-info btn-sm" id="copyPassword">@T["Copy password"]</div>
         </div>
     </div>
 
 
-    <script>
+    <script at="Foot" asp-name="PasswordGenerator">
         window.addEventListener('DOMContentLoaded', function() {
             const strongPasswordLength = 12;
             let password = document.getElementById('@Html.IdFor(p => p.Password)');
@@ -74,9 +73,6 @@
             }
 
             function toggleFieldType(element) {
-
-                console.log('toggle fields...');
-
                 if(element.type == 'password')
                 {
                     element.type = 'text';
@@ -103,10 +99,8 @@
             }
 
             function togglePasswordFieldState() {
-                console.log('toggle password..');
                 toggleFieldType(password);
                 toggleFieldType(passwordConfirmation);
-
                 toggetIcons(passwordToggle);
                 toggetIcons(passwordConfirmationToggle);
             }
@@ -126,5 +120,3 @@
         }, false);
     </script>
 }
-
-
