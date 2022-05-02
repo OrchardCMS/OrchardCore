@@ -19,7 +19,7 @@ using OrchardCore.Indexing;
 using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Modules;
-using Spatial4n.Core.Context;
+using Spatial4n.Context;
 using Directory = System.IO.Directory;
 using LDirectory = Lucene.Net.Store.Directory;
 
@@ -65,7 +65,7 @@ namespace OrchardCore.Lucene
 
             // Typical geospatial context
             // These can also be constructed from SpatialContextFactory
-            _ctx = SpatialContext.GEO;
+            _ctx = SpatialContext.Geo;
 
             var maxLevels = 11; // Results in sub-meter precision for geohash
 
@@ -217,11 +217,11 @@ namespace OrchardCore.Lucene
                         {
                             if (entry.Value is DateTimeOffset)
                             {
-                                doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateTools.Resolution.SECOND), store));
+                                doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateResolution.SECOND), store));
                             }
                             else
                             {
-                                doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateTools.Resolution.SECOND), store));
+                                doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateResolution.SECOND), store));
                             }
                         }
                         else
