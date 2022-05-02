@@ -77,13 +77,13 @@ If you are running on Azure App Services or if you are using Elasticsearch, then
 ## Lucene Queries
 
 The Lucene module provides a management UI and APIs for querying Lucene data using ElasticSearch Queries.
-See : https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
+See: https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
 
 ### Query Filters
 
 Query filters are used to retrieve records from Lucene without taking care of the boost values on them. So, it is retrieving records just like a SQL database would do. 
 
-Here is an example of a filtered query : 
+Here is an example of a filtered query: 
 
 ```json
 {
@@ -116,23 +116,67 @@ With a must query in the bool Query. "finding specific content type(s)"
 }
 ```
 
-As you can see it allows to filter on multiple query types. All of the Query types that are available in Lucene or also filters.
+Using the [`query_string` Lucene query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html) with the [Query Parser Syntax](https://lucene.apache.org/core/2_9_4/queryparsersyntax.html) (with syntax like `"exact match"` and `should AND contain`):
 
-So you can use : 
+```json
+{
+  "query":
+  {
+    "query_string": {
+      "query": "Content.ContentItem.FullText:\"exploration\""
+    }
+  }
+}
+```
 
-`fuzzy`  
-`match`  
-`match_phrase`  
-`match_all`  
-`prefix`  
-`range`  
-`term`  
-`terms`  
-`wildcard`
-`geo_distance`  
-`geo_bounding_box`  
+Or in a way that you don't have to select the fields in the query (to allow users to do simpler search):
 
-See ElasticSearch documentation for more details : 
+```json
+{
+  "query":
+  {
+    "query_string": {
+      "query": "\"exploration\"",
+      "default_field": "Content.ContentItem.FullText"
+    }
+  }
+}
+```
+
+An alternative to the previous one with [`simple_query_string`](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html):
+
+```json
+{
+  "query": {
+    "simple_query_string" : {
+        "query": "\"exploration\"",
+        "fields": ["Content.ContentItem.FullText"]
+    }
+  }
+}
+```
+
+As you can see it allows to filter on multiple query types. All of the Query types that are available in Lucene are also filters.
+
+So you can use: 
+
+- `bool`
+- `geo_distance`
+- `geo_bounding_box`
+- `fuzzy`
+- `match`
+- `match_all`
+- `match_phrase`
+- `prefix`
+- `query_string`
+- `range`
+- `regexp`
+- `simple_query_string`
+- `term`
+- `terms`
+- `wildcard`
+
+See ElasticSearch documentation for more details: 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html
 
 ## Video
