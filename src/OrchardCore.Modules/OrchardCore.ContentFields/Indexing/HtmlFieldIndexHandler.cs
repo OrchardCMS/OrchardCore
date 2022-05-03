@@ -7,7 +7,7 @@ namespace OrchardCore.ContentFields.Indexing
 {
     public class HtmlFieldIndexHandler : ContentFieldIndexHandler<HtmlField>
     {
-        private const int maxStringLength = 32766;
+        private const int MaxStringLength = 32766;
 
         public override Task BuildIndexAsync(HtmlField field, BuildFieldIndexContext context)
         {
