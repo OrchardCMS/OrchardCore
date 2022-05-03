@@ -15,11 +15,10 @@ namespace OrchardCore.ContentFields.Indexing
 
             foreach (var key in context.Keys)
             {
-                field.Html.Chunk(maxStringLength).Select(chunk =>
+                foreach (var chunk in field.Html.Chunk(MaxStringLength))
                 {
                     context.DocumentIndex.Set(key, new string(chunk), options);
-                    return Task.CompletedTask;
-                });
+                )
             }
 
             return Task.CompletedTask;
