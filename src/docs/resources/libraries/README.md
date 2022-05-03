@@ -64,7 +64,7 @@ The below table lists the different Client side libraries:
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
 | [EasyMDE](https://github.com/Ionaru/easy-markdown-editor) | A simple, beautiful, and embeddable JavaScript Markdown editor. | 2.16.1 | [MIT](https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE) |
-| [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | 1.8.5 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
+| [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | 1.8.8 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
 | [GraphiQL explorer](https://github.com/onegraph/graphiql-explorer) | Explorer plugin for GraphiQL. | 0.6.3 | [MIT](https://github.com/OneGraph/graphiql-explorer/blob/master/LICENSE) |
 | [GraphQL](https://github.com/graphql/graphql-js) | A reference implementation of GraphQL for JavaScript. | 15.8.0 | [MIT](https://github.com/graphql/graphql-js/blob/main/LICENSE) |
 | [Gulp](https://github.com/gulpjs/gulp) | A toolkit to automate & enhance your workflow. | 4.0.2 | [MIT](https://github.com/gulpjs/gulp/blob/master/LICENSE) |
@@ -75,8 +75,8 @@ The below table lists the different Client side libraries:
 | [React](https://github.com/facebook/react) | JavaScript library for building user interface. | 17.0.2 | [MIT](https://github.com/facebook/react/blob/master/LICENSE) |
 | [TypeScript](https://github.com/microsoft/TypeScript) | Superset of JavaScript that compiles to clean JavaScript output. | 4.5.2 | [Apache-2.0](https://github.com/microsoft/TypeScript/blob/master/LICENSE.txt) |
 | [Vue](https://github.com/vuejs/vue) | JavaScript framework for building UI on the web. | 2.6.14 | [MIT](https://github.com/vuejs/vue/blob/dev/LICENSE) |
-| [Webpack](https://github.com/webpack/webpack) | A bundler for javascript and friends. | 5.64.2 | [MIT](https://github.com/webpack/webpack/blob/master/LICENSE) |
-| [Webpack CLI](https://github.com/webpack/webpack-cli) | Webpack's Command Line Interface | 4.9.1 | [MIT](https://github.com/webpack/webpack-cli/blob/master/LICENSE) |
+| [Webpack](https://github.com/webpack/webpack) | A bundler for javascript and friends. | 5.72.0 | [MIT](https://github.com/webpack/webpack/blob/master/LICENSE) |
+| [Webpack CLI](https://github.com/webpack/webpack-cli) | Webpack's Command Line Interface | 4.9.2 | [MIT](https://github.com/webpack/webpack-cli/blob/master/LICENSE) |
 
 The below table lists the different Tests libraries:
 
