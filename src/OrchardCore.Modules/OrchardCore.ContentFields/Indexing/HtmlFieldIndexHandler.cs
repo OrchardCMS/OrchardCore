@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.Indexing;
@@ -18,7 +18,7 @@ namespace OrchardCore.ContentFields.Indexing
                 foreach (var chunk in field.Html.Chunk(MaxStringLength))
                 {
                     context.DocumentIndex.Set(key, new string(chunk), options);
-                )
+                }
             }
 
             return Task.CompletedTask;

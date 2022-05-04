@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Html.Models;
 using OrchardCore.Indexing;
@@ -6,6 +7,8 @@ namespace OrchardCore.Html.Indexing
 {
     public class HtmlBodyPartIndexHandler : ContentPartIndexHandler<HtmlBodyPart>
     {
+        private const int MaxStringLength = 32766;
+
         public override Task BuildIndexAsync(HtmlBodyPart part, BuildPartIndexContext context)
         {
             var options = context.Settings.ToOptions()
@@ -15,7 +18,10 @@ namespace OrchardCore.Html.Indexing
 
             foreach (var key in context.Keys)
             {
-                context.DocumentIndex.Set(key, part.Html, options);
+                foreach (var chunk in part.Html.Chunk(MaxStringLength))
+                {
+                    context.DocumentIndex.Set(key, new string(chunk), options);
+                }
             }
 
             return Task.CompletedTask;
