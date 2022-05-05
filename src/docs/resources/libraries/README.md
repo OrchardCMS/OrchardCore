@@ -30,7 +30,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [NJsonSchema](https://github.com/RicoSuter/NJsonSchema) | JSON Schema reader, generator and validator for .NET | 10.6.10 | [MIT](https://github.com/RicoSuter/NJsonSchema/blob/master/LICENSE.md) |
 | [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 3.1.0 | [Apache-2.0](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
 | [OpenIddict](https://github.com/openiddict/openiddict-core) | Versatile OpenID Connect stack for ASP.NET Core. | 3.1.1 | [Apache-2.0](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
-| [PdfPig](https://github.com/UglyToad/PdfPig/) | Library to read and extract text and other content from PDF files. | 0.1.5 | [Apache-2.0](https://github.com/UglyToad/PdfPig/blob/master/LICENSE) |
+| [PdfPig](https://github.com/UglyToad/PdfPig/) | Library to read and extract text and other content from PDF files. | 0.1.6 | [Apache-2.0](https://github.com/UglyToad/PdfPig/blob/master/LICENSE) |
 | [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore) | Serilog integration for ASP.NET Core. | 5.0.0 | [Apache-2.0](https://github.com/serilog/serilog-aspnetcore/blob/dev/LICENSE) |
 | [Shortcodes](https://github.com/sebastienros/shortcodes) | Shortcodes processor for .NET. | 1.3.3 | [MIT](https://github.com/sebastienros/shortcodes/blob/dev/LICENSE) |
 | [YesSql](https://github.com/sebastienros/yessql) | .NET document database working on any RDBMS. | 3.0.12 | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE) |
@@ -64,25 +64,25 @@ The below table lists the different Client side libraries:
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
 | [EasyMDE](https://github.com/Ionaru/easy-markdown-editor) | A simple, beautiful, and embeddable JavaScript Markdown editor. | 2.16.1 | [MIT](https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE) |
-| [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | 1.8.5 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
+| [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | 1.8.8 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
 | [GraphiQL explorer](https://github.com/onegraph/graphiql-explorer) | Explorer plugin for GraphiQL. | 0.6.3 | [MIT](https://github.com/OneGraph/graphiql-explorer/blob/master/LICENSE) |
 | [GraphQL](https://github.com/graphql/graphql-js) | A reference implementation of GraphQL for JavaScript. | 15.8.0 | [MIT](https://github.com/graphql/graphql-js/blob/main/LICENSE) |
 | [Gulp](https://github.com/gulpjs/gulp) | A toolkit to automate & enhance your workflow. | 4.0.2 | [MIT](https://github.com/gulpjs/gulp/blob/master/LICENSE) |
 | [Gulp](https://github.com/gulpjs/gulp-cli) | Command Line Interface for gulp. | 2.3.0 | [MIT](https://github.com/gulpjs/gulp-cli/blob/master/LICENSE) |
 | [jQuery-File-Upload](https://github.com/blueimp/jQuery-File-Upload) | File Upload widget for jQuery. | 10.32.0 | [MIT](https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt) |
 | [jsPlumb](https://github.com/jsplumb/jsplumb) | Visual connectivity for webapps. | 2.15.6 | [MIT and GPLv2](https://github.com/jsplumb/jsplumb/blob/master/jsPlumb-LICENSE.txt) |
-| [React](https://github.com/facebook/react) | JavaScript library for building user interface. | 17.0.2 | [MIT](https://github.com/facebook/react/blob/master/LICENSE) |
-| [TypeScript](https://github.com/microsoft/TypeScript) | Superset of JavaScript that compiles to clean JavaScript output. | 4.5.2 | [Apache-2.0](https://github.com/microsoft/TypeScript/blob/master/LICENSE.txtE) |
+| [React](https://github.com/facebook/react) | JavaScript library for building user interface. | 18.0.1 | [MIT](https://github.com/facebook/react/blob/master/LICENSE) |
+| [TypeScript](https://github.com/microsoft/TypeScript) | Superset of JavaScript that compiles to clean JavaScript output. | 4.5.4 | [Apache-2.0](https://github.com/microsoft/TypeScript/blob/master/LICENSE.txtE) |
 | [Vue](https://github.com/vuejs/vue) | JavaScript framework for building UI on the web. | 2.6.14 | [MIT](https://github.com/vuejs/vue/blob/dev/LICENSE) |
-| [Webpack](https://github.com/webpack/webpack) | A bundler for javascript and friends. | 5.64.2 | [MIT](https://github.com/webpack/webpack/blob/master/LICENSE) |
-| [Webpack CLI](https://github.com/webpack/webpack-cli) | Webpack's Command Line Interface | 4.9.1 | [MIT](https://github.com/webpack/webpack-cli/blob/master/LICENSE) |
+| [Webpack](https://github.com/webpack/webpack) | A bundler for javascript and friends. | 5.72.0 | [MIT](https://github.com/webpack/webpack/blob/master/LICENSE) |
+| [Webpack CLI](https://github.com/webpack/webpack-cli) | Webpack's Command Line Interface | 4.9.2 | [MIT](https://github.com/webpack/webpack-cli/blob/master/LICENSE) |
 
 The below table lists the different Tests libraries:
 
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
 | [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) | Powerful .NET library for benchmarking. | 0.13.1 | [MIT](https://github.com/dotnet/BenchmarkDotNet/blob/master/LICENSE.md) |
-| [Cypress](https://github.com/cypress-io/cypress) | Fast, easy and reliable testing for anything that runs in a browser. | 9.5.4 | [MIT](https://github.com/cypress-io/cypress/blob/develop/LICENSE) |
+| [Cypress](https://github.com/cypress-io/cypress) | Fast, easy and reliable testing for anything that runs in a browser. | 9.6.0 | [MIT](https://github.com/cypress-io/cypress/blob/develop/LICENSE) |
 | [Cypress Orchard](https://www.npmjs.com/package/cypress-orchardcore) | A collection of cypress commands for Orchard Core. | 0.4.5 | MIT |
 | [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 17.1.0 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
 | [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.4.1 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |
