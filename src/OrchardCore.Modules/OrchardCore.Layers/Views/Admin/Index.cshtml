@@ -16,9 +16,7 @@
 
 <form id="undo-form" asp-action="UpdatePosition" method="post" class="no-multisubmit">
     <div id="layer-undo-message" class="alert alert-success alert-dismissible show d-none" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
         @T["Widget successfully moved. <a href=\"javascript:console.log('submit');$('#undo-form').submit();\"><strong>Undo</strong></a>."]
     </div>
     <input id="layer-undo-message-contentItemId" type="hidden" name="contentItemId" value="" />
@@ -40,14 +38,14 @@
                 {
                     double maxPosition = 0;
 
-                    <div class="card form-group">
+                    <div class="card mb-3">
                         <div class="card-header text-muted">
                             @zone
                         </div>
                         <div class="layer-zone card-body" data-zone="@zone">
                             @if (Model.Widgets.ContainsKey(zone) && Model.Widgets[zone].Any())
                             {
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <ul class="list-group zones">
                                         @foreach (var contentItemSummary in Model.Widgets[zone])
                                         {
@@ -56,7 +54,7 @@
 
                                             <text>
                                                 <li class="list-group-item">
-                                                    <div class="properties cursor-move">
+                                                    <div class="w-100 cursor-move">
                                                         @await DisplayAsync(contentItemSummary)
                                                     </div>
                                                     <input type="hidden"
@@ -77,7 +75,7 @@
                                 {
                                     <div class="btn-dropdown-wrapper w-100">
                                         <div class="btn-group btn-dropdown">
-                                            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 @T["Add Widget"]
                                             </button>
                                             <div class="dropdown-menu">
@@ -112,7 +110,7 @@
             }
         </form>
     </div>
-    <div class="col-md-4 col-md-pull-right">
+    <div class="col-md-4 col-md-pull-end">
         <h3>@T["Layers"]</h3>
         <p>
             <span class="hint">
@@ -120,16 +118,16 @@
                 <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Layers/#rules" target="_blank">@T["See documentation"]</a>
             </span>
         </p>
-        <div class="form-group">
+        <div class="mb-3">
             <ul class="list-group">
                 @foreach (var layer in Model.Layers)
                 {
                     <li class="list-group-item">
                         <div class="properties">
                             <div class="d-flex flex-wrap">
-                                <div class="custom-control custom-checkbox mr-auto flex-grow-1">
-                                    <input type="checkbox" class="custom-control-input layer-check" id="@layer.Name" value="@layer.Name">
-                                    <label class="custom-control-label" for="@layer.Name">@layer.Name</label>
+                                <div class="form-check me-auto flex-grow-1">
+                                    <input type="checkbox" class="form-check-input layer-check" id="@layer.Name" value="@layer.Name">
+                                    <label class="form-check-label" for="@layer.Name">@layer.Name</label>
                                 </div>
                                 <div>
                                     <a class="btn btn-primary btn-sm" href="@Url.Action("Edit", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })">@T["Edit"]</a>

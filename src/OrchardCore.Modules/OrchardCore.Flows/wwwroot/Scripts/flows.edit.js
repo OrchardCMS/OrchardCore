@@ -119,6 +119,8 @@ $(function () {
       $btn.html(svg);
     }
 
+    $(this).parent().find('.dropdown-item').removeClass('active');
+    $(this).toggleClass('active');
     $(document).trigger('contentpreview:render');
   });
   $(document).on('click', '.widget-editor-btn-toggle', function () {
