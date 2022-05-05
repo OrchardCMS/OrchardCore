@@ -2,6 +2,9 @@ using StackExchange.Redis;
 
 namespace OrchardCore.Redis
 {
+    /// <summary>
+    /// Configuration options for <see cref="IRedisService"/>.
+    /// </summary>
     public class RedisOptions
     {
         /// <summary>
