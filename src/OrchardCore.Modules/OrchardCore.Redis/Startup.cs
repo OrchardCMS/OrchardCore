@@ -32,20 +32,23 @@ namespace OrchardCore.Redis
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            var originalConfigurationString = _configuration["OrchardCore_Redis:Configuration"];
-            var instancePrefix = _configuration["OrchardCore_Redis:InstancePrefix"];
-
-            if (string.IsNullOrEmpty(originalConfigurationString))
+            try
             {
-                _logger.LogError("'Redis' features are not active on tenant '{TenantName}' as the 'Configuration' string is missing", _tenant);
-                return;
+                var configurationString = _configuration["OrchardCore_Redis:Configuration"];
+                var _ = ConfigurationOptions.Parse(configurationString);
+                var instancePrefix = _configuration["OrchardCore_Redis:InstancePrefix"];
 
+                services.Configure<RedisOptions>(options =>
+                {
+                    options.Configuration = configurationString;
+                    options.InstancePrefix = instancePrefix;
+                });
             }
-            services.Configure<RedisOptions>(options =>
+            catch (Exception e)
             {
-                options.Configuration = originalConfigurationString;
-                options.InstancePrefix = instancePrefix;
-            });
+                _logger.LogError("'Redis' features are not active on tenant '{TenantName}' as the 'Configuration' string is missing or invalid: " + e.Message, _tenant);
+                return;
+            }
 
             services.AddSingleton<IRedisService, RedisService>();
             services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<IRedisService>());
