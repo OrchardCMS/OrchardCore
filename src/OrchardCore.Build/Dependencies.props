@@ -47,7 +47,7 @@
     <PackageManagement Include="System.Linq.Async" Version="6.0.1" />
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
     <PackageManagement Include="xunit" Version="2.4.1" />
-    <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.3" />
+    <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.5" />
     <PackageManagement Include="YesSql" Version="3.0.12" />
     <PackageManagement Include="YesSql.Core" Version="3.0.12" />
     <PackageManagement Include="YesSql.Abstractions" Version="3.0.12" />
