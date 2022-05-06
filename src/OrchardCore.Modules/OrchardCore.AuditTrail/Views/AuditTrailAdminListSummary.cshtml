@@ -1,5 +1,5 @@
 @model AuditTrailIndexOptions
 
-<div class="form-group mb-n1 text-nowrap">
-    <label id="items" for="select-all">@T.Plural(Model.EventsCount, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", Model.StartIndex, Model.EndIndex]">@T.Plural(Model.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+<div class="mb-n1 text-nowrap">
+    <label class="mt-2 ms-2" id="items" for="select-all">@T.Plural(Model.EventsCount, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", Model.StartIndex, Model.EndIndex]">@T.Plural(Model.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
 </div>

@@ -1,17 +1,17 @@
 @use 'sass:math';
-
-:root[data-theme='default'] {
+ 
+html[data-theme='default'] {
     @import "modules/theme/default/_variables.scss";
     @import "../../node_modules/bootstrap/scss/bootstrap";
 
     @import "../../node_modules/bootstrap-select/sass/bootstrap-select.scss";
-    @import "../../node_modules/bootstrap-slider/src/sass/bootstrap-slider.scss";
+    @import "modules/admin/_bootstrap-select.scss";
 
     @import "mixins/_grid.scss";
     @import "mixins/_sizes.scss";
     @import "mixins/_cursors.scss";
     @import "mixins/_word-wrap.scss";
-
+  
     @import "modules/admin/_messages.scss";
     @import "modules/admin/_pager.scss";
     @import "modules/admin/_grid.scss";
@@ -19,19 +19,18 @@
     @import "modules/admin/_login.scss";
     @import "modules/admin/_codemirror.scss";
     @import "modules/admin/_trumbowyg.scss";
-    @import "modules/admin/_switch.scss";
     @import "modules/admin/_jquery-ui.scss";
     @import "modules/admin/_monaco.scss";
 
     @import "modules/theme/default/_bootswatch.scss";
 }
 
-:root[data-theme='darkmode'] {
+html[data-theme='darkmode'] {
     @import "modules/theme/darkmode/_variables.scss";
     @import "../../node_modules/bootstrap/scss/bootstrap";
 
     @import "../../node_modules/bootstrap-select/sass/bootstrap-select.scss";
-    @import "../../node_modules/bootstrap-slider/src/sass/bootstrap-slider.scss";
+    @import "modules/admin/_bootstrap-select.scss";
 
     @import "mixins/_grid.scss";
     @import "mixins/_sizes.scss";
@@ -45,9 +44,17 @@
     @import "modules/admin/_login.scss";
     @import "modules/admin/_codemirror.scss";
     @import "modules/admin/_trumbowyg.scss";
-    @import "modules/admin/_switch.scss";
     @import "modules/admin/_jquery-ui.scss";
     @import "modules/admin/_monaco.scss";
 
     @import "modules/theme/darkmode/_bootswatch.scss";
 } 
+
+@import "modules/admin/_nouislider.scss";
+
+// needs to be fixed in bootstrap-select repository
+html[dir="rtl"] .bootstrap-select .bs-ok-default:after
+{
+    border-width: 0 0.26em 0.26em 0 !important;
+    transform: rotate(45deg) !important;
+}
