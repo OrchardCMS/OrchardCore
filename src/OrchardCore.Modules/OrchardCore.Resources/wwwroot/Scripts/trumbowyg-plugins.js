@@ -1934,6 +1934,368 @@
     }
   });
 }(jQuery);
+/*/* ===========================================================
+ * trumbowyg.history.js v1.0
+ * history plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Sven Dunemann [dunemann@forelabs.eu]
+ */
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        history: {
+          redo: 'Redo',
+          undo: 'Undo'
+        }
+      },
+      da: {
+        history: {
+          redo: 'Annuller fortryd',
+          undo: 'Fortryd'
+        }
+      },
+      de: {
+        history: {
+          redo: 'Wiederholen',
+          undo: 'Rückgängig'
+        }
+      },
+      et: {
+        history: {
+          redo: 'Võta tagasi',
+          undo: 'Tee uuesti'
+        }
+      },
+      fr: {
+        history: {
+          redo: 'Annuler',
+          undo: 'Rétablir'
+        }
+      },
+      hu: {
+        history: {
+          redo: 'Visszállít',
+          undo: 'Visszavon'
+        }
+      },
+      ko: {
+        history: {
+          redo: '다시 실행',
+          undo: '되돌리기'
+        }
+      },
+      pt_br: {
+        history: {
+          redo: 'Refazer',
+          undo: 'Desfazer'
+        }
+      },
+      zh_tw: {
+        history: {
+          redo: '重做',
+          undo: '復原'
+        }
+      } // jshint camelcase:true
+
+    },
+    plugins: {
+      history: {
+        init: function init(t) {
+          t.o.plugins.history = $.extend(true, {
+            _stack: [],
+            _index: -1,
+            _focusEl: undefined
+          }, t.o.plugins.history || {});
+          var btnBuildDefRedo = {
+            title: t.lang.history.redo,
+            ico: 'redo',
+            key: 'Y',
+            fn: function fn() {
+              if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
+                t.o.plugins.history._index += 1;
+                var index = t.o.plugins.history._index;
+                var newState = t.o.plugins.history._stack[index];
+                t.execCmd('html', newState); // because of some semantic optimisations we have to save the state back
+                // to history
+
+                t.o.plugins.history._stack[index] = t.$ed.html();
+                carretToEnd();
+                toggleButtonStates();
+              }
+            }
+          };
+          var btnBuildDefUndo = {
+            title: t.lang.history.undo,
+            ico: 'undo',
+            key: 'Z',
+            fn: function fn() {
+              if (t.o.plugins.history._index > 0) {
+                t.o.plugins.history._index -= 1;
+                var index = t.o.plugins.history._index,
+                    newState = t.o.plugins.history._stack[index];
+                t.execCmd('html', newState); // because of some semantic optimisations we have to save the state back
+                // to history
+
+                t.o.plugins.history._stack[index] = t.$ed.html();
+                carretToEnd();
+                toggleButtonStates();
+              }
+            }
+          };
+
+          var pushToHistory = function pushToHistory() {
+            var index = t.o.plugins.history._index,
+                stack = t.o.plugins.history._stack,
+                latestState = stack.slice(-1)[0] || '<p></p>',
+                prevState = stack[index],
+                newState = t.$ed.html(),
+                focusEl = t.doc.getSelection().focusNode,
+                focusElText = '',
+                latestStateTagsList,
+                newStateTagsList,
+                prevFocusEl = t.o.plugins.history._focusEl;
+            latestStateTagsList = $('<div>' + latestState + '</div>').find('*').map(function () {
+              return this.localName;
+            });
+            newStateTagsList = $('<div>' + newState + '</div>').find('*').map(function () {
+              return this.localName;
+            });
+
+            if (focusEl) {
+              t.o.plugins.history._focusEl = focusEl;
+              focusElText = focusEl.outerHTML || focusEl.textContent;
+            }
+
+            if (newState !== prevState) {
+              // a new stack entry is defined when current insert ends on a whitespace character
+              // or count of node elements has been changed
+              // or focused element differs from previous one
+              if (focusElText.slice(-1).match(/\s/) || !arraysAreIdentical(latestStateTagsList, newStateTagsList) || t.o.plugins.history._index <= 0 || focusEl !== prevFocusEl) {
+                t.o.plugins.history._index += 1; // remove newer entries in history when something new was added
+                // because timeline was changes with interaction
+
+                t.o.plugins.history._stack = stack.slice(0, t.o.plugins.history._index); // now add new state to modified history
+
+                t.o.plugins.history._stack.push(newState);
+              } else {
+                // modify last stack entry
+                t.o.plugins.history._stack[index] = newState;
+              }
+
+              toggleButtonStates();
+            }
+          };
+
+          var toggleButtonStates = function toggleButtonStates() {
+            var index = t.o.plugins.history._index,
+                stackSize = t.o.plugins.history._stack.length,
+                undoState = index > 0,
+                redoState = stackSize !== 0 && index !== stackSize - 1;
+            toggleButtonState('historyUndo', undoState);
+            toggleButtonState('historyRedo', redoState);
+          };
+
+          var toggleButtonState = function toggleButtonState(btn, enable) {
+            var button = t.$box.find('.trumbowyg-' + btn + '-button');
+
+            if (enable) {
+              button.removeClass('trumbowyg-disable');
+            } else if (!button.hasClass('trumbowyg-disable')) {
+              button.addClass('trumbowyg-disable');
+            }
+          };
+
+          var arraysAreIdentical = function arraysAreIdentical(a, b) {
+            if (a === b) {
+              return true;
+            }
+
+            if (a == null || b == null) {
+              return false;
+            }
+
+            if (a.length !== b.length) {
+              return false;
+            }
+
+            for (var i = 0; i < a.length; i += 1) {
+              if (a[i] !== b[i]) {
+                return false;
+              }
+            }
+
+            return true;
+          };
+
+          var carretToEnd = function carretToEnd() {
+            var node = t.doc.getSelection().focusNode,
+                range = t.doc.createRange();
+
+            if (node.childNodes.length > 0) {
+              range.setStartAfter(node.childNodes[node.childNodes.length - 1]);
+              range.setEndAfter(node.childNodes[node.childNodes.length - 1]);
+              t.doc.getSelection().removeAllRanges();
+              t.doc.getSelection().addRange(range);
+            }
+          };
+
+          t.$c.on('tbwinit tbwchange', pushToHistory);
+          t.addBtnDef('historyRedo', btnBuildDefRedo);
+          t.addBtnDef('historyUndo', btnBuildDefUndo);
+        }
+      }
+    }
+  });
+})(jQuery);
+!function (o) {
+  "use strict";
+
+  o.extend(!0, o.trumbowyg, {
+    langs: {
+      en: {
+        history: {
+          redo: "Redo",
+          undo: "Undo"
+        }
+      },
+      da: {
+        history: {
+          redo: "Annuller fortryd",
+          undo: "Fortryd"
+        }
+      },
+      de: {
+        history: {
+          redo: "Wiederholen",
+          undo: "Rückgängig"
+        }
+      },
+      et: {
+        history: {
+          redo: "Võta tagasi",
+          undo: "Tee uuesti"
+        }
+      },
+      fr: {
+        history: {
+          redo: "Annuler",
+          undo: "Rétablir"
+        }
+      },
+      hu: {
+        history: {
+          redo: "Visszállít",
+          undo: "Visszavon"
+        }
+      },
+      ko: {
+        history: {
+          redo: "다시 실행",
+          undo: "되돌리기"
+        }
+      },
+      pt_br: {
+        history: {
+          redo: "Refazer",
+          undo: "Desfazer"
+        }
+      },
+      zh_tw: {
+        history: {
+          redo: "重做",
+          undo: "復原"
+        }
+      }
+    },
+    plugins: {
+      history: {
+        init: function init(i) {
+          i.o.plugins.history = o.extend(!0, {
+            _stack: [],
+            _index: -1,
+            _focusEl: void 0
+          }, i.o.plugins.history || {});
+
+          var t = {
+            title: i.lang.history.redo,
+            ico: "redo",
+            key: "Y",
+            fn: function fn() {
+              if (i.o.plugins.history._index < i.o.plugins.history._stack.length - 1) {
+                i.o.plugins.history._index += 1;
+                var o = i.o.plugins.history._index,
+                    t = i.o.plugins.history._stack[o];
+                i.execCmd("html", t), i.o.plugins.history._stack[o] = i.$ed.html(), d(), e();
+              }
+            }
+          },
+              n = {
+            title: i.lang.history.undo,
+            ico: "undo",
+            key: "Z",
+            fn: function fn() {
+              if (i.o.plugins.history._index > 0) {
+                i.o.plugins.history._index -= 1;
+                var o = i.o.plugins.history._index,
+                    t = i.o.plugins.history._stack[o];
+                i.execCmd("html", t), i.o.plugins.history._stack[o] = i.$ed.html(), d(), e();
+              }
+            }
+          },
+              e = function e() {
+            var o = i.o.plugins.history._index,
+                t = i.o.plugins.history._stack.length,
+                n = 0 !== t && o !== t - 1;
+            s("historyUndo", o > 0), s("historyRedo", n);
+          },
+              s = function s(o, t) {
+            var n = i.$box.find(".trumbowyg-" + o + "-button");
+            t ? n.removeClass("trumbowyg-disable") : n.hasClass("trumbowyg-disable") || n.addClass("trumbowyg-disable");
+          },
+              r = function r(o, i) {
+            if (o === i) return !0;
+            if (null == o || null == i) return !1;
+            if (o.length !== i.length) return !1;
+
+            for (var t = 0; t < o.length; t += 1) {
+              if (o[t] !== i[t]) return !1;
+            }
+
+            return !0;
+          },
+              d = function d() {
+            var o = i.doc.getSelection().focusNode,
+                t = i.doc.createRange();
+            o.childNodes.length > 0 && (t.setStartAfter(o.childNodes[o.childNodes.length - 1]), t.setEndAfter(o.childNodes[o.childNodes.length - 1]), i.doc.getSelection().removeAllRanges(), i.doc.getSelection().addRange(t));
+          };
+
+          i.$c.on("tbwinit tbwchange", function () {
+            var t,
+                n,
+                s = i.o.plugins.history._index,
+                d = i.o.plugins.history._stack,
+                l = d.slice(-1)[0] || "<p></p>",
+                u = d[s],
+                h = i.$ed.html(),
+                c = i.doc.getSelection().focusNode,
+                a = "",
+                g = i.o.plugins.history._focusEl;
+            t = o("<div>" + l + "</div>").find("*").map(function () {
+              return this.localName;
+            }), n = o("<div>" + h + "</div>").find("*").map(function () {
+              return this.localName;
+            }), c && (i.o.plugins.history._focusEl = c, a = c.outerHTML || c.textContent), h !== u && (a.slice(-1).match(/\s/) || !r(t, n) || i.o.plugins.history._index <= 0 || c !== g ? (i.o.plugins.history._index += 1, i.o.plugins.history._stack = d.slice(0, i.o.plugins.history._index), i.o.plugins.history._stack.push(h)) : i.o.plugins.history._stack[s] = h, e());
+          }), i.addBtnDef("historyRedo", t), i.addBtnDef("historyUndo", n);
+        }
+      }
+    }
+  });
+}(jQuery);
 (function ($) {
   'use strict';
 
@@ -2831,13 +3193,15 @@
     }
   });
 }(jQuery);
-/*/* ===========================================================
- * trumbowyg.history.js v1.0
- * history plugin for Trumbowyg
+/* ===========================================================
+ * trumbowyg.mathMl.js v1.0
+ * MathML plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
- * Author : Sven Dunemann [dunemann@forelabs.eu]
+ * Author : loclamor
  */
+
+/* globals MathJax */
 (function ($) {
   'use strict';
 
@@ -2845,349 +3209,205 @@
     langs: {
       // jshint camelcase:false
       en: {
-        history: {
-          redo: 'Redo',
-          undo: 'Undo'
-        }
+        mathml: 'Insert Formulas',
+        formulas: 'Formulas',
+        inline: 'Inline'
       },
       da: {
-        history: {
-          redo: 'Annuller fortryd',
-          undo: 'Fortryd'
-        }
-      },
-      de: {
-        history: {
-          redo: 'Wiederholen',
-          undo: 'Rückgängig'
-        }
+        mathml: 'Indsæt formler',
+        formulas: 'Formler',
+        inline: 'Inline'
       },
       et: {
-        history: {
-          redo: 'Võta tagasi',
-          undo: 'Tee uuesti'
-        }
+        mathml: 'Sisesta valem',
+        formulas: 'Valemid',
+        inline: 'Teksti sees'
       },
       fr: {
-        history: {
-          redo: 'Annuler',
-          undo: 'Rétablir'
-        }
+        mathml: 'Inserer une formule',
+        formulas: 'Formule',
+        inline: 'En ligne'
       },
       hu: {
-        history: {
-          redo: 'Visszállít',
-          undo: 'Visszavon'
-        }
+        mathml: 'Formulák beszúrás',
+        formulas: 'Formulák',
+        inline: 'Inline'
       },
       ko: {
-        history: {
-          redo: '다시 실행',
-          undo: '되돌리기'
-        }
+        mathml: '수식 넣기',
+        formulas: '수식',
+        inline: '글 안에 넣기'
       },
       pt_br: {
-        history: {
-          redo: 'Refazer',
-          undo: 'Desfazer'
-        }
+        mathml: 'Inserir fórmulas',
+        formulas: 'Fórmulas',
+        inline: 'Em linha'
+      },
+      tr: {
+        mathml: 'Formül Ekle',
+        formulas: 'Formüller',
+        inline: 'Satır içi'
       },
       zh_tw: {
-        history: {
-          redo: '重做',
-          undo: '復原'
-        }
-      } // jshint camelcase:true
-
+        mathml: '插入方程式',
+        formulas: '方程式',
+        inline: '內嵌'
+      }
     },
+    // jshint camelcase:true
     plugins: {
-      history: {
-        init: function init(t) {
-          t.o.plugins.history = $.extend(true, {
-            _stack: [],
-            _index: -1,
-            _focusEl: undefined
-          }, t.o.plugins.history || {});
-          var btnBuildDefRedo = {
-            title: t.lang.history.redo,
-            ico: 'redo',
-            key: 'Y',
+      mathml: {
+        init: function init(trumbowyg) {
+          var btnDef = {
             fn: function fn() {
-              if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
-                t.o.plugins.history._index += 1;
-                var index = t.o.plugins.history._index;
-                var newState = t.o.plugins.history._stack[index];
-                t.execCmd('html', newState); // because of some semantic optimisations we have to save the state back
-                // to history
+              trumbowyg.saveRange();
+              var mathMLoptions = {
+                formulas: {
+                  label: trumbowyg.lang.formulas,
+                  required: true,
+                  value: ''
+                },
+                inline: {
+                  label: trumbowyg.lang.inline,
+                  attributes: {
+                    checked: true
+                  },
+                  type: 'checkbox',
+                  required: false
+                }
+              };
 
-                t.o.plugins.history._stack[index] = t.$ed.html();
-                carretToEnd();
-                toggleButtonStates();
-              }
+              var mathmlCallback = function mathmlCallback(v) {
+                var delimiter = v.inline ? '$' : '$$';
+
+                if (trumbowyg.currentMathNode) {
+                  $(trumbowyg.currentMathNode).html(delimiter + ' ' + v.formulas + ' ' + delimiter).attr('formulas', v.formulas).attr('inline', v.inline ? 'true' : 'false');
+                } else {
+                  var html = '<span class="mathMlContainer" contenteditable="false" formulas="' + v.formulas + '" inline="' + (v.inline ? 'true' : 'false') + '" >' + delimiter + ' ' + v.formulas + ' ' + delimiter + '</span>';
+                  var node = $(html)[0];
+
+                  node.onclick = function () {
+                    trumbowyg.currentMathNode = this;
+                    mathMLoptions.formulas.value = $(this).attr('formulas');
+
+                    if ($(this).attr('inline') === 'true') {
+                      mathMLoptions.inline.attributes.checked = true;
+                    } else {
+                      delete mathMLoptions.inline.attributes.checked;
+                    }
+
+                    trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMLoptions, mathmlCallback);
+                  };
+
+                  trumbowyg.range.deleteContents();
+                  trumbowyg.range.insertNode(node);
+                }
+
+                trumbowyg.currentMathNode = false;
+                MathJax.Hub.Queue(['Typeset', MathJax.Hub]);
+                return true;
+              };
+
+              mathMLoptions.formulas.value = trumbowyg.getRangeText();
+              mathMLoptions.inline.attributes.checked = true;
+              trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMLoptions, mathmlCallback);
             }
           };
-          var btnBuildDefUndo = {
-            title: t.lang.history.undo,
-            ico: 'undo',
-            key: 'Z',
-            fn: function fn() {
-              if (t.o.plugins.history._index > 0) {
-                t.o.plugins.history._index -= 1;
-                var index = t.o.plugins.history._index,
-                    newState = t.o.plugins.history._stack[index];
-                t.execCmd('html', newState); // because of some semantic optimisations we have to save the state back
-                // to history
-
-                t.o.plugins.history._stack[index] = t.$ed.html();
-                carretToEnd();
-                toggleButtonStates();
-              }
-            }
-          };
-
-          var pushToHistory = function pushToHistory() {
-            var index = t.o.plugins.history._index,
-                stack = t.o.plugins.history._stack,
-                latestState = stack.slice(-1)[0] || '<p></p>',
-                prevState = stack[index],
-                newState = t.$ed.html(),
-                focusEl = t.doc.getSelection().focusNode,
-                focusElText = '',
-                latestStateTagsList,
-                newStateTagsList,
-                prevFocusEl = t.o.plugins.history._focusEl;
-            latestStateTagsList = $('<div>' + latestState + '</div>').find('*').map(function () {
-              return this.localName;
-            });
-            newStateTagsList = $('<div>' + newState + '</div>').find('*').map(function () {
-              return this.localName;
-            });
-
-            if (focusEl) {
-              t.o.plugins.history._focusEl = focusEl;
-              focusElText = focusEl.outerHTML || focusEl.textContent;
-            }
-
-            if (newState !== prevState) {
-              // a new stack entry is defined when current insert ends on a whitespace character
-              // or count of node elements has been changed
-              // or focused element differs from previous one
-              if (focusElText.slice(-1).match(/\s/) || !arraysAreIdentical(latestStateTagsList, newStateTagsList) || t.o.plugins.history._index <= 0 || focusEl !== prevFocusEl) {
-                t.o.plugins.history._index += 1; // remove newer entries in history when something new was added
-                // because timeline was changes with interaction
-
-                t.o.plugins.history._stack = stack.slice(0, t.o.plugins.history._index); // now add new state to modified history
-
-                t.o.plugins.history._stack.push(newState);
-              } else {
-                // modify last stack entry
-                t.o.plugins.history._stack[index] = newState;
-              }
-
-              toggleButtonStates();
-            }
-          };
-
-          var toggleButtonStates = function toggleButtonStates() {
-            var index = t.o.plugins.history._index,
-                stackSize = t.o.plugins.history._stack.length,
-                undoState = index > 0,
-                redoState = stackSize !== 0 && index !== stackSize - 1;
-            toggleButtonState('historyUndo', undoState);
-            toggleButtonState('historyRedo', redoState);
-          };
-
-          var toggleButtonState = function toggleButtonState(btn, enable) {
-            var button = t.$box.find('.trumbowyg-' + btn + '-button');
-
-            if (enable) {
-              button.removeClass('trumbowyg-disable');
-            } else if (!button.hasClass('trumbowyg-disable')) {
-              button.addClass('trumbowyg-disable');
-            }
-          };
-
-          var arraysAreIdentical = function arraysAreIdentical(a, b) {
-            if (a === b) {
-              return true;
-            }
-
-            if (a == null || b == null) {
-              return false;
-            }
-
-            if (a.length !== b.length) {
-              return false;
-            }
-
-            for (var i = 0; i < a.length; i += 1) {
-              if (a[i] !== b[i]) {
-                return false;
-              }
-            }
-
-            return true;
-          };
-
-          var carretToEnd = function carretToEnd() {
-            var node = t.doc.getSelection().focusNode,
-                range = t.doc.createRange();
-
-            if (node.childNodes.length > 0) {
-              range.setStartAfter(node.childNodes[node.childNodes.length - 1]);
-              range.setEndAfter(node.childNodes[node.childNodes.length - 1]);
-              t.doc.getSelection().removeAllRanges();
-              t.doc.getSelection().addRange(range);
-            }
-          };
-
-          t.$c.on('tbwinit tbwchange', pushToHistory);
-          t.addBtnDef('historyRedo', btnBuildDefRedo);
-          t.addBtnDef('historyUndo', btnBuildDefUndo);
+          trumbowyg.addBtnDef('mathml', btnDef);
         }
       }
     }
   });
 })(jQuery);
-!function (o) {
+!function (e) {
   "use strict";
 
-  o.extend(!0, o.trumbowyg, {
+  e.extend(!0, e.trumbowyg, {
     langs: {
       en: {
-        history: {
-          redo: "Redo",
-          undo: "Undo"
-        }
+        mathml: "Insert Formulas",
+        formulas: "Formulas",
+        inline: "Inline"
       },
       da: {
-        history: {
-          redo: "Annuller fortryd",
-          undo: "Fortryd"
-        }
-      },
-      de: {
-        history: {
-          redo: "Wiederholen",
-          undo: "Rückgängig"
-        }
+        mathml: "Indsæt formler",
+        formulas: "Formler",
+        inline: "Inline"
       },
       et: {
-        history: {
-          redo: "Võta tagasi",
-          undo: "Tee uuesti"
-        }
+        mathml: "Sisesta valem",
+        formulas: "Valemid",
+        inline: "Teksti sees"
       },
       fr: {
-        history: {
-          redo: "Annuler",
-          undo: "Rétablir"
-        }
+        mathml: "Inserer une formule",
+        formulas: "Formule",
+        inline: "En ligne"
       },
       hu: {
-        history: {
-          redo: "Visszállít",
-          undo: "Visszavon"
-        }
+        mathml: "Formulák beszúrás",
+        formulas: "Formulák",
+        inline: "Inline"
       },
       ko: {
-        history: {
-          redo: "다시 실행",
-          undo: "되돌리기"
-        }
+        mathml: "수식 넣기",
+        formulas: "수식",
+        inline: "글 안에 넣기"
       },
       pt_br: {
-        history: {
-          redo: "Refazer",
-          undo: "Desfazer"
-        }
+        mathml: "Inserir fórmulas",
+        formulas: "Fórmulas",
+        inline: "Em linha"
+      },
+      tr: {
+        mathml: "Formül Ekle",
+        formulas: "Formüller",
+        inline: "Satır içi"
       },
       zh_tw: {
-        history: {
-          redo: "重做",
-          undo: "復原"
-        }
+        mathml: "插入方程式",
+        formulas: "方程式",
+        inline: "內嵌"
       }
     },
     plugins: {
-      history: {
-        init: function init(i) {
-          i.o.plugins.history = o.extend(!0, {
-            _stack: [],
-            _index: -1,
-            _focusEl: void 0
-          }, i.o.plugins.history || {});
-
-          var t = {
-            title: i.lang.history.redo,
-            ico: "redo",
-            key: "Y",
+      mathml: {
+        init: function init(l) {
+          var n = {
             fn: function fn() {
-              if (i.o.plugins.history._index < i.o.plugins.history._stack.length - 1) {
-                i.o.plugins.history._index += 1;
-                var o = i.o.plugins.history._index,
-                    t = i.o.plugins.history._stack[o];
-                i.execCmd("html", t), i.o.plugins.history._stack[o] = i.$ed.html(), d(), e();
-              }
-            }
-          },
-              n = {
-            title: i.lang.history.undo,
-            ico: "undo",
-            key: "Z",
-            fn: function fn() {
-              if (i.o.plugins.history._index > 0) {
-                i.o.plugins.history._index -= 1;
-                var o = i.o.plugins.history._index,
-                    t = i.o.plugins.history._stack[o];
-                i.execCmd("html", t), i.o.plugins.history._stack[o] = i.$ed.html(), d(), e();
-              }
-            }
-          },
-              e = function e() {
-            var o = i.o.plugins.history._index,
-                t = i.o.plugins.history._stack.length,
-                n = 0 !== t && o !== t - 1;
-            s("historyUndo", o > 0), s("historyRedo", n);
-          },
-              s = function s(o, t) {
-            var n = i.$box.find(".trumbowyg-" + o + "-button");
-            t ? n.removeClass("trumbowyg-disable") : n.hasClass("trumbowyg-disable") || n.addClass("trumbowyg-disable");
-          },
-              r = function r(o, i) {
-            if (o === i) return !0;
-            if (null == o || null == i) return !1;
-            if (o.length !== i.length) return !1;
+              l.saveRange();
 
-            for (var t = 0; t < o.length; t += 1) {
-              if (o[t] !== i[t]) return !1;
-            }
+              var n = {
+                formulas: {
+                  label: l.lang.formulas,
+                  required: !0,
+                  value: ""
+                },
+                inline: {
+                  label: l.lang.inline,
+                  attributes: {
+                    checked: !0
+                  },
+                  type: "checkbox",
+                  required: !1
+                }
+              },
+                  a = function a(t) {
+                var r = t.inline ? "$" : "$$";
+                if (l.currentMathNode) e(l.currentMathNode).html(r + " " + t.formulas + " " + r).attr("formulas", t.formulas).attr("inline", t.inline ? "true" : "false");else {
+                  var i = '<span class="mathMlContainer" contenteditable="false" formulas="' + t.formulas + '" inline="' + (t.inline ? "true" : "false") + '" >' + r + " " + t.formulas + " " + r + "</span>",
+                      m = e(i)[0];
+                  m.onclick = function () {
+                    l.currentMathNode = this, n.formulas.value = e(this).attr("formulas"), "true" === e(this).attr("inline") ? n.inline.attributes.checked = !0 : delete n.inline.attributes.checked, l.openModalInsert(l.lang.mathml, n, a);
+                  }, l.range.deleteContents(), l.range.insertNode(m);
+                }
+                return l.currentMathNode = !1, MathJax.Hub.Queue(["Typeset", MathJax.Hub]), !0;
+              };
 
-            return !0;
-          },
-              d = function d() {
-            var o = i.doc.getSelection().focusNode,
-                t = i.doc.createRange();
-            o.childNodes.length > 0 && (t.setStartAfter(o.childNodes[o.childNodes.length - 1]), t.setEndAfter(o.childNodes[o.childNodes.length - 1]), i.doc.getSelection().removeAllRanges(), i.doc.getSelection().addRange(t));
+              n.formulas.value = l.getRangeText(), n.inline.attributes.checked = !0, l.openModalInsert(l.lang.mathml, n, a);
+            }
           };
-
-          i.$c.on("tbwinit tbwchange", function () {
-            var t,
-                n,
-                s = i.o.plugins.history._index,
-                d = i.o.plugins.history._stack,
-                l = d.slice(-1)[0] || "<p></p>",
-                u = d[s],
-                h = i.$ed.html(),
-                c = i.doc.getSelection().focusNode,
-                a = "",
-                g = i.o.plugins.history._focusEl;
-            t = o("<div>" + l + "</div>").find("*").map(function () {
-              return this.localName;
-            }), n = o("<div>" + h + "</div>").find("*").map(function () {
-              return this.localName;
-            }), c && (i.o.plugins.history._focusEl = c, a = c.outerHTML || c.textContent), h !== u && (a.slice(-1).match(/\s/) || !r(t, n) || i.o.plugins.history._index <= 0 || c !== g ? (i.o.plugins.history._index += 1, i.o.plugins.history._stack = d.slice(0, i.o.plugins.history._index), i.o.plugins.history._stack.push(h)) : i.o.plugins.history._stack[s] = h, e());
-          }), i.addBtnDef("historyRedo", t), i.addBtnDef("historyUndo", n);
+          l.addBtnDef("mathml", n);
         }
       }
     }
@@ -3726,226 +3946,6 @@
               }
             } catch (t) {}
           });
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.mathMl.js v1.0
- * MathML plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : loclamor
- */
-
-/* globals MathJax */
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        mathml: 'Insert Formulas',
-        formulas: 'Formulas',
-        inline: 'Inline'
-      },
-      da: {
-        mathml: 'Indsæt formler',
-        formulas: 'Formler',
-        inline: 'Inline'
-      },
-      et: {
-        mathml: 'Sisesta valem',
-        formulas: 'Valemid',
-        inline: 'Teksti sees'
-      },
-      fr: {
-        mathml: 'Inserer une formule',
-        formulas: 'Formule',
-        inline: 'En ligne'
-      },
-      hu: {
-        mathml: 'Formulák beszúrás',
-        formulas: 'Formulák',
-        inline: 'Inline'
-      },
-      ko: {
-        mathml: '수식 넣기',
-        formulas: '수식',
-        inline: '글 안에 넣기'
-      },
-      pt_br: {
-        mathml: 'Inserir fórmulas',
-        formulas: 'Fórmulas',
-        inline: 'Em linha'
-      },
-      tr: {
-        mathml: 'Formül Ekle',
-        formulas: 'Formüller',
-        inline: 'Satır içi'
-      },
-      zh_tw: {
-        mathml: '插入方程式',
-        formulas: '方程式',
-        inline: '內嵌'
-      }
-    },
-    // jshint camelcase:true
-    plugins: {
-      mathml: {
-        init: function init(trumbowyg) {
-          var btnDef = {
-            fn: function fn() {
-              trumbowyg.saveRange();
-              var mathMLoptions = {
-                formulas: {
-                  label: trumbowyg.lang.formulas,
-                  required: true,
-                  value: ''
-                },
-                inline: {
-                  label: trumbowyg.lang.inline,
-                  attributes: {
-                    checked: true
-                  },
-                  type: 'checkbox',
-                  required: false
-                }
-              };
-
-              var mathmlCallback = function mathmlCallback(v) {
-                var delimiter = v.inline ? '$' : '$$';
-
-                if (trumbowyg.currentMathNode) {
-                  $(trumbowyg.currentMathNode).html(delimiter + ' ' + v.formulas + ' ' + delimiter).attr('formulas', v.formulas).attr('inline', v.inline ? 'true' : 'false');
-                } else {
-                  var html = '<span class="mathMlContainer" contenteditable="false" formulas="' + v.formulas + '" inline="' + (v.inline ? 'true' : 'false') + '" >' + delimiter + ' ' + v.formulas + ' ' + delimiter + '</span>';
-                  var node = $(html)[0];
-
-                  node.onclick = function () {
-                    trumbowyg.currentMathNode = this;
-                    mathMLoptions.formulas.value = $(this).attr('formulas');
-
-                    if ($(this).attr('inline') === 'true') {
-                      mathMLoptions.inline.attributes.checked = true;
-                    } else {
-                      delete mathMLoptions.inline.attributes.checked;
-                    }
-
-                    trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMLoptions, mathmlCallback);
-                  };
-
-                  trumbowyg.range.deleteContents();
-                  trumbowyg.range.insertNode(node);
-                }
-
-                trumbowyg.currentMathNode = false;
-                MathJax.Hub.Queue(['Typeset', MathJax.Hub]);
-                return true;
-              };
-
-              mathMLoptions.formulas.value = trumbowyg.getRangeText();
-              mathMLoptions.inline.attributes.checked = true;
-              trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMLoptions, mathmlCallback);
-            }
-          };
-          trumbowyg.addBtnDef('mathml', btnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
-!function (e) {
-  "use strict";
-
-  e.extend(!0, e.trumbowyg, {
-    langs: {
-      en: {
-        mathml: "Insert Formulas",
-        formulas: "Formulas",
-        inline: "Inline"
-      },
-      da: {
-        mathml: "Indsæt formler",
-        formulas: "Formler",
-        inline: "Inline"
-      },
-      et: {
-        mathml: "Sisesta valem",
-        formulas: "Valemid",
-        inline: "Teksti sees"
-      },
-      fr: {
-        mathml: "Inserer une formule",
-        formulas: "Formule",
-        inline: "En ligne"
-      },
-      hu: {
-        mathml: "Formulák beszúrás",
-        formulas: "Formulák",
-        inline: "Inline"
-      },
-      ko: {
-        mathml: "수식 넣기",
-        formulas: "수식",
-        inline: "글 안에 넣기"
-      },
-      pt_br: {
-        mathml: "Inserir fórmulas",
-        formulas: "Fórmulas",
-        inline: "Em linha"
-      },
-      tr: {
-        mathml: "Formül Ekle",
-        formulas: "Formüller",
-        inline: "Satır içi"
-      },
-      zh_tw: {
-        mathml: "插入方程式",
-        formulas: "方程式",
-        inline: "內嵌"
-      }
-    },
-    plugins: {
-      mathml: {
-        init: function init(l) {
-          var n = {
-            fn: function fn() {
-              l.saveRange();
-
-              var n = {
-                formulas: {
-                  label: l.lang.formulas,
-                  required: !0,
-                  value: ""
-                },
-                inline: {
-                  label: l.lang.inline,
-                  attributes: {
-                    checked: !0
-                  },
-                  type: "checkbox",
-                  required: !1
-                }
-              },
-                  a = function a(t) {
-                var r = t.inline ? "$" : "$$";
-                if (l.currentMathNode) e(l.currentMathNode).html(r + " " + t.formulas + " " + r).attr("formulas", t.formulas).attr("inline", t.inline ? "true" : "false");else {
-                  var i = '<span class="mathMlContainer" contenteditable="false" formulas="' + t.formulas + '" inline="' + (t.inline ? "true" : "false") + '" >' + r + " " + t.formulas + " " + r + "</span>",
-                      m = e(i)[0];
-                  m.onclick = function () {
-                    l.currentMathNode = this, n.formulas.value = e(this).attr("formulas"), "true" === e(this).attr("inline") ? n.inline.attributes.checked = !0 : delete n.inline.attributes.checked, l.openModalInsert(l.lang.mathml, n, a);
-                  }, l.range.deleteContents(), l.range.insertNode(m);
-                }
-                return l.currentMathNode = !1, MathJax.Hub.Queue(["Typeset", MathJax.Hub]), !0;
-              };
-
-              n.formulas.value = l.getRangeText(), n.inline.attributes.checked = !0, l.openModalInsert(l.lang.mathml, n, a);
-            }
-          };
-          l.addBtnDef("mathml", n);
         }
       }
     }

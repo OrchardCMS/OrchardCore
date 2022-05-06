@@ -5,9 +5,7 @@
   top: 52px;
   bottom: 0;
   right: 0;
-  /*rtl:259px*/
   left: 259px;
-  /*rtl:0px*/
   transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
   background-color: #fff;
 }
@@ -815,9 +813,7 @@
   top: 52px;
   bottom: 0;
   right: 0;
-  /*rtl:259px*/
   left: 259px;
-  /*rtl:0px*/
   transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
   background-color: #fff;
 }
