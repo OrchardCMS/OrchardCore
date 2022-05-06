@@ -1613,3 +1613,8 @@
 :root[data-theme=darkmode] [v-cloak] {
   display: none !important;
 }
+
+[dir=rtl]:root[data-theme=default] #mediaApp, [dir=rtl]:root[data-theme=darkmode] #mediaApp {
+  left: 0;
+  right: 259px;
+}

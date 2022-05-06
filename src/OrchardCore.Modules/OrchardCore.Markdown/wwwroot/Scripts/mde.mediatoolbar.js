@@ -12909,7 +12909,8 @@ $(function () {
       $("#mediaApp").detach().appendTo('#mediaModalMarkdown .modal-body');
       $("#mediaApp").show();
       mediaApp.selectedMedias = [];
-      var modal = $('#mediaModalMarkdown').modal();
+      var modal = new bootstrap.Modal($('#mediaModalMarkdown'));
+      modal.show();
       $('#mediaMarkdownSelectButton').on('click', function (v) {
         var mediaMarkdownContent = "";
 
@@ -12919,7 +12920,7 @@ $(function () {
 
         var cm = editor.codemirror;
         cm.replaceSelection(mediaMarkdownContent);
-        $('#mediaModalMarkdown').modal('hide');
+        modal.hide();
         $(this).off('click');
       });
     },

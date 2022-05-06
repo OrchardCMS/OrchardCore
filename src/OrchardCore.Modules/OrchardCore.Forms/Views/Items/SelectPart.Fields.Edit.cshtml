@@ -13,14 +13,14 @@
             <input type="text" class="form-control courier" v-model="optionValue" placeholder="@T["Enter a value"]" />
         </td>
         <td class="text-center align-middle">
-            <div class="custom-control custom-checkbox ml-2">
-                <input type="checkbox" class="custom-control-input"
+            <div class="form-check ms-2">
+                <input type="checkbox" class="form-check-input"
                         :id=" partId + '_' + option.key + '_id'"
                         :name = " partId + '_name' "
                         v-bind:value="optionCheck"
                         v-model="IsSelected"
                         >
-                <label :for=" partId + '_' + option.key + '_id'" class="custom-control-label" title="@T["Set as default"]" >
+                <label :for=" partId + '_' + option.key + '_id'" class="form-check-label" title="@T["Set as default"]" >
                     <span class="sr-only"></span>
                 </label>
             </div>
@@ -70,19 +70,17 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">@T["Edit Data"]</h5>
-                            <button type="button" class="close" aria-label="Close" v-on:click="closeModal(false)">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <button type="button" class="btn-close" aria-label="Close" v-on:click="closeModal(false)"></button>
                         </div>
                         <div class="modal-body">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label for="select-options-textarea">@T["Options"]</label>
                                 <textarea id="select-options-textarea" name="select-options-textarea" rows="8" class="form-control"
                                 :class="{ 'is-invalid': !isValid }"
                                 v-model="optionsFormattedList"></textarea>
                                 <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { text: 'First option', value: 'option1' }, { text: 'Second option', value: 'option2' } ]"]</span>
                             </div>
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label for="options-default-value">@T["Default value"]</label>
                                 <input id="options-default-value" name="options-default-value" class="form-control" type="text" v-model="defaultValue" />
                                 <span class="hint">@T["(Optional) The value to assign to the select field."]</span>
@@ -102,9 +100,9 @@
     </div>
 </script>
 
-<div id="@Html.IdFor(m => m)" class="form-group">
+<div id="@Html.IdFor(m => m)" class="mb-3">
     <label asp-for="Options">@T["Options"]</label>
-    <a href="#" v-on:click.prevent.stop="showModal = true" class="float-right" title="@T["Edit Data"]"><i class="fas fa-edit" aria-hidden="true"></i></a>
+    <a href="#" v-on:click.prevent.stop="showModal = true" class="float-end" title="@T["Edit Data"]"><i class="fas fa-edit" aria-hidden="true"></i></a>
     <select-options-table :data="state"
                           :mode="'single'"
                           v-on:reorder-option="reorderOption"
