@@ -25,7 +25,7 @@
             <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="auth-form no-multisubmit">
                 <h1 class="fs-4">@T["Log in"]</h1>
                 <hr />
-                <div asp-validation-summary="All" class="text-danger"></div>
+                <div asp-validation-summary="All"></div>
                 <div class="mb-3">
                     <label asp-for="UserName">@T["Username or email address"]</label>
                     <input asp-for="UserName" class="form-control" autofocus tabindex="1" />
