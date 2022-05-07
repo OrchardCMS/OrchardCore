@@ -11,11 +11,11 @@
         @T["You've successfully authenticated with <strong>{0}</strong>. Please fill the form below and click the Register button to complete the registration.", ViewData["LoginProvider"]]
     </p>
     <hr />
-    <div asp-validation-summary="All" class="text-danger"></div>
+    <div asp-validation-summary="All"></div>
 
     @if (!Model.NoUsername || String.IsNullOrWhiteSpace(Model.UserName) || ViewData.ModelState.GetFieldValidationState("UserName") == ModelValidationState.Invalid)
     {
-        <div class="form-group">
+        <div class="mb-3">
             <label asp-for="UserName" class="col-md-3 control-label">@T["Username"]</label>
             <div class="col-md-9">
                 <input asp-for="UserName" class="form-control" autofocus />
@@ -26,7 +26,7 @@
 
     @if (!Model.NoEmail || String.IsNullOrWhiteSpace(Model.Email) || ViewData.ModelState.GetFieldValidationState("Email") == ModelValidationState.Invalid)
     {
-        <div class="form-group">
+        <div class="mb-3">
             <label asp-for="Email" class="col-md-3 control-label">@T["Email"]</label>
             <div class="col-md-9">
                 <input asp-for="Email" class="form-control" />
@@ -37,7 +37,7 @@
 
     @if (!Model.NoPassword)
     {
-        <div class="form-group">
+        <div class="mb-3">
             <label asp-for="Password" class="col-md-3 control-label">@T["Password"]</label>
             <div class="col-md-9">
                 <input asp-for="Password" class="form-control" />
@@ -45,7 +45,7 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="mb-3">
             <label asp-for="ConfirmPassword" class="col-md-3 control-label">@T["Confirm password"]</label>
             <div class="col-md-9">
                 <input asp-for="ConfirmPassword" class="form-control" />
@@ -56,7 +56,7 @@
 
     @await RenderSectionAsync("AfterRegister", required: false)
 
-    <div class="form-group">
+    <div class="mb-3">
         <div class="col-md-offset-3 col-md-9">
             <button type="submit" class="btn btn-primary">@T["Register"]</button>
         </div>

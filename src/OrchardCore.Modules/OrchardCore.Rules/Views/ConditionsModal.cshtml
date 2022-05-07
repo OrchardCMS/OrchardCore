@@ -8,25 +8,25 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="available-rules-title">@T["Available Rules"]</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
+                <div class="mb-3">
                     <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
                 </div>
                 <div id="cards" class="row">
-                    @foreach (var thumbnail in thumbnails.OrderBy(t => t.Key))
-                    {
-                        <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
-                            @await DisplayAsync(thumbnail.Value)
-                        </div>
-                    }
+                    <div class="row row-cols-1 row-cols-md-2 g-2">
+                        @foreach (var thumbnail in thumbnails.OrderBy(t => t.Key))
+                        {
+                            <div class="col">
+                                @await DisplayAsync(thumbnail.Value)
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
             </div>
         </div>
     </div>

@@ -41,7 +41,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
                 if (tabIndex != tabs.Length - 1)
                 {
-                    linkTag.AddCssClass("pr-md-2");
+                    linkTag.AddCssClass("pe-md-2");
                 }
 
                 var aTag = new TagBuilder("a");
@@ -55,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                 var tabId = $"tab-{tab}-{identifier}".HtmlClassify();
 
                 aTag.Attributes["href"] = '#' + tabId;
-                aTag.Attributes["data-toggle"] = "tab";
+                aTag.Attributes["data-bs-toggle"] = "tab";
                 aTag.Attributes["role"] = "tab";
                 aTag.Attributes["aria-controls"] = tabId;
                 aTag.Attributes["aria-selected"] = "false";
@@ -90,8 +90,8 @@ namespace OrchardCore.DisplayManagement.Shapes
             var buttonTag = new TagBuilder("button");
             buttonTag.AddCssClass("btn btn-link btn-block text-left");
             buttonTag.Attributes["type"] = "button";
-            buttonTag.Attributes["data-toggle"] = "collapse";
-            buttonTag.Attributes["data-target"] = $"#collapse-{cardIdPrefix}";
+            buttonTag.Attributes["data-bs-toggle"] = "collapse";
+            buttonTag.Attributes["data-bs-target"] = $"#collapse-{cardIdPrefix}";
             buttonTag.Attributes["aria-expanded"] = "true";
             buttonTag.Attributes["aria-controls"] = $"collapse-{cardIdPrefix}";
 

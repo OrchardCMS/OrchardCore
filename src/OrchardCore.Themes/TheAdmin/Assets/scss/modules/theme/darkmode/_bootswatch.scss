@@ -3,6 +3,7 @@
 
 // Variables ===================================================================
 @import "_admin-variables.scss";
+@import "../../admin/_root.scss";
 // Navbar ======================================================================
 @import "../../admin/_navbar.scss";
 
@@ -12,14 +13,13 @@
 
     a {
         color: $gray-300;
-        text-decoration: none;
+        text-decoration: none !important;
     }
 }
 
 .ta-badge {
-    @extend .badge-dark !optional;
-
-    background-color: darken(#181a1b, 5%)
+    @extend .bg-dark;
+    background-color: darken(#181a1b, 5%) !important;
 }
 
 .ta-navbar-brand {
@@ -52,7 +52,7 @@
     }
 }
 
-.trumbowyg-fullscreen .trumbowyg-editor{
+.trumbowyg-fullscreen .trumbowyg-editor {
     color: black;
 }
 
@@ -210,13 +210,17 @@
 @import "modules/admin/_forms.scss";
 
 .input-group-addon {
-    color: #fff;
+    color: $white;
 }
 
-// Navs ========================================================================
+.form-floating > label {
+    color: $gray-700;
+}
+
+// Navs
 
 .breadcrumb a {
-    color: #fff;
+    color: $white;
 }
 
 .pagination {
@@ -225,18 +229,18 @@
     }
 }
 
-// Indicators ==================================================================
-
-.close {
-    opacity: 0.4;
-
-    &:hover,
-    &:focus {
-        opacity: 1;
-    }
-}
+// Indicators
 
 .alert {
+    border: none;
+    color: $white;
+
+    a,
+    .alert-link {
+        color: $white;
+        text-decoration: underline;
+    }
+
     @each $color, $value in $theme-colors {
         &-#{$color} {
             @if $enable-gradients {
@@ -252,23 +256,34 @@
 
 // Containers ==================================================================
 
-.list-group-item-action {
-    color: #fff;
 
-    &:hover,
-    &:focus {
-        background-color: $gray-700;
-        color: #fff;
-    }
-
-    .list-group-item-heading {
-        color: #fff;
-    }
-}
 
 // Cards
 
-.card-header
-{
+.card-header {
     background-color: #1b1e1f;
+}
+
+// Buttons
+
+@each $color, $value in $theme-colors {
+    .btn-#{$color} {
+        color: #FFF;
+    }
+
+    .btn-#{$color}:hover, .btn-#{$color}:focus {
+        color: #FFF;
+    }
+}
+
+.bootstrap-select {
+    .popover-header {
+        .close {
+            color: white;
+        }
+    }
+}
+
+.modal-header .btn-close {
+    background: white url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/0.6em auto no-repeat;
 }
