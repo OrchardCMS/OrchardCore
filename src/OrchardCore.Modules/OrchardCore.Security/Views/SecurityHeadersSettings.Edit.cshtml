@@ -287,19 +287,17 @@
 </div>
 <script>
     function changeOrigin(e, origin) {
-        var ele = $('#' + e.name + 'AllowedOrigins');
+        var allowedOrigins = $('#' + e.name + 'AllowedOrigins');
 
         if (e.value == "Self") {
-            ele.removeClass('d-none').addClass('d-block');
+            allowedOrigins.removeClass('d-none').addClass('d-block');
 
-            var allowedOrigins = ele.val();
-
-            if (ele.val() != '') {
-                origin += ' ' + allowedOrigins;
+            if (allowedOrigins.val() != '') {
+                origin += ' ' + allowedOrigins.val();
             }
         }
         else {
-            ele.removeClass('d-block').addClass('d-none');
+            allowedOrigins.val().removeClass('d-block').addClass('d-none');
         }
 
         var permissionValue = ele.siblings();

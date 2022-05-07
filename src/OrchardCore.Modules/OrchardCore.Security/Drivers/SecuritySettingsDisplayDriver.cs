@@ -89,31 +89,7 @@ namespace OrchardCore.Security.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                var sandboxPolicy = model.ContentSecurityPolicyValues.SingleOrDefault(p => p.StartsWith(ContentSecurityPolicyValue.Sandbox));
-                var hasSandboxPolicyWithoutValues = sandboxPolicy == ContentSecurityPolicyValue.Sandbox;
-                var upgradeInsecureRequestsPolicy = model.ContentSecurityPolicyValues.SingleOrDefault(p => p == ContentSecurityPolicyValue.UpgradeInsecureRequests);
-
-                model.ContentSecurityPolicyValues.RemoveAll(p => _contentSecurityPolicyNames.Contains(p));
-
-                if (model.EnableSandbox && hasSandboxPolicyWithoutValues)
-                {
-                    model.ContentSecurityPolicyValues.Add(ContentSecurityPolicyValue.Sandbox);
-                }
-
-                if (!model.EnableSandbox && sandboxPolicy != null)
-                {
-                    model.ContentSecurityPolicyValues.Remove(sandboxPolicy);
-                }
-
-                if (model.UpgradeInsecureRequests)
-                {
-                    model.ContentSecurityPolicyValues.Add(ContentSecurityPolicyValue.UpgradeInsecureRequests);
-                }
-
-                if(!model.UpgradeInsecureRequests && upgradeInsecureRequestsPolicy != null)
-                {
-                    model.ContentSecurityPolicyValues.Remove(ContentSecurityPolicyValue.UpgradeInsecureRequests);
-                }
+                PrepareContentSecurityPolicyValues(model);
 
                 section.ContentSecurityPolicy = model.ContentSecurityPolicyValues.ToArray();
                 section.FrameOptions = model.FrameOptions;
@@ -127,6 +103,35 @@ namespace OrchardCore.Security.Drivers
             }
 
             return await EditAsync(section, context);
+        }
+
+        private static void PrepareContentSecurityPolicyValues(SecuritySettingsViewModel model)
+        {
+            var sandboxPolicy = model.ContentSecurityPolicyValues.SingleOrDefault(p => p.StartsWith(ContentSecurityPolicyValue.Sandbox));
+            var hasSandboxPolicyWithoutValues = sandboxPolicy == ContentSecurityPolicyValue.Sandbox;
+            var upgradeInsecureRequestsPolicy = model.ContentSecurityPolicyValues.SingleOrDefault(p => p == ContentSecurityPolicyValue.UpgradeInsecureRequests);
+
+            model.ContentSecurityPolicyValues.RemoveAll(p => _contentSecurityPolicyNames.Contains(p));
+
+            if (model.EnableSandbox && hasSandboxPolicyWithoutValues)
+            {
+                model.ContentSecurityPolicyValues.Add(ContentSecurityPolicyValue.Sandbox);
+            }
+
+            if (!model.EnableSandbox && sandboxPolicy != null)
+            {
+                model.ContentSecurityPolicyValues.Remove(sandboxPolicy);
+            }
+
+            if (model.UpgradeInsecureRequests)
+            {
+                model.ContentSecurityPolicyValues.Add(ContentSecurityPolicyValue.UpgradeInsecureRequests);
+            }
+
+            if (!model.UpgradeInsecureRequests && upgradeInsecureRequestsPolicy != null)
+            {
+                model.ContentSecurityPolicyValues.Remove(ContentSecurityPolicyValue.UpgradeInsecureRequests);
+            }
         }
     }
 }
