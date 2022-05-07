@@ -15,7 +15,7 @@ namespace OrchardCore.Modules
         /// <summary>
         /// Creates an instance of <see cref="PoweredByMiddleware"/>.
         /// </summary>
-        /// <param name="options">The <see cref="IOptions{TOptions}"/>.</param>
+        /// <param name="options">The <see cref="IOptions{PoweredByOptions}"/>.</param>
         /// <param name="next">The <see cref="RequestDelegate"/>.</param>
         public PoweredByMiddleware(IOptions<PoweredByOptions> options, RequestDelegate next)
         {

@@ -4,12 +4,15 @@ using OrchardCore.Modules;
 
 namespace Microsoft.AspNetCore.Builder
 {
-    public static class PoweredByOrchardCoreExtensions
+    /// <summary>
+    /// Provides an extension methods for <see cref="IApplicationBuilder"/> to add X-Powered-By HTTP header.
+    /// </summary>
+    public static class PoweredByExtensions
     {
         private const string DefaultPoweredByValue = "Orchard Core";
 
         /// <summary>
-        /// Configures whether use or not the Header X-Powered-By.
+        /// Configures whether use or not the Header X-Powered-By header.
         /// Default value is OrchardCore.
         /// </summary>
         /// <param name="app">The <see cref="IApplicationBuilder"/>.</param>
