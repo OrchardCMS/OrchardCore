@@ -161,7 +161,7 @@
             {
                 var key = Model.ContentSecurityPolicyValues[i];
                 var value = "";
-                var policy = Model.ContentSecurityPolicy.SingleOrDefault(p => p.StartsWith(Model.ContentSecurityPolicyValues[i]));
+                var policy = Model.ContentSecurityPolicy?.SingleOrDefault(p => p.StartsWith(Model.ContentSecurityPolicyValues[i]));
                 
                 if (policy != null)
                 {
