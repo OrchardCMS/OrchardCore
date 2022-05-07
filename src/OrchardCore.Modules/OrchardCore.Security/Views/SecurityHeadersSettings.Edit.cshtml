@@ -8,65 +8,53 @@
     public LocalizedHtmlString GetContentSecurityPolicyName(string value)
     {
         LocalizedHtmlString name = null;
-        if(value == ContentSecurityPolicyValue.BaseUri)
+        switch (value)
         {
-            name = T["Base URI"];
-        }
-        else if(value == ContentSecurityPolicyValue.ChildSource)
-        {
-            name = T["Child Source"];
-        }
-        else if(value == ContentSecurityPolicyValue.ConnectSource)
-        {
-            name = T["Connect Source"];
-        }
-        else if(value == ContentSecurityPolicyValue.DefaultSource)
-        {
-            name = T["Default Source"];
-        }
-        else if(value == ContentSecurityPolicyValue.FontSource)
-        {
-            name = T["Font Source"];
-        }
-        else if(value == ContentSecurityPolicyValue.FormAction)
-        {
-            name = T["Form Action"];
-        }
-        else if(value == ContentSecurityPolicyValue.FrameAncestors)
-        {
-            name = T["Frame Ancestors"];
-        }
-        else if(value == ContentSecurityPolicyValue.FrameSource)
-        {
-            name = T["Frame Source"];
-        }
-        else if(value == ContentSecurityPolicyValue.ImageSource)
-        {
-            name = T["Image Source"];
-        }
-        else if(value == ContentSecurityPolicyValue.ManifestSource)
-        {
-            name = T["Manifest Source"];
-        }
-        else if(value == ContentSecurityPolicyValue.MediaSource)
-        {
-            name = T["Media Source"];
-        }
-        else if(value == ContentSecurityPolicyValue.ObjectSource)
-        {
-            name = T["Object Source"];
-        }
-        else if(value == ContentSecurityPolicyValue.Sandbox)
-        {
-            name = T["Sandbox"];
-        }
-        else if(value == ContentSecurityPolicyValue.ScriptSource)
-        {
-            name = T["Script Source"];
-        }
-        else if(value == ContentSecurityPolicyValue.StyleSource)
-        {
-            name = T["Style Source"];
+            case ContentSecurityPolicyValue.BaseUri:
+                name = T["Base URI"];
+                break;
+            case ContentSecurityPolicyValue.ChildSource:
+                name = T["Child Source"];
+                break;
+            case ContentSecurityPolicyValue.ConnectSource:
+                name = T["Connect Source"];
+                break;
+            case ContentSecurityPolicyValue.DefaultSource:
+                name = T["Default Source"];
+                break;
+            case ContentSecurityPolicyValue.FontSource:
+                name = T["Font Source"];
+                break;
+            case ContentSecurityPolicyValue.FormAction:
+                name = T["Form Action"];
+                break;
+            case ContentSecurityPolicyValue.FrameAncestors:
+                name = T["Frame Ancestors"];
+                break;
+            case ContentSecurityPolicyValue.FrameSource:
+                name = T["Frame Source"];
+                break;
+            case ContentSecurityPolicyValue.ImageSource:
+                name = T["Image Source"];
+                break;
+            case ContentSecurityPolicyValue.ManifestSource:
+                name = T["Manifest Source"];
+                break;
+            case ContentSecurityPolicyValue.MediaSource:
+                name = T["Media Source"];
+                break;
+            case ContentSecurityPolicyValue.ObjectSource:
+                name = T["Object Source"];
+                break;
+            case ContentSecurityPolicyValue.Sandbox:
+                name = T["Sandbox"];
+                break;
+            case ContentSecurityPolicyValue.ScriptSource:
+                name = T["Script Source"];
+                break;
+            case ContentSecurityPolicyValue.StyleSource:
+                name = T["Style Source"];
+                break;
         }
 
         return name;
@@ -75,87 +63,70 @@
     public LocalizedHtmlString GetPermissionPolicyName(string value)
     {
         LocalizedHtmlString name = null;
-        if(value == PermissionsPolicyValue.Accelerometer)
+        switch (value)
         {
-            name = T["Accelerometer"];
+            case PermissionsPolicyValue.Accelerometer:
+                name = T["Accelerometer"];
+                break;
+            case PermissionsPolicyValue.AmbientLightSensor:
+                name = T["Ambient Light Sensor"];
+                break;
+            case PermissionsPolicyValue.Autoplay:
+                name = T["Autoplay"];
+                break;
+            case PermissionsPolicyValue.Camera:
+                name = T["Camera"];
+                break;
+            case PermissionsPolicyValue.EncryptedMedia:
+                name = T["Encrypted Media"];
+                break;
+            case PermissionsPolicyValue.FullScreen:
+                name = T["Full Screen"];
+                break;
+            case PermissionsPolicyValue.Geolocation:
+                name = T["Geolocation"];
+                break;
+            case PermissionsPolicyValue.Gyroscope:
+                name = T["Gyroscope"];
+                break;
+            case PermissionsPolicyValue.Magnetometer:
+                name = T["Magnetometer"];
+                break;
+            case PermissionsPolicyValue.Microphone:
+                name = T["Microphone"];
+                break;
+            case PermissionsPolicyValue.Midi:
+                name = T["Midi"];
+                break;
+            case PermissionsPolicyValue.Notifications:
+                name = T["Notifications"];
+                break;
+            case PermissionsPolicyValue.Payment:
+                name = T["Payment"];
+                break;
+            case PermissionsPolicyValue.PictureInPicture:
+                name = T["Picture In Picture"];
+                break;
+            case PermissionsPolicyValue.Push:
+                name = T["Push"];
+                break;
+            case PermissionsPolicyValue.Speaker:
+                name = T["Speaker"];
+                break;
+            case PermissionsPolicyValue.SyncXhr:
+                name = T["Synchronous XML Http Request"];
+                break;
+            case PermissionsPolicyValue.Usb:
+                name = T["USB"];
+                break;
+            case PermissionsPolicyValue.Vibrate:
+                name = T["Vibrate"];
+                break;
+            case PermissionsPolicyValue.VR:
+                name = T["VR"];
+                break;
         }
-        else if(value == PermissionsPolicyValue.AmbientLightSensor)
-        {
-            name = T["Ambient Light Sensor"];
-        }
-        else if(value == PermissionsPolicyValue.Autoplay)
-        {
-            name = T["Autoplay"];
-        }
-        else if(value == PermissionsPolicyValue.Camera)
-        {
-            name = T["Camera"];
-        }
-        else if(value == PermissionsPolicyValue.EncryptedMedia)
-        {
-            name = T["Encrypted Media"];
-        }
-        else if(value == PermissionsPolicyValue.FullScreen)
-        {
-            name = T["Full Screen"];
-        }
-        else if(value == PermissionsPolicyValue.Geolocation)
-        {
-            name = T["Geolocation"];
-        }
-        else if(value == PermissionsPolicyValue.Gyroscope)
-        {
-            name = T["Gyroscope"];
-        }
-        else if(value == PermissionsPolicyValue.Magnetometer)
-        {
-            name = T["Magnetometer"];
-        }
-        else if(value == PermissionsPolicyValue.Microphone)
-        {
-            name = T["Microphone"];
-        }
-        else if(value == PermissionsPolicyValue.Midi)
-        {
-            name = T["Midi"];
-        }
-        else if(value == PermissionsPolicyValue.Notifications)
-        {
-            name = T["Notifications"];
-        }
-        else if(value == PermissionsPolicyValue.Payment)
-        {
-            name = T["Payment"];
-        }
-        else if(value == PermissionsPolicyValue.PictureInPicture)
-        {
-            name = T["Picture In Picture"];
-        }
-        else if(value == PermissionsPolicyValue.Push)
-        {
-            name = T["Push"];
-        }
-        else if(value == PermissionsPolicyValue.Speaker)
-        {
-            name = T["Speaker"];
-        }
-        else if(value == PermissionsPolicyValue.SyncXhr)
-        {
-            name = T["Synchronous XML Http Request"];
-        }
-        else if(value == PermissionsPolicyValue.Usb)
-        {
-            name = T["USB"];
-        }
-        else if(value == PermissionsPolicyValue.Vibrate)
-        {
-            name = T["Vibrate"];
-        }
-        else if(value == PermissionsPolicyValue.VR)
-        {
-            name = T["VR"];
-        }
-
+        
         return name;
     }
 }

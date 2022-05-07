@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using OrchardCore.Security.Services;
 
@@ -30,7 +31,7 @@ namespace OrchardCore.Security.Options
         public IList<IHeaderPolicyProvider> HeaderPolicyProviders { get; set; }
 
         public SecurityHeadersOptions AddContentSecurityPolicy(string policies)
-            => AddContentSecurityPolicy(policies.Split(SecurityHeaderDefaults.PoliciesSeparater));
+            => AddContentSecurityPolicy(policies.Split(SecurityHeaderDefaults.PoliciesSeparator, StringSplitOptions.RemoveEmptyEntries));
 
         public SecurityHeadersOptions AddContentSecurityPolicy(params string[] policies)
         {
@@ -54,7 +55,7 @@ namespace OrchardCore.Security.Options
         }
 
         public SecurityHeadersOptions AddPermissionsPolicy(string policies)
-            => AddPermissionsPolicy(policies.Split(SecurityHeaderDefaults.PoliciesSeparater));
+            => AddPermissionsPolicy(policies.Split(SecurityHeaderDefaults.PoliciesSeparator, StringSplitOptions.RemoveEmptyEntries));
 
         public SecurityHeadersOptions AddPermissionsPolicy(params string[] policies)
         {

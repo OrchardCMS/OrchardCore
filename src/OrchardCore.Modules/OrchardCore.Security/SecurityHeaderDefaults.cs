@@ -5,7 +5,7 @@ namespace OrchardCore.Security
 {
     public static class SecurityHeaderDefaults
     {
-        internal static readonly string PoliciesSeparater = ", ";
+        internal static readonly char PoliciesSeparator = ';';
 
         public static readonly string[] ContentSecurityPolicy = Array.Empty<string>();
 

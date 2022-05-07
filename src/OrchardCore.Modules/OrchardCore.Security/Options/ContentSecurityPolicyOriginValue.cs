@@ -2,10 +2,10 @@ namespace OrchardCore.Security.Options
 {
     public class ContentSecurityPolicyOriginValue
     {
-        public static readonly string Any = "*";
+        public const string Any = "*";
 
-        public static readonly string None = "'none'";
+        public const string None = "'none'";
 
-        public static readonly string Self = "'self'";
+        public const string Self = "'self'";
     }
 }
