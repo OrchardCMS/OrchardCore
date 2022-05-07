@@ -12,27 +12,17 @@
 <div class="form-group" asp-validation-class-for="UsersCanRegister">
     <label asp-for="UsersCanRegister">@T["Configure users registration."]</label>
     <select asp-for="UsersCanRegister" class="form-control">
-        @foreach (UserRegistrationType option in Enum.GetValues(typeof(UserRegistrationType)))
-        {
-            <option value="@option" selected="@(Model.UsersCanRegister == option)">
-                @{
-                    switch (option)
-                    {
-                        case UserRegistrationType.NoRegistration: @T["NoRegistration"]; break;
-                        case UserRegistrationType.AllowRegistration: @T["AllowRegistration"]; break;
-                        case UserRegistrationType.AllowOnlyExternalUsers: @T["AllowOnlyExternalUsers"]; break;
-                    }
-                }
-            </option>
-        }
+        <option value="@UserRegistrationType.NoRegistration" selected="@(Model.UsersCanRegister == UserRegistrationType.NoRegistration)">@T["No Registration"]</option>
+        <option value="@UserRegistrationType.AllowRegistration" selected="@(Model.UsersCanRegister == UserRegistrationType.AllowRegistration)">@T["Allow Registration"]</option>
+        <option value="@UserRegistrationType.AllowOnlyExternalUsers" selected="@(Model.UsersCanRegister == UserRegistrationType.AllowOnlyExternalUsers)">@T["Allow Only External Users"]</option>
     </select>
     <span asp-validation-for="UsersCanRegister"></span>
 
     <div class="hint">
         <ul>
-            <li>@T["when NoRegistration is selected, no new users can register"]</li>
-            <li>@T["when AllowRegistration is selected, a link is displayed to allow the users to register on the site. If there are external providers, once authenticated the user can register"]</li>
-            <li>@T["when AllowOnlyExternalUsers is selected, only users authenticated with external providers can register on the site"]</li>
+            <li>@T["when 'No Registration' is selected, no new users can register"]</li>
+            <li>@T["when 'Allow Registration' is selected, a link is displayed to allow the users to register on the site. If there are external providers, once authenticated the user can register"]</li>
+            <li>@T["when 'Allow Only External Users' is selected, only users authenticated with external providers can register on the site"]</li>
         </ul>
     </div>
 </div>
