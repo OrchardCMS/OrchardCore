@@ -15,15 +15,15 @@ public class SeoMetaQueryObjectType : ObjectGraphType<SeoMetaPart>
 
         Field(x => x.Render)
             .Description("Whether to render the seo metas");
-        Field(x => x.PageTitle)
+        Field(x => x.PageTitle, true)
             .Description("The seo page title");
-        Field(x => x.MetaDescription)
+        Field(x => x.MetaDescription, true)
             .Description("The meta description of the content item");
-        Field(x => x.MetaKeywords)
+        Field(x => x.MetaKeywords, true)
             .Description("The meta keywords of the content item");
-        Field(x => x.Canonical)
+        Field(x => x.Canonical, true)
             .Description("The canonical link of the content item");
-        Field( x => x.MetaRobots)
+        Field( x => x.MetaRobots, true)
             .Description("The content item specific meta robots definition");
 
         Field<ListGraphType<MetaEntryQueryObjectType>>()
@@ -38,29 +38,29 @@ public class SeoMetaQueryObjectType : ObjectGraphType<SeoMetaPart>
             .Name("openGraphImage")
             .Resolve(ctx => ctx.Source.OpenGraphImage);
 
-        Field( x => x.OpenGraphType)
+        Field( x => x.OpenGraphType, true)
             .Description("The seo meta opengraph type");
-        Field( x => x.OpenGraphTitle)
+        Field( x => x.OpenGraphTitle, true)
             .Description("The seo meta opengraph title");
-        Field( x => x.OpenGraphDescription)
+        Field( x => x.OpenGraphDescription, true)
             .Description("The seo meta opengraph description");
 
         Field<ObjectGraphType<MediaField>>()
             .Name("twitterImage")
             .Resolve(ctx => ctx.Source.TwitterImage);
 
-        Field( x => x.TwitterTitle)
+        Field( x => x.TwitterTitle, true)
             .Description("The seo meta twitter title");
-        Field( x => x.TwitterDescription)
+        Field( x => x.TwitterDescription, true)
             .Description("The seo meta twitter description");
-        Field( x => x.TwitterCard)
+        Field( x => x.TwitterCard, true)
             .Description("The seo meta twitter card");
-        Field( x => x.TwitterCreator)
+        Field( x => x.TwitterCreator, true)
             .Description("The seo meta twitter creator");
-        Field( x => x.TwitterSite)
+        Field( x => x.TwitterSite, true)
             .Description("The seo meta twitter site");
 
-        Field( x => x.GoogleSchema)
+        Field( x => x.GoogleSchema, true)
             .Description("The seo meta google schema");
 
     }
