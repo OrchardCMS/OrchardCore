@@ -145,7 +145,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 }
                 else
                 {
-                    var itemName = Path.GetFileName(WebUtility.UrlDecode(blob.Blob.Name)).Trim('/');
+                    var itemName = Path.GetFileName(blob.Blob.Name).Trim('/');
                     // Ignore directory marker files.
                     if (itemName != _directoryMarkerFileName)
                     {
