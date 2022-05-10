@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices((tenantServices, serviceProvider) =>
             {
-                var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("SecuritySettings");
+                var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Security");
 
                 tenantServices.PostConfigure<SecuritySettings>(settings =>
                 {
