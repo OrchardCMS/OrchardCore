@@ -14,11 +14,11 @@ namespace OrchardCore.Security.Services
             var securitySettings = _securityService.GetSettingsAsync()
                 .GetAwaiter().GetResult();
 
-            options.ContentSecurityPolicy = securitySettings.ContentSecurityPolicy ?? SecurityHeaderDefaults.ContentSecurityPolicy;
-            options.ContentTypeOptions = securitySettings.ContentTypeOptions ?? SecurityHeaderDefaults.ContentTypeOptions;
-            options.FrameOptions = securitySettings.FrameOptions ?? SecurityHeaderDefaults.FrameOptions;
-            options.PermissionsPolicy = securitySettings.PermissionsPolicy ?? SecurityHeaderDefaults.PermissionsPolicy;
-            options.ReferrerPolicy = securitySettings.ReferrerPolicy ?? SecurityHeaderDefaults.ReferrerPolicy;
+            options.ContentSecurityPolicy = securitySettings.ContentSecurityPolicy;
+            options.ContentTypeOptions = securitySettings.ContentTypeOptions;
+            options.FrameOptions = securitySettings.FrameOptions;
+            options.PermissionsPolicy = securitySettings.PermissionsPolicy;
+            options.ReferrerPolicy = securitySettings.ReferrerPolicy;
         }
     }
 }

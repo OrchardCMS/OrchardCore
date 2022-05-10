@@ -20,14 +20,9 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
 
                     // Reset the settings to avoid merging with the current settings values
-                    settings = new SecuritySettings
-                    {
-                        ContentSecurityPolicy = SecurityHeaderDefaults.ContentSecurityPolicy,
-                        ContentTypeOptions = SecurityHeaderDefaults.ContentTypeOptions,
-                        FrameOptions = SecurityHeaderDefaults.FrameOptions,
-                        PermissionsPolicy = SecurityHeaderDefaults.PermissionsPolicy,
-                        ReferrerPolicy = SecurityHeaderDefaults.ReferrerPolicy
-                    };
+                    settings.ContentSecurityPolicy = SecurityHeaderDefaults.ContentSecurityPolicy;
+                    settings.PermissionsPolicy = SecurityHeaderDefaults.PermissionsPolicy;
+
                     shellConfiguration.Bind(settings);
                 });
             });

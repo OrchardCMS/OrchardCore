@@ -2,6 +2,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -42,6 +44,8 @@ namespace OrchardCore.Security.Drivers
                 return null;
             }
 
+            settings = _httpContextAccessor.HttpContext.RequestServices.GetService<IOptions<SecuritySettings>>().Value;
+
             return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {
                 model.ContentSecurityPolicy = settings.ContentSecurityPolicy;
@@ -49,7 +53,7 @@ namespace OrchardCore.Security.Drivers
                 model.FrameOptions = settings.FrameOptions;
                 model.PermissionsPolicy = settings.PermissionsPolicy;
                 model.PermissionsPolicyValues = SecurityHeaderDefaults.PermissionsPolicyNames.ToList();
-                model.ReferrerPolicy = settings.ReferrerPolicy ?? SecurityHeaderDefaults.ReferrerPolicy;
+                model.ReferrerPolicy = settings.ReferrerPolicy;
                 model.EnableSandbox = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.Any(p => p.StartsWith(ContentSecurityPolicyValue.Sandbox));
                 model.UpgradeInsecureRequests = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.Any(p => p == ContentSecurityPolicyValue.UpgradeInsecureRequests);
             }).Location("Content:2").OnGroup(SettingsGroupId);
