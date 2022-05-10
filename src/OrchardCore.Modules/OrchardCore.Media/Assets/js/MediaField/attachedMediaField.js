@@ -18,7 +18,9 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
             allowMediaText: allowMediaText,
             backupMediaText: '',
             allowAnchors: allowAnchors,
-            backupAnchor: null
+            backupAnchor: null,
+            mediaTextmodal: null,
+            anchoringModal: null
         },
         created: function () {
             var self = this;
@@ -219,15 +221,17 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                 this.selectedMedia = null;
             },
             showMediaTextModal: function (event) {
-                $(this.$refs.mediaTextModal).modal();
+                this.mediaTextModal = new bootstrap.Modal(this.$refs.mediaTextModal);
+                this.mediaTextModal.show();
                 this.backupMediaText = this.selectedMedia.mediaText;
             },
             cancelMediaTextModal: function (event) {
-                $(this.$refs.mediaTextModal).modal('hide');
+                this.mediaTextModal.hide();
                 this.selectedMedia.mediaText = this.backupMediaText;
             }, 
             showAnchorModal: function (event) {
-                $(this.$refs.anchoringModal).modal();
+                this.anchoringModal = new bootstrap.Modal(this.$refs.anchoringModal);
+                this.anchoringModal.show();
                 // Cause a refresh to recalc heights.
                 this.selectedMedia.anchor = {
                   x: this.selectedMedia.anchor.x,
@@ -236,7 +240,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                 this.backupAnchor = this.selectedMedia.anchor;
             },           
             cancelAnchoringModal: function (event) {
-                $(this.$refs.anchoringModal).modal('hide');
+                this.anchoringModal.hide();
                 this.selectedMedia.anchor = this.backupAnchor;
             },            
             resetAnchor: function (event) {

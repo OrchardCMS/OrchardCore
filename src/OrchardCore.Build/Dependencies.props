@@ -12,7 +12,7 @@
     <PackageManagement Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.1" />
     <PackageManagement Include="Azure.Identity" Version="1.6.0" />
-    <PackageManagement Include="Azure.Storage.Blobs" Version="12.11.0" />
+    <PackageManagement Include="Azure.Storage.Blobs" Version="12.12.0" />
     <PackageManagement Include="BenchmarkDotNet" Version="0.13.1" />
     <PackageManagement Include="Castle.Core" Version="4.4.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
@@ -47,7 +47,7 @@
     <PackageManagement Include="System.Linq.Async" Version="6.0.1" />
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
     <PackageManagement Include="xunit" Version="2.4.1" />
-    <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.3" />
+    <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.5" />
     <PackageManagement Include="YesSql" Version="3.0.12" />
     <PackageManagement Include="YesSql.Core" Version="3.0.12" />
     <PackageManagement Include="YesSql.Abstractions" Version="3.0.12" />
