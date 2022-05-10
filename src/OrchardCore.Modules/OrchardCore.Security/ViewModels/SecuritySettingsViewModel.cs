@@ -16,6 +16,8 @@ namespace OrchardCore.Security.ViewModels
 
         public string[] PermissionsPolicy { get; set; }
 
+        public List<string> PermissionsPolicyValues { get; set; }
+
         public string ReferrerPolicy { get; set; }
     }
 }

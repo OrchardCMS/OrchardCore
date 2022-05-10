@@ -167,7 +167,8 @@
                 {
                     var keyValueSeparatorIndex = policy.IndexOf(' ');
 
-                    if (keyValueSeparatorIndex > -1) {
+                    if (keyValueSeparatorIndex > -1)
+                    {
                         key = policy.Substring(0, keyValueSeparatorIndex);
                         value = policy.Substring(keyValueSeparatorIndex + 1);
                     }
@@ -212,19 +213,29 @@
             </tr>
         </thead>
         <tbody>
-            @for (var i = 0; i < Model.PermissionsPolicy.Length; i++)
+            @for (var i = 0; i < Model.PermissionsPolicyValues.Count; i++)
             {
-                var keyValueSeparatorIndex = Model.PermissionsPolicy[i].IndexOf('=');
-                var key = Model.PermissionsPolicy[i].Substring(0, keyValueSeparatorIndex);
-                var value = Model.PermissionsPolicy[i].Substring(keyValueSeparatorIndex + 1);
-                var originSeparatorIndex = value.IndexOf(' ');
-                var originType = Model.PermissionsPolicy[i].Substring(keyValueSeparatorIndex + 1);
+                var key = Model.PermissionsPolicyValues[i];
+                var value = String.Empty;
+                var originType = PermissionsPolicyOriginValue.None;
                 var allowedOrigins = String.Empty;
-                if (originSeparatorIndex > -1)
+                var policy = Model.PermissionsPolicy?.SingleOrDefault(p => p.StartsWith(Model.PermissionsPolicyValues[i]));
+
+                if (policy != null)
                 {
-                    originType = value.Substring(0, originSeparatorIndex);
-                    allowedOrigins = value.Substring(originSeparatorIndex + 1);
+                    var keyValueSeparatorIndex = policy.IndexOf('=');
+                    value = policy.Substring(keyValueSeparatorIndex + 1);
+
+                    var originSeparatorIndex = value.IndexOf(' ');
+                    originType = policy.Substring(keyValueSeparatorIndex + 1);
+
+                    if (originSeparatorIndex > -1)
+                    {
+                        originType = value.Substring(0, originSeparatorIndex);
+                        allowedOrigins = value.Substring(originSeparatorIndex + 1);
+                    }
                 }
+
                 <tr>
                     <td>@GetPermissionPolicyName(key)</td>
                     <td>
@@ -245,7 +256,7 @@
                     <td>
                         <div class="form-group mb-0">
                             <input class="form-control d-@(originType == PermissionsPolicyOriginValue.Self ? "block" : "none")" id="@(key)AllowedOrigins" placeholder="https://www.domain.com https://www.another.domain.com" value="@allowedOrigins" oninput="changeAllowedOrigins(this)" />
-                            @Html.HiddenFor(m => m.PermissionsPolicy[i])
+                            <input id="@Html.IdFor(m => m.PermissionsPolicyValues[i])" name="@Html.NameFor(m => m.PermissionsPolicyValues[i])" type="hidden" value="@($"{key}={PermissionsPolicyOriginValue.None}")"/>
                         </div>
                     </td>
                 </tr>
@@ -300,15 +311,13 @@
             allowedOrigins.removeClass('d-block').addClass('d-none');
         }
 
-        var permissionValue = allowedOrigins.siblings();
-
-        allowedOrigins.siblings().val(permissionValue.val().substr(0, permissionValue.val().indexOf('=') + 1) +  origin);
+        allowedOrigins.siblings().val(e.name + '=' + origin);
     }
 
     function changeAllowedOrigins(e) {
         var permissionValue = $(e).siblings();
         var value = permissionValue.val().substr(0, permissionValue.val().indexOf('=self') + 5);
-        
+
         if (e.value != '') {
             value += ' ';
         }

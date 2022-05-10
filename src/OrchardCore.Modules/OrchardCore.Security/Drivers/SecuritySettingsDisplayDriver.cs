@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -16,25 +15,6 @@ namespace OrchardCore.Security.Drivers
     public class SecuritySettingsDisplayDriver : SectionDisplayDriver<ISite, SecuritySettings>
     {
         internal const string SettingsGroupId = "SecurityHeaders";
-
-        private static readonly List<string> _contentSecurityPolicyNames = new()
-        {
-            ContentSecurityPolicyValue.BaseUri,
-            ContentSecurityPolicyValue.ChildSource,
-            ContentSecurityPolicyValue.ConnectSource,
-            ContentSecurityPolicyValue.DefaultSource,
-            ContentSecurityPolicyValue.FontSource,
-            ContentSecurityPolicyValue.FormAction,
-            ContentSecurityPolicyValue.FrameAncestors,
-            ContentSecurityPolicyValue.FrameSource,
-            ContentSecurityPolicyValue.ImageSource,
-            ContentSecurityPolicyValue.ManifestSource,
-            ContentSecurityPolicyValue.MediaSource,
-            ContentSecurityPolicyValue.ObjectSource,
-            ContentSecurityPolicyValue.ScriptSource,
-            ContentSecurityPolicyValue.StyleSource,
-            ContentSecurityPolicyValue.Sandbox
-        };
 
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
@@ -65,9 +45,10 @@ namespace OrchardCore.Security.Drivers
             return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {
                 model.ContentSecurityPolicy = settings.ContentSecurityPolicy;
-                model.ContentSecurityPolicyValues = _contentSecurityPolicyNames;
-                model.FrameOptions = settings.FrameOptions ?? SecurityHeaderDefaults.FrameOptions;
-                model.PermissionsPolicy = settings.PermissionsPolicy ?? SecurityHeaderDefaults.PermissionsPolicy;
+                model.ContentSecurityPolicyValues = SecurityHeaderDefaults.ContentSecurityPolicyNames.ToList();
+                model.FrameOptions = settings.FrameOptions;
+                model.PermissionsPolicy = settings.PermissionsPolicy;
+                model.PermissionsPolicyValues = SecurityHeaderDefaults.PermissionsPolicyNames.ToList();
                 model.ReferrerPolicy = settings.ReferrerPolicy ?? SecurityHeaderDefaults.ReferrerPolicy;
                 model.EnableSandbox = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.Any(p => p.StartsWith(ContentSecurityPolicyValue.Sandbox));
                 model.UpgradeInsecureRequests = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.Any(p => p == ContentSecurityPolicyValue.UpgradeInsecureRequests);
@@ -91,9 +72,12 @@ namespace OrchardCore.Security.Drivers
 
                 PrepareContentSecurityPolicyValues(model);
 
+                model.PermissionsPolicyValues.RemoveAll(p => SecurityHeaderDefaults.PermissionsPolicyNames.Contains(p));
+
+                section.ContentTypeOptions = SecurityHeaderDefaults.ContentTypeOptions;
                 section.ContentSecurityPolicy = model.ContentSecurityPolicyValues.ToArray();
                 section.FrameOptions = model.FrameOptions;
-                section.PermissionsPolicy = model.PermissionsPolicy;
+                section.PermissionsPolicy = model.PermissionsPolicyValues.ToArray();
                 section.ReferrerPolicy = model.ReferrerPolicy;
 
                 if (context.Updater.ModelState.IsValid)
@@ -111,7 +95,7 @@ namespace OrchardCore.Security.Drivers
             var hasSandboxPolicyWithoutValues = sandboxPolicy == ContentSecurityPolicyValue.Sandbox;
             var upgradeInsecureRequestsPolicy = model.ContentSecurityPolicyValues.SingleOrDefault(p => p == ContentSecurityPolicyValue.UpgradeInsecureRequests);
 
-            model.ContentSecurityPolicyValues.RemoveAll(p => _contentSecurityPolicyNames.Contains(p));
+            model.ContentSecurityPolicyValues.RemoveAll(p => SecurityHeaderDefaults.ContentSecurityPolicyNames.Contains(p));
 
             if (model.EnableSandbox && hasSandboxPolicyWithoutValues)
             {

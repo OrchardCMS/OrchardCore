@@ -26,7 +26,7 @@ namespace OrchardCore.Security.Extensions.Tests
             Assert.Equal(SecurityHeaderDefaults.ContentSecurityPolicy, context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
             Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
             Assert.Equal(SecurityHeaderDefaults.FrameOptions, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
-            Assert.Equal("accelerometer=(),ambient-light-sensor=(),autoplay=(),camera=(),encrypted-media=(),fullscreen=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),midi=(),notifications=(),payment=(),picture-in-picture=(),push=(),speaker=(),sync-xhr=(),usb=(),vibrate=(),vr=()", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
+            Assert.Equal(SecurityHeaderDefaults.PermissionsPolicy, context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
             Assert.Equal(SecurityHeaderDefaults.ReferrerPolicy, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
         }
 

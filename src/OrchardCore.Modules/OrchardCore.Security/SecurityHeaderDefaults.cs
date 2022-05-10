@@ -6,6 +6,47 @@ namespace OrchardCore.Security
     public static class SecurityHeaderDefaults
     {
         internal static readonly char PoliciesSeparator = ',';
+        internal static readonly string[] ContentSecurityPolicyNames = new[]
+        {
+            ContentSecurityPolicyValue.BaseUri,
+            ContentSecurityPolicyValue.ChildSource,
+            ContentSecurityPolicyValue.ConnectSource,
+            ContentSecurityPolicyValue.DefaultSource,
+            ContentSecurityPolicyValue.FontSource,
+            ContentSecurityPolicyValue.FormAction,
+            ContentSecurityPolicyValue.FrameAncestors,
+            ContentSecurityPolicyValue.FrameSource,
+            ContentSecurityPolicyValue.ImageSource,
+            ContentSecurityPolicyValue.ManifestSource,
+            ContentSecurityPolicyValue.MediaSource,
+            ContentSecurityPolicyValue.ObjectSource,
+            ContentSecurityPolicyValue.ScriptSource,
+            ContentSecurityPolicyValue.StyleSource,
+            ContentSecurityPolicyValue.Sandbox
+        };
+        internal static readonly string[] PermissionsPolicyNames = new[]
+        {
+            PermissionsPolicyValue.Accelerometer,
+            PermissionsPolicyValue.AmbientLightSensor,
+            PermissionsPolicyValue.Autoplay,
+            PermissionsPolicyValue.Camera,
+            PermissionsPolicyValue.EncryptedMedia,
+            PermissionsPolicyValue.FullScreen,
+            PermissionsPolicyValue.Geolocation,
+            PermissionsPolicyValue.Gyroscope,
+            PermissionsPolicyValue.Magnetometer,
+            PermissionsPolicyValue.Microphone,
+            PermissionsPolicyValue.Midi,
+            PermissionsPolicyValue.Notifications,
+            PermissionsPolicyValue.Payment,
+            PermissionsPolicyValue.PictureInPicture,
+            PermissionsPolicyValue.Push,
+            PermissionsPolicyValue.Speaker,
+            PermissionsPolicyValue.SyncXhr,
+            PermissionsPolicyValue.Usb,
+            PermissionsPolicyValue.Vibrate,
+            PermissionsPolicyValue.VR
+        };
 
         public static readonly string[] ContentSecurityPolicy = Array.Empty<string>();
 
@@ -13,29 +54,7 @@ namespace OrchardCore.Security
 
         public static readonly string FrameOptions = FrameOptionsValue.SameOrigin;
 
-        public static readonly string[] PermissionsPolicy = new[]
-        {
-            $"{PermissionsPolicyValue.Accelerometer}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.AmbientLightSensor}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.Autoplay}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.Camera}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.EncryptedMedia}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.FullScreen}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.Geolocation}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.Gyroscope}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.Magnetometer}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.Microphone}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.Midi}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.Notifications}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.Payment}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.PictureInPicture}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.Push}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.Speaker}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.SyncXhr}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.Usb}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.Vibrate}={PermissionsPolicyOriginValue.None}",
-            $"{PermissionsPolicyValue.VR}={PermissionsPolicyOriginValue.None}"
-        };
+        public static readonly string[] PermissionsPolicy = Array.Empty<string>();
 
         public static readonly string ReferrerPolicy = ReferrerPolicyValue.NoReferrer;
     }
