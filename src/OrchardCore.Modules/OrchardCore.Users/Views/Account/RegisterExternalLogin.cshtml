@@ -11,7 +11,7 @@
         @T["You've successfully authenticated with <strong>{0}</strong>. Please fill the form below and click the Register button to complete the registration.", ViewData["LoginProvider"]]
     </p>
     <hr />
-    <div asp-validation-summary="All" class="text-danger"></div>
+    <div asp-validation-summary="All"></div>
 
     @if (!Model.NoUsername || String.IsNullOrWhiteSpace(Model.UserName) || ViewData.ModelState.GetFieldValidationState("UserName") == ModelValidationState.Invalid)
     {

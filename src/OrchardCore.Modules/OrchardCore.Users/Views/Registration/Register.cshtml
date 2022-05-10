@@ -8,7 +8,7 @@
 <form asp-controller="Registration" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal no-multisubmit">
     <h4>@T["Create a new account."]</h4>
     <hr />
-    <div asp-validation-summary="All" class="text-danger"></div>
+    <div asp-validation-summary="All"></div>
     <div class="mb-3">
         <label asp-for="UserName" class="col-md-3 control-label">@T["Username"]</label>
         <div class="col-md-9">

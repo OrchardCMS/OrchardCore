@@ -56,8 +56,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | bootstrap             | Script | 4.6.1         | popper         |
 | bootstrap             | Script | 5.1.3         | popperjs       |
 | bootstrap             | Style  | 4.6.1, 5.1.3  | -              |
-| bootstrap-select      | Script | 1.13.18       | -              |
-| bootstrap-select      | Style  | 1.13.18       | -              |
+| bootstrap-select      | Script | 1.14.0-beta3  | -              |
+| bootstrap-select      | Style  | 1.14.0-beta3  | -              |
 | nouislider            | Script | 15.5.1        | -              |
 | nouislider            | Style  | 15.5.1        | -              |
 | codemirror            | Script | 5.65.3        | -              |
@@ -71,6 +71,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | vuedraggable          | Script | 2.24.3        | Sortable       |
 | monaco-loader         | Script | 0.32.1        | -              |
 | monaco                | Script | 0.32.1        | monaco-loader  |
+| nouislider            | Script | 15.6.0        | -              |
+| nouislider            | Style  | 15.6.0        | -              |
 
 ### Registering a Resource Manifest
 
