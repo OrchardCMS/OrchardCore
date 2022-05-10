@@ -297,12 +297,12 @@
             }
         }
         else {
-            allowedOrigins.val().removeClass('d-block').addClass('d-none');
+            allowedOrigins.removeClass('d-block').addClass('d-none');
         }
 
-        var permissionValue = ele.siblings();
+        var permissionValue = allowedOrigins.siblings();
 
-        ele.siblings().val(permissionValue.val().substr(0, permissionValue.val().indexOf('=') + 1) +  origin);
+        allowedOrigins.siblings().val(permissionValue.val().substr(0, permissionValue.val().indexOf('=') + 1) +  origin);
     }
 
     function changeAllowedOrigins(e) {
