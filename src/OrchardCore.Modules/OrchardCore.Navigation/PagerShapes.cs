@@ -223,7 +223,7 @@ namespace OrchardCore.Navigation
             // first and previous pages
             if ((Page > 1) && (routeData.ContainsKey(pageKey)))
             {
-                routeData.Remove(pageKey); // to keep from having "page=1" in the query string
+                routeData.Remove(pageKey); // to keep from having "pagenum=1" in the query string
             }
 
             // first
@@ -244,7 +244,7 @@ namespace OrchardCore.Navigation
 
             // previous
             if ((Page > 1) && (currentPage > 2))
-            { // also to keep from having "page=1" in the query string
+            { // also to keep from having "pagenum=1" in the query string
                 routeData[pageKey] = currentPage - 1;
             }
 
@@ -278,9 +278,18 @@ namespace OrchardCore.Navigation
             {
                 for (var p = firstPage; p <= lastPage; p++)
                 {
+                    if (p == 1)
+                    {
+                        // to keep from having "pagenum=1" in the query string
+                        routeData.Remove(pageKey);
+                    }
+                    else
+                    {
+                        routeData[pageKey] = p;
+                    }
+
                     if (p == currentPage)
                     {
-                        routeData[pageKey] = currentPage;
                         var currentPageItem = await shapeFactory.CreateAsync("Pager_CurrentPage", Arguments.From(new
                         {
                             Value = p,
@@ -297,15 +306,6 @@ namespace OrchardCore.Navigation
                     }
                     else
                     {
-                        if (p == 1)
-                        {
-                            routeData.Remove(pageKey);
-                        }
-                        else
-                        {
-                            routeData[pageKey] = p;
-                        }
-
                         var pagerItem = await shapeFactory.CreateAsync("Pager_Link", Arguments.From(new
                         {
                             Value = p,

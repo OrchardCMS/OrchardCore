@@ -4,6 +4,7 @@
     // items before the tag is actually rendered.
 
     TagBuilder tag = Tag(Model, "ul");
+    tag.AddCssClass("list-group");
 
     foreach (var item in Model.Items)
     {

@@ -20,7 +20,7 @@
     var termContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => String.IsNullOrEmpty(t.GetSettings<ContentTypeSettings>().Stereotype)).OrderBy(x => x.DisplayName);
     var index = 0;
 }
-<div class="form-group" asp-validation-class-for="TermContentType">
+<div class="mb-3" asp-validation-class-for="TermContentType">
     <label asp-for="TermContentType" >@T["Term Content Type"]</label>
     <select asp-for="TermContentType" class="form-control col-small" asp-items="@(new SelectList(termContentTypes, "Name", "DisplayName"))">
     </select>
@@ -43,17 +43,15 @@
     }
 }
 
-<p>
-    <ol id="menu">
-        @foreach (var menuItem in Model.TaxonomyPart.ContentItem.As<TaxonomyPart>().Terms)
-        {
-            dynamic termShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TermAdmin");
-            termShape.TaxonomyPart = Model.TaxonomyPart;
-            termShape.Index = index++;
-            @await DisplayAsync(termShape);
-        }
-    </ol>
-</p>
+<ol id="menu" class="list-group my-3">
+    @foreach (var menuItem in Model.TaxonomyPart.ContentItem.As<TaxonomyPart>().Terms)
+    {
+        dynamic termShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TermAdmin");
+        termShape.TaxonomyPart = Model.TaxonomyPart;
+        termShape.Index = index++;
+        @await DisplayAsync(termShape);
+    }
+</ol>
 
 <input asp-for="Hierarchy" type="hidden" value="" />
 <div id="msg-leave" style="display:none" data>@T["You have reordered the taxonomy."]</div>
