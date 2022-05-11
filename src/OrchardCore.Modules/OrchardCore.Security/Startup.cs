@@ -7,7 +7,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Drivers;
-using OrchardCore.Security.Options;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 using OrchardCore.Security.Settings;
@@ -30,7 +29,7 @@ namespace OrchardCore.Security
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var securityOptions = serviceProvider.GetRequiredService<IOptions<SecurityHeadersOptions>>().Value;
+            var securityOptions = serviceProvider.GetRequiredService<IOptions<SecuritySettings>>().Value;
 
             builder.UseSecurityHeaders(options =>
             {
