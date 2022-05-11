@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Security;
+using OrchardCore.Security.Options;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -12,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Security");
 
-                tenantServices.PostConfigure<SecuritySettings>(settings =>
+                tenantServices.PostConfigure<SecurityHeadersOptions>(settings =>
                 {
                     if (!overrideAdminSettings)
                     {

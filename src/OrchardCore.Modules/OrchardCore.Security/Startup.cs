@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Drivers;
+using OrchardCore.Security.Options;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 using OrchardCore.Settings;
@@ -23,12 +24,12 @@ namespace OrchardCore.Security
 
             services.AddSingleton<ISecurityService, SecurityService>();
 
-            services.AddTransient<IConfigureOptions<SecuritySettings>, SecuritySettingsConfiguration>();
+            services.AddTransient<IConfigureOptions<SecurityHeadersOptions>, SecuritySettingsConfiguration>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var securityOptions = serviceProvider.GetRequiredService<IOptions<SecuritySettings>>().Value;
+            var securityOptions = serviceProvider.GetRequiredService<IOptions<SecurityHeadersOptions>>().Value;
 
             builder.UseSecurityHeaders(options =>
             {

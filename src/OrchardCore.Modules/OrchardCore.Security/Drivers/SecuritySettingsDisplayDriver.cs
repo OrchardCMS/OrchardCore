@@ -14,7 +14,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Security.Drivers
 {
-    public class SecuritySettingsDisplayDriver : SectionDisplayDriver<ISite, SecuritySettings>
+    public class SecuritySettingsDisplayDriver : SectionDisplayDriver<ISite, SecurityHeadersOptions>
     {
         internal const string SettingsGroupId = "SecurityHeaders";
 
@@ -35,7 +35,7 @@ namespace OrchardCore.Security.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(SecuritySettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(SecurityHeadersOptions settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -44,7 +44,7 @@ namespace OrchardCore.Security.Drivers
                 return null;
             }
 
-            settings = _httpContextAccessor.HttpContext.RequestServices.GetService<IOptions<SecuritySettings>>().Value;
+            settings = _httpContextAccessor.HttpContext.RequestServices.GetService<IOptions<SecurityHeadersOptions>>().Value;
 
             return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {
@@ -59,7 +59,7 @@ namespace OrchardCore.Security.Drivers
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SecuritySettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(SecurityHeadersOptions section, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 

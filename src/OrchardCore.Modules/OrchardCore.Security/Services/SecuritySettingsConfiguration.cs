@@ -1,15 +1,16 @@
 using Microsoft.Extensions.Options;
+using OrchardCore.Security.Options;
 
 namespace OrchardCore.Security.Services
 {
-    public class SecuritySettingsConfiguration : IConfigureOptions<SecuritySettings>
+    public class SecuritySettingsConfiguration : IConfigureOptions<SecurityHeadersOptions>
     {
         private readonly ISecurityService _securityService;
 
         public SecuritySettingsConfiguration(ISecurityService securityService)
             => _securityService = securityService;
 
-        public void Configure(SecuritySettings options)
+        public void Configure(SecurityHeadersOptions options)
         {
             var securitySettings = _securityService.GetSettingsAsync()
                 .GetAwaiter().GetResult();
