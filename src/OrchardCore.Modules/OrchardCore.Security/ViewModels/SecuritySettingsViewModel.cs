@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Security.ViewModels
 {
@@ -19,5 +20,8 @@ namespace OrchardCore.Security.ViewModels
         public List<string> PermissionsPolicyValues { get; set; }
 
         public string ReferrerPolicy { get; set; }
+
+        [BindNever]
+        public bool FromAdminSettings { get; set; } = true;
     }
 }

@@ -135,6 +135,13 @@
     @T["The current tenant will be reloaded when the settings are saved."]
 </p>
 
+@if (!Model.FromAdminSettings)
+{
+    <p class="alert alert-warning">
+        @T["The current settings are coming from configuration file, saving the settings will affect the AdminSettings not the configuration settings."]
+    </p>
+}
+
 <div class="form-group">
     <label asp-for="ContentSecurityPolicy">@T["Content Security Policy"]</label>
     <div class="form-group" asp-validation-class-for="EnableSandbox">

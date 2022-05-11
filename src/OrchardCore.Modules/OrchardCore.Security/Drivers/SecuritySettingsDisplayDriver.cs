@@ -47,14 +47,15 @@ namespace OrchardCore.Security.Drivers
                 return null;
             }
 
-            // Set the settings from appsettings.json when AdminSettings overrriden via ConfigureSecuritySettings()
-            if (!_securitySettings.Equals(settings))
-            {
-                settings = _securitySettings;
-            }
-
             return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {
+                // Set the settings from appsettings.json when AdminSettings overrriden via ConfigureSecuritySettings()
+                if (!_securitySettings.Equals(settings))
+                {
+                    settings = _securitySettings;
+                    model.FromAdminSettings = false;
+                }
+
                 model.ContentSecurityPolicy = settings.ContentSecurityPolicy;
                 model.ContentSecurityPolicyValues = SecurityHeaderDefaults.ContentSecurityPolicyNames.ToList();
                 model.FrameOptions = settings.FrameOptions;
