@@ -246,6 +246,7 @@ namespace OrchardCore.Users
 
             services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
 
+            services.AddScoped<IUserEventHandler, UserDisabledEventHandler>();
         }
     }
 
