@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.Security.Options;
 
-namespace OrchardCore.Security
+namespace OrchardCore.Security.Services
 {
     public class SecurityHeadersMiddleware
     {

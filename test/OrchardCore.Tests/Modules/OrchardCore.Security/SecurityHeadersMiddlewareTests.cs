@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using MicrosoftOptions = Microsoft.Extensions.Options.Options;
 using OrchardCore.Security.Options;
+using OrchardCore.Security.Services;
 using Xunit;
 
 namespace OrchardCore.Security.Tests
