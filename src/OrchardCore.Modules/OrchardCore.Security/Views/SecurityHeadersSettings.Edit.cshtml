@@ -256,7 +256,7 @@
                     <td>
                         <div class="form-group mb-0">
                             <input class="form-control d-@(originType == PermissionsPolicyOriginValue.Self ? "block" : "none")" id="@(key)AllowedOrigins" placeholder="https://www.domain.com https://www.another.domain.com" value="@allowedOrigins" oninput="changeAllowedOrigins(this)" />
-                            <input id="@Html.IdFor(m => m.PermissionsPolicyValues[i])" name="@Html.NameFor(m => m.PermissionsPolicyValues[i])" type="hidden" value="@($"{key}={PermissionsPolicyOriginValue.None}")"/>
+                            <input id="@Html.IdFor(m => m.PermissionsPolicyValues[i])" name="@Html.NameFor(m => m.PermissionsPolicyValues[i])" type="hidden" value="@($"{key}={(policy == null ? PermissionsPolicyOriginValue.None : originType)}")"/>
                         </div>
                     </td>
                 </tr>
