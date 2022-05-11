@@ -10,6 +10,7 @@ using OrchardCore.Security.Drivers;
 using OrchardCore.Security.Options;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
+using OrchardCore.Security.Settings;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Security
@@ -24,7 +25,7 @@ namespace OrchardCore.Security
 
             services.AddSingleton<ISecurityService, SecurityService>();
 
-            services.AddTransient<IConfigureOptions<SecurityHeadersOptions>, SecuritySettingsConfiguration>();
+            services.AddTransient<IConfigureOptions<SecuritySettings>, SecuritySettingsConfiguration>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

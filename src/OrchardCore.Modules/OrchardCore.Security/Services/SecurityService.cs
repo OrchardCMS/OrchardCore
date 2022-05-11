@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.Entities;
-using OrchardCore.Security.Options;
+using OrchardCore.Security.Settings;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Security.Services
@@ -14,11 +14,11 @@ namespace OrchardCore.Security.Services
             _siteService = siteService;
         }
 
-        public async Task<SecurityHeadersOptions> GetSettingsAsync()
+        public async Task<SecuritySettings> GetSettingsAsync()
         {
             var securityHeadersSettings = await _siteService.GetSiteSettingsAsync();
 
-            return securityHeadersSettings.As<SecurityHeadersOptions>();
+            return securityHeadersSettings.As<SecuritySettings>();
         }
     }
 }
