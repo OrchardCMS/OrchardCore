@@ -14,5 +14,20 @@ Enabling the `OrchardCore.Security` module will allow the user to set the follow
 | `PermissionsPolicy` | Gets or sets the `Permissions-Policy` HTTP header. |
 | `ReferrerPolicy` | Gets or sets the `Referrer-Policy` HTTP header. |
 
+## Security Settings Configuration
+
+The `OrchardCore.Security` module allows the user to use configuration values to override the `AdminSettings` by calling `ConfigureSecuritySettings()` extention method.
+
+The following configuration values can be customized:
+
+```json
+    "OrchardCore_Security": {
+      "ContentSecurityPolicy": [],
+      "FrameOptions": "SAMEORIGIN",
+      "PermissionsPolicy": [ "fullscreen=self" ],
+      "ReferrerPolicy": "no-referrer"
+    }
+```
+
 !!! note
     Setting the `frame-ancestors` directive in `ContentSecurityPolicy` HTTP header will overrides `FrameOptions`.
