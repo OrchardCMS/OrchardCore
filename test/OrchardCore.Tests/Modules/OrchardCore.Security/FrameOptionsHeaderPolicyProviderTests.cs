@@ -8,7 +8,7 @@ namespace OrchardCore.Security.Tests
     public class FrameOptionsHeaderPolicyProviderTests
     {
         [Fact]
-        public void AddFrameOptionsHeader()
+        public void AddHeader()
         {
             // Arrange
             var provider = new FrameOptionsHeaderPolicyProvider { Options = new SecurityHeadersOptions()};
@@ -22,7 +22,7 @@ namespace OrchardCore.Security.Tests
         }
 
         [Fact]
-        public void OverrideFrameOptionsHeaderWhenContentSecurityPolicyHeaderExists()
+        public void OverrideHeader_FrameAncestorsDirectiveExists()
         {
             // Arrange
             var provider = new FrameOptionsHeaderPolicyProvider();
