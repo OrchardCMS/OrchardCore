@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -22,17 +21,20 @@ namespace OrchardCore.Security.Drivers
         private readonly ShellSettings _shellSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
+        private readonly SecurityHeadersOptions _securityHeadersOptions;
 
         public SecuritySettingsDisplayDriver(
             IShellHost shellHost,
             ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            IOptionsSnapshot<SecurityHeadersOptions> securityHeadersOptions)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
+            _securityHeadersOptions = securityHeadersOptions.Value;
         }
 
         public override async Task<IDisplayResult> EditAsync(SecurityHeadersOptions settings, BuildEditorContext context)
@@ -44,16 +46,14 @@ namespace OrchardCore.Security.Drivers
                 return null;
             }
 
-            settings = _httpContextAccessor.HttpContext.RequestServices.GetService<IOptions<SecurityHeadersOptions>>().Value;
-
             return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {
-                model.ContentSecurityPolicy = settings.ContentSecurityPolicy;
+                model.ContentSecurityPolicy = _securityHeadersOptions.ContentSecurityPolicy;
                 model.ContentSecurityPolicyValues = SecurityHeaderDefaults.ContentSecurityPolicyNames.ToList();
-                model.FrameOptions = settings.FrameOptions;
-                model.PermissionsPolicy = settings.PermissionsPolicy;
+                model.FrameOptions = _securityHeadersOptions.FrameOptions;
+                model.PermissionsPolicy = _securityHeadersOptions.PermissionsPolicy;
                 model.PermissionsPolicyValues = SecurityHeaderDefaults.PermissionsPolicyNames.ToList();
-                model.ReferrerPolicy = settings.ReferrerPolicy;
+                model.ReferrerPolicy = _securityHeadersOptions.ReferrerPolicy;
                 model.EnableSandbox = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.Any(p => p.StartsWith(ContentSecurityPolicyValue.Sandbox));
                 model.UpgradeInsecureRequests = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.Any(p => p == ContentSecurityPolicyValue.UpgradeInsecureRequests);
             }).Location("Content:2").OnGroup(SettingsGroupId);
