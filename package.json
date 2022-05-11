@@ -26,13 +26,13 @@
     "postinstall": "run-s install:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.5",
-    "@babel/preset-env": "^7.16.11",
+    "@babel/core": "^7.17.10",
+    "@babel/preset-env": "^7.17.10",
     "@babel/preset-flow": "7.16.7",
     "all-contributors-cli": "^6.20.0",
     "es6-promise": "4.2.8",
-    "glob": "^7.2.0",
-    "graceful-fs": "4.2.9",
+    "glob": "^8.0.1",
+    "graceful-fs": "4.2.10",
     "gulp": "^4.0.2",
     "gulp-babel": "8.0.0",
     "gulp-cli": "^2.3.0",
@@ -56,9 +56,9 @@
     "merge-stream": "2.0.0",
     "npm-run-all": "^4.1.5",
     "path-posix": "1.0.0",
-    "postcss": "8.4.7",
+    "postcss": "8.4.13",
     "postcss-rtl": "^1.7.3",
     "rtlcss": "3.5.0",
-    "typescript": "^4.6.2"
+    "typescript": "^4.6.4"
   }
 }

@@ -17,13 +17,13 @@
 <div class="card mb-3">
     <nav class="card-body bg-primary p-3">
         <div class="input-group input-group-sm w-lg-50 d-inline-flex">
-            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalTargets">
+            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalTargets">
                 @T["Execute"]
             </button>
         </div>
-        <div class="btn-group float-right">
+        <div class="btn-group float-end">
             <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalSteps">
+            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalSteps">
                 @T["Add Step"]
             </button>
         </div>
@@ -39,7 +39,7 @@
 
                 <li class="list-group-item">
                     <div class="d-flex">
-                        <div class="ui-sortable-handle cursor-pointer mr-2"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div>
+                        <div class="ui-sortable-handle cursor-pointer me-2"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div>
                         @await DisplayAsync(item)
                     </div>
                 </li>
@@ -60,28 +60,26 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="available-steps-title">@T["Available Steps"]</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
+                <div class="mb-3">
                     <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
                 </div>
-                <div id="cards" class="row">
+                <div id="cards" class="row row-cols-1 row-cols-md-2 g-2">
                     @foreach (var thumbnail in Model.Thumbnails.OrderBy(t => t.Key))
                     {
                         thumbnail.Value.DeploymentPlan = Model.DeploymentPlan;
                         thumbnail.Value.Type = thumbnail.Key;
 
-                        <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
+                        <div class="col">
                             @await DisplayAsync(thumbnail.Value)
                         </div>
                     }
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
             </div>
         </div>
     </div>
@@ -92,23 +90,22 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="available-targets-title">@T["Available Targets"]</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row">
+                <div class="row row-cols-1 row-cols-md-2 g-2">
                     @foreach (var target in await DeploymentTargetManager.GetDeploymentTargetsAsync())
                     {
                         var routeWithId = new RouteValueDictionary(target.Route);
                         routeWithId["id"] = Model.DeploymentPlan.Id;
-                        <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
-                            <div class="card w-100 mb-3">
+                        
+                        <div class="col">
+                            <div class="card h-100 mb-3">
                                 <div class="card-body">
                                     <h4 class="card-title">@target.Name</h4>
                                     <p>@target.Description</p>
                                 </div>
-                                <div class="card-footer text-muted text-xs-right">
+                                <div class="card-footer text-muted text-sm-end">
                                     <a class="btn btn-primary btn-sm" href="@Url.RouteUrl(routeWithId)" data-url-af="UnsafeUrl">@T["Select"]</a>
                                 </div>
                             </div>
@@ -117,7 +114,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
             </div>
         </div>
     </div>
