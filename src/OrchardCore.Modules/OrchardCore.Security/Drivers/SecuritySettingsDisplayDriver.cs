@@ -48,11 +48,7 @@ namespace OrchardCore.Security.Drivers
             }
 
             // Set the settings from appsettings.json when AdminSettings overrriden via ConfigureSecuritySettings()
-            if (!(_securitySettings.ContentSecurityPolicy.SequenceEqual(settings.ContentSecurityPolicy) &&
-                _securitySettings.ContentTypeOptions == settings.ContentTypeOptions &&
-                _securitySettings.FrameOptions == settings.FrameOptions &&
-                _securitySettings.PermissionsPolicy.SequenceEqual(settings.PermissionsPolicy) &&
-                _securitySettings.ReferrerPolicy == settings.ReferrerPolicy))
+            if (!_securitySettings.Equals(settings))
             {
                 settings = _securitySettings;
             }

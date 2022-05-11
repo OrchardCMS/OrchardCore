@@ -1,6 +1,9 @@
+using System;
+using System.Linq;
+
 namespace OrchardCore.Security.Settings
 {
-    public class SecuritySettings
+    public class SecuritySettings : IEquatable<SecuritySettings>
     {
         public string[] ContentSecurityPolicy { get; set; } = SecurityHeaderDefaults.ContentSecurityPolicy;
 
@@ -11,5 +14,12 @@ namespace OrchardCore.Security.Settings
         public string[] PermissionsPolicy { get; set; } = SecurityHeaderDefaults.PermissionsPolicy;
 
         public string ReferrerPolicy { get; set; } = SecurityHeaderDefaults.ReferrerPolicy;
+
+        public bool Equals(SecuritySettings other)
+            => ContentSecurityPolicy.SequenceEqual(other.ContentSecurityPolicy) &&
+                ContentTypeOptions == other.ContentTypeOptions &&
+                FrameOptions == other.FrameOptions &&
+                PermissionsPolicy.SequenceEqual(other.PermissionsPolicy) &&
+                ReferrerPolicy == other.ReferrerPolicy;
     }
 }
