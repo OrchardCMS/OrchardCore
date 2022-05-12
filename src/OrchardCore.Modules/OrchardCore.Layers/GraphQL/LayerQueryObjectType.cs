@@ -57,6 +57,7 @@ namespace OrchardCore.Layers.GraphQL
             switch (status)
             {
                 case PublicationStatusEnum.Published: return x => x.Published;
+                case PublicationStatusEnum.PublishedAndLatest: return x => x.Published && x.Latest;
                 case PublicationStatusEnum.Draft: return x => x.Latest && !x.Published;
                 case PublicationStatusEnum.Latest: return x => x.Latest;
                 case PublicationStatusEnum.All: return x => true;

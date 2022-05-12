@@ -209,6 +209,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             switch (status)
             {
                 case PublicationStatusEnum.Published: return VersionOptions.Published;
+                case PublicationStatusEnum.PublishedAndLatest: return VersionOptions.PublishedAndLatest;
                 case PublicationStatusEnum.Draft: return VersionOptions.Draft;
                 case PublicationStatusEnum.Latest: return VersionOptions.Latest;
                 case PublicationStatusEnum.All: return VersionOptions.AllVersions;
@@ -225,6 +226,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
         private static IQuery<ContentItem, ContentItemIndex> FilterVersion(IQuery<ContentItem, ContentItemIndex> query, VersionOptions versionOption)
         {
+            if (versionOption.IsPublishedAndLatest)
+            {
+                query = query.Where(q => q.Published && q.Latest);
+            }
             if (versionOption.IsPublished)
             {
                 query = query.Where(q => q.Published == true);
