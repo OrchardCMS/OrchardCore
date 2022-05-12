@@ -2,7 +2,7 @@ using OrchardCore.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseNLogWeb();
+builder.Host.UseNLogHost();
 
 builder.Services.AddOrchardCms().AddSetupFeatures("OrchardCore.AutoSetup");
 
