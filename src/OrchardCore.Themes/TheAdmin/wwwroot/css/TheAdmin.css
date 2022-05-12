@@ -58769,6 +58769,9 @@ html[data-theme=darkmode] .btn-dark {
 html[data-theme=darkmode] .btn-dark:hover, html[data-theme=darkmode] .btn-dark:focus {
   color: #FFF;
 }
+html[data-theme=darkmode] .btn-light, html[data-theme=darkmode] .btn-light:hover, html[data-theme=darkmode] .btn-light:focus {
+  color: #000;
+}
 html[data-theme=darkmode] .bootstrap-select .popover-header .close {
   color: white;
 }
