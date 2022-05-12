@@ -83,27 +83,36 @@ namespace OrchardCore.DisplayManagement.Shapes
             var cardTag = new TagBuilder("div");
             cardTag.AddCssClass("card mb-2");
 
-            var headerTag = new TagBuilder("div");
-            headerTag.AddCssClass("card-header");
-            headerTag.Attributes["id"] = $"heading-{cardIdPrefix}";
+            var headerArrowTag = new TagBuilder("div");
+            headerArrowTag.AddCssClass("card-header");
+            headerArrowTag.Attributes["id"] = $"heading-{cardIdPrefix}";
+
+            var headerTitleTag = new TagBuilder("h5");
+            headerTitleTag.AddCssClass("float-start mb-0 mt-1");
+            headerTitleTag.InnerHtml.Append(shape.Grouping.Key);
 
             var buttonTag = new TagBuilder("button");
-            buttonTag.AddCssClass("btn btn-link btn-block text-start");
+            buttonTag.AddCssClass("btn btn-link btn-block text-start float-end");
             buttonTag.Attributes["type"] = "button";
             buttonTag.Attributes["data-bs-toggle"] = "collapse";
             buttonTag.Attributes["data-bs-target"] = $"#collapse-{cardIdPrefix}";
             buttonTag.Attributes["aria-expanded"] = "true";
             buttonTag.Attributes["aria-controls"] = $"collapse-{cardIdPrefix}";
 
-            buttonTag.InnerHtml.Append(shape.Grouping.Key);
-            headerTag.InnerHtml.AppendHtml(buttonTag);
+            var buttonIconTag = new TagBuilder("i");
+            buttonIconTag.AddCssClass("fa-solid fa-angle-down");
+
+            buttonTag.InnerHtml.AppendHtml(buttonIconTag);
+
+            headerArrowTag.InnerHtml.AppendHtml(headerTitleTag);
+            headerArrowTag.InnerHtml.AppendHtml(buttonTag);
 
             var bodyTag = new TagBuilder("div");
             bodyTag.AddCssClass("collapse show");
             bodyTag.Attributes["id"] = $"collapse-{cardIdPrefix}";
 
             bodyTag.InnerHtml.AppendHtml(tagBuilder);
-            cardTag.InnerHtml.AppendHtml(headerTag);
+            cardTag.InnerHtml.AppendHtml(headerArrowTag);
             cardTag.InnerHtml.AppendHtml(bodyTag);
 
             return cardTag;
