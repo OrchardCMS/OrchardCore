@@ -17,7 +17,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         {
             Name = "Status";
             Description = "publication status";
-            AddValue("PUBLISHED", "published and latest version content item", PublicationStatusEnum.PublishedAndLatest);
+            AddValue("PUBLISHEDANDLATEST", "published and latest version content item", PublicationStatusEnum.PublishedAndLatest);
             AddValue("PUBLISHED", "published content item version", PublicationStatusEnum.Published);
             AddValue("DRAFT", "draft content item version", PublicationStatusEnum.Draft);
             AddValue("LATEST", "the latest version, either published or draft", PublicationStatusEnum.Latest);
