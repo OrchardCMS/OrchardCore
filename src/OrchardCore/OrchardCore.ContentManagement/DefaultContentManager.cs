@@ -325,7 +325,7 @@ namespace OrchardCore.ContentManagement
             if (previous != null)
             {
                 _session.Save(previous, checkConcurrency: true);
-                previous.Published = false;
+                previous.Latest = previous.Published = false;
             }
 
             contentItem.Published = true;
