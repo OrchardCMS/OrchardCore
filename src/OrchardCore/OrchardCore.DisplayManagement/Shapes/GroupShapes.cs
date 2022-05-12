@@ -81,14 +81,14 @@ namespace OrchardCore.DisplayManagement.Shapes
             var cardIdPrefix = $"card-{shape.Identifier}-{shape.Grouping.Key}".HtmlClassify();
 
             var cardTag = new TagBuilder("div");
-            cardTag.AddCssClass("card");
+            cardTag.AddCssClass("card mb-2");
 
             var headerTag = new TagBuilder("div");
             headerTag.AddCssClass("card-header");
             headerTag.Attributes["id"] = $"heading-{cardIdPrefix}";
 
             var buttonTag = new TagBuilder("button");
-            buttonTag.AddCssClass("btn btn-link btn-block text-left");
+            buttonTag.AddCssClass("btn btn-link btn-block text-start");
             buttonTag.Attributes["type"] = "button";
             buttonTag.Attributes["data-bs-toggle"] = "collapse";
             buttonTag.Attributes["data-bs-target"] = $"#collapse-{cardIdPrefix}";
