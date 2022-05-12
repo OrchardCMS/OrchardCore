@@ -6,7 +6,7 @@ The queries module provides a management UI and APIs for querying data.
 
 1.0 -> 1.1
 
-The Query API now returns either an IQueryResults which now will contain also result count for the Lucene results. The JSON data structure has changed from :
+The Query API now returns an IQueryResults which now will also contain a count for the Lucene results. The JSON data structure has changed from :
 
 ```json
 [
