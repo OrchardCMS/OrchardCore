@@ -65,7 +65,7 @@
 <script type="text/x-template" id="select-options-modal" asp-name="select-options-modal" at="Foot">
     <div>
         <transition v-on:enter="showStart" v-on:after-enter="showEnd" v-on:leave="showEnd" v-on:after-leave="showStart"  >
-            <div class="modal fade text-left" role="dialog" aria-hidden="true" ref="modal" v-if="showModal" v-on:click.self="$emit('modal-cancel')" >
+            <div class="modal fade text-start" role="dialog" aria-hidden="true" ref="modal" v-if="showModal" v-on:click.self="$emit('modal-cancel')" >
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
