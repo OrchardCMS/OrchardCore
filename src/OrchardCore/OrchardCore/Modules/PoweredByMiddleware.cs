@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using OrchardCore.Modules.Manifest;
 
 namespace OrchardCore.Modules
 {
@@ -21,7 +22,7 @@ namespace OrchardCore.Modules
         {
             if (_options.Enabled)
             {
-                httpContext.Response.Headers[_options.HeaderName] = _options.HeaderValue;
+                httpContext.Response.Headers[_options.HeaderName] = $"{_options.HeaderValue}/{ManifestConstants.OrchardCoreVersion}";
             }
 
             return _next.Invoke(httpContext);
