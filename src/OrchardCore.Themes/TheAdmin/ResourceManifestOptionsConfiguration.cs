@@ -16,7 +16,7 @@ namespace OrchardCore.Themes.TheAdmin
                 .DefineStyle("material-icons")
                 .SetCdn("https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp")
                 .SetUrl("~/TheAdmin/fonts/material-icons/material-icons.min.css", "~/TheAdmin/fonts/material-icons/material-icons.css")
-                .SetVersion("0.7.2");
+                .SetVersion("1.10.11");
 
             _manifest
                 .DefineScript("admin")

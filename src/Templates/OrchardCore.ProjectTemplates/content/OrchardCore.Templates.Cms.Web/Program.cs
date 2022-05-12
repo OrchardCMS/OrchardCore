@@ -8,7 +8,7 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 #if (UseNLog)
-builder.Host.UseNLogWeb();
+builder.Host.UseNLogHost();
 #endif
 #if (UseSerilog)
 builder.Host.UseSerilog((hostingContext, configBuilder) =>
