@@ -6,9 +6,9 @@
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 /*!
- * Bootstrap-select v1.14.0-beta2 (https://developer.snapappointments.com/bootstrap-select)
+ * Bootstrap-select v1.14.0-beta3 (https://developer.snapappointments.com/bootstrap-select)
  *
- * Copyright 2012-2021 SnapAppointments, LLC
+ * Copyright 2012-2022 SnapAppointments, LLC
  * Licensed under MIT (https://github.com/snapappointments/bootstrap-select/blob/master/LICENSE)
  */
 (function (root, factory) {
@@ -241,7 +241,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       };
     }
 
-    testElement = null; // shallow array comparison
+    testElement = null; // Polyfill for IE (remove in v2)
+
+    Object.values = typeof Object.values === 'function' ? Object.values : function (obj) {
+      return Object.keys(obj).map(function (key) {
+        return obj[key];
+      });
+    }; // shallow array comparison
 
     function isEqual(array1, array2) {
       return array1.length === array2.length && array1.every(function (element, index) {
@@ -309,8 +315,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       })();
     }
 
+    function toKebabCase(str) {
+      return str.replace(/[A-Z]+(?![a-z])|[A-Z]/g, function ($, ofs) {
+        return (ofs ? '-' : '') + $.toLowerCase();
+      });
+    }
+
     function getSelectedOptions() {
-      var selectedOptions = this.selectpicker.main.data.filter(function (item) {
+      var options = this.selectpicker.main.data;
+
+      if (this.options.source.data || this.options.source.search) {
+        options = Object.values(this.selectpicker.optionValuesDataMap);
+      }
+
+      var selectedOptions = options.filter(function (item) {
         if (item.selected) {
           if (this.options.hideDisabled && item.disabled) return false;
           return true;
@@ -942,11 +960,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             value = option.style.cssText;
             break;
 
-          case 'content':
-          case 'tokens':
-          case 'subtext':
-          case 'icon':
-            value = option.getAttribute('data-' + type);
+          case 'title':
+            value = option.title;
+            break;
+
+          default:
+            value = option.getAttribute('data-' + toKebabCase(type));
             break;
         }
 
@@ -961,12 +980,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             value = option.text || option.value || '';
             break;
 
-          case 'divider':
-          case 'style':
-          case 'content':
-          case 'tokens':
-          case 'subtext':
-          case 'icon':
+          default:
             value = option[type];
             break;
         }
@@ -1001,12 +1015,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       this.options = options;
       this.selectpicker = {
         main: {
-          optionQueue: elementTemplates.fragment.cloneNode(false)
+          data: [],
+          optionQueue: elementTemplates.fragment.cloneNode(false),
+          hasMore: false
         },
-        search: {},
+        search: {
+          data: [],
+          hasMore: false
+        },
         current: {},
-        // current changes if a search is in progress
+        // current is either equal to main or search depending on if a search is in progress
         view: {},
+        // map of option values and their respective data (only used in conjunction with options.source)
+        optionValuesDataMap: {},
         isSearching: false,
         keydown: {
           keyHistory: '',
@@ -1041,7 +1062,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       this.init();
     };
 
-    Selectpicker.VERSION = '1.14.0-beta2'; // part of this is duplicated in i18n/defaults-en_US.js. Make sure to update both.
+    Selectpicker.VERSION = '1.14.0-beta3'; // part of this is duplicated in i18n/defaults-en_US.js. Make sure to update both.
 
     Selectpicker.DEFAULTS = {
       noneSelectedText: 'Nothing selected',
@@ -1054,7 +1075,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       },
       selectAllText: 'Select All',
       deselectAllText: 'Deselect All',
-      source: {},
+      source: {
+        pageSize: 40
+      },
       chunkSize: 40,
       doneButton: false,
       doneButtonText: 'Close',
@@ -1087,7 +1110,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       },
       maxOptions: false,
       mobile: false,
-      selectOnTab: false,
+      selectOnTab: true,
       dropdownAlignRight: false,
       windowPadding: 0,
       virtualScroll: 600,
@@ -1127,13 +1150,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         this.$menuInner = this.$menu.children('.inner');
         this.$searchbox = this.$menu.find('input');
         element.classList.remove('bs-select-hidden');
-        this.fetchData(function () {
-          that.render(true);
-          that.buildList();
-          requestAnimationFrame(function () {
-            that.$element.trigger('loaded' + EVENT_KEY);
-          });
-        });
         this.fetchData(function () {
           that.render(true);
           that.buildList();
@@ -1299,10 +1315,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       },
       createView: function createView(isSearching, setSize, refresh) {
         var that = this,
-            scrollTop = 0,
-            active = [],
-            selected,
-            prevActive;
+            scrollTop = 0;
         this.selectpicker.isSearching = isSearching;
         this.selectpicker.current = isSearching ? this.selectpicker.search : this.selectpicker.main;
         this.setPositionData();
@@ -1373,29 +1386,25 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
           that.selectpicker.view.position1 = isVirtual === false ? size : Math.min(size, chunks[lastChunk][1]) || 0;
           positionIsDifferent = prevPositions[0] !== that.selectpicker.view.position0 || prevPositions[1] !== that.selectpicker.view.position1;
 
-          if (that.activeIndex !== undefined) {
-            prevActive = (that.selectpicker.main.data[that.prevActiveIndex] || {}).element;
-            active = (that.selectpicker.main.data[that.activeIndex] || {}).element;
-            selected = (that.selectpicker.main.data[that.selectedIndex] || {}).element;
-
+          if (that.activeElement !== undefined) {
             if (init) {
-              if (that.activeIndex !== that.selectedIndex) {
-                that.defocusItem(active);
+              if (that.activeElement !== that.selectedElement) {
+                that.defocusItem(that.activeElement);
               }
 
-              that.activeIndex = undefined;
+              that.activeElement = undefined;
             }
 
-            if (that.activeIndex && that.activeIndex !== that.selectedIndex) {
-              that.defocusItem(selected);
+            if (that.activeElement !== that.selectedElement) {
+              that.defocusItem(that.selectedElement);
             }
           }
 
-          if (that.prevActiveIndex !== undefined && that.prevActiveIndex !== that.activeIndex && that.prevActiveIndex !== that.selectedIndex) {
-            that.defocusItem(prevActive);
+          if (that.prevActiveElement !== undefined && that.prevActiveElement !== that.activeElement && that.prevActiveElement !== that.selectedElement) {
+            that.defocusItem(that.prevActiveElement);
           }
 
-          if (init || positionIsDifferent) {
+          if (init || positionIsDifferent || that.selectpicker.current.hasMore) {
             previousElements = that.selectpicker.view.visibleElements ? that.selectpicker.view.visibleElements.slice() : [];
 
             if (isVirtual === false) {
@@ -1480,17 +1489,23 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
               }
             }
 
-            if ((!isSearching && that.options.source.load || isSearching && that.options.source.search) && currentChunk === chunkCount - 1) {
-              that.fetchData(function () {
-                that.render();
-                that.buildList(size, isSearching);
-                that.setPositionData();
-                scroll(scrollTop);
-              }, isSearching ? 'search' : 'load', currentChunk + 1, isSearching ? that.selectpicker.search.previousValue : undefined);
+            if ((!isSearching && that.options.source.data || isSearching && that.options.source.search) && that.selectpicker.current.hasMore && currentChunk === chunkCount - 1) {
+              // Don't load the next chunk until scrolling has started
+              // This prevents unnecessary requests while the user is typing if pageSize is <= chunkSize
+              if (scrollTop > 0) {
+                // Chunks use 0-based indexing, but pages use 1-based. Add 1 to convert and add 1 again to get next page
+                var page = Math.floor(currentChunk * that.options.chunkSize / that.options.source.pageSize) + 2;
+                that.fetchData(function () {
+                  that.render();
+                  that.buildList(size, isSearching);
+                  that.setPositionData();
+                  scroll(scrollTop);
+                }, isSearching ? 'search' : 'data', page, isSearching ? that.selectpicker.search.previousValue : undefined);
+              }
             }
           }
 
-          that.prevActiveIndex = that.activeIndex;
+          that.prevActiveElement = that.activeElement;
 
           if (!that.options.liveSearch) {
             that.$menuInner.trigger('focus');
@@ -1504,7 +1519,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
             newActive = that.selectpicker.view.visibleElements[index];
             that.defocusItem(that.selectpicker.view.currentActive);
-            that.activeIndex = (that.selectpicker.current.data[index] || {}).index;
+            that.activeElement = (that.selectpicker.current.data[index] || {}).element;
             that.focusItem(newActive);
           }
         }
@@ -1516,7 +1531,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       },
       focusItem: function focusItem(li, liData, noStyle) {
         if (li) {
-          liData = liData || this.selectpicker.main.data[this.activeIndex];
+          liData = liData || this.selectpicker.current.data[this.selectpicker.current.elements.indexOf(this.activeElement)];
           var a = li.firstChild;
 
           if (a) {
@@ -1588,6 +1603,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         return updateIndex;
       },
       fetchData: function fetchData(callback, type, page, searchValue) {
+        page = page || 1;
         type = type || 'data';
         var that = this,
             data = this.options.source[type],
@@ -1597,9 +1613,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
           this.options.virtualScroll = true;
 
           if (typeof data === 'function') {
-            data.call(this, function (data) {
+            data.call(this, function (data, more, totalItems) {
+              var current = that.selectpicker[type === 'search' ? 'search' : 'main'];
+              current.hasMore = more;
+              current.totalItems = totalItems;
               builtData = that.buildData(data, type);
               callback.call(that, builtData);
+              that.$element.trigger('fetched' + EVENT_KEY);
             }, page, searchValue);
           } else if (Array.isArray(data)) {
             builtData = that.buildData(data, type);
@@ -1611,16 +1631,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         }
       },
       buildData: function buildData(data, type) {
+        var that = this;
         var dataGetter = data === false ? getOptionData.fromOption : getOptionData.fromDataSource;
-        var optionSelector = ':not([hidden]):not([data-hidden="true"])',
+        var optionSelector = ':not([hidden]):not([data-hidden="true"]):not([style*="display: none"])',
             mainData = [],
-            startLen = 0,
+            startLen = this.selectpicker.main.data ? this.selectpicker.main.data.length : 0,
             optID = 0,
             startIndex = this.setPlaceholder() && !data ? 1 : 0; // append the titleOption if necessary and skip the first option in the loop
 
-        if (type === 'load') {
-          startLen = this.selectpicker.main.data.length;
-        } else if (type === 'search') {
+        if (type === 'search') {
           startLen = this.selectpicker.search.data.length;
         }
 
@@ -1656,6 +1675,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             config.optionClass = optionClass.trim();
             config.inlineStyle = inlineStyle;
             config.text = dataGetter(item, 'text');
+            config.title = dataGetter(item, 'title');
             config.content = dataGetter(item, 'content');
             config.tokens = dataGetter(item, 'tokens');
             config.subtext = dataGetter(item, 'subtext');
@@ -1669,6 +1689,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             config.option.liIndex = liIndex;
             config.selected = !!item.selected;
             config.disabled = config.disabled || !!item.disabled;
+
+            if (data !== false) {
+              if (that.selectpicker.optionValuesDataMap[config.value]) {
+                config = $.extend(that.selectpicker.optionValuesDataMap[config.value], config);
+              } else {
+                that.selectpicker.optionValuesDataMap[config.value] = config;
+              }
+            }
+
             mainData.push(config);
           }
         }
@@ -1685,7 +1714,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             subtext: dataGetter(optgroup, 'subtext'),
             icon: dataGetter(optgroup, 'icon'),
             type: 'optgroup-label',
-            optgroupClass: ' ' + (optgroup.className || '')
+            optgroupClass: ' ' + (optgroup.className || ''),
+            optgroup: optgroup
           },
               headerIndex,
               lastIndex;
@@ -1729,7 +1759,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
               children = item.children;
 
           if (children && children.length) {
-            addOptgroup.call(this, startIndex, selectOptions);
+            addOptgroup.call(this, i, selectOptions);
           } else {
             addOption.call(this, item, {});
           }
@@ -1738,12 +1768,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         switch (type) {
           case 'data':
             {
-              this.selectpicker.main.data = this.selectpicker.current.data = mainData;
-              break;
-            }
+              if (!this.selectpicker.main.data) {
+                this.selectpicker.main.data = [];
+              }
 
-          case 'load':
-            {
               Array.prototype.push.apply(this.selectpicker.main.data, mainData);
               this.selectpicker.current.data = this.selectpicker.main.data;
               break;
@@ -1792,8 +1820,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
               break;
           }
 
-          item.element = liElement;
-          mainElements.push(liElement); // count the number of characters in the option - not perfect, but should work in most cases
+          if (!item.element) {
+            item.element = liElement;
+          } else {
+            item.element.innerHTML = liElement.innerHTML;
+          }
+
+          mainElements.push(item.element); // count the number of characters in the option - not perfect, but should work in most cases
 
           if (item.display) combinedLength += item.display.length;
           if (item.subtext) combinedLength += item.subtext.length; // if there is an icon, ensure this option's width is checked
@@ -1876,7 +1909,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             text: this.options.placeholder
           }, true);
         } else {
-          showCount = this.multiple && this.options.selectedTextFormat.indexOf('count') !== -1 && selectedCount > 1; // determine if the number of selected options will be shown (showCount === true)
+          showCount = this.multiple && this.options.selectedTextFormat.indexOf('count') !== -1 && selectedCount > 0; // determine if the number of selected options will be shown (showCount === true)
 
           if (showCount) {
             countMax = this.options.selectedTextFormat.split('>');
@@ -1923,7 +1956,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
               }
             }
           } else {
-            var optionSelector = ':not([hidden]):not([data-hidden="true"]):not([data-divider="true"])';
+            var optionSelector = ':not([hidden]):not([data-hidden="true"]):not([data-divider="true"]):not([style*="display: none"])';
             if (this.options.hideDisabled) optionSelector += ':not(:disabled)'; // If this is a multiselect, and selectedTextFormat is count, then show 1 of 2 selected, etc.
 
             var totalCount = this.$element[0].querySelectorAll('select > option' + optionSelector + ', optgroup' + optionSelector + ' option' + optionSelector).length,
@@ -2038,7 +2071,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
           for (var i = 0; i < this.selectpicker.current.data.length; i++) {
             var data = this.selectpicker.current.data[i];
 
-            if (data.type === 'option') {
+            if (data.type === 'option' && $(data.element.firstChild).css('display') !== 'none') {
               li = data.element;
               break;
             }
@@ -2204,7 +2237,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         });
         this.$menuInner.css({
           'max-height': menuInnerHeight + 'px',
-          'overflow-y': 'auto',
+          'overflow': 'hidden auto',
           'min-height': menuInnerMinHeight + 'px'
         }); // ensure menuInnerHeight is always a positive number to prevent issues calculating chunkSize in createView
 
@@ -2382,25 +2415,24 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       },
 
       /**
-       * @param {number} index - the index of the option that is being changed
+       * @param {Object} liData - the option object that is being changed
        * @param {boolean} selected - true if the option is being selected, false if being deselected
        */
       setSelected: function setSelected(liData, selected) {
         selected = selected === undefined ? liData.selected : selected;
-        var index = liData.index,
-            li = liData.element,
-            activeIndexIsSet = this.activeIndex !== undefined,
-            thisIsActive = this.activeIndex === index,
+        var li = liData.element,
+            activeElementIsSet = this.activeElement !== undefined,
+            thisIsActive = this.activeElement === li,
             prevActive,
             a,
             // if current option is already active
         // OR
         // if the current option is being selected, it's NOT multiple, and
-        // activeIndex is undefined:
+        // activeElement is undefined:
         //  - when the menu is first being opened, OR
         //  - after a search has been performed, OR
-        //  - when retainActive is false when selecting a new option (i.e. index of the newly selected option is not the same as the current activeIndex)
-        keepActive = thisIsActive || selected && !this.multiple && !activeIndexIsSet;
+        //  - when retainActive is false when selecting a new option (i.e. index of the newly selected option is not the same as the current activeElement)
+        keepActive = thisIsActive || selected && !this.multiple && !activeElementIsSet;
         if (!li) return;
 
         if (selected !== undefined) {
@@ -2415,7 +2447,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         a = li.firstChild;
 
         if (selected) {
-          this.selectedIndex = index;
+          this.selectedElement = li;
         }
 
         li.classList.toggle('selected', selected);
@@ -2423,7 +2455,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         if (keepActive) {
           this.focusItem(li, liData);
           this.selectpicker.view.currentActive = li;
-          this.activeIndex = index;
+          this.activeElement = li;
         } else {
           this.defocusItem(li);
         }
@@ -2442,8 +2474,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
           }
         }
 
-        if (!keepActive && !activeIndexIsSet && selected && this.prevActiveIndex !== undefined) {
-          prevActive = this.selectpicker.main.elements[this.prevActiveIndex];
+        if (!keepActive && !activeElementIsSet && selected && this.prevActiveElement !== undefined) {
+          prevActive = this.prevActiveElement;
           this.defocusItem(prevActive);
         }
       },
@@ -2592,7 +2624,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
               element = that.$element[0],
               position0 = that.isVirtual() ? that.selectpicker.view.position0 : 0,
               clickedData = that.selectpicker.current.data[$this.parent().index() + position0],
-              clickedIndex = clickedData.index,
+              clickedElement = clickedData.element,
               prevValue = getSelectValues.call(that),
               prevIndex = element.selectedIndex,
               prevOption = element.options[prevIndex],
@@ -2609,18 +2641,22 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             var option = clickedData.option,
                 $option = $(option),
                 state = option.selected,
-                $optgroup = $option.parent('optgroup'),
-                $optgroupOptions = $optgroup.find('option'),
-                maxOptions = that.options.maxOptions,
-                maxOptionsGrp = $optgroup.data('maxOptions') || false;
-            if (clickedIndex === that.activeIndex) retainActive = true;
+                optgroupData = that.selectpicker.current.data.find(function (datum) {
+              return datum.optID === clickedData.optID && datum.type === 'optgroup-label';
+            }),
+                optgroup = optgroupData ? optgroupData.optgroup : undefined,
+                dataGetter = optgroup instanceof Element ? getOptionData.fromOption : getOptionData.fromDataSource,
+                optgroupOptions = optgroup && optgroup.children,
+                maxOptions = parseInt(that.options.maxOptions),
+                maxOptionsGrp = optgroup && parseInt(dataGetter(optgroup, 'maxOptions')) || false;
+            if (clickedElement === that.activeElement) retainActive = true;
 
             if (!retainActive) {
-              that.prevActiveIndex = that.activeIndex;
-              that.activeIndex = undefined;
+              that.prevActiveElement = that.activeElement;
+              that.activeElement = undefined;
             }
 
-            if (!that.multiple) {
+            if (!that.multiple || maxOptions === 1) {
               // Deselect previous option if not multi select
               if (prevData) that.setSelected(prevData, false);
               that.setSelected(clickedData, true);
@@ -2631,22 +2667,27 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
               if (maxOptions !== false || maxOptionsGrp !== false) {
                 var maxReached = maxOptions < getSelectedOptions.call(that).length,
-                    maxReachedGrp = maxOptionsGrp < $optgroup.find('option:selected').length;
+                    selectedGroupOptions = 0;
+
+                if (optgroup && optgroup.children) {
+                  for (var i = 0; i < optgroup.children.length; i++) {
+                    if (optgroup.children[i].selected) selectedGroupOptions++;
+                  }
+                }
+
+                var maxReachedGrp = maxOptionsGrp < selectedGroupOptions;
 
                 if (maxOptions && maxReached || maxOptionsGrp && maxReachedGrp) {
-                  if (maxOptions && maxOptions == 1) {
+                  if (maxOptions && maxOptions === 1) {
                     element.selectedIndex = -1;
-                    option.selected = true;
                     that.setOptionStatus(true);
-                  } else if (maxOptionsGrp && maxOptionsGrp == 1) {
-                    for (var i = 0; i < $optgroupOptions.length; i++) {
-                      var _option = $optgroupOptions[i];
-                      _option.selected = false;
-                      that.setSelected(_option.liIndex, false);
+                  } else if (maxOptionsGrp && maxOptionsGrp === 1) {
+                    for (var i = 0; i < optgroupOptions.length; i++) {
+                      var _option = optgroupOptions[i];
+                      that.setSelected(that.selectpicker.current.data[_option.liIndex], false);
                     }
 
-                    option.selected = true;
-                    that.setSelected(clickedIndex, true);
+                    that.setSelected(clickedData, true);
                   } else {
                     var maxOptionsText = typeof that.options.maxOptionsText === 'string' ? [that.options.maxOptionsText, that.options.maxOptionsText] : that.options.maxOptionsText,
                         maxOptionsArr = typeof maxOptionsText === 'function' ? maxOptionsText(maxOptions, maxOptionsGrp) : maxOptionsText,
@@ -2661,7 +2702,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
                       maxTxtGrp = maxTxtGrp.replace('{var}', maxOptionsArr[2][maxOptionsGrp > 1 ? 0 : 1]);
                     }
 
-                    option.selected = false;
                     that.$menu.append($notify);
 
                     if (maxOptions && maxReached) {
@@ -2677,7 +2717,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
                     }
 
                     setTimeout(function () {
-                      that.setSelected(clickedIndex, false);
+                      that.setSelected(clickedData, false);
                     }, 10);
                     $notify[0].classList.add('fadeOut');
                     setTimeout(function () {
@@ -2793,10 +2833,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
           that.selectpicker.search.data = [];
 
           if (searchValue) {
+            that.selectpicker.search.previousValue = searchValue;
+
             if (that.options.source.search) {
               that.fetchData(function (builtData) {
                 that.render();
                 that.buildList(undefined, true);
+                that.noScroll = true;
+                that.$menuInner.scrollTop(0);
                 that.createView(true);
                 showNoResults.call(that, builtData, searchValue);
               }, 'search', 0, searchValue);
@@ -2844,7 +2888,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
                 }
               }
 
-              that.activeIndex = undefined;
+              that.activeElement = undefined;
               that.noScroll = true;
               that.$menuInner.scrollTop(0);
               that.selectpicker.search.elements = searchMatch;
@@ -2856,8 +2900,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             that.$menuInner.scrollTop(0);
             that.createView(false);
           }
-
-          that.selectpicker.search.previousValue = searchValue;
         });
       },
       _searchStyle: function _searchStyle() {
@@ -2900,8 +2942,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
               var liSelectedIndex = (element.options[element.selectedIndex] || {}).liIndex;
 
               if (typeof liSelectedIndex === 'number') {
-                this.setSelected(this.selectedIndex, false);
-                this.setSelected(liSelectedIndex, true);
+                this.setSelected(this.selectpicker.current.data[liSelectedIndex], true);
               }
             }
           }
@@ -3003,7 +3044,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         if (isArrowKey) {
           // if up or down
           if (!$items.length) return;
-          liActive = that.selectpicker.main.elements[that.activeIndex];
+          liActive = that.activeElement;
           index = liActive ? Array.prototype.indexOf.call(liActive.parentElement.children, liActive) : -1;
 
           if (index !== -1) {
@@ -3039,9 +3080,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
               that.$menuInner[0].scrollTop = that.$menuInner[0].scrollHeight;
               liActiveIndex = that.selectpicker.current.elements.length - 1;
             } else {
-              activeLi = that.selectpicker.current.data[liActiveIndex];
-              offset = activeLi.position - activeLi.height;
-              updateScroll = offset < scrollTop;
+              activeLi = that.selectpicker.current.data[liActiveIndex]; // could be undefined if no results exist
+
+              if (activeLi) {
+                offset = activeLi.position - activeLi.height;
+                updateScroll = offset < scrollTop;
+              }
             }
           } else if (e.which === keyCodes.ARROW_DOWN || downOnTab) {
             // down
@@ -3050,14 +3094,17 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
               that.$menuInner[0].scrollTop = 0;
               liActiveIndex = that.selectpicker.view.firstHighlightIndex;
             } else {
-              activeLi = that.selectpicker.current.data[liActiveIndex];
-              offset = activeLi.position - that.sizeInfo.menuInnerHeight;
-              updateScroll = offset > scrollTop;
+              activeLi = that.selectpicker.current.data[liActiveIndex]; // could be undefined if no results exist
+
+              if (activeLi) {
+                offset = activeLi.position - that.sizeInfo.menuInnerHeight;
+                updateScroll = offset > scrollTop;
+              }
             }
           }
 
           liActive = that.selectpicker.current.elements[liActiveIndex];
-          that.activeIndex = that.selectpicker.current.data[liActiveIndex].index;
+          that.activeElement = (that.selectpicker.current.data[liActiveIndex] || {}).element;
           that.focusItem(liActive);
           that.selectpicker.view.currentActive = liActive;
           if (updateScroll) that.$menuInner[0].scrollTop = offset;
@@ -3088,7 +3135,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             hasMatch = stringSearch(li, keyHistory, 'startsWith', true);
 
             if (hasMatch && that.selectpicker.view.canHighlight[i]) {
-              matches.push(li.index);
+              matches.push(li.element);
             }
           }
 
@@ -3097,7 +3144,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             $items.removeClass('active').find('a').removeClass('active'); // either only one key has been pressed or they are all the same key
 
             if (keyHistory.length === 1) {
-              matchIndex = matches.indexOf(that.activeIndex);
+              matchIndex = matches.indexOf(that.activeElement);
 
               if (matchIndex === -1 || matchIndex === matches.length - 1) {
                 matchIndex = 0;
@@ -3119,7 +3166,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             }
 
             liActive = that.selectpicker.main.elements[searchMatch];
-            that.activeIndex = matches[matchIndex];
+            that.activeElement = liActive;
             that.focusItem(liActive);
             if (liActive) liActive.firstChild.focus();
             if (updateScroll) that.$menuInner[0].scrollTop = offset;
@@ -3196,7 +3243,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
           this.selectpicker.view.titleOption.parentNode.removeChild(this.selectpicker.view.titleOption);
         }
 
-        this.$element.off(EVENT_KEY).removeData('selectpicker').removeClass('bs-select-hidden selectpicker');
+        this.$element.off(EVENT_KEY).removeData('selectpicker').removeClass('bs-select-hidden selectpicker mobile-device');
         $(window).off(EVENT_KEY + '.' + this.selectId);
       }
     }; // SELECTPICKER PLUGIN DEFINITION
@@ -3285,6 +3332,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             var config = $.extend({}, Selectpicker.DEFAULTS, $.fn.selectpicker.defaults || {}, getAttributesObject($this), dataAttributes, options); // this is correct order on initial render
 
             config.template = $.extend({}, Selectpicker.DEFAULTS.template, $.fn.selectpicker.defaults ? $.fn.selectpicker.defaults.template : {}, dataAttributes.template, options.template);
+            config.source = $.extend({}, Selectpicker.DEFAULTS.source, $.fn.selectpicker.defaults ? $.fn.selectpicker.defaults.source : {}, options.source);
             $this.data('selectpicker', data = new Selectpicker(this, config));
           } else if (options) {
             for (var i in options) {
