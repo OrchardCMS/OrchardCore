@@ -18,7 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.ContentFields.Abstractions\OrchardCore.ContentFields.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.ContentTypes.Abstractions\OrchardCore.ContentTypes.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Data.YesSql\OrchardCore.Data.YesSql.csproj" />
+    <ProjectReference Include="..\OrchardCore.Users.Abstractions\OrchardCore.Users.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Users.Core\OrchardCore.Users.Core.csproj" />
   </ItemGroup>
 

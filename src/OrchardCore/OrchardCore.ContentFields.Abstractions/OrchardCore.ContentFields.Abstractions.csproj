@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.ContentFields</RootNamespace>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore ContentFields Abstractions</Title>
+    <Description>
+      $(OCCMSDescription)
+
+      Abstractions for ContentFields Module.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

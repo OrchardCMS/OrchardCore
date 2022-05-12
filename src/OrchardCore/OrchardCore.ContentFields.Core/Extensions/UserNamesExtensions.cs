@@ -9,7 +9,7 @@ namespace OrchardCore.ContentFields.Fields
         /// User names are a less well known property of a <see cref="UserPickerField"/>
         /// </summary>
         /// <remarks>
-        /// This property is stored when the <see cref="UserPickerField"/> is saved, not when the <see cref="OrchardCore.Users.Models.User.UserName"/> value changes.
+        /// This property is stored when the <see cref="UserPickerField"/> is saved, not when the <see cref="Users.Models.User.UserName"/> value changes.
         /// </remarks>
         public static string[] GetUserNames(this UserPickerField userPickerField)
         {
@@ -22,7 +22,7 @@ namespace OrchardCore.ContentFields.Fields
         /// User names are a less well known property of a <see cref="UserPickerField"/>
         /// </summary>
         /// <remarks>
-        /// This property is stored when the <see cref="UserPickerField"/> is saved, not when the <see cref="OrchardCore.Users.Models.User.UserName"/> value changes.
+        /// This property is stored when the <see cref="UserPickerField"/> is saved, not when the <see cref="Users.Models.User.UserName"/> value changes.
         /// </remarks>
         public static void SetUserNames(this UserPickerField userPickerField, string[] userNames)
         {
