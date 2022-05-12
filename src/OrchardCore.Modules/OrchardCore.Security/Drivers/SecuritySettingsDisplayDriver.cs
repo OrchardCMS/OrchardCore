@@ -58,7 +58,6 @@ namespace OrchardCore.Security.Drivers
 
                 model.ContentSecurityPolicy = settings.ContentSecurityPolicy;
                 model.ContentSecurityPolicyValues = SecurityHeaderDefaults.ContentSecurityPolicyNames.ToList();
-                model.FrameOptions = settings.FrameOptions;
                 model.PermissionsPolicy = settings.PermissionsPolicy;
                 model.PermissionsPolicyValues = SecurityHeaderDefaults.PermissionsPolicyNames.ToList();
                 model.ReferrerPolicy = settings.ReferrerPolicy;
@@ -88,7 +87,6 @@ namespace OrchardCore.Security.Drivers
 
                 section.ContentTypeOptions = SecurityHeaderDefaults.ContentTypeOptions;
                 section.ContentSecurityPolicy = model.ContentSecurityPolicyValues.ToArray();
-                section.FrameOptions = model.FrameOptions;
                 section.PermissionsPolicy = model.PermissionsPolicyValues.ToArray();
                 section.ReferrerPolicy = model.ReferrerPolicy;
 

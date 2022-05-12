@@ -10,7 +10,6 @@ Enabling the `OrchardCore.Security` module will allow the user to set the follow
 | --- | --- |
 | `ContentSecurityPolicy` | Gets or sets the `Content-Security-Policy` HTTP header. |
 | `ContentTypeOptions` | Gets or sets the `X-Content-Type-Options` HTTP header. |
-| `FrameOptions` | Gets or sets the `XFrame-Options` HTTP header. |
 | `PermissionsPolicy` | Gets or sets the `Permissions-Policy` HTTP header. |
 | `ReferrerPolicy` | Gets or sets the `Referrer-Policy` HTTP header. |
 
@@ -23,11 +22,7 @@ The following configuration values can be customized:
 ```json
     "OrchardCore_Security": {
       "ContentSecurityPolicy": [],
-      "FrameOptions": "SAMEORIGIN",
       "PermissionsPolicy": [ "fullscreen=self" ],
       "ReferrerPolicy": "no-referrer"
     }
 ```
-
-!!! note
-    Setting the `frame-ancestors` directive in `ContentSecurityPolicy` HTTP header will overrides `FrameOptions`.

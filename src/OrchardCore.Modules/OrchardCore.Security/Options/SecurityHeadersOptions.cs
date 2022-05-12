@@ -12,7 +12,6 @@ namespace OrchardCore.Security.Options
             {
                 new ContentSecurityPolicyHeaderPolicyProvider { Options = this },
                 new ContentTypeOptionsHeaderPolicyProvider { Options = this },
-                new FrameOptionsHeaderPolicyProvider { Options = this },
                 new PermissionsHeaderPolicyProvider { Options = this },
                 new ReferrerHeaderPolicyProvider { Options = this }
             };
@@ -21,8 +20,6 @@ namespace OrchardCore.Security.Options
         public string[] ContentSecurityPolicy { get; set; } = SecurityHeaderDefaults.ContentSecurityPolicy;
 
         public string ContentTypeOptions { get; set; } = SecurityHeaderDefaults.ContentTypeOptions;
-
-        public string FrameOptions { get; set; } = SecurityHeaderDefaults.FrameOptions;
 
         public string[] PermissionsPolicy { get; set; } = SecurityHeaderDefaults.PermissionsPolicy;
 
@@ -43,13 +40,6 @@ namespace OrchardCore.Security.Options
         public SecurityHeadersOptions AddContentTypeOptions()
         {
             ContentTypeOptions = ContentTypeOptionsValue.NoSniff;
-
-            return this;
-        }
-
-        public SecurityHeadersOptions AddFrameOptions(string options)
-        {
-            FrameOptions = options;
 
             return this;
         }

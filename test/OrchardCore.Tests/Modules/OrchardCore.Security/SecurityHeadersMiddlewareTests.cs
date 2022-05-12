@@ -24,13 +24,6 @@ namespace OrchardCore.Security.Tests
                 new object[] { new[] { $"{ContentSecurityPolicyValue.UpgradeInsecureRequests}"}, "upgrade-insecure-requests" },
             };
 
-        public static IEnumerable<object[]> FrameOptions =>
-            new List<object[]>
-            {
-                new object[] { FrameOptionsValue.Deny, "DENY" },
-                new object[] { FrameOptionsValue.SameOrigin, "SAMEORIGIN" }
-            };
-
         public static IEnumerable<object[]> PermissionsPolicies =>
             new List<object[]>
             {
@@ -94,26 +87,6 @@ namespace OrchardCore.Security.Tests
             // Assert
             Assert.True(context.Response.Headers.ContainsKey(SecurityHeaderNames.XContentTypeOptions));
             Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
-        }
-
-        [Theory]
-        [MemberData(nameof(FrameOptions))]
-        public async Task AddFrameOptionsHeader(string option, string expectedValue)
-        {
-            // Arrange
-            var options = MicrosoftOptions.Create(new SecurityHeadersOptions
-            {
-                FrameOptions = option
-            });
-            var middleware = new SecurityHeadersMiddleware(options, Request);
-            var context = new DefaultHttpContext();
-
-            // Act
-            await middleware.Invoke(context);
-
-            // Assert
-            Assert.True(context.Response.Headers.ContainsKey(SecurityHeaderNames.XFrameOptions));
-            Assert.Equal(expectedValue, context.Response.Headers[SecurityHeaderNames.XFrameOptions]);
         }
 
         [Theory]

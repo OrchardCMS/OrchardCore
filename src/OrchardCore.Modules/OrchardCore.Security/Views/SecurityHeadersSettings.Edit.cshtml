@@ -224,19 +224,6 @@
     </table>
     <span class="hint">@T["Allows administrators to control resources the user agent is allowed to load for a given page."]</span>
 </div>
-<div class="form-group" asp-validation-class-for="FrameOptions">
-    <label asp-for="FrameOptions">@T["Frame Options"]</label>
-    <select asp-for="FrameOptions" class="form-control">
-        <option value="@FrameOptionsValue.Deny" selected="@(Model.FrameOptions == FrameOptionsValue.Deny)">
-            @T["Deny"]
-        </option>
-        <option value="@FrameOptionsValue.SameOrigin" selected="@(Model.FrameOptions == FrameOptionsValue.SameOrigin)">
-            @T["Same origin"]
-        </option>
-    </select>
-    <span asp-validation-for="FrameOptions"></span>
-    <span class="hint">@T["Tells the browser whether you want to allow your site to be displayed in a frame or not."]</span>
-</div>
 <div class="form-group">
     <label asp-for="PermissionsPolicy">@T["Permissions Policy"]</label>
     <table class="table table-striped table-hover">

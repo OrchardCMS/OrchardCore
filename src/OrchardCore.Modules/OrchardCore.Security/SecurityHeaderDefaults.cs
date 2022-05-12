@@ -61,8 +61,6 @@ namespace OrchardCore.Security
 
         public static readonly string ContentTypeOptions = ContentTypeOptionsValue.NoSniff;
 
-        public static readonly string FrameOptions = FrameOptionsValue.SameOrigin;
-
         public static readonly string[] PermissionsPolicy = Array.Empty<string>();
 
         public static readonly string ReferrerPolicy = ReferrerPolicyValue.NoReferrer;
