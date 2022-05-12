@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using OrchardCore.Modules;
+using OrchardCore.Modules.Manifest;
 using Xunit;
 
 namespace OrchardCore.Tests.Modules
@@ -35,7 +36,7 @@ namespace OrchardCore.Tests.Modules
             await middleware.Invoke(httpContextMock.Object);
 
             // Assert
-            Assert.Equal(value, headersArray[key]);
+            Assert.Equal($"{value}/{ManifestConstants.OrchardCoreVersion}", headersArray[key]);
             httpResponseMock.Verify(r => r.Headers, Times.Once);
         }
 
