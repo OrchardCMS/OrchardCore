@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using MicrosoftOptions = Microsoft.Extensions.Options.Options;
 using OrchardCore.Security.Options;
 using OrchardCore.Security.Services;
 using Xunit;
@@ -55,10 +54,10 @@ namespace OrchardCore.Security.Tests
         public async Task ShouldAddContentSecurityPolicyHeader_WhenItsOptionsConfigured(string[] contentSecurityPolicies, string expectedValue)
         {
             // Arrange
-            var options = MicrosoftOptions.Create(new SecurityHeadersOptions
+            var options = new SecurityHeadersOptions
             {
                 ContentSecurityPolicy = contentSecurityPolicies
-            });
+            };
             var middleware = new SecurityHeadersMiddleware(options, Request);
             var context = new DefaultHttpContext();
 
@@ -74,10 +73,10 @@ namespace OrchardCore.Security.Tests
         public async Task ShouldAddContentTypeOptionsHeader_WhenItsOptionsConfigured()
         {
             // Arrange
-            var options = MicrosoftOptions.Create(new SecurityHeadersOptions
+            var options = new SecurityHeadersOptions
             {
                 ContentTypeOptions = ContentTypeOptionsValue.NoSniff
-            });
+            };
             var middleware = new SecurityHeadersMiddleware(options, Request);
             var context = new DefaultHttpContext();
 
@@ -94,10 +93,10 @@ namespace OrchardCore.Security.Tests
         public async Task ShouldAddPermissionsPolicyHeader_WhenItsOptionsConfigured(string[] permissionsPolicies, string expectedValue)
         {
             // Arrange
-            var options = MicrosoftOptions.Create(new SecurityHeadersOptions
+            var options = new SecurityHeadersOptions
             {
                 PermissionsPolicy = permissionsPolicies
-            });
+            };
             var middleware = new SecurityHeadersMiddleware(options, Request);
             var context = new DefaultHttpContext();
 
@@ -114,10 +113,10 @@ namespace OrchardCore.Security.Tests
         public async Task ShouldAddReferrerPolicyHeader_WhenItsOptionsConfigured(string policy, string expectedValue)
         {
             // Arrange
-            var options = MicrosoftOptions.Create(new SecurityHeadersOptions
+            var options = new SecurityHeadersOptions
             {
                 ReferrerPolicy = policy
-            });
+            };
             var middleware = new SecurityHeadersMiddleware(options, Request);
             var context = new DefaultHttpContext();
 

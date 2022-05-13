@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 using OrchardCore.Security.Options;
 
 namespace OrchardCore.Security.Services
@@ -10,9 +9,9 @@ namespace OrchardCore.Security.Services
         private readonly SecurityHeadersOptions _options;
         private readonly RequestDelegate _next;
 
-        public SecurityHeadersMiddleware(IOptions<SecurityHeadersOptions> options, RequestDelegate next)
+        public SecurityHeadersMiddleware(SecurityHeadersOptions options, RequestDelegate next)
         {
-            _options = options.Value;
+            _options = options;
             _next = next;
         }
 

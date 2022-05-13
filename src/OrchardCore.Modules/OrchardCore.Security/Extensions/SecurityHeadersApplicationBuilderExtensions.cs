@@ -1,5 +1,4 @@
 using System;
-using Microsoft.Extensions.Options;
 using OrchardCore.Security.Services;
 using OrchardCore.Security.Options;
 
@@ -19,7 +18,7 @@ namespace Microsoft.AspNetCore.Builder
             ArgumentNullException.ThrowIfNull(app, nameof(app));
             ArgumentNullException.ThrowIfNull(options, nameof(options));
 
-            app.UseMiddleware<SecurityHeadersMiddleware>(Options.Create(options));
+            app.UseMiddleware<SecurityHeadersMiddleware>(options);
 
             return app;
         }
