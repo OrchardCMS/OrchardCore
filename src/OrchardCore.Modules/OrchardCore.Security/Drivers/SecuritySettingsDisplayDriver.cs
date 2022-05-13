@@ -83,7 +83,7 @@ namespace OrchardCore.Security.Drivers
 
                 PrepareContentSecurityPolicyValues(model);
 
-                model.PermissionsPolicyValues.RemoveAll(p => SecurityHeaderDefaults.PermissionsPolicyNames.Contains(p));
+                model.PermissionsPolicyValues.RemoveAll(p => p.EndsWith(PermissionsPolicyOriginValue.None));
 
                 section.ContentTypeOptions = SecurityHeaderDefaults.ContentTypeOptions;
                 section.ContentSecurityPolicy = model.ContentSecurityPolicyValues.ToArray();
