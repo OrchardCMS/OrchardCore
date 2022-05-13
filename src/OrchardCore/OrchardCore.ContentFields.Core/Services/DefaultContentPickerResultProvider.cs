@@ -16,7 +16,10 @@ namespace OrchardCore.ContentFields.Services
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
 
-        public DefaultContentPickerResultProvider(IContentManager contentManager, IContentDefinitionManager contentDefinitionManager, ISession session)
+        public DefaultContentPickerResultProvider(
+            IContentManager contentManager,
+            IContentDefinitionManager contentDefinitionManager,
+            ISession session)
         {
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
