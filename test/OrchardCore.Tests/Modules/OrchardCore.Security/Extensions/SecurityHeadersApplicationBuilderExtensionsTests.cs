@@ -9,7 +9,7 @@ namespace OrchardCore.Security.Extensions.Tests
     public class SecurityHeadersApplicationBuilderExtensionsTests
     {
         [Fact]
-        public void AddHeaders_Defaults()
+        public void AddSecurityHeaders_WithDefaultValues()
         {
             // Arrange
             var context = new DefaultHttpContext();
@@ -30,7 +30,7 @@ namespace OrchardCore.Security.Extensions.Tests
         }
 
         [Fact]
-        public void AddHeaders_Options()
+        public void AddSecurityHeaders_WithConfigureOptions()
         {
             // Arrange
             var context = new DefaultHttpContext();
@@ -68,7 +68,7 @@ namespace OrchardCore.Security.Extensions.Tests
         }
 
         [Fact]
-        public void AddHeaders_BuilderConfiguration()
+        public void AddSecurityHeaders_WithBuildConfiguration()
         {
             // Arrange
             var context = new DefaultHttpContext();
