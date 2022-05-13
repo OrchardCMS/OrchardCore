@@ -248,7 +248,7 @@ namespace OrchardCore.ContentManagement
         /// Gets the latest published version.
         /// </summary>
         public static VersionOptions Published { get { return new VersionOptions { IsPublished = true }; } }
-        public static VersionOptions PublishedAndLatest { get { return new VersionOptions { IsPublishedAndLatest = true }; } }
+        public static VersionOptions PublishedOrLatest { get { return new VersionOptions { IsPublishedOrLatest = true }; } }
 
         /// <summary>
         /// Gets the latest draft version.
@@ -267,7 +267,7 @@ namespace OrchardCore.ContentManagement
 
         public bool IsLatest { get; private set; }
         public bool IsPublished { get; private set; }
-        public bool IsPublishedAndLatest { get; private set; }
+        public bool IsPublishedOrLatest { get; private set; }
         public bool IsDraft { get; private set; }
         public bool IsDraftRequired { get; private set; }
         public bool IsAllVersions { get; private set; }

@@ -53,7 +53,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 new QueryArgument<IntGraphType> { Name = "first", Description = "the first n content items", ResolvedType = new IntGraphType() },
                 new QueryArgument<IntGraphType> { Name = "skip", Description = "the number of content items to skip", ResolvedType = new IntGraphType() },
                 new QueryArgument<PublicationStatusGraphType> { Name = "status", Description = "publication status of the content item", ResolvedType = new PublicationStatusGraphType(), DefaultValue = PublicationStatusEnum.Published }
-            );
+             );
 
             Resolver = new LockedAsyncFieldResolver<IEnumerable<ContentItem>>(Resolve);
 
@@ -209,7 +209,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             switch (status)
             {
                 case PublicationStatusEnum.Published: return VersionOptions.Published;
-                case PublicationStatusEnum.PublishedAndLatest: return VersionOptions.PublishedAndLatest;
+                case PublicationStatusEnum.PublishedOrLatest: return VersionOptions.PublishedOrLatest;
                 case PublicationStatusEnum.Draft: return VersionOptions.Draft;
                 case PublicationStatusEnum.Latest: return VersionOptions.Latest;
                 case PublicationStatusEnum.All: return VersionOptions.AllVersions;
@@ -226,9 +226,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
         private static IQuery<ContentItem, ContentItemIndex> FilterVersion(IQuery<ContentItem, ContentItemIndex> query, VersionOptions versionOption)
         {
-            if (versionOption.IsPublishedAndLatest)
+            if (versionOption.IsPublishedOrLatest)
             {
-                query = query.Where(q => q.Published && q.Latest);
+                query = query.Where(q => q.Published || q.Latest);
             }
             if (versionOption.IsPublished)
             {
