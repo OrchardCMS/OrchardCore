@@ -15,7 +15,7 @@ Enabling the `OrchardCore.Security` module will allow the user to set the follow
 
 ## Security Settings Configuration
 
-The `OrchardCore.Security` module allows the user to use configuration values to override the `AdminSettings` by calling `ConfigureSecuritySettings()` extention method.
+The `OrchardCore.Security` module allows the user to use configuration values to override the `AdminSettings` by calling `ConfigureSecuritySettings()` extension method.
 
 The following configuration values can be customized:
 
