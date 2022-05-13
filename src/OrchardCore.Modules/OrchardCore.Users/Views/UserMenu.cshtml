@@ -1,22 +1,18 @@
 @inject IAuthorizationService AuthorizationService
 <div class="dropdown">
-    <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline no-multisubmit">
-        <button type="button" class="unset ml-3 dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-toggle-tooltip="tooltip" title="@User.Identity.Name">
-            <i class="fa fa-fw fa-user" aria-hidden="true"></i>
-            <span class="d-none">@T[User.Identity.Name]</span>
-        </button>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-            <h6 class="dropdown-header">@T["Signed in as"]<span class="ml-1 font-weight-bold">@User.Identity.Name</span></h6>
-            <div class="dropdown-divider"></div>
+    <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="no-multisubmit">
+        <a class="dropdown-toggle" id="navbarDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
+            <i class="fa fa-fw fa-user" aria-hidden="true" data-bs-toggle="tooltip" data-bs-original-title="@User.Identity.Name"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li><h6 class="dropdown-header">@T["Signed in as"]<span class="ms-1 font-weight-bold">@User.Identity.Name</span></h6></li>
+            <li><hr class="dropdown-divider" /></li>
             @if (await AuthorizationService.AuthorizeAsync(User, Permissions.ManageOwnUserInformation))
             {
-                <a class="dropdown-item" asp-area="OrchardCore.Users" asp-action="Edit" asp-controller="Admin" asp-route-returnurl="@FullRequestPath"><span><i class="far fa-address-card" aria-hidden="true"></i></span>&nbsp;<span> @T["Profile"]</span></a>
+                <li><a class="dropdown-item" asp-area="OrchardCore.Users" asp-action="Edit" asp-controller="Admin" asp-route-returnUrl="@FullRequestPath"><span><i class="far fa-address-card" aria-hidden="true"></i></span>&nbsp;<span> @T["Profile"]</span></a></li>
             }
-            <a class="dropdown-item" asp-area="OrchardCore.Users" asp-controller="Account" asp-action="ChangePassword" asp-route-returnurl="@FullRequestPath"><span><i class="fas fa-key" aria-hidden="true"></i></span>&nbsp;<span> @T["Change password"]</span></a>
-            <button type="submit" class="dropdown-item"><span><i class="fa fa-sign-out-alt" aria-hidden="true"></i></span>&nbsp;<span> @T["Log off"]</span></button>
-        </div>
+            <li><a class="dropdown-item" asp-area="OrchardCore.Users" asp-controller="Account" asp-action="ChangePassword" asp-route-returnUrl="@FullRequestPath"><span><i class="fas fa-key" aria-hidden="true"></i></span>&nbsp;<span> @T["Change password"]</span></a></li>
+            <li><button type="submit" class="dropdown-item"><span><i class="fa fa-sign-out-alt" aria-hidden="true"></i></span>&nbsp;<span> @T["Log off"]</span></button></li>
+        </ul>
     </form>
 </div>
-<script at="Foot">
-    $('[data-toggle-tooltip="tooltip"]').tooltip();
-</script>

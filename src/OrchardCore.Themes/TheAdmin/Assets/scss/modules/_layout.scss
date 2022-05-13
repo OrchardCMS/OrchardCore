@@ -9,6 +9,15 @@ body {
     margin-bottom: $footer-height;
     cursor: default;
     height: 100%;
+    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+a {
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 @include cursor-class(move);
@@ -65,13 +74,6 @@ body {
     padding: 0.75rem 0.5rem;
 }
 
-.properties {
-    @extend .w-100 !optional;
-}
-
-.related {
-    @extend .float-right !optional;
-}
 
 // No transitions on load
 // Prevents Firefox and Edge transitions on load.
@@ -163,6 +165,14 @@ svg {
     >  .btn-group {
         right: calc(-14px + 50%);
     }
+}
+
+.btn:hover {
+    text-decoration: none;
+}
+
+.dropdown-item:hover {
+    text-decoration: none !important;
 }
 
 .unset{

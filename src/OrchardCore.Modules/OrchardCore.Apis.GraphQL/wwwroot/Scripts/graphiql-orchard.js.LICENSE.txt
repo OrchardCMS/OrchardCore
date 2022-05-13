@@ -1,9 +1,3 @@
-/*
-object-assign
-(c) Sindre Sorhus
-@license MIT
-*/
-
 /*!
  * escape-html
  * Copyright(c) 2012-2013 TJ Holowaychuk
@@ -40,16 +34,8 @@ object-assign
  * Released under the MIT License.
  */
 
-/** @license React v0.19.1
- * scheduler.production.min.js
- *
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-/** @license React v16.14.0
+/**
+ * @license React
  * react-dom.production.min.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -58,8 +44,19 @@ object-assign
  * LICENSE file in the root directory of this source tree.
  */
 
-/** @license React v16.14.0
+/**
+ * @license React
  * react.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/**
+ * @license React
+ * scheduler.production.min.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
