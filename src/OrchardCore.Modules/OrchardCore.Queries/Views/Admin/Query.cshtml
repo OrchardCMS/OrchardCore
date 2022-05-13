@@ -10,16 +10,17 @@
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-sql" at="Foot"></script>
+<script asp-name="monaco" depends-on="admin" at="Foot"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["SQL Query"])</h1></zone>
 
-<div asp-validation-summary="All" class="text-danger"></div>
+<div asp-validation-summary="All"></div>
 
 <form asp-action="Query" method="post" class="no-multisubmit">
     <div class="row">
         <div class="col-md-6">
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="DecodedQuery">@T["Template"]</label>
                 <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
                 <span class="hint">@T["You can <a href=\"{0}\">click here</a> to query all content items.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Queries", Query = matchAllQuery }))]</span>
@@ -28,7 +29,7 @@
         </div>
         <div class="col-md-6">
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="Parameters">@T["Parameters"]</label>
                 <textarea asp-for="Parameters" rows="1" class="form-control"></textarea>
                 <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
@@ -38,7 +39,7 @@
 
     <div class="row">
         <div class="col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
                 <button type="submit" class="btn btn-primary">@T["Query"]</button>
             </div>
         </div>
@@ -48,13 +49,13 @@
 {
     <div class="row">
         <div class="col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="RawSql">@T["Final SQL Query"]</label>
                 <textarea asp-for="RawSql" rows="12" class="form-control"></textarea>
                 <span class="hint">@T["The query as it will be executed by the SQL database."]</span>
             </div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Sql", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
             </div>
         </div>
@@ -65,10 +66,29 @@
 {
     <span class="text-muted">@T["Query executed in {0} ms", Model.Elapsed.TotalMilliseconds]</span>
 
-    @foreach (var document in Model.Documents)
+    var json = "";
+    if (Model.Documents.Any())
     {
-        <div>@Json.Serialize(document)</div>
+        json = "[";
+        var i = 0;
+
+        @foreach (var document in Model.Documents)
+        {
+            json += Json.Serialize(document);
+            if (i < Model.Documents.Count() - 1)
+            {
+                json += ",";
+            }
+            i++;
+        }
+
+        json += "]";
     }
+
+    <div class="form-control" style="min-height: 400px;">
+        <div id="monaco_editor" style="min-height: 385px;" dir="@Orchard.CultureDir()"></div>
+    </div>
+    <textarea id="monaco_textarea" hidden>@json</textarea>
 }
 
 @{
@@ -99,5 +119,50 @@
         if (rawSql = document.getElementById('@Html.IdFor(m => m.RawSql)')) {
           CodeMirror.fromTextArea(rawSql, { mode: "@sqlmode", lineNumbers: true, readonly: true, viewportMargin: Infinity });
         }
+    });
+</script>
+<script asp-name="monaco" depends-on="admin" at="Foot"></script>
+<script at="Foot" asp-name="jsonrecipe-editor" depends-on="monaco, admin">
+    $(document).ready(function () {
+        require(['vs/editor/editor.main'], function () {
+
+            const html = document.getElementsByTagName("html")[0];
+            const mutationObserver = new MutationObserver(setTheme);
+            mutationObserver.observe(html, { attributes: true });
+
+            function setTheme() {
+                var theme = html.dataset.theme;
+                if (theme === "darkmode") {
+                    monaco.editor.setTheme('vs-dark')
+                } else {
+                    monaco.editor.setTheme('vs')
+                }
+            }
+
+            setTheme();
+
+            const textArea = document.getElementById('monaco_textarea');
+            const modelUri = monaco.Uri.parse("json://grid/settings.json");
+            const jsonModel = monaco.editor.createModel(JSON.stringify(textArea, null, 4), "json", modelUri);
+
+            var editor = monaco.editor.create(document.getElementById('monaco_editor'), {
+                automaticLayout: true,
+                language: "json",
+                lineNumbers: false,
+                minimap: { enabled: false },
+                model: jsonModel
+            });
+            
+            editor.getModel().setValue(textArea.value);
+
+            //format json
+            setTimeout(function() {
+                editor.getAction('editor.action.formatDocument').run();
+            }, 300);
+
+            window.addEventListener("submit", function () {
+                textArea.value = editor.getValue();
+            });
+        });
     });
 </script>

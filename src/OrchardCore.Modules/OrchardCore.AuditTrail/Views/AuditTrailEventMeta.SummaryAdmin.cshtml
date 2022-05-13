@@ -5,18 +5,18 @@
     var createdUtc = Model.AuditTrailEvent.CreatedUtc.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture);
 }
 
-<span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@await DisplayAsync(await New.DateTime(Utc: Model.AuditTrailEvent.CreatedUtc, Format: "g"))">
+<span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@await DisplayAsync(await New.DateTime(Utc: Model.AuditTrailEvent.CreatedUtc, Format: "g"))">
     <i class="fa fa-calendar text-secondary" aria-hidden="true"></i> <time datetime="@createdUtc">@await DisplayAsync(await New.Timespan(Utc: Model.AuditTrailEvent.CreatedUtc))</time>
 </span>
 
-<span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["User Name"]">
-    <i class="fa fa-user text-secondary mr-1" aria-hidden="true"></i>@Model.AuditTrailEvent.UserName
+<span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["User Name"]">
+    <i class="fa fa-user text-secondary me-1" aria-hidden="true"></i>@Model.AuditTrailEvent.UserName
 </span>
 
 
 @if (!String.IsNullOrEmpty(Model.AuditTrailEvent.ClientIpAddress))
 {
-    <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Client IP Address"]">
-        <i class="fas fa-wifi text-secondary mr-1" aria-hidden="true"></i>@Model.AuditTrailEvent.ClientIpAddress
+    <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Client IP Address"]">
+        <i class="fas fa-wifi text-secondary me-1" aria-hidden="true"></i>@Model.AuditTrailEvent.ClientIpAddress
     </span>
 }

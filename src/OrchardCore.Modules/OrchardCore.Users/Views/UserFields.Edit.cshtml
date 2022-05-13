@@ -4,18 +4,18 @@
 
 @if (Site.As<RegistrationSettings>().UsersMustValidateEmail)
 {
-    <div class="form-group">
-        <div class="custom-control custom-checkbox">
-            <input asp-for="EmailConfirmed" type="checkbox" class="custom-control-input" asp-is-disabled="@Model.IsEditingDisabled">
-            <label class="custom-control-label" asp-for="EmailConfirmed">@T["Email confirmed"]</label>
+    <div class="mb-3">
+        <div class="form-check">
+            <input asp-for="EmailConfirmed" type="checkbox" class="form-check-input" asp-is-disabled="@Model.IsEditingDisabled">
+            <label class="form-check-label" asp-for="EmailConfirmed">@T["Email confirmed"]</label>
         </div>
     </div>
 }
 
-<div class="form-group">
-    <div class="custom-control custom-switch">
-        <input asp-for="IsEnabled" type="checkbox" class="custom-control-input" checked="@Model.IsEnabled" asp-is-disabled="@Model.IsEditingDisabled" />
-        <label asp-for="IsEnabled" class="custom-control-label cursor-pointer">@T["Is enabled?"]</label>
+<div class="mb-3">
+    <div class="form-check form-switch">
+        <input asp-for="IsEnabled" type="checkbox" class="form-check-input" checked="@Model.IsEnabled" asp-is-disabled="@Model.IsEditingDisabled" />
+        <label asp-for="IsEnabled" class="form-check-label cursor-pointer">@T["Is enabled?"]</label>
         <span class="hint dashed">@T["Uncheck to disable this user account."]</span>
     </div>
 </div>
@@ -58,19 +58,15 @@
             let passwordConfirmationToggle = document.getElementById('passwordConfirmationToggle');
             let generate = document.getElementById('generatePassword');
             let copy = document.getElementById('copyPassword');
-
             function toggetIcons(element) {
                 if (element.classList.contains('fa-eye')) {
                     element.classList.remove('fa-eye');
                     element.classList.add('fa-eye-slash');
-
                     return;
                 }
-
                 element.classList.remove('fa-eye-slash');
                 element.classList.add('fa-eye');
             }
-
             function toggleFieldType(element) {
                 if(element.type == 'password') {
                     element.type = 'text';
@@ -80,7 +76,6 @@
 
                 element.type = 'password';
             }
-
             function generatePassword() {
                 const chars = '0123456789abcdefghijklmnopqrstuvwxyz!@@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 let password = '';
@@ -91,28 +86,23 @@
 
                 return password;
             }
-
             function copyPassword(text) {
                 navigator.clipboard.writeText(text);
             }
-
             function togglePasswordFieldState() {
                 toggleFieldType(password);
                 toggleFieldType(passwordConfirmation);
                 toggetIcons(passwordToggle);
                 toggetIcons(passwordConfirmationToggle);
             }
-
             generate.addEventListener('click', function() {
                 var newPassword = generatePassword();
                 password.value = newPassword;
                 passwordConfirmation.value = newPassword;
             });
-
             copy.addEventListener('click', function() {
                 copyPassword(password.value);
             });
-
             passwordToggle.addEventListener('click', togglePasswordFieldState);
             passwordConfirmationToggle.addEventListener('click', togglePasswordFieldState);
         });
