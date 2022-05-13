@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices((tenantServices, serviceProvider) =>
             {
-                var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Security");
+                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Security");
 
                 tenantServices.PostConfigure<SecuritySettings>(settings =>
                 {
@@ -24,7 +24,9 @@ namespace Microsoft.Extensions.DependencyInjection
                     settings.ContentSecurityPolicy = SecurityHeaderDefaults.ContentSecurityPolicy;
                     settings.PermissionsPolicy = SecurityHeaderDefaults.PermissionsPolicy;
 
-                    shellConfiguration.Bind(settings);
+                    configurationSection.Bind(settings);
+
+                    settings.FromConfiguration = true;
                 });
             });
 

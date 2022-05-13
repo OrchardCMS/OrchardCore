@@ -50,6 +50,7 @@ namespace OrchardCore.Security.Drivers
             return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {
                 // Set the settings from configuration when AdminSettings are overriden via ConfigureSecuritySettings()
+                if (_securitySettings.FromConfiguration)
                 {
                     settings = _securitySettings;
                     model.FromAdminSettings = false;
