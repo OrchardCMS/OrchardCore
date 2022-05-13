@@ -26,3 +26,5 @@ The following configuration values can be customized:
       "ReferrerPolicy": "no-referrer"
     }
 ```
+
+For more information please refer to [Configuration](/reference/core/Configuration/README.md).
