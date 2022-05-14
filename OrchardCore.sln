@@ -464,6 +464,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.Themes.AssyAttrib.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.OrchardCoreThemes.Alpha", "test\OrchardCore.Tests.Themes\Examples.OrchardCoreThemes.Alpha\Examples.OrchardCoreThemes.Alpha.csproj", "{ECCBDB6C-BF57-43B8-9A58-5F3D60357D0D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{59C52CE8-CE78-4502-8C19-34EC63918BE2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{01A2BBC1-B9C1-4DD1-825C-A63B6D40F91D}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\assets_validation.yml = .github\workflows\assets_validation.yml
+		.github\workflows\functional_all_db.yml = .github\workflows\functional_all_db.yml
+		.github\workflows\mac_unit_test_ci.yml = .github\workflows\mac_unit_test_ci.yml
+		.github\workflows\pr_ci.yml = .github\workflows\pr_ci.yml
+		.github\workflows\preview_ci.yml = .github\workflows\preview_ci.yml
+		.github\workflows\release_ci.yml = .github\workflows\release_ci.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1174,14 +1186,14 @@ Global
 		{D00CF459-396D-49C9-92E2-3FD3C2A59847}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D00CF459-396D-49C9-92E2-3FD3C2A59847}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D00CF459-396D-49C9-92E2-3FD3C2A59847}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2FADB5D9-E229-4689-A040-12EEE1876285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2FADB5D9-E229-4689-A040-12EEE1876285}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2FADB5D9-E229-4689-A040-12EEE1876285}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2FADB5D9-E229-4689-A040-12EEE1876285}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FE8011DE-D917-4F74-9955-238B2BBA9165}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FE8011DE-D917-4F74-9955-238B2BBA9165}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE8011DE-D917-4F74-9955-238B2BBA9165}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE8011DE-D917-4F74-9955-238B2BBA9165}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FADB5D9-E229-4689-A040-12EEE1876285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FADB5D9-E229-4689-A040-12EEE1876285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FADB5D9-E229-4689-A040-12EEE1876285}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FADB5D9-E229-4689-A040-12EEE1876285}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A49A2A81-B04C-4240-852A-80A4EEAD3CDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A49A2A81-B04C-4240-852A-80A4EEAD3CDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C058B5EE-2370-4240-B0AE-0D1C8A37CF41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1422,8 +1434,8 @@ Global
 		{2BC850C3-9846-47E1-9068-AC0A8E5537AC} = {184139CF-C4AB-4FBE-AE19-54C8B3FE5C5E}
 		{85EF279B-8F35-476D-9BBD-F503F20712B5} = {184139CF-C4AB-4FBE-AE19-54C8B3FE5C5E}
 		{21F459C1-494E-41C9-B221-6C102774A47F} = {184139CF-C4AB-4FBE-AE19-54C8B3FE5C5E}
-		{2FADB5D9-E229-4689-A040-12EEE1876285} = {B8D16C60-99B4-43D5-A3AD-4CD89AF39B25}
 		{FE8011DE-D917-4F74-9955-238B2BBA9165} = {B8D16C60-99B4-43D5-A3AD-4CD89AF39B25}
+		{2FADB5D9-E229-4689-A040-12EEE1876285} = {B8D16C60-99B4-43D5-A3AD-4CD89AF39B25}
 		{61436BAE-FB36-4ADA-8E5D-EE64C4E04522} = {B8D16C60-99B4-43D5-A3AD-4CD89AF39B25}
 		{A493E5AD-9046-47F3-87A0-0D3AC7EF8699} = {B8D16C60-99B4-43D5-A3AD-4CD89AF39B25}
 		{A49A2A81-B04C-4240-852A-80A4EEAD3CDA} = {72E15FB1-45AB-46CB-B332-40FDFDD2B272}
@@ -1438,6 +1450,7 @@ Global
 		{95406CBA-9382-4019-B422-EE339D47CE8F} = {61436BAE-FB36-4ADA-8E5D-EE64C4E04522}
 		{80E34B32-9043-42FE-AB5C-CE1178F2B90D} = {61436BAE-FB36-4ADA-8E5D-EE64C4E04522}
 		{ECCBDB6C-BF57-43B8-9A58-5F3D60357D0D} = {61436BAE-FB36-4ADA-8E5D-EE64C4E04522}
+		{01A2BBC1-B9C1-4DD1-825C-A63B6D40F91D} = {59C52CE8-CE78-4502-8C19-34EC63918BE2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
