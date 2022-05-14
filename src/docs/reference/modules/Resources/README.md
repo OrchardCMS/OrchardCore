@@ -52,10 +52,10 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | jquery-resizable-dom  | Script | 0.35.0        | -              |
 | js-cookie             | Script | 3.0.1         | jQuery         |
 | popper                | Script | 1.16.1        | -              |
-| popperjs              | Script | 2.10.2        | -              |
+| popperjs              | Script | 2.11.5        | -              |
 | bootstrap             | Script | 4.6.1         | popper         |
-| bootstrap             | Script | 5.1.3         | popperjs       |
-| bootstrap             | Style  | 4.6.1, 5.1.3  | -              |
+| bootstrap             | Script | 5.2.0-beta1   | popperjs       |
+| bootstrap             | Style  | 4.6.1, 5.2.0b | -              |
 | bootstrap-select      | Script | 1.14.0-beta3  | -              |
 | bootstrap-select      | Style  | 1.14.0-beta3  | -              |
 | nouislider            | Script | 15.5.1        | -              |
