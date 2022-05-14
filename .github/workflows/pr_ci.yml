@@ -1,10 +1,6 @@
 name: PR - CI
 on: 
   pull_request:
-    paths-ignore:
-      - '**/*.md'	
-      - 'mkdocs.yml'	
-      - 'src/docs/**/*'
     branches: [ main, release/** ]
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true

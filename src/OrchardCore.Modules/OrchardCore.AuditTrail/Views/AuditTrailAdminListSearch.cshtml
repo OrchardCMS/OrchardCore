@@ -10,17 +10,17 @@
 <div class="input-group input-group-sm w-50 d-inline-flex has-filter">
     <div class="input-group-prepend">
         <button class="btn btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button"
-            data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+            data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-filter" title="@T["Filters"]" aria-hidden="true"></i>
         </button>
-        <div class="dropdown-menu @if(CultureInfo.CurrentUICulture.IsRightToLeft()){<text>dropdown-menu-right</text>}"
+        <ul class="dropdown-menu @if(CultureInfo.CurrentUICulture.IsRightToLeft()){<text>dropdown-menu-start</text>}"
             aria-labelledby="filter-dropdown">
             @foreach(var category in categories)
             {
-                <a class="dropdown-item" href="?q=category:@category.Name">@category.LocalizedName(Context.RequestServices)</a>
+                <li><a class="dropdown-item" href="?q=category:@category.Name">@category.LocalizedName(Context.RequestServices)</a></li>
             }
-            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalAuditTrailIndexOptionsFilterSyntax">@T["Filter syntax"]</a>
-        </div>
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalAuditTrailIndexOptionsFilterSyntax">@T["Filter syntax"]</a></li>
+        </ul>
     </div>
     <input asp-for="OriginalSearchText" type="hidden"></input>
 
@@ -38,9 +38,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="audittrail-filters-syntax-title">@T["Available Filters"]</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
@@ -148,7 +146,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Close"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Close"]</button>
                 </div>
             </div>
         </div>

@@ -1,8 +1,15 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.ContentManagement;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Lucene;
+using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -80,6 +87,47 @@ namespace OrchardCore.Tests.Apis.Context
             }
 
             GraphQLClient = new OrchardGraphQLClient(Client);
+        }
+
+        public async Task RunRecipeAsync(IShellHost shellHost, string recipeName, string recipePath)
+        {
+            var shellScope = await shellHost.GetScopeAsync(TenantName);
+            await shellScope.UsingAsync(async scope =>
+            {
+                var shellFeaturesManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
+                var recipeHarvesters = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeHarvester>>();
+                var recipeExecutor = scope.ServiceProvider.GetRequiredService<IRecipeExecutor>();
+
+                var recipeCollections = await Task.WhenAll(
+                    recipeHarvesters.Select(recipe => recipe.HarvestRecipesAsync()));
+
+                var recipes = recipeCollections.SelectMany(recipeCollection => recipeCollection);
+                var recipe = recipes
+                    .FirstOrDefault(recipe => recipe.RecipeFileInfo.Name == recipeName && recipe.BasePath == recipePath);
+
+                var executionId = Guid.NewGuid().ToString("n");
+
+                await recipeExecutor.ExecuteAsync(
+                    executionId,
+                    recipe,
+                    new Dictionary<string, object>(),
+                    CancellationToken.None);
+            });
+        }
+
+        public async Task ResetLuceneIndiciesAsync(IShellHost shellHost, string indexName)
+        {
+            var shellScope = await shellHost.GetScopeAsync(TenantName);
+            await shellScope.UsingAsync(async scope =>
+            {
+                var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
+                var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
+
+                var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync(indexName);
+
+                luceneIndexingService.ResetIndex(indexName);
+                await luceneIndexingService.ProcessContentItemsAsync(indexName);
+            });
         }
 
         public async Task<string> CreateContentItem(string contentType, Action<ContentItem> func, bool draft = false)
