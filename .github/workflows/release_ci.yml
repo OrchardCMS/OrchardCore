@@ -70,7 +70,7 @@ jobs:
       with:
         name: ui-test-failure
         path: |
-          test/OrchardCore.Tests.UI/bin/Release/net6.0/FailureDumps
+          test/OrchardCore.Tests.UI/bin/Release/*/FailureDumps
     - name: Deploy release NuGet packages
       if: matrix.os == 'ubuntu-latest'
       run: |
