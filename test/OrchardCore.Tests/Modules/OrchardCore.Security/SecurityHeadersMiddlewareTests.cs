@@ -51,7 +51,7 @@ namespace OrchardCore.Security.Tests
 
         [Theory]
         [MemberData(nameof(ContentSecurityPolicies))]
-        public async Task ShouldAddContentSecurityPolicyHeader_WhenItsOptionsConfigured(string[] contentSecurityPolicies, string expectedValue)
+        public async Task ContentSecurityPolicyHeaderShouldBeAdded(string[] contentSecurityPolicies, string expectedValue)
         {
             // Arrange
             var options = new SecurityHeadersOptions
@@ -70,7 +70,7 @@ namespace OrchardCore.Security.Tests
         }
 
         [Fact]
-        public async Task ShouldAddContentTypeOptionsHeader_WhenItsOptionsConfigured()
+        public async Task ContentTypeOptionsHeaderShouldBeAdded()
         {
             // Arrange
             var options = new SecurityHeadersOptions
@@ -90,7 +90,7 @@ namespace OrchardCore.Security.Tests
 
         [Theory]
         [MemberData(nameof(PermissionsPolicies))]
-        public async Task ShouldAddPermissionsPolicyHeader_WhenItsOptionsConfigured(string[] permissionsPolicies, string expectedValue)
+        public async Task PermissionsPolicyHeaderShouldBeAdded(string[] permissionsPolicies, string expectedValue)
         {
             // Arrange
             var options = new SecurityHeadersOptions
@@ -110,7 +110,7 @@ namespace OrchardCore.Security.Tests
 
         [Theory]
         [MemberData(nameof(ReferrerPolicies))]
-        public async Task ShouldAddReferrerPolicyHeader_WhenItsOptionsConfigured(string policy, string expectedValue)
+        public async Task ReferrerPolicyHeaderShouldBeAdded(string policy, string expectedValue)
         {
             // Arrange
             var options = new SecurityHeadersOptions
