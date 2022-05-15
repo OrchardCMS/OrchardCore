@@ -13,6 +13,11 @@ namespace OrchardCore.Security.Services
         {
             _options = options;
             _next = next;
+
+            foreach (var provider in _options.HeaderPolicyProviders)
+            {
+                provider.InitPolicy();
+            }
         }
 
         public Task Invoke(HttpContext context)

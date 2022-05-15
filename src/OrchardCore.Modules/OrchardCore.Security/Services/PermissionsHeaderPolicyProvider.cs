@@ -5,11 +5,21 @@ namespace OrchardCore.Security.Services
 {
     public class PermissionsHeaderPolicyProvider : HeaderPolicyProvider
     {
-        public override void ApplyPolicy(HttpContext httpContext)
+        private string _policy;
+
+        public override void InitPolicy()
         {
             if (Options.PermissionsPolicy.Length > 0)
             {
-                httpContext.Response.Headers[SecurityHeaderNames.PermissionsPolicy] = String.Join(SecurityHeaderDefaults.PoliciesSeparator, Options.PermissionsPolicy);
+                _policy = String.Join(SecurityHeaderDefaults.PoliciesSeparator, Options.PermissionsPolicy);
+            }
+        }
+
+        public override void ApplyPolicy(HttpContext httpContext)
+        {
+            if (_policy != null)
+            {
+                httpContext.Response.Headers[SecurityHeaderNames.PermissionsPolicy] = _policy;
             }
         }
     }

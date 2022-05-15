@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OrchardCoreBuilderExtensions
     {
-        public static OrchardCoreBuilder ConfigureSecuritySettings(this OrchardCoreBuilder builder, bool overrideAdminSettings = true)
+        public static OrchardCoreBuilder ConfigureSecuritySettings(this OrchardCoreBuilder builder)
         {
             builder.ConfigureServices((tenantServices, serviceProvider) =>
             {
@@ -15,14 +15,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 tenantServices.PostConfigure<SecuritySettings>(settings =>
                 {
-                    if (!overrideAdminSettings)
-                    {
-                        return;
-                    }
-
                     // Reset the settings to avoid merging with the current settings values
                     settings.ContentSecurityPolicy = SecurityHeaderDefaults.ContentSecurityPolicy;
-                    settings.PermissionsPolicy = SecurityHeaderDefaults.PermissionsPolicy;
+                    //settings.PermissionsPolicy = SecurityHeaderDefaults.PermissionsPolicy;
 
                     configurationSection.Bind(settings);
 

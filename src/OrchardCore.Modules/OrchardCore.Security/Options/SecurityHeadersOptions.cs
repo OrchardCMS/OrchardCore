@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using OrchardCore.Security.Services;
 
 namespace OrchardCore.Security.Options
@@ -44,8 +45,15 @@ namespace OrchardCore.Security.Options
             return this;
         }
 
-        public SecurityHeadersOptions AddPermissionsPolicy(string policies)
-            => AddPermissionsPolicy(policies.Split(SecurityHeaderDefaults.PoliciesSeparator, StringSplitOptions.RemoveEmptyEntries));
+        public SecurityHeadersOptions AddPermissionsPolicy(Dictionary<string, string> policies)
+        {
+            PermissionsPolicy = policies
+                .Where(x => x.Value != PermissionsPolicyOriginValue.None)
+                .Select(x => x.Key + "=" + x.Value)
+                .ToArray();
+
+            return this;
+        }
 
         public SecurityHeadersOptions AddPermissionsPolicy(params string[] policies)
         {

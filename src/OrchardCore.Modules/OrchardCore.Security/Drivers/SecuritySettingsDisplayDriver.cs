@@ -50,17 +50,18 @@ namespace OrchardCore.Security.Drivers
             return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {
                 // Set the settings from configuration when AdminSettings are overriden via ConfigureSecuritySettings()
+                var currentSettings = settings;
                 if (_securitySettings.FromConfiguration)
                 {
-                    settings = _securitySettings;
-                    model.FromAdminSettings = false;
+                    currentSettings = _securitySettings;
                 }
 
-                model.ContentSecurityPolicy = settings.ContentSecurityPolicy;
+                model.FromConfiguration = currentSettings.FromConfiguration;
+                model.ContentSecurityPolicy = currentSettings.ContentSecurityPolicy;
                 model.ContentSecurityPolicyValues = SecurityHeaderDefaults.ContentSecurityPolicyNames.ToList();
-                model.PermissionsPolicy = settings.PermissionsPolicy;
-                model.PermissionsPolicyValues = SecurityHeaderDefaults.PermissionsPolicyNames.ToList();
-                model.ReferrerPolicy = settings.ReferrerPolicy;
+                model.PermissionsPolicy = currentSettings.PermissionsPolicy;
+                model.ReferrerPolicy = currentSettings.ReferrerPolicy;
+
                 model.EnableSandbox = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.Any(p => p.StartsWith(ContentSecurityPolicyValue.Sandbox));
                 model.UpgradeInsecureRequests = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.Any(p => p == ContentSecurityPolicyValue.UpgradeInsecureRequests);
             }).Location("Content:2").OnGroup(SettingsGroupId);
@@ -83,11 +84,9 @@ namespace OrchardCore.Security.Drivers
 
                 PrepareContentSecurityPolicyValues(model);
 
-                model.PermissionsPolicyValues.RemoveAll(p => p.EndsWith(PermissionsPolicyOriginValue.None));
-
                 section.ContentTypeOptions = SecurityHeaderDefaults.ContentTypeOptions;
                 section.ContentSecurityPolicy = model.ContentSecurityPolicyValues.ToArray();
-                section.PermissionsPolicy = model.PermissionsPolicyValues.ToArray();
+                section.PermissionsPolicy = model.PermissionsPolicy;
                 section.ReferrerPolicy = model.ReferrerPolicy;
 
                 if (context.Updater.ModelState.IsValid)
