@@ -21,7 +21,7 @@ namespace OrchardCore.Security.Options
 
         public string ContentTypeOptions { get; set; } = SecurityHeaderDefaults.ContentTypeOptions;
 
-        public string[] PermissionsPolicy { get; set; } = SecurityHeaderDefaults.PermissionsPolicy;
+        public IDictionary<string, string> PermissionsPolicy { get; set; } = SecurityHeaderDefaults.PermissionsPolicy;
 
         public string ReferrerPolicy { get; set; } = SecurityHeaderDefaults.ReferrerPolicy;
 
@@ -44,10 +44,7 @@ namespace OrchardCore.Security.Options
             return this;
         }
 
-        public SecurityHeadersOptions AddPermissionsPolicy(string policies)
-            => AddPermissionsPolicy(policies.Split(SecurityHeaderDefaults.PoliciesSeparator, StringSplitOptions.RemoveEmptyEntries));
-
-        public SecurityHeadersOptions AddPermissionsPolicy(params string[] policies)
+        public SecurityHeadersOptions AddPermissionsPolicy(IDictionary<string, string> policies)
         {
             PermissionsPolicy = policies;
 

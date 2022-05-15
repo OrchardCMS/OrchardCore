@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     // Reset the settings to avoid merging with the current settings values
                     settings.ContentSecurityPolicy = SecurityHeaderDefaults.ContentSecurityPolicy;
-                    settings.PermissionsPolicy = SecurityHeaderDefaults.PermissionsPolicy;
+                    settings.PermissionsPolicy.Clear();
 
                     configurationSection.Bind(settings);
 

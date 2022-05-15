@@ -7,15 +7,15 @@ namespace OrchardCore.Security.ViewModels
     {
         public string[] ContentSecurityPolicy { get; set; }
 
-        public List<string> ContentSecurityPolicyValues { get; set; }
+        public List<string> AllContentSecurityPolicy { get; set; }
 
         public bool EnableSandbox { get; set; }
 
         public bool UpgradeInsecureRequests { get; set; }
 
-        public string[] PermissionsPolicy { get; set; }
+        public IDictionary<string, string> PermissionsPolicy { get; set; }
 
-        public List<string> PermissionsPolicyValues { get; set; }
+        public IDictionary<string, string> AllPermissionsPolicy { get; set; }
 
         public string ReferrerPolicy { get; set; }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using OrchardCore.Security.Options;
 
 namespace OrchardCore.Security
@@ -61,7 +62,7 @@ namespace OrchardCore.Security
 
         public static readonly string ContentTypeOptions = ContentTypeOptionsValue.NoSniff;
 
-        public static string[] PermissionsPolicy = Array.Empty<string>();
+        public static IDictionary<string, string> PermissionsPolicy = new Dictionary<string, string>();
 
         public static readonly string ReferrerPolicy = ReferrerPolicyValue.NoReferrer;
     }
