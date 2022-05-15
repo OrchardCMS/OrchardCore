@@ -28,8 +28,17 @@ namespace OrchardCore.Security.Options
 
         public IList<IHeaderPolicyProvider> HeaderPolicyProviders { get; set; }
 
-        public SecurityHeadersOptions AddContentSecurityPolicy(string policies)
-            => AddContentSecurityPolicy(policies.Split(SecurityHeaderDefaults.PoliciesSeparator, StringSplitOptions.RemoveEmptyEntries));
+        public SecurityHeadersOptions AddContentSecurityPolicy(Dictionary<string, string> policies)
+        {
+            ContentSecurityPolicy = policies
+                .Where(kvp => kvp.Value != null ||
+                    kvp.Key == ContentSecurityPolicyValue.Sandbox ||
+                    kvp.Key == ContentSecurityPolicyValue.UpgradeInsecureRequests)
+                .Select(kvp => kvp.Key + (kvp.Value != null ? " " + kvp.Value : String.Empty))
+                .ToArray();
+
+            return this;
+        }
 
         public SecurityHeadersOptions AddContentSecurityPolicy(params string[] policies)
         {
@@ -48,8 +57,8 @@ namespace OrchardCore.Security.Options
         public SecurityHeadersOptions AddPermissionsPolicy(Dictionary<string, string> policies)
         {
             PermissionsPolicy = policies
-                .Where(x => x.Value != PermissionsPolicyOriginValue.None)
-                .Select(x => x.Key + "=" + x.Value)
+                .Where(kvp => kvp.Value != PermissionsPolicyOriginValue.None)
+                .Select(kvp => kvp.Key + "=" + kvp.Value)
                 .ToArray();
 
             return this;

@@ -7,11 +7,22 @@ namespace OrchardCore.Security.ViewModels
 {
     public class SecuritySettingsViewModel
     {
+        private Dictionary<string, string> _securityPolicy = new();
         private Dictionary<string, string> _permissionsPolicy = new();
 
-        public string[] ContentSecurityPolicy { get; set; }
-
-        public List<string> ContentSecurityPolicyValues { get; set; }
+        public Dictionary<string, string> ContentSecurityPolicy
+        {
+            get => _securityPolicy;
+            set
+            {
+                // Populate all policy values for the editor (null if not provided).
+                _securityPolicy = SecurityHeaderDefaults.ContentSecurityPolicyNames
+                    .ToDictionary(name => name, name =>
+                        value?.ContainsKey(name) ?? false
+                            ? value[name]
+                            : null);
+            }
+        }
 
         public bool EnableSandbox { get; set; }
 
@@ -30,8 +41,6 @@ namespace OrchardCore.Security.ViewModels
                             : PermissionsPolicyOriginValue.None);
             }
         }
-
-        public List<string> PermissionsPolicyValues { get; set; }
 
         public string ReferrerPolicy { get; set; }
 

@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -58,12 +57,11 @@ namespace OrchardCore.Security.Drivers
 
                 model.FromConfiguration = currentSettings.FromConfiguration;
                 model.ContentSecurityPolicy = currentSettings.ContentSecurityPolicy;
-                model.ContentSecurityPolicyValues = SecurityHeaderDefaults.ContentSecurityPolicyNames.ToList();
                 model.PermissionsPolicy = currentSettings.PermissionsPolicy;
                 model.ReferrerPolicy = currentSettings.ReferrerPolicy;
 
-                model.EnableSandbox = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.Any(p => p.StartsWith(ContentSecurityPolicyValue.Sandbox));
-                model.UpgradeInsecureRequests = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.Any(p => p == ContentSecurityPolicyValue.UpgradeInsecureRequests);
+                model.EnableSandbox = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.Sandbox);
+                model.UpgradeInsecureRequests = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.UpgradeInsecureRequests);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -79,13 +77,12 @@ namespace OrchardCore.Security.Drivers
             if (context.GroupId == SettingsGroupId)
             {
                 var model = new SecuritySettingsViewModel();
-
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 PrepareContentSecurityPolicyValues(model);
 
                 section.ContentTypeOptions = SecurityHeaderDefaults.ContentTypeOptions;
-                section.ContentSecurityPolicy = model.ContentSecurityPolicyValues.ToArray();
+                section.ContentSecurityPolicy = model.ContentSecurityPolicy;
                 section.PermissionsPolicy = model.PermissionsPolicy;
                 section.ReferrerPolicy = model.ReferrerPolicy;
 
@@ -100,30 +97,22 @@ namespace OrchardCore.Security.Drivers
 
         private static void PrepareContentSecurityPolicyValues(SecuritySettingsViewModel model)
         {
-            var sandboxPolicy = model.ContentSecurityPolicyValues.SingleOrDefault(p => p.StartsWith(ContentSecurityPolicyValue.Sandbox));
-            var hasSandboxPolicyWithoutValues = sandboxPolicy == ContentSecurityPolicyValue.Sandbox;
-            var upgradeInsecureRequestsPolicy = model.ContentSecurityPolicyValues.SingleOrDefault(p => p == ContentSecurityPolicyValue.UpgradeInsecureRequests);
-
-            model.ContentSecurityPolicyValues.RemoveAll(p => SecurityHeaderDefaults.ContentSecurityPolicyNames.Contains(p));
-
-            if (model.EnableSandbox && hasSandboxPolicyWithoutValues)
+            if (!model.EnableSandbox)
             {
-                model.ContentSecurityPolicyValues.Add(ContentSecurityPolicyValue.Sandbox);
+                model.ContentSecurityPolicy.Remove(ContentSecurityPolicyValue.Sandbox);
+            }
+            else if (!model.ContentSecurityPolicy.TryGetValue(ContentSecurityPolicyValue.Sandbox, out _))
+            {
+                model.ContentSecurityPolicy[ContentSecurityPolicyValue.Sandbox] = null;
             }
 
-            if (!model.EnableSandbox && sandboxPolicy != null)
+            if (!model.UpgradeInsecureRequests)
             {
-                model.ContentSecurityPolicyValues.Remove(sandboxPolicy);
+                model.ContentSecurityPolicy.Remove(ContentSecurityPolicyValue.UpgradeInsecureRequests);
             }
-
-            if (model.UpgradeInsecureRequests)
+            else
             {
-                model.ContentSecurityPolicyValues.Add(ContentSecurityPolicyValue.UpgradeInsecureRequests);
-            }
-
-            if (!model.UpgradeInsecureRequests && upgradeInsecureRequestsPolicy != null)
-            {
-                model.ContentSecurityPolicyValues.Remove(ContentSecurityPolicyValue.UpgradeInsecureRequests);
+                model.ContentSecurityPolicy[ContentSecurityPolicyValue.UpgradeInsecureRequests] = null;
             }
         }
     }

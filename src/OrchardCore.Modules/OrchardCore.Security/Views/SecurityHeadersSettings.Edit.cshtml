@@ -194,28 +194,15 @@
             </tr>
         </thead>
         <tbody>
-            @for (var i = 0; i < Model.ContentSecurityPolicyValues.Count; i++)
+            @foreach (var key in Model.ContentSecurityPolicy.Keys)
             {
-                var key = Model.ContentSecurityPolicyValues[i];
-                var value = "";
-                var policy = Model.ContentSecurityPolicy?.SingleOrDefault(p => p.StartsWith(Model.ContentSecurityPolicyValues[i]));
-                
-                if (policy != null)
-                {
-                    var keyValueSeparatorIndex = policy.IndexOf(' ');
+                var value = Model.ContentSecurityPolicy[key];
 
-                    if (keyValueSeparatorIndex > -1)
-                    {
-                        key = policy.Substring(0, keyValueSeparatorIndex);
-                        value = policy.Substring(keyValueSeparatorIndex + 1);
-                    }
-                }
                 <tr>
                     <td>@GetContentSecurityPolicyName(key)</td>
                     <td>
                         <div class="form-group mb-0">
-                            <input class="form-control" id="@key" value="@value" oninput="changeContentSecurityPolicy(this)" />
-                            <input id="@Html.IdFor(m => m.ContentSecurityPolicyValues[i])" name="@Html.NameFor(m => m.ContentSecurityPolicyValues[i])" type="hidden" value="@(policy == null ? key : $"{key} {value}")"/>
+                            <input class="form-control" id="@Html.IdFor(m => m.ContentSecurityPolicy[key])" name="@Html.NameFor(m => m.ContentSecurityPolicy[key])" value="@value" />
                         </div>
                     </td>
                 </tr>
@@ -239,17 +226,17 @@
         <tbody>
             @foreach (var key in Model.PermissionsPolicy.Keys)
             {
-                var policy = Model.PermissionsPolicy[key];
-                var originType = policy ?? PermissionsPolicyOriginValue.None;
+                var value = Model.PermissionsPolicy[key];
+                var originType = value ?? PermissionsPolicyOriginValue.None;
                 var allowedOrigins = String.Empty;
 
-                if (policy != null)
+                if (value != null)
                 {
-                    var originSeparatorIndex = policy.IndexOf(' ');
+                    var originSeparatorIndex = value.IndexOf(' ');
                     if (originSeparatorIndex > -1)
                     {
-                        originType = policy.Substring(0, originSeparatorIndex);
-                        allowedOrigins = policy.Substring(originSeparatorIndex + 1);
+                        originType = value.Substring(0, originSeparatorIndex);
+                        allowedOrigins = value.Substring(originSeparatorIndex + 1);
                     }
                 }
 
@@ -273,7 +260,7 @@
                     <td>
                         <div class="form-group mb-0">
                             <input class="form-control d-@(originType == PermissionsPolicyOriginValue.Self ? "block" : "none")" id="@(key)AllowedOrigins" placeholder="https://www.domain.com https://www.another.domain.com" value="@allowedOrigins" oninput="changeAllowedOrigins(this)" />
-                            <input id="@Html.IdFor(m => m.PermissionsPolicy[key])" name="@Html.NameFor(m => m.PermissionsPolicy[key])" type="hidden" value="@($"{(policy == null ? PermissionsPolicyOriginValue.None : originType)}")"/>
+                            <input id="@Html.IdFor(m => m.PermissionsPolicy[key])" name="@Html.NameFor(m => m.PermissionsPolicy[key])" type="hidden" value="@originType" />
                         </div>
                     </td>
                 </tr>
@@ -340,15 +327,5 @@
         }
 
         permissionValue.val(value + e.value);
-    }
-
-    function changeContentSecurityPolicy(e, name) {
-        var value = $(e).attr('id');
-
-        if (e.value != '') {
-            value += ' ' + e.value;
-        }
-
-        $(e).siblings().val(value);
     }
 </script>

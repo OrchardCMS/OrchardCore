@@ -9,7 +9,7 @@ namespace OrchardCore.Security.Services
 
         public override void InitPolicy()
         {
-            if (Options.PermissionsPolicy.Length > 0)
+            if (Options.ContentSecurityPolicy.Length > 0)
             {
                 _policy = String.Join(SecurityHeaderDefaults.PoliciesSeparator, Options.ContentSecurityPolicy);
             }

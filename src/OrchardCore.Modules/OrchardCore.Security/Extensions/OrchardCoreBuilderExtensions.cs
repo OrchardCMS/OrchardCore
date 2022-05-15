@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.Security;
 using OrchardCore.Security.Settings;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -15,12 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 tenantServices.PostConfigure<SecuritySettings>(settings =>
                 {
-                    // Reset the settings to avoid merging with the current settings values
-                    settings.ContentSecurityPolicy = SecurityHeaderDefaults.ContentSecurityPolicy;
-                    //settings.PermissionsPolicy = SecurityHeaderDefaults.PermissionsPolicy;
-
                     configurationSection.Bind(settings);
-
                     settings.FromConfiguration = true;
                 });
             });
