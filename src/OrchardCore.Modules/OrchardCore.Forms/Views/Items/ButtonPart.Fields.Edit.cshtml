@@ -16,3 +16,20 @@
     </select>
     <span class="hint">@T["The button type."]</span>
 </div>
+
+@if (Model.ReCaptchaSettingsAreConfigured)
+{
+    <div class="mb-3 pb-1">
+        <div class="form-check">
+            <input asp-for="ReCaptchaV3Protected" class="form-check-input" />
+            <label asp-for="ReCaptchaV3Protected" class="form-check-label">@T["ReCaptchaV3Protected"]</label>
+            <span class="hint">@T["If the button click is protected by ReCaptchaV3."]</span>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FormId">@T["FormId"]</label>
+        <input asp-for="FormId" type="text" class="form-control content-preview-text" />
+        <span class="hint">@T["If using ReCaptcha validation, copy the form ID here"]</span>
+    </div>
+}

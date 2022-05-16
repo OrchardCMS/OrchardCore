@@ -1,0 +1,5 @@
+@model ActivityViewModel<ValidateReCaptchaV3Task>
+
+<header>
+    <h4><i class="fa fa-shield-alt" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Validate ReCaptchaV3"])</h4>
+</header>
