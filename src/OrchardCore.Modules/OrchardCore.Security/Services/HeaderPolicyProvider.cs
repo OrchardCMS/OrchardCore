@@ -7,6 +7,11 @@ namespace OrchardCore.Security.Services
     {
         public SecurityHeadersOptions Options { get; set; }
 
+        public virtual void InitializePolicy()
+        {
+
+        }
+
         public abstract void ApplyPolicy(HttpContext httpContext);
     }
 }

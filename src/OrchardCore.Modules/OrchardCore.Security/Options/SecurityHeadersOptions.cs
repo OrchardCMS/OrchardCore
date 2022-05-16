@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using OrchardCore.Security.Services;
 
 namespace OrchardCore.Security.Options
@@ -21,14 +22,23 @@ namespace OrchardCore.Security.Options
 
         public string ContentTypeOptions { get; set; } = SecurityHeaderDefaults.ContentTypeOptions;
 
-        public IDictionary<string, string> PermissionsPolicy { get; set; } = SecurityHeaderDefaults.PermissionsPolicy;
+        public string[] PermissionsPolicy { get; set; } = SecurityHeaderDefaults.PermissionsPolicy;
 
         public string ReferrerPolicy { get; set; } = SecurityHeaderDefaults.ReferrerPolicy;
 
         public IList<IHeaderPolicyProvider> HeaderPolicyProviders { get; set; }
 
-        public SecurityHeadersOptions AddContentSecurityPolicy(string policies)
-            => AddContentSecurityPolicy(policies.Split(SecurityHeaderDefaults.PoliciesSeparator, StringSplitOptions.RemoveEmptyEntries));
+        public SecurityHeadersOptions AddContentSecurityPolicy(Dictionary<string, string> policies)
+        {
+            ContentSecurityPolicy = policies
+                .Where(kvp => kvp.Value != null ||
+                    kvp.Key == ContentSecurityPolicyValue.Sandbox ||
+                    kvp.Key == ContentSecurityPolicyValue.UpgradeInsecureRequests)
+                .Select(kvp => kvp.Key + (kvp.Value != null ? " " + kvp.Value : String.Empty))
+                .ToArray();
+
+            return this;
+        }
 
         public SecurityHeadersOptions AddContentSecurityPolicy(params string[] policies)
         {
@@ -46,7 +56,10 @@ namespace OrchardCore.Security.Options
 
         public SecurityHeadersOptions AddPermissionsPolicy(IDictionary<string, string> policies)
         {
-            PermissionsPolicy = policies;
+            PermissionsPolicy = policies
+                .Where(kvp => kvp.Value != PermissionsPolicyOriginValue.None)
+                .Select(kvp => kvp.Key + "=" + kvp.Value)
+                .ToArray();
 
             return this;
         }

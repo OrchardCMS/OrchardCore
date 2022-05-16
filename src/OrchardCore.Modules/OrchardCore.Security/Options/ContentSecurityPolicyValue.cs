@@ -14,9 +14,9 @@ namespace OrchardCore.Security.Options
 
         public const string FormAction = "form-action";
 
-        public const string FrameSource = "frame-src";
-
         public const string FrameAncestors = "frame-ancestors";
+
+        public const string FrameSource = "frame-src";
 
         public const string ImageSource = "img-src";
 

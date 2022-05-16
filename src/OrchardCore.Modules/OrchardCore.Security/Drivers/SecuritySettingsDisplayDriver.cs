@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -51,21 +49,22 @@ namespace OrchardCore.Security.Drivers
             return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {
                 // Set the settings from configuration when AdminSettings are overriden via ConfigureSecuritySettings()
+                var currentSettings = settings;
                 if (_securitySettings.FromConfiguration)
                 {
-                    settings = _securitySettings;
-                    model.FromAdminSettings = false;
+                    currentSettings = _securitySettings;
                 }
 
-                model.ContentSecurityPolicy = settings.ContentSecurityPolicy;
-                model.AllContentSecurityPolicy = SecurityHeaderDefaults.ContentSecurityPolicyNames.ToList();
-                model.PermissionsPolicy = settings.PermissionsPolicy;
-                model.AllPermissionsPolicy = SecurityHeaderDefaults.PermissionsPolicyNames
-                    .ToList()
-                    .ToDictionary(p => p, p => PermissionsPolicyOriginValue.None);
-                model.ReferrerPolicy = settings.ReferrerPolicy;
-                model.EnableSandbox = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.Any(p => p.StartsWith(ContentSecurityPolicyValue.Sandbox));
-                model.UpgradeInsecureRequests = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.Any(p => p == ContentSecurityPolicyValue.UpgradeInsecureRequests);
+                model.FromConfiguration = currentSettings.FromConfiguration;
+                model.ContentSecurityPolicy = currentSettings.ContentSecurityPolicy;
+                model.PermissionsPolicy = currentSettings.PermissionsPolicy;
+                model.ReferrerPolicy = currentSettings.ReferrerPolicy;
+
+                model.EnableSandbox = currentSettings.ContentSecurityPolicy != null &&
+                    currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.Sandbox);
+
+                model.UpgradeInsecureRequests = currentSettings.ContentSecurityPolicy != null &&
+                    currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.UpgradeInsecureRequests);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -86,11 +85,9 @@ namespace OrchardCore.Security.Drivers
 
                 PrepareContentSecurityPolicyValues(model);
 
-                PreparePermissionsPolicyValues(model);
-
                 section.ContentTypeOptions = SecurityHeaderDefaults.ContentTypeOptions;
-                section.ContentSecurityPolicy = model.AllContentSecurityPolicy.ToArray();
-                section.PermissionsPolicy = model.AllPermissionsPolicy;
+                section.ContentSecurityPolicy = model.ContentSecurityPolicy;
+                section.PermissionsPolicy = model.PermissionsPolicy;
                 section.ReferrerPolicy = model.ReferrerPolicy;
 
                 if (context.Updater.ModelState.IsValid)
@@ -104,40 +101,22 @@ namespace OrchardCore.Security.Drivers
 
         private static void PrepareContentSecurityPolicyValues(SecuritySettingsViewModel model)
         {
-            var sandboxPolicy = model.AllContentSecurityPolicy.SingleOrDefault(p => p.StartsWith(ContentSecurityPolicyValue.Sandbox));
-            var hasSandboxPolicyWithoutValues = sandboxPolicy == ContentSecurityPolicyValue.Sandbox;
-            var upgradeInsecureRequestsPolicy = model.AllContentSecurityPolicy.SingleOrDefault(p => p == ContentSecurityPolicyValue.UpgradeInsecureRequests);
-
-            model.AllContentSecurityPolicy.RemoveAll(p => SecurityHeaderDefaults.ContentSecurityPolicyNames.Contains(p));
-
-            if (model.EnableSandbox && hasSandboxPolicyWithoutValues)
+            if (!model.EnableSandbox)
             {
-                model.AllContentSecurityPolicy.Add(ContentSecurityPolicyValue.Sandbox);
+                model.ContentSecurityPolicy.Remove(ContentSecurityPolicyValue.Sandbox);
+            }
+            else if (!model.ContentSecurityPolicy.TryGetValue(ContentSecurityPolicyValue.Sandbox, out _))
+            {
+                model.ContentSecurityPolicy[ContentSecurityPolicyValue.Sandbox] = null;
             }
 
-            if (!model.EnableSandbox && sandboxPolicy != null)
+            if (!model.UpgradeInsecureRequests)
             {
-                model.AllContentSecurityPolicy.Remove(sandboxPolicy);
+                model.ContentSecurityPolicy.Remove(ContentSecurityPolicyValue.UpgradeInsecureRequests);
             }
-
-            if (model.UpgradeInsecureRequests)
+            else
             {
-                model.AllContentSecurityPolicy.Add(ContentSecurityPolicyValue.UpgradeInsecureRequests);
-            }
-
-            if (!model.UpgradeInsecureRequests && upgradeInsecureRequestsPolicy != null)
-            {
-                model.AllContentSecurityPolicy.Remove(ContentSecurityPolicyValue.UpgradeInsecureRequests);
-            }
-        }
-
-        private static void PreparePermissionsPolicyValues(SecuritySettingsViewModel model)
-        {
-            var nonePolicies = model.AllPermissionsPolicy.Where(p => p.Value == PermissionsPolicyOriginValue.None);
-
-            foreach (var policy in nonePolicies)
-            {
-                model.AllPermissionsPolicy.Remove(policy.Key);
+                model.ContentSecurityPolicy[ContentSecurityPolicyValue.UpgradeInsecureRequests] = null;
             }
         }
     }

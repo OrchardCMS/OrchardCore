@@ -156,7 +156,7 @@
                 name = T["Web XR"];
                 break;
         }
-        
+
         return name;
     }
 }
@@ -165,7 +165,7 @@
     @T["The current tenant will be reloaded when the settings are saved."]
 </p>
 
-@if (!Model.FromAdminSettings)
+@if (Model.FromConfiguration)
 {
     <p class="alert alert-info">
         @T["The current settings are coming from configuration sources, saving the settings will affect the AdminSettings not the configuration."]
@@ -194,28 +194,15 @@
             </tr>
         </thead>
         <tbody>
-            @for (var i = 0; i < Model.AllContentSecurityPolicy.Count; i++)
+            @foreach (var key in Model.ContentSecurityPolicy.Keys)
             {
-                var key = Model.AllContentSecurityPolicy[i];
-                var value = "";
-                var policy = Model.ContentSecurityPolicy?.SingleOrDefault(p => p.StartsWith(Model.AllContentSecurityPolicy[i]));
-                
-                if (policy != null)
-                {
-                    var keyValueSeparatorIndex = policy.IndexOf(' ');
+                var value = Model.ContentSecurityPolicy[key];
 
-                    if (keyValueSeparatorIndex > -1)
-                    {
-                        key = policy.Substring(0, keyValueSeparatorIndex);
-                        value = policy.Substring(keyValueSeparatorIndex + 1);
-                    }
-                }
                 <tr>
                     <td>@GetContentSecurityPolicyName(key)</td>
                     <td>
                         <div class="form-group mb-0">
-                            <input class="form-control" id="@key" value="@value" oninput="changeContentSecurityPolicy(this)" />
-                            <input id="@Html.IdFor(m => m.AllContentSecurityPolicy[i])" name="@Html.NameFor(m => m.AllContentSecurityPolicy[i])" type="hidden" value="@(policy == null ? key : $"{key} {value}")"/>
+                            <input id="@Html.IdFor(m => m.ContentSecurityPolicy[key]))" name="@Html.NameFor(m => m.ContentSecurityPolicy[key]))" type="hidden" value="@value"/>
                         </div>
                     </td>
                 </tr>
@@ -237,19 +224,16 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var p in Model.AllPermissionsPolicy)
+            @foreach (var key in Model.PermissionsPolicy.Keys)
             {
-                var originType = PermissionsPolicyOriginValue.None;
+                var value = Model.PermissionsPolicy[key];
+                var originType = value ?? PermissionsPolicyOriginValue.None;
                 var allowedOrigins = String.Empty;
 
-                if (Model.PermissionsPolicy.TryGetValue(p.Key, out string value))
+                if (value != null)
                 {
                     var originsSeparatorIndex = value.IndexOf(' ');
-                    if (originsSeparatorIndex == -1)
-                    {
-                        originType = value;
-                    }
-                    else
+                    if (originsSeparatorIndex > -1)
                     {
                         originType = value.Substring(0, originsSeparatorIndex);
                         allowedOrigins = value.Substring(originsSeparatorIndex + 1);
@@ -257,26 +241,26 @@
                 }
 
                 <tr>
-                    <td>@GetPermissionPolicyName(p.Key)</td>
+                    <td>@GetPermissionPolicyName(key)</td>
                     <td>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="@p.Key" value="None" @(originType == PermissionsPolicyOriginValue.None ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.None');">
+                            <input class="form-check-input" type="radio" name="@key" value="None" @(originType == PermissionsPolicyOriginValue.None ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.None');">
                         </div>
                     </td>
                     <td>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="@p.Key" value="Any" @(originType == PermissionsPolicyOriginValue.Any ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.Any');">
+                            <input class="form-check-input" type="radio" name="@key" value="Any" @(originType == PermissionsPolicyOriginValue.Any ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.Any');">
                         </div>
                     </td>
                     <td>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="@p.Key" value="Self" @(originType == PermissionsPolicyOriginValue.Self ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.Self');">
+                            <input class="form-check-input" type="radio" name="@key" value="Self" @(originType == PermissionsPolicyOriginValue.Self ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.Self');">
                         </div>
                     </td>
                     <td>
                         <div class="form-group mb-0">
-                            <input class="form-control d-@(originType == PermissionsPolicyOriginValue.Self ? "block" : "none")" id="@(p.Key)AllowedOrigins" placeholder="https://www.domain.com https://www.another.domain.com" value="@allowedOrigins" oninput="changeAllowedOrigins(this)" />
-                            <input id="@Html.IdFor(m => m.AllPermissionsPolicy[p.Key])" name="@Html.NameFor(m => m.AllPermissionsPolicy[p.Key])" type="hidden" value="@(allowedOrigins == String.Empty ? originType : $"{originType} {allowedOrigins}")"/>
+                            <input class="form-control d-@(originType == PermissionsPolicyOriginValue.Self ? "block" : "none")" id="@(key)AllowedOrigins" placeholder="https://www.domain.com https://www.another.domain.com" value="@allowedOrigins" oninput="changeAllowedOrigins(this)" />
+                            <input id="@Html.IdFor(m => m.PermissionsPolicy[key])" name="@Html.NameFor(m => m.PermissionsPolicy[key])" type="hidden" value="@originType"/>
                         </div>
                     </td>
                 </tr>
@@ -324,7 +308,7 @@
             allowedOrigins.removeClass('d-none').addClass('d-block');
 
             if (allowedOrigins.val() != '') {
-                origin += ' ' + allowedOrigins.val();
+                origin += ' ' + allowedOrigins.val().trim();
             }
         }
         else {
@@ -338,20 +322,8 @@
         var permissionValue = $(e).siblings();
         var value = permissionValue.val().substr(0, permissionValue.val().indexOf('=self') + 5);
 
-        if (e.value != '') {
-            value += ' ';
+        if (permissionValue().startWith('self')) {
+            permissionValue.val('self ' + e.value.trim());
         }
-
-        permissionValue.val(value + e.value);
-    }
-
-    function changeContentSecurityPolicy(e, name) {
-        var value = $(e).attr('id');
-
-        if (e.value != '') {
-            value += ' ' + e.value;
-        }
-
-        $(e).siblings().val(value);
     }
 </script>
