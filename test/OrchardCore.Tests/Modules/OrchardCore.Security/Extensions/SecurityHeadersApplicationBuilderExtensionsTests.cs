@@ -26,7 +26,7 @@ namespace OrchardCore.Security.Extensions.Tests
             // Assert
             Assert.Equal(SecurityHeaderDefaults.ContentSecurityPolicy, context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
             Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
-            Assert.False(context.Response.Headers.ContainsKey(SecurityHeaderNames.PermissionsPolicy));
+            Assert.Equal(SecurityHeaderDefaults.PermissionsPolicy, context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
             Assert.Equal(SecurityHeaderDefaults.ReferrerPolicy, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
         }
 
@@ -44,11 +44,11 @@ namespace OrchardCore.Security.Extensions.Tests
                     $"{ContentSecurityPolicyValue.DefaultSource} {ContentSecurityPolicyOriginValue.Any}",
                 },
                 ContentTypeOptions = ContentTypeOptionsValue.NoSniff,
-                PermissionsPolicy = new Dictionary<string, string>
+                PermissionsPolicy = new []
                 {
-                    { PermissionsPolicyValue.Camera, PermissionsPolicyOriginValue.Self },
-                    { PermissionsPolicyValue.Microphone,PermissionsPolicyOriginValue.Any },
-                    { PermissionsPolicyValue.SpeakerSelection, $"{PermissionsPolicyOriginValue.Self} https://www.domain1.com https://www.domain2.com" }
+                    $"{PermissionsPolicyValue.Camera}={PermissionsPolicyOriginValue.Self}",
+                    $"{PermissionsPolicyValue.Microphone}={PermissionsPolicyOriginValue.Any}",
+                    $"{PermissionsPolicyValue.SpeakerSelection}={PermissionsPolicyOriginValue.Self} https://www.domain1.com https://www.domain2.com"
                 },
                 ReferrerPolicy = ReferrerPolicyValue.Origin
             };

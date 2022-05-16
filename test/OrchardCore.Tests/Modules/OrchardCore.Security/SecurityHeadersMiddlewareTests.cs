@@ -26,14 +26,14 @@ namespace OrchardCore.Security.Tests
         public static IEnumerable<object[]> PermissionsPolicies =>
             new List<object[]>
             {
-                new object[] { new Dictionary<string, string> { { PermissionsPolicyValue.Accelerometer, PermissionsPolicyOriginValue.None } },  "accelerometer=()" },
-                new object[] { new Dictionary<string, string> { { PermissionsPolicyValue.AmbientLightSensor, PermissionsPolicyOriginValue.Any } }, "ambient-light-sensor=*" },
-                new object[] { new Dictionary<string, string> { { PermissionsPolicyValue.Camera, PermissionsPolicyOriginValue.Self } }, "camera=self" },
-                new object[] { new Dictionary<string, string> { { PermissionsPolicyValue.EncryptedMedia, $"{PermissionsPolicyOriginValue.Self} https://www.domain.com" } }, "encrypted-media=self https://www.domain.com" },
-                new object[] { new Dictionary<string, string> { { PermissionsPolicyValue.FullScreen, $"{PermissionsPolicyOriginValue.Self} https://www.domain.com https://www.sub.domain.com" } }, "fullscreen=self https://www.domain.com https://www.sub.domain.com" },
-                new object[] { new Dictionary<string, string> { { PermissionsPolicyValue.Geolocation, PermissionsPolicyOriginValue.None }, { PermissionsPolicyValue.Gyroscope, PermissionsPolicyOriginValue.Any } }, "geolocation=(),gyroscope=*" },
-                new object[] { new Dictionary<string, string> { { PermissionsPolicyValue.Magnetometer, PermissionsPolicyOriginValue.None}, { PermissionsPolicyValue.Microphone, PermissionsPolicyOriginValue.Any}, { PermissionsPolicyValue.Midi, PermissionsPolicyOriginValue.Self} }, "magnetometer=(),microphone=*,midi=self" },
-                new object[] { new Dictionary<string, string> { { PermissionsPolicyValue.Usb, PermissionsPolicyOriginValue.Self }, { PermissionsPolicyValue.Payment, $"{PermissionsPolicyOriginValue.Self} https://www.domain.com" }, { PermissionsPolicyValue.PictureInPicture, PermissionsPolicyOriginValue.Self }, { PermissionsPolicyValue.Push, $"{PermissionsPolicyOriginValue.Self} https://www.domain.com https://www.sub.domain.com" } }, "usb=self,payment=self https://www.domain.com,picture-in-picture=self,push=self https://www.domain.com https://www.sub.domain.com" }
+                new object[] { new[] { $"{PermissionsPolicyValue.Accelerometer}={PermissionsPolicyOriginValue.None}"}, "accelerometer=()" },
+                new object[] { new[] { $"{PermissionsPolicyValue.AmbientLightSensor}={PermissionsPolicyOriginValue.Any}"}, "ambient-light-sensor=*" },
+                new object[] { new[] { $"{PermissionsPolicyValue.Camera}={PermissionsPolicyOriginValue.Self}"}, "camera=self" },
+                new object[] { new[] { $"{PermissionsPolicyValue.EncryptedMedia}={PermissionsPolicyOriginValue.Self} https://www.domain.com" }, "encrypted-media=self https://www.domain.com" },
+                new object[] { new[] { $"{PermissionsPolicyValue.FullScreen}={PermissionsPolicyOriginValue.Self} https://www.domain.com https://www.sub.domain.com" }, "fullscreen=self https://www.domain.com https://www.sub.domain.com" },
+                new object[] { new[] { $"{PermissionsPolicyValue.Geolocation}={PermissionsPolicyOriginValue.None}", $"{PermissionsPolicyValue.Gyroscope}={PermissionsPolicyOriginValue.Any}" }, "geolocation=(),gyroscope=*" },
+                new object[] { new[] { $"{PermissionsPolicyValue.Magnetometer}={PermissionsPolicyOriginValue.None}", $"{PermissionsPolicyValue.Microphone}={PermissionsPolicyOriginValue.Any}", $"{PermissionsPolicyValue.Midi}={PermissionsPolicyOriginValue.Self}" }, "magnetometer=(),microphone=*,midi=self" },
+                new object[] { new[] { $"{PermissionsPolicyValue.Usb}={PermissionsPolicyOriginValue.Self}", $"{PermissionsPolicyValue.Payment}={PermissionsPolicyOriginValue.Self} https://www.domain.com", $"{PermissionsPolicyValue.PictureInPicture}={PermissionsPolicyOriginValue.Self}", $"{PermissionsPolicyValue.Push}={PermissionsPolicyOriginValue.Self} https://www.domain.com https://www.sub.domain.com" }, "usb=self,payment=self https://www.domain.com,picture-in-picture=self,push=self https://www.domain.com https://www.sub.domain.com" }
             };
 
         public static IEnumerable<object[]> ReferrerPolicies =>
@@ -90,7 +90,7 @@ namespace OrchardCore.Security.Tests
 
         [Theory]
         [MemberData(nameof(PermissionsPolicies))]
-        public async Task PermissionsPolicyHeaderShouldBeAdded(IDictionary<string, string> permissionsPolicies, string expectedValue)
+        public async Task PermissionsPolicyHeaderShouldBeAdded(string[] permissionsPolicies, string expectedValue)
         {
             // Arrange
             var options = new SecurityHeadersOptions
