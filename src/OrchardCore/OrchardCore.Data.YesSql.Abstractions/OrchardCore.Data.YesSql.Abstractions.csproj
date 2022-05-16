@@ -21,8 +21,4 @@
     <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="YesSql.Abstractions" />
-  </ItemGroup>
-
 </Project>

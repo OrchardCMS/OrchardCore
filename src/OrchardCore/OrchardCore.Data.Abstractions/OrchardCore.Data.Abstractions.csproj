@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="YesSql.Abstractions" Version="3.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Queries.Abstractions\OrchardCore.Queries.Abstractions.csproj" />
   </ItemGroup>
 
