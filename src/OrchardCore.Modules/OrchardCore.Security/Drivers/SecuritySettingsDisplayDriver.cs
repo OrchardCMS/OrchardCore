@@ -60,8 +60,12 @@ namespace OrchardCore.Security.Drivers
                 model.PermissionsPolicy = currentSettings.PermissionsPolicy;
                 model.ReferrerPolicy = currentSettings.ReferrerPolicy;
 
-                model.EnableSandbox = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.Sandbox);
-                model.UpgradeInsecureRequests = model.ContentSecurityPolicy != null && model.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.UpgradeInsecureRequests);
+                model.EnableSandbox = currentSettings.ContentSecurityPolicy != null &&
+                    currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.Sandbox);
+
+                model.UpgradeInsecureRequests = currentSettings.ContentSecurityPolicy != null &&
+                    currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.UpgradeInsecureRequests);
+
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 

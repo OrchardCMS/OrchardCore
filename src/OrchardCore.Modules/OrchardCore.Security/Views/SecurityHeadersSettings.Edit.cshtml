@@ -156,7 +156,7 @@
                 name = T["Web XR"];
                 break;
         }
-        
+
         return name;
     }
 }
@@ -308,7 +308,7 @@
             allowedOrigins.removeClass('d-none').addClass('d-block');
 
             if (allowedOrigins.val() != '') {
-                origin += ' ' + allowedOrigins.val();
+                origin += ' ' + allowedOrigins.val().trim();
             }
         }
         else {
@@ -320,12 +320,9 @@
 
     function changeAllowedOrigins(e) {
         var permissionValue = $(e).siblings();
-        var value = permissionValue.val().substr(0, permissionValue.val().indexOf('self') + 4);
 
-        if (e.value != '') {
-            value += ' ';
+        if (permissionValue.val().startsWith('self')) {
+            permissionValue.val('self ' + e.value.trim());
         }
-
-        permissionValue.val(value + e.value);
     }
 </script>
