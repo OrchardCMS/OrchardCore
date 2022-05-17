@@ -44,7 +44,7 @@ namespace OrchardCore.ContentFields.Drivers
 
         public override IDisplayResult Edit(ContentPickerField field, BuildFieldEditorContext context)
         {
-            return Initialize(GetEditorShapeType(context), (Func<EditContentPickerFieldViewModel, ValueTask>)(async model =>
+            return Initialize<EditContentPickerFieldViewModel>(GetEditorShapeType(context), async model =>
             {
                 model.ContentItemIds = string.Join(",", field.ContentItemIds);
 
