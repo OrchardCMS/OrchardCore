@@ -202,7 +202,7 @@
                     <td>@GetContentSecurityPolicyName(key)</td>
                     <td>
                         <div class="form-group mb-0">
-                            <input id="@Html.IdFor(m => m.ContentSecurityPolicy[key]))" name="@Html.NameFor(m => m.ContentSecurityPolicy[key]))" type="hidden" value="@value"/>
+                            <input class="form-control" id="@Html.IdFor(m => m.ContentSecurityPolicy[key])" name="@Html.NameFor(m => m.ContentSecurityPolicy[key])" value="@value" />
                         </div>
                     </td>
                 </tr>
@@ -260,7 +260,7 @@
                     <td>
                         <div class="form-group mb-0">
                             <input class="form-control d-@(originType == PermissionsPolicyOriginValue.Self ? "block" : "none")" id="@(key)AllowedOrigins" placeholder="https://www.domain.com https://www.another.domain.com" value="@allowedOrigins" oninput="changeAllowedOrigins(this)" />
-                            <input id="@Html.IdFor(m => m.PermissionsPolicy[key])" name="@Html.NameFor(m => m.PermissionsPolicy[key])" type="hidden" value="@originType"/>
+                            <input id="@Html.IdFor(m => m.PermissionsPolicy[key])" name="@Html.NameFor(m => m.PermissionsPolicy[key])" type="hidden" value="@originType" />
                         </div>
                     </td>
                 </tr>
@@ -320,9 +320,8 @@
 
     function changeAllowedOrigins(e) {
         var permissionValue = $(e).siblings();
-        var value = permissionValue.val().substr(0, permissionValue.val().indexOf('=self') + 5);
 
-        if (permissionValue().startWith('self')) {
+        if (permissionValue.val().startsWith('self')) {
             permissionValue.val('self ' + e.value.trim());
         }
     }
