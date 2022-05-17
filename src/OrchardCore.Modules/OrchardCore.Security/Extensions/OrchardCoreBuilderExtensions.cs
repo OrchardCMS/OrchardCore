@@ -14,6 +14,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 tenantServices.PostConfigure<SecuritySettings>(settings =>
                 {
+                    settings.ContentSecurityPolicy.Clear();
+                    settings.PermissionsPolicy.Clear();
+
                     configurationSection.Bind(settings);
 
                     settings.FromConfiguration = true;
