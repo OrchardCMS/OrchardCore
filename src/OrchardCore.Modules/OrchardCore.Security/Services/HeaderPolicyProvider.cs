@@ -9,7 +9,7 @@ namespace OrchardCore.Security.Services
 
         public virtual void InitializePolicy()
         {
-
+            // This is intentionally empty, only header policy provider(s) that need an initialization should override this
         }
 
         public abstract void ApplyPolicy(HttpContext httpContext);
