@@ -2552,6 +2552,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "devlife",
+      "name": "Mike Paterson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/237369?v=4",
+      "profile": "http://sleepcanwait.blogspot.com/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true
