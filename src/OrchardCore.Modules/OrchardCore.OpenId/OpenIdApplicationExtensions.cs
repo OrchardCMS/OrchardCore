@@ -64,7 +64,7 @@ namespace OrchardCore.OpenId
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Logout);
             }
 
-            if (model.AllowAuthorizationCodeFlow)
+            if (model.AllowAuthorizationCodeFlow || model.AllowHybridFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode);
             }
@@ -82,7 +82,7 @@ namespace OrchardCore.OpenId
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials);
             }
 
-            if (model.AllowImplicitFlow)
+            if (model.AllowHybridFlow || model.AllowImplicitFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.Implicit);
             }
@@ -109,7 +109,7 @@ namespace OrchardCore.OpenId
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.RefreshToken);
             }
 
-            if (model.AllowAuthorizationCodeFlow || model.AllowImplicitFlow)
+            if (model.AllowAuthorizationCodeFlow || model.AllowHybridFlow || model.AllowImplicitFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Authorization);
             }
@@ -118,8 +118,8 @@ namespace OrchardCore.OpenId
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Authorization);
             }
 
-            if (model.AllowAuthorizationCodeFlow || model.AllowClientCredentialsFlow ||
-                model.AllowPasswordFlow || model.AllowRefreshTokenFlow)
+            if (model.AllowAuthorizationCodeFlow || model.AllowHybridFlow ||
+                model.AllowClientCredentialsFlow || model.AllowPasswordFlow || model.AllowRefreshTokenFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
             }
