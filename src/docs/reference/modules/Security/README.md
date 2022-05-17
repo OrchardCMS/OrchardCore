@@ -22,7 +22,7 @@ The following configuration values can be customized:
 ```json
     "OrchardCore_Security": {
       "ContentSecurityPolicy": {},
-      "PermissionsPolicy": { "fullscreen": "self" },
+      "PermissionsPolicy": { fullscreen: "self" },
       "ReferrerPolicy": "no-referrer"
     }
 ```
