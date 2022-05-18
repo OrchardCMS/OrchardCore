@@ -184,32 +184,7 @@ namespace OrchardCore.Navigation
             var lastText = LastText ?? S[">>"];
             var gapText = GapText ?? S["..."];
 
-            var httpContextAccessor = displayContext.ServiceProvider.GetService<IHttpContextAccessor>();
-            var httpContext = httpContextAccessor.HttpContext;
-
-            var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
-
-            if (httpContext != null)
-            {
-                var queryString = httpContext.Request.Query;
-                if (queryString != null)
-                {
-                    foreach (var key in from string key in queryString.Keys where key != null && !routeData.ContainsKey(key) let value = queryString[key] select key)
-                    {
-                        routeData[key] = queryString[key];
-                    }
-                }
-            }
-
-            // specific cross-requests route data can be passed to the shape directly (e.g., OrchardCore.Users)
-            var shapeRouteData = shape.GetProperty<RouteData>("RouteData");
-            if (shapeRouteData != null)
-            {
-                foreach (var rd in shapeRouteData.Values)
-                {
-                    routeData[rd.Key] = rd.Value;
-                }
-            }
+            var routeData = GetRouteData(shape, displayContext, Html);
 
             var firstPage = Math.Max(1, Page - (numberOfPagesToShow / 2));
             var lastPage = Math.Min(totalPageCount, Page + (numberOfPagesToShow / 2));
@@ -398,32 +373,8 @@ namespace OrchardCore.Navigation
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "List";
 
-            var httpContextAccessor = displayContext.ServiceProvider.GetService<IHttpContextAccessor>();
-            var httpContext = httpContextAccessor.HttpContext;
 
-            var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
-
-            if (httpContext != null)
-            {
-                var queryString = httpContext.Request.Query;
-                if (queryString != null)
-                {
-                    foreach (var key in from string key in queryString.Keys where key != null && !routeData.ContainsKey(key) let value = queryString[key] select key)
-                    {
-                        routeData[key] = queryString[key];
-                    }
-                }
-            }
-
-            // specific cross-requests route data can be passed to the shape directly (e.g., OrchardCore.Users)
-            var shapeRouteData = shape.GetProperty<RouteData>("RouteData");
-            if (shapeRouteData != null)
-            {
-                foreach (var rd in shapeRouteData.Values)
-                {
-                    routeData[rd.Key] = rd.Value;
-                }
-            }
+            var routeData = GetRouteData(shape, displayContext, Html);
 
             // Allows to pass custom url params to PagerSlim
             if (UrlParams != null)
@@ -465,6 +416,13 @@ namespace OrchardCore.Navigation
                 await shape.AddAsync(previousItem);
                 shape.Properties["FirstClass"] = PreviousClass;
             }
+            else
+            {
+                if (routeData.ContainsKey("before"))
+                {
+                    routeData.Remove("before");
+                }
+            }
 
             if (shape.TryGetProperty("After", out string after))
             {
@@ -487,6 +445,13 @@ namespace OrchardCore.Navigation
 
                 await shape.AddAsync(nextItem);
                 shape.Properties["LastClass"] = NextClass;
+            }
+            else
+            {
+                if (routeData.ContainsKey("after"))
+                {
+                    routeData.Remove("after");
+                }
             }
 
             return await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
@@ -605,6 +570,38 @@ namespace OrchardCore.Navigation
             }
 
             return new HtmlContentString(value.ToString());
+        }
+
+        private static RouteValueDictionary GetRouteData(Shape shape, DisplayContext displayContext, IHtmlHelper Html)
+        {
+            var httpContextAccessor = displayContext.ServiceProvider.GetService<IHttpContextAccessor>();
+            var httpContext = httpContextAccessor.HttpContext;
+
+            var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
+
+            if (httpContext != null)
+            {
+                var queryString = httpContext.Request.Query;
+                if (queryString != null)
+                {
+                    foreach (var key in from string key in queryString.Keys where key != null && !routeData.ContainsKey(key) let value = queryString[key] select key)
+                    {
+                        routeData[key] = queryString[key];
+                    }
+                }
+            }
+
+            // specific cross-requests route data can be passed to the shape directly (e.g., OrchardCore.Users)
+            var shapeRouteData = shape.GetProperty<RouteData>("RouteData");
+            if (shapeRouteData != null)
+            {
+                foreach (var rd in shapeRouteData.Values)
+                {
+                    routeData[rd.Key] = rd.Value;
+                }
+            }
+
+            return routeData;
         }
     }
 }
