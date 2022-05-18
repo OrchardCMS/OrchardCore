@@ -388,8 +388,7 @@ namespace OrchardCore.Navigation
                     else
                     {
                         // We update the value since it has been explicitly passed on the Pager
-                        routeData.Remove(item.Key);
-                        routeData.Add(item.Key, item.Value);
+                        routeData[item.Key] = item.Value;
                     }
                 }
             }
