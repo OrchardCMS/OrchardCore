@@ -398,14 +398,48 @@ namespace OrchardCore.Navigation
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "List";
 
+            var httpContextAccessor = displayContext.ServiceProvider.GetService<IHttpContextAccessor>();
+            var httpContext = httpContextAccessor.HttpContext;
+
             var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
+
+            if (httpContext != null)
+            {
+                var queryString = httpContext.Request.Query;
+                if (queryString != null)
+                {
+                    foreach (var key in from string key in queryString.Keys where key != null && !routeData.ContainsKey(key) let value = queryString[key] select key)
+                    {
+                        routeData[key] = queryString[key];
+                    }
+                }
+            }
+
+            // specific cross-requests route data can be passed to the shape directly (e.g., OrchardCore.Users)
+            var shapeRouteData = shape.GetProperty<RouteData>("RouteData");
+            if (shapeRouteData != null)
+            {
+                foreach (var rd in shapeRouteData.Values)
+                {
+                    routeData[rd.Key] = rd.Value;
+                }
+            }
 
             // Allows to pass custom url params to PagerSlim
             if (UrlParams != null)
             {
                 foreach (var item in UrlParams)
                 {
-                    routeData.Add(item.Key, item.Value);
+                    if (!routeData.ContainsKey(item.Key))
+                    {
+                        routeData.Add(item.Key, item.Value);
+                    }
+                    else
+                    {
+                        // We update the value since it has been explicitly passed on the Pager
+                        routeData.Remove(item.Key);
+                        routeData.Add(item.Key, item.Value);
+                    }
                 }
             }
 
