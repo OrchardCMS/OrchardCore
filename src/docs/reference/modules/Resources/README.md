@@ -56,8 +56,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | bootstrap             | Script | 4.6.1         | popper         |
 | bootstrap             | Script | 5.1.3         | popperjs       |
 | bootstrap             | Style  | 4.6.1, 5.1.3  | -              |
-| bootstrap-select      | Script | 1.14.0-beta3  | -              |
-| bootstrap-select      | Style  | 1.14.0-beta3  | -              |
+| bootstrap-select      | Script | 1.14.0-beta2  | -              |
+| bootstrap-select      | Style  | 1.14.0-beta2  | -              |
 | codemirror            | Script | 5.65.3        | -              |
 | codemirror            | Style  | 5.65.3        | -              |
 | font-awesome          | Style  | 6.0.0         | -              |

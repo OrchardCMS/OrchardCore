@@ -12175,7 +12175,8 @@ html[data-theme=default] select.selectpicker {
   display: none !important;
 }
 html[data-theme=default] .bootstrap-select {
-  width: 220px;
+  width: 220px \0 ;
+  /*IE9 and below*/
   vertical-align: middle;
 }
 html[data-theme=default] .bootstrap-select > .dropdown-toggle {
@@ -41593,7 +41594,8 @@ html[data-theme=darkmode] select.selectpicker {
   display: none !important;
 }
 html[data-theme=darkmode] .bootstrap-select {
-  width: 220px;
+  width: 220px \0 ;
+  /*IE9 and below*/
   vertical-align: middle;
 }
 html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle {
