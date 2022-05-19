@@ -204,9 +204,25 @@ namespace OrchardCore.OpenId.Controllers
 
             var model = new EditOpenIdApplicationViewModel
             {
-                AllowAuthorizationCodeFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode),
+                AllowAuthorizationCodeFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode) &&
+                                             await HasPermissionAsync(OpenIddictConstants.Permissions.ResponseTypes.Code),
+
                 AllowClientCredentialsFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials),
-                AllowImplicitFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.Implicit),
+
+                // Note: the hybrid flow doesn't have a dedicated grant_type but is treated as a combination
+                // of both the authorization code and implicit grants. As such, to determine whether the hybrid
+                // flow is enabled, both the authorization code grant and the implicit grant MUST be enabled.
+                AllowHybridFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode) &&
+                                  await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.Implicit) &&
+                                  (await HasPermissionAsync(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken) ||
+                                   await HasPermissionAsync(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken) ||
+                                   await HasPermissionAsync(OpenIddictConstants.Permissions.ResponseTypes.CodeToken)),
+
+                AllowImplicitFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.Implicit) &&
+                                    (await HasPermissionAsync(OpenIddictConstants.Permissions.ResponseTypes.IdToken) ||
+                                     await HasPermissionAsync(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken) ||
+                                     await HasPermissionAsync(OpenIddictConstants.Permissions.ResponseTypes.Token)),
+
                 AllowPasswordFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.Password),
                 AllowRefreshTokenFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.RefreshToken),
                 AllowLogoutEndpoint = await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.Logout),
