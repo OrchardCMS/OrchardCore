@@ -409,10 +409,7 @@ namespace OrchardCore.Navigation
             }
             else
             {
-                if (routeData.ContainsKey("before"))
-                {
-                    routeData.Remove("before");
-                }
+                routeData.Remove("before");
             }
 
             if (shape.TryGetProperty("After", out string after))
@@ -439,10 +436,7 @@ namespace OrchardCore.Navigation
             }
             else
             {
-                if (routeData.ContainsKey("after"))
-                {
-                    routeData.Remove("after");
-                }
+                routeData.Remove("after");
             }
 
             return await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
