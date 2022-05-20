@@ -319,6 +319,60 @@ We also specify that the `Content` column will take 9 columns, of the default 12
 !!! note
     By default the columns will break responsively at the `md` breakpoint, and a modifier will be parsed to `col-md-9`.
     If you want to change the breakpoint, you could also specifiy `Content_lg-9`, which is parsed to `col-lg-9`.
+    
+### Dynamic part placement
+
+In the following example we place a dynamic part (part without driver, i.e. created in json) `GalleryPart` in a zone called `MyGalleryZone`. When displaying that part inside Content template we would execute:
+
+=== Content-Product.Detail.html
+``` html
+@await DisplayAsync(Model.MyGalleryZone)
+```
+
+Dynamic parts use `ContentPart` shape for detail display with differentiator of Part name, so the placement file would look like this:
+``` json
+{
+  "ContentPart": [
+    {
+      "place": "MyGalleryZone",
+      "differentiator": "GalleryPart"
+    }
+  ]
+}
+```
+
+This setup would then show your template (e.g. `GalleryPart.cshtml` or `GalleryPart.Detail.cshtml`) where DisplayAsync was called.
+
+If we would like to show the same part in a summary display content template (or any other that isn't `Detail` display type):
+
+
+=== Content-Product.Summary.html
+``` html
+@await DisplayAsync(Model.MyGalleryZone)
+```
+
+Our placement would look like this (note the `_Summary` suffix to ContentPart name; change your suffix accordingly):
+``` json
+{
+  "ContentPart_Summary": [
+    {
+      "place": "MyGalleryZone",
+      "differentiator": "GalleryPart"
+    }
+  ]
+}
+```
+This setup would then show your template  (e.g. `GalleryPart.cshtml` or `GalleryPart.Summary.cshtml`) where DisplayAsync was called.
+
+Alternatively, if you find this complicated for dynamic parts, you can display your dynamic part like so:
+
+=== Content-Product.Summary.html
+``` html
+@await DisplayAsync(Model.Content.GalleryPart)
+```
+
+!!! note
+    Directly displaying parts like shown above without placement is a bit hacky. If for example we would call both `@await DisplayAsync(Model.Content.GalleryPart)` and `@await DisplayAsync(Model.Content)` inside the same template, we would expect both calls to show gallery. However, only the first call will show the gallery, and the other would ignore the gallery shape (since it's already rendered).
 
 ## Video
 
