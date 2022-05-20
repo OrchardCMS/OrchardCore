@@ -387,7 +387,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                 await distributedCache.SetStringAsync(ReloadIdKey(name), identifier.ReloadId);
 
                 // Check if it is a new created tenant that has not been already loaded.
-                if (name != ShellHelper.DefaultShellName && !_shellHost.TryGetSettings(name, out _))
+                if (!String.Equals(name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase) && !_shellHost.TryGetSettings(name, out _))
                 {
                     // Also update the global identifier specifying that a tenant has been created.
                     await distributedCache.SetStringAsync(ShellCreatedIdKey, identifier.ReloadId);

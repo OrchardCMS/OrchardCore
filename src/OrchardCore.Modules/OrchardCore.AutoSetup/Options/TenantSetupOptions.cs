@@ -78,7 +78,7 @@ namespace OrchardCore.AutoSetup.Options
         /// <summary>
         /// Gets the Flag which indicates a Default/Root shell/tenant.
         /// </summary>
-        public bool IsDefault => ShellName == ShellHelper.DefaultShellName;
+        public bool IsDefault => String.Equals(ShellName, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// Error Message Format
