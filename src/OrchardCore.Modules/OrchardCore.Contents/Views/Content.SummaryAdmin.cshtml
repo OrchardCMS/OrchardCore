@@ -8,7 +8,8 @@
     ContentItem contentItem = Model.ContentItem;
 
     var queryString = Context.Request.QueryString;
-    if (!Context.Request.Query.ContainsKey("Options.SelectedContentType"))
+    if (!Context.Request.Query.ContainsKey("Options.SelectedContentType") &&
+        !Context.Request.RouteValues.ContainsKey("contenttypeid"))
     {
         queryString = queryString.Add(new QueryString($"?Options.SelectedContentType={contentItem.ContentType}"));
     }
