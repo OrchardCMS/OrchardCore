@@ -68,29 +68,115 @@ namespace OrchardCore.ContentManagement.Display
             }
 
             var settings = contentTypeDefinition?.GetSettings<ContentTypeSettings>();
-            var stereotype = "";
-
-            if (settings != null)
-            {
-                stereotype = settings.Stereotype;
-            }
+            var stereotype = settings?.Stereotype ?? String.Empty;
 
             foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = contentTypePartDefinition.Name;
                 var partTypeName = contentTypePartDefinition.PartDefinition.Name;
-                var contentType = contentTypePartDefinition.ContentTypeDefinition.Name;
                 var partActivator = _contentPartFactory.GetTypeActivator(partTypeName);
                 var part = contentItem.Get(partActivator.Type, partName) as ContentPart;
 
-                if (part != null)
+                if (part == null)
                 {
-                    var partDisplayDrivers = _contentPartDisplayDriverResolver.GetDisplayModeDrivers(partTypeName, contentTypePartDefinition.DisplayMode());
-                    foreach (var partDisplayDriver in partDisplayDrivers)
+                    continue;
+                }
+
+                var contentType = contentTypePartDefinition.ContentTypeDefinition.Name;
+                var partDisplayDrivers = _contentPartDisplayDriverResolver.GetDisplayModeDrivers(partTypeName, contentTypePartDefinition.DisplayMode());
+                foreach (var partDisplayDriver in partDisplayDrivers)
+                {
+                    try
+                    {
+                        var result = await partDisplayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
+                        if (result != null)
+                        {
+                            await result.ApplyAsync(context);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        InvokeExtensions.HandleException(ex, _logger, partDisplayDrivers.GetType().Name, nameof(BuildDisplayAsync));
+                    }
+                }
+                var tempContext = context;
+
+                // Create a custom ContentPart shape that will hold the fields for dynamic content part (not implicit parts)
+                // This allows its fields to be grouped and templated
+
+                if (part.GetType() == typeof(ContentPart) && partTypeName != contentTypePartDefinition.ContentTypeDefinition.Name)
+                {
+                    var shapeType = context.DisplayType != "Detail" ? "ContentPart_" + context.DisplayType : "ContentPart";
+
+                    var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, () => new ValueTask<IShape>(new ZoneHolding(() => ctx.ShapeFactory.CreateAsync("Zone")))));
+                    shapeResult.Differentiator(partName);
+                    shapeResult.Name(partName);
+                    shapeResult.Location("Content");
+                    shapeResult.OnGroup(context.GroupId);
+                    shapeResult.Displaying(ctx =>
+                    {
+                        var displayTypes = new[] { String.Empty, "_" + ctx.Shape.Metadata.DisplayType };
+
+                        foreach (var displayType in displayTypes)
+                        {
+                            // eg. ServicePart,  ServicePart.Summary
+                            ctx.Shape.Metadata.Alternates.Add($"{partTypeName}{displayType}");
+
+                            // [ContentType]_[DisplayType]__[PartType]
+                            // e.g. LandingPage-ServicePart, LandingPage-ServicePart.Summary
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partTypeName}");
+
+                            if (!String.IsNullOrEmpty(stereotype))
+                            {
+                                // [Stereotype]_[DisplayType]__[PartType],
+                                // e.g. Widget-ServicePart
+                                ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partTypeName}");
+                            }
+                        }
+
+                        if (partTypeName == partName)
+                        {
+                            return;
+                        }
+
+                        foreach (var displayType in displayTypes)
+                        {
+                            // [ContentType]_[DisplayType]__[PartName]
+                            // e.g. Employee-Address1, Employee-Address2
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}");
+
+                            if (!String.IsNullOrEmpty(stereotype))
+                            {
+                                // [Stereotype]_[DisplayType]__[PartType]__[PartName]
+                                // e.g. Widget-Services
+                                ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partTypeName}__{partName}");
+                            }
+                        }
+                    });
+
+                    await shapeResult.ApplyAsync(context);
+
+                    var contentPartShape = shapeResult.Shape;
+
+                    // Make the ContentPart name property available on the shape
+                    contentPartShape.Properties[partTypeName] = part.Content;
+                    contentPartShape.Properties["ContentItem"] = part.ContentItem;
+
+                    context = new BuildDisplayContext(shapeResult.Shape, context.DisplayType, context.GroupId, context.ShapeFactory, context.Layout, context.Updater)
+                    {
+                        // With a new display context we have the default FindPlacementDelegate that returns null, so we reuse the delegate from the temp context.
+                        FindPlacement = tempContext.FindPlacement,
+                    };
+                }
+
+                foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
+                {
+                    var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetDisplayModeDrivers(contentPartFieldDefinition.FieldDefinition.Name, contentPartFieldDefinition.DisplayMode());
+                    foreach (var fieldDisplayDriver in fieldDisplayDrivers)
                     {
                         try
                         {
-                            var result = await partDisplayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
+                            var result = await fieldDisplayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
                             if (result != null)
                             {
                                 await result.ApplyAsync(context);
@@ -98,97 +184,12 @@ namespace OrchardCore.ContentManagement.Display
                         }
                         catch (Exception ex)
                         {
-                            InvokeExtensions.HandleException(ex, _logger, partDisplayDrivers.GetType().Name, nameof(BuildDisplayAsync));
+                            InvokeExtensions.HandleException(ex, _logger, fieldDisplayDriver.GetType().Name, nameof(BuildDisplayAsync));
                         }
                     }
-                    var tempContext = context;
-
-                    // Create a custom ContentPart shape that will hold the fields for dynamic content part (not implicit parts)
-                    // This allows its fields to be grouped and templated
-
-                    if (part.GetType() == typeof(ContentPart) && partTypeName != contentTypePartDefinition.ContentTypeDefinition.Name)
-                    {
-                        var shapeType = context.DisplayType != "Detail" ? "ContentPart_" + context.DisplayType : "ContentPart";
-
-                        var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, () => new ValueTask<IShape>(new ZoneHolding(() => ctx.ShapeFactory.CreateAsync("Zone")))));
-                        shapeResult.Differentiator(partName);
-                        shapeResult.Name(partName);
-                        shapeResult.Location("Content");
-
-                        shapeResult.Displaying(ctx =>
-                        {
-                            string[] displayTypes = new[] { "", "_" + ctx.Shape.Metadata.DisplayType };
-
-                            foreach (var displayType in displayTypes)
-                            {
-                                // eg. ServicePart,  ServicePart.Summary
-                                ctx.Shape.Metadata.Alternates.Add($"{partTypeName}{displayType}");
-
-                                // [ContentType]_[DisplayType]__[PartType]
-                                // e.g. LandingPage-ServicePart, LandingPage-ServicePart.Summary
-                                ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partTypeName}");
-
-                                if (!String.IsNullOrEmpty(stereotype))
-                                {
-                                    // [Stereotype]_[DisplayType]__[PartType],
-                                    // e.g. Widget-ServicePart
-                                    ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partTypeName}");
-                                }
-                            }
-
-                            if (partTypeName != partName)
-                            {
-                                foreach (var displayType in displayTypes)
-                                {
-                                    // [ContentType]_[DisplayType]__[PartName]
-                                    // e.g. Employee-Address1, Employee-Address2
-                                    ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}");
-
-                                    if (!String.IsNullOrEmpty(stereotype))
-                                    {
-                                        // [Stereotype]_[DisplayType]__[PartType]__[PartName]
-                                        // e.g. Widget-Services
-                                        ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partTypeName}__{partName}");
-                                    }
-                                }
-                            }
-                        });
-
-                        await shapeResult.ApplyAsync(context);
-
-                        var contentPartShape = shapeResult.Shape;
-
-                        // Make the ContentPart name property available on the shape
-                        contentPartShape.Properties[partTypeName] = part.Content;
-                        contentPartShape.Properties["ContentItem"] = part.ContentItem;
-
-                        context = new BuildDisplayContext(shapeResult.Shape, context.DisplayType, context.GroupId, context.ShapeFactory, context.Layout, context.Updater);
-                        // With a new display context we have the default FindPlacementDelegate that returns null, so we reuse the delegate from the temp context.
-                        context.FindPlacement = tempContext.FindPlacement;
-                    }
-
-                    foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
-                    {
-                        var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetDisplayModeDrivers(contentPartFieldDefinition.FieldDefinition.Name, contentPartFieldDefinition.DisplayMode());
-                        foreach (var fieldDisplayDriver in fieldDisplayDrivers)
-                        {
-                            try
-                            {
-                                var result = await fieldDisplayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
-                                if (result != null)
-                                {
-                                    await result.ApplyAsync(context);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                InvokeExtensions.HandleException(ex, _logger, fieldDisplayDriver.GetType().Name, nameof(BuildDisplayAsync));
-                            }
-                        }
-                    }
-
-                    context = tempContext;
                 }
+
+                context = tempContext;
             }
         }
 
@@ -196,7 +197,9 @@ namespace OrchardCore.ContentManagement.Display
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
             if (contentTypeDefinition == null)
+            {
                 return;
+            }
 
             var contentShape = context.Shape as IZoneHolding;
             var partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
@@ -230,34 +233,11 @@ namespace OrchardCore.ContentManagement.Display
                 var contentType = typePartDefinition.ContentTypeDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partTypeName);
                 var part = (ContentPart)contentItem.Get(activator.Type, partName) ?? activator.CreateInstance();
-                var isNamedPart = typePartDefinition.PartDefinition.IsReusable() && partName != partTypeName;
                 var partPosition = typePartDefinition.GetSettings<ContentTypePartSettings>().Position ?? "before";
                 part.ContentItem = contentItem;
 
                 // Create a custom shape to render all the part shapes into it
-                var shapeType = "ContentPart_Edit";
-                var typePartShapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType));
-                typePartShapeResult.Differentiator($"{contentType}-{partName}");
-                typePartShapeResult.Name(partName);
-                typePartShapeResult.Location($"Parts:{partPosition}");
-
-                typePartShapeResult.Displaying(ctx =>
-                {
-                    // ContentPart_Edit__[PartType]
-                    // eg ContentPart-ServicePart.Edit
-                    ctx.Shape.Metadata.Alternates.Add($"{shapeType}__{partTypeName}");
-
-                    // ContentPart_Edit__[ContentType]__[PartType]
-                    // e.g. ContentPart-LandingPage-ServicePart.Edit
-                    ctx.Shape.Metadata.Alternates.Add($"{shapeType}__{contentType}__{partTypeName}");
-
-                    if (isNamedPart)
-                    {
-                        // ContentPart_Edit__[ContentType]__[PartName]
-                        // e.g. ContentPart-LandingPage-BillingService.Edit ContentPart-LandingPage-HelplineService.Edit
-                        ctx.Shape.Metadata.Alternates.Add($"{shapeType}__{contentType}__{partName}");
-                    }
-                });
+                var typePartShapeResult = CreateShapeResult(context.GroupId, partTypeName, contentType, typePartDefinition, partPosition);
 
                 await typePartShapeResult.ApplyAsync(context);
                 var typePartShape = typePartShapeResult.Shape;
@@ -342,35 +322,11 @@ namespace OrchardCore.ContentManagement.Display
                 var contentType = typePartDefinition.ContentTypeDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partTypeName);
                 var part = (ContentPart)contentItem.Get(activator.Type, partName) ?? activator.CreateInstance();
-                var isNamedPart = typePartDefinition.PartDefinition.IsReusable() && partName != partTypeName;
                 var partPosition = typePartDefinition.GetSettings<ContentTypePartSettings>().Position ?? "before";
                 part.ContentItem = contentItem;
 
                 // Create a custom shape to render all the part shapes into it
-                var shapeType = "ContentPart_Edit";
-                var typePartShapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType));
-
-                typePartShapeResult.Differentiator($"{contentType}-{partName}");
-                typePartShapeResult.Name(partName);
-                typePartShapeResult.Location($"Parts:{partPosition}");
-
-                typePartShapeResult.Displaying(ctx =>
-                {
-                    // ContentPart_Edit__[PartType]
-                    // eg ContentPart-ServicePart.Edit
-                    ctx.Shape.Metadata.Alternates.Add($"{shapeType}__{partTypeName}");
-
-                    // ContentPart_Edit__[ContentType]__[PartType]
-                    // e.g. ContentPart-LandingPage-ServicePart.Edit
-                    ctx.Shape.Metadata.Alternates.Add($"{shapeType}__{contentType}__{partTypeName}");
-
-                    if (isNamedPart)
-                    {
-                        // ContentPart_Edit__[ContentType]__[PartName]
-                        // e.g. ContentPart-LandingPage-BillingService.Edit ContentPart-LandingPage-HelplineService.Edit
-                        ctx.Shape.Metadata.Alternates.Add($"{shapeType}__{contentType}__{partName}");
-                    }
-                });
+                var typePartShapeResult = CreateShapeResult(context.GroupId, partTypeName, contentType, typePartDefinition, partPosition);
 
                 await typePartShapeResult.ApplyAsync(context);
                 var typePartShape = typePartShapeResult.Shape;
@@ -413,6 +369,39 @@ namespace OrchardCore.ContentManagement.Display
                     }, part, partFieldDefinition, typePartDefinition, context, _logger);
                 }
             }
+        }
+
+        private static ShapeResult CreateShapeResult(string groupId, string partTypeName, string contentType, ContentTypePartDefinition typePartDefinition, string partPosition)
+        {
+            var shapeType = "ContentPart_Edit";
+            var partName = typePartDefinition.Name;
+
+            var typePartShapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType));
+            typePartShapeResult.Differentiator($"{contentType}-{partName}");
+            typePartShapeResult.Name(partName);
+            typePartShapeResult.Location($"Parts:{partPosition}");
+            typePartShapeResult.OnGroup(groupId);
+            typePartShapeResult.Displaying(ctx =>
+            {
+                // ContentPart_Edit__[PartType]
+                // eg ContentPart-ServicePart.Edit
+                ctx.Shape.Metadata.Alternates.Add($"{shapeType}__{partTypeName}");
+
+                // ContentPart_Edit__[ContentType]__[PartType]
+                // e.g. ContentPart-LandingPage-ServicePart.Edit
+                ctx.Shape.Metadata.Alternates.Add($"{shapeType}__{contentType}__{partTypeName}");
+
+                var isNamedPart = typePartDefinition.PartDefinition.IsReusable() && partName != partTypeName;
+
+                if (isNamedPart)
+                {
+                    // ContentPart_Edit__[ContentType]__[PartName]
+                    // e.g. ContentPart-LandingPage-BillingService.Edit ContentPart-LandingPage-HelplineService.Edit
+                    ctx.Shape.Metadata.Alternates.Add($"{shapeType}__{contentType}__{partName}");
+                }
+            });
+
+            return typePartShapeResult;
         }
     }
 }

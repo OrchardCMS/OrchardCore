@@ -2035,7 +2035,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   function addMarkedSpan(line, span, op) {
     var inThisOp = op && window.WeakSet && (op.markedSpans || (op.markedSpans = new WeakSet()));
 
-    if (inThisOp && inThisOp.has(line.markedSpans)) {
+    if (inThisOp && line.markedSpans && inThisOp.has(line.markedSpans)) {
       line.markedSpans.push(span);
     } else {
       line.markedSpans = line.markedSpans ? line.markedSpans.concat([span]) : [span];
@@ -12325,7 +12325,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     if (pasted) {
       e.preventDefault();
 
-      if (!cm.isReadOnly() && !cm.options.disableInput) {
+      if (!cm.isReadOnly() && !cm.options.disableInput && cm.hasFocus()) {
         runInOp(cm, function () {
           return applyTextInput(cm, pasted, 0, null, "paste");
         });
@@ -14719,6 +14719,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.65.2";
+  CodeMirror.version = "5.65.4";
   return CodeMirror;
 });

@@ -2442,7 +2442,6 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/22633385?v=4",
       "profile": "https://bandism.net/",
       "contributions": [
-        "code",
         "doc"
       ]
     },
@@ -2541,6 +2540,24 @@
       "name": "Szabolcs Deme",
       "avatar_url": "https://avatars.githubusercontent.com/u/80963259?v=4",
       "profile": "https://github.com/DemeSzabolcs",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "mazuryv",
+      "name": "Mazur Yuriy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/26767342?v=4",
+      "profile": "http://mazur.dp.ua/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "devlife",
+      "name": "Mike Paterson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/237369?v=4",
+      "profile": "http://sleepcanwait.blogspot.com/",
       "contributions": [
         "doc"
       ]

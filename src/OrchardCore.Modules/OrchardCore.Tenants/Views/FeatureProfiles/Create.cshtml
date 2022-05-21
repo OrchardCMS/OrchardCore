@@ -11,7 +11,7 @@
 <form asp-action="Create" method="post" class="no-multisubmit">
     <div class="row">
         <div class="col-12 col-md-6">
-            <div class="form-group" asp-validation-class-for="Name">
+            <div class="mb-3" asp-validation-class-for="Name">
                 <label asp-for="Name">@T["Name"]</label>
                 <input asp-for="Name" class="form-control" autofocus />
                 <span asp-validation-for="Name"></span>
@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="col-12">
-            <div class="form-group" asp-validation-class-for="FeatureRules">
+            <div class="mb-3" asp-validation-class-for="FeatureRules">
                 <label asp-for="FeatureRules">@T["Rules"]</label>
                 <div class="form-control" style="min-height: 400px;">
                     <div id="@Html.IdFor(x => x.FeatureRules)_editor" asp-for="FeatureRules" style="min-height: 385px;"  dir="@Orchard.CultureDir()" data-schema="@schema"></div>
@@ -31,10 +31,10 @@
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         <div class="btn-group">
             <button type="submit" name="submit" class="btn btn-primary save">@T["Save"]</button>
-            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">@T["Toggle Dropdown"]</span>
             </button>
             <div class="dropdown-menu">

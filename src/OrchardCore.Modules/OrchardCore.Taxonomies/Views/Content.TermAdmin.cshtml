@@ -9,52 +9,49 @@
     var index = 0;
 }
 
-<li class="menu-item" id="menu-id-@Model.Index" data-index="@Model.Index">
-    <div class="menu-item menu-item-title list-group-item">
-        <div class="properties">
-            <div class="related">
-                <a asp-action="Edit"
-                   asp-controller="Admin"
-                   asp-route-area="OrchardCore.Taxonomies"
-                   asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
-                   asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
-                   class="btn btn-success btn-sm">
-                    @T["Edit"]
-                </a>
-                <a class="btn btn-primary btn-sm"
-                    asp-route-action="Create"
-                    asp-route-controller="Admin"
-                    asp-route-id="@Model.TaxonomyPart.TermContentType"
-                    asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
-                    asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
-                    asp-route-area="OrchardCore.Taxonomies">
-                    @T["Add"]
-                </a>
-                <a asp-action="Delete"
-                   asp-controller="Admin"
-                   asp-route-area="OrchardCore.Taxonomies"
-                   asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
-                   asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
-                   data-url-af="RemoveUrl UnsafeUrl"
-                   class="btn btn-danger btn-sm">
-                    @T["Delete"]
-                </a>
-            </div>
+<li class="menu-item list-group-item" id="menu-id-@Model.Index" data-index="@Model.Index">
+    <div class="menu-item menu-item-title border rounded p-2 ps-3 mb-1 d-flex flex-row justify-content-between align-items-center">
+        <span>@contentItem</span>
 
-            <span>@contentItem</span>
-
-            @if (Model.Content != null)
-            {
-                @await DisplayAsync(Model.Content)
-            }
+        @if (Model.Content != null)
+        {
+            @await DisplayAsync(Model.Content)
+        }
+        <div class="float-end">
+            <a asp-action="Edit"
+                asp-controller="Admin"
+                asp-route-area="OrchardCore.Taxonomies"
+                asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+                asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
+                class="btn btn-success btn-sm">
+                @T["Edit"]
+            </a>
+            <a class="btn btn-primary btn-sm"
+                asp-route-action="Create"
+                asp-route-controller="Admin"
+                asp-route-id="@Model.TaxonomyPart.TermContentType"
+                asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+                asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
+                asp-route-area="OrchardCore.Taxonomies">
+                @T["Add"]
+            </a>
+            <a asp-action="Delete"
+                asp-controller="Admin"
+                asp-route-area="OrchardCore.Taxonomies"
+                asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+                asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
+                data-url-af="RemoveUrl UnsafeUrl"
+                class="btn btn-danger btn-sm">
+                @T["Delete"]
+            </a>
         </div>
     </div>
 
-    <ol class="menu-item menu-item-links">
-        @if (termsArray != null)
-        {
-            var updater = ModelUpdaterAccessor.ModelUpdater;
+    @if (termsArray != null)
+    {
+        var updater = ModelUpdaterAccessor.ModelUpdater;
 
+        <ol class="menu-item menu-item-links">
             @foreach (JObject termObject in termsArray)
             {
                 var term = termObject.ToObject<ContentItem>();
@@ -63,6 +60,7 @@
                 termShape.Index = Model.Index + "-" + index++;
                 @await DisplayAsync(termShape)
             }
-        }
-    </ol>
+        </ol>
+    }
+    
 </li>

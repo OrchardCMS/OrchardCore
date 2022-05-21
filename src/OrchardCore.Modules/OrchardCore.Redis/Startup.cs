@@ -34,12 +34,13 @@ namespace OrchardCore.Redis
         {
             try
             {
-                var configurationOptions = ConfigurationOptions.Parse(_configuration["OrchardCore_Redis:Configuration"]);
+                var configurationString = _configuration["OrchardCore_Redis:Configuration"];
+                var _ = ConfigurationOptions.Parse(configurationString);
                 var instancePrefix = _configuration["OrchardCore_Redis:InstancePrefix"];
 
                 services.Configure<RedisOptions>(options =>
                 {
-                    options.ConfigurationOptions = configurationOptions;
+                    options.Configuration = configurationString;
                     options.InstancePrefix = instancePrefix;
                 });
             }
