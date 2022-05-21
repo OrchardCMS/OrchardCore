@@ -26,5 +26,10 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
         /// Gets or sets the default position of the part when attached to a type.
         /// </summary>
         public string DefaultPosition { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this part can is managable from the User interface.
+        /// </summary>
+        public bool DisabledUserInterface { get; set; }
     }
 }
