@@ -188,15 +188,6 @@ namespace OrchardCore.Navigation
             var routeData = GetRouteData(shape, displayContext, Html);
             SetCustomUrlParams(UrlParams, routeData);
 
-            // Allows to pass custom url params to Pager
-            if (UrlParams != null)
-            {
-                foreach (var item in UrlParams)
-                {
-                    routeData[item.Key] = item.Value;
-                }
-            }
-
             var firstPage = Math.Max(1, Page - (numberOfPagesToShow / 2));
             var lastPage = Math.Min(totalPageCount, Page + (numberOfPagesToShow / 2));
 
@@ -572,13 +563,11 @@ namespace OrchardCore.Navigation
 
             if (httpContext != null)
             {
-                var queryString = httpContext.Request.Query;
-                if (queryString != null)
+                var query = httpContext.Request.Query;
+
+                foreach (var key in query.Keys)
                 {
-                    foreach (var key in from string key in queryString.Keys where key != null && !routeData.ContainsKey(key) let value = queryString[key] select key)
-                    {
-                        routeData[key] = queryString[key];
-                    }
+                    routeData.TryAdd(key, query[key]);
                 }
             }
 
