@@ -1,13 +1,6 @@
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
-    Name = "Amazon S3 Media",
-    Author = ManifestConstants.OrchardCoreTeam,
-    Website = ManifestConstants.OrchardCoreWebsite,
-    Version = ManifestConstants.OrchardCoreVersion
-)]
-
-[assembly: Feature(
     Id = "OrchardCore.Media.AmazonS3.Storage",
     Name = "Amazon S3 Media Storage",
     Description = "Enables support for storing media files in Amazon S3 Bucket.",
@@ -15,5 +8,9 @@ using OrchardCore.Modules.Manifest;
     {
         "OrchardCore.Media.Cache"
     },
-    Category = "Hosting"
+    Category = "Hosting",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion
 )]
+

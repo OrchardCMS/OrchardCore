@@ -26,7 +26,6 @@ using OrchardCore.Media.Core.Events;
 
 namespace OrchardCore.Media.AmazonS3;
 
-[Feature("OrchardCore.Media.AmazonS3.Storage")]
 public class Startup : Modules.StartupBase
 {
     private readonly ILogger _logger;
