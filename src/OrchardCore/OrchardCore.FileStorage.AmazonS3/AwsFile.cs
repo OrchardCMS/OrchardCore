@@ -15,8 +15,9 @@ public class AwsFile : IFileStoreEntry
         _path = path;
         _name = System.IO.Path.GetFileName(_path);
 
-        if (_name == _path) // file is in root Directory
+        if (_name == _path)
         {
+            // File is in the root directory.
             _directoryPath = String.Empty;
         }
         else
