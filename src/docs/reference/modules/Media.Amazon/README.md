@@ -63,7 +63,7 @@ Simplest way of doing it is to add a policy :
     ]
 }
 ```
-After this policy will be added to your bucket permissions - all newly added files will be available to read from the outside of the Amazon Cloud.
+After this policy will be added to your bucket permissions all newly added files will have Read permission and will be available from the outside of the Amazon Cloud.
 
 ## Media Cache
 
