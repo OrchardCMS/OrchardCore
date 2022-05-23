@@ -3,9 +3,9 @@
 @{
     var settings = Model.TypeDefinition.GetSettings<ContentTypeSettings>();
 }
-<div class="properties">
+<div class="w-100">
     <a asp-route-action="Edit" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Name">@Model.DisplayName</a>
-    <div class="related">
+    <div class="float-end">
         @if (settings.Creatable)
         {
             <a id="btn-create-@Model.Name" asp-route-area="OrchardCore.Contents" asp-route-action="Create" asp-route-id="@Model.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-success btn-sm">@T["Create New {0}", Model.DisplayName]</a>
@@ -15,6 +15,6 @@
     </div>
     @if (!string.IsNullOrWhiteSpace(settings.Stereotype))
     {
-        <span class="badge badge-pill ta-badge font-weight-normal" data-toggle="tooltip" title="Stereotype"><i class="fa fa-file text-info" aria-hidden="true"></i> @settings.Stereotype</span>
+        <span class="badge rounded-pill ta-badge font-weight-normal" data-bs-toggle="tooltip" title="Stereotype"><i class="fa fa-file text-info" aria-hidden="true"></i> @settings.Stereotype</span>
     }
 </div>

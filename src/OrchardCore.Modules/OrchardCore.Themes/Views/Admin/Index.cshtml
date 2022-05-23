@@ -35,47 +35,45 @@ else
                             </ul>
                         </p>
                     </div>
-                    <div class="card-footer text-muted text-xs-right">
+                    <div class="card-footer">
                         @if (!themeEntry.IsCurrent)
                         {
                             <div class="row">
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 text-start">
                                     <form asp-route-action="SetCurrentTheme" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
                                         <button type="submit" class="btn btn-sm btn-primary">@T["Make Current"]</button>
                                     </form>
                                 </div>
-                                <div class="col-sm-6">
-                                    <div class="float-right">
-                                        @if (themeEntry.Enabled)
-                                        {
-                                            <form asp-route-action="Disable" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
-                                                <button type="submit" class="btn btn-sm btn-secondary">@T["Disable"]</button>
-                                            </form>
-                                        }
-                                        else
-                                        {
-                                            <form asp-route-action="Enable" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
-                                                <button type="submit" class="btn btn-sm btn-secondary">@T["Enable"]</button>
-                                            </form>
-                                        }
-                                        </div>
-                                    </div>
+                                <div class="col-sm-6 text-end">
+                                    @if (themeEntry.Enabled)
+                                    {
+                                        <form asp-route-action="Disable" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
+                                            <button type="submit" class="btn btn-sm btn-secondary">@T["Disable"]</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-route-action="Enable" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
+                                            <button type="submit" class="btn btn-sm btn-secondary">@T["Enable"]</button>
+                                        </form>
+                                    }
                                 </div>
+                            </div>
                         }
                         else
                         {
                             if (themeEntry.IsAdmin)
                             {
-                                @T["This is the current Admin theme"]
+                                <span class="text-muted">@T["This is the current Admin theme"]</span>
                             }
                             else
                             {
-                                @T["This is the current Site theme"]
+                                <span class="text-muted">@T["This is the current Site theme"]</span>
                             }
                         }
-                            </div>
-                        </div>
                     </div>
+                </div>
+            </div>
         }
     </div>
 

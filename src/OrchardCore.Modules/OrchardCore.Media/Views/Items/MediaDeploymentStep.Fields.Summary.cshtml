@@ -10,7 +10,7 @@
 
 @if (includeAll)
 {
-    <span class="badge badge-success">@T["All"]</span>
+    <span class="badge bg-success">@T["All"]</span>
 }
 else if (filePaths.Length > 0 || directoryPaths.Length > 0)
 {
@@ -28,5 +28,5 @@ else if (filePaths.Length > 0 || directoryPaths.Length > 0)
 }
 else
 {
-    <span class="badge badge-warning">@T["No media selected."]</span>
+    <span class="badge bg-warning">@T["No media selected."]</span>
 }

@@ -16,7 +16,7 @@
 
     <!-- Bootstrap CSS -->
     <style media="all" asp-name="admin" version="1"></style>
-    <style asp-name="material-icons" version="0.7.2"></style>
+    <style asp-name="material-icons" version="1"></style>
 
     <script asp-name="font-awesome" at="Head" version="6"></script>
     <script asp-name="font-awesome-v4-shims" at="Head" version="6"></script>
@@ -43,7 +43,7 @@
                     @await RenderSectionAsync("NavbarTop", required: false)
                     @if (adminSettings.DisplayDarkMode)
                     {
-                        <button type="button" id="btn-darkmode" class="unset ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])">
+                        <a id="btn-darkmode" class="me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
                             @if (darkMode)
                             {
                                 <i class="fas fa-sun" aria-hidden="true"></i>
@@ -54,9 +54,9 @@
                                 <i class="fas fa-moon" aria-hidden="true"></i>
                                 <span class="d-none">@T["Dark mode"]</span>
                             }
-                        </button>
+                        </a>
                     }
-                    <a href="@Url.Content("~/")" class="ml-3" target="_blank" data-toggle="tooltip" aria-label="@T["Visit Site"]" title="@T["Visit Site"]">
+                    <a href="@Url.Content("~/")" class="me-3" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Visit Site"]" role="button">
                         <i class="fa fa-fw fa-external-link" aria-hidden="true"></i>
                     </a>
                     @await DisplayAsync(await New.UserMenu())
