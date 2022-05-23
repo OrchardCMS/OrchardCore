@@ -8,6 +8,6 @@ internal static class AmazonWebServiceResponseExtensions
     public static bool IsSuccessful(this AmazonWebServiceResponse response) =>
         response.HttpStatusCode == HttpStatusCode.OK;
 
-    public static bool DeletedSuccessfully(this AmazonWebServiceResponse response) =>
+    public static bool IsDeleteSuccessful(this AmazonWebServiceResponse response) =>
         response.HttpStatusCode == HttpStatusCode.NoContent;
 }

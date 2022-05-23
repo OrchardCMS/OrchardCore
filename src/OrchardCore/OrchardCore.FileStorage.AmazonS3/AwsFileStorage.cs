@@ -139,7 +139,7 @@ public class AwsFileStore : IFileStore
                 Key = this.Combine(_basePrefix, path)
             });
 
-            return response.DeletedSuccessfully();
+            return response.IsDeleteSuccessful();
         }
         catch (AmazonS3Exception)
         {

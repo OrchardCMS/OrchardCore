@@ -114,4 +114,4 @@ re-fetch the source file, as and when required, which the Media Cache Module wil
 
 !!! note
     The Media Feature is designed to support one storage provider at a time, whether that is
-    local File Storage, the default, or Azure Blob Storage.
+    local File Storage, the default, or Azure Blob Storage, or Amazon S3 Storage.

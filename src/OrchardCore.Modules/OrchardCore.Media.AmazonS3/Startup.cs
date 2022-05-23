@@ -49,16 +49,7 @@ public class Startup : Modules.StartupBase
                 stringBuilder.Append(error.ErrorMessage);
             }
 
-            if (_webHostEnvironment.IsDevelopment())
-            {
-                _logger.LogInformation(
-                    $"S3 Media configuration validation failed: {validationErrors} fallback to File storage", stringBuilder);
-            }
-            else
-            {
-                _logger.LogError(
-                    $"S3 Media configuration validation failed with errors: {validationErrors} fallback to File storage", stringBuilder);
-            }
+            _logger.LogError("S3 Media configuration validation failed with errors: {Errors} fallback to File storage", stringBuilder);
         }
         else
         {
