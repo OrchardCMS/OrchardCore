@@ -21,7 +21,7 @@ public class AwsFile : IFileStoreEntry
         }
         else
         {
-            _directoryPath = _path.Substring(0, _path.Length - _name.Length - 1);
+            _directoryPath = _path[..(_path.Length - _name.Length - 1)];
         }
 
         _length = length;
