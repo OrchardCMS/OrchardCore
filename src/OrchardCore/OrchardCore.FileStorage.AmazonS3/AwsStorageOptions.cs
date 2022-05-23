@@ -11,7 +11,7 @@ public class AwsStorageOptions
     public string BucketName { get; set; }
 
     /// <summary>
-    /// The base directory path to use inside the container for this stores contents.
+    /// The base directory path to use inside the container for this store's contents.
     /// </summary>
     public string BasePath { get; set; }
 
