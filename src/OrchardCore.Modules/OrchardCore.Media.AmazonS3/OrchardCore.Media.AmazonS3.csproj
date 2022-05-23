@@ -5,7 +5,7 @@
     <Title>OrchardCore Media Amazon S3</Title>
     <Description>$(OCCMSDescription)
 
-      Enables support for storing media files in Amazon S3 Bucket</Description>
+      Enables support for storing media files in Amazon S3 Bucket.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS ContentManagement</PackageTags>
   </PropertyGroup>
   
