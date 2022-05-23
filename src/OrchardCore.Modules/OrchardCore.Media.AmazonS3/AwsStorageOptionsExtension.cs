@@ -64,7 +64,7 @@ public static class AwsStorageOptionsExtension
         }
         else
         {
-            // Attempt to load Credentials from Profile
+            // Attempt to load Credentials from Profile.
             var profileName = section.GetValue("ProfileName", String.Empty);
             if (!String.IsNullOrEmpty(profileName))
             {
