@@ -19,8 +19,9 @@ public class AwsStorageOptions
     /// Gets or sets the credentials.
     /// <remarks>
     /// Credentials section can be set directly via configuration or get loaded from the configured ProfileName.
-    /// For development purpose it is recommended to specify just ProfileName.
-    /// For Prod Env this section should be null, AWS SDK Services will get the default credentials from Env variables
+    /// For development purposes, it is recommended to specify just ProfileName.
+    /// For a production environment this section should be null, AWS SDK Services will get the default credentials
+    /// from environment variables.
     /// </remarks>
     /// </summary>
     public AwsStorageCredentials Credentials { get; set; }
