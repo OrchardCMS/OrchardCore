@@ -1,12 +1,10 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-
 using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
-
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,15 +12,14 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
+using OrchardCore.FileStorage.AmazonS3;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Events;
 using OrchardCore.Media.Events;
 using OrchardCore.Modules;
-using OrchardCore.FileStorage.AmazonS3;
-using OrchardCore.Media.Core.Events;
 
 namespace OrchardCore.Media.AmazonS3;
 
