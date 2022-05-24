@@ -22,28 +22,24 @@
 
 @if (Model.IsNewRequest)
 {
-    <div class="form-group">
+    <div class="mb-1">
         <label asp-for="Password">@T["Password"]</label>
-        <div class="input-group row col-md-4">
-            <div class="input-group-prepend">
-                <span class="input-group-text"><span class="fas fa-eye prefix" id="passwordToggle"></span></span>
-            </div>
+        <div class="input-group col-md-4">
+            <span class="input-group-text"><span class="fas fa-eye prefix" id="passwordToggle"></span></span>
             <input asp-for="Password" type="password" class="form-control" placeholder="@T["Password"]" />
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         <label asp-for="PasswordConfirmation" class="sr-only">@T["Password Confirmation"]</label>
-        <div class="input-group row col-md-4">
-            <div class="input-group-prepend">
-                <span class="input-group-text"><span class="fas fa-eye prefix" id="passwordConfirmationToggle"></span></span>
-            </div>
+        <div class="input-group col-md-4">
+            <span class="input-group-text"><span class="fas fa-eye prefix" id="passwordConfirmationToggle"></span></span>
             <input asp-for="PasswordConfirmation" type="password" class="form-control" placeholder="@T["Password confirmation"]" />
             <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
         </div>
 
-        <div class="pt-2">
+        <div class="mt-2">
             <div class="btn btn-warning btn-sm" id="generatePassword">@T["Generate password"]</div>
             <div class="btn btn-info btn-sm" id="copyPassword">@T["Copy password"]</div>
         </div>
@@ -108,3 +104,4 @@
         });
     </script>
 }
+    
