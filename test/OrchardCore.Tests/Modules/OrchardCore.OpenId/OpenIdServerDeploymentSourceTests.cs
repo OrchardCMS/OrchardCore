@@ -32,6 +32,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 result.AuthorizationEndpointPath = "/connect/authorize";
                 result.LogoutEndpointPath = "/connect/logout";
                 result.UserinfoEndpointPath = "/connect/userinfo";
+                result.IntrospectionEndpointPath = "/connect/introspect";
+                result.RevocationEndpointPath = "/connect/revoke";
 
                 result.EncryptionCertificateStoreLocation = StoreLocation.LocalMachine;
                 result.EncryptionCertificateStoreName = StoreName.My;

@@ -38,6 +38,22 @@
     </div>
 </div>
 
+<div class="mb-3" asp-validation-class-for="EnableIntrospectionEndpoint">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="EnableIntrospectionEndpoint">
+        <label class="form-check-label" asp-for="EnableIntrospectionEndpoint">@T["Enable Introspection Endpoint"]</label>
+        <span class="hint dashed">@T["Enables action"] /connect/introspect</span>
+    </div>
+</div>
+
+<div class="mb-3" asp-validation-class-for="EnableRevocationEndpoint">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="EnableRevocationEndpoint">
+        <label class="form-check-label" asp-for="EnableRevocationEndpoint">@T["Enable Revocation Endpoint"]</label>
+        <span class="hint dashed">@T["Enables action"] /connect/revoke</span>
+    </div>
+</div>
+
 <h3>@T["Flows"]</h3>
 
 <div class="mb-3 collapse" asp-validation-class-for="AllowAuthorizationCodeFlow">

@@ -47,6 +47,8 @@ namespace OrchardCore.OpenId.Deployment
                 EnableLogoutEndpoint = !string.IsNullOrWhiteSpace(settings.LogoutEndpointPath),
                 EnableTokenEndpoint = !string.IsNullOrWhiteSpace(settings.TokenEndpointPath),
                 EnableUserInfoEndpoint = !string.IsNullOrWhiteSpace(settings.UserinfoEndpointPath),
+                EnableIntrospectionEndpoint = !string.IsNullOrWhiteSpace(settings.IntrospectionEndpointPath),
+                EnableRevocationEndpoint = !string.IsNullOrWhiteSpace(settings.RevocationEndpointPath),
 
                 AllowAuthorizationCodeFlow = settings.AllowAuthorizationCodeFlow,
                 AllowClientCredentialsFlow = settings.AllowClientCredentialsFlow,

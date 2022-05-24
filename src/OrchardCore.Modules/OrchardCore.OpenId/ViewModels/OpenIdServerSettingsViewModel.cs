@@ -24,6 +24,8 @@ namespace OrchardCore.OpenId.ViewModels
         public bool EnableAuthorizationEndpoint { get; set; }
         public bool EnableLogoutEndpoint { get; set; }
         public bool EnableUserInfoEndpoint { get; set; }
+        public bool EnableIntrospectionEndpoint { get; set; }
+        public bool EnableRevocationEndpoint { get; set; }
         public bool AllowPasswordFlow { get; set; }
         public bool AllowClientCredentialsFlow { get; set; }
         public bool AllowAuthorizationCodeFlow { get; set; }

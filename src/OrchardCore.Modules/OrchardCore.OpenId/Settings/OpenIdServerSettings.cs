@@ -25,6 +25,10 @@ namespace OrchardCore.OpenId.Settings
 
         public PathString UserinfoEndpointPath { get; set; }
 
+        public PathString IntrospectionEndpointPath { get; set; }
+
+        public PathString RevocationEndpointPath { get; set; }
+
         public bool AllowPasswordFlow { get; set; }
         public bool AllowClientCredentialsFlow { get; set; }
         public bool AllowAuthorizationCodeFlow { get; set; }

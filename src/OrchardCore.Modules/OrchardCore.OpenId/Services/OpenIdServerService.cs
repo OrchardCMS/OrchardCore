@@ -78,7 +78,9 @@ namespace OrchardCore.OpenId.Services
                 AuthorizationEndpointPath = "/connect/authorize",
                 LogoutEndpointPath = "/connect/logout",
                 TokenEndpointPath = "/connect/token",
-                UserinfoEndpointPath = "/connect/userinfo"
+                UserinfoEndpointPath = "/connect/userinfo",
+                IntrospectionEndpointPath = "/connect/introspect",
+                RevocationEndpointPath = "/connect/revoke",
             };
         }
 

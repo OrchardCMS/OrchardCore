@@ -34,16 +34,16 @@
         <input asp-for="ClientSecret" class="form-control" autofocus autocomplete="off" />
         <span asp-validation-for="ClientSecret" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <div class="custom-control custom-checkbox">
-             <input type="checkbox" class="custom-control-input" asp-for="AllowIntrospectionEndpoint" checked="@Model.AllowIntrospectionEndpoint">
-            <label class="custom-control-label" asp-for="AllowIntrospectionEndpoint">@T["Allow Introspection Endpoint"]</label>
+    <div class="mb-3">
+        <div class="form-check">
+             <input type="checkbox" class="form-check-input" asp-for="AllowIntrospectionEndpoint" checked="@Model.AllowIntrospectionEndpoint">
+            <label class="form-check-label" asp-for="AllowIntrospectionEndpoint">@T["Allow Introspection Endpoint"]</label>
         </div>
     </div>
-    <div class="form-group">
-        <div class="custom-control custom-checkbox">
-             <input type="checkbox" class="custom-control-input" asp-for="AllowRevocationEndpoint" checked="@Model.AllowRevocationEndpoint">
-            <label class="custom-control-label" asp-for="AllowRevocationEndpoint">@T["Allow Revocation Endpoint"]</label>
+    <div class="mb-3">
+        <div class="form-check">
+             <input type="checkbox" class="form-check-input" asp-for="AllowRevocationEndpoint" checked="@Model.AllowRevocationEndpoint">
+            <label class="form-check-label" asp-for="AllowRevocationEndpoint">@T["Allow Revocation Endpoint"]</label>
         </div>
     </div>
 
