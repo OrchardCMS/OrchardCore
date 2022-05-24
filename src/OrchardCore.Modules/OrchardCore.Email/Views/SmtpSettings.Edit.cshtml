@@ -13,10 +13,10 @@
 <div class="mb-3" asp-validation-class-for="DeliveryMethod">
     <label asp-for="DeliveryMethod">@T["Delivery method"]</label>
     <select asp-for="DeliveryMethod" class="form-control">
-        <option value="@SmtpDeliveryMethod.Network" selected="@(SmtpDeliveryMethod.Network == Model.DeliveryMethod)" data-target="#@Html.Id("NetworkOptions")">
+        <option value="@SmtpDeliveryMethod.Network" selected="@(SmtpDeliveryMethod.Network == Model.DeliveryMethod)" data-bs-target="#@Html.Id("NetworkOptions")">
             @T["Network"]
         </option>
-        <option value="@SmtpDeliveryMethod.SpecifiedPickupDirectory" selected="@(SmtpDeliveryMethod.SpecifiedPickupDirectory == Model.DeliveryMethod)" data-target="#@Html.Id("SpecifiedPickupDirectoryOptions")">
+        <option value="@SmtpDeliveryMethod.SpecifiedPickupDirectory" selected="@(SmtpDeliveryMethod.SpecifiedPickupDirectory == Model.DeliveryMethod)" data-bs-target="#@Html.Id("SpecifiedPickupDirectoryOptions")">
             @T["Specified pickup directory"]
         </option>
     </select>
@@ -25,7 +25,7 @@
 </div>
 
 <div class="mb-4" id="@Html.Id("DeliveryMethodOptions")">
-    <div class="collapse" id="@Html.Id("NetworkOptions")" data-parent="#@Html.Id("DeliveryMethodOptions")">
+    <div class="collapse" id="@Html.Id("NetworkOptions")" data-bs-parent="#@Html.Id("DeliveryMethodOptions")">
 
         <div class="card">
             <div class="card-body">
@@ -135,7 +135,7 @@
         </div>
     </div>
 
-    <div class="collapse" id="@Html.Id("SpecifiedPickupDirectoryOptions")" data-parent="#@Html.Id("DeliveryMethodOptions")">
+    <div class="collapse" id="@Html.Id("SpecifiedPickupDirectoryOptions")" data-bs-parent="#@Html.Id("DeliveryMethodOptions")">
         <div class="card">
             <div class="card-body">
                 <h2 class="card-title">@T["Specified pickup directory delivery options"]</h2>
@@ -156,7 +156,7 @@
         function showSelectedCollapse() {
             var val = $(this).val();
             var option = $("option", this).filter(function (i, el) { return $(el).val() == val; });
-            var target = option.data("target");
+            var target = option.data("bs-target");
             if (target) {
                 $(target).collapse("show");
             }
