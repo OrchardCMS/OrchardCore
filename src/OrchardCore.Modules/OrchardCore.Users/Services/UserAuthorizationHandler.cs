@@ -48,7 +48,7 @@ namespace OrchardCore.Users.Services
                 return;
             }
 
-            if (!String.Equals(requirement.Permission.Name, Permissions.ManageUsers.Name, StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(requirement.Permission.Name, Permissions.EditUsers.Name, StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

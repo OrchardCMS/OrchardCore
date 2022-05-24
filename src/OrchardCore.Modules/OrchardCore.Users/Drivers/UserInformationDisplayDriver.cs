@@ -67,8 +67,8 @@ namespace OrchardCore.Users.Drivers
                 return _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserInformation);
             }
 
-            // Otherwise we require permission to manage this users information.
-            return _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user);
+            // Otherwise we require permission to edit this users information.
+            return _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.EditUsers, user);
         }
 
         private Task<bool> AuthorizeEditAsync(User user)
@@ -79,8 +79,8 @@ namespace OrchardCore.Users.Drivers
                 return _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserInformation);
             }
 
-            // Otherwise we require permission to manage this users information.
-            return _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ViewUsers, user);
+            // Otherwise we require permission to edit this users information.
+            return _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.EditUsers, user);
         }
     }
 }

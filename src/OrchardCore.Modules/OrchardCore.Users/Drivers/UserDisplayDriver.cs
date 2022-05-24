@@ -25,7 +25,7 @@ namespace OrchardCore.Users.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
-        private IEnumerable<IUserEventHandler> _userEventHandlers;
+        private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
         private readonly ILogger _logger;
         private readonly IHtmlLocalizer H;
 
@@ -62,7 +62,7 @@ namespace OrchardCore.Users.Drivers
                 model.EmailConfirmed = user.EmailConfirmed;
                 model.IsEnabled = user.IsEnabled;
                 // The current user cannot disable themselves, nor can a user without permission to manage this user disable them.
-                model.IsEditingDisabled = !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user) ||
+                model.IsEditingDisabled = !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.EditUsers, user) ||
                     String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase);
             })
             .Location("Content:1.5")
@@ -72,7 +72,7 @@ namespace OrchardCore.Users.Drivers
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
             // To prevent html injection when updating the user must meet all authorization requirements.
-            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user))
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.EditUsers, user))
             {
                 // When the user is only editing their profile never update this part of the user.
                 return Edit(user);
@@ -85,7 +85,7 @@ namespace OrchardCore.Users.Drivers
                 return await EditAsync(user, context);
             }
 
-            var isEditingDisabled = !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user) ||
+            var isEditingDisabled = !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.EditUsers, user) ||
                     String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase);
 
             if (!isEditingDisabled && !model.IsEnabled && user.IsEnabled)

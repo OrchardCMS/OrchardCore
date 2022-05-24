@@ -224,7 +224,7 @@ namespace OrchardCore.Users.Controllers
             // Check a dummy user account to see if the current user has permission to manage it.
             var authUser = new User();
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, authUser))
+            if (!await CanEditContextAsync(authUser))
             {
                 return Forbid();
             }
@@ -233,11 +233,11 @@ namespace OrchardCore.Users.Controllers
             {
                 var checkedUsers = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync();
 
-                // Bulk actions require the ManageUsers permission on all the checked users.
+                // Bulk actions require the EditUsers permission on all the checked users.
                 // To prevent html injection we authorize each user before performing any operations.
                 foreach (var user in checkedUsers)
                 {
-                    if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
+                    if (!await CanEditContextAsync(user))
                     {
                         return Forbid();
                     }
@@ -304,7 +304,7 @@ namespace OrchardCore.Users.Controllers
         {
             var user = new User();
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewUsers, user))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditUsers, user))
             {
                 return Forbid();
             }
@@ -320,7 +320,7 @@ namespace OrchardCore.Users.Controllers
         {
             var user = new User();
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewUsers, user))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditUsers, user))
             {
                 return Forbid();
             }
@@ -347,24 +347,19 @@ namespace OrchardCore.Users.Controllers
         public async Task<IActionResult> Edit(string id, string returnUrl)
         {
             // When no id is provided we assume the user is trying to edit their own profile.
-            var editingOwnUser = false;
             if (String.IsNullOrEmpty(id))
             {
                 id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnUserInformation))
-                {
-                    return Forbid();
-                }
-                editingOwnUser = true;
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
+
             if (user == null)
             {
                 return NotFound();
             }
 
-            if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, Permissions.ViewUsers, user))
+            if (!await CanEditContextAsync(user))
             {
                 return Forbid();
             }
@@ -382,14 +377,11 @@ namespace OrchardCore.Users.Controllers
         {
             // When no id is provided we assume the user is trying to edit their own profile.
             var editingOwnUser = false;
+            // When no id is provided we assume the user is trying to edit their own profile.
             if (String.IsNullOrEmpty(id))
             {
                 editingOwnUser = true;
                 id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnUserInformation))
-                {
-                    return Forbid();
-                }
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
@@ -398,7 +390,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, Permissions.ViewUsers, user))
+            if (!await CanEditContextAsync(user))
             {
                 return Forbid();
             }
@@ -438,15 +430,13 @@ namespace OrchardCore.Users.Controllers
 
                 return RedirectToAction(nameof(Edit));
             }
-            else
-            {
-                if (!String.IsNullOrEmpty(returnUrl))
-                {
-                    return this.LocalRedirect(returnUrl, true);
-                }
 
-                return RedirectToAction(nameof(Index));
+            if (!String.IsNullOrEmpty(returnUrl))
+            {
+                return this.LocalRedirect(returnUrl, true);
             }
+
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -459,7 +449,13 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
+            if (IsCurrentUser(user.UserName))
+            {
+                // prevent self-delete
+                return Forbid();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteUsers, user))
             {
                 return Forbid();
             }
@@ -494,7 +490,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
+            if (!await CanEditContextAsync(user))
             {
                 return Forbid();
             }
@@ -514,7 +510,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
+            if (!await CanEditContextAsync(user))
             {
                 return Forbid();
             }
@@ -537,7 +533,7 @@ namespace OrchardCore.Users.Controllers
         [HttpPost]
         public async Task<IActionResult> Unlock(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditUsers))
             {
                 return Forbid();
             }
@@ -569,6 +565,23 @@ namespace OrchardCore.Users.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task<bool> CanEditContextAsync(User user)
+        {
+            if (await _authorizationService.AuthorizeAsync(User, Permissions.EditUsers, user))
+            {
+                return true;
+            }
+
+            var manageOwn = await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnUserInformation, user);
+
+            return IsCurrentUser(user.UserName) && manageOwn;
+        }
+
+        private bool IsCurrentUser(string username)
+        {
+            return username == User.Identity.Name;
         }
     }
 }

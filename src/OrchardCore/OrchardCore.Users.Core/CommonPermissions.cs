@@ -12,12 +12,22 @@ namespace OrchardCore.Users
         public static readonly Permission ManageUsers = new Permission("ManageUsers", "Manage Users", true);
 
         /// <summary>
+        /// Allow the user to Edit other users.
+        /// </summary>
+        public static readonly Permission EditUsers = new Permission("EditUsers", "Edit Other Users", new[] { ManageUsers }, true);
+
+        /// <summary>
+        /// Allow the user to Delete other users.
+        /// </summary>
+        public static readonly Permission DeleteUsers = new Permission("DeleteUsers", "Delete Other Users", new[] { ManageUsers }, true);
+
+        /// <summary>
         /// View users only allows listing or viewing a users profile.
         /// </summary>
-        public static readonly Permission ViewUsers = new Permission("View Users", "View Users", new[] { ManageUsers });
+        public static readonly Permission ViewUsers = new Permission("View Users", "View All Users", new[] { ManageUsers, EditUsers, DeleteUsers });
 
         // Dynamic permission template.
-        private static readonly Permission ManageUsersInRole = new Permission("ManageUsersInRole_{0}", "Manage Users in Role - {0}", new[] { ManageUsers });
+        private static readonly Permission ManageUsersInRole = new Permission("ManageUsersInRole_{0}", "Manage Users in Role - {0}", new[] { EditUsers });
 
         public static Permission CreatePermissionForManageUsersInRole(string name)
             => new Permission(
