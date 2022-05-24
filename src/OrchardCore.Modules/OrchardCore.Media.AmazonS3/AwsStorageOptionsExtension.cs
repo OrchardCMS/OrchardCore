@@ -49,6 +49,7 @@ public static class AwsStorageOptionsExtension
 
         options.BucketName = section.GetValue(nameof(options.BucketName), String.Empty);
         options.BasePath = section.GetValue(nameof(options.BasePath), String.Empty);
+        options.CreateBucket = section.GetValue(nameof(options.CreateBucket), false);
 
         var credentials = section.GetSection("Credentials");
         if (credentials.Exists())

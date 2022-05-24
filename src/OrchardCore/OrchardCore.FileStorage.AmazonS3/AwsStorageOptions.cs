@@ -16,6 +16,11 @@ public class AwsStorageOptions
     public string BasePath { get; set; }
 
     /// <summary>
+    /// Indicates if bucket should be created on module startup
+    /// </summary>
+    public bool CreateBucket { get; set; }
+
+    /// <summary>
     /// Gets or sets the credentials.
     /// <remarks>
     /// Credentials section can be set directly via configuration or get loaded from the configured ProfileName.

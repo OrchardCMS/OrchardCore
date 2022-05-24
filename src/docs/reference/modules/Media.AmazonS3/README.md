@@ -44,6 +44,8 @@ In case you are hosting Orchard Core inside AWS (EC2, EKS, etc.) you need to con
 
 In case you are hosting Orchard Core outside of AWS, you should fill the `Credentials` section or if you have AWS CLI installed and configured on your server you may specify only configured profile name (`default` if a profile name was not chosen during AWS CLI configuration).
 
+You can find region endpoints in the [Official AWS S3 Documentation](https://docs.aws.amazon.com/general/latest/gr/s3.html), see Region column. For example for Frankfurt region you should use `eu-central-1` 
+
 ## AWS S3 Bucket Configuration
 
 By default, AWS 3S Bucket has limitations for newly uploaded files. If you want media files to be available from the outside of AWS, you should set up your bucket permissions.
@@ -64,6 +66,55 @@ The simplest way of doing it is to add a policy:
 }
 ```
 After this policy will be added to your bucket permissions all newly added files will have Read permission and will be available from the outside of the Amazon Cloud.
+
+## Templating Configuration
+
+Optionally you may use liquid templating to further configure Amazon Media Storage, perhaps creating a bucket per tenant,
+or a single bucket with a base path per tenant.
+
+The `ShellSettings` property is made available to the liquid template.
+The `BucketName` property and the `BasePath` property are the only templatable properties.
+
+!!! note
+When templating the `BucketName`  using  `{{ ShellSettings.Name }}`, the tenant's name will be automatically lowercased, however, you must also make sure the `BucketName` conforms to other Amazon S3 naming conventions as set out in Amazon's documentation.
+
+### Configuring a bucket per tenant.
+
+```json
+{
+    "OrchardCore": {
+        "OrchardCore_Media_Amazon_S3": {
+            "BucketName": "{{ ShellSettings.Name }}-media",
+            "Credentials": {
+                "SecretKey": "",
+                "AccessKeyId": "",
+                "RegionEndpoint": ""
+            },
+            "BasePath": "/media",
+            "ProfileName": ""
+        }
+    }
+}
+```
+
+### Configuring a single bucket, with a base folder per tenant.
+
+```json
+{
+    "OrchardCore": {
+        "OrchardCore_Media_Amazon_S3": {
+            "BucketName": "",
+            "Credentials": {
+                "SecretKey": "",
+                "AccessKeyId": "",
+                "RegionEndpoint": ""
+            },
+            "BasePath": "{{ ShellSettings.Name }}/Media",
+            "ProfileName": ""
+        }
+    }
+}
+```
 
 ## Media Cache
 

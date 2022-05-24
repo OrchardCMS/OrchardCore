@@ -27,18 +27,17 @@ public class Startup : Modules.StartupBase
 {
     private readonly ILogger _logger;
     private readonly IShellConfiguration _configuration;
-    private readonly IWebHostEnvironment _webHostEnvironment;
 
     public Startup(IShellConfiguration configuration,
-        IWebHostEnvironment webHostEnvironment,
         ILogger<Startup> logger)
-        => (_configuration, _webHostEnvironment, _logger)
-            = (configuration, webHostEnvironment, logger);
+        => (_configuration, _logger)
+            = (configuration, logger);
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        var storeOptions = new AwsStorageOptions().BindConfiguration(_configuration);
+        services.AddTransient<IConfigureOptions<AwsStorageOptions>, AwsStorageOptionsConfiguration>();
 
+        var storeOptions = new AwsStorageOptions().BindConfiguration(_configuration);
         var validationErrors = storeOptions.Validate().ToList();
         var stringBuilder = new StringBuilder();
 
@@ -91,7 +90,7 @@ public class Startup : Modules.StartupBase
 
             services.AddSingleton<IAmazonS3>(serviceProvider =>
             {
-                var options = storeOptions;
+                var options = serviceProvider.GetRequiredService<IOptions<AwsStorageOptions>>().Value;
                 if (options.Credentials == null)
                 {
                     return new AmazonS3Client();
@@ -148,6 +147,8 @@ public class Startup : Modules.StartupBase
             }));
 
             services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
+
+            services.AddScoped<IModularTenantEvents, CreateMediaS3BucketEvent>();
         }
     }
 
