@@ -155,7 +155,7 @@ nav:
           - Media:
               - Media: docs/reference/modules/Media/README.md
               - Media Slugify: docs/reference/modules/Media.Slugify/README.md
-              - Media AmazonS3: docs/reference/modules/Media.AmazonS3/README.md
+              - Media Amazon S3: docs/reference/modules/Media.AmazonS3/README.md
               - Media Azure: docs/reference/modules/Media.Azure/README.md
           - ReCaptcha: docs/reference/modules/ReCaptcha/README.md
           - Resources: docs/reference/modules/Resources/README.md

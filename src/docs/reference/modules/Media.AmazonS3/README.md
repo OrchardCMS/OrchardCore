@@ -1,4 +1,4 @@
-# Amazon Media Storage (`OrchardCore.Media.AmazonS3`)
+# Amazon S3 Media Storage (`OrchardCore.Media.AmazonS3`)
 
 The Amazon Media Storage feature enables support for storing assets in Amazon S3 Bucket.
 
