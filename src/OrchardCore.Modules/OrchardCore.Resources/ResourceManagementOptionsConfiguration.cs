@@ -16,7 +16,7 @@ namespace OrchardCore.Resources
 
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         // Versions
-        private const string codeMirrorVersion = "5.65.3";
+        private const string codeMirrorVersion = "5.65.4";
         private const string monacoEditorVersion = "0.33.0";
         // URLs
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
@@ -226,7 +226,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/codemirror.min.js", "~/OrchardCore.Resources/Scripts/codemirror/codemirror.js")
                 .SetCdn(codeMirrorUrl + "codemirror.min.js", codeMirrorUrl + "codemirror.js")
-                .SetCdnIntegrity("sha512-/8pAp30QGvOa8tNBv7WmWiPFgYGOg2JdVtqI8vK+xZsqWHnNd939v9s+zJHXZcJe5wPD44D66zz+CLTD3KacYA==", "sha512-jXWXS+auGy9bxFH/fOBrSH1Dz/PK2CKtEw54+jX1Vu5Ap8wjsnUZatXDkIz0UJUqx4MXLYoBXuaoMy4VA4zNRQ==")
+                .SetCdnIntegrity("sha512-2cmTnLqUwlJs8HnJF3SvFKcsdRf65Ho7wof0IeydYXnyWCiVhaR6u2zTD/BFS+2mIywyiUscY1Er54SS+OJjEw==", "sha512-iFw5pXwoMhzpQmqSeNrzsHMbctY7wGlBhWWRqWWnfdwqHlS26S+uXsd75kjpDW3Vk/ydv1EhyUozlwl9SzBi0w==")
                 .SetVersion(codeMirrorVersion);
 
             manifest
@@ -304,7 +304,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror-mode-css")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/mode/css/css.min.js", "~/OrchardCore.Resources/Scripts/codemirror/mode/css/css.js")
                 .SetCdn(codeMirrorUrl + "mode/css/css.min.js", codeMirrorUrl + "mode/css/css.js")
-                .SetCdnIntegrity("sha512-h6AytRzmMK5vOf+hKrNYF01098/wg5Mnez3okGsZgNX1o75gXDzMmM7AB1adlMRdOEfo/A6uwC8U7Kx/Y6xjFQ==", "sha512-ir5//5EF9wtIiuaPj7Sv0ubB8Jb5vx57hLKE2u2A2VZlt4RDTYDgJVue9dMPqKCQ4PM9V3jqRjm3ExA9mHFa9A==")
+                .SetCdnIntegrity("sha512-oikhYLgIKf0zWtVTOXh101BWoSacgv4UTJHQOHU+iUQ1Dol3Xjz/o9Jh0U33MPoT/d4aQruvjNvcYxvkTQd0nA==", "sha512-LlgRxEeQlqyccHYlPxviqF8q+qHuHnl9oeGFbl+vq35xRHKf4y27cB4vC8PE4g9Dxy350Em/KZ0Z2g5ncSRSRQ==")
                 .SetVersion(codeMirrorVersion);
 
             manifest
