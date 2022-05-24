@@ -364,16 +364,6 @@ Our placement would look like this (note the `_Summary` suffix to ContentPart na
 ```
 This setup would then show your template  (e.g. `GalleryPart.cshtml` or `GalleryPart.Summary.cshtml`) where DisplayAsync was called.
 
-Alternatively, if you find this complicated for dynamic parts, you can display your dynamic part like so:
-
-=== Content-Product.Summary.html
-``` html
-@await DisplayAsync(Model.Content.GalleryPart)
-```
-
-!!! note
-    Directly displaying parts like shown above without placement is a bit hacky. If for example we would call both `@await DisplayAsync(Model.Content.GalleryPart)` and `@await DisplayAsync(Model.Content)` inside the same template, we would expect both calls to show gallery. However, only the first call will show the gallery, and the other would ignore the gallery shape (since it's already rendered).
-
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/h0lZMQkUApo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
