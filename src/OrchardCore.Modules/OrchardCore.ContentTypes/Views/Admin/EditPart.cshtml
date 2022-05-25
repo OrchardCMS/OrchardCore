@@ -16,14 +16,14 @@
 
     @if (Model.Editor.Shortcuts != null)
     {
-        <div class="form-group">
+        <div class="mb-3">
             @await DisplayAsync(Model.Editor.Shortcuts)
         </div>
     }
 
     @await DisplayAsync(Model.Editor)
 
-    <div class="form-group">
+    <div class="mb-3">
         <h3>@T["Fields"]</h3>
 
         @if (Model.PartDefinition != null)
@@ -32,8 +32,8 @@
                 @foreach (var field in orderedFields)
                 {
                     <li class="list-group-item">
-                        <div class="properties">
-                            <div class="related">
+                        <div class="w-100">
+                            <div class="float-end">
                                 <a asp-route-action="EditField" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
                                 <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
@@ -45,11 +45,11 @@
             </ul>
         }
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <a asp-route-action="AddFieldTo" asp-route-id="@Model.PartDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
         <button class="btn btn-danger delete" type="submit" name="submit.Delete" value="Delete" data-url-af="RemoveUrl">@T["Delete"]</button>
     </div>

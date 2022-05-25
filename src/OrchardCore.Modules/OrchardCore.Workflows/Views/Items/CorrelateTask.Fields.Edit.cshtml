@@ -1,7 +1,7 @@
 @using OrchardCore.Workflows.ViewModels;
 @model CorrelateTaskViewModel
 
-<div class="form-group" asp-validation-class-for="Value">
+<div class="mb-3" asp-validation-class-for="Value">
     <label asp-for="Value">@T["Value"]</label>
     <input  type="hidden" asp-for="Value" class="form-control "/>
     <div id="@Html.IdFor(x => x.Value)_editor" asp-for="Text" class="form-control"></div>
