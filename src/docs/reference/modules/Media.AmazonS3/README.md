@@ -49,11 +49,13 @@ You can find region endpoints in the [Official AWS S3 Documentation](https://doc
 
 ## AWS S3 Bucket Configuration
 
-If `CreateBucket` was configured as `true` and `BucketName` is following official [Bucket naming rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html), than new bucket will be created.
-New bucket will be created without [Access Control Lists](https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html) due to security reasons, you may add needed ACLs manually:
-1) Open you bucket
-2) Go to the Permissions tab
-3) Edit `Block public access` 
+If `CreateBucket` was configured as `true` and `BucketName` follows official [Bucket naming rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html), then a new bucket will be created.
+The new bucket will be created without [Access Control Lists](https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html) due to security reasons. If you create the bucket manually then you need to do it with ACLs enabled. When using a previously created bucket, you may need to configure ACLs manually:
+
+1. Open your bucket.
+2. Go to the Permissions tab.
+3. Edit "Block public access".
+4. Tick "Block all public access".
 
 ### S3 Bucket policies
 By default, AWS 3S Bucket has limitations for newly uploaded files. If you want media files to be available from the outside of AWS, you should set up your bucket permissions.
