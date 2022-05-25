@@ -17,12 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="YesSql.Abstractions" Version="3.0.12" />
+    <ProjectReference Include="..\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+    <PackageReference Include="YesSql.Abstractions" />
   </ItemGroup>
 
 </Project>

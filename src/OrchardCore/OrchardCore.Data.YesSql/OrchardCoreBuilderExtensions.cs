@@ -33,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
         public static OrchardCoreBuilder AddDataAccess(this OrchardCoreBuilder builder)
         {
-            _ = builder.ConfigureServices(services =>
+            builder.ConfigureServices(services =>
             {
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
@@ -49,7 +49,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 // Configuring data access
 
-                _ = services.AddSingleton(sp =>
+                services.AddSingleton(sp =>
                 {
                     var shellSettings = sp.GetService<ShellSettings>();
 
