@@ -17,7 +17,7 @@ The following configuration values are used by default and can be customized:
 ```json
 {
    "OrchardCore": {
-       "OrchardCore_Media_Amazon_S3": {
+       "OrchardCore_Media_AmazonS3": {
            // Your AWS S3 Bucket name
            "BucketName": "",
            // This section needed only if Orchard will be hosted not in the AWS Cloud
@@ -91,7 +91,7 @@ The `BucketName` property and the `BasePath` property are the only templatable p
 ```json
 {
     "OrchardCore": {
-        "OrchardCore_Media_Amazon_S3": {
+        "OrchardCore_Media_AmazonS3": {
             "BucketName": "{{ ShellSettings.Name }}-media",
             "Credentials": {
                 "SecretKey": "",
@@ -110,7 +110,7 @@ The `BucketName` property and the `BasePath` property are the only templatable p
 ```json
 {
     "OrchardCore": {
-        "OrchardCore_Media_Amazon_S3": {
+        "OrchardCore_Media_AmazonS3": {
             "BucketName": "",
             "Credentials": {
                 "SecretKey": "",

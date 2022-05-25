@@ -39,7 +39,7 @@ public static class AwsStorageOptionsExtension
 
     public static AwsStorageOptions BindConfiguration(this AwsStorageOptions options, IShellConfiguration shellConfiguration)
     {
-        var section = shellConfiguration.GetSection("OrchardCore_Media_Amazon_S3");
+        var section = shellConfiguration.GetSection("OrchardCore_Media_AmazonS3");
 
         if (section == null)
         {
