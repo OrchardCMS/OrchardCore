@@ -1,6 +1,6 @@
 Orchard includes a processing pipeline for client-side assets (typically scripts and stylesheets) which is used to perform front-end development workflow tasks such as transpilation, minification and bundling of client-side assets in both core projects and extensions (i.e. modules and themes). Many of the built-in modules and themes in Orchard use this pipeline to process client-side assets, and you can enable your own extensions to use it as well.
 
-## Overview
+# Overview
 
 The client-side asset pipeline is powered by [Gulp](http://gulpjs.com), a popular open-source task runner based on [Node.js](https://nodejs.org) that can be used to automate a wide variety of tasks in a development workflow. The pipeline defines a set of Gulp *tasks* that can be executed by Gulp using either the command line or using the **Task Runner Explorer** tool window in Visual Studio 2015 or later.
 
@@ -9,7 +9,7 @@ Physically, the client-side asset pipeline consists of two files in the Orchard 
 - `src/Package.json` contains information about the Node packages required by the pipeline. This file tells the Node package manager (NPM) which packages it needs to download and install for the pipeline to function.
 - `src/Gulpfile.js` contains JavaScript code that defines a set of Gulp tasks and their implementation logic.
 
-In Visual Studio you will find these files in **Solution Explorer** in a solution folder named `Solution Items/Gulp`:
+In Visual Studio you will find these files in **Solution Explorer** in a solution folder named `Solution Items`:
 
 ![](images/solution-items.png)
 
@@ -21,15 +21,15 @@ There are several reasons why the pipeline has been implemented at the solution 
 
 The client-side asset pipeline is not configured by default to be invoked automatically when opening or building Orchard. To minimize build time and make it as easy as possible to get started with Orchard, all built-in modules and themes in Orchard are kept in source control with their processed output files included. This means you don't have to activate and run the client-side asset pipeline to build or run Orchard out of the box. You only need to run the client-side asset pipeline if you make changes to these assets, or wish to use it to process assets in your own extensions.
 
-## Getting started
+# Getting started
 
-### Installing prerequisites
+## Installing prerequisites
 
 The client-side asset pipeline requires Node.js to be installed. If you are using Visual Studio 2015 or later, Node.js is typically already installed as part of Visual Studio. If you are not using Visual Studio, or if you selected not to include Node.js when installing Visual Studio, you will need to install Node.js manually from https://nodejs.org.
 
 Next you will need to use NPM to install all the packages the client-side asset pipeline needs, including Gulp itself. Using the command line, navigate to the Orchard solution folder and execute the command `npm install`, which will install all dependencies referenced in the `Package.json`file. In Visual Studio 2015 or later, you can instead simply open the `Package.json` file and save it without making any changes - this will trigger an automatic `npm install` behind the scenes.
 
-### Executing tasks
+## Executing tasks
 
 There are three different Gulp tasks that you can invoke to execute the pipeline in different ways.
 
@@ -41,14 +41,14 @@ Note: These tasks also take the asset manifest files themselves into considerati
 
 The way you typically execute the Gulp tasks depends on whether you are using Visual Studio or not.
 
-#### Using the command line
+### Using the command line
 
 1. Make sure you have Node.js installed and added to your `PATH` varable.
 2. Make sure you have installed all the required Node.js packages using the `npm install` command as described above.
 3. Navigate to the Orchard solution folder where the file `Gulpfile.js` is located.
 4. Execute one of the commands `gulp build`, `gulp rebuild` and `gulp watch` to execute the corresponding Gulp task.
 
-#### Using Visual Studio
+### Using Visual Studio
 
 Visual Studio 2015 and later comes with a built-in tool window named **Task Runner Explorer** that can be used to execute NPM tasks as well as tasks from different task runners such as Gulp and Grunt among others.
 
@@ -68,7 +68,7 @@ When Task Runner Explorer has correctly parsed the Gulp file you will see the li
 
 You can now double-click one of the tasks to execute it.
 
-#### Binding tasks to Visual Studio events
+### Binding tasks to Visual Studio events
 
 Task Runner Explorer also has the ability to "bind" tasks to be executed automatically in response to Visual Studio solution events. Orchard is not preconfigured with any such bindings because all assets in the original code base are already processed and their outputs are included in source control, but it can be useful to configure these bindings temporarily while developing your own client-side assets or while working on modifications to the ones in Orchard.
 
@@ -84,11 +84,11 @@ Another common scenario is binding the **watch** task to the **Project Open** so
 
 Note: It's important to be aware that task bindings are stored in a specially formatted comment in the beginning of the Gulp file, so when you configure task bindings you are effectively making a change to one of the core files belonging to the Orchard code base which may be overwritten if you later choose to update your code base to a newer version of Orchard.
 
-## Using the pipeline for your own module or theme
+# Using the pipeline for your own module or theme
 
 You typically don't have to execute any of the tasks in the client-side asset pipeline unless you are either making changes to Orchard itself or creating your own custom extensions and wish to utilize the pipeline to process your own client-side assets. This section explains how to enable the pipeline for your own extension.
 
-### Adding an asset manifest file
+## Adding an asset manifest file
 
 The first step is to add an *asset manifest file* to your extension. This asset manifest file is a simple JSON document that declares one or more *asset groups* to be processed by the pipeline. Each asset group specifies a set of *input files* in your extension (such as `.less`, `.scss`, `.css`, `.ts` or `.js` files) along with an *output file* and (optionally) one or more options to influence the processing.
 
@@ -117,7 +117,7 @@ All input and output paths are relative to the extension root folder. However th
 
 Using the asset pipeline is completely optional. If you don't add an `Asset.json` manifest file in the root folder of your extension, the client-side asset pipeline will simply ignore your extension.
 
-### Basic example (single input file)
+## Basic example (single input file)
 
 The following example takes the LESS stylesheet `Assets/Styles.less` in your extension and transpiles it into the output file `Styles/Styles.css`:
 
@@ -150,7 +150,7 @@ Once these output asset files have been generated you can reference them from Ra
 
 Note: The generated output asset files will not be automatically added to your extension project (`.csproj`) file. If you wish to keep the output asset files in source control, you will need to manually include them in your project using Solution Explorer after they have been generated for the first time. See the section on advanced scenarios below for some pointers on when you may or may not want to do this.
 
-### Multiple input files
+## Multiple input files
 
 You can also specify multiple inputs in the same asset group:
 
@@ -169,7 +169,7 @@ You can also specify multiple inputs in the same asset group:
 
 This works exactly like the basic example above with the single input, with the addition that all three inputs will be bundled into the output files `Styles.css` and `Styles.min.css`.
 
-### Globs (wildcards)
+## Globs (wildcards)
 
 The client-side asset pipeline also supports using [glob wildcard patterns](https://www.npmjs.com/package/glob#glob-primer) to include multiple input assets without having to specify each one individually.
 
@@ -186,7 +186,7 @@ The following example processes all files with a `.js` extension in the `Assets`
 ]
 ```
 
-### Separate output files for each input file
+## Separate output files for each input file
 
 In many cases you will want to process many input files in the exact same way but keep them in separate output files. You could do this by declaring a separate asset group for each pair of input/output files. However this can be extremely tedious and error prone to write, and even more so to maintain over time as you add or remove assets to your extention, especially if you have a large number of asset files.
 
@@ -205,7 +205,7 @@ The pipeline makes this easier by allowing you to use the `@` characted instead 
 
 In this example, all TypeScript files in the `Assets/Moment/Localizations` are processed and each generated into a separate `.js` file with the same name in the `Scripts/Localizations` folder. For example, assuming the `Assets/Moment/Localizations` folder contains `en-GB.ts`, `fr-FR.ts` and `sv-SE.ts`, then the output `Scripts/Localizations` folder would contain the resulting files `en-GB.js`, `en-GB.min.js`, `fr-FR.js`, `fr-FR.min.js`, `sv-SE.js` and `sv-SE.min.js`. If localization files are added or removed over time, the asset group is implicitly redefined accordingly.
 
-### Multiple asset groups
+## Multiple asset groups
 
 You can define multiple asset groups in the same asset manifest, as in the following example:
 
@@ -234,7 +234,7 @@ You can define multiple asset groups in the same asset manifest, as in the follo
 ]
 ```
 
-### Adding additional files to be watched
+## Adding additional files to be watched
 
 As described above, the **watch** task can be used to continuously monitor input asset files for changes and rebuild affected asset groups automatically for a smooth and efficient local dev/test workflow.
 
@@ -266,7 +266,7 @@ In these cases you can use the `watch` property in an asset group to specify an 
 
 Note that glob wildcards are supported.
 
-### Supported asset file formats
+## Supported asset file formats
 
 The client-side asset pipelines can process either *stylesheet assets* or *script assets*.
 
@@ -274,7 +274,7 @@ An asset group can only be used to process one of these categories, and must hav
 
 For example you can specify both `.less` and `.css` input assets in a group targeted for a `.css` output file and you can specify both `.ts` and `.js` input assets in a group targeted for a `.js` output file, but you cannot mix and match; if you try the asset pipeline will throw an error.
 
-#### Stylesheet assets
+### Stylesheet assets
 
 The following file types are supported as stylesheet input assets:
 
@@ -293,7 +293,7 @@ The following tasks are performed on stylesheet assets:
 * Bundling (unless disabled)
 * Minification
 
-#### Script assets
+### Script assets
 
 The following file types are supported as script input assets:
 
@@ -311,27 +311,27 @@ The following tasks are performed on script assets:
 
 Note: All input script assets are processed through the TypeScript transpiler, also plain JavaScript `.js` files. This means the asset pipeline will throw errors for obvious syntactical errors in plain JavaScript files. This should generally be considered an advantage as JavaScript errors can be caught at build time rather than at runtime.
 
-### Supported options
+## Supported options
 
 The following is an exhaustive list of all possible properties that can be specified in an asset group in the asset manifest file.
 
-#### `inputs` (required)
+### `inputs` (required)
 
 An array of input files to include in the asset group. Paths are relative to the asset manifest file. Glob wildcards are supported. Single entries must be wrapped in an array.
 
-#### `output` (required)
+### `output` (required)
 
 The output file to be generated by the asset group. The path is relative to the asset manifest file. All inputs will be bundled into the specified output file unless `@` is specified as the base filename, eg `Scripts/@.css`, to skip bundling. A minified version with a `.min` suffix will be automatically generated also.
 
-#### `watch`
+### `watch`
 
 An array of additional files to be monitored for changes. Paths are relative to the asset manifest file. Glob wildcards are supported. Single entries must be wrapped in an array.
 
-#### `generateSourceMaps`
+### `generateSourceMaps`
 
 `true` to emit inline source maps into non-minified output files, `false` to disable source maps. Default is `true`.
 
-#### `flatten`
+### `flatten`
 
 By default, when using a glob to specify input assets and using the `@` character in the output file path to bypass bundling, output files are generated in the same relative location as their corresponding input assets relative to the first glob in the input pattern. For example, assuming you have the following input assets:
 
@@ -363,7 +363,7 @@ This may not always be the desired behavior. The `flatten` property can be set t
 * `Styles/Login.css`
 * `Styles/Login.min.css`
 
-#### `separateMinified`
+### `separateMinified`
 
 By default, minified output files are generated alongside their non-minified siblings with a `.min` filename extension:
 
@@ -375,7 +375,7 @@ In some cases, such as when using a runtime module loader, it can be useful to p
 * `Styles/SomeStyles.css`
 * `Styles/min/SomeStyles.css`
 
-#### `typeScriptOptions`
+### `typeScriptOptions`
 
 Any options you wish to pass through to the TypeScript transpiler (only applicable for script asset groups). The following default values are specified by the asset pipeline unless overridden in this property:
 
@@ -387,9 +387,9 @@ Any options you wish to pass through to the TypeScript transpiler (only applicab
 }
 ```
 
-## Advanced scenarios
+# Advanced scenarios
 
-### Excluding output files from source control
+## Excluding output files from source control
 
 When developing an extension intended for redistribution and used by third parties, it is recommended that generated output files be added to `.csproj` files of the containing extension and included in source control. All the built-in projects in the Orchard code base employ this methods. This is so that consumers can use your extension without having to install Node.js and execute the Gulp tasks in the client-side asset pipeline to generate the needed output asset files first.
 
@@ -402,7 +402,7 @@ This approach has a couple of advantages:
 
 When using this approach, the `Styles` and `Scripts` folders in your extension will always remain empty in Solution Explorer although they will contain the output files on disk, and you will typically configure a Gulp task binding to ensure that client-side assets are always built when the solution is built in Visual Studio. If using an automated build system you will also typically add a step to your build script to ensure the **build** or **rebuild** task is executed as part of the build.
 
-### Including custom extension folders
+## Including custom extension folders
 
 Version 1.10 of Orchard introduced the ability to load extensions from other folders besides the `Orchard.Web/Modules` and `Orchard.Web/Themes` folders. If your extension is stored and loaded from such a custom location, the client-side asset pipeline will not automatically detect your asset manifest. This is because, by default, it only looks for `Assets.json` files in folders under these locations:
 
@@ -428,6 +428,6 @@ assetManifestPaths = assetManifestPaths.concat(customThemePaths);
    
 The Orchard development team is investigating ways to automate this process.
 
-## Evolution of the client-side asset pipeline
+# Evolution of the client-side asset pipeline
 
 For those interested in the history behind the client-side asset pipeline, you can find the initial discussion with reasons for its development and proposed solutions in [issue #5450](https://github.com/OrchardCMS/Orchard/issues/5450).
