@@ -40,7 +40,7 @@ namespace OrchardCore.Users.Drivers
             IEnumerable<IUserEventHandler> userEventHandlers,
             IAuthorizationService authorizationService,
             IHtmlLocalizer<UserDisplayDriver> htmlLocalizer,
-            IStringLocalizer<UserDisplayDriver> s)
+            IStringLocalizer<UserDisplayDriver> stringLocalizer)
         {
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
@@ -49,7 +49,7 @@ namespace OrchardCore.Users.Drivers
             _logger = logger;
             _userEventHandlers = userEventHandlers;
             H = htmlLocalizer;
-            S = s;
+            S = stringLocalizer;
         }
 
         public override IDisplayResult Display(User user)
