@@ -61,7 +61,7 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
                     return;
                 }
 
-                // Blocking public access for newly created bucket
+                // Blocking public access for the newly created bucket.
                 var blockConfiguration = new PublicAccessBlockConfiguration
                 {
                     BlockPublicAcls = true,
