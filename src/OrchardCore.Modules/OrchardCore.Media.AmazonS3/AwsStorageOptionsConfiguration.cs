@@ -48,8 +48,9 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
         {
             var template = _fluidParser.Parse(options.BucketName);
 
-            options.BucketName = template.Render(templateContext, NullEncoder.Default);
-            options.BucketName = options.BucketName.Replace("\r", String.Empty).Replace("\n", String.Empty);
+            options.BucketName = template
+                .Render(templateContext, NullEncoder.Default)
+                .Replace("\r", String.Empty).Replace("\n", String.Empty);
         }
         catch (Exception e)
         {
