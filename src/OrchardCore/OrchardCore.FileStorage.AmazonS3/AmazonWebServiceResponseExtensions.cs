@@ -1,9 +1,9 @@
-﻿using Amazon.Runtime;
-using System.Net;
+﻿using System.Net;
+using Amazon.Runtime;
 
 namespace OrchardCore.FileStorage.AmazonS3;
 
-internal static class AmazonWebServiceResponseExtensions
+public static class AmazonWebServiceResponseExtensions
 {
     public static bool IsSuccessful(this AmazonWebServiceResponse response) =>
         response.HttpStatusCode == HttpStatusCode.OK;

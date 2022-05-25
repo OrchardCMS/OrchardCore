@@ -1,8 +1,5 @@
 ﻿using System;
-using Amazon;
-using Amazon.Runtime.CredentialManagement;
 using Fluid;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -13,19 +10,17 @@ namespace OrchardCore.Media.AmazonS3;
 
 public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOptions>
 {
-
     private readonly IShellConfiguration _shellConfiguration;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
     // Local instance since it can be discarded once the startup is over
-    private readonly FluidParser _fluidParser = new FluidParser();
+    private readonly FluidParser _fluidParser = new ();
 
     public AwsStorageOptionsConfiguration(
         IShellConfiguration shellConfiguration,
         ShellSettings shellSettings,
-        ILogger<AwsStorageOptions> logger
-    )
+        ILogger<AwsStorageOptions> logger)
     {
         _shellConfiguration = shellConfiguration;
         _shellSettings = shellSettings;
@@ -53,6 +48,7 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
         {
             var template = _fluidParser.Parse(options.BucketName);
 
+            options.BucketName = template.Render(templateContext, NullEncoder.Default);
             options.BucketName = options.BucketName.Replace("\r", String.Empty).Replace("\n", String.Empty);
         }
         catch (Exception e)

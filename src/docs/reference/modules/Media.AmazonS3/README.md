@@ -44,7 +44,7 @@ In case you are hosting Orchard Core inside AWS (EC2, EKS, etc.) you need to con
 
 In case you are hosting Orchard Core outside of AWS, you should fill the `Credentials` section or if you have AWS CLI installed and configured on your server you may specify only configured profile name (`default` if a profile name was not chosen during AWS CLI configuration).
 
-You can find region endpoints in the [Official AWS S3 Documentation](https://docs.aws.amazon.com/general/latest/gr/s3.html), see Region column. For example for Frankfurt region you should use `eu-central-1` 
+You can find region endpoints in the [Official AWS S3 Documentation](https://docs.aws.amazon.com/general/latest/gr/s3.html), see Region column. For example for the Frankfurt region you should use `eu-central-1` 
 
 ## AWS S3 Bucket Configuration
 
@@ -69,16 +69,16 @@ After this policy will be added to your bucket permissions all newly added files
 
 ## Templating Configuration
 
-Optionally you may use liquid templating to further configure Amazon Media Storage, perhaps creating a bucket per tenant,
+Optionally you may use Liquid templating to further configure Amazon Media Storage, perhaps creating a bucket per tenant,
 or a single bucket with a base path per tenant.
 
-The `ShellSettings` property is made available to the liquid template.
+The `ShellSettings` property is made available to the Liquid template.
 The `BucketName` property and the `BasePath` property are the only templatable properties.
 
 !!! note
-When templating the `BucketName`  using  `{{ ShellSettings.Name }}`, the tenant's name will be automatically lowercased, however, you must also make sure the `BucketName` conforms to other Amazon S3 naming conventions as set out in Amazon's documentation.
+    When templating the `BucketName`  using  `{{ ShellSettings.Name }}`, the tenant's name will be automatically lowercased, however, you must also make sure the `BucketName` conforms to other Amazon S3 naming conventions as set out in Amazon's documentation.
 
-### Configuring a bucket per tenant.
+### Configuring a bucket per tenant
 
 ```json
 {
@@ -97,7 +97,7 @@ When templating the `BucketName`  using  `{{ ShellSettings.Name }}`, the tenant'
 }
 ```
 
-### Configuring a single bucket, with a base folder per tenant.
+### Configuring a single bucket, with a base folder per tenant
 
 ```json
 {

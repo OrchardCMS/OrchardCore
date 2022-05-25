@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -53,7 +52,7 @@ public class Startup : Modules.StartupBase
         else
         {
             _logger.LogInformation(
-                $"Starting with S3 Media Configuration. {System.Environment.NewLine} BucketName: {storeOptions.BucketName}, {System.Environment.NewLine} BasePath: {storeOptions.BasePath}");
+                "Starting with S3 Media Configuration. BucketName: {BucketName}; BasePath: {BasePath}", storeOptions.BucketName, storeOptions.BasePath);
 
             services.AddSingleton<IMediaFileStoreCacheFileProvider>(serviceProvider =>
             {

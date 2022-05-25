@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -22,8 +21,7 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
     public CreateMediaS3BucketEvent(ShellSettings shellSettings,
         IOptions<AwsStorageOptions> options,
         IAmazonS3 amazonS3Client,
-        ILogger<CreateMediaS3BucketEvent> logger
-        )
+        ILogger<CreateMediaS3BucketEvent> logger)
     {
         _shellSettings = shellSettings;
         _logger = logger;
@@ -33,9 +31,9 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
 
     public override async Task ActivatingAsync()
     {
-        if (_shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized &&
-            !String.IsNullOrEmpty(_options.BucketName) &&
-            _options.CreateBucket)
+        if (_options.CreateBucket &&
+            _shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized &&
+            !String.IsNullOrEmpty(_options.BucketName))
         {
             _logger.LogDebug("Testing Amazon S3 Bucket {BucketName} existence", _options.BucketName);
 
@@ -54,13 +52,29 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
                     UseClientRegion = true
                 };
 
+                // Tying to create bucket
                 var response = await _amazonS3Client.PutBucketAsync(bucketRequest);
 
-                if (response.HttpStatusCode != HttpStatusCode.OK)
+                if (!response.IsSuccessful())
                 {
                     _logger.LogError("Unable to create Amazon S3 Bucket. {Response}", response);
                     return;
                 }
+
+                // Blocking public access for newly created bucket
+                var blockConfiguration = new PublicAccessBlockConfiguration
+                {
+                    BlockPublicAcls = true,
+                    BlockPublicPolicy = true,
+                    IgnorePublicAcls = true,
+                    RestrictPublicBuckets = true
+                };
+
+                await _amazonS3Client.PutPublicAccessBlockAsync(new PutPublicAccessBlockRequest
+                {
+                    PublicAccessBlockConfiguration = blockConfiguration,
+                    BucketName = _options.BucketName
+                });
 
                 _logger.LogDebug("Amazon S3 Bucket {BucketName} created.", _options.BucketName);
             }

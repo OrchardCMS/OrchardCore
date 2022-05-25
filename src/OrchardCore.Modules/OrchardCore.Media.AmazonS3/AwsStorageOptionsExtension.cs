@@ -34,7 +34,6 @@ public static class AwsStorageOptionsExtension
             {
                 yield return new ValidationResult(Constants.ValidationMessages.RegionEndpointIsEmpty);
             }
-
         }
     }
 

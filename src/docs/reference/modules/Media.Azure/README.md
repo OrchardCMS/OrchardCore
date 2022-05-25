@@ -88,7 +88,7 @@ The `ContainerName` property and the `BasePath` property are the only templatabl
 ```
 
 !!! note
-    Only the default liquid filters and tags are available during parsing of the liquid template.
+    Only the default Liquid filters and tags are available during parsing of the Liquid template.
     Extra filters like `slugify` will not be available.
 
 ## Media Cache

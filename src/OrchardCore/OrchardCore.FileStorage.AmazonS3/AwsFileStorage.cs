@@ -271,7 +271,6 @@ public class AwsFileStore : IFileStore
             {
                 BucketName = _options.BucketName,
                 Key = this.Combine(_basePrefix, path),
-                CannedACL = S3CannedACL.PublicRead,
                 InputStream = inputStream
             });
 
