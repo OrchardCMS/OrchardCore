@@ -1,13 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <!-- NuGet properties-->
     <Title>OrchardCore ResourceManagement</Title>
-    <Description>
-      $(OCFrameworkDescription)
+    <Description>$(OCFrameworkDescription)
 
-      Provides Resource Management capabilities and useful TagHelpers for commonly used resources like JavaScript libraries and CSS files.
-    </Description>
+      Provides Resource Management capabilities and useful TagHelpers for commonly used resources like JavaScript libraries and CSS files.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 
