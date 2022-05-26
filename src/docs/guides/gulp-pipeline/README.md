@@ -2,12 +2,12 @@ Orchard Core includes a processing pipeline for client-side assets (typically sc
 
 # Overview
 
-The client-side asset pipeline is powered by [Gulp](http://gulpjs.com), a popular open-source task runner based on [Node.js](https://nodejs.org) that can be used to automate a wide variety of tasks in a development workflow. The pipeline defines a set of Gulp *tasks* that can be executed by Gulp using either the command line or using the **Task Runner Explorer** tool window in Visual Studio 2015 or later.
+The client-side asset pipeline is powered by [Gulp](http://gulpjs.com), a popular open-source task runner based on [Node.js](https://nodejs.org) that can be used to automate a wide variety of tasks in a development workflow. The pipeline defines a set of Gulp *tasks* that can be executed by Gulp using either the command line or using the **Task Runner Explorer** tool window in Visual Studio 2022 or later. For those using Visual Studio Code you can use its terminal.
 
 Physically, the client-side asset pipeline consists of two files in the Orchard Core solution folder:
 
-- `src/Package.json` contains information about the Node packages required by the pipeline. This file tells the Node package manager (NPM) which packages it needs to download and install for the pipeline to function.
-- `src/Gulpfile.js` contains JavaScript code that defines a set of Gulp tasks and their implementation logic.
+- `src/package.json` contains information about the Node packages required by the pipeline. This file tells the Node package manager (NPM) which packages it needs to download and install for the pipeline to function.
+- `src/gulpfile.js` contains JavaScript code that defines a set of Gulp tasks and their implementation logic.
 
 In Visual Studio you will find these files in **Solution Explorer** in a solution folder named `Solution Items`:
 
@@ -25,9 +25,9 @@ The client-side asset pipeline is not configured by default to be invoked automa
 
 ## Installing prerequisites
 
-The client-side asset pipeline requires Node.js to be installed. If you are using Visual Studio 2015 or later, Node.js is typically already installed as part of Visual Studio. If you are not using Visual Studio, or if you selected not to include Node.js when installing Visual Studio, you will need to install Node.js manually from https://nodejs.org.
+The client-side asset pipeline requires Node.js to be installed. If you are using Visual Studio 2022 or later, Node.js is typically already installed as part of Visual Studio. If you are not using Visual Studio, or if you selected not to include Node.js when installing Visual Studio, you will need to install Node.js manually from https://nodejs.org.
 
-Next you will need to use NPM to install all the packages the client-side asset pipeline needs, including Gulp itself. Using the command line, navigate to the Orchard Core solution folder and execute the command `npm install`, which will install all dependencies referenced in the `Package.json`file. In Visual Studio 2015 or later, you can instead simply open the `Package.json` file and save it without making any changes - this will trigger an automatic `npm install` behind the scenes.
+Next you will need to use NPM to install all the packages the client-side asset pipeline needs, including Gulp itself. Using the command line, navigate to the Orchard Core solution folder and execute the command `npm install`, which will install all dependencies referenced in the `package.json` file. In Visual Studio 2022 or later, you can instead simply open the `package.json` file and save it without making any changes - this will trigger an automatic `npm install` behind the scenes.
 
 ## Executing tasks
 
@@ -45,14 +45,14 @@ The way you typically execute the Gulp tasks depends on whether you are using Vi
 
 1. Make sure you have Node.js installed and added to your `PATH` varable.
 2. Make sure you have installed all the required Node.js packages using the `npm install` command as described above.
-3. Navigate to the Orchard Core solution folder where the file `Gulpfile.js` is located.
+3. Navigate to the Orchard Core solution folder where the file `gulpfile.js` is located.
 4. Execute one of the commands `gulp build`, `gulp rebuild` and `gulp watch` to execute the corresponding Gulp task.
 
 ### Using Visual Studio
 
-Visual Studio 2019 and later comes with a built-in tool window named **Task Runner Explorer** that can be used to execute NPM tasks as well as tasks from different task runners such as Gulp and Grunt among others.
+Visual Studio 2022 and later comes with a built-in tool window named **Task Runner Explorer** that can be used to execute NPM tasks as well as tasks from different task runners such as Gulp and Grunt among others.
 
-To open Task Runner Explorer, select **View -> Other Windows -> Task Runner Explorer** from the menu. Alternatively, you can right-click on the file `Gulpfile.js` in Solution Explorer and select **Task Runner Explorer** from there.
+To open Task Runner Explorer, select **View -> Other Windows -> Task Runner Explorer** from the menu. Alternatively, you can right-click on the file `gulpfile.js` in Solution Explorer and select **Task Runner Explorer** from there.
 
 Initially you may see an error message in Task Runner Explorer:
 
@@ -411,7 +411,7 @@ Orchard Core has the ability to load extensions from other folders besides the `
 
 To add your custom location to be scanned for asset manifests, follow these steps:
 
-1. Open the file `src/Gulpfile.js` in Visual Studio or any other text editor.
+1. Open the file `src/gulpfile.js` in Visual Studio or any other text editor.
 
 2. Find the `getAssetGroups()` function.
 
