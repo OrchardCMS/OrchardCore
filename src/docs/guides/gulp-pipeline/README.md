@@ -1,10 +1,10 @@
-Orchard includes a processing pipeline for client-side assets (typically scripts and stylesheets) which is used to perform front-end development workflow tasks such as transpilation, minification and bundling of client-side assets in both core projects and extensions (i.e. modules and themes). Many of the built-in modules and themes in Orchard use this pipeline to process client-side assets, and you can enable your own extensions to use it as well.
+Orchard Core includes a processing pipeline for client-side assets (typically scripts and stylesheets) which is used to perform front-end development workflow tasks such as transpilation, minification and bundling of client-side assets in both core projects and extensions (i.e. modules and themes). Many of the built-in modules and themes in Orchard Core use this pipeline to process client-side assets, and you can enable your own extensions to use it as well.
 
 # Overview
 
 The client-side asset pipeline is powered by [Gulp](http://gulpjs.com), a popular open-source task runner based on [Node.js](https://nodejs.org) that can be used to automate a wide variety of tasks in a development workflow. The pipeline defines a set of Gulp *tasks* that can be executed by Gulp using either the command line or using the **Task Runner Explorer** tool window in Visual Studio 2015 or later.
 
-Physically, the client-side asset pipeline consists of two files in the Orchard solution folder:
+Physically, the client-side asset pipeline consists of two files in the Orchard Core solution folder:
 
 - `src/Package.json` contains information about the Node packages required by the pipeline. This file tells the Node package manager (NPM) which packages it needs to download and install for the pipeline to function.
 - `src/Gulpfile.js` contains JavaScript code that defines a set of Gulp tasks and their implementation logic.
@@ -19,7 +19,7 @@ There are several reasons why the pipeline has been implemented at the solution 
 * Only one copy of the necessary Node.js packages needs to be downloaded and stored alongside the codebase.
 * Keeping Node package folders (`node_modules`) anywhere inside the `OrchardCore.Cms.Web` project causes their contents to be included when publishing Orchard for deployment which would increase the size of the deployment package by orders of magnitude even though these files are only useful at development time.
 
-The client-side asset pipeline is not configured by default to be invoked automatically when opening or building Orchard. To minimize build time and make it as easy as possible to get started with Orchard, all built-in modules and themes in Orchard are kept in source control with their processed output files included. This means you don't have to activate and run the client-side asset pipeline to build or run Orchard out of the box. You only need to run the client-side asset pipeline if you make changes to these assets, or wish to use it to process assets in your own extensions.
+The client-side asset pipeline is not configured by default to be invoked automatically when opening or building Orchard Core. To minimize build time and make it as easy as possible to get started with Orchard Core, all built-in modules and themes in Orchard Core are kept in source control with their processed output files included. This means you don't have to activate and run the client-side asset pipeline to build or run Orchard Core out of the box. You only need to run the client-side asset pipeline if you make changes to these assets, or wish to use it to process assets in your own extensions.
 
 # Getting started
 
@@ -27,7 +27,7 @@ The client-side asset pipeline is not configured by default to be invoked automa
 
 The client-side asset pipeline requires Node.js to be installed. If you are using Visual Studio 2015 or later, Node.js is typically already installed as part of Visual Studio. If you are not using Visual Studio, or if you selected not to include Node.js when installing Visual Studio, you will need to install Node.js manually from https://nodejs.org.
 
-Next you will need to use NPM to install all the packages the client-side asset pipeline needs, including Gulp itself. Using the command line, navigate to the Orchard solution folder and execute the command `npm install`, which will install all dependencies referenced in the `Package.json`file. In Visual Studio 2015 or later, you can instead simply open the `Package.json` file and save it without making any changes - this will trigger an automatic `npm install` behind the scenes.
+Next you will need to use NPM to install all the packages the client-side asset pipeline needs, including Gulp itself. Using the command line, navigate to the Orchard Core solution folder and execute the command `npm install`, which will install all dependencies referenced in the `Package.json`file. In Visual Studio 2015 or later, you can instead simply open the `Package.json` file and save it without making any changes - this will trigger an automatic `npm install` behind the scenes.
 
 ## Executing tasks
 
@@ -45,7 +45,7 @@ The way you typically execute the Gulp tasks depends on whether you are using Vi
 
 1. Make sure you have Node.js installed and added to your `PATH` varable.
 2. Make sure you have installed all the required Node.js packages using the `npm install` command as described above.
-3. Navigate to the Orchard solution folder where the file `Gulpfile.js` is located.
+3. Navigate to the Orchard Core solution folder where the file `Gulpfile.js` is located.
 4. Execute one of the commands `gulp build`, `gulp rebuild` and `gulp watch` to execute the corresponding Gulp task.
 
 ### Using Visual Studio
@@ -70,9 +70,9 @@ You can now double-click one of the tasks to execute it.
 
 ### Binding tasks to Visual Studio events
 
-Task Runner Explorer also has the ability to "bind" tasks to be executed automatically in response to Visual Studio solution events. Orchard is not preconfigured with any such bindings because all assets in the original code base are already processed and their outputs are included in source control, but it can be useful to configure these bindings temporarily while developing your own client-side assets or while working on modifications to the ones in Orchard.
+Task Runner Explorer also has the ability to "bind" tasks to be executed automatically in response to Visual Studio solution events. Orchard Core is not preconfigured with any such bindings because all assets in the original code base are already processed and their outputs are included in source control, but it can be useful to configure these bindings temporarily while developing your own client-side assets or while working on modifications to the ones in Orchard Core.
 
-The most common scenario is to bind the **build** task to the **After Build** solution event. This way, each time you build Orchard (for example, by hitting `F5` or `Ctrl+F5` or selecting **Build -> Build Solution** from the menu) the asset pipeline's **build** task will be executed at the end of the build process. Any asset groups whose input files have changed since the last build will be refreshed.
+The most common scenario is to bind the **build** task to the **After Build** solution event. This way, each time you build Orchard Core (for example, by hitting `F5` or `Ctrl+F5` or selecting **Build -> Build Solution** from the menu) the asset pipeline's **build** task will be executed at the end of the build process. Any asset groups whose input files have changed since the last build will be refreshed.
 
 To configure this binding, follow these steps:
 
@@ -82,11 +82,11 @@ To configure this binding, follow these steps:
 
 Another common scenario is binding the **watch** task to the **Project Open** solution event, which will start the **watch** task when the solution is loaded and keep it running until you terminate it.
 
-Note: It's important to be aware that task bindings are stored in a specially formatted comment in the beginning of the Gulp file, so when you configure task bindings you are effectively making a change to one of the core files belonging to the Orchard code base which may be overwritten if you later choose to update your code base to a newer version of Orchard.
+Note: It's important to be aware that task bindings are stored in a specially formatted comment in the beginning of the Gulp file, so when you configure task bindings you are effectively making a change to one of the core files belonging to the Orchard Core code base which may be overwritten if you later choose to update your code base to a newer version of Orchard Core.
 
 # Using the pipeline for your own module or theme
 
-You typically don't have to execute any of the tasks in the client-side asset pipeline unless you are either making changes to Orchard itself or creating your own custom extensions and wish to utilize the pipeline to process your own client-side assets. This section explains how to enable the pipeline for your own extension.
+You typically don't have to execute any of the tasks in the client-side asset pipeline unless you are either making changes to Orchard Core itself or creating your own custom extensions and wish to utilize the pipeline to process your own client-side assets. This section explains how to enable the pipeline for your own extension.
 
 ## Adding an asset manifest file
 
@@ -113,7 +113,7 @@ The basic structure of the asset manifest looks like this:
 ]
 ```
 
-All input and output paths are relative to the extension root folder. However they do not have to reside within the extension folder; using `../` to resolve paths outside of the extension folder is fully supported. It is a common convention in Orchard to use a folder named `Assets` to contain input asset files and to keep those separate from the output asset files, but this is not required.
+All input and output paths are relative to the extension root folder. However they do not have to reside within the extension folder; using `../` to resolve paths outside of the extension folder is fully supported. It is a common convention in Orchard Core to use a folder named `Assets` to contain input asset files and to keep those separate from the output asset files, but this is not required.
 
 Using the asset pipeline is completely optional. If you don't add an `Asset.json` manifest file in the root folder of your extension, the client-side asset pipeline will simply ignore your extension.
 
@@ -146,7 +146,7 @@ After the **build** task has executed your extension's `Styles` folder will cont
 * `Styles.css` (non-minified with inline source maps)
 * `Styles.min.css` (minified)
 
-Once these output asset files have been generated you can reference them from Razor views just as you normally wolud using the Orchard resource manager, either by declaring them in a resource manifest class and requiring them using one of the `Require()` methods or by including them by path using one of the `Include()` methods.
+Once these output asset files have been generated you can reference them from Razor views just as you normally wolud using the Orchard Core resource manager, either by declaring them in a resource manifest class and requiring them using one of the `Require()` methods or by including them by path using one of the `Include()` methods.
 
 Note: The generated output asset files will not be automatically added to your extension project (`.csproj`) file. If you wish to keep the output asset files in source control, you will need to manually include them in your project using Solution Explorer after they have been generated for the first time. See the section on advanced scenarios below for some pointers on when you may or may not want to do this.
 
@@ -391,7 +391,7 @@ Any options you wish to pass through to the TypeScript transpiler (only applicab
 
 ## Excluding output files from source control
 
-When developing an extension intended for redistribution and used by third parties, it is recommended that generated output files be added to `.csproj` files of the containing extension and included in source control. All the built-in projects in the Orchard code base employ this methods. This is so that consumers can use your extension without having to install Node.js and execute the Gulp tasks in the client-side asset pipeline to generate the needed output asset files first.
+When developing an extension intended for redistribution and used by third parties, it is recommended that generated output files be added to `.csproj` files of the containing extension and included in source control. All the built-in projects in the Orchard Core code base employ this methods. This is so that consumers can use your extension without having to install Node.js and execute the Gulp tasks in the client-side asset pipeline to generate the needed output asset files first.
 
 However, when developing an extension for internal use you may also consider the alternative approach of leaving generated output files out of both `.csproj` files and source control and rely on them being rebuilt by the client-side asset pipeline whenever needed. This is similar to how you often assume that the NuGet package manager will be used to restore NuGet package references before a project is built.
 
@@ -425,7 +425,7 @@ assetManifestPaths = assetManifestPaths.concat(customThemePaths);
     
 4. Save and close the file.
    
-The Orchard development team is investigating ways to automate this process.
+The Orchard Core development team is investigating ways to automate this process.
 
 # Evolution of the client-side asset pipeline
 
