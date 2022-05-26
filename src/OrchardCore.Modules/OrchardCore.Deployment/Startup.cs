@@ -38,7 +38,6 @@ namespace OrchardCore.Deployment
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
-            services.AddScoped<IDisplayManager<DeploymentStep>, DisplayManager<DeploymentStep>>();
             services.AddSingleton<IDeploymentTargetProvider, FileDownloadDeploymentTargetProvider>();
 
             // Custom File deployment step
