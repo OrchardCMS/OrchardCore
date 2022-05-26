@@ -50,7 +50,8 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
 
             options.BucketName = template
                 .Render(templateContext, NullEncoder.Default)
-                .Replace(System.Environment.NewLine, String.Empty)
+                .Replace("\r", String.Empty)
+                .Replace("\n", String.Empty)
                 .Trim();
         }
         catch (Exception e)
@@ -68,7 +69,8 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
 
             options.BasePath = template
                 .Render(templateContext, NullEncoder.Default)
-                .Replace(System.Environment.NewLine, String.Empty)
+                .Replace("\r", String.Empty)
+                .Replace("\n", String.Empty)
                 .Trim();
         }
         catch (Exception e)
