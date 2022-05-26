@@ -224,7 +224,7 @@ namespace OrchardCore.Users.Controllers
             // Check a dummy user account to see if the current user has permission to manage it.
             var authUser = new User();
 
-            if (!await CanEditContextAsync(authUser))
+            if (!await CanEditUserAsync(authUser))
             {
                 return Forbid();
             }
@@ -237,7 +237,7 @@ namespace OrchardCore.Users.Controllers
                 // To prevent html injection we authorize each user before performing any operations.
                 foreach (var user in checkedUsers)
                 {
-                    if (!await CanEditContextAsync(user))
+                    if (!await CanEditUserAsync(user))
                     {
                         return Forbid();
                     }
@@ -359,7 +359,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!await CanEditContextAsync(user))
+            if (!await CanEditUserAsync(user))
             {
                 return Forbid();
             }
@@ -390,7 +390,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!await CanEditContextAsync(user))
+            if (!await CanEditUserAsync(user))
             {
                 return Forbid();
             }
@@ -490,7 +490,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!await CanEditContextAsync(user))
+            if (!await CanEditUserAsync(user))
             {
                 return Forbid();
             }
@@ -510,7 +510,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!await CanEditContextAsync(user))
+            if (!await CanEditUserAsync(user))
             {
                 return Forbid();
             }
@@ -567,7 +567,7 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task<bool> CanEditContextAsync(User user)
+        private async Task<bool> CanEditUserAsync(User user)
         {
             if (await _authorizationService.AuthorizeAsync(User, Permissions.EditUsers, user))
             {
