@@ -17,7 +17,7 @@ There are several reasons why the pipeline has been implemented at the solution 
 
 * Current and future can share the existing pipeline logic instead of having to reinvent it.
 * Only one copy of the necessary Node.js packages needs to be downloaded and stored alongside the codebase.
-* Keeping Node package folders (`node_modules`) anywhere inside the `Orchard.Web` project causes their contents to be included when publishing Orchard for deployment which would increase the size of the deployment package by orders of magnitude even though these files are only useful at development time.
+* Keeping Node package folders (`node_modules`) anywhere inside the `OrchardCore.Cms.Web` project causes their contents to be included when publishing Orchard for deployment which would increase the size of the deployment package by orders of magnitude even though these files are only useful at development time.
 
 The client-side asset pipeline is not configured by default to be invoked automatically when opening or building Orchard. To minimize build time and make it as easy as possible to get started with Orchard, all built-in modules and themes in Orchard are kept in source control with their processed output files included. This means you don't have to activate and run the client-side asset pipeline to build or run Orchard out of the box. You only need to run the client-side asset pipeline if you make changes to these assets, or wish to use it to process assets in your own extensions.
 
@@ -50,7 +50,7 @@ The way you typically execute the Gulp tasks depends on whether you are using Vi
 
 ### Using Visual Studio
 
-Visual Studio 2015 and later comes with a built-in tool window named **Task Runner Explorer** that can be used to execute NPM tasks as well as tasks from different task runners such as Gulp and Grunt among others.
+Visual Studio 2019 and later comes with a built-in tool window named **Task Runner Explorer** that can be used to execute NPM tasks as well as tasks from different task runners such as Gulp and Grunt among others.
 
 To open Task Runner Explorer, select **View -> Other Windows -> Task Runner Explorer** from the menu. Alternatively, you can right-click on the file `Gulpfile.js` in Solution Explorer and select **Task Runner Explorer** from there.
 
@@ -404,11 +404,10 @@ When using this approach, the `Styles` and `Scripts` folders in your extension w
 
 ## Including custom extension folders
 
-Version 1.10 of Orchard introduced the ability to load extensions from other folders besides the `Orchard.Web/Modules` and `Orchard.Web/Themes` folders. If your extension is stored and loaded from such a custom location, the client-side asset pipeline will not automatically detect your asset manifest. This is because, by default, it only looks for `Assets.json` files in folders under these locations:
+Orchard Core has the ability to load extensions from other folders besides the `OrchardCore.Modules` and `OrchardCore.Themes` folders. If your extension is stored and loaded from such a custom location, the client-side asset pipeline will not automatically detect your asset manifest. This is because, by default, it only looks for `Assets.json` files in folders under these locations:
 
-* `Orchard.Web/Core/`
-* `Orchard.Web/Modules/`
-* `Orchard.Web/Themes/`
+* `OrchardCore.Modules/`
+* `OrchardCore.Themes/`
 
 To add your custom location to be scanned for asset manifests, follow these steps:
 
@@ -419,7 +418,7 @@ To add your custom location to be scanned for asset manifests, follow these step
 3. This function declares an `assetManifestPaths` array variable. You can add your own glob here and merge the resulting arrays. For example:
 
 ```js
-var assetManifestPaths = glob.sync("Orchard.Web/{Core,Modules,Themes}/*/Assets.json");
+var assetManifestPaths = glob.sync("./src/OrchardCore.{Modules,Themes}/*/Assets.json", {});
 var customThemePaths = glob.sync("AnotherLocation/MyCompanyThemes/*/Assets.json"); // Custom location!
 assetManifestPaths = assetManifestPaths.concat(customThemePaths);
 ```
