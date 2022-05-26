@@ -31,11 +31,5 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
         /// Used to determine if this content type supports custom permissions
         /// </summary>
         public bool Securable { get; set; }
-
-
-        /// <summary>
-        /// Used to determine if this content type is managable from the User interface.
-        /// </summary>
-        public bool DisabledUserInterface { get; set; }
     }
 }

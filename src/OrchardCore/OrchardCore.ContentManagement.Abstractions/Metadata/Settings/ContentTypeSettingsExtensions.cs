@@ -54,16 +54,6 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
             return type.GetSettings<ContentTypeSettings>().Securable;
         }
 
-        public static ContentTypeDefinitionBuilder DisabledUserInterface(this ContentTypeDefinitionBuilder builder, bool disabledUserInterface = true)
-        {
-            return builder.MergeSettings<ContentTypeSettings>(x => x.DisabledUserInterface = disabledUserInterface);
-        }
-
-        public static bool IsDisabledUserInterface(this ContentTypeDefinition type)
-        {
-            return type.GetSettings<ContentTypeSettings>().DisabledUserInterface;
-        }
-
         public static ContentTypeDefinitionBuilder Stereotype(this ContentTypeDefinitionBuilder builder, string stereotype)
         {
             return builder.MergeSettings<ContentTypeSettings>(x => x.Stereotype = stereotype);

@@ -50,7 +50,6 @@ namespace OrchardCore.ContentTypes.Controllers
             _contentDefinitionService = contentDefinitionService;
             _contentDefinitionManager = contentDefinitionManager;
             _updateModelAccessor = updateModelAccessor;
-
             H = htmlLocalizer;
             S = stringLocalizer;
         }
@@ -71,7 +70,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             return View(new ListContentTypesViewModel
             {
-                Types = _contentDefinitionService.GetTypes().Where(x => !x.TypeDefinition.IsDisabledUserInterface())
+                Types = await GetEditableTypeViewModelsAsync(),
             });
         }
 
@@ -98,37 +97,37 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
             {
-                ModelState.AddModelError("DisplayName", S["The Display Name can't be empty."]);
+                ModelState.AddModelError(nameof(CreateTypeViewModel.DisplayName), S["The Display Name can't be empty."]);
             }
 
             if (_contentDefinitionService.LoadTypes().Any(t => String.Equals(t.DisplayName.Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
-                ModelState.AddModelError("DisplayName", S["A type with the same Display Name already exists."]);
+                ModelState.AddModelError(nameof(CreateTypeViewModel.DisplayName), S["A type with the same Display Name already exists."]);
             }
 
             if (String.IsNullOrWhiteSpace(viewModel.Name))
             {
-                ModelState.AddModelError("Name", S["The Technical Name can't be empty."]);
+                ModelState.AddModelError(nameof(CreateTypeViewModel.Name), S["The Technical Name can't be empty."]);
             }
 
             if (!String.IsNullOrWhiteSpace(viewModel.Name) && !viewModel.Name[0].IsLetter())
             {
-                ModelState.AddModelError("Name", S["The Technical Name must start with a letter."]);
+                ModelState.AddModelError(nameof(CreateTypeViewModel.Name), S["The Technical Name must start with a letter."]);
             }
 
             if (!String.Equals(viewModel.Name, viewModel.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
             {
-                ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
+                ModelState.AddModelError(nameof(CreateTypeViewModel.Name), S["The Technical Name contains invalid characters."]);
             }
 
             if (viewModel.Name.IsReservedContentName())
             {
-                ModelState.AddModelError("Name", S["The Technical Name is reserved for internal use."]);
+                ModelState.AddModelError(nameof(CreateTypeViewModel.Name), S["The Technical Name is reserved for internal use."]);
             }
 
             if (_contentDefinitionService.LoadTypes().Any(t => String.Equals(t.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
-                ModelState.AddModelError("Name", S["A type with the same Technical Name already exists."]);
+                ModelState.AddModelError(nameof(CreateTypeViewModel.Name), S["A type with the same Technical Name already exists."]);
             }
 
             if (!ModelState.IsValid)
@@ -143,14 +142,14 @@ namespace OrchardCore.ContentTypes.Controllers
 
             await _notifier.SuccessAsync(H["The \"{0}\" content type has been created.", typeViewModel.DisplayName]);
 
-            return RedirectToAction("AddPartsTo", new { id = typeViewModel.Name });
+            return RedirectToAction(nameof(AddPartsTo), new { id = typeViewModel.Name });
         }
 
         public async Task<ActionResult> Edit(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                return NotFound();
             }
 
             var typeViewModel = _contentDefinitionService.GetType(id);
@@ -160,9 +159,14 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (typeViewModel.TypeDefinition.IsDisabledUserInterface())
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(typeViewModel.TypeDefinition)))
             {
                 return Forbid();
+            }
+
+            if (typeViewModel == null)
+            {
+                return NotFound();
             }
 
             typeViewModel.Editor = await _contentDefinitionDisplayManager.BuildTypeEditorAsync(typeViewModel.TypeDefinition, _updateModelAccessor.ModelUpdater);
@@ -174,9 +178,9 @@ namespace OrchardCore.ContentTypes.Controllers
         [FormValueRequired("submit.Save")]
         public async Task<ActionResult> EditPOST(string id, EditTypeViewModel viewModel)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                return NotFound();
             }
 
             var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(id);
@@ -186,9 +190,9 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (contentTypeDefinition.IsDisabledUserInterface())
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(contentTypeDefinition)))
             {
-                return NotFound();
+                return Forbid();
             }
 
             viewModel.Settings = contentTypeDefinition.Settings;
@@ -218,9 +222,9 @@ namespace OrchardCore.ContentTypes.Controllers
         [FormValueRequired("submit.Delete")]
         public async Task<ActionResult> Delete(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                return NotFound();
             }
 
             var typeViewModel = _contentDefinitionService.LoadType(id);
@@ -230,9 +234,14 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (typeViewModel.TypeDefinition.IsDisabledUserInterface())
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(typeViewModel.TypeDefinition)))
             {
                 return Forbid();
+            }
+
+            if (typeViewModel == null)
+            {
+                return NotFound();
             }
 
             _contentDefinitionService.RemoveType(id, true);
@@ -244,9 +253,9 @@ namespace OrchardCore.ContentTypes.Controllers
 
         public async Task<ActionResult> AddPartsTo(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                return NotFound();
             }
 
             var typeViewModel = _contentDefinitionService.GetType(id);
@@ -256,7 +265,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (typeViewModel.TypeDefinition.IsDisabledUserInterface())
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(typeViewModel.TypeDefinition)))
             {
                 return Forbid();
             }
@@ -277,9 +286,9 @@ namespace OrchardCore.ContentTypes.Controllers
 
         public async Task<ActionResult> AddReusablePartTo(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                return NotFound();
             }
 
             var typeViewModel = _contentDefinitionService.GetType(id);
@@ -289,7 +298,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (typeViewModel.TypeDefinition.IsDisabledUserInterface())
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(typeViewModel.TypeDefinition)))
             {
                 return Forbid();
             }
@@ -312,9 +321,9 @@ namespace OrchardCore.ContentTypes.Controllers
         [HttpPost, ActionName(nameof(AddPartsTo))]
         public async Task<ActionResult> AddPartsToPOST(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                return NotFound();
             }
 
             var typeViewModel = _contentDefinitionService.LoadType(id);
@@ -324,7 +333,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (typeViewModel.TypeDefinition.IsDisabledUserInterface())
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(typeViewModel.TypeDefinition)))
             {
                 return Forbid();
             }
@@ -354,9 +363,9 @@ namespace OrchardCore.ContentTypes.Controllers
         [HttpPost, ActionName(nameof(AddReusablePartTo))]
         public async Task<ActionResult> AddReusablePartToPOST(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                return NotFound();
             }
 
             var typeViewModel = _contentDefinitionService.LoadType(id);
@@ -366,7 +375,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (typeViewModel.TypeDefinition.IsDisabledUserInterface())
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(typeViewModel.TypeDefinition)))
             {
                 return Forbid();
             }
@@ -433,21 +442,26 @@ namespace OrchardCore.ContentTypes.Controllers
         [HttpPost, ActionName(nameof(RemovePart))]
         public async Task<ActionResult> RemovePart(string id, string name)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-            {
-                return Forbid();
-            }
-
-            var typeViewModel = _contentDefinitionService.LoadType(id);
-
-            if (typeViewModel == null || !typeViewModel.TypeDefinition.Parts.Any(p => p.Name == name))
+            if (String.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
 
-            if (typeViewModel.TypeDefinition.GetSettings<ContentPartSettings>().DisabledUserInterface)
+            var typeViewModel = _contentDefinitionService.LoadType(id);
+
+            if (typeViewModel == null)
+            {
+                return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(typeViewModel.TypeDefinition)))
             {
                 return Forbid();
+            }
+
+            if (typeViewModel == null || !typeViewModel.TypeDefinition.Parts.Any(p => p.Name == name))
+            {
+                return NotFound();
             }
 
             _contentDefinitionService.RemovePartFromType(name, id);
@@ -455,6 +469,28 @@ namespace OrchardCore.ContentTypes.Controllers
             await _notifier.SuccessAsync(H["The \"{0}\" part has been removed.", name]);
 
             return RedirectToAction(nameof(Edit), new { id });
+        }
+
+        private async Task<IEnumerable<EditTypeViewModel>> GetEditableTypeViewModelsAsync()
+        {
+            if (await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            {
+                return _contentDefinitionService.GetTypes();
+            }
+
+            var contentTypes = new List<EditTypeViewModel>();
+
+            foreach (var model in _contentDefinitionService.GetTypes())
+            {
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(model.TypeDefinition)))
+                {
+                    continue;
+                }
+
+                contentTypes.Add(model);
+            }
+
+            return contentTypes;
         }
 
         #endregion Types
@@ -470,8 +506,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             return View(new ListContentPartsViewModel
             {
-                // only user-defined parts (not code as they are not configurable)
-                Parts = _contentDefinitionService.GetParts(true/*metadataPartsOnly*/).Where(x => !x.PartDefinition.IsDisabledUserInterface())
+                Parts = await GetEditablePartViewModelsAsync()
             });
         }
 
@@ -540,9 +575,9 @@ namespace OrchardCore.ContentTypes.Controllers
 
         public async Task<ActionResult> EditPart(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                return NotFound();
             }
 
             var contentPartDefinition = _contentDefinitionManager.GetPartDefinition(id);
@@ -552,7 +587,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (contentPartDefinition.IsDisabledUserInterface())
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(contentPartDefinition)))
             {
                 return Forbid();
             }
@@ -569,9 +604,9 @@ namespace OrchardCore.ContentTypes.Controllers
         [FormValueRequired("submit.Save")]
         public async Task<ActionResult> EditPartPOST(string id, string[] orderedFieldNames)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                return NotFound();
             }
 
             var contentPartDefinition = _contentDefinitionManager.LoadPartDefinition(id);
@@ -581,7 +616,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (contentPartDefinition.GetSettings<ContentPartSettings>().DisabledUserInterface)
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(contentPartDefinition)))
             {
                 return Forbid();
             }
@@ -607,9 +642,9 @@ namespace OrchardCore.ContentTypes.Controllers
         [FormValueRequired("submit.Delete")]
         public async Task<ActionResult> DeletePart(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                return NotFound();
             }
 
             var partViewModel = _contentDefinitionService.LoadPart(id);
@@ -619,7 +654,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (partViewModel.PartDefinition.GetSettings<ContentPartSettings>().DisabledUserInterface)
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(partViewModel.PartDefinition)))
             {
                 return Forbid();
             }
@@ -633,9 +668,9 @@ namespace OrchardCore.ContentTypes.Controllers
 
         public async Task<ActionResult> AddFieldTo(string id, string returnUrl = null)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                return NotFound();
             }
 
             var partViewModel = _contentDefinitionService.LoadPart(id);
@@ -643,6 +678,11 @@ namespace OrchardCore.ContentTypes.Controllers
             if (partViewModel == null)
             {
                 return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(partViewModel.PartDefinition)))
+            {
+                return Forbid();
             }
 
             var viewModel = new AddFieldViewModel
@@ -658,9 +698,9 @@ namespace OrchardCore.ContentTypes.Controllers
         [HttpPost, ActionName(nameof(AddFieldTo))]
         public async Task<ActionResult> AddFieldToPOST(AddFieldViewModel viewModel, string id, string returnUrl = null)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                return NotFound();
             }
 
             var partViewModel = _contentDefinitionService.LoadPart(id);
@@ -668,6 +708,11 @@ namespace OrchardCore.ContentTypes.Controllers
             if (partViewModel == null)
             {
                 return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(partViewModel.PartDefinition)))
+            {
+                return Forbid();
             }
 
             var partDefinition = partViewModel.PartDefinition;
@@ -730,9 +775,9 @@ namespace OrchardCore.ContentTypes.Controllers
 
         public async Task<ActionResult> EditField(string id, string name, string returnUrl = null)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                return NotFound();
             }
 
             var partViewModel = _contentDefinitionService.GetPart(id);
@@ -740,6 +785,11 @@ namespace OrchardCore.ContentTypes.Controllers
             if (partViewModel == null)
             {
                 return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(partViewModel.PartDefinition)))
+            {
+                return Forbid();
             }
 
             var partFieldDefinition = partViewModel.PartDefinition.Fields.FirstOrDefault(x => x.Name == name);
@@ -767,12 +817,7 @@ namespace OrchardCore.ContentTypes.Controllers
         [FormValueRequired("submit.Save")]
         public async Task<ActionResult> EditFieldPOST(string id, EditFieldViewModel viewModel, string returnUrl = null)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-            {
-                return Forbid();
-            }
-
-            if (viewModel == null)
+            if (String.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
@@ -782,6 +827,11 @@ namespace OrchardCore.ContentTypes.Controllers
             if (partViewModel == null)
             {
                 return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(partViewModel.PartDefinition)))
+            {
+                return Forbid();
             }
 
             var field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => x.Name == viewModel.Name);
@@ -856,9 +906,9 @@ namespace OrchardCore.ContentTypes.Controllers
         [HttpPost, ActionName("RemoveFieldFrom")]
         public async Task<ActionResult> RemoveFieldFromPOST(string id, string name)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                return NotFound();
             }
 
             var partViewModel = _contentDefinitionService.LoadPart(id);
@@ -866,6 +916,11 @@ namespace OrchardCore.ContentTypes.Controllers
             if (partViewModel == null)
             {
                 return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(partViewModel.PartDefinition)))
+            {
+                return Forbid();
             }
 
             var field = partViewModel.PartDefinition.Fields.FirstOrDefault(x => x.Name == name);
@@ -887,15 +942,40 @@ namespace OrchardCore.ContentTypes.Controllers
             return RedirectToAction(nameof(EditPart), new { id });
         }
 
+        private async Task<IEnumerable<EditPartViewModel>> GetEditablePartViewModelsAsync()
+        {
+            // only user-defined parts (not code as they are not configurable)
+            var definitions = _contentDefinitionService.GetParts(metadataPartsOnly: true);
+
+            if (await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            {
+                return definitions;
+            }
+
+            var models = new List<EditPartViewModel>();
+
+            foreach (var definition in definitions)
+            {
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(definition.PartDefinition)))
+                {
+                    continue;
+                }
+
+                models.Add(definition);
+            }
+
+            return models;
+        }
+
         #endregion Parts
 
         #region Type Parts
 
         public async Task<ActionResult> EditTypePart(string id, string name)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                return NotFound();
             }
 
             var typeDefinition = _contentDefinitionManager.GetTypeDefinition(id);
@@ -903,6 +983,11 @@ namespace OrchardCore.ContentTypes.Controllers
             if (typeDefinition == null)
             {
                 return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(typeDefinition)))
+            {
+                return Forbid();
             }
 
             var typePartDefinition = typeDefinition.Parts.FirstOrDefault(x => x.Name == name);
@@ -930,12 +1015,7 @@ namespace OrchardCore.ContentTypes.Controllers
         [FormValueRequired("submit.Save")]
         public async Task<ActionResult> EditTypePartPOST(string id, EditTypePartViewModel viewModel)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-            {
-                return Forbid();
-            }
-
-            if (viewModel == null)
+            if (String.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
@@ -945,6 +1025,11 @@ namespace OrchardCore.ContentTypes.Controllers
             if (typeDefinition == null)
             {
                 return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(typeDefinition)))
+            {
+                return Forbid();
             }
 
             var part = typeDefinition.Parts.FirstOrDefault(x => x.Name == viewModel.Name);

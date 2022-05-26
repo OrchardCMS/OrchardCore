@@ -27,16 +27,6 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
             return part.GetSettings<ContentPartSettings>().Reusable;
         }
 
-        public static ContentPartDefinitionBuilder DisabledUserInterface(this ContentPartDefinitionBuilder builder, bool disabledUserInterface = true)
-        {
-            return builder.MergeSettings<ContentPartSettings>(x => x.DisabledUserInterface = disabledUserInterface);
-        }
-
-        public static bool IsDisabledUserInterface(this ContentPartDefinition part)
-        {
-            return part.GetSettings<ContentPartSettings>().DisabledUserInterface;
-        }
-
         public static ContentPartDefinitionBuilder WithDescription(this ContentPartDefinitionBuilder builder, string description)
         {
             return builder.MergeSettings<ContentPartSettings>(x => x.Description = description);
