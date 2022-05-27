@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage.AmazonS3;
+using static System.Environment;
 
 namespace OrchardCore.Media.AmazonS3;
 
@@ -51,8 +52,7 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
             options.BucketName = template
                 .Render(templateContext, NullEncoder.Default)
                 .Replace("\r", String.Empty)
-                .Replace("\n", String.Empty)
-                .Trim();
+                .Replace(NewLine, String.Empty);
         }
         catch (Exception e)
         {
@@ -70,8 +70,7 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
             options.BasePath = template
                 .Render(templateContext, NullEncoder.Default)
                 .Replace("\r", String.Empty)
-                .Replace("\n", String.Empty)
-                .Trim();
+                .Replace(NewLine, String.Empty);
         }
         catch (Exception e)
         {
