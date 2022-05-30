@@ -17,8 +17,7 @@ namespace OrchardCore.Rules
             services.AddOptions<ConditionOptions>();
 
             // Rule services.
-            services.AddScoped<IDisplayManager<Condition>, DisplayManager<Condition>>()
-                .AddScoped<IDisplayManager<Rule>, DisplayManager<Rule>>()
+            services
                 .AddScoped<IDisplayDriver<Rule>, RuleDisplayDriver>()
                 .AddSingleton<IConditionIdGenerator, ConditionIdGenerator>()
                 .AddTransient<IConfigureOptions<ConditionOperatorOptions>, ConditionOperatorConfigureOptions>()
