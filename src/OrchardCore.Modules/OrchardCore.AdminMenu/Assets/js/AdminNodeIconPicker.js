@@ -48,7 +48,6 @@ var iconPickerVue = new Vue({
             if (this._data.iconPickerModal == null)
             {
                 this._data.iconPickerModal = new bootstrap.Modal($("#iconPickerModal"), {
-                    backdrop: 'static',
                     keyboard: false
                 });
             }
