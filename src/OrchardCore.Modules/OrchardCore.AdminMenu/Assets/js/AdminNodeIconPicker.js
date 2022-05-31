@@ -42,19 +42,17 @@ var iconPickerVue = new Vue({
     },
     methods: {
         show: function (targetInputField, targetIconTag) {
-            var self = this;
+            this.targetInputField = targetInputField;
+            this.targetIconTag = targetIconTag;
 
-            self.targetInputField = targetInputField;
-            self.targetIconTag = targetIconTag;
-
-            if (self.iconPickerModal == null)
+            if (this.iconPickerModal == null)
             {
-                self.iconPickerModal = new bootstrap.Modal($("#iconPickerModal"), {
+                this.iconPickerModal = new bootstrap.Modal($("#iconPickerModal"), {
                     keyboard: false
                 });
             }
 
-            self.iconPickerModal.show();
+            this.iconPickerModal.show();
         }
     }
 })
