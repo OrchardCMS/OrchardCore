@@ -2561,6 +2561,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "neglectedvalue",
+      "name": "neglectedvalue",
+      "avatar_url": "https://avatars.githubusercontent.com/u/69389840?v=4",
+      "profile": "https://github.com/neglectedvalue",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
