@@ -33,26 +33,28 @@ var iconPickerVue = new Vue({
                 $('#' + self.targetIconTag).replaceWith('<i id="' + self.targetIconTag + '" class="'+ selected + '"></i>')                
             }
 
-            if (self._data.iconPickerModal != null)
+            if (self.$data.iconPickerModal != null)
             {
-                self._data.iconPickerModal.hide();
+                self.$data.iconPickerModal.hide();
             }
         });
 
     },
     methods: {
         show: function (targetInputField, targetIconTag) {
-            this.targetInputField = targetInputField;
-            this.targetIconTag = targetIconTag;
+            var self = this;
 
-            if (this._data.iconPickerModal == null)
+            self.$data.targetInputField = targetInputField;
+            self.$data.targetIconTag = targetIconTag;
+
+            if (self.$data.iconPickerModal == null)
             {
-                this._data.iconPickerModal = new bootstrap.Modal($("#iconPickerModal"), {
+                self.$data.iconPickerModal = new bootstrap.Modal($("#iconPickerModal"), {
                     keyboard: false
                 });
             }
 
-            this._data.iconPickerModal.show();
+            self.$data.iconPickerModal.show();
         }
     }
 })
