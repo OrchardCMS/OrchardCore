@@ -226,7 +226,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/codemirror.min.js", "~/OrchardCore.Resources/Scripts/codemirror/codemirror.js")
                 .SetCdn(codeMirrorUrl + "codemirror.min.js", codeMirrorUrl + "codemirror.js")
-                .SetCdnIntegrity("sha512-ad261kgu2n1u+3TwfJjITAkm6cgvqr6YeRcIz/rCoVO6GV84tuCa9dApAbsMKQYRKjKDRFruLC0gq3O4ghzKaQ==", "sha512-hG/Qw6E14LsVUaQRSgw0RrFA1wl5QPG1a4bCOUgwzkGPIVFsOPUPpbr90DFavEEqFMwFXPVI0NS4MzKsInlKxQ==")
+                .SetCdnIntegrity("sha512-hG/Qw6E14LsVUaQRSgw0RrFA1wl5QPG1a4bCOUgwzkGPIVFsOPUPpbr90DFavEEqFMwFXPVI0NS4MzKsInlKxQ==", "sha512-ad261kgu2n1u+3TwfJjITAkm6cgvqr6YeRcIz/rCoVO6GV84tuCa9dApAbsMKQYRKjKDRFruLC0gq3O4ghzKaQ==")
                 .SetVersion(codeMirrorVersion);
 
             manifest
