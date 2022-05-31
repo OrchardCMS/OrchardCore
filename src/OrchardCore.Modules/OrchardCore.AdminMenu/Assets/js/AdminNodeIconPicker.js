@@ -33,9 +33,9 @@ var iconPickerVue = new Vue({
                 $('#' + self.targetIconTag).replaceWith('<i id="' + self.targetIconTag + '" class="'+ selected + '"></i>')                
             }
 
-            if (self.$data.iconPickerModal != null)
+            if (self.iconPickerModal != null)
             {
-                self.$data.iconPickerModal.hide();
+                self.iconPickerModal.hide();
             }
         });
 
@@ -44,17 +44,17 @@ var iconPickerVue = new Vue({
         show: function (targetInputField, targetIconTag) {
             var self = this;
 
-            self.$data.targetInputField = targetInputField;
-            self.$data.targetIconTag = targetIconTag;
+            self.targetInputField = targetInputField;
+            self.targetIconTag = targetIconTag;
 
-            if (self.$data.iconPickerModal == null)
+            if (self.iconPickerModal == null)
             {
-                self.$data.iconPickerModal = new bootstrap.Modal($("#iconPickerModal"), {
+                self.iconPickerModal = new bootstrap.Modal($("#iconPickerModal"), {
                     keyboard: false
                 });
             }
 
-            self.$data.iconPickerModal.show();
+            self.iconPickerModal.show();
         }
     }
 })
