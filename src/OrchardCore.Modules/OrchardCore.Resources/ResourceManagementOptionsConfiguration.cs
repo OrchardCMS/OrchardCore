@@ -16,7 +16,7 @@ namespace OrchardCore.Resources
 
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         // Versions
-        private const string codeMirrorVersion = "5.65.4";
+        private const string codeMirrorVersion = "5.65.5";
         private const string monacoEditorVersion = "0.33.0";
         // URLs
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
@@ -226,7 +226,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/codemirror.min.js", "~/OrchardCore.Resources/Scripts/codemirror/codemirror.js")
                 .SetCdn(codeMirrorUrl + "codemirror.min.js", codeMirrorUrl + "codemirror.js")
-                .SetCdnIntegrity("sha512-2cmTnLqUwlJs8HnJF3SvFKcsdRf65Ho7wof0IeydYXnyWCiVhaR6u2zTD/BFS+2mIywyiUscY1Er54SS+OJjEw==", "sha512-iFw5pXwoMhzpQmqSeNrzsHMbctY7wGlBhWWRqWWnfdwqHlS26S+uXsd75kjpDW3Vk/ydv1EhyUozlwl9SzBi0w==")
+                .SetCdnIntegrity("sha512-ad261kgu2n1u+3TwfJjITAkm6cgvqr6YeRcIz/rCoVO6GV84tuCa9dApAbsMKQYRKjKDRFruLC0gq3O4ghzKaQ==", "sha512-hG/Qw6E14LsVUaQRSgw0RrFA1wl5QPG1a4bCOUgwzkGPIVFsOPUPpbr90DFavEEqFMwFXPVI0NS4MzKsInlKxQ==")
                 .SetVersion(codeMirrorVersion);
 
             manifest
