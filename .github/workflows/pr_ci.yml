@@ -47,7 +47,7 @@ jobs:
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests.UI/OrchardCore.Tests.UI.csproj
     - uses: actions/upload-artifact@v2
-      if: failure()
+      if: failure() && hashFiles('test/OrchardCore.Tests.UI/bin/Release/*/FailureDumps')
       with:
         name: ui-test-failure
         path: |
