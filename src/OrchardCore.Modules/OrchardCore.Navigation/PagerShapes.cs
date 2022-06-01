@@ -156,7 +156,8 @@ namespace OrchardCore.Navigation
             object NextText,
             object LastText,
             object GapText,
-            bool ShowNext)
+            bool ShowNext,
+            Dictionary<string, string> UrlParams)
         {
             var noFollow = shape.Attributes.ContainsKey("rel") && shape.Attributes["rel"] == "no-follow";
             var currentPage = Page;
@@ -184,32 +185,8 @@ namespace OrchardCore.Navigation
             var lastText = LastText ?? S[">>"];
             var gapText = GapText ?? S["..."];
 
-            var httpContextAccessor = displayContext.ServiceProvider.GetService<IHttpContextAccessor>();
-            var httpContext = httpContextAccessor.HttpContext;
-
-            var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
-
-            if (httpContext != null)
-            {
-                var queryString = httpContext.Request.Query;
-                if (queryString != null)
-                {
-                    foreach (var key in from string key in queryString.Keys where key != null && !routeData.ContainsKey(key) let value = queryString[key] select key)
-                    {
-                        routeData[key] = queryString[key];
-                    }
-                }
-            }
-
-            // specific cross-requests route data can be passed to the shape directly (e.g., OrchardCore.Users)
-            var shapeRouteData = shape.GetProperty<RouteData>("RouteData");
-            if (shapeRouteData != null)
-            {
-                foreach (var rd in shapeRouteData.Values)
-                {
-                    routeData[rd.Key] = rd.Value;
-                }
-            }
+            var routeData = GetRouteData(shape, displayContext, Html);
+            SetCustomUrlParams(UrlParams, routeData);
 
             var firstPage = Math.Max(1, Page - (numberOfPagesToShow / 2));
             var lastPage = Math.Min(totalPageCount, Page + (numberOfPagesToShow / 2));
@@ -398,16 +375,8 @@ namespace OrchardCore.Navigation
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "List";
 
-            var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
-
-            // Allows to pass custom url params to PagerSlim
-            if (UrlParams != null)
-            {
-                foreach (var item in UrlParams)
-                {
-                    routeData.Add(item.Key, item.Value);
-                }
-            }
+            var routeData = GetRouteData(shape, displayContext, Html);
+            SetCustomUrlParams(UrlParams, routeData);
 
             if (shape.TryGetProperty("Before", out string before))
             {
@@ -415,6 +384,8 @@ namespace OrchardCore.Navigation
                 {
                     ["before"] = before
                 };
+
+                beforeRouteData.Remove("after");
 
                 var previousItem = await shapeFactory.CreateAsync("Pager_Previous", Arguments.From(new
                 {
@@ -431,6 +402,10 @@ namespace OrchardCore.Navigation
                 await shape.AddAsync(previousItem);
                 shape.Properties["FirstClass"] = PreviousClass;
             }
+            else
+            {
+                routeData.Remove("before");
+            }
 
             if (shape.TryGetProperty("After", out string after))
             {
@@ -438,6 +413,8 @@ namespace OrchardCore.Navigation
                 {
                     ["after"] = after
                 };
+
+                afterRouteData.Remove("before");
 
                 var nextItem = await shapeFactory.CreateAsync("Pager_Next", Arguments.From(new
                 {
@@ -453,6 +430,10 @@ namespace OrchardCore.Navigation
 
                 await shape.AddAsync(nextItem);
                 shape.Properties["LastClass"] = NextClass;
+            }
+            else
+            {
+                routeData.Remove("after");
             }
 
             return await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
@@ -571,6 +552,48 @@ namespace OrchardCore.Navigation
             }
 
             return new HtmlContentString(value.ToString());
+        }
+
+        private static RouteValueDictionary GetRouteData(Shape shape, DisplayContext displayContext, IHtmlHelper Html)
+        {
+            var httpContextAccessor = displayContext.ServiceProvider.GetService<IHttpContextAccessor>();
+            var httpContext = httpContextAccessor.HttpContext;
+
+            var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
+
+            if (httpContext != null)
+            {
+                var query = httpContext.Request.Query;
+
+                foreach (var key in query.Keys)
+                {
+                    routeData.TryAdd(key, query[key]);
+                }
+            }
+
+            // specific cross-requests route data can be passed to the shape directly (e.g., OrchardCore.Users)
+            var shapeRouteData = shape.GetProperty<RouteData>("RouteData");
+            if (shapeRouteData != null)
+            {
+                foreach (var rd in shapeRouteData.Values)
+                {
+                    routeData[rd.Key] = rd.Value;
+                }
+            }
+
+            return routeData;
+        }
+
+        private static void SetCustomUrlParams(Dictionary<string, string> urlParams, RouteValueDictionary routeData)
+        {
+            // Allows to pass custom url params to Pager
+            if (urlParams != null)
+            {
+                foreach (var item in urlParams)
+                {
+                    routeData[item.Key] = item.Value;
+                }
+            }
         }
     }
 }
