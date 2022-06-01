@@ -12,7 +12,7 @@ Orchard Core consists of two distinct projects:
 
 ## Build Status
 
-Stable (release/1.3): 
+Stable (release/1.4): 
 
 [![Build status](https://github.com/OrchardCMS/OrchardCore/actions/workflows/release_ci.yml/badge.svg)](https://github.com/OrchardCMS/OrchardCore/actions?query=workflow%3A%22Release+-+CI%22)
 [![NuGet](https://img.shields.io/nuget/v/OrchardCore.Application.Cms.Targets.svg)](https://www.nuget.org/packages/OrchardCore.Application.Cms.Targets)
@@ -24,7 +24,7 @@ Nightly (main):
 
 ## Status
 
-### 1.3
+### 1.4.0
 
 The software is finished -- and by finished, we mean there are no show-stopping, little-children-killing bugs in it. That we know of. There are probably numerous lower-priority bugs triaged into the next point release or service pack, as well.
 
@@ -37,7 +37,7 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 ### Command line
 
 - Install the latest version of the .NET SDK from this page <https://dotnet.microsoft.com/download>
-- Next, navigate to `D:\OrchardCore\src\OrchardCore.Cms.Web` or wherever your folder is on the commandline in Administrator mode.
+- Next, navigate to `./OrchardCore/src/OrchardCore.Cms.Web`.
 - Call `dotnet run`.
 - Then open the `http://localhost:5000` URL in your browser.
 
