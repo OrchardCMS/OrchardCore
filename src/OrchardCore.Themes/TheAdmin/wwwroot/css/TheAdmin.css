@@ -12175,7 +12175,8 @@ html[data-theme=default] select.selectpicker {
   display: none !important;
 }
 html[data-theme=default] .bootstrap-select {
-  width: 220px;
+  width: 220px \0 ;
+  /*IE9 and below*/
   vertical-align: middle;
 }
 html[data-theme=default] .bootstrap-select > .dropdown-toggle {
@@ -41593,7 +41594,8 @@ html[data-theme=darkmode] select.selectpicker {
   display: none !important;
 }
 html[data-theme=darkmode] .bootstrap-select {
-  width: 220px;
+  width: 220px \0 ;
+  /*IE9 and below*/
   vertical-align: middle;
 }
 html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle {
@@ -58768,6 +58770,9 @@ html[data-theme=darkmode] .btn-dark {
 }
 html[data-theme=darkmode] .btn-dark:hover, html[data-theme=darkmode] .btn-dark:focus {
   color: #FFF;
+}
+html[data-theme=darkmode] .btn-light, html[data-theme=darkmode] .btn-light:hover, html[data-theme=darkmode] .btn-light:focus {
+  color: #000;
 }
 html[data-theme=darkmode] .bootstrap-select .popover-header .close {
   color: white;

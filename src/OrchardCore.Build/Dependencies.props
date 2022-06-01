@@ -9,17 +9,20 @@
 
   <ItemGroup>
     <PackageManagement Include="AngleSharp" Version="0.16.1" />
+    <PackageManagement Include="AWSSDK.S3" Version="3.7.9.4" />
+    <PackageManagement Include="AWSSDK.SecurityToken" Version="3.7.1.153" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.1" />
     <PackageManagement Include="Azure.Identity" Version="1.6.0" />
     <PackageManagement Include="Azure.Storage.Blobs" Version="12.12.0" />
     <PackageManagement Include="BenchmarkDotNet" Version="0.13.1" />
-    <PackageManagement Include="Castle.Core" Version="4.4.1" />
+    <PackageManagement Include="Castle.Core" Version="5.0.0" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
     <PackageManagement Include="Fluid.Core" Version="2.2.15" />
     <PackageManagement Include="GraphQL" Version="2.4.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-2037" />
     <PackageManagement Include="HtmlSanitizer" Version="7.1.488" />
+    <PackageManagement Include="Lorem.Universal.NET" Version="4.0.80" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00016" />
@@ -27,11 +30,11 @@
     <PackageManagement Include="MailKit" Version="3.2.0" />
     <PackageManagement Include="Markdig" Version="0.30.2" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
-    <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+    <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     <PackageManagement Include="MimeKit" Version="3.2.0" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.22" />
-    <PackageManagement Include="Moq" Version="4.17.2" />
+    <PackageManagement Include="Moq" Version="4.18.0" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />
     <PackageManagement Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageManagement Include="NJsonSchema" Version="10.6.10" />
