@@ -368,18 +368,16 @@ The Recipes step allows you to execute other recipes from the current recipe. Yo
       "name": "recipes",
       "Values": [
         {
-          "executionid": "MyApp",
           "name": "MyApp.Pages"
         },
         {
-          "executionid": "MyApp",
           "name": "MyApp.Blog"
         }
       ]
     }
 ```
 
-As `executionid` use a custom identifier to distinguish these recipe executions from others. As `name` use the `name` field from the given recipe's head (this is left blank when you export to recipes).
+As `name` use the `name` field from the given recipe's head (this is left blank when you export to recipes).
 
 ### Other settings Step
 
