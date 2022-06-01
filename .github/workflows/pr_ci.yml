@@ -44,7 +44,6 @@ jobs:
           test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
     - name: UI Tests
-      if: matrix.os == 'windows-latest'
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests.UI/OrchardCore.Tests.UI.csproj
     - uses: actions/upload-artifact@v2
