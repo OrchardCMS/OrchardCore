@@ -49,6 +49,6 @@ jobs:
     - uses: actions/upload-artifact@v2
       if: failure() && hashFiles('test/OrchardCore.Tests.UI/bin/Release/*/FailureDumps')
       with:
-        name: ui-test-failure
+        name: ui-test-failure-${{ matrix.os }}
         path: |
           test/OrchardCore.Tests.UI/bin/Release/*/FailureDumps
