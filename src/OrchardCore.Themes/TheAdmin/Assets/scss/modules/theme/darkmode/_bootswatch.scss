@@ -276,6 +276,10 @@
     }
 }
 
+.btn-light, .btn-light:hover, .btn-light:focus {
+    color: $black;
+}
+
 .bootstrap-select {
     .popover-header {
         .close {

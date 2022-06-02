@@ -69,7 +69,7 @@ namespace OrchardCore.Media.Azure
 
                     if (String.IsNullOrWhiteSpace(hostingEnvironment.WebRootPath))
                     {
-                        throw new Exception("The wwwroot folder for serving cache media files is missing.");
+                        throw new MediaConfigurationException("The wwwroot folder for serving cache media files is missing.");
                     }
 
                     var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
