@@ -11,7 +11,7 @@ namespace OrchardCore.Tests.Email
     public class RecipeStepTests
     {
         [Fact]
-        public async Task ReplyTo_ShouldHaveAuthors_IfNotSet()
+        public async Task RecipesShouldBeCapturedIntoContext()
         {
             var step = CreateRecipeStepExecutor();
             var context = new RecipeExecutionContext()
