@@ -85,6 +85,11 @@ Although many activities support multiple outcomes, they typically return only o
 For example, the _Send Email_ activity has two possible outcomes: "Done" and "Failed".  
 When the email was sent successfully, it yields "Done" as the outcome, and "Failed" otherwise.
 
+For activities that have an iterator outcome e.g _Content For Each_, return the outcome of the next activity back to the irrerate task for the irritation to continue either through the done outcome or via a fork.
+If forking make sure that the loop output is after the action output. 
+
+![Sample content for each ](docs/sample-content-for-each.png)
+
 ### Transition
 
 A transition is the connection between the outcome of one activity to another activity. Transitions are created using drag & drop operations in the workflow editor.
@@ -241,6 +246,7 @@ The following activities are available with any default Orchard installation:
 | Create Content | Task | Create a content item. |
 | Delete Content | Task | Delete a content item. |
 | Publish Content | Task | Publish a content item. |
+| For Content Type | Task | Loop through a content type. |
 **User** | * | * | * |
 | ValidateUser | Task | Used to check if the user is logged in and has the specified role(s). |
 
