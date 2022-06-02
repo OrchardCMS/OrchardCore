@@ -1,0 +1,20 @@
+name: UI Tests
+description: Runs UI tests and publishes the failure dumps as an artifact on test failure.
+
+inputs:
+  os-name:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: UI Tests
+      run: |
+        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests.UI/OrchardCore.Tests.UI.csproj
+    - uses: actions/upload-artifact@v2
+      if: failure() && hashFiles('test/OrchardCore.Tests.UI/bin/Release/*/FailureDumps')
+      with:
+        name: ui-test-failure-${{ inputs.os-name }}
+        path: |
+          test/OrchardCore.Tests.UI/bin/Release/*/FailureDumps
