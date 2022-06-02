@@ -159,7 +159,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(typeViewModel.TypeDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, typeViewModel.TypeDefinition))
             {
                 return Forbid();
             }
@@ -190,7 +190,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(contentTypeDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, contentTypeDefinition))
             {
                 return Forbid();
             }
@@ -234,7 +234,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(typeViewModel.TypeDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, typeViewModel.TypeDefinition))
             {
                 return Forbid();
             }
@@ -265,7 +265,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(typeViewModel.TypeDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, typeViewModel.TypeDefinition))
             {
                 return Forbid();
             }
@@ -298,7 +298,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(typeViewModel.TypeDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, typeViewModel.TypeDefinition))
             {
                 return Forbid();
             }
@@ -333,7 +333,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(typeViewModel.TypeDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, typeViewModel.TypeDefinition))
             {
                 return Forbid();
             }
@@ -375,7 +375,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(typeViewModel.TypeDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, typeViewModel.TypeDefinition))
             {
                 return Forbid();
             }
@@ -454,7 +454,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(typeViewModel.TypeDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, typeViewModel.TypeDefinition))
             {
                 return Forbid();
             }
@@ -482,7 +482,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             foreach (var model in _contentDefinitionService.GetTypes())
             {
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForType(model.TypeDefinition)))
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, model.TypeDefinition))
                 {
                     continue;
                 }
@@ -587,7 +587,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(contentPartDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, contentPartDefinition))
             {
                 return Forbid();
             }
@@ -616,7 +616,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(contentPartDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, contentPartDefinition))
             {
                 return Forbid();
             }
@@ -654,7 +654,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(partViewModel.PartDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, partViewModel.PartDefinition))
             {
                 return Forbid();
             }
@@ -680,7 +680,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(partViewModel.PartDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, partViewModel.PartDefinition))
             {
                 return Forbid();
             }
@@ -710,7 +710,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(partViewModel.PartDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, partViewModel.PartDefinition))
             {
                 return Forbid();
             }
@@ -787,7 +787,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(partViewModel.PartDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, partViewModel.PartDefinition))
             {
                 return Forbid();
             }
@@ -829,7 +829,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(partViewModel.PartDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, partViewModel.PartDefinition))
             {
                 return Forbid();
             }
@@ -918,7 +918,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(partViewModel.PartDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes, partViewModel.PartDefinition))
             {
                 return Forbid();
             }
@@ -956,7 +956,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             foreach (var definition in definitions)
             {
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForPart(definition.PartDefinition)))
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentPart, definition.PartDefinition))
                 {
                     continue;
                 }

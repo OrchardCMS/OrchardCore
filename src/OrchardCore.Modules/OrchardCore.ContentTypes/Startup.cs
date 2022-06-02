@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ using OrchardCore.ContentTypes.Controllers;
 using OrchardCore.ContentTypes.Deployment;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.RecipeSteps;
+using OrchardCore.ContentTypes.Security;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -31,6 +33,7 @@ namespace OrchardCore.ContentTypes
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<IAuthorizationHandler, ContentDefinitionAuthorizationHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IContentDefinitionService, ContentDefinitionService>();
             services.AddScoped<IStereotypesProvider, DefaultStereotypesProvider>();

@@ -13,8 +13,8 @@ namespace OrchardCore.ContentTypes
         public static readonly Permission EditContentTypes = new Permission("EditContentTypes", "Edit all content types.", isSecurityCritical: true);
         public static readonly Permission ViewContentTypes = new Permission("ViewContentTypes", "View content types.", new[] { EditContentTypes });
 
-        private static readonly Permission EditContentType = new Permission("EditContentType_{0}", "Edit content type - {0}", new[] { EditContentTypes });
-        private static readonly Permission EditContentPart = new Permission("EditContentPart_{0}", "Edit content part - {0}", new[] { EditContentTypes });
+        private static readonly Permission EditContentType = new Permission("EditContentType_{0}", "Edit content type - {0}", new[] { EditContentTypes }, isSecurityCritical: true);
+        public static readonly Permission EditContentPart = new Permission("EditContentPart_{0}", "Edit content part - {0}", new[] { EditContentTypes }, isSecurityCritical: true);
 
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -48,7 +48,7 @@ namespace OrchardCore.ContentTypes
 
             return permissions
                     .Union(_contentDefinitionManager.ListTypeDefinitions().Select(type => CreatePermissionForType(type)))
-                    .Union(_contentDefinitionManager.LoadPartDefinitions().Select(part => CreatePermissionForPart(part)))
+                    .Union(_contentDefinitionManager.ListPartDefinitions().Select(part => CreatePermissionForPart(part)))
                     .ToArray();
         }
 
@@ -57,7 +57,8 @@ namespace OrchardCore.ContentTypes
             return new Permission(
                 String.Format(EditContentType.Name, type.Name),
                 String.Format(EditContentType.Description, type.DisplayName),
-                EditContentType.ImpliedBy
+                EditContentType.ImpliedBy,
+                isSecurityCritical: EditContentType.IsSecurityCritical
             );
         }
 
@@ -66,7 +67,8 @@ namespace OrchardCore.ContentTypes
             return new Permission(
                 String.Format(EditContentPart.Name, part.Name),
                 String.Format(EditContentPart.Description, part.Name),
-                EditContentPart.ImpliedBy
+                EditContentPart.ImpliedBy,
+                isSecurityCritical: EditContentType.IsSecurityCritical
             );
         }
     }
