@@ -44,6 +44,6 @@ jobs:
           test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
     - name: UI Tests
-      uses: ../actions/ui_tests
+      uses: ../actions/ui-tests
       with:
         os-name: ${{ matrix.os }}

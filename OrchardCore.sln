@@ -483,8 +483,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "actions", "actions", "{2FF93CCD-E4DF-4086-950B-0F7484C88906}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ui-tests", "ui-tests", "{0B2B9EBE-C008-42A0-9CC0-37727DD8ED0C}"
 	ProjectSection(SolutionItems) = preProject
-		.github\actions\ui_tests.yml = .github\actions\ui_tests.yml
+		.github\actions\ui-tests\action.yml = .github\actions\ui-tests\action.yml
 	EndProjectSection
 EndProject
 Global
@@ -1478,6 +1480,7 @@ Global
 		{FF1C550C-6D30-499A-AF11-68DE7C8B6869} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{01A2BBC1-B9C1-4DD1-825C-A63B6D40F91D} = {59C52CE8-CE78-4502-8C19-34EC63918BE2}
 		{2FF93CCD-E4DF-4086-950B-0F7484C88906} = {59C52CE8-CE78-4502-8C19-34EC63918BE2}
+		{0B2B9EBE-C008-42A0-9CC0-37727DD8ED0C} = {2FF93CCD-E4DF-4086-950B-0F7484C88906}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
