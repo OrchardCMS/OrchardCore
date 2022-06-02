@@ -3,13 +3,14 @@ description: Runs UI tests and publishes the failure dumps as an artifact on tes
 
 inputs:
   os-name:
+    description: The name of the OS used for the runner (e.g. "ubuntu-latest").
     required: true
-    type: string
 
 runs:
   using: "composite"
   steps:
     - name: UI Tests
+      shell: bash
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests.UI/OrchardCore.Tests.UI.csproj
     - uses: actions/upload-artifact@v2
