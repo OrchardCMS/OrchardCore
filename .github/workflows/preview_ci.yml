@@ -51,15 +51,9 @@ jobs:
           test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data_Tests/logs
     - name: UI Tests
-      if: matrix.os == 'windows-latest'
-      run: |
-        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests.UI/OrchardCore.Tests.UI.csproj
-    - uses: actions/upload-artifact@v2
-      if: failure()
+      uses: ./.github/actions/ui-tests
       with:
-        name: ui-test-failure
-        path: |
-          test/OrchardCore.Tests.UI/bin/Release/*/FailureDumps
+        os-name: ${{ matrix.os }}
     - name: Deploy preview nuget packages
       if: matrix.os == 'ubuntu-latest'
       run: |
