@@ -17,22 +17,12 @@ namespace Microsoft.AspNetCore.Authorization
         /// </summary>
         public static async Task<bool> AuthorizeContentTypeDefinitionsAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, IEnumerable<ContentTypeDefinition> contentTypeDefinitions, IContentManager contentManager)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            if (requiredPermission == null)
-            {
-                throw new ArgumentNullException(nameof(requiredPermission));
-            }
-
-            if (contentManager == null)
-            {
-                throw new ArgumentNullException(nameof(contentManager));
-            }
+            ArgumentNullException.ThrowIfNull(user);
+            ArgumentNullException.ThrowIfNull(requiredPermission);
+            ArgumentNullException.ThrowIfNull(contentManager);
 
             var permission = GetOwnerVariation(requiredPermission);
+
             var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission);
 
             foreach (var contentTypeDefinition in contentTypeDefinitions)

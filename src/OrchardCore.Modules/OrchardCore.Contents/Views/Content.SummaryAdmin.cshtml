@@ -60,21 +60,17 @@
             {
                 @await DisplayAsync(Model.Actions)
             }
-            @if (Model.ActionsMenu != null)
-            {
-                IHtmlContent buttons = await DisplayAsync(Model.ActionsMenu);
 
-                @if (HasHtml(buttons))
-                {
-                    <div class="btn-group" title="@T["Actions"]">
-                        <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span>@T["Actions"]</span>
-                        </button>
-                        <div class="actions-menu dropdown-menu dropdown-menu-end">
-                            @buttons
-                        </div>
+            @if (Model.ActionsMenu != null && Model.ActionsMenu.HasItems)
+            {
+                <div class="btn-group" title="@T["Actions"]">
+                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span>@T["Actions"]</span>
+                    </button>
+                    <div class="actions-menu dropdown-menu dropdown-menu-end">
+                        @await DisplayAsync(Model.ActionsMenu)
                     </div>
-                }
+                </div>
             }
         </div>
     </div>
@@ -87,23 +83,4 @@
             @await DisplayAsync(Model.Content)
         </div>
     </div>
-}
-
-
-@functions
-{
-    public bool HasHtml(IHtmlContent content)
-    {
-        if (content is HtmlString htmlString)
-        {
-            return !String.IsNullOrWhiteSpace(htmlString.Value?.Trim());
-        }
-
-        using var writer = new System.IO.StringWriter();
-
-        content.WriteTo(writer, System.Text.Encodings.Web.HtmlEncoder.Default);
-        var value = writer.ToString()?.Trim();
-
-        return !String.IsNullOrWhiteSpace(value);
-    }
 }
