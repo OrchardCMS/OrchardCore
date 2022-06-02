@@ -31,13 +31,15 @@ namespace OrchardCore.Recipes.RecipeSteps
             var recipes = recipeCollections.SelectMany(x => x).ToDictionary(x => x.Name);
 
             IList<RecipeDescriptor> innerRecipes = new List<RecipeDescriptor>();
-            foreach (var recipe in step.Values)
+            foreach (var stepValue in step.Values)
             {
-                if (!recipes.ContainsKey(recipe.Name))
+                if (recipes.TryGetValue(stepValue.Name, out var recipeDescriptor))
                 {
-                    throw new ArgumentException($"No recipe named '{recipe.Name}' was found.");
+                    innerRecipes.Add(recipeDescriptor);
                 }
-                innerRecipes.Add(recipes[recipe.Name]);
+                else
+                    throw new ArgumentException($"No recipe named '{stepValue.Name}' was found.");
+
             }
 
             context.InnerRecipes = innerRecipes;
