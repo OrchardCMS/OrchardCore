@@ -1,8 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
-using OrchardCore.Workflows.Services;
-using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
@@ -11,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using OrchardCore.ContentManagement.Workflows;
 
 namespace OrchardCore.Contents.Workflows.Activities
 {
@@ -19,16 +17,12 @@ namespace OrchardCore.Contents.Workflows.Activities
     {
         readonly IStringLocalizer S;
         private readonly ISession _session;
-        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         private readonly IContentManager _contentManager;
-        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
 
-        public ContentForEachTask(IWorkflowExpressionEvaluator expressionEvaluator, IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<RetrieveContentTask> localizer, ISession session)
+        public ContentForEachTask(IContentManager contentManager, IStringLocalizer<RetrieveContentTask> localizer, ISession session)
         {
             S = localizer;
             _session = session;
-            _scriptEvaluator = scriptEvaluator;
-            _expressionEvaluator = expressionEvaluator;
             _contentManager = contentManager;
         }
         public override string Name => nameof(ContentForEachTask);
@@ -61,7 +55,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 var contentItem = await _contentManager.LoadAsync(items[Index]);
                 var current = Current = contentItem;
                 workflowContext.CorrelationId = contentItem.ContentItemId;
-                workflowContext.Properties["ContentItem"] = contentItem;
+                workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
                 workflowContext.LastResult = current;
                 Index++;
                 return Outcomes("Iterate"); 
