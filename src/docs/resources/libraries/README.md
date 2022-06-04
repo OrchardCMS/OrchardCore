@@ -13,7 +13,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Fluid.Core](https://github.com/sebastienros/fluid) | .NET Liquid template engine. | 2.2.15 | [MIT](https://github.com/sebastienros/fluid/blob/dev/LICENSE) |
 | [GraphQL](https://github.com/graphql/graphiql) | GraphiQL & GraphQL. | 2.4.0 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
 | [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 7.1.512 | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
-| [Image Sharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 1.0.5 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
+| [Image Sharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 2.0.1 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
 | [Irony.Core](https://github.com/daxnet/irony) | A modified version of the Irony project with .NET Core support | 1.0.7 | [MIT](https://github.com/daxnet/irony/blob/master/LICENSE) |
 | [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.0.0-beta-2037 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
 | [Lorem.NET for netstandard](https://github.com/trichards57/Lorem.Universal.NET) | A .NET library for all things random! | 4.0.80 | [MIT](https://github.com/trichards57/Lorem.Universal.NET/blob/master/license.md) |
@@ -28,7 +28,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [NCrontab](https://github.com/atifaziz/NCrontab) | Crontab for .NET | 3.3.1 | [Apache-2.0](https://github.com/atifaziz/NCrontab/blob/master/COPYING.txt) |
 | [NLog.Web.AspNetCore](https://github.com/NLog/NLog.Web/tree/master/src/NLog.Web.AspNetCore) | NLog integration for ASP.NET. | 4.14.0 | [BSD-3-Clause](https://github.com/NLog/NLog.Web/blob/master/LICENSE) |
 | [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) | Json.NET is a popular high-performance JSON framework for .NET | 13.0.1 | [MIT](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md) |
-| [NJsonSchema](https://github.com/RicoSuter/NJsonSchema) | JSON Schema reader, generator and validator for .NET | 10.6.10 | [MIT](https://github.com/RicoSuter/NJsonSchema/blob/master/LICENSE.md) |
+| [NJsonSchema](https://github.com/RicoSuter/NJsonSchema) | JSON Schema reader, generator and validator for .NET | 10.7.2 | [MIT](https://github.com/RicoSuter/NJsonSchema/blob/master/LICENSE.md) |
 | [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 3.1.0 | [Apache-2.0](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
 | [OpenIddict](https://github.com/openiddict/openiddict-core) | Versatile OpenID Connect stack for ASP.NET Core. | 3.1.1 | [Apache-2.0](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
 | [PdfPig](https://github.com/UglyToad/PdfPig/) | Library to read and extract text and other content from PDF files. | 0.1.6 | [Apache-2.0](https://github.com/UglyToad/PdfPig/blob/master/LICENSE) |
