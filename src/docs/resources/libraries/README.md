@@ -5,6 +5,8 @@ The below table lists the different .NET libraries used in Orchard Core:
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
 | [Angle Sharp](https://github.com/AngleSharp/AngleSharp) | Angle brackets parser library. | 0.17.1 |[MIT](https://github.com/AngleSharp/AngleSharp/blob/devel/LICENSE) |
+| [AWSSDK S3](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.9.10 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
+| [AWSSDK SecurityToken](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.1.159 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
 | [Azure Identity](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/identity/Azure.Identity/README.md) | Azure Active Directory token authentication support. | 1.6.0 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Configuration Secrets](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Extensions.AspNetCore.Configuration.Secrets_1.2.2/sdk/extensions/Azure.Extensions.AspNetCore.Configuration.Secrets/README.md) | Azure Key Vault configuration provider implementation for Microsoft.Extensions.Configuration. | 1.2.2 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Storage Blobs](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/storage/Azure.Storage.Blobs/README.md) | Azure Storage Blobs client library for .NET. | 12.12.0 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
@@ -24,7 +26,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Microsoft.SourceLink.GitHub](https://github.com/dotnet/sourcelink) | Source Link enables a great source debugging experience. | 1.1.1 | [MIT](https://github.com/dotnet/sourcelink/blob/main/License.txt) |
 | [MimeKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 3.2.0 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
 | [MiniProfiler](https://github.com/MiniProfiler/dotnet) | A simple but effective mini-profiler for ASP.NET (and Core) websites | 4.2.22 | [MIT](https://github.com/MiniProfiler/dotnet/blob/main/LICENSE.txt) |
-| [Moq](https://github.com/moq/moq) | The most popular and friendly mocking framework for .NET. | 4.18.0 | [MIT](https://github.com/moq/moq/blob/main/LICENSE) |
+| [Moq](https://github.com/moq/moq) | The most popular and friendly mocking framework for .NET. | 4.18.1 | [MIT](https://github.com/moq/moq/blob/main/LICENSE) |
 | [NCrontab](https://github.com/atifaziz/NCrontab) | Crontab for .NET | 3.3.1 | [Apache-2.0](https://github.com/atifaziz/NCrontab/blob/master/COPYING.txt) |
 | [NLog.Web.AspNetCore](https://github.com/NLog/NLog.Web/tree/master/src/NLog.Web.AspNetCore) | NLog integration for ASP.NET. | 4.14.0 | [BSD-3-Clause](https://github.com/NLog/NLog.Web/blob/master/LICENSE) |
 | [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) | Json.NET is a popular high-performance JSON framework for .NET | 13.0.1 | [MIT](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md) |
@@ -44,7 +46,7 @@ The below table lists the different libraries used as Resources:
 | [Bootstrap](https://github.com/twbs/bootstrap) | HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web. | 5.1.3 | [MIT](https://github.com/twbs/bootstrap/blob/main/LICENSE) |
 | [bootstrap-select](https://github.com/snapappointments/bootstrap-select) | jQuery plugin for select elements. | 1.14.0-beta2 | [MIT](https://github.com/snapappointments/bootstrap-select/blob/v1.14-dev/LICENSE) |
 | [noUiSlider](https://github.com/leongersen/noUiSlider) | noUiSlider is a lightweight JavaScript range slider. | 15.6.0 | [MIT](https://github.com/leongersen/noUiSlider/blob/master/LICENSE.md) |
-| [Code Mirror](https://github.com/codemirror/CodeMirror) | In-browser code editor. | 5.65.4 | [MIT](https://github.com/codemirror/CodeMirror/blob/master/LICENSE) |
+| [Code Mirror](https://github.com/codemirror/CodeMirror) | In-browser code editor. | 5.65.5 | [MIT](https://github.com/codemirror/CodeMirror/blob/master/LICENSE) |
 | [Font Awesome](https://github.com/FortAwesome/Font-Awesome) | The iconic SVG, font, and CSS toolkit. | 6.1.1 | [Font Awesome Free License](https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt) |
 | [jQuery](https://github.com/jquery/jquery) | jQuery JavaScript Library. | 3.6.0 | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt) |
 | [jQuery UI](https://github.com/jquery/jquery-ui) | jQuery user interface library. | 1.12.1 | [MIT](https://github.com/jquery/jquery-ui/blob/master/LICENSE.txt) |
@@ -52,7 +54,7 @@ The below table lists the different libraries used as Resources:
 | [jQuery Easing](https://github.com/gdsmith/jquery.easing) | jQuery Easing Plugin. | 1.4.1 | [MIT](https://github.com/gdsmith/jquery.easing/blob/master/LICENSE-BSD-3-Clause.txt) |
 | [jquery-resizable-dom](https://github.com/RickStrahl/jquery-resizable) | jQuery plug-in to make DOM components resizable. | 0.35.0 | [MIT](https://github.com/RickStrahl/jquery-resizable/blob/master/LICENSE.md) |
 | [js-cookie](https://github.com/js-cookie/js-cookie) | A simple, lightweight JavaScript API for handling browser cookies. | 3.0.1 | [MIT](https://github.com/js-cookie/js-cookie/blob/master/LICENSE) |
-| [Material icons](https://github.com/marella/material-icons) | Latest icon fonts and CSS for self-hosting material design icons. | 1.10.11 | [Apache-2.0](https://github.com/marella/material-icons/blob/main/LICENSE) |
+| [Material icons](https://github.com/marella/material-icons) | Latest icon fonts and CSS for self-hosting material design icons. | 1.11.0 | [Apache-2.0](https://github.com/marella/material-icons/blob/main/LICENSE) |
 | [Monaco Editor](https://microsoft.github.io/monaco-editor) | Lightweight source code editor | 0.33.0 | [MIT](https://github.com/microsoft/monaco-editor/blob/main/LICENSE.md) |
 | [Popper](https://github.com/popperjs/popper-core) | Positioning tooltips and popovers. | 2.11.5 | [MIT](https://github.com/popperjs/popper-core/blob/master/LICENSE.md) |
 | [Sortable](https://github.com/SortableJS/sortablejs) | Create and reorder lists with drag-and-drop. | 1.15.0 | [MIT](https://github.com/SortableJS/sortablejs/blob/master/LICENSE) |
