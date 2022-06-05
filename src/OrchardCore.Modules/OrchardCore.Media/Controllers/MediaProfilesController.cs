@@ -350,6 +350,7 @@ namespace OrchardCore.Media.Controllers
             model.AvailableFormats.Add(new SelectListItem() { Text = S["Jpg"], Value = ((int)Format.Jpg).ToString() });
             model.AvailableFormats.Add(new SelectListItem() { Text = S["Png"], Value = ((int)Format.Png).ToString() });
             model.AvailableFormats.Add(new SelectListItem() { Text = S["Tga"], Value = ((int)Format.Tga).ToString() });
+            model.AvailableFormats.Add(new SelectListItem() { Text = S["WebP"], Value = ((int)Format.WebP).ToString() });
         }
     }
 }
