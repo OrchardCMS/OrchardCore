@@ -378,6 +378,7 @@ namespace OrchardCore.Environment.Shell
                 // Creates a default shell settings based on the configuration.
                 var shellSettings = _shellSettingsManager.CreateDefaultSettings();
                 shellSettings.Name = ShellHelper.DefaultShellName;
+                shellSettings.VersionId = IdGenerator.GenerateId();
                 shellSettings.State = TenantState.Uninitialized;
                 defaultSettings = shellSettings;
             }
