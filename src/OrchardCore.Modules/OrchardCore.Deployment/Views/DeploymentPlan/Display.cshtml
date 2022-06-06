@@ -72,7 +72,7 @@
                         thumbnail.Value.DeploymentPlan = Model.DeploymentPlan;
                         thumbnail.Value.Type = thumbnail.Key;
 
-                        <div class="col">
+                        <div class="col item">
                             @await DisplayAsync(thumbnail.Value)
                         </div>
                     }
@@ -138,17 +138,17 @@
             var search = replaceDiacritics($(this).val().toLowerCase());
             if (search == '') {
                 searchBox.val('');
-                $('.card-item').attr('style', 'display:flex !important');
+                $('.item').show();
             }
             else {
-                $('.card-item').each(function () {
+                $('.item').each(function () {
                     var filter = replaceDiacritics($(this).children().children().first().html().toLowerCase());
                     var found = filter.indexOf(search) > -1;
                     if (found) {
-                        $(this).attr('style', 'display:flex !important');
+                        $(this).show();
                     }
                     else {
-                        $(this).attr('style', 'display:none !important');
+                        $(this).hide();
                     }
                 });
             }
