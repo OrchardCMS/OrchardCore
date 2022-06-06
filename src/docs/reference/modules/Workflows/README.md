@@ -85,7 +85,7 @@ Although many activities support multiple outcomes, they typically return only o
 For example, the _Send Email_ activity has two possible outcomes: "Done" and "Failed".  
 When the email was sent successfully, it yields "Done" as the outcome, and "Failed" otherwise.
 
-For activities that have an iterator outcome e.g _Content For Each_, return the outcome of the next activity back to the irrerate task for the irritation to continue either through the done outcome or via a fork.
+For activities that have an iterator outcome e.g _Content For Each_, return the outcome of the next activity back to the iterate task for the iteration to continue either through the done outcome or via a fork.
 If forking make sure that the loop output is after the action output. 
 
 ![Sample content for each ](docs/sample-content-for-each.png)
