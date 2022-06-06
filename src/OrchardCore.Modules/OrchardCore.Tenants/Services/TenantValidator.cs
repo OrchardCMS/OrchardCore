@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -20,27 +21,31 @@ namespace OrchardCore.Tenants.Services
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly ShellSettings _shellSettings;
         private readonly IStringLocalizer<TenantValidator> S;
+        private readonly IConnectionFactoryProvider _connectionFactoryProvider;
 
         public TenantValidator(
             IShellHost shellHost,
             IFeatureProfilesService featureProfilesService,
             IEnumerable<DatabaseProvider> databaseProviders,
             ShellSettings shellSettings,
-            IStringLocalizer<TenantValidator> stringLocalizer)
+            IStringLocalizer<TenantValidator> stringLocalizer,
+            IConnectionFactoryProvider connectionFactoryProvider)
         {
             _shellHost = shellHost;
             _featureProfilesService = featureProfilesService;
             _databaseProviders = databaseProviders;
             _shellSettings = shellSettings;
             S = stringLocalizer;
+            _connectionFactoryProvider = connectionFactoryProvider;
         }
 
         public async Task<IEnumerable<ModelError>> ValidateAsync(TenantViewModel model)
         {
             var errors = new List<ModelError>();
             var selectedProvider = _databaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
+            var hasConnectionString = !String.IsNullOrWhiteSpace(model.ConnectionString);
 
-            if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(model.ConnectionString))
+            if (selectedProvider != null && selectedProvider.HasConnectionString && !hasConnectionString)
             {
                 errors.Add(new ModelError(nameof(model.ConnectionString), S["The connection string is mandatory for this provider."]));
             }
@@ -79,9 +84,26 @@ namespace OrchardCore.Tenants.Services
 
             var allSettings = _shellHost.GetAllSettings();
 
-            if (model.IsNewTenant && allSettings.Any(tenant => String.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
+            if (model.IsNewTenant)
             {
-                errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
+                if (allSettings.Any(tenant => String.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
+                {
+                    errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
+                }
+
+                if (selectedProvider != null && hasConnectionString)
+                {
+                    var connectionKeys = GetExistingConnectionKeys(allSettings);
+
+                    var dbFactory = _connectionFactoryProvider.GetFactory(selectedProvider.Value, model.ConnectionString);
+                    using var newTenantConnection = dbFactory.CreateConnection();
+                    var newTenantKey = GetConnectionKey(dbFactory.DbConnectionType, newTenantConnection, model.TablePrefix);
+
+                    if (connectionKeys.Any(key => key.Equals(newTenantKey)))
+                    {
+                        errors.Add(new ModelError(nameof(model.TablePrefix), S["The provided table prefix already exists."]));
+                    }
+                }
             }
 
             var allOtherShells = allSettings.Where(t => !String.Equals(t.Name, model.Name, StringComparison.OrdinalIgnoreCase));
@@ -91,8 +113,45 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
 
+
             return errors;
         }
+
+        private IEnumerable<string> GetExistingConnectionKeys(IEnumerable<ShellSettings> allSettings)
+        {
+            var connectionKeys = new List<string>();
+
+            foreach (var setting in allSettings)
+            {
+                var providerName = setting["DatabaseProvider"];
+
+                if (String.IsNullOrEmpty(providerName))
+                {
+                    continue;
+                }
+
+                var connectionString = setting["ConnectionString"];
+
+                if (String.IsNullOrEmpty(connectionString))
+                {
+                    continue;
+                }
+
+                var dbFactory = _connectionFactoryProvider.GetFactory(providerName, connectionString);
+
+                using var connection = dbFactory.CreateConnection();
+
+                connectionKeys.Add(GetConnectionKey(dbFactory.DbConnectionType, connection, setting["TablePrefix"]));
+            }
+
+            return connectionKeys;
+        }
+
+        private static string GetConnectionKey(Type dbType, DbConnection connection, string prefix)
+        {
+            return $"{dbType.Name}-{connection.DataSource}-{connection.Database}-{prefix}".ToLower();
+        }
+
 
         private static bool DoesUrlHostExist(string urlHost, string modelUrlHost)
         {

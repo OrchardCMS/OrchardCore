@@ -111,17 +111,22 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 ? _shellSettings.First()
                 : new ShellSettings();
 
+            var connectionFactory = new Mock<IConnectionFactoryProvider>();
+            connectionFactory.Setup(l => l.GetFactory(shellSettings));
+            connectionFactory.Setup(l => l.GetFactory(shellSettings["ProviderName"], shellSettings["ConnectionName"]));
+
             return new TenantValidator(
                 shellHostMock.Object,
                 featureProfilesServiceMock.Object,
                 Enumerable.Empty<DatabaseProvider>(),
                 shellSettings,
-                stringLocalizerMock.Object);
+                stringLocalizerMock.Object,
+                connectionFactory.Object);
         }
 
         private void SeedTenants()
         {
-            _shellSettings.Add(new ShellSettings{ Name = ShellHelper.DefaultShellName });
+            _shellSettings.Add(new ShellSettings { Name = ShellHelper.DefaultShellName });
             _shellSettings.Add(new ShellSettings { Name = "Tenant1" });
             _shellSettings.Add(new ShellSettings { Name = "Tenant2", RequestUrlPrefix = String.Empty, RequestUrlHost = "example2.com" });
             _shellSettings.Add(new ShellSettings { Name = "Tenant3", RequestUrlPrefix = "tenant3", RequestUrlHost = String.Empty });
