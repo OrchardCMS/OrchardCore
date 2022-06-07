@@ -9,7 +9,7 @@
 
 <div class="mb-3">
     <label asp-for="Method">@T["Method"]</label>
-    <select asp-for="Method" class="form-control content-preview-select">
+    <select asp-for="Method" class="form-select content-preview-select">
         <option value="POST">POST</option>
         <option value="GET">GET</option>
     </select>
@@ -18,7 +18,7 @@
 
 <div class="mb-3">
     <label asp-for="EncType">@T["EncType"]</label>
-    <select asp-for="EncType" class="form-control content-preview-select">
+    <select asp-for="EncType" class="form-select content-preview-select">
         <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded	</option>
         <option value="multipart/form-data">multipart/form-data</option>
         <option value="text/plain">text/plain</option>
