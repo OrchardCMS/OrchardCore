@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -66,7 +67,7 @@ namespace OrchardCore.Sitemaps.Builders
                 if (lastModDate.HasValue)
                 {
                     var lastMod = new XElement(Namespace + "lastmod");
-                    lastMod.Add(lastModDate.GetValueOrDefault().ToString("yyyy-MM-ddTHH:mm:sszzz"));
+                    lastMod.Add(lastModDate.GetValueOrDefault().ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture));
                     xmlSitemap.Add(lastMod);
                 }
 
