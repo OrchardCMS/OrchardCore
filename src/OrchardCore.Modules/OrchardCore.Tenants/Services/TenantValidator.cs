@@ -113,7 +113,6 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
 
-
             return errors;
         }
 
@@ -121,16 +120,16 @@ namespace OrchardCore.Tenants.Services
         {
             var connectionKeys = new List<string>();
 
-            foreach (var setting in allSettings)
+            foreach (var tenantSettings in allSettings)
             {
-                var providerName = setting["DatabaseProvider"];
+                var providerName = tenantSettings["DatabaseProvider"];
 
                 if (String.IsNullOrEmpty(providerName))
                 {
                     continue;
                 }
 
-                var connectionString = setting["ConnectionString"];
+                var connectionString = tenantSettings["ConnectionString"];
 
                 if (String.IsNullOrEmpty(connectionString))
                 {
@@ -141,7 +140,7 @@ namespace OrchardCore.Tenants.Services
 
                 using var connection = dbFactory.CreateConnection();
 
-                connectionKeys.Add(GetConnectionKey(dbFactory.DbConnectionType, connection, setting["TablePrefix"]));
+                connectionKeys.Add(GetConnectionKey(dbFactory.DbConnectionType, connection, tenantSettings["TablePrefix"]));
             }
 
             return connectionKeys;
@@ -151,7 +150,6 @@ namespace OrchardCore.Tenants.Services
         {
             return $"{dbType.Name}-{connection.DataSource}-{connection.Database}-{prefix}".ToLower();
         }
-
 
         private static bool DoesUrlHostExist(string urlHost, string modelUrlHost)
         {
