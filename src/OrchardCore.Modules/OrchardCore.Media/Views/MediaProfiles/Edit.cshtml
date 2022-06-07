@@ -43,7 +43,7 @@
     <div class="form-g mb-3" asp-validation-class-for="SelectedHeight">
         <div class="w-100 w-md-50">
             <label asp-for="SelectedHeight">@T["Height"]</label>
-            <select asp-for="SelectedHeight" asp-items="@Model.AvailableHeights" class="form-selectv content-preview-select" asp-validation-class-for="SelectedHeight"></select>
+            <select asp-for="SelectedHeight" asp-items="@Model.AvailableHeights" class="form-select content-preview-select" asp-validation-class-for="SelectedHeight"></select>
             <span asp-validation-for="SelectedHeight"></span>
             <input type="number" asp-for="CustomHeight" class="form-control mt-3" style="@(Model.CustomHeight != 0 ? "" : "display: none;")" />
             <span asp-validation-for="CustomHeight"></span>
