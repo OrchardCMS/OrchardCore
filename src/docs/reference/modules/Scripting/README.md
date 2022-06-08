@@ -8,18 +8,7 @@ The scripting module provides an API allowing you to evaluate custom scripts in 
 
 ### Executing some script
 
-The main interface is `IScriptingManager`.
-
-```csharp
-public interface IScriptingManager
-{
-    IScriptingEngine GetScriptingEngine(string prefix);
-
-    object Evaluate(string directive, IFileProvider fileProvider, string basePath, IEnumerable<IGlobalMethodProvider> scopedMethodProviders);
-
-    IReadOnlyList<IGlobalMethodProvider> GlobalMethodProviders { get; }
-}
-```
+The main interface is [IScriptingManager](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Infrastructure.Abstractions/Scripting/IScriptingManager.cs)
 
 To evaluate an expression using a scripting engine, you must know which ones are available in the system.  
 For instance, a JavaScript one is available by default and its prefix is `js`.  
