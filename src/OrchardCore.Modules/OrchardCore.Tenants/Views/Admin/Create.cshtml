@@ -88,6 +88,7 @@
             <input asp-for="TablePrefix" class="form-control" />
         </div>
     </div>
+  
     @if (!Model.DatabaseConfigurationPreset)
     {
         <div class="row connectionString" asp-validation-class-for="ConnectionString">
@@ -108,8 +109,7 @@
 
         <div class="mb-3" asp-validation-class-for="FeatureProfiles">
             <label asp-for="FeatureProfiles">@T["Optionally specify which feature profile should be applied to this tenant."]</label>
-            <select asp-for="FeatureProfiles" asp-items="Model.FeatureProfileItems" class="form-control"></select>
-        </div>
+            <select asp-for="FeatureProfiles" asp-items="Model.FeatureProfileItems" class="form-select"></select>
     }
 
     <div class="mb-3">

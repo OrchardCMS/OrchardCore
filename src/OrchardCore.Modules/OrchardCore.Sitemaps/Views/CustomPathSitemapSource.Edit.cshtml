@@ -20,12 +20,12 @@
                 </div>
                 <div class="mb-3" asp-validation-class-for="ChangeFrequency">
                     <label asp-for="ChangeFrequency">@T["Change Frequency"] </label>
-                    <select asp-for="ChangeFrequency" class="form-control w-25" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
+                    <select asp-for="ChangeFrequency" class="form-select w-25" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
                     <span class="hint">@T["The default frequency with which this path is likely to change."]</span>
                 </div>
                 <div class="mb-3" asp-validation-class-for="Priority">
                     <label asp-for="Priority">@T["Priority"] </label>
-                    <select asp-for="Priority" class="form-control w-25">
+                    <select asp-for="Priority" class="form-select w-25">
                         <option value="0">@T["0.0"]</option>
                         <option value="1">@T["0.1"]</option>
                         <option value="2">@T["0.2"]</option>

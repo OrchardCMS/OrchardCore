@@ -12,7 +12,7 @@
     <div class="row">
         <div class="col-md-6 col-lg-4">
             <label asp-for="Value">@name</label>
-            <select asp-for="Value" class="form-control content-preview-select">
+            <select asp-for="Value" class="form-select content-preview-select">
                 @if (!settings.Required)
                 {
                     <option value="">@T["None"]</option>

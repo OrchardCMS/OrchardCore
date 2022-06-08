@@ -30,7 +30,7 @@
     <div class="form-g mb-3" asp-validation-class-for="SelectedWidth">
         <div class="w-100 w-md-50">
             <label asp-for="SelectedWidth">@T["Width"]</label>
-            <select asp-for="SelectedWidth" asp-items="@Model.AvailableWidths" class="form-control content-preview-select" asp-validation-class-for="SelectedWidth"></select>
+            <select asp-for="SelectedWidth" asp-items="@Model.AvailableWidths" class="form-select content-preview-select" asp-validation-class-for="SelectedWidth"></select>
             <span asp-validation-for="SelectedWidth"></span>
             <input type="number" asp-for="CustomWidth" class="form-control mt-3" style="@(Model.CustomWidth != 0 ? "" : "display: none;")" />
             <span asp-validation-for="CustomWidth"></span>
@@ -43,7 +43,7 @@
     <div class="form-g mb-3" asp-validation-class-for="SelectedHeight">
         <div class="w-100 w-md-50">
             <label asp-for="SelectedHeight">@T["Height"]</label>
-            <select asp-for="SelectedHeight" asp-items="@Model.AvailableHeights" class="form-control content-preview-select" asp-validation-class-for="SelectedHeight"></select>
+            <select asp-for="SelectedHeight" asp-items="@Model.AvailableHeights" class="form-select content-preview-select" asp-validation-class-for="SelectedHeight"></select>
             <span asp-validation-for="SelectedHeight"></span>
             <input type="number" asp-for="CustomHeight" class="form-control mt-3" style="@(Model.CustomHeight != 0 ? "" : "display: none;")" />
             <span asp-validation-for="CustomHeight"></span>
@@ -56,7 +56,7 @@
     <div class="form-g mb-3" asp-validation-class-for="SelectedMode">
         <div class="w-100 w-md-50">
             <label asp-for="SelectedMode">@T["Resize Mode"]</label>
-            <select asp-for="SelectedMode" asp-items="Model.AvailableResizeModes" class="form-control content-preview-select" asp-validation-class-for="SelectedMode"></select>
+            <select asp-for="SelectedMode" asp-items="Model.AvailableResizeModes" class="form-select content-preview-select" asp-validation-class-for="SelectedMode"></select>
             <span asp-validation-for="SelectedMode"></span>
         </div>
         <div class="w-100">
@@ -78,7 +78,7 @@
     <div class="form-g mb-3" asp-validation-class-for="SelectedFormat">
         <div class="w-100 w-md-50">
             <label asp-for="SelectedFormat">@T["Format"]</label>
-            <select asp-for="SelectedFormat" asp-items="Model.AvailableFormats" class="form-control content-preview-select" asp-validation-class-for="SelectedFormat"></select>
+            <select asp-for="SelectedFormat" asp-items="Model.AvailableFormats" class="form-select content-preview-select" asp-validation-class-for="SelectedFormat"></select>
             <span asp-validation-for="SelectedFormat"></span>
         </div>
         <div class="w-100">
