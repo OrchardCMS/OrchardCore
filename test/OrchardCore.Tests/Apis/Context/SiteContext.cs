@@ -10,124 +10,23 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Lucene;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Testing.Context;
 
 namespace OrchardCore.Tests.Apis.Context
 {
-    public class SiteContext : IDisposable
+    public class SiteContext : SiteContext<SiteStartup>
     {
-        private static readonly TablePrefixGenerator TablePrefixGenerator = new TablePrefixGenerator();
-        public static OrchardTestFixture<SiteStartup> Site { get; }
-        public static HttpClient DefaultTenantClient { get; }
-
-        public string RecipeName { get; set; } = "Blog";
-        public string DatabaseProvider { get; set; } = "Sqlite";
-        public string ConnectionString { get; set; }
-        public PermissionsContext PermissionsContext { get; set; }
-
-        public HttpClient Client { get; private set; }
-        public string TenantName { get; private set; }
         public OrchardGraphQLClient GraphQLClient { get; private set; }
 
-        static SiteContext()
+        public SiteContext()
         {
-            Site = new OrchardTestFixture<SiteStartup>();
-            DefaultTenantClient = Site.CreateDefaultClient();
+            RecipeName = "Blog";
         }
 
-        public virtual async Task InitializeAsync()
+        public override async Task InitializeAsync()
         {
-            var tenantName = Guid.NewGuid().ToString("n");
-            var tablePrefix = await TablePrefixGenerator.GeneratePrefixAsync();
-
-            var createModel = new Tenants.ViewModels.CreateApiViewModel
-            {
-                DatabaseProvider = DatabaseProvider,
-                TablePrefix = tablePrefix,
-                ConnectionString = ConnectionString,
-                RecipeName = RecipeName,
-                Name = tenantName,
-                RequestUrlPrefix = tenantName
-            };
-
-            var createResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/create", createModel);
-            createResult.EnsureSuccessStatusCode();
-
-            var content = await createResult.Content.ReadAsStringAsync();
-
-            var url = new Uri(content.Trim('"'));
-            url = new Uri(url.Scheme + "://" + url.Authority + url.LocalPath + "/");
-
-            var setupModel = new Tenants.ViewModels.SetupApiViewModel
-            {
-                SiteName = "Test Site",
-                DatabaseProvider = DatabaseProvider,
-                TablePrefix = tablePrefix,
-                ConnectionString = ConnectionString,
-                RecipeName = RecipeName,
-                UserName = "admin",
-                Password = "Password01_",
-                Name = tenantName,
-                Email = "Nick@Orchard"
-            };
-
-            var setupResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", setupModel);
-            setupResult.EnsureSuccessStatusCode();
-
-            lock (Site)
-            {
-                Client = Site.CreateDefaultClient(url);
-                TenantName = tenantName;
-            }
-
-            if (PermissionsContext != null)
-            {
-                var permissionContextKey = Guid.NewGuid().ToString();
-                SiteStartup.PermissionsContexts.TryAdd(permissionContextKey, PermissionsContext);
-                Client.DefaultRequestHeaders.Add("PermissionsContext", permissionContextKey);
-            }
-
+            await base.InitializeAsync();
             GraphQLClient = new OrchardGraphQLClient(Client);
-        }
-
-        public async Task RunRecipeAsync(IShellHost shellHost, string recipeName, string recipePath)
-        {
-            var shellScope = await shellHost.GetScopeAsync(TenantName);
-            await shellScope.UsingAsync(async scope =>
-            {
-                var shellFeaturesManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
-                var recipeHarvesters = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeHarvester>>();
-                var recipeExecutor = scope.ServiceProvider.GetRequiredService<IRecipeExecutor>();
-
-                var recipeCollections = await Task.WhenAll(
-                    recipeHarvesters.Select(recipe => recipe.HarvestRecipesAsync()));
-
-                var recipes = recipeCollections.SelectMany(recipeCollection => recipeCollection);
-                var recipe = recipes
-                    .FirstOrDefault(recipe => recipe.RecipeFileInfo.Name == recipeName && recipe.BasePath == recipePath);
-
-                var executionId = Guid.NewGuid().ToString("n");
-
-                await recipeExecutor.ExecuteAsync(
-                    executionId,
-                    recipe,
-                    new Dictionary<string, object>(),
-                    CancellationToken.None);
-            });
-        }
-
-        public async Task ResetLuceneIndiciesAsync(IShellHost shellHost, string indexName)
-        {
-            var shellScope = await shellHost.GetScopeAsync(TenantName);
-            await shellScope.UsingAsync(async scope =>
-            {
-                var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
-                var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
-
-                var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync(indexName);
-
-                luceneIndexingService.ResetIndex(indexName);
-                await luceneIndexingService.ProcessContentItemsAsync(indexName);
-            });
         }
 
         public async Task<string> CreateContentItem(string contentType, Action<ContentItem> func, bool draft = false)
@@ -153,10 +52,21 @@ namespace OrchardCore.Tests.Apis.Context
             return Client.DeleteAsync("api/content/" + contentItemId);
         }
 
-        public void Dispose()
+        public async Task ResetLuceneIndiciesAsync(IShellHost shellHost, string indexName)
         {
-            Client?.Dispose();
+            var shellScope = await shellHost.GetScopeAsync(TenantName);
+            await shellScope.UsingAsync(async scope =>
+            {
+                var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
+                var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
+
+                var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync(indexName);
+
+                luceneIndexingService.ResetIndex(indexName);
+                await luceneIndexingService.ProcessContentItemsAsync(indexName);
+            });
         }
+
     }
 
     public static class SiteContextExtensions

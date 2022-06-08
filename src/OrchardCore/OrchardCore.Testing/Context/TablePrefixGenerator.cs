@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Tests.Apis.Context
+namespace OrchardCore.Testing.Context
 {
     /// <summary>
     /// This is an internal table prefix generator which uses a timestamp to generate a table prefix
@@ -11,11 +11,11 @@ namespace OrchardCore.Tests.Apis.Context
     /// <remarks>
     /// Does not guarantee uniqueness.
     /// </remarks>
-    internal class TablePrefixGenerator
+    public class TablePrefixGenerator
     {
         private static readonly char[] CharList = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
 
-        internal async Task<string> GeneratePrefixAsync()
+        public async Task<string> GeneratePrefixAsync()
         {
             await Task.Delay(1);
             var ticks = DateTime.Now.Ticks;

@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 
-namespace OrchardCore.Tests.Apis.Context
+namespace OrchardCore.Testing.Context
 {
     public class OrchardTestFixture<TStartup> : WebApplicationFactory<TStartup>
-        where TStartup : class
+        where TStartup : SiteStartupBase, new()
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -22,10 +22,19 @@ namespace OrchardCore.Tests.Apis.Context
             builder.UseContentRoot(Directory.GetCurrentDirectory());
         }
 
+        Type _webStartupClass;
+        public Type WebStartupClass
+        {
+            get
+            {
+                return _webStartupClass ?? (_webStartupClass = default(TStartup).WebStartupClass);
+            }
+        }
+
         protected override IWebHostBuilder CreateWebHostBuilder()
         {
             return WebHostBuilderFactory.CreateFromAssemblyEntryPoint(
-                typeof(Cms.Web.Startup).Assembly, Array.Empty<string>());
+                WebStartupClass.Assembly, Array.Empty<string>());
         }
 
         protected override IHostBuilder CreateHostBuilder()

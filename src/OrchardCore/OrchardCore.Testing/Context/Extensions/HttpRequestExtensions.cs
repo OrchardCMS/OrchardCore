@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace OrchardCore.Tests.Apis.Context
+namespace OrchardCore
 {
     /// <summary>
     /// The http request extensions.
     /// </summary>
-    internal static class HttpRequestExtensions
+    public static class HttpRequestExtensions
     {
         private readonly static JsonSerializerSettings JsonSettings = new JsonSerializerSettings()
         {
@@ -29,7 +29,7 @@ namespace OrchardCore.Tests.Apis.Context
         /// <param name="value">
         /// The value.
         /// </param>
-        /// <param name="formatter">
+        /// <param name="settings">
         /// The formatter.
         /// </param>
         /// <typeparam name="T">
@@ -48,7 +48,7 @@ namespace OrchardCore.Tests.Apis.Context
                 Encoding.UTF8,
                 "application/json");
 
-            return HttpRequestExtensions.PatchAsync(client, requestUri, content);
+            return PatchAsync(client, requestUri, content);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace OrchardCore.Tests.Apis.Context
         /// <param name="value">
         /// The value.
         /// </param>
-        /// <param name="formatter">
+        /// <param name="settings">
         /// The formatter.
         /// </param>
         /// <typeparam name="T">
@@ -128,7 +128,7 @@ namespace OrchardCore.Tests.Apis.Context
         /// <param name="value">
         /// The value.
         /// </param>
-        /// <param name="formatter">
+        /// <param name="settings">
         /// The formatter.
         /// </param>
         /// <typeparam name="T">

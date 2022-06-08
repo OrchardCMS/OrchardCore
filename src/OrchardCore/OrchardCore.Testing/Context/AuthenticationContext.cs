@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Tests.Apis.Context
+namespace OrchardCore.Testing.Context
 {
-    internal class PermissionContextAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+    public class PermissionContextAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
         private readonly PermissionsContext _permissionsContext;
 
@@ -66,7 +66,7 @@ namespace OrchardCore.Tests.Apis.Context
         public bool UsePermissionsContext { get; set; } = false;
     }
 
-    internal class StubIdentity : IIdentity
+    public class StubIdentity : IIdentity
     {
         public string AuthenticationType => "TEST TEST";
 

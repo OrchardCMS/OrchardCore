@@ -12,7 +12,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Tests.Apis.Context;
+using OrchardCore.Testing.Context;
 using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules

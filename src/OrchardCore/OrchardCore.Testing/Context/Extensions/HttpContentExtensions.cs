@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace OrchardCore.Tests.Apis.Context
+namespace OrchardCore
 {
-    internal static class HttpContentExtensions
+    public static class HttpContentExtensions
     {
         public static async Task<T> ReadAsAsync<T>(this HttpContent content, JsonConverter jsonConverter)
         {
