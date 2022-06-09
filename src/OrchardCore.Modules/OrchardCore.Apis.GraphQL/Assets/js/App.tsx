@@ -27,16 +27,16 @@ function fetcher(params: Object): Promise<any> {
             credentials: 'include'
         }
     )
-        .then(function (response) {
-            return response.text();
-        })
-        .then(function (responseBody) {
-            try {
-                return JSON.parse(responseBody);
-            } catch (e) {
-                return responseBody;
-            }
-        });
+    .then(function(response) {
+        return response.text();
+    })
+    .then(function(responseBody) {
+        try {
+            return JSON.parse(responseBody);
+        } catch (e) {
+            return responseBody;
+        }
+    });
 }
 
 function App() {
@@ -48,7 +48,7 @@ function App() {
     const [schema, setSchema] = useState(null);
     const [explorerIsOpen, setExplorerIsOpen] = useState(true);
 
-    useEffect(() => { 
+    useEffect(() => {
         fetcher({
             query: getIntrospectionQuery()
         }).then(result => {
