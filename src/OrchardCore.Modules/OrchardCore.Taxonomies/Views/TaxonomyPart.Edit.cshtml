@@ -22,7 +22,7 @@
 }
 <div class="mb-3" asp-validation-class-for="TermContentType">
     <label asp-for="TermContentType" >@T["Term Content Type"]</label>
-    <select asp-for="TermContentType" class="form-control col-small" asp-items="@(new SelectList(termContentTypes, "Name", "DisplayName"))">
+    <select asp-for="TermContentType" class="form-select col-small" asp-items="@(new SelectList(termContentTypes, "Name", "DisplayName"))">
     </select>
     <span asp-validation-for="TermContentType"></span>
 </div>
