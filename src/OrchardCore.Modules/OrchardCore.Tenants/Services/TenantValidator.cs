@@ -50,12 +50,16 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.Name), S["The tenant name is mandatory."]));
             }
 
-            if (!String.IsNullOrWhiteSpace(model.FeatureProfile))
+            if (model.FeatureProfile != null && model.FeatureProfile.Any())
             {
                 var featureProfiles = await _featureProfilesService.GetFeatureProfilesAsync();
-                if (!featureProfiles.ContainsKey(model.FeatureProfile))
+
+                foreach (var featureProfile in model.FeatureProfile)
                 {
-                    errors.Add(new ModelError(nameof(model.FeatureProfile), S["The feature profile does not exist."]));
+                    if (!featureProfiles.ContainsKey(featureProfile))
+                    {
+                        errors.Add(new ModelError(nameof(model.FeatureProfile), S["The feature profile {0} does not exist.", featureProfile]));
+                    }
                 }
             }
 

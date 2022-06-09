@@ -307,9 +307,8 @@ namespace OrchardCore.Tenants.Controllers
             // Creates a default shell settings based on the configuration.
             var shellSettings = _shellSettingsManager.CreateDefaultSettings();
 
-            var currentFeatureProfile = shellSettings["FeatureProfile"];
-
-            var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfile);
+            var currentProfiles = shellSettings["FeatureProfile"]?.Split(',');
+            var featureProfiles = await GetFeatureProfilesAsync(currentProfiles);
 
             var model = new EditTenantViewModel
             {
@@ -318,7 +317,7 @@ namespace OrchardCore.Tenants.Controllers
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
                 TablePrefix = shellSettings["TablePrefix"],
                 RecipeName = shellSettings["RecipeName"],
-                FeatureProfile = currentFeatureProfile,
+                FeatureProfile = currentProfiles,
                 FeatureProfiles = featureProfiles
             };
             SetConfigurationShellValues(model);
@@ -364,7 +363,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
-                shellSettings["FeatureProfile"] = model.FeatureProfile;
+                shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfile ?? Array.Empty<string>());
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -401,9 +400,9 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            var currentFeatureProfile = shellSettings["FeatureProfile"];
+            var currentProfiles = shellSettings["FeatureProfile"]?.Split(',');
 
-            var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfile);
+            var featureProfiles = await GetFeatureProfilesAsync(currentProfiles);
 
             var model = new EditTenantViewModel
             {
@@ -412,7 +411,7 @@ namespace OrchardCore.Tenants.Controllers
                 Name = shellSettings.Name,
                 RequestUrlHost = shellSettings.RequestUrlHost,
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
-                FeatureProfile = currentFeatureProfile,
+                FeatureProfile = currentProfiles,
                 FeatureProfiles = featureProfiles
             };
 
@@ -464,11 +463,11 @@ namespace OrchardCore.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
-                shellSettings["Description"] = model.Description;
-                shellSettings["Category"] = model.Category;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
-                shellSettings["FeatureProfile"] = model.FeatureProfile;
+                shellSettings["Description"] = model.Description;
+                shellSettings["Category"] = model.Category;
+                shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfile ?? Array.Empty<string>());
 
                 // The user can change the 'preset' database information only if the
                 // tenant has not been initialized yet
@@ -643,6 +642,15 @@ namespace OrchardCore.Tenants.Controllers
             {
                 featureProfiles.Insert(0, new SelectListItem(S["None"], String.Empty, currentFeatureProfile == String.Empty));
             }
+
+            return featureProfiles;
+        }
+
+        private async Task<List<SelectListItem>> GetFeatureProfilesAsync(IEnumerable<string> currentFeatureProfiles)
+        {
+            var featureProfiles = (await _featureProfilesService.GetFeatureProfilesAsync())
+                .Select(x => new SelectListItem(x.Value.Name ?? x.Key, x.Key, currentFeatureProfiles != null && currentFeatureProfiles.Contains(x.Key, StringComparer.OrdinalIgnoreCase)))
+                .ToList();
 
             return featureProfiles;
         }

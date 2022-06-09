@@ -47,7 +47,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 Name = name,
                 RequestUrlPrefix = urlPrefix,
                 RequestUrlHost = hostName,
-                FeatureProfile = featureProfile,
+                FeatureProfile = new[] { featureProfile },
                 IsNewTenant = true
             };
 
@@ -75,7 +75,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 Name = "Tenant5",
                 RequestUrlPrefix = "tenant4",
                 RequestUrlHost = "example5.com",
-                FeatureProfile = "Feature Profile",
+                FeatureProfile = new[] { "Feature Profile" },
                 IsNewTenant = isNewTenant
             };
 
@@ -121,7 +121,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
 
         private void SeedTenants()
         {
-            _shellSettings.Add(new ShellSettings{ Name = ShellHelper.DefaultShellName });
+            _shellSettings.Add(new ShellSettings { Name = ShellHelper.DefaultShellName });
             _shellSettings.Add(new ShellSettings { Name = "Tenant1" });
             _shellSettings.Add(new ShellSettings { Name = "Tenant2", RequestUrlPrefix = String.Empty, RequestUrlHost = "example2.com" });
             _shellSettings.Add(new ShellSettings { Name = "Tenant3", RequestUrlPrefix = "tenant3", RequestUrlHost = String.Empty });

@@ -179,14 +179,14 @@ namespace OrchardCore.Tenants
             routes.MapAreaControllerRoute(
                 name: "TenantFeatureProfilesEdit",
                 areaName: "OrchardCore.Tenants",
-                pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles/Edit/{name}",
+                pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles/Edit/{id}",
                 defaults: new { controller = featureProfilesControllerName, action = nameof(FeatureProfilesController.Edit) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "TenantFeatureProfilesDelete",
                 areaName: "OrchardCore.Tenants",
-                pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles/Delete/{name}",
+                pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles/Delete/{id}",
                 defaults: new { controller = featureProfilesControllerName, action = nameof(FeatureProfilesController.Delete) }
             );
         }

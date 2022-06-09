@@ -22,7 +22,7 @@ namespace OrchardCore.Tenants.ViewModels
 
         public string RecipeName { get; set; }
 
-        public string FeatureProfile { get; set; }
+        public string[] FeatureProfile { get; set; }
 
         [BindNever]
         public bool IsNewTenant { get; set; }

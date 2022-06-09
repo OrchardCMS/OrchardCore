@@ -63,10 +63,10 @@
                     </div>
                     <div class="w-100">
                         <div class="float-end">
-                            <a asp-action="Edit" asp-route-name="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            <a asp-action="Edit" asp-route-id="@entry.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <a asp-action="Delete" asp-route-id="@entry.Id" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
-                        <a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a>
+                        <a asp-action="Edit" asp-route-id="@entry.Id">@entry.Name</a>
                     </div>
                 </li>
             }
