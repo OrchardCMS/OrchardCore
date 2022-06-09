@@ -26,7 +26,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
         [InlineData("Tenant5", "", "example2.com", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
         [InlineData("Tenant6", "tenant4", "example4.com", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
         [InlineData("", "tenant7", "example1.com", "Feature Profile", new[] { "The tenant name is mandatory." })]
-        [InlineData("Tenant7", "tenant7", "", "Feature", new[] { "The feature profile does not exist." })]
+        [InlineData("Tenant7", "tenant7", "", "Feature", new[] { "The feature profile Feature does not exist." })]
         [InlineData("@Invalid Tenant", "tenant7", "example1.com", "Feature Profile", new[] { "Invalid tenant name. Must contain characters only and no spaces." })]
         [InlineData("Tenant7", null, "  ", "Feature Profile", new[] { "Host and url prefix can not be empty at the same time." })]
         [InlineData("Tenant7", "/tenant7", "", "Feature Profile", new[] { "The url prefix can not contain more than one segment." })]
