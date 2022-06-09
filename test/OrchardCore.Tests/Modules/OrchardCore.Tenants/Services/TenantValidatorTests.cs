@@ -112,7 +112,6 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 : new ShellSettings();
 
             var connectionFactory = new Mock<IConnectionFactoryProvider>();
-            connectionFactory.Setup(l => l.GetFactory(shellSettings));
             connectionFactory.Setup(l => l.GetFactory(shellSettings["ProviderName"], shellSettings["ConnectionName"]));
 
             return new TenantValidator(
