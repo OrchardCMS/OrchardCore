@@ -1,7 +1,7 @@
 using System;
 
 namespace OrchardCore.Data;
-public class DatabaseHelper
+internal class DatabaseHelper
 {
     public static string GetStandardPrefix(string prefix)
     {

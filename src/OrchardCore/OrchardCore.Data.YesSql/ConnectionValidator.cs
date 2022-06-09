@@ -54,7 +54,7 @@ public class ConnectionValidator : IConnectionValidator
         }
         catch (Exception)
         {
-            // at this point we know that the document table does not exists;
+            // at this point we know that the document table does not exist;
 
             return ConnectionValidatorResult.ValidDocumentDoesNotExists;
         }
