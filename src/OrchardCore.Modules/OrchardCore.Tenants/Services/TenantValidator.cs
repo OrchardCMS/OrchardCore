@@ -58,7 +58,7 @@ namespace OrchardCore.Tenants.Services
                 {
                     if (!featureProfiles.ContainsKey(featureProfile))
                     {
-                        errors.Add(new ModelError(nameof(model.FeatureProfile), S["The feature profile {0} does not exist.", featureProfile]));
+                        errors.Add(new ModelError(nameof(model.FeatureProfile), S["The feature profile does not exist."]));
                     }
                 }
             }
