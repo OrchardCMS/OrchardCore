@@ -67,7 +67,6 @@ namespace OrchardCore.Sitemaps
 
             services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
             services.AddScoped<ISitemapHelperService, SitemapHelperService>();
-            services.AddScoped<IDisplayManager<SitemapSource>, DisplayManager<SitemapSource>>();
             services.AddScoped<ISitemapBuilder, DefaultSitemapBuilder>();
             services.AddScoped<ISitemapTypeBuilder, SitemapTypeBuilder>();
             services.AddScoped<ISitemapCacheProvider, DefaultSitemapCacheProvider>();

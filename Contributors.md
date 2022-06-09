@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-272-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-277-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -358,7 +358,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/andrewjcarney"><img src="https://avatars.githubusercontent.com/u/6652459?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Andrew Carney</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=andrewjcarney" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/evaldsen"><img src="https://avatars.githubusercontent.com/u/90476086?v=4?s=100" width="100px;" alt=""/><br /><sub><b>evaldsen</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=evaldsen" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/wordshop-git"><img src="https://avatars.githubusercontent.com/u/58780682?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Wordshop</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=wordshop-git" title="Code">💻</a></td>
-    <td align="center"><a href="https://bandism.net/"><img src="https://avatars.githubusercontent.com/u/22633385?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ikko Ashimine</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=eltociear" title="Code">💻</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=eltociear" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://bandism.net/"><img src="https://avatars.githubusercontent.com/u/22633385?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ikko Ashimine</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=eltociear" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/dannoh"><img src="https://avatars.githubusercontent.com/u/1886686?v=4?s=100" width="100px;" alt=""/><br /><sub><b>dannoh</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=dannoh" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/scil"><img src="https://avatars.githubusercontent.com/u/2786775?v=4?s=100" width="100px;" alt=""/><br /><sub><b>scil</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=scil" title="Code">💻</a></td>
   </tr>
@@ -373,6 +373,13 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://github.com/momentum-tunis"><img src="https://avatars.githubusercontent.com/u/58601327?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mehdi</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=momentum-tunis" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/kevinsmgov"><img src="https://avatars.githubusercontent.com/u/5798763?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Kevin Hobson</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=kevinsmgov" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/DemeSzabolcs"><img src="https://avatars.githubusercontent.com/u/80963259?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Szabolcs Deme</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=DemeSzabolcs" title="Documentation">📖</a></td>
+    <td align="center"><a href="http://mazur.dp.ua/"><img src="https://avatars.githubusercontent.com/u/26767342?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mazur Yuriy</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=mazuryv" title="Code">💻</a></td>
+    <td align="center"><a href="http://sleepcanwait.blogspot.com/"><img src="https://avatars.githubusercontent.com/u/237369?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mike Paterson</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=devlife" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/neglectedvalue"><img src="https://avatars.githubusercontent.com/u/69389840?v=4?s=100" width="100px;" alt=""/><br /><sub><b>neglectedvalue</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=neglectedvalue" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/PBMikeW"><img src="https://avatars.githubusercontent.com/u/89110166?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mike Williamson</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=PBMikeW" title="Code">💻</a></td>
   </tr>
 </table>
 

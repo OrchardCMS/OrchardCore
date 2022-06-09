@@ -6,4 +6,6 @@
 #menu li {
   list-style: none;
   cursor: move;
+  border: none;
+  padding: 0;
 }

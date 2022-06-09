@@ -10,6 +10,7 @@ using OrchardCore.Navigation;
 using OrchardCore.ReverseProxy.Drivers;
 using OrchardCore.ReverseProxy.Services;
 using OrchardCore.ReverseProxy.Settings;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
@@ -28,7 +29,9 @@ namespace OrchardCore.ReverseProxy
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, ReverseProxySettingsDisplayDriver>();
+            
             services.AddSingleton<ReverseProxyService>();
 
             services.TryAddEnumerable(ServiceDescriptor

@@ -2442,7 +2442,6 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/22633385?v=4",
       "profile": "https://bandism.net/",
       "contributions": [
-        "code",
         "doc"
       ]
     },
@@ -2532,6 +2531,51 @@
       "name": "Kevin Hobson",
       "avatar_url": "https://avatars.githubusercontent.com/u/5798763?v=4",
       "profile": "https://github.com/kevinsmgov",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "DemeSzabolcs",
+      "name": "Szabolcs Deme",
+      "avatar_url": "https://avatars.githubusercontent.com/u/80963259?v=4",
+      "profile": "https://github.com/DemeSzabolcs",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "mazuryv",
+      "name": "Mazur Yuriy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/26767342?v=4",
+      "profile": "http://mazur.dp.ua/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "devlife",
+      "name": "Mike Paterson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/237369?v=4",
+      "profile": "http://sleepcanwait.blogspot.com/",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "neglectedvalue",
+      "name": "neglectedvalue",
+      "avatar_url": "https://avatars.githubusercontent.com/u/69389840?v=4",
+      "profile": "https://github.com/neglectedvalue",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "PBMikeW",
+      "name": "Mike Williamson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/89110166?v=4",
+      "profile": "https://github.com/PBMikeW",
       "contributions": [
         "code"
       ]
