@@ -15,51 +15,13 @@ public class ConnectionFactoryProvider : IConnectionFactoryProvider
         ArgumentNullException.ThrowIfNull(providerName);
         ArgumentNullException.ThrowIfNull(connectionString);
 
-        if (Is("SqlConnection", providerName))
+        return providerName.ToLower() switch
         {
-            return new DbConnectionFactory<SqlConnection>(connectionString);
-        }
-
-        if (Is("Sqlite", providerName))
-        {
-            return new DbConnectionFactory<MySqlConnection>(connectionString);
-        }
-
-        if (Is("MySql", providerName))
-        {
-            return new DbConnectionFactory<SqliteConnection>(connectionString);
-        }
-
-        if (Is("Postgres", providerName))
-        {
-            return new DbConnectionFactory<NpgsqlConnection>(connectionString);
-        }
-
-        throw new ArgumentOutOfRangeException("The provider '{0}' is not supported.", providerName);
-    }
-
-    public IConnectionFactory GetFactory(ShellSettings shellSettings)
-    {
-        ArgumentNullException.ThrowIfNull(shellSettings);
-
-        var providerName = shellSettings["DatabaseProvider"];
-
-        if (String.IsNullOrEmpty(providerName))
-        {
-            throw new ArgumentOutOfRangeException("The tenant settings does not contain a DatabaseProvider");
-        }
-        var connectionString = shellSettings["ConnectionString"];
-
-        if (String.IsNullOrEmpty(connectionString))
-        {
-            throw new ArgumentOutOfRangeException("The tenant settings does not contain a ConnectionString");
-        }
-
-        return GetFactory(providerName, connectionString);
-    }
-
-    private bool Is(string name, string comparedTo)
-    {
-        return name.Equals(comparedTo, StringComparison.OrdinalIgnoreCase);
+            "sqlconnection" => new DbConnectionFactory<SqlConnection>(connectionString),
+            "sqlite" => new DbConnectionFactory<MySqlConnection>(connectionString),
+            "mysql" => new DbConnectionFactory<SqliteConnection>(connectionString),
+            "postgres" => new DbConnectionFactory<NpgsqlConnection>(connectionString),
+            _ => throw new ArgumentOutOfRangeException("The provider '{0}' is not supported.", providerName)
+        };
     }
 }
