@@ -33,8 +33,9 @@ namespace OrchardCore.Environment.Shell
 
         public async ValueTask<bool> IsFeatureValidAsync(string id)
         {
-            var featureProfileName = _shellSettings["FeatureProfile"];
-            if (String.IsNullOrEmpty(featureProfileName))
+            var profileNames = _shellSettings["FeatureProfile"];
+
+            if (String.IsNullOrEmpty(profileNames))
             {
                 return true;
             }
@@ -49,12 +50,15 @@ namespace OrchardCore.Environment.Shell
 
                     var feauterProfiles = await featureProfilesService.GetFeatureProfilesAsync();
 
-                    if (feauterProfiles.TryGetValue(featureProfileName, out var featureProfile))
+                    foreach (var profileName in profileNames.Split(',', StringSplitOptions.RemoveEmptyEntries))
                     {
-                        _featureProfileLookup = (false, featureProfile);
-                    }
-                    else
-                    {
+                        if (feauterProfiles.TryGetValue(profileName, out var featureProfile))
+                        {
+                            _featureProfileLookup = (false, featureProfile);
+
+                            continue;
+                        }
+
                         _featureProfileLookup = (true, null);
                     }
                 });

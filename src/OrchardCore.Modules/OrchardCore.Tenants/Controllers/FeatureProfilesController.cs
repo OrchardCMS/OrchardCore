@@ -150,8 +150,8 @@ namespace OrchardCore.Tenants.Controllers
             {
                 // For backward compatibility, we use the name as id where id does not exists
                 // the id is immutable whereas the name is mutable
-                Id = featureProfile.Id ?? featureProfile.Name,
-                Name = featureProfile.Name,
+                Id = featureProfile.Id ?? id,
+                Name = featureProfile.Name ?? id,
                 FeatureRules = JsonConvert.SerializeObject(featureProfile.FeatureRules, Formatting.Indented),
             };
 

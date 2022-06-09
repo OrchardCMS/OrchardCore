@@ -24,7 +24,19 @@
             </div>
             <textarea asp-for="FeatureRules" hidden></textarea>
             <span asp-validation-for="FeatureRules"></span>
-            <span class="hint">@T["The feature rules."]</span>
+            <span class="hint">
+                @T["The feature rules. Here is an example if a rule that would exclude '{0}' feature.", "OrchardCore.Flows"]
+
+<pre>
+[
+  {
+    "Rule": "Exclude",
+    "Expression": "OrchardCore.Flows"
+  }
+]
+</pre>
+            </span>
+
         </div>
     </div>
 </div>
