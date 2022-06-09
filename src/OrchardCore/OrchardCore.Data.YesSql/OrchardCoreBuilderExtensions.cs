@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices(services =>
             {
-                services.AddScoped<IConnectionFactoryProvider, ConnectionFactoryProvider>();
+                services.AddScoped<IConnectionValidator, ConnectionValidator>();
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
@@ -103,9 +103,11 @@ namespace Microsoft.Extensions.DependencyInjection
                             throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
                     }
 
-                    if (!string.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
+                    var tablePrefix = DatabaseHelper.GetStandardPrefix(shellSettings["TablePrefix"]);
+
+                    if (!string.IsNullOrEmpty(tablePrefix))
                     {
-                        storeConfiguration = storeConfiguration.SetTablePrefix(shellSettings["TablePrefix"] + "_");
+                        storeConfiguration = storeConfiguration.SetTablePrefix(tablePrefix);
                     }
 
                     var store = StoreFactory.CreateAndInitializeAsync(storeConfiguration).GetAwaiter().GetResult();

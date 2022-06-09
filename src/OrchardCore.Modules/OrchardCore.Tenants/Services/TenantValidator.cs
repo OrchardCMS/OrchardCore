@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -21,7 +20,7 @@ namespace OrchardCore.Tenants.Services
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly ShellSettings _shellSettings;
         private readonly IStringLocalizer<TenantValidator> S;
-        private readonly IConnectionFactoryProvider _connectionFactoryProvider;
+        private readonly IConnectionValidator _connectionValidator;
 
         public TenantValidator(
             IShellHost shellHost,
@@ -29,14 +28,14 @@ namespace OrchardCore.Tenants.Services
             IEnumerable<DatabaseProvider> databaseProviders,
             ShellSettings shellSettings,
             IStringLocalizer<TenantValidator> stringLocalizer,
-            IConnectionFactoryProvider connectionFactoryProvider)
+            IConnectionValidator connectionValidator)
         {
             _shellHost = shellHost;
             _featureProfilesService = featureProfilesService;
             _databaseProviders = databaseProviders;
             _shellSettings = shellSettings;
             S = stringLocalizer;
-            _connectionFactoryProvider = connectionFactoryProvider;
+            _connectionValidator = connectionValidator;
         }
 
         public async Task<IEnumerable<ModelError>> ValidateAsync(TenantViewModel model)
@@ -93,13 +92,13 @@ namespace OrchardCore.Tenants.Services
 
                 if (selectedProvider != null && hasConnectionString)
                 {
-                    var connectionKeys = GetExistingConnectionKeys(allSettings);
+                    var result = await _connectionValidator.ValidateAsync(selectedProvider.Value, model.ConnectionString, model.TablePrefix);
 
-                    var dbFactory = _connectionFactoryProvider.GetFactory(selectedProvider.Value, model.ConnectionString);
-                    using var newTenantConnection = dbFactory.CreateConnection();
-                    var newTenantKey = GetConnectionKey(dbFactory.DbConnectionType, newTenantConnection, model.TablePrefix);
-
-                    if (connectionKeys.Any(key => key.Equals(newTenantKey)))
+                    if (result == ConnectionValidatorResult.InvalidConnection)
+                    {
+                        errors.Add(new ModelError(nameof(model.ConnectionString), S["The provided connection string is invalid or unreachable."]));
+                    }
+                    else if (result == ConnectionValidatorResult.ValidDocumentExists)
                     {
                         errors.Add(new ModelError(nameof(model.TablePrefix), S["The provided table prefix already exists."]));
                     }
@@ -114,41 +113,6 @@ namespace OrchardCore.Tenants.Services
             }
 
             return errors;
-        }
-
-        private IEnumerable<string> GetExistingConnectionKeys(IEnumerable<ShellSettings> allSettings)
-        {
-            var connectionKeys = new List<string>();
-
-            foreach (var tenantSettings in allSettings)
-            {
-                var providerName = tenantSettings["DatabaseProvider"];
-
-                if (String.IsNullOrEmpty(providerName))
-                {
-                    continue;
-                }
-
-                var connectionString = tenantSettings["ConnectionString"];
-
-                if (String.IsNullOrEmpty(connectionString))
-                {
-                    continue;
-                }
-
-                var dbFactory = _connectionFactoryProvider.GetFactory(providerName, connectionString);
-
-                using var connection = dbFactory.CreateConnection();
-
-                connectionKeys.Add(GetConnectionKey(dbFactory.DbConnectionType, connection, tenantSettings["TablePrefix"]));
-            }
-
-            return connectionKeys;
-        }
-
-        private static string GetConnectionKey(Type dbType, DbConnection connection, string prefix)
-        {
-            return $"{dbType.Name}-{connection.DataSource}-{connection.Database}-{prefix}".ToLower();
         }
 
         private static bool DoesUrlHostExist(string urlHost, string modelUrlHost)
