@@ -27,7 +27,7 @@ namespace OrchardCore.Users
         public static readonly Permission ViewUsers = new Permission("View Users", "View All Users", new[] { ManageUsers, EditUsers, DeleteUsers });
 
         // Dynamic permission template.
-        private static readonly Permission ManageUsersInRole = new Permission("ManageUsersInRole_{0}", "Manage Users in Role - {0}", new[] { EditUsers });
+        private static readonly Permission ManageUsersInRole = new Permission("ManageUsersInRole_{0}", "Manage Users in Role - {0}", true);
 
         public static Permission CreatePermissionForManageUsersInRole(string name)
             => new Permission(

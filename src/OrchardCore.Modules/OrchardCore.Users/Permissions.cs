@@ -13,7 +13,7 @@ namespace OrchardCore.Users
         public static readonly Permission ViewUsers = CommonPermissions.ViewUsers;
         public static readonly Permission EditUsers = CommonPermissions.EditUsers;
         public static readonly Permission DeleteUsers = CommonPermissions.DeleteUsers;
-        public static readonly Permission ManageOwnUserInformation = new Permission("ManageOwnUserInformation", "Manage own user information", new Permission[] { EditUsers });
+        public static readonly Permission ManageOwnUserInformation = new Permission("ManageOwnUserInformation", "Manage own user information", new Permission[] { ManageUsers });
 
         private readonly IRoleService _roleService;
 
