@@ -33,7 +33,7 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
         public bool Securable { get; set; }
 
         /// <summary>
-        /// Gets or sets the description name of the type.
+        /// Gets or sets the description name of this content type.
         /// </summary>
         public string Description { get; set; }
     }
