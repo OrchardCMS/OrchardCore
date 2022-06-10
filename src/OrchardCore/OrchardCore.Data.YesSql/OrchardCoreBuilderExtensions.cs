@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices(services =>
             {
-                services.AddScoped<IConnectionValidator, ConnectionValidator>();
+                services.AddScoped<IDbConnectionValidator, DbConnectionValidator>();
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
@@ -64,14 +64,14 @@ namespace Microsoft.Extensions.DependencyInjection
                         ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
                     };
 
-                    switch (shellSettings["DatabaseProvider"])
+                    switch (DatabaseHelper.GetDatabaseProviderName(shellSettings["DatabaseProvider"]))
                     {
-                        case "SqlConnection":
+                        case DatabaseProviderName.SqlConnection:
                             storeConfiguration
                                 .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
                                 .UseBlockIdGenerator();
                             break;
-                        case "Sqlite":
+                        case DatabaseProviderName.Sqlite:
                             var shellOptions = sp.GetService<IOptions<ShellOptions>>();
                             var sqliteOptions = sp.GetService<IOptions<SqliteOptions>>()?.Value ?? new SqliteOptions();
                             var option = shellOptions.Value;
@@ -89,12 +89,12 @@ namespace Microsoft.Extensions.DependencyInjection
                                 .UseSqLite(connectionStringBuilder.ToString(), IsolationLevel.ReadUncommitted)
                                 .UseDefaultIdGenerator();
                             break;
-                        case "MySql":
+                        case DatabaseProviderName.MySql:
                             storeConfiguration
                                 .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
                                 .UseBlockIdGenerator();
                             break;
-                        case "Postgres":
+                        case DatabaseProviderName.Postgres:
                             storeConfiguration
                                 .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
                                 .UseBlockIdGenerator();

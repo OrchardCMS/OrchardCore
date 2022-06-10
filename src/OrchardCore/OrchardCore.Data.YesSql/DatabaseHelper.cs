@@ -12,4 +12,23 @@ internal class DatabaseHelper
 
         return prefix.Trim() + "_";
     }
+
+    public static DatabaseProviderName GetDatabaseProviderName(string databaseProvider)
+    {
+        if (Enum.TryParse(databaseProvider, out DatabaseProviderName providerName))
+        {
+            return providerName;
+        }
+
+        return DatabaseProviderName.None;
+    }
+}
+
+public enum DatabaseProviderName
+{
+    None,
+    SqlConnection,
+    Sqlite,
+    MySql,
+    Postgres,
 }

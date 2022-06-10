@@ -111,7 +111,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 ? _shellSettings.First()
                 : new ShellSettings();
 
-            var connectionFactory = new Mock<IConnectionValidator>();
+            var connectionFactory = new Mock<IDbConnectionValidator>();
             connectionFactory.Setup(l => l.ValidateAsync(shellSettings["ProviderName"], shellSettings["ConnectionName"], shellSettings["TablePrefix"]));
 
             return new TenantValidator(

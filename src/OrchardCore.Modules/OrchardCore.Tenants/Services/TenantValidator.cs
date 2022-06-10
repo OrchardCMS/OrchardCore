@@ -20,7 +20,7 @@ namespace OrchardCore.Tenants.Services
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly ShellSettings _shellSettings;
         private readonly IStringLocalizer<TenantValidator> S;
-        private readonly IConnectionValidator _connectionValidator;
+        private readonly IDbConnectionValidator _dbConnectionValidator;
 
         public TenantValidator(
             IShellHost shellHost,
@@ -28,14 +28,14 @@ namespace OrchardCore.Tenants.Services
             IEnumerable<DatabaseProvider> databaseProviders,
             ShellSettings shellSettings,
             IStringLocalizer<TenantValidator> stringLocalizer,
-            IConnectionValidator connectionValidator)
+            IDbConnectionValidator dbConnectionValidator)
         {
             _shellHost = shellHost;
             _featureProfilesService = featureProfilesService;
             _databaseProviders = databaseProviders;
             _shellSettings = shellSettings;
             S = stringLocalizer;
-            _connectionValidator = connectionValidator;
+            _dbConnectionValidator = dbConnectionValidator;
         }
 
         public async Task<IEnumerable<ModelError>> ValidateAsync(TenantViewModel model)
@@ -92,13 +92,17 @@ namespace OrchardCore.Tenants.Services
 
                 if (selectedProvider != null && hasConnectionString)
                 {
-                    var result = await _connectionValidator.ValidateAsync(selectedProvider.Value, model.ConnectionString, model.TablePrefix);
+                    var result = await _dbConnectionValidator.ValidateAsync(selectedProvider.Value, model.ConnectionString, model.TablePrefix);
 
-                    if (result == ConnectionValidatorResult.InvalidConnection)
+                    if (result == DbConnectionValidatorResult.UnsupportedProvider)
+                    {
+                        errors.Add(new ModelError(nameof(model.TablePrefix), S["The provided database provider is not supported."]));
+                    }
+                    else if (result == DbConnectionValidatorResult.InvalidConnection)
                     {
                         errors.Add(new ModelError(nameof(model.ConnectionString), S["The provided connection string is invalid or unreachable."]));
                     }
-                    else if (result == ConnectionValidatorResult.ValidDocumentExists)
+                    else if (result == DbConnectionValidatorResult.DocumentFound)
                     {
                         errors.Add(new ModelError(nameof(model.TablePrefix), S["The provided table prefix already exists."]));
                     }
