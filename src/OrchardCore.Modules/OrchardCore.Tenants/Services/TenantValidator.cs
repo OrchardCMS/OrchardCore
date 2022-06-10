@@ -91,9 +91,9 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
 
-            var allOtherShellsHaveConnectionString = allOtherShells.Where(tenant => tenant.ShellConfiguration.GetChildren().Any(section => section.Key == "ConnectionString"));
+            var allOtherShellsHaveConnectionString = allOtherShells.Where(tenant => tenant.ShellConfiguration.GetChildren().Any(section => section.Key == "ConnectionString")).ToList();
 
-            if (selectedProvider.HasConnectionString && allOtherShellsHaveConnectionString.Any(tenant => String.Equals(model.TablePrefix, tenant.ShellConfiguration["TablePrefix"], StringComparison.OrdinalIgnoreCase)))
+            if (allOtherShellsHaveConnectionString.Any() && selectedProvider.HasConnectionString && allOtherShellsHaveConnectionString.Any(tenant => String.Equals(model.TablePrefix, tenant.ShellConfiguration["TablePrefix"], StringComparison.OrdinalIgnoreCase)))
             {
                 errors.Add(new ModelError(nameof(model.TablePrefix), S["A tenant with the same connection string and table prefix already exists."]));
             }
