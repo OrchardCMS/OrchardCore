@@ -93,7 +93,10 @@ namespace OrchardCore.Tenants.Services
 
             var allOtherShellsHaveConnectionString = allOtherShells.Where(tenant => !String.IsNullOrEmpty(tenant.ShellConfiguration?["ConnectionString"])).ToList();
 
-            if (allOtherShellsHaveConnectionString.Any() && selectedProvider.HasConnectionString && allOtherShellsHaveConnectionString.Any(tenant => String.Equals(model.TablePrefix, tenant.ShellConfiguration["TablePrefix"], StringComparison.OrdinalIgnoreCase)))
+            if (allOtherShellsHaveConnectionString.Any() &&
+                selectedProvider.HasConnectionString &&
+                allOtherShellsHaveConnectionString.Any(tenant => String.Equals(model.ConnectionString, tenant.ShellConfiguration["ConnectionString"], StringComparison.OrdinalIgnoreCase) &&
+                String.Equals(model.TablePrefix, tenant.ShellConfiguration["TablePrefix"], StringComparison.OrdinalIgnoreCase)))
             {
                 errors.Add(new ModelError(nameof(model.TablePrefix), S["A tenant with the same connection string and table prefix already exists."]));
             }
