@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Tenants.ViewModels;
 
@@ -83,6 +84,13 @@ namespace OrchardCore.Tenants.Services
 
             var allSettings = _shellHost.GetAllSettings();
 
+            var allOtherShells = allSettings.Where(t => !String.Equals(t.Name, model.Name, StringComparison.OrdinalIgnoreCase));
+
+            if (allOtherShells.Any(tenant => String.Equals(tenant.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && DoesUrlHostExist(tenant.RequestUrlHost, model.RequestUrlHost)))
+            {
+                errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
+            }
+
             if (model.IsNewTenant)
             {
                 if (allSettings.Any(tenant => String.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
@@ -92,31 +100,46 @@ namespace OrchardCore.Tenants.Services
 
                 if (selectedProvider != null && hasConnectionString)
                 {
-                    var result = await _dbConnectionValidator.ValidateAsync(selectedProvider.Value, model.ConnectionString, model.TablePrefix);
+                    await ValidateConnectionAsync(selectedProvider.Value, model.ConnectionString, model.TablePrefix, errors);
+                }
 
-                    if (result == DbConnectionValidatorResult.UnsupportedProvider)
-                    {
-                        errors.Add(new ModelError(nameof(model.TablePrefix), S["The provided database provider is not supported."]));
-                    }
-                    else if (result == DbConnectionValidatorResult.InvalidConnection)
-                    {
-                        errors.Add(new ModelError(nameof(model.ConnectionString), S["The provided connection string is invalid or unreachable."]));
-                    }
-                    else if (result == DbConnectionValidatorResult.DocumentFound)
-                    {
-                        errors.Add(new ModelError(nameof(model.TablePrefix), S["The provided table prefix already exists."]));
-                    }
+                return errors;
+            }
+
+            // At this point, we are validating existing tenant.
+            var shellSetting = allSettings.Where(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase))
+                                          .FirstOrDefault();
+
+            if (shellSetting == null || shellSetting.State == TenantState.Uninitialized)
+            {
+                // while the tenant is Uninitialized, we are still able to change the database settings
+                // let's validate the database for assurance
+
+                if (selectedProvider != null && hasConnectionString)
+                {
+                    await ValidateConnectionAsync(selectedProvider.Value, model.ConnectionString, model.TablePrefix, errors);
                 }
             }
 
-            var allOtherShells = allSettings.Where(t => !String.Equals(t.Name, model.Name, StringComparison.OrdinalIgnoreCase));
-
-            if (allOtherShells.Any(tenant => String.Equals(tenant.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && DoesUrlHostExist(tenant.RequestUrlHost, model.RequestUrlHost)))
-            {
-                errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
-            }
-
             return errors;
+        }
+
+        private async Task ValidateConnectionAsync(string databaseProvider, string connectionString, string tablePrefix, List<ModelError> errors)
+        {
+            var result = await _dbConnectionValidator.ValidateAsync(databaseProvider, connectionString, tablePrefix);
+
+            if (result == DbConnectionValidatorResult.UnsupportedProvider)
+            {
+                errors.Add(new ModelError(nameof(TenantViewModel.DatabaseProvider), S["The provided database provider is not supported."]));
+            }
+            else if (result == DbConnectionValidatorResult.InvalidConnection)
+            {
+                errors.Add(new ModelError(nameof(TenantViewModel.ConnectionString), S["The provided connection string is invalid or unreachable."]));
+            }
+            else if (result == DbConnectionValidatorResult.DocumentFound)
+            {
+                errors.Add(new ModelError(nameof(TenantViewModel.TablePrefix), S["The provided table prefix already exists."]));
+            }
         }
 
         private static bool DoesUrlHostExist(string urlHost, string modelUrlHost)
