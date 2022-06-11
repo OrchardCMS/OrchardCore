@@ -2580,6 +2580,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ProstoMimoProhodill",
+      "name": "Andrew",
+      "avatar_url": "https://avatars.githubusercontent.com/u/32439583?v=4",
+      "profile": "https://github.com/ProstoMimoProhodill",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
