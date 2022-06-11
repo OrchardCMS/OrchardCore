@@ -2589,6 +2589,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "MZole",
+      "name": "Zoltán Máté",
+      "avatar_url": "https://avatars.githubusercontent.com/u/99020631?v=4",
+      "profile": "https://github.com/MZole",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
