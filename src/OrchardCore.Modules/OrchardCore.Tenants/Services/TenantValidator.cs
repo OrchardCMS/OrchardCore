@@ -91,14 +91,20 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
 
-            var allOtherShellsHaveConnectionString = allOtherShells.Where(tenant => !String.IsNullOrEmpty(tenant.ShellConfiguration?["ConnectionString"])).ToList();
-
-            if (allOtherShellsHaveConnectionString.Any() &&
-                selectedProvider.HasConnectionString &&
-                allOtherShellsHaveConnectionString.Any(tenant => String.Equals(model.ConnectionString, tenant.ShellConfiguration["ConnectionString"], StringComparison.OrdinalIgnoreCase) &&
-                String.Equals(model.TablePrefix, tenant.ShellConfiguration["TablePrefix"], StringComparison.OrdinalIgnoreCase)))
+            if (selectedProvider.HasConnectionString)
             {
-                errors.Add(new ModelError(nameof(model.TablePrefix), S["A tenant with the same connection string and table prefix already exists."]));
+                var allOtherShellsHaveConnectionString = allOtherShells
+                    .Where(tenant => !String.IsNullOrEmpty(tenant.ShellConfiguration?["ConnectionString"]))
+                    .ToList();
+
+                if (allOtherShellsHaveConnectionString.Any() &&
+                    allOtherShellsHaveConnectionString.Any(
+                        tenant => String.Equals(model.ConnectionString, tenant.ShellConfiguration["ConnectionString"], StringComparison.OrdinalIgnoreCase) &&
+                        String.Equals(model.TablePrefix, tenant.ShellConfiguration["TablePrefix"], StringComparison.OrdinalIgnoreCase))
+                    )
+                {
+                    errors.Add(new ModelError(nameof(model.TablePrefix), S["A tenant with the same connection string and table prefix already exists."]));
+                }
             }
 
             return errors;
