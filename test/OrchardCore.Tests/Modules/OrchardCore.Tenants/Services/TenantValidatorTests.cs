@@ -48,6 +48,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 RequestUrlPrefix = urlPrefix,
                 RequestUrlHost = hostName,
                 FeatureProfile = featureProfile,
+                DatabaseProvider = "Sqlite",
                 IsNewTenant = true
             };
 
@@ -76,6 +77,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 RequestUrlPrefix = "tenant4",
                 RequestUrlHost = "example5.com",
                 FeatureProfile = "Feature Profile",
+                DatabaseProvider = "Sqlite",
                 IsNewTenant = isNewTenant
             };
 
@@ -85,6 +87,41 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
             // Asserts
             Assert.Single(errors);
             Assert.Equal("A tenant with the same host and prefix already exists.", errors.Single().Message);
+        }
+
+        [Theory]
+        [InlineData("Tenant10", "tenant10", "Server=.;Database=OrchardCore1;User Id=oc;Password=admin@OC", "OC", "A tenant with the same connection string and table prefix already exists.")]
+        [InlineData("Tenant20", "tenant20", "Server=.;Database=OrchardCore2;User Id=oc;Password=admin@OC", "OC", "")]
+        [InlineData("Tenant20", "tenant30", "Server=.;Database=OrchardCore1;User Id=oc;Password=admin@OC", "OCC", "")]
+        public async Task DuplicateConnectionStringAndTablePrefixShouldFailValidation(string name, string urlPrefix, string connectionString, string tablePrefix, string errorMessage)
+        {
+            // Arrange
+            var tenantValidator = CreateTenantValidator();
+
+            var viewModel = new EditTenantViewModel
+            {
+                Name = name,
+                RequestUrlPrefix = urlPrefix,
+                FeatureProfile = "Feature Profile",
+                ConnectionString = connectionString,
+                TablePrefix = tablePrefix,
+                DatabaseProvider = "SqlConnection",
+                IsNewTenant = true
+            };
+
+            // Act
+            var errors = await tenantValidator.ValidateAsync(viewModel);
+
+            // Asserts
+            if (errorMessage == String.Empty)
+            {
+                Assert.False(errors.Any());
+            }
+            else
+            {
+                Assert.Single(errors);
+                Assert.Equal(errorMessage, errors.Single().Message);
+            }
         }
 
         private TenantValidator CreateTenantValidator(bool defaultTenant = true)
@@ -107,6 +144,14 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 .Setup(l => l[It.IsAny<string>(), It.IsAny<object[]>()])
                 .Returns<string, object[]>((n, a) => new LocalizedString(n, n));
 
+            var dataProviders = new List<DatabaseProvider>
+            {
+                new DatabaseProvider { Name = "Sql Server", Value = "SqlConnection", HasConnectionString = true, SampleConnectionString = "Server=localhost;Database=Orchard;User Id=username;Password=password", HasTablePrefix = true, IsDefault = false },
+                new DatabaseProvider { Name = "Sqlite", Value = "Sqlite", HasConnectionString = false, HasTablePrefix = false, IsDefault = true },
+                new DatabaseProvider { Name = "MySql", Value = "MySql", HasConnectionString = true, SampleConnectionString = "Server=localhost;Database=Orchard;Uid=username;Pwd=password", HasTablePrefix = true, IsDefault = false },
+                new DatabaseProvider { Name = "Postgres", Value = "Postgres", HasConnectionString = true, SampleConnectionString = "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", HasTablePrefix = true, IsDefault = false }
+            };
+
             var shellSettings = defaultTenant
                 ? _shellSettings.First()
                 : new ShellSettings();
@@ -114,15 +159,26 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
             return new TenantValidator(
                 shellHostMock.Object,
                 featureProfilesServiceMock.Object,
-                Enumerable.Empty<DatabaseProvider>(),
+                dataProviders,
                 shellSettings,
                 stringLocalizerMock.Object);
         }
 
         private void SeedTenants()
         {
-            _shellSettings.Add(new ShellSettings{ Name = ShellHelper.DefaultShellName });
-            _shellSettings.Add(new ShellSettings { Name = "Tenant1" });
+            _shellSettings.Add(new ShellSettings { Name = ShellHelper.DefaultShellName });
+
+            var settings = new ShellSettings { Name = "Tenant1" };
+            settings.ShellConfiguration["ConnectionString"] = "Server=.;Database=OrchardCore1;User Id=oc;Password=admin@OC";
+            settings.ShellConfiguration["TablePrefix"] = "OC";
+
+            _shellSettings.Add(settings);
+
+            settings = new ShellSettings { Name = "Tenant2", RequestUrlPrefix = String.Empty, RequestUrlHost = "example2.com" };
+            settings.ShellConfiguration["ConnectionString"] = "Server=.;Database=OrchardCore2;User Id=oc;Password=admin@OC";
+
+            _shellSettings.Add(settings);
+
             _shellSettings.Add(new ShellSettings { Name = "Tenant2", RequestUrlPrefix = String.Empty, RequestUrlHost = "example2.com" });
             _shellSettings.Add(new ShellSettings { Name = "Tenant3", RequestUrlPrefix = "tenant3", RequestUrlHost = String.Empty });
             _shellSettings.Add(new ShellSettings { Name = "Tenant4", RequestUrlPrefix = "tenant4", RequestUrlHost = "example4.com,example5.com" });
