@@ -17,6 +17,7 @@ These guides are specific to Orchard Core CMS
 - [Creating an Orchard Core CMS website](create-cms-application/README.md)
 - [Adding a Menu Item to the Admin Navigation](add-admin-menu/README.md)
 - [Installing Localization Files](install-localization-files/README.md)
+- [How to use the assets transpiler/bundler/minifier pipeline](gulp-pipeline/README.md)
 - [Integrate facebook plugins](integrate-facebook-plugins/README.md)
 - [Implement Full Text search](implement-fulltext-search/README.md)
 - [Integrate AzureAD as external provider](azuread-integration/README.md)
