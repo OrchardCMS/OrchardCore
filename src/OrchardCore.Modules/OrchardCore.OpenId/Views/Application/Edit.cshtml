@@ -130,6 +130,14 @@
                 </div>
             </div>
         </div>
+        <div class="mb-3" >
+             <div class="mb-3">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" asp-for="RequirePkce" checked="@Model.RequirePkce">
+                    <label class="form-check-label" asp-for="RequirePkce">@T["Require Pkce"]</label>
+                </div>
+            </div>
+        </div>
         <div class="mb-3" asp-validation-class-for="ConsentType">
             <label asp-for="ConsentType">@T["Consent type"]</label>
             <select asp-for="ConsentType" class="form-select">

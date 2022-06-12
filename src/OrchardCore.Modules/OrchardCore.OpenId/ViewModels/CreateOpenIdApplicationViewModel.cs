@@ -31,6 +31,7 @@ namespace OrchardCore.OpenId.ViewModels
         public bool AllowLogoutEndpoint { get; set; }
         public bool AllowIntrospectionEndpoint { get; set; }
         public bool AllowRevocationEndpoint { get; set; }
+        public bool RequirePkce { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) => ValidateUrls(validationContext, nameof(RedirectUris), RedirectUris)
             .Union(ValidateUrls(validationContext, nameof(PostLogoutRedirectUris), PostLogoutRedirectUris));

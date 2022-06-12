@@ -176,7 +176,8 @@ namespace OrchardCore.OpenId.Controllers
                 RedirectUris = model.RedirectUris,
                 Roles = model.RoleEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
                 Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
-                Type = model.Type
+                Type = model.Type,
+                RequirePkce = model.RequirePkce
             };
 
             await _applicationManager.UpdateDescriptorFromSettings(settings);
@@ -203,6 +204,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             ValueTask<bool> HasPermissionAsync(string permission) => _applicationManager.HasPermissionAsync(application, permission);
+            ValueTask<bool> HasRequirementAsync(string requirement) => _applicationManager.HasRequirementAsync(application, requirement);
 
             var model = new EditOpenIdApplicationViewModel
             {
@@ -236,7 +238,8 @@ namespace OrchardCore.OpenId.Controllers
                 Id = await _applicationManager.GetPhysicalIdAsync(application),
                 PostLogoutRedirectUris = string.Join(" ", await _applicationManager.GetPostLogoutRedirectUrisAsync(application)),
                 RedirectUris = string.Join(" ", await _applicationManager.GetRedirectUrisAsync(application)),
-                Type = await _applicationManager.GetClientTypeAsync(application)
+                Type = await _applicationManager.GetClientTypeAsync(application),
+                RequirePkce = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange)
             };
 
             var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
@@ -339,7 +342,8 @@ namespace OrchardCore.OpenId.Controllers
                 RedirectUris = model.RedirectUris,
                 Roles = model.RoleEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
                 Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
-                Type = model.Type
+                Type = model.Type,
+                RequirePkce = model.RequirePkce
             };
 
             await _applicationManager.UpdateDescriptorFromSettings(settings, application);
