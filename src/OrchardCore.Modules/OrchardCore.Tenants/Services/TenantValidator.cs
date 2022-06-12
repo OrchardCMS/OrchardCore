@@ -106,7 +106,7 @@ namespace OrchardCore.Tenants.Services
                 return errors;
             }
 
-            // At this point, we are validating existing tenant.
+            // At this point, we know we are validating existing tenant
             var shellSetting = allSettings.Where(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase))
                                           .FirstOrDefault();
 
