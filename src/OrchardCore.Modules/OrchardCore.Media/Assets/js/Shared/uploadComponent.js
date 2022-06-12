@@ -37,7 +37,7 @@ Vue.component('upload', {
             if (data.files[0].name !== self.model.name) {
                 return;
             }
-            self.handleFailure(data.files[0].name , data.textStatus);            
+            self.handleFailure(data.files[0].name, $('#t-error').val());
         });
     },
     methods: {
