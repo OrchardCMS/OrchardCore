@@ -29,6 +29,7 @@ namespace OrchardCore.OpenId.Recipes
         public bool AllowHybridFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
         public bool DisableRollingRefreshTokens { get; set; }
+        public bool RequireProofKeyForCodeExchange { get; set; }
 
         public bool UseReferenceAccessTokens { get; set; }
     }

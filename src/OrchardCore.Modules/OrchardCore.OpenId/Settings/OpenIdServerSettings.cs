@@ -40,6 +40,8 @@ namespace OrchardCore.OpenId.Settings
 
         public bool UseReferenceAccessTokens { get; set; }
 
+        public bool RequireProofKeyForCodeExchange { get; set; }
+
         public enum TokenFormat
         {
             DataProtection = 0,

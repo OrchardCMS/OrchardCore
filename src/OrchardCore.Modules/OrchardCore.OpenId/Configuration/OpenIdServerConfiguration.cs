@@ -157,6 +157,15 @@ namespace OrchardCore.OpenId.Configuration
                 options.Scopes.Add(Scopes.OfflineAccess);
             }
 
+            if (settings.RequireProofKeyForCodeExchange)
+            {
+                options.RequireProofKeyForCodeExchange = true;
+            }
+            else
+            {
+                options.RequireProofKeyForCodeExchange= false;
+            }
+
             options.Scopes.Add(Scopes.Email);
             options.Scopes.Add(Scopes.Phone);
             options.Scopes.Add(Scopes.Profile);

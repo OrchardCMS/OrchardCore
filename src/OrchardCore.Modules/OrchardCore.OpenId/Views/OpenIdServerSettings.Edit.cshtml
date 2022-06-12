@@ -104,6 +104,14 @@
     </div>
 </div>
 
+<h3>@T["Proof Key for Code Exchange"]</h3>
+<div class="mb-3" asp-validation-class-for="RequireProofKeyForCodeExchange">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="RequireProofKeyForCodeExchange">
+        <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>        
+    </div>
+</div>
+
 <h3>@T["Advanced options"]</h3>
 
 <p class="alert alert-info">@T["These options are all optional and are for advanced users only."]</p>

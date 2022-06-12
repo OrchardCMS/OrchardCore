@@ -34,6 +34,7 @@ namespace OrchardCore.OpenId.ViewModels
         public bool AllowImplicitFlow { get; set; }
         public bool DisableRollingRefreshTokens { get; set; }
         public bool UseReferenceAccessTokens { get; set; }
+        public bool RequireProofKeyForCodeExchange { get; set; }
 
         public class CertificateInfo
         {

@@ -48,6 +48,7 @@ namespace OrchardCore.OpenId.Drivers
                 model.DisableAccessTokenEncryption = settings.DisableAccessTokenEncryption;
                 model.DisableRollingRefreshTokens = settings.DisableRollingRefreshTokens;
                 model.UseReferenceAccessTokens = settings.UseReferenceAccessTokens;
+                model.RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange;
 
                 foreach (var (certificate, location, name) in await _serverService.GetAvailableCertificatesAsync())
                 {
@@ -106,6 +107,7 @@ namespace OrchardCore.OpenId.Drivers
             settings.DisableAccessTokenEncryption = model.DisableAccessTokenEncryption;
             settings.DisableRollingRefreshTokens = model.DisableRollingRefreshTokens;
             settings.UseReferenceAccessTokens = model.UseReferenceAccessTokens;
+            settings.RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange;
 
             return await EditAsync(settings, context);
         }
