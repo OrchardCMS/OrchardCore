@@ -5,11 +5,9 @@
 
     <!-- NuGet properties-->
     <Title>OrchardCore ContentFields Core</Title>
-    <Description>
-      $(OCCMSDescription)
+    <Description>$(OCCMSDescription)
 
-      Core implementation for OrchardCore ContentFields
-    </Description>
+    Core implementation for OrchardCore ContentFields.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS ContentFields</PackageTags>
   </PropertyGroup>
 

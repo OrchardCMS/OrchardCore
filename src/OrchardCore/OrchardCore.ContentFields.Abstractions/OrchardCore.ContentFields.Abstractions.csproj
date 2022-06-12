@@ -5,11 +5,9 @@
 
     <!-- NuGet properties-->
     <Title>OrchardCore ContentFields Abstractions</Title>
-    <Description>
-      $(OCCMSDescription)
+    <Description>$(OCCMSDescription)
 
-      Abstractions for ContentFields Module.
-    </Description>
+      Abstractions for ContentFields.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
   </PropertyGroup>
 
