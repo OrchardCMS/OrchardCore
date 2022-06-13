@@ -48,12 +48,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.TryAddDataProvider(name: "Postgres", value: "Postgres", hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
 
                 // Configuring data access
-
                 services.AddSingleton(sp =>
                 {
                     var shellSettings = sp.GetService<ShellSettings>();
 
-                    // Before the setup a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
+                    // Before the setup, a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
                     if (shellSettings.State == TenantState.Uninitialized || shellSettings["DatabaseProvider"] == null)
                     {
                         return null;
@@ -100,7 +99,7 @@ namespace Microsoft.Extensions.DependencyInjection
                             throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
                     }
 
-                    if (!string.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
+                    if (!String.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
                     {
                         storeConfiguration = storeConfiguration.SetTablePrefix(shellSettings["TablePrefix"] + "_");
                     }
@@ -164,7 +163,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
 
-            IConfiguration storeConfiguration = new YesSql.Configuration
+            var storeConfiguration = new YesSql.Configuration
             {
                 CommandsPageSize = yesSqlOptions.CommandsPageSize,
                 QueryGatingEnabled = yesSqlOptions.QueryGatingEnabled,
