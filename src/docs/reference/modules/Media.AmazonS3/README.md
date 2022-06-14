@@ -18,20 +18,22 @@ The following configuration values are used by default and can be customized:
 {
    "OrchardCore": {
        "OrchardCore_Media_AmazonS3": {
-           // Your AWS S3 Bucket name
-           "BucketName": "",
+           // If you have aws cli installed and configured you may just specify profile name
+           "Profile": "",
+           // In case your aws profiles are located not in default place
+           "ProfilesLocation": "",
+           "Region": "",
            // This section needed only if Orchard will be hosted not in the AWS Cloud
            // You can obtain all that information in the IAM Management Console
             "Credentials": {
               "SecretKey": "",
-              "AccessKeyId": "",
-              "RegionEndpoint": ""
+              "AccessKey": ""
            },
            // Optionally, set to a path to store media in a subdirectory inside your container.
            "BasePath": "/media",
-           // If you have aws cli installed and configured you may just specify profile name
-           "ProfileName": "",
-           "CreateBucket": false
+           "CreateBucket": false,
+           // Your AWS S3 Bucket name
+           "BucketName": ""
        }
   }
 }
@@ -45,7 +47,29 @@ In case you are hosting Orchard Core inside AWS (EC2, EKS, etc.) you need to con
 
 In case you are hosting Orchard Core outside of AWS, you should fill the `Credentials` section or if you have AWS CLI installed and configured on your server you may specify only configured profile name (`default` if a profile name was not chosen during AWS CLI configuration).
 
-You can find region endpoints in the [Official AWS S3 Documentation](https://docs.aws.amazon.com/general/latest/gr/s3.html), see Region column. For example for the Frankfurt region you should use `eu-central-1` 
+You can find region endpoints in the [Official AWS S3 Documentation](https://docs.aws.amazon.com/general/latest/gr/s3.html), see Region column. For example for the Frankfurt region you should use `eu-central-1`
+
+## AWS Credentials and it's loading order
+
+`OrchardCore_Media_AmazonS3` is a subset of `AWSOptions` configuration and should be configured same as a generic [AWSOptions](https://docs.aws.amazon.com/sdk-for-net/v3/developer-guide/net-dg-config-netcore.html).
+
+### Credentials loading order
+
+1. Credentials property of AWSOptions
+2. Shared Credentials File (Custom Location). When both the profile and profile location are specified
+3. SDK Store (Windows Only). When an instance of AWSOptions is provided and only the profile is set (profile location is null or empty)
+4. Shared Credentials File (Default Location). When an instance of AWSOptions is provided and only the profile is set (profile location is null or empty)
+5. AWS Web Identity Federation Credentials. When an OIDC token file exists and is set in the environment variables.
+6. CredentialsProfileStoreChain
+   1. SDK Store (Windows Only) encrypted using Windows Data Protection API
+   2. Shared Credentials File in the default location
+7. Environment variables. When the Access Key ID and Secret Access Key environment variables are set.
+8. ECS Task Credentials or EC2 Instance Credentials. When using IAM roles with ECS tasks and ECS instances.
+
+!!! note
+    AWS team want to encourage the use of profiles instead of embedding credentials directly into appsettings.X.json file where they would accidentally get checked into source control.
+    If you have an option to use profiles or environment variables - you should use it instead of direct credentials.
+
 
 ## AWS S3 Bucket Configuration
 
@@ -95,13 +119,14 @@ The `BucketName` property and the `BasePath` property are the only templatable p
     "OrchardCore": {
         "OrchardCore_Media_AmazonS3": {
             "BucketName": "{{ ShellSettings.Name }}-media",
+            "Region": "",
             "Credentials": {
                 "SecretKey": "",
-                "AccessKeyId": "",
-                "RegionEndpoint": ""
+                "AccessKey": ""
             },
             "BasePath": "/media",
-            "ProfileName": ""
+            "Profile": "",
+            "ProfilesLocation": ""
         }
     }
 }
@@ -114,13 +139,14 @@ The `BucketName` property and the `BasePath` property are the only templatable p
     "OrchardCore": {
         "OrchardCore_Media_AmazonS3": {
             "BucketName": "",
+            "Region": "",
             "Credentials": {
                 "SecretKey": "",
-                "AccessKeyId": "",
-                "RegionEndpoint": ""
+                "AccessKey": ""
             },
             "BasePath": "{{ ShellSettings.Name }}/Media",
-            "ProfileName": ""
+            "Profile": "",
+            "ProfilesLocation" : ""
         }
     }
 }
