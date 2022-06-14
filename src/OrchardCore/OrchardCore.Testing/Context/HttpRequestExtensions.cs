@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace OrchardCore
+namespace OrchardCore.Testing.Context
 {
     /// <summary>
     /// The http request extensions.

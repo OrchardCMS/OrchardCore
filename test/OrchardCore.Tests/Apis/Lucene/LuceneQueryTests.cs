@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Html.Models;
 using OrchardCore.Lucene;
+using OrchardCore.Testing.Context;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
 

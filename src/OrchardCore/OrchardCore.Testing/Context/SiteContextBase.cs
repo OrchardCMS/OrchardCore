@@ -6,17 +6,16 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Lucene;
 using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Testing.Context
 {
-    public class SiteContext<T> : IDisposable where T : SiteStartupBase, new()
+    public abstract class SiteContextBase : IDisposable
     {
         private static readonly TablePrefixGenerator TablePrefixGenerator = new TablePrefixGenerator();
-        public static OrchardTestFixture<T> Site { get; }
+
+        public static OrchardTestFixture Site { get; }
         public static HttpClient DefaultTenantClient { get; }
 
         public string RecipeName { get; set; } = "Blank";
@@ -27,9 +26,50 @@ namespace OrchardCore.Testing.Context
         public HttpClient Client { get; private set; }
         public string TenantName { get; private set; }
 
-        static SiteContext()
+        public static IShellHost ShellHost { get { return Site.Services.GetRequiredService<IShellHost>(); } }
+
+        static SiteContextBase()
         {
-            Site = new OrchardTestFixture<T>();
+            if (SiteContextConfig.WebStartupClass == null)
+            {
+                throw new ArgumentNullException(nameof(SiteContextConfig.WebStartupClass));
+            }
+            SiteStartup.WebStartupClass = SiteContextConfig.WebStartupClass;
+
+            if (SiteContextConfig.Recipies != null)
+            {
+                SiteStartup.Recipies.AddRange(SiteContextConfig.Recipies);
+            }
+            if (SiteContextConfig.AdditionalSetupFeatures != null)
+            {
+                SiteStartup.AdditionalSetupFeatures.AddRange(SiteContextConfig.AdditionalSetupFeatures);
+            }
+            if (SiteContextConfig.TenantFeatures != null)
+            {
+                SiteStartup.TenantFeatures.AddRange(SiteContextConfig.TenantFeatures);
+            }
+
+            if (SiteContextConfig.ConfigureAppBuilder != null)
+            {
+                SiteStartup.ConfigureAppBuilder = SiteContextConfig.ConfigureAppBuilder;
+            }
+
+            if (SiteContextConfig.ConfigureOrchardServices != null)
+            {
+                var defaultConfiguration = SiteStartup.ConfigureOrchardServices;
+                SiteStartup.ConfigureOrchardServices = new Action<IServiceCollection>(target =>
+                {
+                    defaultConfiguration.Invoke(target);
+                    SiteContextConfig.ConfigureOrchardServices.Invoke(target);
+                });
+            }
+
+            if (SiteContextConfig.ConfigureHostBuilder != null)
+            {
+                OrchardTestFixture.ConfigureHostBuilder = SiteContextConfig.ConfigureHostBuilder;
+            }
+
+            Site = new OrchardTestFixture();
             DefaultTenantClient = Site.CreateDefaultClient();
         }
 
@@ -81,7 +121,7 @@ namespace OrchardCore.Testing.Context
             if (PermissionsContext != null)
             {
                 var permissionContextKey = Guid.NewGuid().ToString();
-                SiteStartupBase.PermissionsContexts.TryAdd(permissionContextKey, PermissionsContext);
+                SiteStartup.PermissionsContexts.TryAdd(permissionContextKey, PermissionsContext);
                 Client.DefaultRequestHeaders.Add("PermissionsContext", permissionContextKey);
             }
         }
@@ -120,16 +160,33 @@ namespace OrchardCore.Testing.Context
 
         protected virtual void Dispose(bool disposing) { }
 
-        public void UseRecipies(params string[] recipies)
+    }
+
+    public static class SiteContextExtensions
+    {
+        public static T WithDatabaseProvider<T>(this T siteContext, string databaseProvider) where T : SiteContextBase
         {
-            SiteStartupBase.Recipies = recipies;
+            siteContext.DatabaseProvider = databaseProvider;
+            return siteContext;
         }
 
-        public void UseAssemblies(params Assembly[] assemblies)
+        public static T WithConnectionString<T>(this T siteContext, string connectionString) where T : SiteContextBase
         {
-            SiteStartupBase.Assemblies = assemblies;
+            siteContext.ConnectionString = connectionString;
+            return siteContext;
         }
 
+        public static T WithPermissionsContext<T>(this T siteContext, PermissionsContext permissionsContext) where T : SiteContextBase
+        {
+            siteContext.PermissionsContext = permissionsContext;
+            return siteContext;
+        }
+
+        public static T WithRecipe<T>(this T siteContext, string recipeName) where T : SiteContextBase
+        {
+            siteContext.RecipeName = recipeName;
+            return siteContext;
+        }
     }
 
 }

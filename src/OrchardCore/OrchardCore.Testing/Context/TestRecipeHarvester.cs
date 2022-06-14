@@ -10,58 +10,48 @@ namespace OrchardCore.Testing.Context
     public class TestRecipeHarvester : IRecipeHarvester
     {
         private readonly IRecipeReader _recipeReader;
-        private readonly string[] _recipies;
-        private readonly Assembly[] _assemblies;
+        private readonly IEnumerable<RecipeLocator> _recipies;
 
-        public TestRecipeHarvester(IRecipeReader recipeReader, string[] recipies, Assembly[] assemblies)
+        public TestRecipeHarvester(IRecipeReader recipeReader, IEnumerable<RecipeLocator> recipies)
         {
             _recipeReader = recipeReader;
-            _recipies = recipies ?? new string[0];
-            _assemblies = assemblies ?? new Assembly[0];
+            _recipies = recipies;
         }
 
-        public Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
-            => HarvestRecipesAsync(_recipies);
+        public Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync() => HarvestAsync();
 
-        private async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string[] paths)
+        private async Task<IEnumerable<RecipeDescriptor>> HarvestAsync()
         {
             var recipeDescriptors = new List<RecipeDescriptor>();
-            var fileInfos = new Dictionary<IFileInfo, EmbeddedFileProvider>();
 
-            foreach (var assembly in _assemblies)
+            if (_recipies != null)
             {
-                var testAssemblyFileProvider = new EmbeddedFileProvider(assembly);
-
-                foreach (var path in paths)
+                foreach (var item in _recipies)
                 {
+                    var testAssemblyFileProvider = new EmbeddedFileProvider(item.Assembly);
+
                     // EmbeddedFileProvider doesn't list directory contents.
-                    var fileInfo = testAssemblyFileProvider.GetFileInfo(path);
+                    var fileInfo = testAssemblyFileProvider.GetFileInfo(item.Path);
                     if (fileInfo.Exists)
                     {
-                        fileInfos.Add(fileInfo, testAssemblyFileProvider);
+                        var descriptor = await _recipeReader.GetRecipeDescriptor(fileInfo.PhysicalPath, fileInfo, testAssemblyFileProvider);
+                        recipeDescriptors.Add(descriptor);
                     }
                 }
             }
-
-            foreach (var fileInfo in fileInfos)
-            {
-                var descriptor = await _recipeReader.GetRecipeDescriptor(fileInfo.Key.PhysicalPath, fileInfo.Key, fileInfo.Value);
-                recipeDescriptors.Add(descriptor);
-            }
-
             return recipeDescriptors;
         }
     }
 
-    public class AssemblyRecipies
+    public class RecipeLocator
     {
-        public AssemblyRecipies(Assembly assembly, string[] recipies)
+        public RecipeLocator(string path, Assembly assembly)
         {
+            Path = path;
             Assembly = assembly;
-            Recipies = recipies;
         }
         public Assembly Assembly { get; private set; }
-        public string[] Recipies { get; private set; }
+        public string Path { get; private set; }
 
     }
 }

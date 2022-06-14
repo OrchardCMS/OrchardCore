@@ -7,9 +7,10 @@ using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.Testing.Context
 {
-    public class OrchardTestFixture<TStartup> : WebApplicationFactory<TStartup>
-        where TStartup : SiteStartupBase, new()
+    public class OrchardTestFixture : WebApplicationFactory<SiteStartup>
     {
+        public static Action<IHostBuilder> ConfigureHostBuilder;
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             var shellsApplicationDataPath = Path.Combine(Directory.GetCurrentDirectory(), "App_Data");
@@ -22,24 +23,24 @@ namespace OrchardCore.Testing.Context
             builder.UseContentRoot(Directory.GetCurrentDirectory());
         }
 
-        Type _webStartupClass;
-        public Type WebStartupClass
-        {
-            get
-            {
-                return _webStartupClass ?? (_webStartupClass = default(TStartup).WebStartupClass);
-            }
-        }
-
         protected override IWebHostBuilder CreateWebHostBuilder()
         {
             return WebHostBuilderFactory.CreateFromAssemblyEntryPoint(
-                WebStartupClass.Assembly, Array.Empty<string>());
+                SiteStartup.WebStartupClass.Assembly, Array.Empty<string>());
         }
 
         protected override IHostBuilder CreateHostBuilder()
-            => Host.CreateDefaultBuilder()
-                .ConfigureWebHostDefaults(webBuilder =>
-                    webBuilder.UseStartup<TStartup>());
+        {
+            var builder = Host.CreateDefaultBuilder()
+                  .ConfigureWebHostDefaults(webBuilder =>
+                      webBuilder.UseStartup<SiteStartup>());
+
+            if (ConfigureHostBuilder != null)
+            {
+                ConfigureHostBuilder(builder);
+            }
+
+            return builder;
+        }
     }
 }

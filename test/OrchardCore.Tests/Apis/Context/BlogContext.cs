@@ -12,13 +12,6 @@ namespace OrchardCore.Tests.Apis.Context
 
         public string BlogContentItemId { get; private set; }
 
-        public static IShellHost ShellHost { get; }
-
-        static BlogContext()
-        {
-            ShellHost = Site.Services.GetRequiredService<IShellHost>();
-        }
-
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync();

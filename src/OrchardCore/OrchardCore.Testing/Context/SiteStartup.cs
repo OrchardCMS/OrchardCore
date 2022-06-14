@@ -15,72 +15,63 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Testing.Context
 {
-    public abstract class SiteStartupBase
+    public class SiteStartup
     {
-        public static ConcurrentDictionary<string, PermissionsContext> PermissionsContexts;
+        public static ConcurrentDictionary<string, PermissionsContext> PermissionsContexts = new ConcurrentDictionary<string, PermissionsContext>();
 
-        static string[] _recipies = Array.Empty<string>();
-        public static string[] Recipies { get { return _recipies; } set { _recipies = value ?? Array.Empty<string>(); } }
+        public static Type WebStartupClass;
 
-        static Assembly[] _assemblies = Array.Empty<Assembly>();
-        public static Assembly[] Assemblies { get { return _assemblies; } set { _assemblies = value ?? Array.Empty<Assembly>(); } }
+        public static readonly List<RecipeLocator> Recipies = new List<RecipeLocator>();
 
-        static SiteStartupBase()
+        public static readonly List<string> TenantFeatures = new List<string>();
+
+        public static readonly List<string> AdditionalSetupFeatures = new List<string>();
+
+        public static Action<IServiceCollection> ConfigureOrchardServices = (collection) =>
         {
-            PermissionsContexts = new ConcurrentDictionary<string, PermissionsContext>();
-        }
-
-        protected virtual string[] SetupFeatures
-        {
-            get
-            {
-                return new string[] { "OrchardCore.Tenants" };
-            }
-        }
-
-        protected virtual string[] TenantFeatures
-        {
-            get
-            {
-                return Array.Empty<String>();
-            }
-        }
-
-        protected virtual void ConfigureOrchardServices(IServiceCollection collection)
-        {
-
-            collection.AddScoped<IRecipeHarvester, TestRecipeHarvester>(x => new TestRecipeHarvester(x.GetService<IRecipeReader>(), Recipies, Assemblies));
+            collection.AddScoped<IRecipeHarvester, TestRecipeHarvester>(x => new TestRecipeHarvester(x.GetService<IRecipeReader>(), Recipies));
 
             collection.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(sp =>
             {
                 return new PermissionContextAuthorizationHandler(sp.GetRequiredService<IHttpContextAccessor>(), PermissionsContexts);
             });
-        }
+        };
 
-        protected virtual void ConfigureAppBuilder(IApplicationBuilder appBuilder)
+        public static Action<IApplicationBuilder> ConfigureAppBuilder = (appBuilder) =>
         {
             appBuilder.UseAuthorization();
-        }
-
-        public abstract Type WebStartupClass { get; }
+        };
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOrchardCms(builder =>
             {
-                if (SetupFeatures != null && SetupFeatures.Length > 0)
+                var setupFeatures = new string[] { "OrchardCore.Tenants" };
+
+                if (AdditionalSetupFeatures != null)
                 {
-                    builder.AddSetupFeatures(SetupFeatures);
+                    setupFeatures = setupFeatures.Concat(AdditionalSetupFeatures).ToArray();
                 };
-                if (TenantFeatures != null && TenantFeatures.Length > 0)
+                builder.AddSetupFeatures(setupFeatures);
+
+
+                if (TenantFeatures != null)
                 {
-                    builder.AddTenantFeatures(TenantFeatures);
+                    builder.AddTenantFeatures(TenantFeatures.ToArray());
                 };
+
                 builder.ConfigureServices(collection =>
                {
-                   ConfigureOrchardServices(collection);
-               })
-                .Configure(appBuilder => ConfigureAppBuilder(appBuilder));
+                   if (ConfigureOrchardServices != null)
+                   {
+                       ConfigureOrchardServices(collection);
+                   }
+               });
+
+                if (ConfigureAppBuilder != null)
+                {
+                    builder.Configure(appBuilder => ConfigureAppBuilder(appBuilder));
+                }
             });
 
             services.AddSingleton<IModuleNamesProvider, ModuleNamesProvider>(x => new ModuleNamesProvider(WebStartupClass));
