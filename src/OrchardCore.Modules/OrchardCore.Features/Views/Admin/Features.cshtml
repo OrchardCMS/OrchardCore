@@ -1,8 +1,16 @@
 @using Microsoft.AspNetCore.Html
-@using OrchardCore.Modules;
+@using OrchardCore.Modules
+@using System
 @model FeaturesViewModel
+@{
+    var title = T["Features"];
+    if (!String.IsNullOrEmpty(Model.Name))
+    {
+        title = T["Features for {0}", Model.Name];
+    }
+}
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Features"])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(title)</h1></zone>
 
 <form autocomplete="off" class="position-sticky action-bar">
     <div class="card mb-3">
