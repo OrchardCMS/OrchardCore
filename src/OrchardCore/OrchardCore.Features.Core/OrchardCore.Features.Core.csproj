@@ -3,11 +3,9 @@
   <PropertyGroup>
     <!-- NuGet properties-->
     <Title>OrchardCore Features Core</Title>
-    <Description>
-      $(OCFrameworkDescription)
+    <Description>$(OCFrameworkDescription)
 
-      Core implementation of Features Module.
-    </Description>
+    Core implementation of Features Module.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework Features</PackageTags>
   </PropertyGroup>
 
