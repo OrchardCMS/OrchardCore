@@ -18,6 +18,11 @@ public class DbConnectionValidator : IDbConnectionValidator
 {
     public async Task<DbConnectionValidatorResult> ValidateAsync(string databaseProvider, string connectionString, string tablePrefix)
     {
+        if (String.IsNullOrWhiteSpace(databaseProvider))
+        {
+            return DbConnectionValidatorResult.NoProvider;
+        }
+
         var providerName = DatabaseHelper.GetDatabaseProviderName(databaseProvider);
 
         if (providerName == DatabaseProviderName.None)

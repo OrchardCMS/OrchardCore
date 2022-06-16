@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Abstractions.Setup;
+using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
@@ -34,6 +35,7 @@ namespace OrchardCore.Setup.Services
         private readonly IStringLocalizer S;
         private readonly IHostApplicationLifetime _applicationLifetime;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IDbConnectionValidator _dbConnectionValidator;
         private readonly string _applicationName;
         private IEnumerable<RecipeDescriptor> _recipes;
 
@@ -49,6 +51,7 @@ namespace OrchardCore.Setup.Services
         /// <param name="stringLocalizer">The <see cref="IStringLocalizer"/>.</param>
         /// <param name="applicationLifetime">The <see cref="IHostApplicationLifetime"/>.</param>
         /// <param name="httpContextAccessor">The <see cref="IHttpContextAccessor"/>.</param>
+        /// <param name="dbConnectionValidator">The <see cref="IDbConnectionValidator"/>.</param>
         public SetupService(
             IShellHost shellHost,
             IHostEnvironment hostingEnvironment,
@@ -58,7 +61,8 @@ namespace OrchardCore.Setup.Services
             ILogger<SetupService> logger,
             IStringLocalizer<SetupService> stringLocalizer,
             IHostApplicationLifetime applicationLifetime,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IDbConnectionValidator dbConnectionValidator)
         {
             _shellHost = shellHost;
             _applicationName = hostingEnvironment.ApplicationName;
@@ -69,6 +73,7 @@ namespace OrchardCore.Setup.Services
             S = stringLocalizer;
             _applicationLifetime = applicationLifetime;
             _httpContextAccessor = httpContextAccessor;
+            _dbConnectionValidator = dbConnectionValidator;
         }
 
         /// <inheritdoc />
@@ -150,16 +155,32 @@ namespace OrchardCore.Setup.Services
 
             var shellSettings = new ShellSettings(context.ShellSettings);
 
-            if (string.IsNullOrEmpty(shellSettings["DatabaseProvider"]))
+            if (String.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
             {
                 shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider) ? databaseProvider?.ToString() : String.Empty;
                 shellSettings["ConnectionString"] = context.Properties.TryGetValue(SetupConstants.DatabaseConnectionString, out var databaseConnectionString) ? databaseConnectionString?.ToString() : String.Empty;
                 shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix) ? databaseTablePrefix?.ToString() : String.Empty;
             }
 
-            if (String.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
+            switch (await _dbConnectionValidator.ValidateAsync(shellSettings["DatabaseProvider"], shellSettings["ConnectionString"], shellSettings["TablePrefix"]))
             {
-                throw new ArgumentException("DatabaseProvider is required");
+                case DbConnectionValidatorResult.NoProvider:
+                    context.Errors.Add("DatabaseProvider", S["DatabaseProvider is required"]);
+                    break;
+                case DbConnectionValidatorResult.UnsupportedProvider:
+                    context.Errors.Add("DatabaseProvider", S["The provided database provider is not supported."]);
+                    break;
+                case DbConnectionValidatorResult.InvalidConnection:
+                    context.Errors.Add("ConnectionString", S["The provided connection string is invalid or unreachable."]);
+                    break;
+                case DbConnectionValidatorResult.DocumentFound:
+                    context.Errors.Add("TablePrefix", S["The provided table prefix already exists."]);
+                    break;
+            }
+
+            if (context.Errors.Any())
+            {
+                return null;
             }
 
             // Creating a standalone environment based on a "minimum shell descriptor".

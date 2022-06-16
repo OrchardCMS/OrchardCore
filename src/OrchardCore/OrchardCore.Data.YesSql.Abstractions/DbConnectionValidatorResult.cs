@@ -5,6 +5,9 @@ public enum DbConnectionValidatorResult
     // Unknown indicates that the connection string status is unknown or was not yet validated
     Unknown,
 
+    // NoProvider indicated that the provider is missing
+    NoProvider,
+
     // DocumentNotFound indicates that the connection string was valid, yet the Document table does not exist 
     DocumentNotFound,
 

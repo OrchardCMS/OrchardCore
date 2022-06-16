@@ -23,12 +23,3 @@ internal class DatabaseHelper
         return DatabaseProviderName.None;
     }
 }
-
-public enum DatabaseProviderName
-{
-    None,
-    SqlConnection,
-    Sqlite,
-    MySql,
-    Postgres,
-}

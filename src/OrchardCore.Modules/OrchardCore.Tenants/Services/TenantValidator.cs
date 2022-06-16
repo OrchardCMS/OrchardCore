@@ -100,45 +100,43 @@ namespace OrchardCore.Tenants.Services
 
                 if (selectedProvider != null && hasConnectionString)
                 {
-                    await ValidateConnectionAsync(selectedProvider.Value, model.ConnectionString, model.TablePrefix, errors);
+                    await AssertConnectionAndApplyErrorsAsync(selectedProvider.Value, model.ConnectionString, model.TablePrefix, errors);
                 }
-
-                return errors;
             }
-
-            // At this point, we know we are validating existing tenant
-            var shellSetting = allSettings.Where(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase))
-                                          .FirstOrDefault();
-
-            if (shellSetting == null || shellSetting.State == TenantState.Uninitialized)
+            else
             {
-                // while the tenant is Uninitialized, we are still able to change the database settings
-                // let's validate the database for assurance
+                // At this point, we know we are validating existing tenant
+                var shellSetting = allSettings.Where(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase))
+                                              .FirstOrDefault();
 
-                if (selectedProvider != null && hasConnectionString)
+                if (shellSetting == null || shellSetting.State == TenantState.Uninitialized)
                 {
-                    await ValidateConnectionAsync(selectedProvider.Value, model.ConnectionString, model.TablePrefix, errors);
+                    // while the tenant is Uninitialized, we are still able to change the database settings
+                    // let's validate the database for assurance
+
+                    if (selectedProvider != null && hasConnectionString)
+                    {
+                        await AssertConnectionAndApplyErrorsAsync(selectedProvider.Value, model.ConnectionString, model.TablePrefix, errors);
+                    }
                 }
             }
 
             return errors;
         }
 
-        private async Task ValidateConnectionAsync(string databaseProvider, string connectionString, string tablePrefix, List<ModelError> errors)
+        private async Task AssertConnectionAndApplyErrorsAsync(string databaseProvider, string connectionString, string tablePrefix, List<ModelError> errors)
         {
-            var result = await _dbConnectionValidator.ValidateAsync(databaseProvider, connectionString, tablePrefix);
-
-            if (result == DbConnectionValidatorResult.UnsupportedProvider)
+            switch (await _dbConnectionValidator.ValidateAsync(databaseProvider, connectionString, tablePrefix))
             {
-                errors.Add(new ModelError(nameof(TenantViewModel.DatabaseProvider), S["The provided database provider is not supported."]));
-            }
-            else if (result == DbConnectionValidatorResult.InvalidConnection)
-            {
-                errors.Add(new ModelError(nameof(TenantViewModel.ConnectionString), S["The provided connection string is invalid or unreachable."]));
-            }
-            else if (result == DbConnectionValidatorResult.DocumentFound)
-            {
-                errors.Add(new ModelError(nameof(TenantViewModel.TablePrefix), S["The provided table prefix already exists."]));
+                case DbConnectionValidatorResult.UnsupportedProvider:
+                    errors.Add(new ModelError(nameof(TenantViewModel.DatabaseProvider), S["The provided database provider is not supported."]));
+                    break;
+                case DbConnectionValidatorResult.InvalidConnection:
+                    errors.Add(new ModelError(nameof(TenantViewModel.ConnectionString), S["The provided connection string is invalid or unreachable."]));
+                    break;
+                case DbConnectionValidatorResult.DocumentFound:
+                    errors.Add(new ModelError(nameof(TenantViewModel.TablePrefix), S["The provided table prefix already exists."]));
+                    break;
             }
         }
 
