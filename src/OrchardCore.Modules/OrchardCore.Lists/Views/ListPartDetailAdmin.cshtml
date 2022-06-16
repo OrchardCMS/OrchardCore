@@ -47,7 +47,7 @@ else
                 <div class="mb-n1">
                     <div class="input-group input-group-sm w-50 d-inline-flex has-filter">
                         <div class="input-group-prepend">
-                            <button class="btn btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button class="btn btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa fa-filter" title="@T["Filters"]" aria-hidden="true"></i>
                             </button>
                             <div class="dropdown-menu @if (CultureInfo.CurrentUICulture.IsRightToLeft()) {<text>dropdown-menu-start</text>}" aria-labelledby="filter-dropdown">
@@ -76,9 +76,9 @@ else
                             }
                             else if (authorizedContentTypeDefinitions.Count() > 1)
                             {
-                                <a class="btn btn-sm btn-success dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button class="btn btn-sm btn-success dropdown-toggle" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     @T["Create"]
-                                </a>
+                                </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                     @foreach (var containedContentTypeDefinition in authorizedContentTypeDefinitions)
                                     {
