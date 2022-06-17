@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
@@ -18,45 +20,57 @@ namespace OrchardCore.Features.Controllers
     public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
+        private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
-        private readonly FeatureService _featureService;
+        private readonly IExtensionManager _extensionManager;
         private readonly IHtmlLocalizer H;
+        private readonly IShellFeaturesManager _shellFeaturesManager;
 
         public AdminController(
             IExtensionManager extensionManager,
             IHtmlLocalizer<AdminController> localizer,
             IShellFeaturesManager shellFeaturesManager,
             IAuthorizationService authorizationService,
+            IShellHost shellHost,
             ShellSettings shellSettings,
             INotifier notifier,
             IStringLocalizer<AdminController> stringLocalizer)
         {
             _authorizationService = authorizationService;
+            _shellHost = shellHost;
             _shellSettings = shellSettings;
             _notifier = notifier;
+            _extensionManager = extensionManager;
             H = localizer;
+            _shellFeaturesManager = shellFeaturesManager;
             S = stringLocalizer;
-            _featureService = new FeatureService(shellFeaturesManager, extensionManager);
         }
 
-        public async Task<ActionResult> Features()
+        public async Task<ActionResult> Features(string tenant)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
                 return Forbid();
             }
 
-            return View(new FeaturesViewModel
+            var viewModel = new FeaturesViewModel();
+
+            await ExecuteAsync(tenant, async (featureService, settings) =>
             {
-                Features = await _featureService.GetModuleFeaturesAsync()
+                // if the user provide an invalid tenant value, we'll set it to null so it's not available on the next request
+                tenant = settings?.Name;
+                viewModel.Name = settings?.Name;
+                viewModel.Features = await featureService.GetModuleFeaturesAsync();
             });
+
+            return View(viewModel);
         }
 
         [HttpPost]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> Features(BulkActionViewModel model, bool? force)
+        public async Task<ActionResult> Features(BulkActionViewModel model, bool? force, string tenant)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
@@ -70,64 +84,115 @@ namespace OrchardCore.Features.Controllers
 
             if (ModelState.IsValid)
             {
-                var availableFeatures = await _featureService.GetAvailableFeatures(model.FeatureIds);
+                await ExecuteAsync(tenant, async (featureService, settings) =>
+                {
+                    var availableFeatures = await featureService.GetAvailableFeatures(model.FeatureIds);
 
-                await _featureService.EnableOrDisableFeaturesAsync(availableFeatures, model.BulkAction, force, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
+                    await featureService.EnableOrDisableFeaturesAsync(availableFeatures, model.BulkAction, force, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
+                });
             }
 
             return RedirectToAction(nameof(Features));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Disable(string id)
+        public async Task<IActionResult> Disable(string id, string tenant)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
                 return Forbid();
             }
 
-            var feature = await _featureService.GetAvailableFeature(id);
+            var found = false;
 
-            if (feature == null)
+            await ExecuteAsync(tenant, async (featureService, settings) =>
+            {
+                var feature = await featureService.GetAvailableFeature(id);
+
+                if (feature != null)
+                {
+                    found = true;
+                }
+
+                await featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Disable, true, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
+            });
+
+            if (!found)
             {
                 return NotFound();
             }
 
-            // Generating routes can fail while the tenant is recycled as routes can use services.
-            // It could be fixed by waiting for the next request or the end of the current one
-            // to actually release the tenant. Right now we render the url before recycling the tenant.
-
-            var nextUrl = Url.Action(nameof(Features));
-
-            await _featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Disable, true, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
-
-            return Redirect(nextUrl);
+            return Redirect(GetNextUrl(tenant));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Enable(string id)
+        public async Task<IActionResult> Enable(string id, string tenant)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
                 return Forbid();
             }
 
-            var feature = await _featureService.GetAvailableFeature(id);
+            var found = false;
 
-            if (feature == null)
+            await ExecuteAsync(tenant, async (featureService, settings) =>
+            {
+                var feature = await featureService.GetAvailableFeature(id);
+
+                if (feature != null)
+                {
+                    found = true;
+                }
+
+                await featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Enable, true, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
+            });
+
+            if (!found)
             {
                 return NotFound();
             }
 
+            return Redirect(GetNextUrl(tenant));
+        }
+
+        private async Task ExecuteAsync(string tenant, Func<FeatureService, ShellSettings, Task> action)
+        {
+            if (_shellSettings.IsDefaultShell() && !String.IsNullOrWhiteSpace(tenant) && _shellHost.TryGetSettings(tenant, out var settings) && !settings.IsDefaultShell())
+            {
+                // At this point we know that this request is being executed from the host.
+                // Also, we were able to find a matching tenant that isn't a default shell
+                // we are free to create a scope for the given tenant
+                var shellScope = await _shellHost.GetScopeAsync(settings);
+
+                await shellScope.UsingAsync(async scope =>
+                {
+                    var shellFeatureManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
+                    var extensionManager = scope.ServiceProvider.GetRequiredService<IExtensionManager>();
+
+                    var featureService = new FeatureService(shellFeatureManager, extensionManager);
+
+                    await action(featureService, settings);
+                });
+
+                return;
+            }
+
+            // at this point we apply the action on the current tenant
+            await action(new FeatureService(_shellFeaturesManager, _extensionManager), null);
+        }
+
+        private string GetNextUrl(string tenant)
+        {
             // Generating routes can fail while the tenant is recycled as routes can use services.
             // It could be fixed by waiting for the next request or the end of the current one
             // to actually release the tenant. Right now we render the url before recycling the tenant.
 
-            var nextUrl = Url.Action(nameof(Features));
+            if (!String.IsNullOrWhiteSpace(tenant))
+            {
+                return Url.Action(nameof(Features), new { tenant });
+            }
 
-            await _featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Enable, true, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
-
-            return Redirect(nextUrl);
+            return Url.Action(nameof(Features));
         }
 
         private async ValueTask NotifyAsync(IEnumerable<IFeatureInfo> features, bool enabled = true)

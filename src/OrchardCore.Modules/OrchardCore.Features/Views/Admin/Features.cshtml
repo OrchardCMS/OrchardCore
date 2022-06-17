@@ -1,8 +1,16 @@
 @using Microsoft.AspNetCore.Html
-@using OrchardCore.Modules;
+@using OrchardCore.Modules
+@using System
 @model FeaturesViewModel
+@{
+    var title = T["Features"];
+    if (!String.IsNullOrEmpty(Model.Name))
+    {
+        title = T["Features for {0}", Model.Name];
+    }
+}
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Features"])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(title)</h1></zone>
 
 <form autocomplete="off" class="position-sticky action-bar">
     <div class="card mb-3">
@@ -107,7 +115,7 @@
                                     <div class="col-md-2 text-end">
                                         @if (showEnable && !feature.IsEnabled)
                                         {
-                                            <a id="btn-enable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Enable" asp-route-id="@feature.Descriptor.Id" class="btn btn-primary btn-sm" data-url-af="UnsafeUrl">@T["Enable"]</a>
+                                            <a id="btn-enable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Enable" asp-route-id="@feature.Descriptor.Id" asp-route-tenant="@Model.Name" class="btn btn-primary btn-sm" data-url-af="UnsafeUrl">@T["Enable"]</a>
                                         }
                                         @if (showDisable && feature.IsEnabled)
                                         {
@@ -117,7 +125,7 @@
                                                 var enabledDependentFeatures = new HtmlString($"<ul>{String.Join("", feature.EnabledDependentFeatures.Select(f => $"<li>{f.Name}</li>"))}</ul>");
                                                 confirmationMessage = T["Disabling the {0} feature will also disable the following dependent features:{1}Continue?", feature.Descriptor.Name, enabledDependentFeatures];
                                             }
-                                            <a id="btn-disable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+                                            <a id="btn-disable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Disable" asp-route-id="@feature.Descriptor.Id" asp-route-tenant="@Model.Name" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl RemoveUrl">@T["Disable"]</a>
                                         }
                                     </div>
                                 </div>
@@ -133,11 +141,11 @@
     }
 </form>
 <script at="Foot">
-    $(function () {
+    $(function() {
         var searchBox = $('#search-box');
 
         // On each keypress filter the list of features
-        searchBox.keyup(function (e) {
+        searchBox.keyup(function(e) {
             var search = $(this).val().toLowerCase();
             var elementsToFilter = $("[data-filter-value]");
 
@@ -146,21 +154,19 @@
                 searchBox.val('');
                 elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
             } else {
-                elementsToFilter.each(function () {
+                elementsToFilter.each(function() {
                     var text = $(this).data('filter-value').toLowerCase();
                     var found = text.indexOf(search) > -1;
 
-                    if (found)
-                    {
+                    if (found) {
                         $(this).removeClass("d-none first-child-visible last-child-visible");
                     }
-                    else
-                    {
+                    else {
                         $(this).addClass("d-none");
                     }
                 });
 
-                $('ul.list-group').each(function () {
+                $('ul.list-group').each(function() {
                     $(this).find('li').filter(":not(.d-none)").first().addClass("first-child-visible");
                     $(this).find('li').filter(":not(.d-none)").last().addClass("last-child-visible");
                 });
@@ -176,7 +182,7 @@
         });
 
         //prevent posting form on pressing enter key
-        searchBox.keypress(function (e) {
+        searchBox.keypress(function(e) {
             var key = e.charCode || e.keyCode || 0;
             if (key == 13) {
                 return false;
@@ -185,7 +191,7 @@
 
         $(".dropdown-menu a").filter(function() {
             return $(this).data("action");
-        }).on('click', function () {
+        }).on('click', function() {
             $("[name='BulkAction']").val($(this).data('action'));
             $("[name='submit.BulkAction']").click();
         });

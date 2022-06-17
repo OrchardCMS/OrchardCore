@@ -76,8 +76,6 @@ public class FeatureService
     {
         switch (action)
         {
-            case FeaturesBulkAction.None:
-                break;
             case FeaturesBulkAction.Enable:
                 await _shellFeaturesManager.EnableFeaturesAsync(features, force == true);
                 await notifyAsync(features, true);

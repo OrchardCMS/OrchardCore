@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Admin;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Distributed;
@@ -20,10 +20,8 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Setup;
 using OrchardCore.Tenants.Controllers;
 using OrchardCore.Tenants.Deployment;
-using OrchardCore.Tenants.Drivers;
 using OrchardCore.Tenants.Recipes;
 using OrchardCore.Tenants.Services;
-using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants
 {
@@ -38,11 +36,10 @@ namespace OrchardCore.Tenants
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDisplayManager<ShellSettingsEntry>, DisplayManager<ShellSettingsEntry>>();
-            services.AddScoped<IDisplayDriver<ShellSettingsEntry>, ShellSettingsEntryDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<ITenantValidator, TenantValidator>();
+            services.AddScoped<IShapeTableProvider, TenantShapeTableProvider>();
             services.AddSetup();
         }
 
@@ -197,44 +194,12 @@ namespace OrchardCore.Tenants
         }
     }
 
-    [Feature("OrchardCore.Tenants.TenantFeatures")]
+    [RequireFeatures("OrchardCore.Tenants", "OrchardCore.Features")]
     public class TenantFeatureProfilesStartup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-        public TenantFeatureProfilesStartup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IPermissionProvider, FeaturePermissions>();
-            services.AddScoped<IDisplayDriver<ShellSettingsEntry>, ShellSettingsEntryManageFeatureDisplayDriver>();
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var featureControllerName = typeof(TenantFeaturesController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-               name: "TenantFeatures",
-               areaName: "OrchardCore.Tenants",
-               pattern: _adminOptions.AdminUrlPrefix + "/{tenant}/Features",
-               defaults: new { controller = featureControllerName, action = nameof(TenantFeaturesController.Features) }
-           );
-            routes.MapAreaControllerRoute(
-                name: "TenantFeaturesDisable",
-                areaName: "OrchardCore.Tenants",
-                pattern: _adminOptions.AdminUrlPrefix + "/{tenant}/Features/{id}/Disable",
-                defaults: new { controller = featureControllerName, action = nameof(TenantFeaturesController.Disable) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "TenantFeaturesEnable",
-                areaName: "OrchardCore.Tenants",
-                pattern: _adminOptions.AdminUrlPrefix + "/{tenant}/Features/{id}/Enable",
-                defaults: new { controller = featureControllerName, action = nameof(TenantFeaturesController.Enable) }
-            );
+            services.AddScoped<IShapeTableProvider, TenantFeatureShapeTableProvider>();
         }
     }
 

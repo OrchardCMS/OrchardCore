@@ -3,8 +3,6 @@
 @using OrchardCore.DisplayManagement
 @using OrchardCore.Environment.Shell
 @using OrchardCore.Environment.Shell.Models
-@inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor UpdateModelAccessor
-@inject IDisplayManager<ShellSettingsEntry> DisplayManager
 @{
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.ShellSettingsEntries.Count - 1;
@@ -77,20 +75,12 @@
                                 <label class="form-check-label" for="tenantNames-@entry.Name"></label>
                             </div>
                             <div class="d-inline">
-                                @{
-                                    var tagsShape = await DisplayManager.BuildDisplayAsync(entry, UpdateModelAccessor.ModelUpdater, String.Empty, "Tags");
-                                }
-    
-                                @await DisplayAsync(tagsShape)
+                                @await DisplayAsync(await New.TenantActionTags(ShellSettingsEntry: entry))
                             </div>
                         </div>
                         <div class="col-lg-6 col-sm-12 float-end">
                             <div class="float-end">
-                                @{
-                                    var buttonShape = await DisplayManager.BuildDisplayAsync(entry, UpdateModelAccessor.ModelUpdater, String.Empty, "ActionButtons");
-                                }
-
-                                @await DisplayAsync(buttonShape)
+                                @await DisplayAsync(await New.TenantActionButtons(ShellSettingsEntry: entry))
                             </div>
                         </div>
                     </div>
