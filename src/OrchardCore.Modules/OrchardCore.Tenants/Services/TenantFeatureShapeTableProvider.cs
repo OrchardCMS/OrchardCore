@@ -1,3 +1,8 @@
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Tenants.ViewModels;
+
 namespace OrchardCore.Tenants.Services;
 
 public class TenantFeatureShapeTableProvider : IShapeTableProvider
