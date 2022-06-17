@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
@@ -16,6 +18,13 @@ namespace OrchardCore.Data;
 
 public class DbConnectionValidator : IDbConnectionValidator
 {
+    private readonly IEnumerable<DatabaseProvider> _databaseProviders;
+
+    public DbConnectionValidator(IEnumerable<DatabaseProvider> databaseProviders)
+    {
+        _databaseProviders = databaseProviders;
+    }
+
     public async Task<DbConnectionValidatorResult> ValidateAsync(string databaseProvider, string connectionString, string tablePrefix)
     {
         if (String.IsNullOrWhiteSpace(databaseProvider))
@@ -23,16 +32,21 @@ public class DbConnectionValidator : IDbConnectionValidator
             return DbConnectionValidatorResult.NoProvider;
         }
 
-        var providerName = DatabaseHelper.GetDatabaseProviderName(databaseProvider);
-
-        if (providerName == DatabaseProviderName.None)
+        if (!Enum.TryParse(databaseProvider, out DatabaseProviderName providerName) || providerName == DatabaseProviderName.None)
         {
             return DbConnectionValidatorResult.UnsupportedProvider;
         }
 
+        var provider = _databaseProviders.FirstOrDefault(x => x.Value == providerName);
+
+        if (provider != null && !provider.HasConnectionString)
+        {
+            return DbConnectionValidatorResult.DocumentNotFound;
+        }
+
         if (String.IsNullOrWhiteSpace(connectionString))
         {
-            throw new ArgumentException($"The parameter '{nameof(connectionString)}' cannot be empty.");
+            return DbConnectionValidatorResult.InvalidConnection;
         }
 
         var factory = GetFactory(providerName, connectionString);

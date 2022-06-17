@@ -18,7 +18,6 @@ namespace OrchardCore.Tenants.Services
 
         private readonly IShellHost _shellHost;
         private readonly IFeatureProfilesService _featureProfilesService;
-        private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly ShellSettings _shellSettings;
         private readonly IStringLocalizer<TenantValidator> S;
         private readonly IDbConnectionValidator _dbConnectionValidator;
@@ -26,14 +25,12 @@ namespace OrchardCore.Tenants.Services
         public TenantValidator(
             IShellHost shellHost,
             IFeatureProfilesService featureProfilesService,
-            IEnumerable<DatabaseProvider> databaseProviders,
             ShellSettings shellSettings,
             IStringLocalizer<TenantValidator> stringLocalizer,
             IDbConnectionValidator dbConnectionValidator)
         {
             _shellHost = shellHost;
             _featureProfilesService = featureProfilesService;
-            _databaseProviders = databaseProviders;
             _shellSettings = shellSettings;
             S = stringLocalizer;
             _dbConnectionValidator = dbConnectionValidator;
@@ -42,13 +39,6 @@ namespace OrchardCore.Tenants.Services
         public async Task<IEnumerable<ModelError>> ValidateAsync(TenantViewModel model)
         {
             var errors = new List<ModelError>();
-            var selectedProvider = _databaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
-            var hasConnectionString = !String.IsNullOrWhiteSpace(model.ConnectionString);
-
-            if (selectedProvider != null && selectedProvider.HasConnectionString && !hasConnectionString)
-            {
-                errors.Add(new ModelError(nameof(model.ConnectionString), S["The connection string is mandatory for this provider."]));
-            }
 
             if (String.IsNullOrWhiteSpace(model.Name))
             {
@@ -98,10 +88,7 @@ namespace OrchardCore.Tenants.Services
                     errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
                 }
 
-                if (selectedProvider != null && hasConnectionString)
-                {
-                    await AssertConnectionAndApplyErrorsAsync(selectedProvider.Value, model.ConnectionString, model.TablePrefix, errors);
-                }
+                await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, errors);
             }
             else
             {
@@ -114,17 +101,14 @@ namespace OrchardCore.Tenants.Services
                     // while the tenant is Uninitialized, we are still able to change the database settings
                     // let's validate the database for assurance
 
-                    if (selectedProvider != null && hasConnectionString)
-                    {
-                        await AssertConnectionAndApplyErrorsAsync(selectedProvider.Value, model.ConnectionString, model.TablePrefix, errors);
-                    }
+                    await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, errors);
                 }
             }
 
             return errors;
         }
 
-        private async Task AssertConnectionAndApplyErrorsAsync(string databaseProvider, string connectionString, string tablePrefix, List<ModelError> errors)
+        private async Task AssertConnectionValidityAndApplyErrorsAsync(string databaseProvider, string connectionString, string tablePrefix, List<ModelError> errors)
         {
             switch (await _dbConnectionValidator.ValidateAsync(databaseProvider, connectionString, tablePrefix))
             {

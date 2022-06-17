@@ -42,10 +42,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddTransient<IConfigureOptions<SqliteOptions>, SqliteOptionsConfiguration>();
 
                 // Adding supported databases
-                services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
-                services.TryAddDataProvider(name: "Sqlite", value: "Sqlite", hasConnectionString: false, hasTablePrefix: false, isDefault: true);
-                services.TryAddDataProvider(name: "MySql", value: "MySql", hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
-                services.TryAddDataProvider(name: "Postgres", value: "Postgres", hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "Sql Server", value: DatabaseProviderName.SqlConnection, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "Sqlite", value: DatabaseProviderName.Sqlite, hasConnectionString: false, hasTablePrefix: false, isDefault: true);
+                services.TryAddDataProvider(name: "MySql", value: DatabaseProviderName.MySql, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "Postgres", value: DatabaseProviderName.Postgres, hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
 
                 // Configuring data access
 
@@ -64,7 +64,9 @@ namespace Microsoft.Extensions.DependencyInjection
                         ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
                     };
 
-                    switch (DatabaseHelper.GetDatabaseProviderName(shellSettings["DatabaseProvider"]))
+                    Enum.TryParse(shellSettings["DatabaseProvider"], out DatabaseProviderName providerName);
+
+                    switch (providerName)
                     {
                         case DatabaseProviderName.SqlConnection:
                             storeConfiguration

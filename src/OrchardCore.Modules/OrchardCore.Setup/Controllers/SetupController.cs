@@ -26,7 +26,7 @@ namespace OrchardCore.Setup.Controllers
         private readonly ISetupService _setupService;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
-        private IdentityOptions _identityOptions;
+        private readonly IdentityOptions _identityOptions;
         private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly ILogger _logger;
@@ -215,7 +215,10 @@ namespace OrchardCore.Setup.Controllers
             if (!String.IsNullOrEmpty(_shellSettings["DatabaseProvider"]))
             {
                 model.DatabaseConfigurationPreset = true;
-                model.DatabaseProvider = _shellSettings["DatabaseProvider"];
+                if (Enum.TryParse(_shellSettings["DatabaseProvider"], out DatabaseProviderName providerName))
+                {
+                    model.DatabaseProvider = providerName;
+                }
             }
             else
             {

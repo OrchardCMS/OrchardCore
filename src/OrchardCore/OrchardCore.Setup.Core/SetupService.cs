@@ -165,7 +165,7 @@ namespace OrchardCore.Setup.Services
             switch (await _dbConnectionValidator.ValidateAsync(shellSettings["DatabaseProvider"], shellSettings["ConnectionString"], shellSettings["TablePrefix"]))
             {
                 case DbConnectionValidatorResult.NoProvider:
-                    context.Errors.Add("DatabaseProvider", S["DatabaseProvider is required"]);
+                    context.Errors.Add("DatabaseProvider", S["DatabaseProvider is required."]);
                     break;
                 case DbConnectionValidatorResult.UnsupportedProvider:
                     context.Errors.Add("DatabaseProvider", S["The provided database provider is not supported."]);
