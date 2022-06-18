@@ -199,7 +199,6 @@ namespace OrchardCore.Contents
 
             services.AddScoped<IContentsAdminListQueryService, DefaultContentsAdminListQueryService>();
 
-            services.AddScoped<IDisplayManager<ContentOptionsViewModel>, DisplayManager<ContentOptionsViewModel>>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ContentOptionsDisplayDriver>();
 
             services.AddScoped(typeof(IContentItemRecursionHelper<>), typeof(ContentItemRecursionHelper<>));
