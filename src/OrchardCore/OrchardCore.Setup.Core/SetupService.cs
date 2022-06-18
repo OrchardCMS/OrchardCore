@@ -165,16 +165,16 @@ namespace OrchardCore.Setup.Services
             switch (await _dbConnectionValidator.ValidateAsync(shellSettings["DatabaseProvider"], shellSettings["ConnectionString"], shellSettings["TablePrefix"]))
             {
                 case DbConnectionValidatorResult.NoProvider:
-                    context.Errors.Add("DatabaseProvider", S["DatabaseProvider is required."]);
+                    context.Errors.Add(String.Empty, S["DatabaseProvider is required."]);
                     break;
                 case DbConnectionValidatorResult.UnsupportedProvider:
-                    context.Errors.Add("DatabaseProvider", S["The provided database provider is not supported."]);
+                    context.Errors.Add(String.Empty, S["The provided database provider is not supported."]);
                     break;
                 case DbConnectionValidatorResult.InvalidConnection:
-                    context.Errors.Add("ConnectionString", S["The provided connection string is invalid or unreachable."]);
+                    context.Errors.Add(String.Empty, S["The provided connection string is invalid or unreachable."]);
                     break;
                 case DbConnectionValidatorResult.DocumentFound:
-                    context.Errors.Add("TablePrefix", S["The provided table prefix already exists."]);
+                    context.Errors.Add(String.Empty, S["The provided table prefix already exists."]);
                     break;
             }
 
@@ -213,7 +213,7 @@ namespace OrchardCore.Setup.Services
                         // unless the recipe is executing?
 
                         _logger.LogError(e, "An error occurred while initializing the datastore.");
-                        context.Errors.Add("DatabaseProvider", S["An error occurred while initializing the datastore: {0}", e.Message]);
+                        context.Errors.Add(String.Empty, S["An error occurred while initializing the datastore: {0}", e.Message]);
                         return;
                     }
 
