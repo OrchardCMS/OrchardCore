@@ -48,7 +48,8 @@ namespace OrchardCore.ContentFields.Controllers
             var contentItem = await _contentManager.NewAsync(contentType);
             contentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem) &&
+                !await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditOwnContent, contentItem))
             {
                 return Forbid();
             }
