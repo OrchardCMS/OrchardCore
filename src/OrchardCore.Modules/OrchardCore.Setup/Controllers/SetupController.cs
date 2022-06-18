@@ -5,14 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Abstractions.Setup;
 using OrchardCore.Data;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -33,8 +31,6 @@ namespace OrchardCore.Setup.Controllers
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly ILogger _logger;
         private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer<SetupController> H;
-        private readonly INotifier _notifier;
 
         public SetupController(
             IClock clock,
@@ -45,9 +41,7 @@ namespace OrchardCore.Setup.Controllers
             IEmailAddressValidator emailAddressValidator,
             IEnumerable<DatabaseProvider> databaseProviders,
             IStringLocalizer<SetupController> localizer,
-            ILogger<SetupController> logger,
-            IHtmlLocalizer<SetupController> htmlLocalizer,
-            INotifier notifier)
+            ILogger<SetupController> logger)
         {
             _clock = clock;
             _setupService = setupService;
@@ -58,8 +52,6 @@ namespace OrchardCore.Setup.Controllers
             _databaseProviders = databaseProviders;
             _logger = logger;
             S = localizer;
-            H = htmlLocalizer;
-            _notifier = notifier;
         }
 
         public async Task<ActionResult> Index(string token)
@@ -175,7 +167,7 @@ namespace OrchardCore.Setup.Controllers
 
             var executionId = await _setupService.SetupAsync(setupContext);
 
-            // Check if a component in the Setup failed including database connection validation
+            // Check if any Setup component failed (e.g., database connection validation)
             if (setupContext.Errors.Any())
             {
                 foreach (var error in setupContext.Errors)
@@ -211,7 +203,8 @@ namespace OrchardCore.Setup.Controllers
                     model.DatabaseProvider = providerName;
                 }
             }
-            else
+
+            if (!model.DatabaseProvider.HasValue)
             {
                 model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
             }
