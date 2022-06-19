@@ -1,11 +1,10 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
-using OrchardCore.Workflows.ViewModels;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Workflows.Events
 {
@@ -53,7 +52,7 @@ return result;";
         }
         
         public string TriggeredWorkflowName { get; set; }
-        public override LocalizedString DisplayText => S["Catch Workflow Fault Evnet"];
+        public override LocalizedString DisplayText => S["Catch Workflow Fault Event"];
         public override LocalizedString Category => S["Background"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
