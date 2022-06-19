@@ -12,7 +12,7 @@
 
 <div class="mb-3" asp-validation-class-for="DeliveryMethod">
     <label asp-for="DeliveryMethod">@T["Delivery method"]</label>
-    <select asp-for="DeliveryMethod" class="form-control">
+    <select asp-for="DeliveryMethod" class="form-select">
         <option value="@SmtpDeliveryMethod.Network" selected="@(SmtpDeliveryMethod.Network == Model.DeliveryMethod)" data-bs-target="#@Html.Id("NetworkOptions")">
             @T["Network"]
         </option>
@@ -79,7 +79,7 @@
 
                 <div id="@Html.Id("SelectEncryptionMethod")" class="mb-3" asp-validation-class-for="EncryptionMethod">
                     <label asp-for="EncryptionMethod">@T["Encryption method to use"]</label>
-                    <select asp-for="EncryptionMethod" class="form-control" disabled="@Model.AutoSelectEncryption">
+                    <select asp-for="EncryptionMethod" class="form-select" disabled="@Model.AutoSelectEncryption">
                         <option value="@SmtpEncryptionMethod.None" selected="@(SmtpEncryptionMethod.None == Model.EncryptionMethod ? true : false)">
                             @T["None"] - @T["Connect to server using insecure connection."]
                         </option>

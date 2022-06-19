@@ -1,6 +1,14 @@
 @model ContentTypeSettingsViewModel
 
 <div class="mb-3">
+    <div class="w-md-75 w-xl-50">
+        <label asp-for="Description">@T["Description"]</label>
+        <input asp-for="Description" type="text" class="form-control">
+    </div>
+    <span class="hint">@T["(Optional) Description of the content type"]</span>
+</div>
+
+<div class="mb-3">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="Creatable">
         <label class="form-check-label" asp-for="Creatable">@T["Creatable"]</label>
