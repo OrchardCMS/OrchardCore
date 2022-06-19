@@ -165,7 +165,7 @@ namespace OrchardCore.Documents
                 {
                     _ = await _distributedCache.GetStringAsync(_options.CacheIdKey);
                 }
-                catch
+                catch(Exception e)
                 {
                     await DocumentStore.CancelAsync();
 
