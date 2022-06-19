@@ -119,6 +119,7 @@ namespace OrchardCore.Tests.Workflows
             var missingActivityLogger = new Mock<ILogger<MissingActivity>>();
             var missingActivityLocalizer = new Mock<IStringLocalizer<MissingActivity>>();
             var clock = new Mock<IClock>();
+            var workflowFaultHandler = new Mock<IWorkflowFaultHandler>();
             var workflowManager = new WorkflowManager(
                 activityLibrary.Object,
                 workflowTypeStore.Object,
@@ -129,7 +130,9 @@ namespace OrchardCore.Tests.Workflows
                 workflowManagerLogger.Object,
                 missingActivityLogger.Object,
                 missingActivityLocalizer.Object,
-                clock.Object);
+                clock.Object,
+                workflowFaultHandler.Object
+                );
 
             foreach (var activity in activities)
             {
