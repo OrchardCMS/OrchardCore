@@ -21,6 +21,7 @@ namespace OrchardCore.Workflows.Events
             S = stringLocalizer;
             _scriptEvaluator = scriptEvaluator;
         }
+        
         public override string Name => nameof(WorkflowFaultEvent);
 
 
@@ -47,19 +48,19 @@ errorInfo.{nameof(WorkflowFaultModel.ActivityId)}== 'ActivityId' ||
 errorInfo.{nameof(WorkflowFaultModel.ExcutedActivityCount)}== 20
 // If the above expression is true, the exception message will be caught
 // and a new workflow instance will be created.
-return result;
-            ";
+return result;";
             return sample;
         }
+        
         public string TriggeredWorkflowName { get; set; }
         public override LocalizedString DisplayText => S["Catch Workflow Fault Evnet"];
-
         public override LocalizedString Category => S["Background"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(S["Done"]);
         }
+        
         public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var faultModel = workflowContext.Input[WorkflowFaultModel.WorkflowFaultInputKey] as WorkflowFaultModel;
@@ -77,9 +78,5 @@ return result;
         {
             return base.ExecuteAsync(workflowContext, activityContext);
         }
-
     }
 }
-
-
-

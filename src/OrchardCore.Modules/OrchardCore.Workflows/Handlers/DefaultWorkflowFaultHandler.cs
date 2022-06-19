@@ -12,8 +12,6 @@ namespace OrchardCore.Workflows.Handlers
 {
     public class DefaultWorkflowFaultHandler : IWorkflowFaultHandler
     {
-
-
         public async Task OnWorkflowFaultAsync(IWorkflowManager workflowManager, WorkflowExecutionContext workflowContext,
             ActivityContext activityContext,
             Exception exception)
