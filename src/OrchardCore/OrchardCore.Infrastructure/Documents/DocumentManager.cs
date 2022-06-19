@@ -165,13 +165,13 @@ namespace OrchardCore.Documents
                 {
                     _ = await _distributedCache.GetStringAsync(_options.CacheIdKey);
                 }
-                catch(Exception e)
+                catch
                 {
                     await DocumentStore.CancelAsync();
 
-                    _logger.LogError(e, "Failed to update the '{DocumentName}'", typeof(TDocument).Name);
+                    _logger.LogError("Can't update the '{DocumentName}' if not able to access the distributed cache", typeof(TDocument).Name);
                     
-                    throw new InvalidOperationException($"Can't update the '{typeof(TDocument).Name}' if not able to access the distributed cache");
+                    throw;
                 }
             }
 
