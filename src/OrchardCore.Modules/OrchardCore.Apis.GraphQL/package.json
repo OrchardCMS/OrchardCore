@@ -8,7 +8,7 @@
     "graphiql": "^1.8.10",
     "graphiql-explorer": "^0.9.0",
     "graphql": "^15.8.0",
-    "react": "^18.1.0",
+    "react": "^18.2.0",
     "react-dom": "^18.1.0"
   },
   "devDependencies": {
