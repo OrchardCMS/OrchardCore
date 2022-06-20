@@ -67,6 +67,7 @@ namespace OrchardCore.Flows.Drivers
                 m.BagPart = bagPart;
                 m.Updater = context.Updater;
                 m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(contentDefinitionManager, context.TypePartDefinition);
+                m.AccessibleWidgets = await GetAccessibleWidgetsAsync(bagPart.ContentItems, contentDefinitionManager);
             });
         }
 
@@ -87,7 +88,7 @@ namespace OrchardCore.Flows.Drivers
                 var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
 
                 // assign the owner of the item to ensure we can validate access to it later.
-                contentItem.Owner = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                contentItem.Owner = GetCurrentOwner();
 
                 // Try to match the requested id with an existing id
                 var existingContentItem = part.ContentItems.FirstOrDefault(x => String.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
@@ -152,9 +153,41 @@ namespace OrchardCore.Flows.Drivers
             return Edit(part, context);
         }
 
+        private async Task<IEnumerable<BagPartWidgetViewModel>> GetAccessibleWidgetsAsync(IEnumerable<ContentItem> contentItems, IContentDefinitionManager contentDefinitionManager)
+        {
+            var widgets = new List<BagPartWidgetViewModel>();
+
+            foreach (var contentItem in contentItems)
+            {
+                var widget = new BagPartWidgetViewModel
+                {
+                    ContentItem = contentItem,
+                    Viewable = true,
+                    Editable = true,
+                    Deletable = true,
+                };
+
+                if (IsSecurable(contentDefinitionManager, contentItem.ContentType, out var contentTypeDefinition))
+                {
+                    widget.Viewable = await AuthorizeAsync(CommonPermissions.ViewContent, contentItem);
+                    widget.Editable = await AuthorizeAsync(CommonPermissions.EditContent, contentItem);
+                    widget.Deletable = await AuthorizeAsync(CommonPermissions.DeleteContent, contentItem);
+                }
+
+                widget.ContentTypeDefinition = contentTypeDefinition;
+
+                if (widget.Editable || widget.Viewable)
+                {
+                    widgets.Add(widget);
+                }
+            }
+
+            return widgets;
+        }
+
         private async Task<bool> AuthorizeAsync(IContentDefinitionManager contentDefinitionManager, Permission permission, ContentItem contentItem)
         {
-            if (!IsSecurable(contentDefinitionManager, contentItem.ContentType))
+            if (!IsSecurable(contentDefinitionManager, contentItem.ContentType, out _))
             {
                 return true;
             }
@@ -168,9 +201,9 @@ namespace OrchardCore.Flows.Drivers
         }
 
 
-        private static bool IsSecurable(IContentDefinitionManager contentDefinitionManager, string contentType)
+        private static bool IsSecurable(IContentDefinitionManager contentDefinitionManager, string contentType, out ContentTypeDefinition contentTypeDefinition)
         {
-            var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(contentType);
+            contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(contentType);
 
             var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
 
@@ -190,6 +223,7 @@ namespace OrchardCore.Flows.Drivers
             foreach (var contentType in contentTypes)
             {
                 var dummyContent = await _contentManager.NewAsync(contentType.Name);
+                dummyContent.Owner = GetCurrentOwner();
 
                 if (!await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, dummyContent))
                 {
@@ -200,6 +234,11 @@ namespace OrchardCore.Flows.Drivers
             }
 
             return accessibleContentTypes;
+        }
+
+        private string GetCurrentOwner()
+        {
+            return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
     }
 }

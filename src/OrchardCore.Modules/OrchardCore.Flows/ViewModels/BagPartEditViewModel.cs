@@ -21,5 +21,8 @@ namespace OrchardCore.Flows.ViewModels
 
         [BindNever]
         public IEnumerable<ContentTypeDefinition> ContainedContentTypeDefinitions { get; set; }
+
+        [BindNever]
+        public IEnumerable<BagPartWidgetViewModel> AccessibleWidgets { get; set; }
     }
 }
