@@ -257,6 +257,8 @@ namespace OrchardCore.Contents.Controllers
             // Load items so that loading handlers are invoked.
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync(_contentManager);
 
+            _httpContextAccessor.HttpContext.Features.Set(new ContentItemListFeature(pageOfContentItems));
+
             // We prepare the content items SummaryAdmin shape
             var contentItemSummaries = new List<dynamic>();
             foreach (var contentItem in pageOfContentItems)
