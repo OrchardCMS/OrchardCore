@@ -13,23 +13,19 @@ namespace OrchardCore.Workflows.Events
         private readonly IStringLocalizer<WorkflowFaultEvent> S;
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
 
-        public WorkflowFaultEvent(IStringLocalizer<WorkflowFaultEvent> stringLocalizer,
-             IWorkflowScriptEvaluator scriptEvaluator
-            )
+        public WorkflowFaultEvent(
+            IStringLocalizer<WorkflowFaultEvent> stringLocalizer,
+            IWorkflowScriptEvaluator scriptEvaluator)
         {
             S = stringLocalizer;
             _scriptEvaluator = scriptEvaluator;
         }
-        
         public override string Name => nameof(WorkflowFaultEvent);
-
-
         public WorkflowExpression<bool> ErrorFilter
         {
             get => GetProperty(() => new WorkflowExpression<bool>(getDefaultValue()));
             set => SetProperty(value);
         }
-
         private string getDefaultValue()
         {
             var sample = $@"
@@ -50,7 +46,7 @@ errorInfo.{nameof(WorkflowFaultModel.ExcutedActivityCount)}== 20
 return result;";
             return sample;
         }
-        
+
         public string TriggeredWorkflowName { get; set; }
         public override LocalizedString DisplayText => S["Catch Workflow Fault Event"];
         public override LocalizedString Category => S["Background"];
@@ -59,7 +55,7 @@ return result;";
         {
             return Outcomes(S["Done"]);
         }
-        
+
         public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var faultModel = workflowContext.Input[WorkflowFaultModel.WorkflowFaultInputKey] as WorkflowFaultModel;
@@ -69,6 +65,7 @@ return result;";
             {
                 return false;
             }
+
             var result = await _scriptEvaluator.EvaluateAsync(ErrorFilter, workflowContext);
             return result;
         }
