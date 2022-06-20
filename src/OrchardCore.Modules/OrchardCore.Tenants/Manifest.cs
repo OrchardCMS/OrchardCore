@@ -34,7 +34,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Tenants.FeatureProfiles",
     Name = "Tenant Feature Profiles",
-    Description = "Provides a way to control available features for each tenant.",
+    Description = "Provides a way to manage available features for each tenant.",
     Category = "Infrastructure",
     DefaultTenantOnly = true
 )]
