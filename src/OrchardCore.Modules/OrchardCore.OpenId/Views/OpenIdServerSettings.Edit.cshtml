@@ -110,6 +110,9 @@
         <input type="checkbox" class="form-check-input" asp-for="RequireProofKeyForCodeExchange">
         <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>        
     </div>
+    <div class="hint">
+                @T["Global setting that applies PKCE to all registered clients whether or not the 'Require PKCE' option is set on the individual client application."]
+            </div>
 </div>
 
 <h3>@T["Advanced options"]</h3>

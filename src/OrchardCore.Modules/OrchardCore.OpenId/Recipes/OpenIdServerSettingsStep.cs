@@ -62,6 +62,7 @@ namespace OrchardCore.OpenId.Recipes
             settings.DisableAccessTokenEncryption = model.DisableAccessTokenEncryption;
             settings.DisableRollingRefreshTokens = model.DisableRollingRefreshTokens;
             settings.UseReferenceAccessTokens = model.UseReferenceAccessTokens;
+            settings.RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange;
 
             await _serverService.UpdateSettingsAsync(settings);
         }

@@ -50,7 +50,8 @@ namespace OrchardCore.OpenId.Recipes
                 RedirectUris = model.RedirectUris,
                 Roles = model.RoleEntries.Select(x => x.Name).ToArray(),
                 Scopes = model.ScopeEntries.Select(x => x.Name).ToArray(),
-                Type = model.Type
+                Type = model.Type,
+                RequirePkce = model.RequirePkce,
             };
 
             await _applicationManager.UpdateDescriptorFromSettings(settings, app);
