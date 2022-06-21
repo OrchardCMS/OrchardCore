@@ -91,7 +91,7 @@ with this line:
 app.UseOrchardCore();
 ```
 
-Finally, remove the default `Pages` and/or `Views` folder to allow OrchardCore to render the views from the theme.
+Finally, remove the default `Pages` and/or `Views` folder to allow OrchardCore to render the views from the active theme.
 
 ## Setup your application
 
