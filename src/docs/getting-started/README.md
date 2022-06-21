@@ -18,7 +18,7 @@ To add a reference to the package, right-click on the project and click on `Mana
 !!! tip
     When starting a new project using `.NET 6` framework, you'll notice that the created project does not have a `Startup` class as it did in previous versions of the .NET framework.
 
-Open `Project.cs` file. Remove the following line "if exists"
+Open `Program.cs` file. Remove the following line "if exists"
 
 ```csharp
 builder.Services.AddRazorPages();
@@ -64,7 +64,6 @@ app.UseOrchardCore();
 
 app.Run();
 ```
-
 
 ### Getting Started Using `Startup.cs` file?
 
