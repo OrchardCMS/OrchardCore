@@ -406,8 +406,8 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
         }
 
-        private string ReleaseIdKey(string name) => name + ReleaseIdKeySuffix;
-        private string ReloadIdKey(string name) => name + ReloadIdKeySuffix;
+        private static string ReleaseIdKey(string name) => name + ReleaseIdKeySuffix;
+        private static string ReloadIdKey(string name) => name + ReloadIdKeySuffix;
 
         /// <summary>
         /// Creates a distributed context based on the default tenant settings and descriptor.
