@@ -68,7 +68,7 @@ public static class AwsStorageOptionsExtension
         }
         catch (ConfigurationException ex)
         {
-            logger.LogCritical(ex, e.Message);
+            logger.LogCritical(ex, ex.Message);
             throw;
         }
     }
