@@ -23,7 +23,6 @@ namespace OrchardCore.Workflows.Services
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowTypeStore _workflowTypeStore;
         private readonly IWorkflowFaultHandler _workflowFaultHandler;
-
         private readonly IWorkflowStore _workflowStore;
         private readonly IWorkflowIdGenerator _workflowIdGenerator;
         private readonly Resolver<IEnumerable<IWorkflowValueSerializer>> _workflowValueSerializers;

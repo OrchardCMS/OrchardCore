@@ -76,8 +76,6 @@ namespace OrchardCore.Workflows
             //IWorkflowFaultHandler
             services.AddScoped<IWorkflowFaultHandler, DefaultWorkflowFaultHandler>();
             services.AddActivity<WorkflowFaultEvent, WorkflowFaultEventDisplayDriver>();
-
-
             services.AddActivity<Activity, ActivityMetadataDisplayDriver>();
             services.AddActivity<NotifyTask, NotifyTaskDisplayDriver>();
             services.AddActivity<SetPropertyTask, SetVariableTaskDisplayDriver>();
