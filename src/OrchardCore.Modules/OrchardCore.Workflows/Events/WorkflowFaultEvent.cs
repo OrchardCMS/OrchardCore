@@ -21,35 +21,18 @@ namespace OrchardCore.Workflows.Events
             _scriptEvaluator = scriptEvaluator;
         }
         public override string Name => nameof(WorkflowFaultEvent);
+        
+        public string TriggeredWorkflowName { get; set; }
+
+        public override LocalizedString DisplayText => S["Catch Workflow Fault Event"];
+
+        public override LocalizedString Category => S["Background"];
+
         public WorkflowExpression<bool> ErrorFilter
         {
             get => GetProperty(() => new WorkflowExpression<bool>(getDefaultValue()));
             set => SetProperty(value);
-        }
-        private string getDefaultValue()
-        {
-            var sample = $@"
-//sample code
-var errorInfo= input('{WorkflowFaultModel.WorkflowFaultInputKey}');
-// This is where you define the workflow to intercept or specify the exception information
-var result=  errorInfo.{nameof(WorkflowFaultModel.WorkflowName)}== 'WorkflowName' ||
-errorInfo.{nameof(WorkflowFaultModel.WorkflowId)}== 'WorkflowId' ||
-errorInfo.{nameof(WorkflowFaultModel.ErrorMessage)}.indexOf('ErrorStr') ||
-errorInfo.{nameof(WorkflowFaultModel.ExceptionDetails)}.indexOf('ErrorStr') ||
-errorInfo.{nameof(WorkflowFaultModel.FaultMessage)}.indexOf('ErrorStr') ||
-errorInfo.{nameof(WorkflowFaultModel.ActivityDisplayName)}== 'ActivityDisplayName' ||
-errorInfo.{nameof(WorkflowFaultModel.ActivityTypeName)}== 'ActivityTypeName' ||
-errorInfo.{nameof(WorkflowFaultModel.ActivityId)}== 'ActivityId' ||
-errorInfo.{nameof(WorkflowFaultModel.ExcutedActivityCount)}== 20
-// If the above expression is true, the exception message will be caught
-// and a new workflow instance will be created.
-return result;";
-            return sample;
-        }
-
-        public string TriggeredWorkflowName { get; set; }
-        public override LocalizedString DisplayText => S["Catch Workflow Fault Event"];
-        public override LocalizedString Category => S["Background"];
+        }       
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
@@ -73,6 +56,27 @@ return result;";
         public override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return base.ExecuteAsync(workflowContext, activityContext);
+        }
+        
+        private string getDefaultValue()
+        {
+            var sample = $@"
+//sample code
+var errorInfo= input('{WorkflowFaultModel.WorkflowFaultInputKey}');
+// This is where you define the workflow to intercept or specify the exception information
+var result=  errorInfo.{nameof(WorkflowFaultModel.WorkflowName)}== 'WorkflowName' ||
+errorInfo.{nameof(WorkflowFaultModel.WorkflowId)}== 'WorkflowId' ||
+errorInfo.{nameof(WorkflowFaultModel.ErrorMessage)}.indexOf('ErrorStr') ||
+errorInfo.{nameof(WorkflowFaultModel.ExceptionDetails)}.indexOf('ErrorStr') ||
+errorInfo.{nameof(WorkflowFaultModel.FaultMessage)}.indexOf('ErrorStr') ||
+errorInfo.{nameof(WorkflowFaultModel.ActivityDisplayName)}== 'ActivityDisplayName' ||
+errorInfo.{nameof(WorkflowFaultModel.ActivityTypeName)}== 'ActivityTypeName' ||
+errorInfo.{nameof(WorkflowFaultModel.ActivityId)}== 'ActivityId' ||
+errorInfo.{nameof(WorkflowFaultModel.ExcutedActivityCount)}== 20
+// If the above expression is true, the exception message will be caught
+// and a new workflow instance will be created.
+return result;";
+            return sample;
         }
     }
 }
