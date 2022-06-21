@@ -85,7 +85,7 @@ public class Startup : Modules.StartupBase
             services.AddSingleton<IMediaFileStoreCache>(serviceProvider =>
                 serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>());
 
-            // Registering IAmazonS3 client using AWS registration factory
+            // Registering IAmazonS3 client using AWS registration factory.
             services.AddAWSService<IAmazonS3>(storeOptions.AwsOptions);
 
             services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>

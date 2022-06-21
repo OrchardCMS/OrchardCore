@@ -18,9 +18,9 @@ The following configuration values are used by default and can be customized:
 {
    "OrchardCore": {
        "OrchardCore_Media_AmazonS3": {
-           // If you have aws cli installed and configured you may just specify profile name
+           // If you have AWS CLI installed and configured you may just specify a profile name.
            "Profile": "",
-           // In case your aws profiles are located not in default place
+           // In case your AWS profiles are located not in the default place.
            "ProfilesLocation": "",
            "Region": "",
            // This section needed only if Orchard will be hosted not in the AWS Cloud
@@ -32,7 +32,7 @@ The following configuration values are used by default and can be customized:
            // Optionally, set to a path to store media in a subdirectory inside your container.
            "BasePath": "/media",
            "CreateBucket": false,
-           // Your AWS S3 Bucket name
+           // Your AWS S3 Bucket name.
            "BucketName": ""
        }
   }
@@ -49,25 +49,25 @@ In case you are hosting Orchard Core outside of AWS, you should fill the `Creden
 
 You can find region endpoints in the [Official AWS S3 Documentation](https://docs.aws.amazon.com/general/latest/gr/s3.html), see Region column. For example for the Frankfurt region you should use `eu-central-1`
 
-## AWS Credentials and it's loading order
+## AWS Credentials and its loading order
 
-`OrchardCore_Media_AmazonS3` is a subset of `AWSOptions` configuration and should be configured same as a generic [AWSOptions](https://docs.aws.amazon.com/sdk-for-net/v3/developer-guide/net-dg-config-netcore.html).
+`OrchardCore_Media_AmazonS3` is a subset of `AWSOptions` configuration and should be configured the same as a generic [AWSOptions](https://docs.aws.amazon.com/sdk-for-net/v3/developer-guide/net-dg-config-netcore.html).
 
 ### Credentials loading order
 
-1. Credentials property of AWSOptions
-2. Shared Credentials File (Custom Location). When both the profile and profile location are specified
-3. SDK Store (Windows Only). When an instance of AWSOptions is provided and only the profile is set (profile location is null or empty)
-4. Shared Credentials File (Default Location). When an instance of AWSOptions is provided and only the profile is set (profile location is null or empty)
+1. Credentials property of `AWSOptions˙.
+2. Shared Credentials File (Custom Location). When both the profile and profile location are specified.
+3. SDK Store (Windows Only). When an instance of `AWSOptions˙ is provided and only the profile is set (profile location is null or empty).
+4. Shared Credentials File (Default Location). When an instance of `AWSOptions˙ is provided and only the profile is set (profile location is null or empty).
 5. AWS Web Identity Federation Credentials. When an OIDC token file exists and is set in the environment variables.
-6. CredentialsProfileStoreChain
-   1. SDK Store (Windows Only) encrypted using Windows Data Protection API
-   2. Shared Credentials File in the default location
+6. `CredentialsProfileStoreChain`
+   1. SDK Store (Windows Only) encrypted using Windows Data Protection API.
+   2. Shared Credentials File in the default location.
 7. Environment variables. When the Access Key ID and Secret Access Key environment variables are set.
 8. ECS Task Credentials or EC2 Instance Credentials. When using IAM roles with ECS tasks and ECS instances.
 
 !!! note
-    AWS team want to encourage the use of profiles instead of embedding credentials directly into appsettings.X.json file where they would accidentally get checked into source control.
+    The AWS team wants to encourage using profiles instead of embedding credentials directly into `appsettings.X.json` files where they would accidentally get checked into source control.
     If you have an option to use profiles or environment variables - you should use it instead of direct credentials.
 
 
