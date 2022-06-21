@@ -81,7 +81,6 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             if (File.Exists(appsettings))
             {
-                File.Delete(appsettings);
                 try
                 {
                     File.Delete(appsettings);
