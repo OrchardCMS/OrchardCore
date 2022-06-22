@@ -21,6 +21,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         private const string ShellCreatedIdKey = "SHELL_CREATED_ID";
         private const string ReleaseIdKeySuffix = "_RELEASE_ID";
         private const string ReloadIdKeySuffix = "_RELOAD_ID";
+        private const string RemoveIdKeySuffix = "_REMOVE_ID";
 
         private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(1);
         private static readonly TimeSpan MaxRetryTime = TimeSpan.FromMinutes(1);
@@ -197,6 +198,22 @@ namespace OrchardCore.Environment.Shell.Distributed
 
                                     // Keep in sync this tenant by reloading it locally.
                                     await _shellHost.ReloadShellContextAsync(settings, eventSource: false);
+                                }
+                            }
+
+                            // Try to retrieve the remove identifier of this tenant from the distributed cache.
+                            var removeId = await distributedCache.GetStringAsync(RemoveIdKey(settings.Name));
+                            if (removeId != null)
+                            {
+                                // Check if the remove identifier of this tenant has changed.
+                                var identifier = _identifiers.GetOrAdd(settings.Name, name => new ShellIdentifier());
+                                if (identifier.RemoveId != removeId)
+                                {
+                                    // Upate the local identifier.
+                                    identifier.RemoveId = removeId;
+
+                                    // Keep in sync this tenant by removing it locally.
+                                    await _shellHost.RemoveShellContextAsync(settings, eventSource: false);
                                 }
                             }
                         }
@@ -406,8 +423,60 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
         }
 
+        /// <summary>
+        /// Called before removing a tenant to update the related shell identifiers, locally and in the distributed cache.
+        /// </summary>
+        public async Task RemovingAsync(string name)
+        {
+            if (_terminated || name == ShellHelper.DefaultShellName)
+            {
+                return;
+            }
+
+            // If there is no default tenant or it is not running, nothing to do.
+            if (!_shellHost.TryGetShellContext(ShellHelper.DefaultShellName, out var defaultContext) ||
+                defaultContext.Settings.State != TenantState.Running)
+            {
+                return;
+            }
+
+            // Acquire the distributed context or create a new one if not yet built.
+            using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
+
+            // If the required distributed features are not enabled, nothing to do.
+            var distributedCache = context?.DistributedCache;
+            if (distributedCache == null)
+            {
+                return;
+            }
+
+            var semaphore = _semaphores.GetOrAdd(name, name => new SemaphoreSlim(1));
+            await semaphore.WaitAsync();
+            try
+            {
+                // Update this tenant in the local collection with a new remove identifier.
+                var identifier = _identifiers.GetOrAdd(name, name => new ShellIdentifier());
+                identifier.RemoveId = IdGenerator.GenerateId();
+
+                // Update the remove identifier of this tenant in the distributed cache.
+                await distributedCache.SetStringAsync(RemoveIdKey(name), identifier.RemoveId);
+
+                // Also update the global identifier specifying that a tenant has changed.
+                await distributedCache.SetStringAsync(ShellChangedIdKey, identifier.RemoveId);
+            }
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                _logger.LogError(ex, "Unable to update the distributed cache before removing the tenant '{TenantName}'.", name);
+            }
+            finally
+            {
+                semaphore.Release();
+            }
+        }
+
         private static string ReleaseIdKey(string name) => name + ReleaseIdKeySuffix;
         private static string ReloadIdKey(string name) => name + ReloadIdKeySuffix;
+        private static string RemoveIdKey(string name) => name + RemoveIdKeySuffix;
 
         /// <summary>
         /// Creates a distributed context based on the default tenant settings and descriptor.

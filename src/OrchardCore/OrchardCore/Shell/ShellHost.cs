@@ -52,6 +52,7 @@ namespace OrchardCore.Environment.Shell
         public ShellsEvent LoadingAsync { get; set; }
         public ShellEvent ReleasingAsync { get; set; }
         public ShellEvent ReloadingAsync { get; set; }
+        public ShellEvent RemovingAsync { get; set; }
 
         public async Task InitializeAsync()
         {
@@ -144,6 +145,13 @@ namespace OrchardCore.Environment.Shell
             settings.VersionId = IdGenerator.GenerateId();
             await _shellSettingsManager.SaveSettingsAsync(settings);
             await ReloadShellContextAsync(settings);
+        }
+
+        public async Task RemoveShellSettingsAsync(ShellSettings settings)
+        {
+            CheckCanRemoveShell(settings);
+            await _shellSettingsManager.RemoveSettingsAsync(settings);
+            await RemoveShellContextAsync(settings);
         }
 
         /// <summary>
@@ -261,8 +269,29 @@ namespace OrchardCore.Environment.Shell
             {
                 _shellSettings[settings.Name] = settings;
             }
+        }
 
-            return;
+        /// <summary>
+        /// Removes a shell.
+        /// </summary>
+        public async Task RemoveShellContextAsync(ShellSettings settings, bool eventSource = true)
+        {
+            CheckCanRemoveShell(settings);
+
+            if (RemovingAsync != null && eventSource && settings.State != TenantState.Initializing)
+            {
+                foreach (var d in RemovingAsync.GetInvocationList())
+                {
+                    await ((ShellEvent)d)(settings.Name);
+                }
+            }
+
+            if (_shellContexts.TryRemove(settings.Name, out var context))
+            {
+                context.Release();
+            }
+
+            _shellSettings.TryRemove(settings.Name, out _);
         }
 
         public IEnumerable<ShellContext> ListShellContexts() => _shellContexts.Values.ToArray();
@@ -465,6 +494,19 @@ namespace OrchardCore.Environment.Shell
         private bool CanReleaseShell(ShellSettings settings)
         {
             return settings.State != TenantState.Disabled || _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes == 0;
+        }
+
+        /// <summary>
+        /// Checks if a shell can be removed, throws an exception if the shell is not disabled or still in use.
+        /// </summary>
+        private void CheckCanRemoveShell(ShellSettings settings)
+        {
+            if (settings.State != TenantState.Disabled ||
+                _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
+            {
+                throw new InvalidOperationException(
+                    $"The tenant '{settings.Name}' can't be removed as it is not disabled or still in use.");
+            }
         }
 
         public void Dispose()
