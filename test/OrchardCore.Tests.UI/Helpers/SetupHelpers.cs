@@ -9,7 +9,7 @@ namespace OrchardCore.Tests.UI.Helpers
 {
     public static class SetupHelpers
     {
-        public const string RecipeId = "SaaS";
+        public const string RecipeId = "Agency";
 
         public static async Task<Uri> RunSetupAsync(UITestContext context)
         {
