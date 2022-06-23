@@ -207,17 +207,17 @@
             </div>
         </div>
         <div class="row">
-            <div class="form-group col-md-6" asp-validation-class-for="Password">
+            <div class="mb-3 col-md-6" asp-validation-class-for="Password">
                 <label asp-for="Password">@T["Password"]</label>
                 <div class="input-group">
-                    <input asp-for="Password" class="form-control" data-bs-toggle="popover" data-bs-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-content="@passwordTooltip" required pattern="@passwordRegex" />
+                    <input asp-for="Password" class="form-control" data-bs-toggle="popover" data-bs-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-bs-content="@passwordTooltip" required pattern="@passwordRegex" />
                     <button tabindex="-1" class="btn btn-secondary" type="button" id="togglePassword"><i class="icon fa fa-eye"></i></button>
                 </div>
                 <div id="passwordStrength"></div>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
-            <div class="form-group col-md-6" asp-validation-class-for="PasswordConfirmation">
+            <div class="mb-3 col-md-6" asp-validation-class-for="PasswordConfirmation">
                 <label asp-for="PasswordConfirmation">@T["Password Confirmation"]</label>
                 <div class="input-group">
                     <input asp-for="PasswordConfirmation" class="form-control" title="@passwordTooltip" required pattern="@passwordRegex" />
@@ -228,7 +228,7 @@
         </div>
     </fieldset>
     <div class="row">
-        <div class="mb-3 mt-3 col-md-4">
+        <div class="mb-3 col-md-4">
             <input type="hidden" asp-for="Secret" value="@Model.Secret" />
             <button class="btn btn-primary" type="submit" id="SubmitButton">@T["Finish Setup"]</button>
         </div>

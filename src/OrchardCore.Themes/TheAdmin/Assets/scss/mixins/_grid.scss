@@ -13,7 +13,7 @@
     &.col-#{$grouping} {
         @each $breakpoint in map-keys($grid-breakpoints) {
             @include make-col-fix(#{$breakpoint});
-            @for $i from 1 through $grid-columns / 2 {
+            @for $i from 1 through math.div($grid-columns, 2) {
                 @include make-col-fix(#{$breakpoint}-#{$i});
             }
         }

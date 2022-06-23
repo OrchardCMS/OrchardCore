@@ -107,6 +107,7 @@ nav:
       - Azure AD integration: docs/guides/azuread-integration/README.md
       - Create a Liquid Widget: docs/guides/create-liquid-widget/README.md
       - Query Content Items Based on Taxonomy: docs/guides/query-content-items-based-on-taxonomy/README.md
+      - Gulp pipeline: docs/guides/gulp-pipeline/README.md
   - Key Topics:
       - Manage your Content: docs/topics/content-management/README.md
       - Customize the Display: docs/topics/display/README.md
@@ -155,6 +156,7 @@ nav:
           - Media:
               - Media: docs/reference/modules/Media/README.md
               - Media Slugify: docs/reference/modules/Media.Slugify/README.md
+              - Media Amazon S3: docs/reference/modules/Media.AmazonS3/README.md
               - Media Azure: docs/reference/modules/Media.Azure/README.md
           - ReCaptcha: docs/reference/modules/ReCaptcha/README.md
           - Resources: docs/reference/modules/Resources/README.md
@@ -212,6 +214,7 @@ nav:
           - Roles: docs/reference/modules/Roles/README.md
           - Sanitizer: docs/reference/core/Sanitizer/README.md
           - Scripting: docs/reference/modules/Scripting/README.md
+          - Security: docs/reference/modules/Security/README.md
           - Setup: docs/reference/modules/Setup/README.md
           - Shells: docs/reference/core/Shells/README.md
           - Tenants: docs/reference/modules/Tenants/README.md
@@ -229,6 +232,7 @@ nav:
       - Owners: docs/resources/owners/README.md
       - Workshops: docs/resources/workshops/README.md
   - Releases:
+      - 1.4.0: docs/releases/1.4.0.md
       - 1.3.0: docs/releases/1.3.0.md
       - 1.2.2: docs/releases/1.2.2.md
       - 1.2.1: docs/releases/1.2.1.md

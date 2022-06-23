@@ -58,7 +58,6 @@ namespace OrchardCore.Shortcodes
 
             services.AddOptions<ShortcodeOptions>();
             services.AddScoped<IShortcodeProvider, OptionsShortcodeProvider>();
-            services.AddScoped<IDisplayManager<ShortcodeDescriptor>, DisplayManager<ShortcodeDescriptor>>();
             services.AddScoped<IDisplayDriver<ShortcodeDescriptor>, ShortcodeDescriptorDisplayDriver>();
         }
     }

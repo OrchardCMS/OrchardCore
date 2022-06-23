@@ -2,11 +2,11 @@
 @using OrchardCore.Contents.AuditTrail.ViewModels
 
 <section>
-    <div class="form-group check-all-content-container" asp-validation-class-for="AllowedContentTypes">
+    <div class="mb-3 check-all-content-container" asp-validation-class-for="AllowedContentTypes">
         <label asp-for="AllowedContentTypes">@T["Allowed content types"]</label>
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input check-all-master" id="select-all" />
-            <label class="custom-control-label" for="select-all">@T["Select all"]</label>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input check-all-master" id="select-all" />
+            <label class="form-check-label" for="select-all">@T["Select all"]</label>
         </div>
         <div class="check-all-content-slave">
             @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.AllowedContentTypes, htmlName = Html.NameFor(m => m.AllowedContentTypes) })

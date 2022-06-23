@@ -119,8 +119,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 
             appManagerMock.Setup(m =>
                 m.PopulateAsync(
-                    It.IsAny<object>(),
                     It.IsAny<OpenIddictApplicationDescriptor>(),
+                    It.IsAny<object>(),
                     It.IsAny<CancellationToken>()))
                 .Returns(
                     new ValueTask());
