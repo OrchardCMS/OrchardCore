@@ -33,7 +33,7 @@ namespace OrchardCore.Tests.UI.Tests
                     return Task.CompletedTask;
                 });
 
-        [Theory(Skip = "Used to test artifact creation during build."), Chrome]
+        [Theory, Chrome]
         public Task IntentionallyFailingTest(Browser browser) =>
             ExecuteTestAfterSetupAsync(
                 context => context.Exists(By.Id("navbarasdfds")),
