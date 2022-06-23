@@ -15,7 +15,7 @@
 <div class="mb-3">
     <label asp-for="Values">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="row col-md-6 col-lg-4">
-        <select class="form-control content-preview-select" asp-for="Values" asp-items="options" multiple
+        <select class="form-select content-preview-select" asp-for="Values" asp-items="options" multiple
             style="min-height: 200px"></select>
     </div>
     @if (!String.IsNullOrEmpty(settings.Hint))

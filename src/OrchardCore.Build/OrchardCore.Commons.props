@@ -3,8 +3,8 @@
   <Import Project="Dependencies.props" />
 
   <PropertyGroup>
-    <VersionPrefix>1.4.0</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <VersionPrefix>1.5.0</VersionPrefix>
+    <VersionSuffix>preview</VersionSuffix>
     <VersionSuffix Condition="'$(VersionSuffix)'!='' AND '$(BuildNumber)' != ''">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
