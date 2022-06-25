@@ -29,10 +29,5 @@ namespace OrchardCore.Environment.Shell.Models
         /// The tenant settings are invalid.
         /// </summary>
         Invalid,
-
-        /// <summary>
-        /// The tenant is removed.
-        /// </summary>
-        Removed,
     }
 }

@@ -220,7 +220,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                         catch (Exception ex) when (!ex.IsFatal())
                         {
                             syncingSuccess = false;
-                            _logger.LogError(ex, "Unable to read the distributed cache while syncing the tenant '{TenantName}'.", settings.Name);
+                            _logger.LogError(ex, "Unexpected error while syncing the tenant '{TenantName}'.", settings.Name);
                             break;
                         }
                         finally
