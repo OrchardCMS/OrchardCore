@@ -19,9 +19,7 @@ namespace OrchardCore.Mvc.RazorPages
             ShellDescriptor shellDescriptor)
         {
             // Available features in the current shell.            
-            _features = extensionManager.GetFeatures().Where(f => shellDescriptor.Features.Any(sf =>
-                sf.Id == f.Id)).Select(f => f);
-
+            _features = extensionManager.GetFeatures().Where(f => shellDescriptor.Features.Any(sf => sf.Id == f.Id));
             _typeFeatureProvider = typeFeatureProvider;
         }
 
@@ -34,31 +32,25 @@ namespace OrchardCore.Mvc.RazorPages
         // Called the 1st time a page is requested or if any page has been updated.
         public void OnProvidersExecuted(PageApplicationModelProviderContext context)
         {
-            // Check if the page belongs to an enabled module.
-            var relativePath = context.ActionDescriptor.RelativePath;
-            var found = false;
-            var featureForPath = _features.Where(f =>
-               relativePath.StartsWith('/' + f.Extension.SubPath + "/Pages/", StringComparison.Ordinal))
-                .OrderBy(f => f.Id == f.Extension.Id ? 1 : 0).ToArray();
+            // Check if the page belongs to an enabled feature.
+            var area = context.PageApplicationModel.AreaName;
 
-            // All pages with internal model types are available to module
-            var pageModelType = context.PageApplicationModel.ModelType.AsType();
-            if (!IsComponentType(pageModelType))
+            var found = false;
+            var featureIdsForArea = _features.Where(f => f.Extension.Id == area).Select(f => f.Id);
+            if (featureIdsForArea.Any())
             {
-                found = featureForPath.Any(f => f.Id == f.Extension.Id);
-            }
-            else
-            {
-                // Pages with public model types containing [Feature] attribute
-                // are available only if feature is enabled 
-                foreach (var feature in featureForPath)
+                // All pages with internal model types are available to the module.
+                var pageModelType = context.PageApplicationModel.ModelType.AsType();
+                if (!IsComponentType(pageModelType))
                 {
-                    var blueprint = _typeFeatureProvider.GetFeatureForDependency(pageModelType);
-                    if (blueprint != null && feature.Id == blueprint.Id)
-                    {
-                        found = true;
-                        break;
-                    }
+                    found = true;
+                }
+                else
+                {
+                    // Pages with public model types containing the [Feature] attribute
+                    // are only available if the feature is enabled.
+                    var featureForType = _typeFeatureProvider.GetFeatureForDependency(pageModelType);
+                    found = featureIdsForArea.Contains(featureForType.Id);
                 }
             }
 
@@ -67,7 +59,7 @@ namespace OrchardCore.Mvc.RazorPages
 
         private bool IsComponentType(Type type)
         {
-            return type.IsClass && !type.IsAbstract && type.IsPublic;
+            return type.IsClass && !type.IsAbstract && type.IsPublic && type != typeof(Object);
         }
     }
 }

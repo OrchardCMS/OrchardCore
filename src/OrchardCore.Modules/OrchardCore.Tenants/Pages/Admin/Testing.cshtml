@@ -1,0 +1,112 @@
+@page "/admin/testing"
+
+@model dynamic
+
+@using System
+@using System.Globalization;
+@using Microsoft.Extensions.Caching.Distributed
+
+@inject IDistributedCache DistributedCache
+
+@functions
+{
+    public Task<IActionResult> OnGetAsync()
+    {
+        return Task.FromResult<IActionResult>(Page());
+    }
+
+    public async Task<ContentResult> OnGetErrorMessage()
+    {
+        var message = await DistributedCache.GetStringAsync("TestingErrorMessage");
+        if (!string.IsNullOrEmpty(message))
+        {
+            await DistributedCache.SetStringAsync("TestingErrorMessage", String.Empty);
+        }
+
+        return new ContentResult { Content = message };
+    }
+}
+
+<h2>Testing</h2>
+
+<form method="post" class="no-multisubmit mt-4">
+
+    <ul class="nav nav-tabs" id="testing-tabs" data-url="@((HttpContext.Request.PathBase + HttpContext.Request.Path).ToString().TrimEnd('/'))">
+        <li class="nav-item pr-md-2"><a class="nav-link active" id="testing1-tab" data-bs-toggle="tab" href="#testing1" role="tab" aria-controls="site" aria-selected="true">@T["Testing1"]</a></li>
+       <li class="nav-item pr-md-2"><a class="nav-link" id="testing2-tab" data-bs-toggle="tab" href="#testing2" role="tab" aria-controls="site" aria-selected="true">@T["Testing2"]</a></li>
+    </ul>
+
+    <div class="testing-alert alert alert-danger alert-dismissible fade show d-none w-50 mt-3" role="alert">
+        <div class="testing-alert-message"></div>
+        <button type="button" class="testing-alert-close close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="tab-content" id="tabs">
+
+        <partial name="Testing1" model="@Model" />
+        <partial name="Testing2" model="@Model" />
+
+    </div>
+</form>
+
+<script at="Foot" depends-on="jquery">
+    $(function () {
+
+        var url = $('#testing-tabs').data('url');
+
+        InitProgress('testing1', 'action1', 1000);
+        InitProgress('testing2', 'action1', 1000);
+
+        function InitProgress(group, action, interval = 5000) {
+            setInterval(function () { GetProgress(group, action); }, interval);
+            GetProgress(group, action);
+        }
+
+        function GetProgress(group, action) {
+            $.ajax({
+                type: "GET",
+                url: url + '/' + group + "?handler=" + action + "progress",
+                success: function (progress) {
+                    $('.' + group + '-' + action + '-progress-bar').css('width', progress + '%');
+                    $('.' + group + '-' + action + '-progress-bar').text(progress + '%');
+
+                    if (progress > 0 && progress < 100) {
+                        $('.' + group + '-' + action + '-progress-bar').addClass('progress-bar-striped progress-bar-animated');
+                    } else {
+                        $('.' + group + '-' + action + '-progress-bar').removeClass('progress-bar-striped progress-bar-animated');
+                    }
+               }
+            });
+        }
+
+        setInterval(function () { GetErrorMessage(); }, 5000);
+
+        function GetErrorMessage() {
+            $.ajax({
+                type: "GET",
+                url: url + "?handler=errormessage",
+                success: function (message) {
+                    if (message.length) {
+                        $('.testing-alert').removeClass('d-none');
+                        $('.testing-alert-message').text(message);
+                    }
+               }
+            });
+        }
+
+        $('.testing-alert-close').click(function(e) {
+            $('.testing-alert').addClass('d-none');
+        });
+
+        $('#testing-tabs a[data-bs-toggle="tab"]').on('show.bs.tab', function(e) {
+            localStorage.setItem('testing-tabs', $(e.target).attr('href'));
+        });
+
+        var activeTab = localStorage.getItem('testing-tabs');
+        if(activeTab){
+            $('#testing-tabs a[href="' + activeTab + '"]').tab('show');
+        }
+    });
+</script>

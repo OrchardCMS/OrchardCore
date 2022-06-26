@@ -28,6 +28,6 @@ namespace OrchardCore.Environment.Shell.Models
         /// <summary>
         /// The tenant settings are invalid.
         /// </summary>
-        Invalid,
+        Invalid
     }
 }

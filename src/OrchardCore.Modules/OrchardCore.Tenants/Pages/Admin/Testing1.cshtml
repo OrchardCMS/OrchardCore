@@ -1,0 +1,89 @@
+@page "/admin/testing/testing1"
+
+@model dynamic
+
+@using System
+@using System.Globalization;
+@using Microsoft.Extensions.Caching.Distributed
+@using Newtonsoft.Json
+@using OrchardCore.BackgroundJobs
+
+@inject IDistributedCache DistributedCache
+
+@functions
+{
+    public async Task<IActionResult> OnPostDo()
+    {
+        await DistributedCache.SetStringAsync("Testing1Action1Pause", false.ToString());
+
+        // Do the job;
+
+        return RedirectToPage("testing");
+    }
+
+    public async Task<IActionResult> OnPostPause()
+    {
+        await DistributedCache.SetStringAsync("Testing1Action1Pause", true.ToString());
+        return RedirectToPage("testing");
+    }
+
+    public async Task<IActionResult> OnPostRefresh()
+    {
+        // Do the job;
+        await Task.Delay(50);
+
+        return RedirectToPage("testing");
+    }
+
+    public async Task<IActionResult> OnPostDoAction1()
+    {
+        await DistributedCache.SetStringAsync("Testing1Action1Pause", false.ToString());
+
+        // Do the job;
+        await HttpBackgroundJob.AfterEndOfRequestAsync(async scope =>
+        {
+            for (var i = 0; i <= 100; i = i + 10)
+            {
+                await DistributedCache.SetStringAsync("Testing1Action1Progress", i.ToString());
+                await Task.Delay(5_000);
+            }
+        });
+
+        return RedirectToPage("testing");
+    }
+
+    public async Task<IActionResult> OnPostPauseAction1()
+    {
+        await DistributedCache.SetStringAsync("Testing1Action1Pause", true.ToString());
+        return RedirectToPage("testing");
+    }
+
+    public async Task<ContentResult> OnGetAction1Progress()
+    {
+        var progressString = await DistributedCache.GetStringAsync("Testing1Action1Progress");
+        if (!Decimal.TryParse(progressString, NumberStyles.Number, CultureInfo.InvariantCulture, out var progress))
+        {
+            progress = 0;
+        }
+
+        return new ContentResult { Content = progress.ToString(CultureInfo.InvariantCulture) };
+    }
+}
+
+<div class="tab-pane fade show active" id="testing1" role="tabpanel" aria-labelledby="testing1-tab">
+    <div class="form-group card">
+        <div class="card-body w-lg-75 w-xl-50">
+            <button asp-page="Testing1" asp-page-handler="PauseAction1" class="btn btn-sm btn-outline-secondary mx-1">Pause</button>
+            <button asp-page="Testing1" asp-page-handler="DoAction1" class="btn btn-sm btn-outline-success mx-1">Do</button>
+            <span>Action1</span>
+            <button asp-page="Testing1" asp-page-handler="Refresh" class="btn btn-sm btn-outline-info mx-1 float-end">Refresh</button>
+            <button asp-page="Testing1" asp-page-handler="Do" class="btn btn-sm btn-outline-success mx-1 float-end">Do All</button>
+            <button asp-page="Testing1" asp-page-handler="Pause" class="btn btn-sm btn-outline-secondary mx-1 float-end">Pause</button>
+            <div class="form-group mt-3">
+                <div class="progress">
+                    <div class="testing1-action1-progress-bar progress-bar" role="progressbar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
