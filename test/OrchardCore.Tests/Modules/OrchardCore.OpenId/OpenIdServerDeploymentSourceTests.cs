@@ -53,6 +53,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 result.DisableAccessTokenEncryption = true;
                 result.DisableRollingRefreshTokens = true;
                 result.UseReferenceAccessTokens = true;
+                result.RequireProofKeyForCodeExchange = true;
             }
 
             return result;
