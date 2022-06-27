@@ -25,6 +25,17 @@
 
         return new ContentResult { Content = message };
     }
+
+    public async Task<ContentResult> OnGetSuccessMessage()
+    {
+        var message = await DistributedCache.GetStringAsync("TestingSuccessMessage");
+        if (!string.IsNullOrEmpty(message))
+        {
+            await DistributedCache.SetStringAsync("TestingSuccessMessage", String.Empty);
+        }
+
+        return new ContentResult { Content = message };
+    }
 }
 
 <h2>Testing</h2>
@@ -38,9 +49,7 @@
 
     <div class="testing-alert alert alert-danger alert-dismissible fade show d-none w-50 mt-3" role="alert">
         <div class="testing-alert-message"></div>
-        <button type="button" class="testing-alert-close close" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
     <div class="tab-content" id="tabs">
@@ -48,6 +57,11 @@
         <partial name="Testing1" model="@Model" />
         <partial name="Testing2" model="@Model" />
 
+    </div>
+
+    <div class="testing-success alert alert-success alert-dismissible fade show d-none w-50 mt-3" role="alert">
+        <div class="testing-success-message"></div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 </form>
 
@@ -81,7 +95,7 @@
             });
         }
 
-        setInterval(function () { GetErrorMessage(); }, 5000);
+        setInterval(function () { GetErrorMessage(); }, 1000);
 
         function GetErrorMessage() {
             $.ajax({
@@ -96,9 +110,20 @@
             });
         }
 
-        $('.testing-alert-close').click(function(e) {
-            $('.testing-alert').addClass('d-none');
-        });
+        setInterval(function () { GetSuccessMessage(); }, 1000);
+
+        function GetSuccessMessage() {
+            $.ajax({
+                type: "GET",
+                url: url + "?handler=successmessage",
+                success: function (message) {
+                    if (message.length) {
+                        $('.testing-success').removeClass('d-none');
+                        $('.testing-success-message').html(message);
+                    }
+               }
+            });
+        }
 
         $('#testing-tabs a[data-bs-toggle="tab"]').on('show.bs.tab', function(e) {
             localStorage.setItem('testing-tabs', $(e.target).attr('href'));

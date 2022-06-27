@@ -5,8 +5,11 @@
 @using System
 @using System.Globalization;
 @using Microsoft.Extensions.Caching.Distributed
+@using Microsoft.Extensions.DependencyInjection
 @using Newtonsoft.Json
 @using OrchardCore.BackgroundJobs
+@using OrchardCore.Environment.Shell
+@using OrchardCore.Environment.Shell.Descriptor.Models
 
 @inject IDistributedCache DistributedCache
 
@@ -45,7 +48,18 @@
             for (var i = 0; i <= 100; i = i + 10)
             {
                 await DistributedCache.SetStringAsync("Testing1Action1Progress", i.ToString());
-                await Task.Delay(5_000);
+                await Task.Delay(1_000);
+            }
+
+            var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
+            if (shellHost.TryGetSettings("Tenant1", out var shellSettings))
+            {
+                // List all installed feature ids.
+                var shellContext = await shellHost.GetOrCreateShellContextAsync(shellSettings);
+
+                var descriptor = shellContext.Blueprint.Descriptor;
+                var featureIds = descriptor.Installed.Select(sf => sf.Id);
+                await DistributedCache.SetStringAsync("TestingSuccessMessage", String.Join("<br/>", featureIds));
             }
         });
 
@@ -75,7 +89,7 @@
         <div class="card-body w-lg-75 w-xl-50">
             <button asp-page="Testing1" asp-page-handler="PauseAction1" class="btn btn-sm btn-outline-secondary mx-1">Pause</button>
             <button asp-page="Testing1" asp-page-handler="DoAction1" class="btn btn-sm btn-outline-success mx-1">Do</button>
-            <span>Action1</span>
+            <span>Installed Features</span>
             <button asp-page="Testing1" asp-page-handler="Refresh" class="btn btn-sm btn-outline-info mx-1 float-end">Refresh</button>
             <button asp-page="Testing1" asp-page-handler="Do" class="btn btn-sm btn-outline-success mx-1 float-end">Do All</button>
             <button asp-page="Testing1" asp-page-handler="Pause" class="btn btn-sm btn-outline-secondary mx-1 float-end">Pause</button>

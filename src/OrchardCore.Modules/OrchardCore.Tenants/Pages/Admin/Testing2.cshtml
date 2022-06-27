@@ -4,9 +4,19 @@
 
 @using System
 @using System.Globalization;
+@using System.Reflection;
 @using Microsoft.Extensions.Caching.Distributed
+@using Microsoft.Extensions.DependencyInjection
 @using Newtonsoft.Json
 @using OrchardCore.BackgroundJobs
+@using OrchardCore.Data
+@using OrchardCore.Data.Migration
+@using OrchardCore.Environment.Shell
+@using OrchardCore.Environment.Shell.Builders
+@using OrchardCore.Environment.Shell.Descriptor.Models
+@using OrchardCore.Tenants.Removal
+@using YesSql
+@using YesSql.Indexes
 
 @inject IDistributedCache DistributedCache
 
@@ -45,7 +55,62 @@
             for (var i = 0; i <= 100; i = i + 10)
             {
                 await DistributedCache.SetStringAsync("Testing2Action1Progress", i.ToString());
-                await Task.Delay(5_000);
+                await Task.Delay(1_000);
+            }
+
+            var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
+            if (shellHost.TryGetSettings("Tenant1", out var shellSettings))
+            {
+                var shellContext = await shellHost.GetOrCreateShellContextAsync(shellSettings);
+
+                // List all installed table names.
+                var descriptor = shellContext.Blueprint.Descriptor;
+                var shellContextFactory = scope.ServiceProvider.GetRequiredService<IShellContextFactory>();
+                var installedDescriptor = new ShellDescriptor { Features = descriptor.Installed };
+
+                using var installedShell = await shellContextFactory.CreateDescribedContextAsync(shellSettings, installedDescriptor);
+                await installedShell.CreateScope().UsingServiceScopeAsync(async scope =>
+                {
+                    var store = scope.ServiceProvider.GetRequiredService<IStore>();
+                    var schemaBuilder = new SchemaBuilderForRemoval(store.Configuration);
+                    var migrations = scope.ServiceProvider.GetServices<IDataMigration>();
+
+                    try
+                    {
+                        foreach (var migration in migrations)
+                        {
+                            migration.SchemaBuilder = schemaBuilder;
+
+                            var methodInfo = migration.GetType().GetMethod("Create", BindingFlags.Public | BindingFlags.Instance);
+                            if (methodInfo != null && methodInfo.ReturnType == typeof(int))
+                            {
+                                methodInfo.Invoke(migration, Array.Empty<object>());
+                            }
+                            else
+                            {
+                                methodInfo = migration.GetType().GetMethod("CreateAsync", BindingFlags.Public | BindingFlags.Instance);
+                                if (methodInfo != null && methodInfo.ReturnType == typeof(Task<int>))
+                                {
+                                    await (Task<int>)methodInfo.Invoke(migration, new object[0]);
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        ;
+                    }
+
+                    await DistributedCache.SetStringAsync(
+                        "TestingSuccessMessage",
+                        String.Join(
+                            "<br/>",
+                            schemaBuilder.IndexTables
+                                .Union(schemaBuilder.DocumentTables)
+                                .Union(schemaBuilder.BridgeTables)
+                                .Union(schemaBuilder.Tables)
+                    ));
+                });
             }
         });
 
@@ -75,7 +140,7 @@
         <div class="card-body w-lg-75 w-xl-50">
             <button asp-page="Testing2" asp-page-handler="PauseAction1" class="btn btn-sm btn-outline-secondary mx-1">Pause</button>
             <button asp-page="Testing2" asp-page-handler="DoAction1" class="btn btn-sm btn-outline-success mx-1">Do</button>
-            <span>Action1</span>
+            <span>Installed Tables</span>
             <button asp-page="Testing2" asp-page-handler="Refresh" class="btn btn-sm btn-outline-info mx-1 float-end">Refresh</button>
             <button asp-page="Testing2" asp-page-handler="Do" class="btn btn-sm btn-outline-success mx-1 float-end">Do All</button>
             <button asp-page="Testing2" asp-page-handler="Pause" class="btn btn-sm btn-outline-secondary mx-1 float-end">Pause</button>
