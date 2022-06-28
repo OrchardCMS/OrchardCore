@@ -14,7 +14,7 @@ public static class HttpBackgroundJob
     /// <summary>
     /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
     /// </summary>
-    public static Task AfterEndOfRequestAsync(Func<ShellScope, Task> job)
+    public static Task AfterEndOfRequestAsync(string jobName , Func<ShellScope, Task> job)
     {
         var scope = ShellScope.Current;
 
@@ -57,7 +57,8 @@ public static class HttpBackgroundJob
             {
                 logger.LogError(
                     ex,
-                    "Error while executing a background job after the end of a request on tenant '{TenantName}'.",
+                    "Error while executing the background job '{JobName}' after the end of the request on tenant '{TenantName}'.",
+                    jobName,
                     scope.ShellContext.Settings.Name);
             }
         });

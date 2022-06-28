@@ -14,7 +14,6 @@
 @using OrchardCore.Environment.Shell
 @using OrchardCore.Environment.Shell.Builders
 @using OrchardCore.Environment.Shell.Descriptor.Models
-@using OrchardCore.Tenants.Removal
 @using YesSql
 @using YesSql.Indexes
 
@@ -50,7 +49,7 @@
         await DistributedCache.SetStringAsync("Testing2Action1Pause", false.ToString());
 
         // Do the job;
-        await HttpBackgroundJob.AfterEndOfRequestAsync(async scope =>
+        await HttpBackgroundJob.AfterEndOfRequestAsync("AnalyzeDataMigration", async scope =>
         {
             for (var i = 0; i <= 100; i = i + 10)
             {
@@ -58,59 +57,26 @@
                 await Task.Delay(1_000);
             }
 
-            var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
-            if (shellHost.TryGetSettings("Tenant1", out var shellSettings))
+            var dataMigrationAnalyzer = scope.ServiceProvider.GetRequiredService<IDataMigrationAnalyzer>();
+
+            var result = await dataMigrationAnalyzer.AnalyzeAsync("Tenant1");
+            if (result.Success)
             {
-                var shellContext = await shellHost.GetOrCreateShellContextAsync(shellSettings);
-
-                // List all installed table names.
-                var descriptor = shellContext.Blueprint.Descriptor;
-                var shellContextFactory = scope.ServiceProvider.GetRequiredService<IShellContextFactory>();
-                var installedDescriptor = new ShellDescriptor { Features = descriptor.Installed };
-
-                using var installedShell = await shellContextFactory.CreateDescribedContextAsync(shellSettings, installedDescriptor);
-                await installedShell.CreateScope().UsingServiceScopeAsync(async scope =>
-                {
-                    var store = scope.ServiceProvider.GetRequiredService<IStore>();
-                    var schemaBuilder = new SchemaBuilderForRemoval(store.Configuration);
-                    var migrations = scope.ServiceProvider.GetServices<IDataMigration>();
-
-                    try
-                    {
-                        foreach (var migration in migrations)
-                        {
-                            migration.SchemaBuilder = schemaBuilder;
-
-                            var methodInfo = migration.GetType().GetMethod("Create", BindingFlags.Public | BindingFlags.Instance);
-                            if (methodInfo != null && methodInfo.ReturnType == typeof(int))
-                            {
-                                methodInfo.Invoke(migration, Array.Empty<object>());
-                            }
-                            else
-                            {
-                                methodInfo = migration.GetType().GetMethod("CreateAsync", BindingFlags.Public | BindingFlags.Instance);
-                                if (methodInfo != null && methodInfo.ReturnType == typeof(Task<int>))
-                                {
-                                    await (Task<int>)methodInfo.Invoke(migration, new object[0]);
-                                }
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        ;
-                    }
-
-                    await DistributedCache.SetStringAsync(
-                        "TestingSuccessMessage",
-                        String.Join(
-                            "<br/>",
-                            schemaBuilder.IndexTables
-                                .Union(schemaBuilder.DocumentTables)
-                                .Union(schemaBuilder.BridgeTables)
-                                .Union(schemaBuilder.Tables)
-                    ));
-                });
+                await DistributedCache.SetStringAsync(
+                    "TestingSuccessMessage",
+                    String.Join(
+                        "<br/>",
+                        result.IndexTables
+                            .Union(result.BridgeTables)
+                            .Union(result.DocumentTables)
+                            .Union(result.Tables)));
+            }
+            else
+            {
+                await DistributedCache.SetStringAsync(
+                    "TestingErrorMessage",
+                    result.Message + ": " +
+                    result.Error.Message);
             }
         });
 

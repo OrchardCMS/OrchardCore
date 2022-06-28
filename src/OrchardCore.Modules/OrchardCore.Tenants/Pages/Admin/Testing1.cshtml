@@ -43,7 +43,7 @@
         await DistributedCache.SetStringAsync("Testing1Action1Pause", false.ToString());
 
         // Do the job;
-        await HttpBackgroundJob.AfterEndOfRequestAsync(async scope =>
+        await HttpBackgroundJob.AfterEndOfRequestAsync("GetTenantInstalledFeatures", async scope =>
         {
             for (var i = 0; i <= 100; i = i + 10)
             {

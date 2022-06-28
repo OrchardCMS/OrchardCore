@@ -36,6 +36,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
+                services.AddScoped<IDataMigrationAnalyzer, DataMigrationAnalyzer>();
 
                 services.AddOptions<StoreCollectionOptions>();
                 services.AddTransient<IConfigureOptions<SqliteOptions>, SqliteOptionsConfiguration>();
