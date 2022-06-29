@@ -17,6 +17,7 @@ namespace OrchardCore.Workflows.Http.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         private readonly IStringLocalizer S;
         private readonly UrlEncoder _urlEncoder;
 
@@ -24,12 +25,14 @@ namespace OrchardCore.Workflows.Http.Activities
             IStringLocalizer<HttpResponseTask> localizer,
             IHttpContextAccessor httpContextAccessor,
             IWorkflowExpressionEvaluator expressionEvaluator,
+            IWorkflowScriptEvaluator scriptEvaluator,
             UrlEncoder urlEncoder
         )
         {
             S = localizer;
             _httpContextAccessor = httpContextAccessor;
             _expressionEvaluator = expressionEvaluator;
+            _scriptEvaluator = scriptEvaluator;
             _urlEncoder = urlEncoder;
         }
 
@@ -63,6 +66,12 @@ namespace OrchardCore.Workflows.Http.Activities
             set => SetProperty(value);
         }
 
+        public bool IsBinary
+        {
+            get => GetProperty(() => false);
+            set => SetProperty(value);
+        }
+
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(S["Done"]);
@@ -71,7 +80,6 @@ namespace OrchardCore.Workflows.Http.Activities
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var headersString = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext, _urlEncoder);
-            var content = await _expressionEvaluator.EvaluateAsync(Content, workflowContext, null);
             var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext, _urlEncoder);
             var headers = ParseHeaders(headersString);
             var response = _httpContextAccessor.HttpContext.Response;
@@ -88,12 +96,25 @@ namespace OrchardCore.Workflows.Http.Activities
                 response.ContentType = contentType;
             }
 
-            if (!string.IsNullOrWhiteSpace(content))
+            if (IsBinary) 
             {
-                await response.WriteAsync(content);
+                var javascript = new WorkflowExpression<object[]>(Content.Expression);
+                var value = (await _scriptEvaluator.EvaluateAsync(javascript, workflowContext));
+                var buffer =  value.Select(v => Convert.ToByte(v)).ToArray().AsMemory();
+                response.ContentLength = buffer.Length;
+                await response.Body.WriteAsync(buffer);
+            } 
+            else 
+            {
+                var content = await _expressionEvaluator.EvaluateAsync(Content, workflowContext, null);
+                if (!string.IsNullOrWhiteSpace(content))
+                {
+                    await response.WriteAsync(content);
+                }
             }
 
             _httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
+
             return Outcomes("Done");
         }
 

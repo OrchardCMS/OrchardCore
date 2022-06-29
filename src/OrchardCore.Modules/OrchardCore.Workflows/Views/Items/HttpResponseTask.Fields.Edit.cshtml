@@ -16,9 +16,20 @@
         <option>application/x-www-form-urlencoded</option>
         <option>application/json</option>
         <option>application/xml</option>
+        <option>application/octet-stream</option>
     </select>
     <span asp-validation-for="ContentType"></span>
     <span class="hint">@T["The content type of the response body."]</span>
+</div>
+
+<div class="form-group mb-3">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="IsBinary" checked="@Model.IsBinary" />
+        <label class="custom-control-label" asp-for="IsBinary">@T["Is Binary"]</label>
+        <span class="hint dashed">
+            @T["Is Binary"]
+        </span>
+    </div>
 </div>
 
 @*TODO: Only display Content field when appropriate for the selected HTTP status code.*@
@@ -26,7 +37,8 @@
     <label asp-for="Content">@T["Content"]</label>
     <textarea asp-for="Content"></textarea>
     <span asp-validation-for="Content"></span>
-    <span class="hint">@T["The body to send back. With Liquid support."]</span>
+    <span id="liquid_hint" class="hint @(Model.IsBinary ? "d-none" : "")">@T["The body to send back. With Liquid support."]</span>
+    <span id="javascript_hint" class="hint @(Model.IsBinary ? "" : "d-none")">@T["The raw body (byte array) to send back. With Javascript support."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="Headers">
@@ -56,6 +68,18 @@
             mode: { name: "liquid" },
         };
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Headers)'), codeMirrorOptions);
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Content)'), codeMirrorOptions);
+        var contentEditor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Content)'), codeMirrorOptions);
+
+        $('#@Html.IdFor(x => x.IsBinary)').on('change', function() {
+            if ($(this).is(":checked")) {
+                contentEditor.setOption('mode', 'javascript');
+                document.getElementById('liquid_hint').classList.add('d-none');
+                document.getElementById('javascript_hint').classList.remove('d-none');
+            } else {
+                contentEditor.setOption('mode', 'liquid');
+                document.getElementById('javascript_hint').classList.add('d-none');
+                document.getElementById('liquid_hint').classList.remove('d-none');
+            }
+        });
 });
 </script>

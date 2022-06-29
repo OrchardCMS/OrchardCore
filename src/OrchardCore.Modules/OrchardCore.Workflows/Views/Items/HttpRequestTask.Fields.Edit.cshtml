@@ -55,6 +55,16 @@
     <span class="hint">@T["A comma-separated list of HTTP response status codes to handle as activity outcomes. For example: 200, 404, 500"]</span>
 </div>
 
+<div class="mb-3 form-group">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="IsBinary" checked="@Model.IsBinary" />
+        <label class="custom-control-label" asp-for="IsBinary">@T["Is Binary"]</label>
+        <span class="hint dashed">
+            @T["Is Binary"]
+        </span>
+    </div>
+</div>
+
 <style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
