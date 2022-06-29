@@ -102,7 +102,7 @@ public class DataMigrationRemover : IDataMigrationRemover
 
                 removeSchemaResult.TableNames = removeSchemaBuilder.GetTableNames();
 
-                if (!remove)
+                if (!remove || !removeSchemaResult.Success)
                 {
                     return;
                 }
