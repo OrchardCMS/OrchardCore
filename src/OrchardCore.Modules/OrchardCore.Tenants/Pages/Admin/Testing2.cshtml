@@ -54,29 +54,26 @@
             for (var i = 0; i <= 100; i = i + 10)
             {
                 await DistributedCache.SetStringAsync("Testing2Action1Progress", i.ToString());
-                await Task.Delay(1_000);
+                await Task.Delay(500);
             }
 
-            var dataMigrationAnalyzer = scope.ServiceProvider.GetRequiredService<IDataMigrationAnalyzer>();
+            var dataMigrationRemover = scope.ServiceProvider.GetRequiredService<IDataMigrationRemover>();
 
-            var result = await dataMigrationAnalyzer.AnalyzeAsync("Tenant1");
+            var result = await dataMigrationRemover.GetTablesOnlyAsync("Tenant1");
             if (result.Success)
             {
                 await DistributedCache.SetStringAsync(
                     "TestingSuccessMessage",
                     String.Join(
                         "<br/>",
-                        result.IndexTables
-                            .Union(result.BridgeTables)
-                            .Union(result.DocumentTables)
-                            .Union(result.Tables)));
+                        result.TableNames.Prepend(
+                            $"Table names of Tenant '{result.TenantName}' using the Prefix '{result.TablePrefix}'<br/>")));
             }
             else
             {
                 await DistributedCache.SetStringAsync(
                     "TestingErrorMessage",
-                    result.Message + ": " +
-                    result.Error.Message);
+                    result.Message + ": " + result.Error.Message);
             }
         });
 
