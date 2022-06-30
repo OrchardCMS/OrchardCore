@@ -26,10 +26,14 @@ namespace OrchardCore.ContentFields.Settings
                 model.Hint = settings.Hint;
                 model.Required = settings.Required;
                 model.Multiple = settings.Multiple;
-
                 var roles = (await _roleService.GetRoleNamesAsync())
                     .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase)
-                    .Select(x => new RoleEntry { Role = x, IsSelected = settings.DisplayedRoles.Contains(x, StringComparer.OrdinalIgnoreCase) }).ToArray();
+                    .Select(roleName => new RoleEntry
+                    {
+                        Role = roleName,
+                        IsSelected = settings.DisplayedRoles.Contains(roleName, StringComparer.OrdinalIgnoreCase)
+                    })
+                    .ToArray();
 
                 model.Roles = roles;
                 model.DisplayAllUsers = settings.DisplayAllUsers || roles.Length == 0;
@@ -49,7 +53,7 @@ namespace OrchardCore.ContentFields.Settings
                 settings.Multiple = model.Multiple;
                 var selectedRoles = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
 
-                if (model.DisplayAllUsers || !selectedRoles.Any())
+                if (model.DisplayAllUsers || selectedRoles.Length == 0)
                 {
                     // No selected role should have the same effect as display all users
                     settings.DisplayedRoles = Array.Empty<string>();
