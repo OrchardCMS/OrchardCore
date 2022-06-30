@@ -250,8 +250,7 @@ namespace OrchardCore.Roles.Controllers
 
                 foreach (var permission in permissions)
                 {
-                    var category = permission.Category;
-                    var groupKey = GetGroupKey(feature, category);
+                    var groupKey = GetGroupKey(feature, permission.Category);
 
                     if (installedPermissions.ContainsKey(groupKey))
                     {
