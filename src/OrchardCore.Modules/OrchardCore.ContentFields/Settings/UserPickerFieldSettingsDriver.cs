@@ -36,7 +36,7 @@ namespace OrchardCore.ContentFields.Settings
                     .ToArray();
 
                 model.Roles = roles;
-                model.DisplayAllUsers = settings.DisplayAllUsers || roles.Length == 0;
+                model.DisplayAllUsers = settings.DisplayAllUsers || !roles.Where(x => x.IsSelected).Any();
 
             }).Location("Content");
         }
@@ -44,13 +44,16 @@ namespace OrchardCore.ContentFields.Settings
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
         {
             var model = new UserPickerFieldSettingsViewModel();
-            var settings = new UserPickerFieldSettings();
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                settings.Hint = model.Hint;
-                settings.Required = model.Required;
-                settings.Multiple = model.Multiple;
+                var settings = new UserPickerFieldSettings
+                {
+                    Hint = model.Hint,
+                    Required = model.Required,
+                    Multiple = model.Multiple
+                };
+
                 var selectedRoles = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
 
                 if (model.DisplayAllUsers || selectedRoles.Length == 0)
@@ -62,12 +65,13 @@ namespace OrchardCore.ContentFields.Settings
                 else
                 {
                     settings.DisplayedRoles = selectedRoles;
+                    settings.DisplayAllUsers = false;
                 }
 
                 context.Builder.WithSettings(settings);
             }
 
-            return Edit(partFieldDefinition);
+            return Edit(partFieldDefinition, context.Updater);
         }
     }
 }
