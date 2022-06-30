@@ -1,20 +1,18 @@
-using Dapper;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
+using Dapper;
 using YesSql;
+using YesSql.Services;
 using YesSql.Sql;
 using YesSql.Sql.Schema;
-using YesSql.Services;
 
 namespace OrchardCore.Data.Migration;
 
-public class RemoveSchemaBuilder : ISchemaBuilder
+public class SchemaExplorer : ISchemaBuilder
 {
     private ICommandInterpreter _commandInterpreter;
-    private readonly ILogger _logger;
 
     public string TablePrefix { get; private set; }
     public ISqlDialect Dialect { get; private set; }
@@ -23,42 +21,32 @@ public class RemoveSchemaBuilder : ISchemaBuilder
     public DbTransaction Transaction { get; set; }
     public bool ThrowOnError { get; private set; }
 
-    public HashSet<string> Tables { get; private set; } = new HashSet<string>();
-    public HashSet<(string Name, Type Type, string Collection)> IndexTables { get; private set; } =
+    public HashSet<(string Name, Type Type, string Collection)> MapIndexTables { get; private set; } =
         new HashSet<(string Name, Type Type, string Collection)>();
+
     public HashSet<(string Name, Type Type, string Collection)> ReduceIndexTables { get; private set; } =
         new HashSet<(string Name, Type Type, string Collection)>();
-    public HashSet<string> DocumentTables { get; private set; } = new HashSet<string>();
-    public HashSet<string> BridgeTables { get; private set; } = new HashSet<string>();
 
-    public RemoveSchemaBuilder(IConfiguration configuration, DbTransaction transaction, bool throwOnError = true)
+    public HashSet<string> BridgeTables { get; private set; } = new HashSet<string>();
+    public HashSet<string> DocumentTables { get; private set; } = new HashSet<string>();
+    public HashSet<string> Tables { get; private set; } = new HashSet<string>();
+    public bool Success => Error == null;
+    public Exception Error { get; set; }
+    public string Message { get; set; }
+
+    public void Configure(IConfiguration configuration)
     {
-        Transaction = transaction;
-        _logger = configuration.Logger;
-        Connection = Transaction?.Connection;
-        _commandInterpreter = configuration.CommandInterpreter;
         Dialect = configuration.SqlDialect;
         TablePrefix = configuration.TablePrefix;
-        ThrowOnError = throwOnError;
         TableNameConvention = configuration.TableNameConvention;
+        _commandInterpreter = configuration.CommandInterpreter;
     }
 
-    public IEnumerable<string> GetTableNames()
+    public void Configure(DbTransaction transaction, bool throwOnError = true)
     {
-        return Tables.Select(Prefix)
-            .Union(IndexTables.Select(i => Prefix(i.Name)))
-            .Union(ReduceIndexTables.Select(i => Prefix(i.Name)))
-            .Union(DocumentTables.Select(Prefix))
-            .Append(Prefix(DbBlockIdGenerator.TableName))
-            .Union(BridgeTables.Select(Prefix))
-            ;
-    }
-
-    public ISchemaBuilder CreateTable(string name, Action<ICreateTableCommand> table)
-    {
-        Tables.Add(name);
-
-        return this;
+        Transaction = transaction;
+        Connection = Transaction?.Connection;
+        ThrowOnError = throwOnError;
     }
 
     public ISchemaBuilder CreateMapIndexTable(Type indexType, Action<ICreateTableCommand> table, string collection)
@@ -66,7 +54,7 @@ public class RemoveSchemaBuilder : ISchemaBuilder
         var indexTable = TableNameConvention.GetIndexTable(indexType, collection);
         var documentTable = TableNameConvention.GetDocumentTable(collection);
 
-        IndexTables.Add((indexTable, indexType, collection));
+        MapIndexTables.Add((indexTable, indexType, collection));
         DocumentTables.Add(documentTable);
 
         return this;
@@ -85,20 +73,20 @@ public class RemoveSchemaBuilder : ISchemaBuilder
         return this;
     }
 
-    public ISchemaBuilder AlterTable(string name, Action<IAlterTableCommand> table) => this;
-    public ISchemaBuilder AlterIndexTable(Type indexType, Action<IAlterTableCommand> table, string collection) => this;
-
-    public ISchemaBuilder DropTable(string name)
+    public ISchemaBuilder CreateTable(string name, Action<ICreateTableCommand> table)
     {
-        Tables.Remove(name);
+        Tables.Add(name);
 
         return this;
     }
 
+    public ISchemaBuilder AlterIndexTable(Type indexType, Action<IAlterTableCommand> table, string collection) => this;
+    public ISchemaBuilder AlterTable(string name, Action<IAlterTableCommand> table) => this;
+
     public ISchemaBuilder DropMapIndexTable(Type indexType, string collection = null)
     {
         var indexTable = TableNameConvention.GetIndexTable(indexType, collection);
-        IndexTables.Remove((indexTable, indexType, collection));
+        MapIndexTables.Remove((indexTable, indexType, collection));
 
         return this;
     }
@@ -115,53 +103,37 @@ public class RemoveSchemaBuilder : ISchemaBuilder
         return this;
     }
 
-    public void RemoveTable(string name)
+    public ISchemaBuilder DropTable(string name)
     {
-        try
-        {
-            var deleteTable = new DropTableCommand(Prefix(name));
-            Execute(_commandInterpreter.CreateSql(deleteTable));
-        }
-        catch
-        {
-            if (ThrowOnError)
-            {
-                throw;
-            }
-        }
+        Tables.Remove(name);
+
+        return this;
     }
 
-    public void RemoveTables()
+    public IEnumerable<string> GetTableNames()
     {
-        try
-        {
-            foreach (var name in Tables)
-            {
-                RemoveTable(name);
-            }
+        return MapIndexTables.Select(i => Prefix(i.Name))
+            .Union(ReduceIndexTables.Select(i => Prefix(i.Name)))
+            .Union(BridgeTables.Select(Prefix))
+            .Append(Prefix(DbBlockIdGenerator.TableName))
+            .Union(DocumentTables.Select(Prefix))
+            .Union(Tables.Select(Prefix))
+            .ToArray();
+    }
 
-            foreach (var name in DocumentTables)
-            {
-                RemoveTable(name);
-            }
-
-            var identifiersTable = new DropTableCommand(Prefix(DbBlockIdGenerator.TableName));
-            Execute(_commandInterpreter.CreateSql(identifiersTable));
-        }
-        catch
-        {
-            if (ThrowOnError)
-            {
-                throw;
-            }
-        }
+    public void RemoveAllTables()
+    {
+        RemoveMapIndexTables();
+        RemoveReduceIndexTables();
+        RemoveDocumentTables();
+        RemoveTables();
     }
 
     public void RemoveMapIndexTables()
     {
         try
         {
-            foreach (var index in IndexTables)
+            foreach (var index in MapIndexTables)
             {
                 var indexTypeName = index.Type.Name;
                 var indexTable = TableNameConvention.GetIndexTable(index.Type, index.Collection);
@@ -202,6 +174,60 @@ public class RemoveSchemaBuilder : ISchemaBuilder
                 RemoveTable(bridgeTable);
                 RemoveTable(indexTable);
             }
+        }
+        catch
+        {
+            if (ThrowOnError)
+            {
+                throw;
+            }
+        }
+    }
+
+    public void RemoveDocumentTables()
+    {
+        try
+        {
+            foreach (var name in DocumentTables)
+            {
+                RemoveTable(name);
+            }
+
+            RemoveTable(DbBlockIdGenerator.TableName);
+        }
+        catch
+        {
+            if (ThrowOnError)
+            {
+                throw;
+            }
+        }
+    }
+
+    public void RemoveTables()
+    {
+        try
+        {
+            foreach (var name in Tables)
+            {
+                RemoveTable(name);
+            }
+        }
+        catch
+        {
+            if (ThrowOnError)
+            {
+                throw;
+            }
+        }
+    }
+
+    public void RemoveTable(string name)
+    {
+        try
+        {
+            var deleteTable = new DropTableCommand(Prefix(name));
+            Execute(_commandInterpreter.CreateSql(deleteTable));
         }
         catch
         {
@@ -253,7 +279,6 @@ public class RemoveSchemaBuilder : ISchemaBuilder
     {
         foreach (var statement in statements)
         {
-            _logger.LogTrace(statement);
             Connection.Execute(statement, null, Transaction);
         }
     }

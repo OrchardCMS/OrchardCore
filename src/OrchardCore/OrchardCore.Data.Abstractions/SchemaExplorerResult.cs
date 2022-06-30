@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace OrchardCore.Data.Migration;
 
-public class RemoveSchemaResult
+public class SchemaExplorerResult
 {
     public string TenantName { get; set; }
     public string TablePrefix { get; set; }
