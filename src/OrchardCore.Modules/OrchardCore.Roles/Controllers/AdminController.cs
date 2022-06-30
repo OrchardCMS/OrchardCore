@@ -240,9 +240,9 @@ namespace OrchardCore.Roles.Controllers
             };
         }
 
-        private async Task<IDictionary<PermissionGroupKey, IList<Permission>>> GetInstalledPermissionsAsync()
+        private async Task<IDictionary<PermissionGroupKey, IEnumerable<Permission>>> GetInstalledPermissionsAsync()
         {
-            var installedPermissions = new Dictionary<PermissionGroupKey, IList<Permission>>();
+            var installedPermissions = new Dictionary<PermissionGroupKey, IEnumerable<Permission>>();
             foreach (var permissionProvider in _permissionProviders)
             {
                 var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
@@ -255,12 +255,12 @@ namespace OrchardCore.Roles.Controllers
 
                     if (installedPermissions.ContainsKey(groupKey))
                     {
-                        installedPermissions[groupKey].Add(permission);
+                        installedPermissions[groupKey] = installedPermissions[groupKey].Concat(new[] { permission });
 
                         continue;
                     }
 
-                    installedPermissions.Add(groupKey, new List<Permission> { permission });
+                    installedPermissions.Add(groupKey, new[] { permission });
                 }
             }
 

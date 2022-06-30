@@ -11,7 +11,7 @@ namespace OrchardCore.Roles.ViewModels
         public string RoleDescription { get; set; }
 
         [BindNever]
-        public IDictionary<PermissionGroupKey, IList<Permission>> RoleCategoryPermissions { get; set; }
+        public IDictionary<PermissionGroupKey, IEnumerable<Permission>> RoleCategoryPermissions { get; set; }
 
         [BindNever]
         public IEnumerable<string> EffectivePermissions { get; set; }

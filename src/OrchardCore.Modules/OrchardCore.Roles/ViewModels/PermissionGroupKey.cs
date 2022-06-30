@@ -4,9 +4,9 @@ namespace OrchardCore.Roles.ViewModels;
 
 public class PermissionGroupKey
 {
-    private readonly string _key;
+    public readonly string Key;
 
-    public string Title { get; set; }
+    public readonly string Title;
 
     public string Source { get; set; }
 
@@ -17,24 +17,20 @@ public class PermissionGroupKey
             throw new ArgumentException(nameof(key));
         }
 
-        _key = key;
+        Key = key;
     }
 
-    public PermissionGroupKey(string key, string title)
-        : this(key)
+    public PermissionGroupKey(string key, string title) : this(key)
     {
         Title = title;
     }
 
-    public override int GetHashCode()
-    {
-        return _key.GetHashCode();
-    }
+    public override int GetHashCode() => Key.GetHashCode();
 
     public override bool Equals(object obj)
     {
         var other = obj as PermissionGroupKey;
 
-        return _key.Equals(other?._key);
+        return other != null && Key.Equals(other.Key);
     }
 }
