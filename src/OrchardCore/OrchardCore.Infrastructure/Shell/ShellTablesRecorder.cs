@@ -8,12 +8,13 @@ using YesSql.Services;
 using YesSql.Sql;
 using YesSql.Sql.Schema;
 
-namespace OrchardCore.Data.Migration;
+namespace OrchardCore.Environment.Shell;
 
-public class SchemaExplorer : ISchemaBuilder
+public class ShellTablesRecorder : ISchemaBuilder
 {
     private ICommandInterpreter _commandInterpreter;
 
+    public string TenantName { get; set; }
     public string TablePrefix { get; private set; }
     public ISqlDialect Dialect { get; private set; }
     public ITableNameConvention TableNameConvention { get; private set; }
@@ -31,8 +32,8 @@ public class SchemaExplorer : ISchemaBuilder
     public HashSet<string> DocumentTables { get; private set; } = new HashSet<string>();
     public HashSet<string> Tables { get; private set; } = new HashSet<string>();
     public bool Success => Error == null;
-    public Exception Error { get; set; }
     public string Message { get; set; }
+    public Exception Error { get; set; }
 
     public void Configure(IConfiguration configuration)
     {

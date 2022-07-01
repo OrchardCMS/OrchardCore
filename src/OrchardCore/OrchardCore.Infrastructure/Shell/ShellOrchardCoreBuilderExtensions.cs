@@ -14,6 +14,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddDataStorage(this OrchardCoreBuilder builder)
         {
+            builder.ApplicationServices.AddSingleton<IShellTablesService, ShellTablesService>();
+
             builder.AddSitesFolder()
                 .ConfigureServices(services =>
                 {

@@ -57,9 +57,9 @@
                 await Task.Delay(500);
             }
 
-            var dataMigrationExplorer = scope.ServiceProvider.GetRequiredService<IDataMigrationExplorer>();
+            var shellMigrationService = scope.ServiceProvider.GetRequiredService<IShellTablesService>();
 
-            var result = await dataMigrationExplorer.RemoveTablesAsync("Tenant1");
+            var result = await shellMigrationService.RemoveTablesAsync("Tenant1");
             if (result.Success)
             {
                 await DistributedCache.SetStringAsync(
