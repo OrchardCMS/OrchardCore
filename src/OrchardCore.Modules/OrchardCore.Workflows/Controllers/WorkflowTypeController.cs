@@ -223,30 +223,6 @@ namespace OrchardCore.Workflows.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task<string> ExportWorkflows(params int[] itemIds)
-        {
-            using var fileBuilder = new TemporaryFileBuilder();
-            var archiveFileName = fileBuilder.Folder + ".zip";
-            var recipeDescriptor = new RecipeDescriptor();
-            var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
-            var data = new JArray();
-            deploymentPlanResult.Steps.Add(new JObject(
-                new JProperty("name", "WorkflowType"),
-                new JProperty("data", data)
-            ));
-            //Do filter
-            foreach (var workflow in await _workflowTypeStore.GetAsync(itemIds))
-            {
-                var objectData = JObject.FromObject(workflow);
-                // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
-                objectData.Remove(nameof(workflow.Id));
-                data.Add(objectData);
-            }
-
-            await deploymentPlanResult.FinalizeAsync();
-            ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
-            return archiveFileName;
-        }
 
         public async Task<IActionResult> Export(int id)
         {
@@ -577,6 +553,31 @@ namespace OrchardCore.Workflows.Controllers
                 id = workflowTypeId, localId = localId
             });
             return activityShape;
+        }
+
+        private async Task<string> ExportWorkflows(params int[] itemIds)
+        {
+            using var fileBuilder = new TemporaryFileBuilder();
+            var archiveFileName = fileBuilder.Folder + ".zip";
+            var recipeDescriptor = new RecipeDescriptor();
+            var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
+            var data = new JArray();
+            deploymentPlanResult.Steps.Add(new JObject(
+            new JProperty("name", "WorkflowType"),
+            new JProperty("data", data)
+            ));
+            //Do filter
+            foreach (var workflow in await _workflowTypeStore.GetAsync(itemIds))
+            {
+                var objectData = JObject.FromObject(workflow);
+                // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
+                objectData.Remove(nameof(workflow.Id));
+                data.Add(objectData);
+            }
+
+            await deploymentPlanResult.FinalizeAsync();
+            ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
+            return archiveFileName;
         }
     }
 }
