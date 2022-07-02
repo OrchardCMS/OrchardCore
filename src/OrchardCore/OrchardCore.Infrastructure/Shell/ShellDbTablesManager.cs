@@ -13,78 +13,54 @@ using YesSql;
 
 namespace OrchardCore.Environment.Shell;
 
-/// <summary>
-/// Allows to retrieve and remove all the migrated tables of a given tenant.
-/// </summary>
-public class ShellTablesService : IShellTablesService
+public class ShellDbTablesManager : IShellDbTablesManager
 {
     private readonly IShellHost _shellHost;
     private readonly IShellContextFactory _shellContextFactory;
     private readonly ILogger _logger;
 
-    public ShellTablesService(IShellHost shellHost, IShellContextFactory shellContextFactory, ILogger<ShellTablesService> logger)
+    public ShellDbTablesManager(IShellHost shellHost, IShellContextFactory shellContextFactory, ILogger<ShellDbTablesManager> logger)
     {
         _shellHost = shellHost;
         _shellContextFactory = shellContextFactory;
         _logger = logger;
     }
 
-    /// <summary>
-    /// Retrieves all the migrated tables of the provided tenant.
-    /// </summary>
-    public async Task<ShellTablesResult> GetTablesAsync(string tenant)
+    public async Task<ShellDbTablesResult> GetTablesAsync(string tenant)
     {
-        var shellTablesRecorder = new ShellTablesRecorder
+        var shellDbTablesInfo = new ShellDbTablesInfo
         {
             TenantName = tenant,
         };
 
-        await GetTablesAsync(shellTablesRecorder);
+        await GetTablesAsync(shellDbTablesInfo);
 
-        return new ShellTablesResult
-        {
-            TenantName = shellTablesRecorder.TenantName,
-            TablePrefix = shellTablesRecorder.TablePrefix,
-            TableNames = shellTablesRecorder.GetTableNames(),
-            Message = shellTablesRecorder.Message,
-            Error = shellTablesRecorder.Error,
-        };
+        return shellDbTablesInfo.GetResult();
     }
 
-    /// <summary>
-    /// Removes all the migrated tables of the provided tenant.
-    /// </summary>
-    public async Task<ShellTablesResult> RemoveTablesAsync(string tenant)
+    public async Task<ShellDbTablesResult> RemoveTablesAsync(string tenant)
     {
-        var shellTablesRecorder = new ShellTablesRecorder
+        var shellDbTablesInfo = new ShellDbTablesInfo
         {
             TenantName = tenant,
         };
 
-        await GetTablesAsync(shellTablesRecorder);
-        if (shellTablesRecorder.Success)
+        await GetTablesAsync(shellDbTablesInfo);
+        if (shellDbTablesInfo.Success)
         {
-            await RemoveTablesAsync(shellTablesRecorder);
+            await RemoveTablesAsync(shellDbTablesInfo);
         }
 
-        return new ShellTablesResult
-        {
-            TenantName = shellTablesRecorder.TenantName,
-            TablePrefix = shellTablesRecorder.TablePrefix,
-            TableNames = shellTablesRecorder.GetTableNames(),
-            Message = shellTablesRecorder.Message,
-            Error = shellTablesRecorder.Error,
-        };
+        return shellDbTablesInfo.GetResult();
     }
 
-    internal async Task GetTablesAsync(ShellTablesRecorder shellTablesRecorder)
+    internal async Task GetTablesAsync(ShellDbTablesInfo shellDbTablesInfo)
     {
-        if (!_shellHost.TryGetSettings(shellTablesRecorder.TenantName, out var shellSettings))
+        if (!_shellHost.TryGetSettings(shellDbTablesInfo.TenantName, out var shellSettings))
         {
-            var ex = new InvalidOperationException("The provided tenant doesn't exist.");
-            _logger.LogError(ex, "Failed to retrieve tables of tenant '{TenantName}'.", shellTablesRecorder.TenantName);
-            shellTablesRecorder.Message = $"Failed to retrieve tables of tenant '{shellTablesRecorder.TenantName}'.";
-            shellTablesRecorder.Error = ex;
+            var ex = new InvalidOperationException($"The tenant '{shellDbTablesInfo.TenantName}' doesn't exist.");
+            _logger.LogError(ex, "The tenant '{TenantName}' doesn't exist.", shellDbTablesInfo.TenantName);
+            shellDbTablesInfo.Error = ex;
 
             return;
         }
@@ -92,7 +68,7 @@ public class ShellTablesService : IShellTablesService
         var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
         var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
 
-        shellTablesRecorder.Configure(store.Configuration);
+        shellDbTablesInfo.Configure(store.Configuration);
 
         // Create a full context composed of all features that have been installed on this tenant.
         var descriptor = new ShellDescriptor { Features = shellContext.Blueprint.Descriptor.Installed };
@@ -100,12 +76,12 @@ public class ShellTablesService : IShellTablesService
         using var context = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, descriptor);
         await context.CreateScope().UsingServiceScopeAsync(async scope =>
         {
-            // Replay tenant migrations but by using a 'ShellTablesRecorder' that
-            // only records table definitions without executing any Sql commands.
+            // Replay tenant migrations but by using a 'ShellDbTablesInfo' that
+            // only tracks table definitions without executing any Sql commands.
             var migrations = scope.ServiceProvider.GetServices<IDataMigration>();
             foreach (var migration in migrations)
             {
-                migration.SchemaBuilder = shellTablesRecorder;
+                migration.SchemaBuilder = shellDbTablesInfo;
 
                 var version = 0;
                 try
@@ -125,28 +101,35 @@ public class ShellTablesService : IShellTablesService
                         version,
                         tenant);
 
-                    shellTablesRecorder.Message = $"Failed to replay migration '{type}' from version '{version}' on tenant '{tenant}'.";
-                    shellTablesRecorder.Error = ex.InnerException;
+                    shellDbTablesInfo.Message = $"Failed to replay migration '{type}' from version '{version}' on tenant '{tenant}'.";
+                    shellDbTablesInfo.Error = ex.InnerException;
 
                     break;
                 }
             }
 
-            // The 'ShellTablesRecorder' doesn't execute any Sql commands and content
-            // definitions are idempotent, but anyway here nothing needs to be stored.
+            // The 'ShellDbTablesInfo' doesn't execute any Sql command and type definitions
+            // are intended to be idempotent, but anyway here nothing needs to be persisted.
             var documentStore = scope.ServiceProvider.GetRequiredService<IDocumentStore>();
             await documentStore.CancelAsync();
         });
     }
 
-    internal async Task RemoveTablesAsync(ShellTablesRecorder shellTablesRecorder)
+    internal async Task RemoveTablesAsync(ShellDbTablesInfo shellDbTablesInfo)
     {
-        if (!_shellHost.TryGetSettings(shellTablesRecorder.TenantName, out var shellSettings))
+        if (!_shellHost.TryGetSettings(shellDbTablesInfo.TenantName, out var shellSettings))
         {
-            var ex = new InvalidOperationException("The provided tenant doesn't exist.");
-            _logger.LogError(ex, "Failed to remove tables of tenant '{TenantName}'.", shellTablesRecorder.TenantName);
-            shellTablesRecorder.Message = $"Failed to remove tables of tenant '{shellTablesRecorder.TenantName}'.";
-            shellTablesRecorder.Error = ex;
+            var ex = new InvalidOperationException($"The tenant '{shellDbTablesInfo.TenantName}' doesn't exist.");
+            _logger.LogError(ex, "The tenant '{TenantName}' doesn't exist.", shellDbTablesInfo.TenantName);
+            shellDbTablesInfo.Error = ex;
+
+            return;
+        }
+        else if (shellSettings.Name == ShellHelper.DefaultShellName)
+        {
+            var ex = new InvalidOperationException("Can't remove the tables of the 'Default' tenant.");
+            _logger.LogError(ex, "Can't remove the tables of the 'Default' tenant");
+            shellDbTablesInfo.Error = ex;
 
             return;
         }
@@ -161,16 +144,16 @@ public class ShellTablesService : IShellTablesService
             using var transaction = connection.BeginTransaction(store.Configuration.IsolationLevel);
 
             // Remove all tables of this tenant.
-            shellTablesRecorder.Configure(transaction);
-            shellTablesRecorder.RemoveAllTables();
+            shellDbTablesInfo.Configure(transaction);
+            shellDbTablesInfo.RemoveAllTables();
 
             transaction.Commit();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to to remove tables of tenant '{TenantName}'.", shellSettings.Name);
-            shellTablesRecorder.Message = $"Failed to remove tables of tenant '{shellSettings.Name}'.";
-            shellTablesRecorder.Error = ex;
+            _logger.LogError(ex, "Failed to remove tables on tenant '{TenantName}'.", shellSettings.Name);
+            shellDbTablesInfo.Message = $"Failed to remove tables on tenant '{shellSettings.Name}'.";
+            shellDbTablesInfo.Error = ex;
         }
     }
 

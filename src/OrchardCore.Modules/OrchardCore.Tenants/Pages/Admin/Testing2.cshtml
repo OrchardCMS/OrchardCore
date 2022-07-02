@@ -57,9 +57,9 @@
                 await Task.Delay(500);
             }
 
-            var shellMigrationService = scope.ServiceProvider.GetRequiredService<IShellTablesService>();
+            var shellDbTablesManager = scope.ServiceProvider.GetRequiredService<IShellDbTablesManager>();
 
-            var result = await shellMigrationService.RemoveTablesAsync("Tenant1");
+            var result = await shellDbTablesManager.RemoveTablesAsync("Tenant1");
             if (result.Success)
             {
                 await DistributedCache.SetStringAsync(

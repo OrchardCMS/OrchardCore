@@ -10,12 +10,10 @@ using YesSql.Sql.Schema;
 
 namespace OrchardCore.Environment.Shell;
 
-public class ShellTablesRecorder : ISchemaBuilder
+internal class ShellDbTablesInfo : ShellDbTablesResult, ISchemaBuilder
 {
     private ICommandInterpreter _commandInterpreter;
 
-    public string TenantName { get; set; }
-    public string TablePrefix { get; private set; }
     public ISqlDialect Dialect { get; private set; }
     public ITableNameConvention TableNameConvention { get; private set; }
     public DbConnection Connection { get; set; }
@@ -31,9 +29,6 @@ public class ShellTablesRecorder : ISchemaBuilder
     public HashSet<string> BridgeTables { get; private set; } = new HashSet<string>();
     public HashSet<string> DocumentTables { get; private set; } = new HashSet<string>();
     public HashSet<string> Tables { get; private set; } = new HashSet<string>();
-    public bool Success => Error == null;
-    public string Message { get; set; }
-    public Exception Error { get; set; }
 
     public void Configure(IConfiguration configuration)
     {
@@ -48,6 +43,24 @@ public class ShellTablesRecorder : ISchemaBuilder
         Transaction = transaction;
         Connection = Transaction?.Connection;
         ThrowOnError = throwOnError;
+    }
+
+    public ShellDbTablesResult GetResult()
+    {
+        TableNames = GetTableNames();
+
+        return this;
+    }
+
+    public IEnumerable<string> GetTableNames()
+    {
+        return MapIndexTables.Select(i => Prefix(i.Name))
+            .Union(ReduceIndexTables.Select(i => Prefix(i.Name)))
+            .Union(BridgeTables.Select(Prefix))
+            .Append(Prefix(DbBlockIdGenerator.TableName))
+            .Union(DocumentTables.Select(Prefix))
+            .Union(Tables.Select(Prefix))
+            .ToArray();
     }
 
     public ISchemaBuilder CreateMapIndexTable(Type indexType, Action<ICreateTableCommand> table, string collection)
@@ -109,17 +122,6 @@ public class ShellTablesRecorder : ISchemaBuilder
         Tables.Remove(name);
 
         return this;
-    }
-
-    public IEnumerable<string> GetTableNames()
-    {
-        return MapIndexTables.Select(i => Prefix(i.Name))
-            .Union(ReduceIndexTables.Select(i => Prefix(i.Name)))
-            .Union(BridgeTables.Select(Prefix))
-            .Append(Prefix(DbBlockIdGenerator.TableName))
-            .Union(DocumentTables.Select(Prefix))
-            .Union(Tables.Select(Prefix))
-            .ToArray();
     }
 
     public void RemoveAllTables()
