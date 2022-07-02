@@ -46,6 +46,7 @@ namespace OrchardCore.Workflows.ViewModels
     public enum WorkflowTypeBulkAction
     {
         None,
+        Export,
         Delete
     }
 }

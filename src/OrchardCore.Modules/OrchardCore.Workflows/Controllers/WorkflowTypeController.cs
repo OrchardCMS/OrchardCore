@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -12,10 +13,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using OrchardCore.Admin;
+using OrchardCore.Deployment;
+using OrchardCore.Deployment.Core.Services;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes.Models;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Activities;
@@ -127,7 +131,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflowTypeIds = workflowTypes.Select(x => x.WorkflowTypeId).ToList();
             var workflowGroups = (await _session.QueryIndex<WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds))
-                .ListAsync())
+                    .ListAsync())
                 .GroupBy(x => x.WorkflowTypeId)
                 .ToDictionary(x => x.Key);
 
@@ -185,7 +189,14 @@ namespace OrchardCore.Workflows.Controllers
                 switch (options.BulkAction)
                 {
                     case WorkflowTypeBulkAction.None:
-                        break;
+                        break;                        
+                    case WorkflowTypeBulkAction.Export:
+                        var archiveFileName = await ExportWorkflows(itemIds.ToArray());
+                        return new PhysicalFileResult(archiveFileName, "application/zip")
+                        {
+                            FileDownloadName = "WorkflowTypes.zip"
+                        };
+
                     case WorkflowTypeBulkAction.Delete:
                         foreach (var entry in checkedEntries)
                         {
@@ -207,6 +218,44 @@ namespace OrchardCore.Workflows.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        private async Task<string> ExportWorkflows(params int[] itemIds)
+        {
+            using var fileBuilder = new TemporaryFileBuilder();
+            var archiveFileName = fileBuilder.Folder + ".zip";
+            var recipeDescriptor = new RecipeDescriptor();
+            var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
+            var data = new JArray();
+            deploymentPlanResult.Steps.Add(new JObject(
+            new JProperty("name", "WorkflowType"),
+            new JProperty("data", data)
+            ));
+            //Do filter
+            foreach (var workflow in await _workflowTypeStore.GetAsync(itemIds))
+            {
+                var objectData = JObject.FromObject(workflow);
+
+                // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
+                objectData.Remove(nameof(workflow.Id));
+                data.Add(objectData);
+            }
+            await deploymentPlanResult.FinalizeAsync();
+            ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
+            return archiveFileName;
+
+        }
+
+        public async Task<IActionResult> Export(int id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+            {
+                return Forbid();
+            }
+            var resultFileName = await ExportWorkflows(id);
+            return new PhysicalFileResult(resultFileName, "application/zip")
+            {
+                FileDownloadName = "WorkflowType.zip"
+            };
+        }
         public async Task<IActionResult> EditProperties(int? id, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
@@ -215,7 +264,7 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             if (id == null)
-            {
+            {    
                 return View(new WorkflowTypePropertiesViewModel
                 {
                     IsEnabled = true,
@@ -283,8 +332,8 @@ namespace OrchardCore.Workflows.Controllers
             return isNew
                 ? RedirectToAction(nameof(Edit), new { workflowType.Id })
                 : Url.IsLocalUrl(viewModel.ReturnUrl)
-                   ? (IActionResult)this.Redirect(viewModel.ReturnUrl, true)
-                   : RedirectToAction(nameof(Index));
+                    ? (IActionResult)this.Redirect(viewModel.ReturnUrl, true)
+                    : RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Duplicate(int id, string returnUrl = null)
@@ -448,7 +497,7 @@ namespace OrchardCore.Workflows.Controllers
                 activity.IsStart = activityState.isStart;
             }
 
-            // Update transitions.
+                 // Update transitions.
             workflowType.Transitions.Clear();
             foreach (var transitionState in state.transitions)
             {
@@ -464,7 +513,7 @@ namespace OrchardCore.Workflows.Controllers
             await _notifier.SuccessAsync(H["Workflow has been saved."]);
 
             return RedirectToAction(nameof(Edit), new { id = model.Id });
-        }
+    }
 
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
@@ -487,7 +536,7 @@ namespace OrchardCore.Workflows.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, int workflowTypeId, string localId, string displayType)
+      private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, int workflowTypeId, string localId, string displayType)
         {
             dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activity, _updateModelAccessor.ModelUpdater, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}";
