@@ -24,7 +24,7 @@ namespace OrchardCore.Themes
             builder
                 .Add(S["Design"], NavigationConstants.AdminMenuDesignPosition, design => design
                     .AddClass("themes").Id("themes")
-                    .Add(S["Themes"], S["Themes"].PrefixPosition(), installed => installed
+                    .Add(S["Themes"], S["Themes"].PrefixPosition(), themes => themes
                         .Action("Index", "Admin", new { area = "OrchardCore.Themes" })
                         .Permission(Permissions.ApplyTheme)
                         .LocalNav()

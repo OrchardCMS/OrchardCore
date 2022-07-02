@@ -22,10 +22,10 @@ namespace OrchardCore.Cors
             }
 
             builder
-                .Add(S["Configuration"], design => design
+                .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
                         .Add(S["Security"], security => security.Id("security")
-                            .Add(S["CORS"], S["CORS"].PrefixPosition(), entry => entry
+                            .Add(S["CORS"], S["CORS"].PrefixPosition(), cors => cors
                             .AddClass("cors").Id("cors")
                                 .Action("Index", "Admin", new { area = "OrchardCore.Cors" })
                                 .Permission(Permissions.ManageCorsSettings)

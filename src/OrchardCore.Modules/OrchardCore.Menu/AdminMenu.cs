@@ -30,12 +30,14 @@ namespace OrchardCore.Menu
                 { "Options.CanCreateSelectedContentType", true }
             };
 
-            builder.Add(S["Content"], design => design
+            builder
+                .Add(S["Content"], content => content
                     .Add(S["Menus"], S["Menus"].PrefixPosition(), menus => menus
                         .Permission(Permissions.ManageMenu)
                         .Action("List", "Admin", rvd)
                         .LocalNav()
-                        ));
+                    )
+                );
 
             return Task.CompletedTask;
         }

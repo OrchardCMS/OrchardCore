@@ -21,13 +21,16 @@ namespace OrchardCore.Media.Azure
                 return Task.CompletedTask;
             }
 
-            builder.Add(S["Configuration"], configuration => configuration
-                .Add(S["Media"], S["Media"].PrefixPosition(), media => media
-                    .Add(S["Azure Blob Options"], S["Azure Blob Options"].PrefixPosition(), options => options
-                        .Action("Options", "Admin", new { area = "OrchardCore.Media.Azure" })
-                        .Permission(Permissions.ViewAzureMediaOptions)
-                        .LocalNav())
-            ));
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Media"], S["Media"].PrefixPosition(), media => media
+                        .Add(S["Azure Blob Options"], S["Azure Blob Options"].PrefixPosition(), options => options
+                            .Action("Options", "Admin", new { area = "OrchardCore.Media.Azure" })
+                            .Permission(Permissions.ViewAzureMediaOptions)
+                            .LocalNav()
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }

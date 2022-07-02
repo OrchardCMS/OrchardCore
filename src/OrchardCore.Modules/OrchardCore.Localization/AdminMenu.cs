@@ -25,17 +25,17 @@ namespace OrchardCore.Localization
         ///<inheritdocs />
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
 
             builder
-                .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, localization => localization
+                .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, configuration => configuration
                     .Add(S["Settings"], settings => settings
                         .Add(S["Localization"], localization => localization
                             .AddClass("localization").Id("localization")
-                            .Add(S["Cultures"], S["Cultures"].PrefixPosition(), entry => entry
+                            .Add(S["Cultures"], S["Cultures"].PrefixPosition(), cultures => cultures
                                 .AddClass("cultures").Id("cultures")
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LocalizationSettingsDisplayDriver.GroupId })
                                 .Permission(Permissions.ManageCultures)

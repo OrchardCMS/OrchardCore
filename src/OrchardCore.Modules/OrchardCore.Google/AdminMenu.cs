@@ -53,7 +53,7 @@ namespace OrchardCore.Google
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Google Analytics"], S["Google Analytics"].PrefixPosition(), settings => settings
+                        .Add(S["Google Analytics"], S["Google Analytics"].PrefixPosition(), analytics => analytics
                             .AddClass("googleAnalytics").Id("googleAnalytics")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleAnalytics })
                             .Permission(Permissions.ManageGoogleAnalytics)

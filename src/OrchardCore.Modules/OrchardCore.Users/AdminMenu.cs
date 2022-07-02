@@ -137,7 +137,7 @@ namespace OrchardCore.Users
             }
 
             builder
-                .Add(S["Configuration"], design => design
+                .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
                         .Add(S["Security"], security => security.Id("security")
                             .Add(S["User Reset password"], S["User Reset password"].PrefixPosition(), password => password

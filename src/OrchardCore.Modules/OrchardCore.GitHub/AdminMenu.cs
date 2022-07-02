@@ -18,17 +18,23 @@ namespace OrchardCore.GitHub
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(S["Security"], security => security
-                        .Add(S["Authentication"], authentication => authentication
-                        .Add(S["GitHub"], S["GitHub"].PrefixPosition(), settings => settings
-                        .AddClass("github").Id("github")
+                return Task.CompletedTask;
+            }
+
+            builder
+                .Add(S["Security"], security => security
+                    .Add(S["Authentication"], authentication => authentication
+                        .Add(S["GitHub"], S["GitHub"].PrefixPosition(), github => github
+                            .AddClass("github").Id("github")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GitHubConstants.Features.GitHubAuthentication })
                             .Permission(Permissions.ManageGitHubAuthentication)
-                            .LocalNav())
-                    ));
-            }
+                            .LocalNav()
+                        )
+                    )
+                );
+
             return Task.CompletedTask;
         }
     }

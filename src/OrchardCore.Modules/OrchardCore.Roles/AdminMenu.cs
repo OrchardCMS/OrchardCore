@@ -21,13 +21,15 @@ namespace OrchardCore.Roles
                 return Task.CompletedTask;
             }
 
-            builder.Add(S["Security"], security => security
-                        .Add(S["Roles"], S["Roles"].PrefixPosition(), roles => roles
-                            .AddClass("roles").Id("roles")
-                            .Action("Index", "Admin", "OrchardCore.Roles")
-                            .Permission(Permissions.ManageRoles)
-                            .LocalNav()
-                        ));
+            builder
+                .Add(S["Security"], security => security
+                    .Add(S["Roles"], S["Roles"].PrefixPosition(), roles => roles
+                        .AddClass("roles").Id("roles")
+                        .Action("Index", "Admin", "OrchardCore.Roles")
+                        .Permission(Permissions.ManageRoles)
+                        .LocalNav()
+                    )
+                );
 
             return Task.CompletedTask;
         }

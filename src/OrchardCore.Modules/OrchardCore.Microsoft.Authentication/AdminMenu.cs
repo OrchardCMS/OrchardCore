@@ -19,17 +19,23 @@ namespace OrchardCore.Microsoft.Authentication
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(S["Security"], security => security
-                        .Add(S["Authentication"], authentication => authentication
+                return Task.CompletedTask;
+            }
+
+            builder
+                .Add(S["Security"], security => security
+                    .Add(S["Authentication"], authentication => authentication
                         .Add(S["Microsoft"], S["Microsoft"].PrefixPosition(), client => client
-                        .AddClass("microsoft").Id("microsoft")
+                            .AddClass("microsoft").Id("microsoft")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.MicrosoftAccount })
                             .Permission(Permissions.ManageMicrosoftAuthentication)
-                            .LocalNav())
-                    ));
-            }
+                            .LocalNav()
+                        )
+                    )
+                );
+
             return Task.CompletedTask;
         }
     }

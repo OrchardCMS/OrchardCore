@@ -30,7 +30,7 @@ namespace OrchardCore.Layers
                         .LocalNav()
                     )
                 )
-                .Add(S["Configuration"], design => design
+                .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings.Id("settings")
                         .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })

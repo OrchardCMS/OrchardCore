@@ -23,7 +23,7 @@ namespace OrchardCore.Security
             }
 
             builder
-                .Add(S["Configuration"], design => design
+                .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
                         .Add(S["Security"], security => security.Id("security")
                             .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers

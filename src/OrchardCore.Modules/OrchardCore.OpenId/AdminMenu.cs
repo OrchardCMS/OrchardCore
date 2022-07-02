@@ -29,7 +29,7 @@ namespace OrchardCore.OpenId
             }
 
             builder
-                .Add(S["Configuration"], design => design
+                .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
                         .Add(S["Security"], security => security
                             .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), category =>

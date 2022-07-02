@@ -25,7 +25,7 @@ namespace OrchardCore.Lucene
             builder
                 .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
                     .AddClass("search").Id("search")
-                    .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
+                    .Add(S["Indexing"], S["Indexing"].PrefixPosition(), indexing => indexing
                         .Add(S["Lucene Indices"], S["Lucene Indices"].PrefixPosition(), indexes => indexes
                             .Action("Index", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
