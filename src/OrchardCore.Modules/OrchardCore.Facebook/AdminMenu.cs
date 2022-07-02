@@ -22,18 +22,23 @@ namespace OrchardCore.Facebook
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(S["Configuration"], configuration => configuration
-                        .Add(S["Settings"], settings => settings
-                            .Add(S["Facebook App"], S["Facebook App"].PrefixPosition(), settings => settings
+                return Task.CompletedTask;
+            }
+
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Facebook App"], S["Facebook App"].PrefixPosition(), settings => settings
                             .AddClass("facebookApp").Id("facebookApp")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Core })
                             .Permission(Permissions.ManageFacebookApp)
-                            .LocalNav())
+                            .LocalNav()
                         )
-                    );
-            }
+                    )
+                );
+
             return Task.CompletedTask;
         }
     }

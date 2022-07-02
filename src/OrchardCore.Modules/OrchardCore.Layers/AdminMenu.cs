@@ -24,17 +24,21 @@ namespace OrchardCore.Layers
 
             builder
                 .Add(S["Design"], design => design
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })
-                            .Permission(Permissions.ManageLayers)
-                            .LocalNav()
-                        ))
                     .Add(S["Widgets"], S["Widgets"].PrefixPosition(), widgets => widgets
                         .Permission(Permissions.ManageLayers)
                         .Action("Index", "Admin", new { area = "OrchardCore.Layers" })
                         .LocalNav()
-                    ));
+                    )
+                )
+                .Add(S["Configuration"], design => design
+                    .Add(S["Settings"], settings => settings.Id("settings")
+                        .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })
+                            .Permission(Permissions.ManageLayers)
+                            .LocalNav()
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }

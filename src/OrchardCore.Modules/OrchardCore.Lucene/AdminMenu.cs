@@ -29,17 +29,22 @@ namespace OrchardCore.Lucene
                         .Add(S["Lucene Indices"], S["Lucene Indices"].PrefixPosition(), indexes => indexes
                             .Action("Index", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
-                            .LocalNav())
+                            .LocalNav()
+                         )
                         .Add(S["Run Lucene Query"], S["Run Lucene Query"].PrefixPosition(), queries => queries
                             .Action("Query", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
-                            .LocalNav()))
+                            .LocalNav()
+                         )
+                    )
                     .Add(S["Settings"], settings => settings
                         .Add(S["Search"], S["Search"].PrefixPosition(), entry => entry
                              .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LuceneSettingsDisplayDriver.GroupId })
                              .Permission(Permissions.ManageIndexes)
                              .LocalNav()
-                        )));
+                        )
+                     )
+                );
 
             return Task.CompletedTask;
         }

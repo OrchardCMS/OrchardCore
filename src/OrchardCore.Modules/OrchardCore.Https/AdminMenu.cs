@@ -22,13 +22,16 @@ namespace OrchardCore.Https
             }
 
             builder
-                .Add(S["Security"], security => security
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["HTTPS"], S["HTTPS"].PrefixPosition(), entry => entry
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "Https" })
-                            .Permission(Permissions.ManageHttps)
-                            .LocalNav()
-                        ))
+                .Add(S["Configuration"], design => design
+                    .Add(S["Settings"], settings => settings.Id("settings")
+                        .Add(S["Security"], security => security.Id("security")
+                            .Add(S["HTTPS"], S["HTTPS"].PrefixPosition(), entry => entry
+                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "Https" })
+                                .Permission(Permissions.ManageHttps)
+                                .LocalNav()
+                            )
+                        )
+                    )
                 );
 
             return Task.CompletedTask;

@@ -45,18 +45,23 @@ namespace OrchardCore.Google
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(S["Configuration"], configuration => configuration
-                        .Add(S["Settings"], settings => settings
-                            .Add(S["Google Analytics"], S["Google Analytics"].PrefixPosition(), settings => settings
+                return Task.CompletedTask;
+            }
+
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Google Analytics"], S["Google Analytics"].PrefixPosition(), settings => settings
                             .AddClass("googleAnalytics").Id("googleAnalytics")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleAnalytics })
-                                .Permission(Permissions.ManageGoogleAnalytics)
-                                .LocalNav())
-                            )
-                        );
-            }
+                            .Permission(Permissions.ManageGoogleAnalytics)
+                            .LocalNav()
+                        )
+                    )
+                );
+
             return Task.CompletedTask;
         }
     }
@@ -73,18 +78,23 @@ namespace OrchardCore.Google
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(S["Configuration"], configuration => configuration
-                        .Add(S["Settings"], settings => settings
-                            .Add(S["Google Tag Manager"], S["Google Tag Manager"].PrefixPosition(), settings => settings
+                return Task.CompletedTask;
+            }
+
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings.Id("settings")
+                        .Add(S["Google Tag Manager"], S["Google Tag Manager"].PrefixPosition(), settings => settings
                             .AddClass("googleTagManager").Id("googleTagManager")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleTagManager })
-                                .Permission(Permissions.ManageGoogleTagManager)
-                                .LocalNav())
-                            )
-                        );
-            }
+                            .Permission(Permissions.ManageGoogleTagManager)
+                            .LocalNav()
+                        )
+                    )
+                );
+
             return Task.CompletedTask;
         }
     }

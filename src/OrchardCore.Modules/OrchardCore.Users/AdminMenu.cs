@@ -24,23 +24,28 @@ namespace OrchardCore.Users
                 return Task.CompletedTask;
             }
 
-            builder.Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
+            builder
+                .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
                     .AddClass("security").Id("security")
-                        .Add(S["Users"], S["Users"].PrefixPosition(), users => users
-                            .AddClass("users").Id("users")
-                            .Action("Index", "Admin", "OrchardCore.Users")
-                            .Permission(Permissions.ViewUsers)
-                            .Resource(new User())
-                            .LocalNav()
-                         )
-                        .Add(S["Settings"], settings => settings
+                    .Add(S["Users"], S["Users"].PrefixPosition(), users => users
+                        .AddClass("users").Id("users")
+                        .Action("Index", "Admin", "OrchardCore.Users")
+                        .Permission(Permissions.ViewUsers)
+                        .Resource(new User())
+                        .LocalNav()
+                    )
+                )
+                .Add(S["Configuration"], design => design
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Security"], security => security.Id("security")
                             .Add(S["User Login"], S["User Login"].PrefixPosition(), login => login
                                 .Permission(Permissions.ManageUsers)
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LoginSettingsDisplayDriver.GroupId })
                                 .LocalNav()
-                                )
                             )
-                       );
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }
@@ -64,13 +69,17 @@ namespace OrchardCore.Users
             }
 
             builder
-                .Add(S["Security"], security => security
+                .Add(S["Configuration"], design => design
                     .Add(S["Settings"], settings => settings
-                        .Add(S["User Change email"], S["User Change email"].PrefixPosition(), registration => registration
-                            .Permission(Permissions.ManageUsers)
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ChangeEmailSettingsDisplayDriver.GroupId })
-                            .LocalNav()
-                        )));
+                        .Add(S["Security"], security => security.Id("security")
+                            .Add(S["User Change email"], S["User Change email"].PrefixPosition(), registration => registration
+                                .Permission(Permissions.ManageUsers)
+                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ChangeEmailSettingsDisplayDriver.GroupId })
+                                .LocalNav()
+                            )
+                        )
+                    )
+               );
 
             return Task.CompletedTask;
         }
@@ -94,13 +103,17 @@ namespace OrchardCore.Users
             }
 
             builder
-                .Add(S["Security"], security => security
+                .Add(S["Configuration"], design => design
                     .Add(S["Settings"], settings => settings
-                        .Add(S["User Registration"], S["User Registration"].PrefixPosition(), registration => registration
-                            .Permission(Permissions.ManageUsers)
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = RegistrationSettingsDisplayDriver.GroupId })
-                            .LocalNav()
-                        )));
+                        .Add(S["Security"], security => security.Id("security")
+                            .Add(S["User Registration"], S["User Registration"].PrefixPosition(), registration => registration
+                                .Permission(Permissions.ManageUsers)
+                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = RegistrationSettingsDisplayDriver.GroupId })
+                                .LocalNav()
+                            )
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }
@@ -124,13 +137,17 @@ namespace OrchardCore.Users
             }
 
             builder
-                .Add(S["Security"], security => security
+                .Add(S["Configuration"], design => design
                     .Add(S["Settings"], settings => settings
-                        .Add(S["User Reset password"], S["User Reset password"].PrefixPosition(), password => password
-                            .Permission(Permissions.ManageUsers)
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ResetPasswordSettingsDisplayDriver.GroupId })
-                            .LocalNav()
-                        )));
+                        .Add(S["Security"], security => security.Id("security")
+                            .Add(S["User Reset password"], S["User Reset password"].PrefixPosition(), password => password
+                                .Permission(Permissions.ManageUsers)
+                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ResetPasswordSettingsDisplayDriver.GroupId })
+                                .LocalNav()
+                            )
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }

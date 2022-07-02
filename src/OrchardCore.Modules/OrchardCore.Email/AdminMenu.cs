@@ -18,17 +18,21 @@ namespace OrchardCore.Email
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            {
                 return Task.CompletedTask;
+            }
 
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
                        .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
-                       .AddClass("email").Id("email")
-                          .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId })
-                          .Permission(Permissions.ManageEmailSettings)
-                          .LocalNav()
-                )));
+                           .AddClass("email").Id("email")
+                           .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId })
+                           .Permission(Permissions.ManageEmailSettings)
+                           .LocalNav()
+                       )
+                    )
+                );
 
             return Task.CompletedTask;
         }

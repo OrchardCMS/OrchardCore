@@ -22,14 +22,17 @@ namespace OrchardCore.Cors
             }
 
             builder
-                .Add(S["Configuration"], configuration => configuration
+                .Add(S["Configuration"], design => design
                     .Add(S["Settings"], settings => settings
-                        .Add(S["CORS"], S["CORS"].PrefixPosition(), entry => entry
-                        .AddClass("cors").Id("cors")
-                            .Action("Index", "Admin", new { area = "OrchardCore.Cors" })
-                            .Permission(Permissions.ManageCorsSettings)
-                            .LocalNav()
-                        ))
+                        .Add(S["Security"], security => security.Id("security")
+                            .Add(S["CORS"], S["CORS"].PrefixPosition(), entry => entry
+                            .AddClass("cors").Id("cors")
+                                .Action("Index", "Admin", new { area = "OrchardCore.Cors" })
+                                .Permission(Permissions.ManageCorsSettings)
+                                .LocalNav()
+                            )
+                        )
+                    )
                 );
 
             return Task.CompletedTask;

@@ -29,7 +29,10 @@ namespace OrchardCore.AuditTrail.Navigation
                             .AddClass("audittrail").Id("audittrailSettings")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AuditTrailSettingsGroup.Id })
                             .Permission(AuditTrailPermissions.ManageAuditTrailSettings)
-                            .LocalNav())));
+                            .LocalNav()
+                        )
+                     )
+                 );
 
             return Task.CompletedTask;
         }

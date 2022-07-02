@@ -36,7 +36,9 @@ namespace OrchardCore.CustomSettings
                                 .Permission(Permissions.CreatePermissionForType(type))
                                 .Resource(type.Name)
                                 .LocalNav()
-                            )));
+                            )
+                        )
+                    );
             }
 
             return Task.CompletedTask;

@@ -45,17 +45,23 @@ namespace OrchardCore.Twitter
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(S["Configuration"], configuration => configuration
-                        .Add(S["Settings"], settings => settings
-                            .Add(S["Twitter"], S["Twitter"].PrefixPosition(), settings => settings
+                return Task.CompletedTask;
+            }
+
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Twitter"], S["Twitter"].PrefixPosition(), settings => settings
                             .AddClass("twitter").Id("twitter")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Twitter })
                             .Permission(Permissions.ManageTwitter)
-                            .LocalNav())
-                    ));
-            }
+                            .LocalNav()
+                        )
+                    )
+                );
+
             return Task.CompletedTask;
         }
     }

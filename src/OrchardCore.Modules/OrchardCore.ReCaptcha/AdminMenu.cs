@@ -23,13 +23,17 @@ namespace OrchardCore.ReCaptcha
             }
 
             builder
-                .Add(S["Security"], security => security
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["reCaptcha"], S["reCaptcha"].PrefixPosition(), registration => registration
+                .Add(S["Configuration"], design => design
+                    .Add(S["Settings"], settings => settings.Id("settings")
+                        .Add(S["Security"], security => security.Id("security")
+                            .Add(S["reCaptcha"], S["reCaptcha"].PrefixPosition(), registration => registration
                             .Permission(Permissions.ManageReCaptchaSettings)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ReCaptchaSettingsDisplayDriver.GroupId })
                             .LocalNav()
-                        )));
+                            )
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }

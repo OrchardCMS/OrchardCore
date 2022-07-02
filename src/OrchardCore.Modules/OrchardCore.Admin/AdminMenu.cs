@@ -31,7 +31,8 @@ namespace OrchardCore.Admin
                             .Permission(PermissionsAdminSettings.ManageAdminSettings)
                             .LocalNav()
                         )
-                    ));
+                    )
+                );
 
             return Task.CompletedTask;
         }
