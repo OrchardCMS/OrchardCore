@@ -147,18 +147,19 @@ namespace OrchardCore.Workflows.Controllers
                 WorkflowTypes = workflowTypes
                     .Select(x => new WorkflowTypeEntry
                     {
-                        WorkflowType = x,
-                        Id = x.Id,
-                        WorkflowCount = workflowGroups.ContainsKey(x.WorkflowTypeId) ? workflowGroups[x.WorkflowTypeId].Count() : 0,
-                        Name = x.Name
+                        WorkflowType = x, Id = x.Id, WorkflowCount = workflowGroups.ContainsKey(x.WorkflowTypeId) ? workflowGroups[x.WorkflowTypeId].Count() : 0, Name = x.Name
                     })
                     .ToList(),
                 Options = options,
                 Pager = pagerShape
             };
 
-            model.Options.WorkflowTypesBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"].Value, Value = nameof(WorkflowTypeBulkAction.Delete) }
+            model.Options.WorkflowTypesBulkAction = new List<SelectListItem>()
+            {
+                new SelectListItem()
+                {
+                    Text = S["Delete"].Value, Value = nameof(WorkflowTypeBulkAction.Delete)
+                }
             };
 
             return View(model);
@@ -168,8 +169,11 @@ namespace OrchardCore.Workflows.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(WorkflowTypeIndexViewModel model)
         {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            return RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                {
+                    "Options.Search", model.Options.Search
+                }
             });
         }
 
@@ -189,12 +193,13 @@ namespace OrchardCore.Workflows.Controllers
                 switch (options.BulkAction)
                 {
                     case WorkflowTypeBulkAction.None:
-                        break;                        
+                        break;
                     case WorkflowTypeBulkAction.Export:
                         var archiveFileName = await ExportWorkflows(itemIds.ToArray());
+
                         return new PhysicalFileResult(archiveFileName, "application/zip")
                         {
-                            FileDownloadName = "WorkflowTypes.zip"
+                            FileDownloadName = $"Workflows.zip"
                         };
 
                     case WorkflowTypeBulkAction.Delete:
@@ -226,22 +231,21 @@ namespace OrchardCore.Workflows.Controllers
             var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
             var data = new JArray();
             deploymentPlanResult.Steps.Add(new JObject(
-            new JProperty("name", "WorkflowType"),
-            new JProperty("data", data)
+                new JProperty("name", "WorkflowType"),
+                new JProperty("data", data)
             ));
             //Do filter
             foreach (var workflow in await _workflowTypeStore.GetAsync(itemIds))
             {
                 var objectData = JObject.FromObject(workflow);
-
                 // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
                 objectData.Remove(nameof(workflow.Id));
                 data.Add(objectData);
             }
+
             await deploymentPlanResult.FinalizeAsync();
             ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
             return archiveFileName;
-
         }
 
         public async Task<IActionResult> Export(int id)
@@ -250,6 +254,7 @@ namespace OrchardCore.Workflows.Controllers
             {
                 return Forbid();
             }
+
             var resultFileName = await ExportWorkflows(id);
             return new PhysicalFileResult(resultFileName, "application/zip")
             {
@@ -264,11 +269,10 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             if (id == null)
-            {    
+            {
                 return View(new WorkflowTypePropertiesViewModel
                 {
-                    IsEnabled = true,
-                    ReturnUrl = returnUrl
+                    IsEnabled = true, ReturnUrl = returnUrl
                 });
             }
             else
@@ -330,7 +334,10 @@ namespace OrchardCore.Workflows.Controllers
             await _workflowTypeStore.SaveAsync(workflowType);
 
             return isNew
-                ? RedirectToAction(nameof(Edit), new { workflowType.Id })
+                ? RedirectToAction(nameof(Edit), new
+                {
+                    workflowType.Id
+                })
                 : Url.IsLocalUrl(viewModel.ReturnUrl)
                     ? (IActionResult)this.Redirect(viewModel.ReturnUrl, true)
                     : RedirectToAction(nameof(Index));
@@ -390,7 +397,10 @@ namespace OrchardCore.Workflows.Controllers
 
             await _workflowTypeStore.SaveAsync(workflowType);
 
-            return RedirectToAction(nameof(Edit), new { workflowType.Id });
+            return RedirectToAction(nameof(Edit), new
+            {
+                workflowType.Id
+            });
         }
 
         public async Task<IActionResult> Edit(int id, string localId)
@@ -451,7 +461,10 @@ namespace OrchardCore.Workflows.Controllers
             var viewModel = new WorkflowTypeViewModel
             {
                 WorkflowType = workflowType,
-                WorkflowTypeJson = JsonConvert.SerializeObject(workflowTypeData, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }),
+                WorkflowTypeJson = JsonConvert.SerializeObject(workflowTypeData, Formatting.None, new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                }),
                 ActivityThumbnailShapes = activityThumbnailShapes,
                 ActivityDesignShapes = activityDesignShapes,
                 ActivityCategories = _activityLibrary.ListCategories().ToList(),
@@ -497,23 +510,24 @@ namespace OrchardCore.Workflows.Controllers
                 activity.IsStart = activityState.isStart;
             }
 
-                 // Update transitions.
+            // Update transitions.
             workflowType.Transitions.Clear();
             foreach (var transitionState in state.transitions)
             {
                 workflowType.Transitions.Add(new Transition
                 {
-                    SourceActivityId = transitionState.sourceActivityId,
-                    DestinationActivityId = transitionState.destinationActivityId,
-                    SourceOutcomeName = transitionState.sourceOutcomeName
+                    SourceActivityId = transitionState.sourceActivityId, DestinationActivityId = transitionState.destinationActivityId, SourceOutcomeName = transitionState.sourceOutcomeName
                 });
             }
 
             await _workflowTypeStore.SaveAsync(workflowType);
             await _notifier.SuccessAsync(H["Workflow has been saved."]);
 
-            return RedirectToAction(nameof(Edit), new { id = model.Id });
-    }
+            return RedirectToAction(nameof(Edit), new
+            {
+                id = model.Id
+            });
+        }
 
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
@@ -536,14 +550,17 @@ namespace OrchardCore.Workflows.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-      private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, int workflowTypeId, string localId, string displayType)
+        private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, int workflowTypeId, string localId, string displayType)
         {
             dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activity, _updateModelAccessor.ModelUpdater, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}";
             activityShape.Activity = activity;
             activityShape.WorkflowTypeId = workflowTypeId;
             activityShape.Index = index;
-            activityShape.ReturnUrl = Url.Action(nameof(Edit), new { id = workflowTypeId, localId = localId });
+            activityShape.ReturnUrl = Url.Action(nameof(Edit), new
+            {
+                id = workflowTypeId, localId = localId
+            });
             return activityShape;
         }
 
@@ -555,7 +572,10 @@ namespace OrchardCore.Workflows.Controllers
             activityShape.ActivityRecord = activityContext.ActivityRecord;
             activityShape.WorkflowTypeId = workflowTypeId;
             activityShape.Index = index;
-            activityShape.ReturnUrl = Url.Action(nameof(Edit), new { id = workflowTypeId, localId = localId });
+            activityShape.ReturnUrl = Url.Action(nameof(Edit), new
+            {
+                id = workflowTypeId, localId = localId
+            });
             return activityShape;
         }
     }
