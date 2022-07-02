@@ -24,13 +24,17 @@ namespace OrchardCore.GitHub
             }
 
             builder
-                .Add(S["Security"], security => security
-                    .Add(S["Authentication"], authentication => authentication
-                        .Add(S["GitHub"], S["GitHub"].PrefixPosition(), github => github
-                            .AddClass("github").Id("github")
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GitHubConstants.Features.GitHubAuthentication })
-                            .Permission(Permissions.ManageGitHubAuthentication)
-                            .LocalNav()
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Security"], security => security.Id("security")
+                            .Add(S["Authentication"], authentication => authentication
+                                .Add(S["GitHub"], S["GitHub"].PrefixPosition(), github => github
+                                    .AddClass("github").Id("github")
+                                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GitHubConstants.Features.GitHubAuthentication })
+                                    .Permission(Permissions.ManageGitHubAuthentication)
+                                    .LocalNav()
+                                )
+                            )
                         )
                     )
                 );

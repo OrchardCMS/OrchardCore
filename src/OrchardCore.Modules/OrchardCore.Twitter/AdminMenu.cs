@@ -18,17 +18,28 @@ namespace OrchardCore.Twitter
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(S["Security"], security => security
-                        .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Sign in with Twitter"], S["Sign in with Twitter"].PrefixPosition(), settings => settings
-                        .AddClass("twitter").Id("twitter")
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Signin })
-                            .Permission(Permissions.ManageTwitterSignin)
-                            .LocalNav())
-                    ));
+                return Task.CompletedTask;
+
             }
+
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Security"], security => security.Id("security")
+                            .Add(S["Authentication"], authentication => authentication
+                                .Add(S["Sign in with Twitter"], S["Sign in with Twitter"].PrefixPosition(), settings => settings
+                                    .AddClass("twitter").Id("twitter")
+                                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Signin })
+                                    .Permission(Permissions.ManageTwitterSignin)
+                                    .LocalNav()
+                                )
+                            )
+                        )
+                    )
+                );
+
             return Task.CompletedTask;
         }
     }
@@ -53,7 +64,7 @@ namespace OrchardCore.Twitter
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Twitter"], S["Twitter"].PrefixPosition(), settings => settings
+                        .Add(S["Twitter"], S["Twitter"].PrefixPosition(), client => client
                             .AddClass("twitter").Id("twitter")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Twitter })
                             .Permission(Permissions.ManageTwitter)

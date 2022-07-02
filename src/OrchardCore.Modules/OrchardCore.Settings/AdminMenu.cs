@@ -21,16 +21,17 @@ namespace OrchardCore.Settings
                 return Task.CompletedTask;
             }
 
-            builder.Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], "1", settings => settings
-                    .Add(S["General"], "1", entry => entry
-                        .AddClass("general").Id("general")
-                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })
-                        .Permission(Permissions.ManageGroupSettings)
-                        .LocalNav()
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], "1", settings => settings
+                        .Add(S["General"], "1", entry => entry
+                            .AddClass("general").Id("general")
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })
+                            .Permission(Permissions.ManageGroupSettings)
+                            .LocalNav()
+                        )
                     )
-                )
-            );
+                );
 
             return Task.CompletedTask;
         }

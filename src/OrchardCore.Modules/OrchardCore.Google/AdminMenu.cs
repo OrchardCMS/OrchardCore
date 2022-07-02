@@ -18,17 +18,27 @@ namespace OrchardCore.Google
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(S["Security"], security => security
-                        .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Google"], S["Google"].PrefixPosition(), settings => settings
-                        .AddClass("google").Id("google")
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleAuthentication })
-                            .Permission(Permissions.ManageGoogleAuthentication)
-                            .LocalNav())
-                    ));
+                return Task.CompletedTask;
             }
+
+            builder
+              .Add(S["Configuration"], configuration => configuration
+                  .Add(S["Settings"], settings => settings
+                      .Add(S["Security"], security => security.Id("security")
+                          .Add(S["Authentication"], authentication => authentication
+                              .Add(S["Google"], S["Google"].PrefixPosition(), settings => settings
+                                  .AddClass("google").Id("google")
+                                  .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleAuthentication })
+                                  .Permission(Permissions.ManageGoogleAuthentication)
+                                  .LocalNav()
+                              )
+                          )
+                      )
+                  )
+              );
+
             return Task.CompletedTask;
         }
     }

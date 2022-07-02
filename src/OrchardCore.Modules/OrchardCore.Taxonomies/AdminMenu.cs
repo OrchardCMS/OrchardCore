@@ -25,7 +25,7 @@ namespace OrchardCore.Taxonomies
             builder
                 .Add(S["Configuration"], configuration => configuration
                        .Add(S["Settings"], "1", settings => settings
-                            .Add(S["Taxonomy Filters"], S["Taxonomy Filters"].PrefixPosition(), admt => admt
+                            .Add(S["Taxonomy Filters"], S["Taxonomy Filters"].PrefixPosition(), filters => filters
                                 .AddClass("taxonomyfilters").Id("taxonomyfilters")
                                 .Permission(Permissions.ManageTaxonomies)
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TaxonomyContentsAdminListSettingsDisplayDriver.GroupId })

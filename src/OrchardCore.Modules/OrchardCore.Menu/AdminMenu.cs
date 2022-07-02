@@ -22,7 +22,7 @@ namespace OrchardCore.Menu
                 return Task.CompletedTask;
             }
 
-            var rvd = new RouteValueDictionary
+            var routeValues = new RouteValueDictionary
             {
                 { "contentTypeId", "Menu" },
                 { "Area", "OrchardCore.Contents" },
@@ -34,7 +34,7 @@ namespace OrchardCore.Menu
                 .Add(S["Content"], content => content
                     .Add(S["Menus"], S["Menus"].PrefixPosition(), menus => menus
                         .Permission(Permissions.ManageMenu)
-                        .Action("List", "Admin", rvd)
+                        .Action("List", "Admin", routeValues)
                         .LocalNav()
                     )
                 );

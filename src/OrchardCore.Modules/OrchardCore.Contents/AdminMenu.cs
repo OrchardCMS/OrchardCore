@@ -48,13 +48,12 @@ namespace OrchardCore.Contents
 
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            var context = _httpContextAccessor.HttpContext;
-
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
+            var context = _httpContextAccessor.HttpContext;
             var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
             var contentTypes = contentTypeDefinitions.Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
             await builder.AddAsync(S["Content"], NavigationConstants.AdminMenuContentPosition, async content =>

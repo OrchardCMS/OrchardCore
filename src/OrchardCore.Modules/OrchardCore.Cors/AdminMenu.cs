@@ -7,12 +7,12 @@ namespace OrchardCore.Cors
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
             S = localizer;
         }
-
-        public IStringLocalizer S { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {

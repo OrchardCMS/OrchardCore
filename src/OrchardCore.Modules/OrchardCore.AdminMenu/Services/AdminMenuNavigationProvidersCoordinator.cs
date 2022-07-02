@@ -44,7 +44,7 @@ namespace OrchardCore.AdminMenu.Services
                 return;
             }
 
-            var trees = ((await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
+            var trees = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu
                 .Where(m => m.Enabled && m.MenuItems.Count > 0);
 
             foreach (var tree in trees)
