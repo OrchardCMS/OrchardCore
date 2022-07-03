@@ -131,7 +131,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflowTypeIds = workflowTypes.Select(x => x.WorkflowTypeId).ToList();
             var workflowGroups = (await _session.QueryIndex<WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds))
-                    .ListAsync())
+                .ListAsync())
                 .GroupBy(x => x.WorkflowTypeId)
                 .ToDictionary(x => x.Key);
 
@@ -563,8 +563,8 @@ namespace OrchardCore.Workflows.Controllers
             var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
             var data = new JArray();
             deploymentPlanResult.Steps.Add(new JObject(
-            new JProperty("name", "WorkflowType"),
-            new JProperty("data", data)
+                new JProperty("name", "WorkflowType"),
+                new JProperty("data", data)
             ));
             //Do filter
             foreach (var workflow in await _workflowTypeStore.GetAsync(itemIds))
@@ -577,6 +577,7 @@ namespace OrchardCore.Workflows.Controllers
 
             await deploymentPlanResult.FinalizeAsync();
             ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
+
             return archiveFileName;
         }
     }
