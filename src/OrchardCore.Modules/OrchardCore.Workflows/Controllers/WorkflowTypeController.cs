@@ -315,8 +315,8 @@ namespace OrchardCore.Workflows.Controllers
                     workflowType.Id
                 })
                 : Url.IsLocalUrl(viewModel.ReturnUrl)
-                    ? (IActionResult)this.Redirect(viewModel.ReturnUrl, true)
-                    : RedirectToAction(nameof(Index));
+                   ? (IActionResult)this.Redirect(viewModel.ReturnUrl, true)
+                   : RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Duplicate(int id, string returnUrl = null)
@@ -563,8 +563,8 @@ namespace OrchardCore.Workflows.Controllers
             var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
             var data = new JArray();
             deploymentPlanResult.Steps.Add(new JObject(
-                new JProperty("name", "WorkflowType"),
-                new JProperty("data", data)
+            new JProperty("name", "WorkflowType"),
+            new JProperty("data", data)
             ));
             //Do filter
             foreach (var workflow in await _workflowTypeStore.GetAsync(itemIds))
