@@ -26,12 +26,12 @@ namespace OrchardCore.Lucene
                 .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
                     .AddClass("search").Id("search")
                     .Add(S["Indexing"], S["Indexing"].PrefixPosition(), indexing => indexing
-                        .Add(S["Lucene Indices"], S["Lucene Indices"].PrefixPosition(), indexes => indexes
+                        .Add(S["Lucene indices"], S["Lucene indices"].PrefixPosition(), indexes => indexes
                             .Action("Index", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav()
                          )
-                        .Add(S["Run Lucene Query"], S["Run Lucene Query"].PrefixPosition(), queries => queries
+                        .Add(S["Run Lucene query"], S["Run Lucene query"].PrefixPosition(), queries => queries
                             .Action("Query", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav()

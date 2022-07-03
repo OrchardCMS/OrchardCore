@@ -28,13 +28,13 @@ namespace OrchardCore.ContentLocalization
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
                         .Add(S["Localization"], localization => localization
-                            .Add(S["Content Request Culture Provider"], S["Content Request Culture Provider"].PrefixPosition(), provider => provider
+                            .Add(S["Content request culture provider"], S["Content request culture provider"].PrefixPosition(), provider => provider
                                 .AddClass("contentrequestcultureprovider").Id("contentrequestcultureprovider")
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ContentRequestCultureProviderSettingsDriver.GroupId })
                                 .Permission(Permissions.ManageContentCulturePicker)
                                 .LocalNav()
                             )
-                            .Add(S["Content Culture Picker"], S["Content Culture Picker"].PrefixPosition(), picker => picker
+                            .Add(S["Content culture picker"], S["Content culture picker"].PrefixPosition(), picker => picker
                                 .AddClass("contentculturepicker").Id("contentculturepicker")
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ContentCulturePickerSettingsDriver.GroupId })
                                 .Permission(Permissions.ManageContentCulturePicker)

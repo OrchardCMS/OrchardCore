@@ -26,7 +26,7 @@ namespace OrchardCore.Security
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
                         .Add(S["Security"], security => security.Id("security")
-                            .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
+                            .Add(S["Security headers"], S["Security headers"].PrefixPosition(), headers => headers
                                 .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SecuritySettingsDisplayDriver.SettingsGroupId })
                                 .LocalNav()

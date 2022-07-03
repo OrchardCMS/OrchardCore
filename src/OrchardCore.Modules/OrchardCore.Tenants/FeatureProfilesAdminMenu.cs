@@ -33,7 +33,7 @@ namespace OrchardCore.Tenants
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .AddClass("menu-configuration").Id("configuration")
-                    .Add(S["Tenant Feature Profiles"], S["Tenant Feature Profiles"].PrefixPosition(), featureProfiles => featureProfiles
+                    .Add(S["Tenant feature profiles"], S["Tenant feature profiles"].PrefixPosition(), featureProfiles => featureProfiles
                         .Action("Index", "FeatureProfiles", new { area = "OrchardCore.Tenants" })
                         .Permission(Permissions.ManageTenantFeatureProfiles)
                         .LocalNav()

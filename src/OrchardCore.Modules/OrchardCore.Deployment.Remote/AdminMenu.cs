@@ -24,12 +24,12 @@ namespace OrchardCore.Deployment.Remote
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Import/Export"], import => import
-                        .Add(S["Remote Instances"], S["Remote Instances"].PrefixPosition(), instances => instances
+                        .Add(S["Remote instances"], S["Remote instances"].PrefixPosition(), instances => instances
                             .Action("Index", "RemoteInstance", new { area = "OrchardCore.Deployment.Remote" })
                             .Permission(Permissions.ManageRemoteInstances)
                             .LocalNav()
                         )
-                        .Add(S["Remote Clients"], S["Remote Clients"].PrefixPosition(), clients => clients
+                        .Add(S["Remote clients"], S["Remote clients"].PrefixPosition(), clients => clients
                             .Action("Index", "RemoteClient", new { area = "OrchardCore.Deployment.Remote" })
                             .Permission(Permissions.ManageRemoteClients)
                             .LocalNav()

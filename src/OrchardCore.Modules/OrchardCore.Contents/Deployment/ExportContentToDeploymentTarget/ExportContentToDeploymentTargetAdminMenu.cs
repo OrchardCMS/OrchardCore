@@ -25,7 +25,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Export Target Settings"], S["Export Target Settings"].PrefixPosition(), deployment => deployment
+                            .Add(S["Export target settings"], S["Export target settings"].PrefixPosition(), deployment => deployment
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "ExportContentToDeploymentTarget" })
                                 .Permission(OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan)
                                 .LocalNav()
