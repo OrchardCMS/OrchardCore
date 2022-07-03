@@ -14,6 +14,3 @@ namespace OrchardCore.Workflows.Models
         public int ExcutedActivityCount { get; set; }
     }
 }
-
-
-

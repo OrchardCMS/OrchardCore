@@ -8,5 +8,3 @@ namespace OrchardCore.Workflows.ViewModels
         public string ErrorFilter { get; set; }
     }
 }
-
-

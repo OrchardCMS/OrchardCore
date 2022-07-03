@@ -21,7 +21,7 @@ namespace OrchardCore.Workflows.Events
             _scriptEvaluator = scriptEvaluator;
         }
         public override string Name => nameof(WorkflowFaultEvent);
-        
+
         public string TriggeredWorkflowName { get; set; }
 
         public override LocalizedString DisplayText => S["Catch Workflow Fault Event"];
@@ -32,7 +32,7 @@ namespace OrchardCore.Workflows.Events
         {
             get => GetProperty(() => new WorkflowExpression<bool>(getDefaultValue()));
             set => SetProperty(value);
-        }       
+        }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
@@ -49,15 +49,9 @@ namespace OrchardCore.Workflows.Events
                 return false;
             }
 
-            var result = await _scriptEvaluator.EvaluateAsync(ErrorFilter, workflowContext);
-            return result;
+            return await _scriptEvaluator.EvaluateAsync(ErrorFilter, workflowContext);
         }
 
-        public override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            return base.ExecuteAsync(workflowContext, activityContext);
-        }
-        
         private string getDefaultValue()
         {
             var sample = $@"
@@ -76,6 +70,7 @@ errorInfo.{nameof(WorkflowFaultModel.ExcutedActivityCount)}== 20
 // If the above expression is true, the exception message will be caught
 // and a new workflow instance will be created.
 return result;";
+
             return sample;
         }
     }
