@@ -1,14 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Models;
 using YesSql;
 
 namespace OrchardCore.Environment.Shell;
@@ -19,7 +23,10 @@ public class ShellDbTablesManager : IShellDbTablesManager
     private readonly IShellContextFactory _shellContextFactory;
     private readonly ILogger _logger;
 
-    public ShellDbTablesManager(IShellHost shellHost, IShellContextFactory shellContextFactory, ILogger<ShellDbTablesManager> logger)
+    public ShellDbTablesManager(
+        IShellHost shellHost,
+        IShellContextFactory shellContextFactory,
+        ILogger<ShellDbTablesManager> logger)
     {
         _shellHost = shellHost;
         _shellContextFactory = shellContextFactory;
@@ -59,23 +66,20 @@ public class ShellDbTablesManager : IShellDbTablesManager
         if (!_shellHost.TryGetSettings(shellDbTablesInfo.TenantName, out var shellSettings))
         {
             var ex = new InvalidOperationException($"The tenant '{shellDbTablesInfo.TenantName}' doesn't exist.");
-            _logger.LogError(ex, "The tenant '{TenantName}' doesn't exist.", shellDbTablesInfo.TenantName);
+            _logger.LogError(ex, "Failed to get the tables of tenant '{TenantName}'.", shellDbTablesInfo.TenantName);
+            shellDbTablesInfo.Message = $"Failed to get the tables of tenant '{shellDbTablesInfo.TenantName}'.";
             shellDbTablesInfo.Error = ex;
 
             return;
         }
 
-        var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
-        var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
-
-        shellDbTablesInfo.Configure(store.Configuration);
-
-        // Create a full context composed of all features that have been installed on this tenant.
-        var descriptor = new ShellDescriptor { Features = shellContext.Blueprint.Descriptor.Installed };
-
-        using var context = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, descriptor);
-        await context.CreateScope().UsingServiceScopeAsync(async scope =>
+        // Create a context composed of all features that have been installed.
+        using var shellContext = await GetMaximumContextAsync(shellSettings);
+        await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
         {
+            var store = scope.ServiceProvider.GetRequiredService<IStore>();
+            shellDbTablesInfo.Configure(store.Configuration);
+
             // Replay tenant migrations but by using a 'ShellDbTablesInfo' that
             // only tracks table definitions without executing any Sql commands.
             var migrations = scope.ServiceProvider.GetServices<IDataMigration>();
@@ -96,12 +100,12 @@ public class ShellDbTablesManager : IShellDbTablesManager
 
                     _logger.LogError(
                         ex,
-                        "Failed to replay migration '{MigrationType}' from version '{Version}' on tenant '{TenantName}'.",
+                        "Failed to replay the migration '{MigrationType}' from version '{Version}' on tenant '{TenantName}'.",
                         type,
                         version,
                         tenant);
 
-                    shellDbTablesInfo.Message = $"Failed to replay migration '{type}' from version '{version}' on tenant '{tenant}'.";
+                    shellDbTablesInfo.Message = $"Failed to replay the migration '{type}' from version '{version}' on tenant '{tenant}'.";
                     shellDbTablesInfo.Error = ex.InnerException;
 
                     break;
@@ -117,45 +121,97 @@ public class ShellDbTablesManager : IShellDbTablesManager
 
     internal async Task RemoveTablesAsync(ShellDbTablesInfo shellDbTablesInfo)
     {
+        InvalidOperationException exception = null;
         if (!_shellHost.TryGetSettings(shellDbTablesInfo.TenantName, out var shellSettings))
         {
-            var ex = new InvalidOperationException($"The tenant '{shellDbTablesInfo.TenantName}' doesn't exist.");
-            _logger.LogError(ex, "The tenant '{TenantName}' doesn't exist.", shellDbTablesInfo.TenantName);
-            shellDbTablesInfo.Error = ex;
-
-            return;
+            exception = new InvalidOperationException($"The tenant '{shellDbTablesInfo.TenantName}' doesn't exist.");
+            _logger.LogError(exception, "Failed to remove the tables of tenant '{TenantName}'.", shellDbTablesInfo.TenantName);
         }
         else if (shellSettings.Name == ShellHelper.DefaultShellName)
         {
-            var ex = new InvalidOperationException("Can't remove the tables of the 'Default' tenant.");
-            _logger.LogError(ex, "Can't remove the tables of the 'Default' tenant");
-            shellDbTablesInfo.Error = ex;
+            exception = new InvalidOperationException("The tenant should not be the 'Default' tenant.");
+            _logger.LogError(exception, "Failed to remove the tables of tenant '{TenantName}'.", shellSettings.Name);
+        }
+        else if (shellSettings.State != TenantState.Disabled)
+        {
+            exception = new InvalidOperationException($"The tenant '{shellDbTablesInfo.TenantName}' should be 'Disabled'.");
+            _logger.LogError(exception, "Failed to remove the tables of tenant '{TenantName}'.", shellSettings.Name);
+        }
 
+        if (exception != null)
+        {
+            shellDbTablesInfo.Message = $"Failed to remove the tables of tenant '{shellSettings.Name}'.";
+            shellDbTablesInfo.Error = exception;
             return;
         }
 
-        var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
-        var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
-
         try
         {
+            if (shellSettings["DatabaseProvider"] == "Sqlite")
+            {
+                ;
+            }
+
+            using var shellContext = await GetMinimumContextAsync(shellSettings);
+            var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
+
             using var connection = store.Configuration.ConnectionFactory.CreateConnection();
-            await connection.OpenAsync();
-            using var transaction = connection.BeginTransaction(store.Configuration.IsolationLevel);
+            if (shellSettings["DatabaseProvider"] == "Sqlite" && connection is SqliteConnection sqliteConnection)
+            {
+                // Clear the pool to unlock the file and remove it.
+                SqliteConnection.ClearPool(sqliteConnection);
+                File.Delete(connection.DataSource);
+            }
+            else
+            {
+                await connection.OpenAsync();
+                using var transaction = connection.BeginTransaction(store.Configuration.IsolationLevel);
 
-            // Remove all tables of this tenant.
-            shellDbTablesInfo.Configure(transaction);
-            shellDbTablesInfo.RemoveAllTables();
+                // Remove all tables of this tenant.
+                shellDbTablesInfo.Configure(transaction);
+                //shellDbTablesInfo.RemoveAllTables();
 
-            transaction.Commit();
+                transaction.Commit();
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to remove tables on tenant '{TenantName}'.", shellSettings.Name);
-            shellDbTablesInfo.Message = $"Failed to remove tables on tenant '{shellSettings.Name}'.";
+            _logger.LogError(ex, "Failed to remove the tables of tenant '{TenantName}'.", shellSettings.Name);
+            shellDbTablesInfo.Message = $"Failed to remove the tables of tenant '{shellSettings.Name}'.";
             shellDbTablesInfo.Error = ex;
         }
     }
+
+    private async Task<ShellContext> GetMaximumContextAsync(ShellSettings shellSettings)
+    {
+        var shellDescriptor = await GetShellDescriptorAsync(shellSettings);
+        if (shellDescriptor == null)
+        {
+            return await GetMinimumContextAsync(shellSettings);
+        }
+
+        // Create a shell descriptor composed of all features that have been installed.
+        shellDescriptor = new ShellDescriptor { Features = shellDescriptor.Installed };
+
+        return await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor);
+    }
+
+    private async Task<ShellDescriptor> GetShellDescriptorAsync(ShellSettings shellSettings)
+    {
+        ShellDescriptor shellDescriptor = null;
+
+        using var shellContext = await GetMinimumContextAsync(shellSettings);
+        await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
+        {
+            var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
+            shellDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();
+        });
+
+        return shellDescriptor;
+    }
+
+    private Task<ShellContext> GetMinimumContextAsync(ShellSettings shellSettings) =>
+        _shellContextFactory.CreateDescribedContextAsync(shellSettings, new ShellDescriptor());
 
     private static async Task<int> ExecuteCreateMethodAsync(IDataMigration migration)
     {

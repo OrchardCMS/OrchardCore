@@ -41,7 +41,7 @@ internal class ShellDbTablesInfo : ShellDbTablesResult, ISchemaBuilder
     public void Configure(DbTransaction transaction, bool throwOnError = true)
     {
         Transaction = transaction;
-        Connection = Transaction?.Connection;
+        Connection = Transaction.Connection;
         ThrowOnError = throwOnError;
     }
 

@@ -5,6 +5,7 @@
 @using System
 @using System.Globalization;
 @using System.Reflection;
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Caching.Distributed
 @using Microsoft.Extensions.DependencyInjection
 @using Newtonsoft.Json
@@ -14,10 +15,13 @@
 @using OrchardCore.Environment.Shell
 @using OrchardCore.Environment.Shell.Builders
 @using OrchardCore.Environment.Shell.Descriptor.Models
+@using OrchardCore.Tenants
 @using YesSql
 @using YesSql.Indexes
 
 @inject IDistributedCache DistributedCache
+@inject IAuthorizationService AuthorizationService
+@inject IShellHost ShellHost
 
 @functions
 {
@@ -46,6 +50,11 @@
 
     public async Task<IActionResult> OnPostDoAction1()
     {
+        if (!await AuthorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+        {
+            return Forbid();
+        }
+
         await DistributedCache.SetStringAsync("Testing2Action1Pause", false.ToString());
 
         // Do the job;
@@ -75,6 +84,11 @@
                     "TestingErrorMessage",
                     result.Message + ": " + result.Error.Message);
             }
+
+            //if (result.Success && ShellHost.TryGetSettings("Tenant1", out var settings))
+            //{
+            //    await ShellHost.RemoveShellSettingsAsync(settings);
+            //}
         });
 
         return RedirectToPage("testing");
@@ -102,7 +116,7 @@
     <div class="form-group card">
         <div class="card-body w-lg-75 w-xl-50">
             <button asp-page="Testing2" asp-page-handler="PauseAction1" class="btn btn-sm btn-outline-secondary mx-1">Pause</button>
-            <button asp-page="Testing2" asp-page-handler="DoAction1" class="btn btn-sm btn-outline-success mx-1">Do</button>
+            <button asp-page="Testing2" asp-page-handler="DoAction1" class="btn btn-sm btn-outline-success mx-1">Remove Tables</button>
             <span>Installed Tables</span>
             <button asp-page="Testing2" asp-page-handler="Refresh" class="btn btn-sm btn-outline-info mx-1 float-end">Refresh</button>
             <button asp-page="Testing2" asp-page-handler="Do" class="btn btn-sm btn-outline-success mx-1 float-end">Do All</button>

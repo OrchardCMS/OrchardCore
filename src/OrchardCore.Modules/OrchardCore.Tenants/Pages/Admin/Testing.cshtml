@@ -38,17 +38,13 @@
     }
 }
 
-@{
-    var title = "Testing123";
-}
-
-<h2>@title</h2>
+<h2>Tenant Removal</h2>
 
 <form method="post" class="no-multisubmit mt-4">
 
     <ul class="nav nav-tabs" id="testing-tabs" data-url="@((HttpContext.Request.PathBase + HttpContext.Request.Path).ToString().TrimEnd('/'))">
         <li class="nav-item pr-md-2"><a class="nav-link active" id="testing1-tab" data-bs-toggle="tab" href="#testing1" role="tab" aria-controls="site" aria-selected="true">@T["Testing1"]</a></li>
-       <li class="nav-item pr-md-2"><a class="nav-link" id="testing2-tab" data-bs-toggle="tab" href="#testing2" role="tab" aria-controls="site" aria-selected="true">@T["Testing2"]</a></li>
+       <li class="nav-item pr-md-2"><a class="nav-link" id="testing2-tab" data-bs-toggle="tab" href="#testing2" role="tab" aria-controls="site" aria-selected="true">@T["Database"]</a></li>
     </ul>
 
     <div class="testing-alert alert alert-danger alert-dismissible fade show d-none w-50 mt-3" role="alert">
