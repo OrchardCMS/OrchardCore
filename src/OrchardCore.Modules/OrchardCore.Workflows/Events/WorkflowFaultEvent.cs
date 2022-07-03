@@ -21,11 +21,7 @@ namespace OrchardCore.Workflows.Events
             _scriptEvaluator = scriptEvaluator;
         }
         public override string Name => nameof(WorkflowFaultEvent);
-
-        public string TriggeredWorkflowName { get; set; }
-
         public override LocalizedString DisplayText => S["Catch Workflow Fault Event"];
-
         public override LocalizedString Category => S["Background"];
 
         public WorkflowExpression<bool> ErrorFilter
