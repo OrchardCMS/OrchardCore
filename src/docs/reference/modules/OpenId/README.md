@@ -131,7 +131,7 @@ A sample of OpenID Connect App recipe step:
       "AllowAuthorizationCodeFlow": false,
       "AllowRefreshTokenFlow": false,
       "AllowImplicitFlow": false,
-      "RequirePkce": false
+      "RequireProofKeyForCodeExchange": false
 }
 ```
 

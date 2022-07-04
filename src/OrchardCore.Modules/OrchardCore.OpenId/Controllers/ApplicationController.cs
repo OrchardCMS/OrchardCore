@@ -177,7 +177,7 @@ namespace OrchardCore.OpenId.Controllers
                 Roles = model.RoleEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
                 Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
                 Type = model.Type,
-                RequirePkce = model.RequirePkce
+                RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange
             };
 
             await _applicationManager.UpdateDescriptorFromSettings(settings);
@@ -239,7 +239,7 @@ namespace OrchardCore.OpenId.Controllers
                 PostLogoutRedirectUris = string.Join(" ", await _applicationManager.GetPostLogoutRedirectUrisAsync(application)),
                 RedirectUris = string.Join(" ", await _applicationManager.GetRedirectUrisAsync(application)),
                 Type = await _applicationManager.GetClientTypeAsync(application),
-                RequirePkce = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange)
+                RequireProofKeyForCodeExchange = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange)
             };
 
             var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
@@ -343,7 +343,7 @@ namespace OrchardCore.OpenId.Controllers
                 Roles = model.RoleEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
                 Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
                 Type = model.Type,
-                RequirePkce = model.RequirePkce
+                RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange
             };
 
             await _applicationManager.UpdateDescriptorFromSettings(settings, application);

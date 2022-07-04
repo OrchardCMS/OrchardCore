@@ -29,7 +29,7 @@ namespace OrchardCore.OpenId
         public bool AllowLogoutEndpoint { get; set; }
         public bool AllowIntrospectionEndpoint { get; set; }
         public bool AllowRevocationEndpoint { get; set; }
-        public bool RequirePkce { get; set; }
+        public bool RequireProofKeyForCodeExchange { get; set; }
     }
 
     internal static class OpenIdApplicationExtensions
@@ -199,7 +199,7 @@ namespace OrchardCore.OpenId
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Revocation);
             }
 
-            if (model.RequirePkce)
+            if (model.RequireProofKeyForCodeExchange)
             {
                 descriptor.Requirements.Add(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange);
             }

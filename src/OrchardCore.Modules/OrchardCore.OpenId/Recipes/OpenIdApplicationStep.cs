@@ -51,7 +51,7 @@ namespace OrchardCore.OpenId.Recipes
                 Roles = model.RoleEntries.Select(x => x.Name).ToArray(),
                 Scopes = model.ScopeEntries.Select(x => x.Name).ToArray(),
                 Type = model.Type,
-                RequirePkce = model.RequirePkce,
+                RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange,
             };
 
             await _applicationManager.UpdateDescriptorFromSettings(settings, app);
