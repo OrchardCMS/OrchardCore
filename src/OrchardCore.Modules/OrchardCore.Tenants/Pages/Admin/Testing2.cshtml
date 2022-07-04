@@ -8,6 +8,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Caching.Distributed
 @using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Options
 @using Newtonsoft.Json
 @using OrchardCore.BackgroundJobs
 @using OrchardCore.Data
@@ -21,6 +22,7 @@
 
 @inject IDistributedCache DistributedCache
 @inject IAuthorizationService AuthorizationService
+@inject IOptions<ShellOptions> ShellOptions
 @inject IShellHost ShellHost
 
 @functions
@@ -71,12 +73,17 @@
             var result = await shellDbTablesManager.RemoveTablesAsync("Tenant1");
             if (result.Success)
             {
+                var message = $"'{result.TenantName}' Tables using the Prefix '{result.TenantTablePrefix}' was removed.";
+                if (result.DatabaseProvider == "Sqlite")
+                {
+                    message += " The database file 'yessql.db' was removed. ";
+                }
+
                 await DistributedCache.SetStringAsync(
                     "TestingSuccessMessage",
                     String.Join(
                         "<br/>",
-                        result.TableNames.Prepend(
-                            $"'{result.TenantName}' Tables using the Prefix '{result.TablePrefix}' was removed. <br/>")));
+                        result.TableNames.Prepend(message)));
             }
             else
             {
@@ -85,10 +92,25 @@
                     result.Message + ": " + result.Error.Message);
             }
 
-            //if (result.Success && ShellHost.TryGetSettings("Tenant1", out var settings))
-            //{
-            //    await ShellHost.RemoveShellSettingsAsync(settings);
-            //}
+            if (result.Success && ShellHost.TryGetSettings("Tenant1", out var settings))
+            {
+                await ShellHost.RemoveShellSettingsAsync(settings);
+
+                var tenantFolder = System.IO.Path.Combine(
+                    ShellOptions.Value.ShellsApplicationDataPath,
+                    ShellOptions.Value.ShellsContainerName, settings.Name);
+
+                try
+                {
+                    System.IO.Directory.Delete(tenantFolder, true);
+                }
+                catch (Exception ex)
+                {
+                    await DistributedCache.SetStringAsync(
+                        "TestingErrorMessage",
+                        $"Failed to delete the tenant folder {tenantFolder}" + ": " + ex.Message);
+                }
+            }
         });
 
         return RedirectToPage("testing");
@@ -114,7 +136,7 @@
 
 <div class="tab-pane fade" id="testing2" role="tabpanel" aria-labelledby="testing2-tab">
     <div class="form-group card">
-        <div class="card-body w-lg-75 w-xl-50">
+        <div class="card-body w-lg-75">
             <button asp-page="Testing2" asp-page-handler="PauseAction1" class="btn btn-sm btn-outline-secondary mx-1">Pause</button>
             <button asp-page="Testing2" asp-page-handler="DoAction1" class="btn btn-sm btn-outline-success mx-1">Remove Tables</button>
             <span>Installed Tables</span>

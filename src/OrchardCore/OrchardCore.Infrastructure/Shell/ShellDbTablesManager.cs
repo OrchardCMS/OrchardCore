@@ -35,42 +35,22 @@ public class ShellDbTablesManager : IShellDbTablesManager
 
     public async Task<ShellDbTablesResult> GetTablesAsync(string tenant)
     {
-        var shellDbTablesInfo = new ShellDbTablesInfo
+        string message = null;
+        if (!_shellHost.TryGetSettings(tenant, out var shellSettings))
         {
-            TenantName = tenant,
-        };
-
-        await GetTablesAsync(shellDbTablesInfo);
-
-        return shellDbTablesInfo.GetResult();
-    }
-
-    public async Task<ShellDbTablesResult> RemoveTablesAsync(string tenant)
-    {
-        var shellDbTablesInfo = new ShellDbTablesInfo
-        {
-            TenantName = tenant,
-        };
-
-        await GetTablesAsync(shellDbTablesInfo);
-        if (shellDbTablesInfo.Success)
-        {
-            await RemoveTablesAsync(shellDbTablesInfo);
+            message = $"The tenant '{tenant}' doesn't exist.";
         }
 
-        return shellDbTablesInfo.GetResult();
-    }
-
-    internal async Task GetTablesAsync(ShellDbTablesInfo shellDbTablesInfo)
-    {
-        if (!_shellHost.TryGetSettings(shellDbTablesInfo.TenantName, out var shellSettings))
+        var shellDbTablesInfo = new ShellDbTablesInfo().Configure(shellSettings);
+        if (message != null)
         {
-            var ex = new InvalidOperationException($"The tenant '{shellDbTablesInfo.TenantName}' doesn't exist.");
-            _logger.LogError(ex, "Failed to get the tables of tenant '{TenantName}'.", shellDbTablesInfo.TenantName);
-            shellDbTablesInfo.Message = $"Failed to get the tables of tenant '{shellDbTablesInfo.TenantName}'.";
+            var ex = new InvalidOperationException(message);
+            _logger.LogError(ex, "Failed to retrieve the tables of tenant '{TenantName}'.", tenant);
+
+            shellDbTablesInfo.Message = $"Failed to retrieve the tables of tenant '{shellSettings.Name}'.";
             shellDbTablesInfo.Error = ex;
 
-            return;
+            return shellDbTablesInfo;
         }
 
         // Create a context composed of all features that have been installed.
@@ -96,7 +76,6 @@ public class ShellDbTablesManager : IShellDbTablesManager
                 catch (Exception ex)
                 {
                     var type = migration.GetType().FullName;
-                    var tenant = shellSettings.Name;
 
                     _logger.LogError(
                         ex,
@@ -117,46 +96,46 @@ public class ShellDbTablesManager : IShellDbTablesManager
             var documentStore = scope.ServiceProvider.GetRequiredService<IDocumentStore>();
             await documentStore.CancelAsync();
         });
+
+        return shellDbTablesInfo.GetResult();
     }
 
-    internal async Task RemoveTablesAsync(ShellDbTablesInfo shellDbTablesInfo)
+    public async Task<ShellDbTablesResult> RemoveTablesAsync(string tenant)
     {
-        InvalidOperationException exception = null;
-        if (!_shellHost.TryGetSettings(shellDbTablesInfo.TenantName, out var shellSettings))
+        var shellDbTablesInfo = (await GetTablesAsync(tenant)) as ShellDbTablesInfo;
+
+        string message = null;
+        if (!_shellHost.TryGetSettings(tenant, out var shellSettings))
         {
-            exception = new InvalidOperationException($"The tenant '{shellDbTablesInfo.TenantName}' doesn't exist.");
-            _logger.LogError(exception, "Failed to remove the tables of tenant '{TenantName}'.", shellDbTablesInfo.TenantName);
+            message = $"The tenant '{tenant}' doesn't exist.";
         }
         else if (shellSettings.Name == ShellHelper.DefaultShellName)
         {
-            exception = new InvalidOperationException("The tenant should not be the 'Default' tenant.");
-            _logger.LogError(exception, "Failed to remove the tables of tenant '{TenantName}'.", shellSettings.Name);
+            message = "The tenant should not be the 'Default' tenant.";
         }
         else if (shellSettings.State != TenantState.Disabled)
         {
-            exception = new InvalidOperationException($"The tenant '{shellDbTablesInfo.TenantName}' should be 'Disabled'.");
-            _logger.LogError(exception, "Failed to remove the tables of tenant '{TenantName}'.", shellSettings.Name);
+            message = $"The tenant '{tenant}' should be 'Disabled'.";
         }
 
-        if (exception != null)
+        if (message != null)
         {
+            var ex = new InvalidOperationException(message);
+
+            _logger.LogError(ex, "Failed to remove the tables of tenant '{TenantName}'.", tenant);
             shellDbTablesInfo.Message = $"Failed to remove the tables of tenant '{shellSettings.Name}'.";
-            shellDbTablesInfo.Error = exception;
-            return;
+            shellDbTablesInfo.Error = ex;
+
+            return shellDbTablesInfo;
         }
 
         try
         {
-            if (shellSettings["DatabaseProvider"] == "Sqlite")
-            {
-                ;
-            }
-
             using var shellContext = await GetMinimumContextAsync(shellSettings);
             var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
 
             using var connection = store.Configuration.ConnectionFactory.CreateConnection();
-            if (shellSettings["DatabaseProvider"] == "Sqlite" && connection is SqliteConnection sqliteConnection)
+            if (shellDbTablesInfo.DatabaseProvider == "Sqlite" && connection is SqliteConnection sqliteConnection)
             {
                 // Clear the pool to unlock the file and remove it.
                 SqliteConnection.ClearPool(sqliteConnection);
@@ -169,17 +148,19 @@ public class ShellDbTablesManager : IShellDbTablesManager
 
                 // Remove all tables of this tenant.
                 shellDbTablesInfo.Configure(transaction);
-                //shellDbTablesInfo.RemoveAllTables();
+                shellDbTablesInfo.RemoveAllTables();
 
                 transaction.Commit();
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to remove the tables of tenant '{TenantName}'.", shellSettings.Name);
-            shellDbTablesInfo.Message = $"Failed to remove the tables of tenant '{shellSettings.Name}'.";
+            _logger.LogError(ex, "Failed to remove the tables of tenant '{TenantName}'.", tenant);
+            shellDbTablesInfo.Message = $"Failed to remove the tables of tenant '{tenant}'.";
             shellDbTablesInfo.Error = ex;
         }
+
+        return shellDbTablesInfo;
     }
 
     private async Task<ShellContext> GetMaximumContextAsync(ShellSettings shellSettings)

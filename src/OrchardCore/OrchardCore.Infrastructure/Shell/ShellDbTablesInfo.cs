@@ -30,19 +30,32 @@ internal class ShellDbTablesInfo : ShellDbTablesResult, ISchemaBuilder
     public HashSet<string> DocumentTables { get; private set; } = new HashSet<string>();
     public HashSet<string> Tables { get; private set; } = new HashSet<string>();
 
-    public void Configure(IConfiguration configuration)
+    public ShellDbTablesInfo Configure(ShellSettings shellSettings)
+    {
+        TenantName = shellSettings.Name;
+        TenantTablePrefix = shellSettings["TablePrefix"];
+        DatabaseProvider = shellSettings["DatabaseProvider"];
+
+        return this;
+    }
+
+    public ShellDbTablesInfo Configure(IConfiguration configuration)
     {
         Dialect = configuration.SqlDialect;
         TablePrefix = configuration.TablePrefix;
         TableNameConvention = configuration.TableNameConvention;
         _commandInterpreter = configuration.CommandInterpreter;
+
+        return this;
     }
 
-    public void Configure(DbTransaction transaction, bool throwOnError = true)
+    public ShellDbTablesInfo Configure(DbTransaction transaction, bool throwOnError = true)
     {
         Transaction = transaction;
-        Connection = Transaction.Connection;
+        Connection = transaction.Connection;
         ThrowOnError = throwOnError;
+
+        return this;
     }
 
     public ShellDbTablesResult GetResult()
@@ -286,8 +299,5 @@ internal class ShellDbTablesInfo : ShellDbTablesResult, ISchemaBuilder
         }
     }
 
-    private string Prefix(string table)
-    {
-        return TablePrefix + table;
-    }
+    private string Prefix(string table) => TablePrefix + table;
 }
