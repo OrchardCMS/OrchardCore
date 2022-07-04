@@ -89,18 +89,15 @@ namespace OrchardCore.OpenId.Configuration
             }
             if (settings.UserinfoEndpointPath.HasValue)
             {
-                options.UserinfoEndpointUris.Add(new Uri(settings.UserinfoEndpointPath.Value, UriKind.Relative));
-                
+                options.UserinfoEndpointUris.Add(new Uri(settings.UserinfoEndpointPath.Value, UriKind.Relative));                
             }
             if (settings.IntrospectionEndpointPath.HasValue)
             {
                 options.IntrospectionEndpointUris.Add(new Uri(settings.IntrospectionEndpointPath.Value, UriKind.Relative));
-
             }
             if (settings.RevocationEndpointPath.HasValue)
             {
                 options.RevocationEndpointUris.Add(new Uri(settings.RevocationEndpointPath.Value, UriKind.Relative));
-
             }
 
             // For now, response types and response modes are not directly
