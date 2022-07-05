@@ -161,6 +161,7 @@ namespace OrchardCore.OpenId
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.Token);
             }
+
             if (model.AllowHybridFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken);
@@ -182,6 +183,7 @@ namespace OrchardCore.OpenId
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken);
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
             }
+
             if (model.AllowIntrospectionEndpoint)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Introspection);
@@ -190,6 +192,7 @@ namespace OrchardCore.OpenId
             {
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Introspection);
             }
+
             if (model.AllowRevocationEndpoint)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Revocation);

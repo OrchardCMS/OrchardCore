@@ -79,22 +79,27 @@ namespace OrchardCore.OpenId.Configuration
             {
                 options.AuthorizationEndpointUris.Add(new Uri(settings.AuthorizationEndpointPath.Value, UriKind.Relative));
             }
+
             if (settings.LogoutEndpointPath.HasValue)
             {
                 options.LogoutEndpointUris.Add(new Uri(settings.LogoutEndpointPath.Value, UriKind.Relative));
             }
+
             if (settings.TokenEndpointPath.HasValue)
             {
                 options.TokenEndpointUris.Add(new Uri(settings.TokenEndpointPath.Value, UriKind.Relative));
             }
+
             if (settings.UserinfoEndpointPath.HasValue)
             {
                 options.UserinfoEndpointUris.Add(new Uri(settings.UserinfoEndpointPath.Value, UriKind.Relative));                
             }
+
             if (settings.IntrospectionEndpointPath.HasValue)
             {
                 options.IntrospectionEndpointUris.Add(new Uri(settings.IntrospectionEndpointPath.Value, UriKind.Relative));
             }
+
             if (settings.RevocationEndpointPath.HasValue)
             {
                 options.RevocationEndpointUris.Add(new Uri(settings.RevocationEndpointPath.Value, UriKind.Relative));
@@ -114,10 +119,12 @@ namespace OrchardCore.OpenId.Configuration
 
                 options.ResponseTypes.Add(ResponseTypes.Code);
             }
+
             if (settings.AllowClientCredentialsFlow)
             {
                 options.GrantTypes.Add(GrantTypes.ClientCredentials);
             }
+
             if (settings.AllowHybridFlow)
             {
                 options.CodeChallengeMethods.Add(CodeChallengeMethods.Sha256);
@@ -132,6 +139,7 @@ namespace OrchardCore.OpenId.Configuration
                 options.ResponseTypes.Add(ResponseTypes.Code + ' ' + ResponseTypes.IdToken + ' ' + ResponseTypes.Token);
                 options.ResponseTypes.Add(ResponseTypes.Code + ' ' + ResponseTypes.Token);
             }
+
             if (settings.AllowImplicitFlow)
             {
                 options.GrantTypes.Add(GrantTypes.Implicit);
@@ -143,10 +151,12 @@ namespace OrchardCore.OpenId.Configuration
                 options.ResponseTypes.Add(ResponseTypes.IdToken + ' ' + ResponseTypes.Token);
                 options.ResponseTypes.Add(ResponseTypes.Token);
             }
+
             if (settings.AllowPasswordFlow)
             {
                 options.GrantTypes.Add(GrantTypes.Password);
             }
+
             if (settings.AllowRefreshTokenFlow)
             {
                 options.GrantTypes.Add(GrantTypes.RefreshToken);
