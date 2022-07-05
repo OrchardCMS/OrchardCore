@@ -58,6 +58,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             shellHost.LoadingAsync += LoadingAsync;
             shellHost.ReleasingAsync += ReleasingAsync;
             shellHost.ReloadingAsync += ReloadingAsync;
+            shellHost.RemovingAsync += RemovingAsync;
         }
 
         /// <summary>
@@ -205,15 +206,17 @@ namespace OrchardCore.Environment.Shell.Distributed
                             var removeId = await distributedCache.GetStringAsync(RemoveIdKey(settings.Name));
                             if (removeId != null)
                             {
-                                // Check if the remove identifier of this tenant has changed.
+                                // Check if the remove identifier has changed and if the tenant is already disabled.
                                 var identifier = _identifiers.GetOrAdd(settings.Name, name => new ShellIdentifier());
-                                if (identifier.RemoveId != removeId)
+                                if (identifier.RemoveId != removeId && settings.State == TenantState.Disabled)
                                 {
                                     // Upate the local identifier.
                                     identifier.RemoveId = removeId;
 
                                     // Keep in sync this tenant by removing it locally.
                                     await _shellHost.RemoveShellContextAsync(settings, eventSource: false);
+
+                                    // TODO: Maybe remove the local tenant folder.
                                 }
                             }
                         }

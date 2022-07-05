@@ -8,6 +8,7 @@ namespace OrchardCore.Modules
         Task ActivatedAsync();
         Task TerminatingAsync();
         Task TerminatedAsync();
+        Task RemovingAsync();
     }
 
     public class ModularTenantEvents : IModularTenantEvents
@@ -31,5 +32,7 @@ namespace OrchardCore.Modules
         {
             return Task.CompletedTask;
         }
+
+        public virtual Task RemovingAsync() => Task.CompletedTask;
     }
 }

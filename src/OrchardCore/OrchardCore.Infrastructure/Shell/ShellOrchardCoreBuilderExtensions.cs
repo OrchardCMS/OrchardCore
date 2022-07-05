@@ -3,6 +3,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Data.Descriptors;
 using OrchardCore.Environment.Shell.Descriptor;
+using OrchardCore.Environment.Shell.Removing;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -14,7 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddDataStorage(this OrchardCoreBuilder builder)
         {
-            builder.ApplicationServices.AddSingleton<IShellDbTablesManager, ShellDbTablesManager>();
+            builder.ApplicationServices.AddSingleton<IShellRemovingHandler, ShellDbTablesRemovingHandler>();
 
             builder.AddSitesFolder()
                 .ConfigureServices(services =>

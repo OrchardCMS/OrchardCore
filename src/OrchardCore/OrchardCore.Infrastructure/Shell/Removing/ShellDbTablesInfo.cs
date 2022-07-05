@@ -8,11 +8,27 @@ using YesSql.Services;
 using YesSql.Sql;
 using YesSql.Sql.Schema;
 
-namespace OrchardCore.Environment.Shell;
+namespace OrchardCore.Environment.Shell.Removing;
 
-internal class ShellDbTablesInfo : ShellDbTablesResult, ISchemaBuilder
+internal class ShellDbTablesInfo : ISchemaBuilder
 {
     private ICommandInterpreter _commandInterpreter;
+
+    public string TenantName { get; set; }
+    public string TenantTablePrefix { get; set; }
+    public string DatabaseProvider { get; set; }
+    public string TablePrefix { get; set; }
+    public IEnumerable<string> TableNames { get; set; } = Enumerable.Empty<string>();
+    public bool Success => Error == null;
+
+    private string _message;
+    public string Message
+    {
+        get => _message + " " + Error.GetType().Name + ": " + Error.Message;
+        set => _message = value;
+    }
+
+    public Exception Error { get; set; }
 
     public ISqlDialect Dialect { get; private set; }
     public ITableNameConvention TableNameConvention { get; private set; }
@@ -29,6 +45,13 @@ internal class ShellDbTablesInfo : ShellDbTablesResult, ISchemaBuilder
     public HashSet<string> BridgeTables { get; private set; } = new HashSet<string>();
     public HashSet<string> DocumentTables { get; private set; } = new HashSet<string>();
     public HashSet<string> Tables { get; private set; } = new HashSet<string>();
+
+    public ShellDbTablesInfo Configure(string tenant)
+    {
+        TenantName = tenant;
+
+        return this;
+    }
 
     public ShellDbTablesInfo Configure(ShellSettings shellSettings)
     {
@@ -54,13 +77,6 @@ internal class ShellDbTablesInfo : ShellDbTablesResult, ISchemaBuilder
         Transaction = transaction;
         Connection = transaction.Connection;
         ThrowOnError = throwOnError;
-
-        return this;
-    }
-
-    public ShellDbTablesResult GetResult()
-    {
-        TableNames = GetTableNames();
 
         return this;
     }
