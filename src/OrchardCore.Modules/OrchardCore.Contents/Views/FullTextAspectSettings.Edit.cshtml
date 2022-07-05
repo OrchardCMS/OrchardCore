@@ -32,7 +32,7 @@
         <span class="hint dashed">@T["Check to define a custom Liquid template generating some text to include in the full-text content."]</span>
     </div>
 
-    <div id="fulltext-template" class="collapse">
+    <div id="fulltext-template" class="collapse@(Model.IncludeFullTextTemplate ? " show": "")">
         <div class="mb-3 row">
             <div class="col">
                 <textarea asp-for="FullTextTemplate" type="text" class="form-control"></textarea>
@@ -42,7 +42,7 @@
     </div>
 </div>
 <script at="Foot" depends-on="jquery">
-    $(function () {
+    $(function() {
         editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.FullTextTemplate)'), {
             autoRefresh: true,
             lineNumbers: true,

@@ -266,7 +266,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("codemirror-addon-edit-closetag")
-                .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/addon/edit/closetag.min.js", "~/OrchardCore.Resources/Scripts/codemirror/addon/display/closetag.js")
+                .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/addon/edit/closetag.min.js", "~/OrchardCore.Resources/Scripts/codemirror/addon/edit/closetag.js")
                 .SetCdn(codeMirrorUrl + "addon/edit/closetag.min.js", codeMirrorUrl + "addon/edit/closetag.js")
                 .SetCdnIntegrity("sha512-XYx5xhl4B5vKNlaRBWh/nlti0+IPM6eT+dSFc3/oc4rERn2DpwbS3q4OblprqqBLXyRSVePKmf+8mHkDLtGZpg==", "sha512-Kv1H9hpQfUDlEjSqGTqCJCZToL0hcAq042y91qSAyQNbaTvNBbsG3j/tMSrTZT8XVxdWsrXBuhSe7qBLELKLxA==")
                 .SetVersion(codeMirrorVersion);
