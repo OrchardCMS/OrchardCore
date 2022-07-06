@@ -10,5 +10,5 @@ public interface IShellRemovingManager
     /// <summary>
     /// Removes the provided tenant.
     /// </summary>
-    Task<ShellRemovingResult> RemoveAsync(string tenant);
+    Task<ShellRemovingContext> RemoveAsync(string tenant);
 }

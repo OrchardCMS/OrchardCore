@@ -70,8 +70,8 @@
             var shellRemovingManager = scope.ServiceProvider.GetRequiredService<IShellRemovingManager>();
 
             var tenant = "Tenant1";
-            var result = await shellRemovingManager.RemoveAsync(tenant);
-            if (result.Success)
+            var context = await shellRemovingManager.RemoveAsync(tenant);
+            if (context.Success)
             {
                 await DistributedCache.SetStringAsync(
                     "TestingSuccessMessage",
@@ -81,7 +81,7 @@
             {
                 await DistributedCache.SetStringAsync(
                     "TestingErrorMessage",
-                    $"Failed to remove the tenant '{tenant}': " + result.ErrorMessage);
+                    $"Failed to remove the tenant '{tenant}': " + context.ErrorMessage);
             }
         });
 

@@ -19,30 +19,11 @@ public class SiteFolderRemovingHandler : IShellRemovingHandler
         _logger = logger;
     }
 
-    public Task<ShellRemovingResult> RemovingAsync(string tenant)
+    public Task RemovingAsync(ShellRemovingContext context)
     {
-        var shellRemovingResult = new ShellRemovingResult
-        {
-            TenantName = tenant,
-        };
-
-        string message = null;
-        if (tenant == ShellHelper.DefaultShellName)
-        {
-            message = "The tenant should not be the 'Default' tenant.";
-        }
-
-        if (message != null)
-        {
-            var ex = new InvalidOperationException(message);
-            _logger.LogError(ex, "Failed to remove the site folder while removing the tenant '{TenantName}'.", tenant);
-            shellRemovingResult.ErrorMessage = message;
-            return Task.FromResult(shellRemovingResult);
-        }
-
         var tenantFolder = Path.Combine(
             _shellOptions.ShellsApplicationDataPath,
-            _shellOptions.ShellsContainerName, tenant);
+            _shellOptions.ShellsContainerName, context.TenantName);
 
         try
         {
@@ -57,11 +38,11 @@ public class SiteFolderRemovingHandler : IShellRemovingHandler
                 ex,
                 "Failed to remove the site folder '{tenantFolder}' of tenant '{TenantName}'.",
                 tenantFolder,
-                tenant);
+                context.TenantName);
 
-            shellRemovingResult.ErrorMessage = $"Failed to remove the site folder '{tenantFolder}'.";
+            context.ErrorMessage = $"Failed to remove the site folder '{tenantFolder}'.";
         }
 
-        return Task.FromResult(shellRemovingResult);
+        return Task.CompletedTask;
     }
 }

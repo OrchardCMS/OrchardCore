@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using OrchardCore.Environment.Shell.Removing;
 
 namespace OrchardCore.Modules
 {
@@ -8,7 +9,7 @@ namespace OrchardCore.Modules
         Task ActivatedAsync();
         Task TerminatingAsync();
         Task TerminatedAsync();
-        Task RemovingAsync();
+        Task RemovingAsync(ShellRemovingContext context);
     }
 
     public class ModularTenantEvents : IModularTenantEvents
@@ -33,6 +34,6 @@ namespace OrchardCore.Modules
             return Task.CompletedTask;
         }
 
-        public virtual Task RemovingAsync() => Task.CompletedTask;
+        public virtual Task RemovingAsync(ShellRemovingContext context) => Task.CompletedTask;
     }
 }

@@ -29,30 +29,25 @@ public class ShellRemovingManager : IShellRemovingManager
         _logger = logger;
     }
 
-    public async Task<ShellRemovingResult> RemoveAsync(string tenant)
+    public async Task<ShellRemovingContext> RemoveAsync(string tenant)
     {
-        string errorMessage = null;
+        var context = new ShellRemovingContext(tenant);
         if (!_shellHost.TryGetSettings(tenant, out var shellSettings))
         {
-            errorMessage = $"The tenant '{tenant}' doesn't exist.";
-        }
-        else if (shellSettings.Name == ShellHelper.DefaultShellName)
-        {
-            errorMessage = "The tenant should not be the 'Default' tenant.";
-        }
-        else if (shellSettings.State != TenantState.Disabled)
-        {
-            errorMessage = $"The tenant '{tenant}' should be 'Disabled'.";
+            context.ErrorMessage = $"The tenant '{tenant}' doesn't exist.";
+            return context;
         }
 
-        var shellRemovingResult = new ShellRemovingResult { TenantName = tenant };
-        if (errorMessage != null)
+        if (shellSettings.Name == ShellHelper.DefaultShellName)
         {
-            var ex = new InvalidOperationException(errorMessage);
-            _logger.LogError(ex, "Failed to remove the tenant '{TenantName}'.", tenant);
-            shellRemovingResult.ErrorMessage = errorMessage;
+            context.ErrorMessage = "The tenant should not be the 'Default' tenant.";
+            return context;
+        }
 
-            return shellRemovingResult;
+        if (shellSettings.State != TenantState.Disabled)
+        {
+            context.ErrorMessage = $"The tenant '{tenant}' should be 'Disabled'.";
+            return context;
         }
 
         // Create a shell context composed of all features that have been installed.
@@ -65,7 +60,11 @@ public class ShellRemovingManager : IShellRemovingManager
             {
                 try
                 {
-                    await handler.RemovingAsync();
+                    await handler.RemovingAsync(context);
+                    if (!context.Success)
+                    {
+                        break;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -77,21 +76,21 @@ public class ShellRemovingManager : IShellRemovingManager
                         type,
                         tenant);
 
-                    shellRemovingResult.ErrorMessage = $"Failed to execute the tenant handler '{type}'.";
+                    context.ErrorMessage = $"Failed to execute the tenant handler '{type}'.";
 
                     break;
                 }
             }
         });
 
+        // Executes host level removing handlers in a reverse order.
         foreach (var handler in _hostHandlers.Reverse())
         {
             try
             {
-                var result = await handler.RemovingAsync(tenant);
-                if (!result.Success)
+                await handler.RemovingAsync(context);
+                if (!context.Success)
                 {
-                    shellRemovingResult.ErrorMessage = result.ErrorMessage;
                     break;
                 }
             }
@@ -105,12 +104,12 @@ public class ShellRemovingManager : IShellRemovingManager
                     type,
                     tenant);
 
-                shellRemovingResult.ErrorMessage = $"Failed to execute the host handler '{type}'.";
+                context.ErrorMessage = $"Failed to execute the host handler '{type}'.";
 
                 break;
             }
         }
 
-        return shellRemovingResult;
+        return context;
     }
 }

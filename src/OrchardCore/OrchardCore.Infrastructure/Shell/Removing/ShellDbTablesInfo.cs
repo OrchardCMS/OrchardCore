@@ -19,16 +19,8 @@ internal class ShellDbTablesInfo : ISchemaBuilder
     public string DatabaseProvider { get; set; }
     public string TablePrefix { get; set; }
     public IEnumerable<string> TableNames { get; set; } = Enumerable.Empty<string>();
-    public bool Success => Error == null;
-
-    private string _message;
-    public string Message
-    {
-        get => _message + " " + Error.GetType().Name + ": " + Error.Message;
-        set => _message = value;
-    }
-
-    public Exception Error { get; set; }
+    public bool Success => ErrorMessage == null;
+    public string ErrorMessage { get; set; }
 
     public ISqlDialect Dialect { get; private set; }
     public ITableNameConvention TableNameConvention { get; private set; }
