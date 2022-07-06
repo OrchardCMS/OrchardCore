@@ -113,7 +113,7 @@ namespace OrchardCore.Roles.Controllers
                 if (result.Succeeded)
                 {
                     await _notifier.SuccessAsync(H["Role created successfully."]);
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Edit), new { id = role.RoleName });
                 }
 
                 await _documentStore.CancelAsync();
