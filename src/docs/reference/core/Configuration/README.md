@@ -12,9 +12,9 @@ Note that while this documentation page explains configuration happening in the 
 Orchard Core supports a hierarchy of Configuration Sources
 
 * The `Startup` ASP.NET Core Project, e.g. `OrchardCore.Cms.Web.csproj`, `appsettings.json`, or by environment  `appsettings.Development.json`.
+* Environment Variables, or AppSettings as Environment Variables via Azure.
 * Global Tenant Configuration `App_Data/appsettings.json`, or by environment `App_Data/appsettings.Development.json`.
 * Individual Tenant Configuration files located under each Tenant Folder in the `App_Data/Sites/{tenant_name}/appsettings.json` folder. **Note:** These are mutable files, and do not support an Environment version.
-* Environment Variables, or AppSettings as Environment Variables via Azure.
 
 The Configuration Sources are loaded in the above order, and settings lower in the hierarchy will override values configured higher up, i.e. an Global Tenant value will always be overridden by an Environment Variable.
 
