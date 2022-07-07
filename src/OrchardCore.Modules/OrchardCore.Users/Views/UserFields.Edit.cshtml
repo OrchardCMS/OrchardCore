@@ -25,7 +25,7 @@
     <div class="mb-1">
         <label asp-for="Password">@T["Password"]</label>
         <div class="input-group col-md-4">
-            <span class="input-group-text"><span class="fas fa-eye prefix" id="passwordToggle"></span></span>
+            <span class="input-group-text" id="passwordToggle"><span class="toggle-icon fas fa-eye prefix"></span></span>
             <input asp-for="Password" type="password" class="form-control" placeholder="@T["Password"]" />
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
@@ -34,7 +34,7 @@
     <div class="mb-3">
         <label asp-for="PasswordConfirmation" class="sr-only">@T["Password Confirmation"]</label>
         <div class="input-group col-md-4">
-            <span class="input-group-text"><span class="fas fa-eye prefix" id="passwordConfirmationToggle"></span></span>
+            <span class="input-group-text" id="passwordConfirmationToggle"><span class="toggle-icon fas fa-eye prefix"></span></span>
             <input asp-for="PasswordConfirmation" type="password" class="form-control" placeholder="@T["Password confirmation"]" />
             <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
         </div>
@@ -64,7 +64,7 @@
                 element.classList.add('fa-eye');
             }
             function toggleFieldType(element) {
-                if(element.type == 'password') {
+                if (element.type == 'password') {
                     element.type = 'text';
 
                     return;
@@ -88,8 +88,8 @@
             function togglePasswordFieldState() {
                 toggleFieldType(password);
                 toggleFieldType(passwordConfirmation);
-                toggetIcons(passwordToggle);
-                toggetIcons(passwordConfirmationToggle);
+                toggetIcons(passwordToggle.querySelector('.toggle-icon'));
+                toggetIcons(passwordConfirmationToggle.querySelector('.toggle-icon'));
             }
             generate.addEventListener('click', function() {
                 var newPassword = generatePassword();
@@ -104,4 +104,4 @@
         });
     </script>
 }
-    
+
