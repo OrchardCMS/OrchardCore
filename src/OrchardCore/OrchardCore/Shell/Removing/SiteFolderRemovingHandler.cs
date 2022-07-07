@@ -23,7 +23,7 @@ public class SiteFolderRemovingHandler : IShellRemovingHandler
     {
         var tenantFolder = Path.Combine(
             _shellOptions.ShellsApplicationDataPath,
-            _shellOptions.ShellsContainerName, context.TenantName);
+            _shellOptions.ShellsContainerName, context.ShellSettings.Name);
 
         try
         {
@@ -38,7 +38,7 @@ public class SiteFolderRemovingHandler : IShellRemovingHandler
                 ex,
                 "Failed to remove the site folder '{tenantFolder}' of tenant '{TenantName}'.",
                 tenantFolder,
-                context.TenantName);
+                context.ShellSettings.Name);
 
             context.ErrorMessage = $"Failed to remove the site folder '{tenantFolder}'.";
         }

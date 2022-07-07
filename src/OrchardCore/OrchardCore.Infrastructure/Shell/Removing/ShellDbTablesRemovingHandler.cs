@@ -16,16 +16,13 @@ namespace OrchardCore.Environment.Shell.Removing;
 /// </summary>
 public class ShellDbTablesRemovingHandler : IShellRemovingHandler
 {
-    private readonly IShellHost _shellHost;
     private readonly IShellContextFactory _shellContextFactory;
     private readonly ILogger _logger;
 
     public ShellDbTablesRemovingHandler(
-        IShellHost shellHost,
         IShellContextFactory shellContextFactory,
         ILogger<ShellDbTablesRemovingHandler> logger)
     {
-        _shellHost = shellHost;
         _shellContextFactory = shellContextFactory;
         _logger = logger;
     }
@@ -35,12 +32,6 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
     /// </summary>
     public async Task RemovingAsync(ShellRemovingContext context)
     {
-        if (!_shellHost.TryGetSettings(context.TenantName, out var shellSettings))
-        {
-            context.ErrorMessage = $"The tenant '{context.TenantName}' doesn't exist.";
-            return;
-        }
-
         var shellDbTablesInfo = await GetTablesAsync(context);
         if (!context.Success)
         {
@@ -50,7 +41,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         try
         {
             // Create a minimum shell context without any features.
-            using var shellContext = await _shellContextFactory.CreateMinimumContextAsync(shellSettings);
+            using var shellContext = await _shellContextFactory.CreateMinimumContextAsync(context.ShellSettings);
             var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
 
             using var connection = store.Configuration.ConnectionFactory.CreateConnection();
@@ -74,8 +65,8 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to remove the tables of tenant '{TenantName}'.", context.TenantName);
-            context.ErrorMessage = $"Failed to remove the tables of tenant '{context.TenantName}'.";
+            _logger.LogError(ex, "Failed to remove the tables of tenant '{TenantName}'.", context.ShellSettings.Name);
+            context.ErrorMessage = $"Failed to remove the tables.";
         }
     }
 
@@ -84,17 +75,10 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
     /// </summary>
     private async Task<ShellDbTablesInfo> GetTablesAsync(ShellRemovingContext context)
     {
-        var shellDbTablesInfo = new ShellDbTablesInfo().Configure(context.TenantName);
-        if (!_shellHost.TryGetSettings(context.TenantName, out var shellSettings))
-        {
-            context.ErrorMessage = $"The tenant '{context.TenantName}' doesn't exist.";
-            return shellDbTablesInfo;
-        }
-
-        shellDbTablesInfo.Configure(shellSettings);
+        var shellDbTablesInfo = new ShellDbTablesInfo().Configure(context.ShellSettings);
 
         // Create a shell context composed of all features that have been installed.
-        using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
+        using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(context.ShellSettings);
         await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
         {
             var store = scope.ServiceProvider.GetRequiredService<IStore>();
@@ -122,7 +106,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
                         "Failed to replay the migration '{MigrationType}' from version '{Version}' on tenant '{TenantName}'.",
                         type,
                         version,
-                        context.TenantName);
+                        context.ShellSettings.Name);
 
                     context.ErrorMessage = $"Failed to replay the migration '{type}' from version '{version}'";
 

@@ -31,16 +31,18 @@ public class ShellRemovingManager : IShellRemovingManager
 
     public async Task<ShellRemovingContext> RemoveAsync(string tenant)
     {
-        var context = new ShellRemovingContext(tenant);
+        var context = new ShellRemovingContext();
         if (!_shellHost.TryGetSettings(tenant, out var shellSettings))
         {
             context.ErrorMessage = $"The tenant '{tenant}' doesn't exist.";
             return context;
         }
 
+        context.ShellSettings = shellSettings;
+
         if (shellSettings.Name == ShellHelper.DefaultShellName)
         {
-            context.ErrorMessage = "The tenant should not be the 'Default' tenant.";
+            context.ErrorMessage = $"The tenant should not be the '{ShellHelper.DefaultShellName}' tenant.";
             return context;
         }
 

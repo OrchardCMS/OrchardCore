@@ -14,8 +14,6 @@ internal class ShellDbTablesInfo : ISchemaBuilder
 {
     private ICommandInterpreter _commandInterpreter;
 
-    public string TenantName { get; set; }
-    public string TenantTablePrefix { get; set; }
     public string DatabaseProvider { get; set; }
     public string TablePrefix { get; set; }
     public IEnumerable<string> TableNames { get; set; } = Enumerable.Empty<string>();
@@ -35,17 +33,8 @@ internal class ShellDbTablesInfo : ISchemaBuilder
     public HashSet<string> DocumentTables { get; private set; } = new HashSet<string>();
     public HashSet<string> Tables { get; private set; } = new HashSet<string>();
 
-    public ShellDbTablesInfo Configure(string tenant)
-    {
-        TenantName = tenant;
-
-        return this;
-    }
-
     public ShellDbTablesInfo Configure(ShellSettings shellSettings)
     {
-        TenantName = shellSettings.Name;
-        TenantTablePrefix = shellSettings["TablePrefix"];
         DatabaseProvider = shellSettings["DatabaseProvider"];
 
         return this;

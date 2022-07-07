@@ -21,23 +21,18 @@ public class ShellSettingsRemovingHandler : IShellRemovingHandler
 
     public async Task RemovingAsync(ShellRemovingContext context)
     {
-        if (!_shellHost.TryGetSettings(context.TenantName, out var shellSettings))
-        {
-            context.ErrorMessage = $"The tenant '{context.TenantName}' doesn't exist.";
-        }
-
         try
         {
-            await _shellHost.RemoveShellSettingsAsync(shellSettings);
+            await _shellHost.RemoveShellSettingsAsync(context.ShellSettings);
         }
         catch (Exception ex)
         {
             _logger.LogError(
                 ex,
                 "Failed to remove the shell settings of tenant '{TenantName}'.",
-                context.TenantName);
+                context.ShellSettings.Name);
 
-            context.ErrorMessage = $"Failed to remove the shell settings of tenant '{context.TenantName}'.";
+            context.ErrorMessage = $"Failed to remove the shell settings of tenant.";
         }
     }
 }
