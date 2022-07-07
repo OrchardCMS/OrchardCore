@@ -24,7 +24,7 @@ namespace OrchardCore.Queries.Sql
             builder
                 .Add(S["Search"], search => search
                     .Add(S["Queries"], S["Queries"].PrefixPosition(), queries => queries
-                        .Add(S["Run SQL query"], S["Run SQL query"].PrefixPosition(), sql => sql
+                        .Add(S["Run SQL Query"], S["Run SQL Query"].PrefixPosition(), sql => sql
                             .Action("Query", "Admin", new { area = "OrchardCore.Queries" })
                             .Permission(Permissions.ManageSqlQueries)
                             .LocalNav()

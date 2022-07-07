@@ -25,7 +25,7 @@ namespace OrchardCore.Facebook
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Facebook app"], S["Facebook app"].PrefixPosition(), app => app
+                        .Add(S["Facebook App"], S["Facebook App"].PrefixPosition(), app => app
                             .AddClass("facebookApp").Id("facebookApp")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Core })
                             .Permission(Permissions.ManageFacebookApp)

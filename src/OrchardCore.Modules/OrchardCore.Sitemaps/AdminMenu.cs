@@ -29,11 +29,11 @@ namespace OrchardCore.Sitemaps
                             .Action("List", "Admin", new { area = "OrchardCore.Sitemaps" })
                             .LocalNav()
                         )
-                        .Add(S["Sitemap indexes"], S["Sitemap indexes"].PrefixPosition("2"), sitemaps => sitemaps
+                        .Add(S["Sitemap Indexes"], S["Sitemap Indexes"].PrefixPosition("2"), sitemaps => sitemaps
                             .Action("List", "SitemapIndex", new { area = "OrchardCore.Sitemaps" })
                             .LocalNav()
                         )
-                        .Add(S["Sitemaps cache"], S["Sitemaps cache"].PrefixPosition("3"), sitemaps => sitemaps
+                        .Add(S["Sitemaps Cache"], S["Sitemaps Cache"].PrefixPosition("3"), sitemaps => sitemaps
                             .Action("List", "SitemapCache", new { area = "OrchardCore.Sitemaps" })
                             .LocalNav()
                         )
