@@ -38,12 +38,12 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         if (!_shellHost.TryGetSettings(context.TenantName, out var shellSettings))
         {
             context.ErrorMessage = $"The tenant '{context.TenantName}' doesn't exist.";
+            return;
         }
 
-        var shellDbTablesInfo = await GetTablesAsync(context.TenantName);
-        if (!shellDbTablesInfo.Success)
+        var shellDbTablesInfo = await GetTablesAsync(context);
+        if (!context.Success)
         {
-            context.ErrorMessage = shellDbTablesInfo.ErrorMessage;
             return;
         }
 
@@ -75,24 +75,19 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to remove the tables of tenant '{TenantName}'.", context.TenantName);
-            shellDbTablesInfo.ErrorMessage = $"Failed to remove the tables of tenant '{context.TenantName}'.";
-        }
-
-        if (!shellDbTablesInfo.Success)
-        {
-            context.ErrorMessage = shellDbTablesInfo.ErrorMessage;
+            context.ErrorMessage = $"Failed to remove the tables of tenant '{context.TenantName}'.";
         }
     }
 
     /// <summary>
     /// Gets the database tables retrieved from the migrations of the provided tenant.
     /// </summary>
-    private async Task<ShellDbTablesInfo> GetTablesAsync(string tenant)
+    private async Task<ShellDbTablesInfo> GetTablesAsync(ShellRemovingContext context)
     {
-        var shellDbTablesInfo = new ShellDbTablesInfo().Configure(tenant);
-        if (!_shellHost.TryGetSettings(tenant, out var shellSettings))
+        var shellDbTablesInfo = new ShellDbTablesInfo().Configure(context.TenantName);
+        if (!_shellHost.TryGetSettings(context.TenantName, out var shellSettings))
         {
-            shellDbTablesInfo.ErrorMessage = $"The tenant '{tenant}' doesn't exist.";
+            context.ErrorMessage = $"The tenant '{context.TenantName}' doesn't exist.";
             return shellDbTablesInfo;
         }
 
@@ -127,9 +122,9 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
                         "Failed to replay the migration '{MigrationType}' from version '{Version}' on tenant '{TenantName}'.",
                         type,
                         version,
-                        tenant);
+                        context.TenantName);
 
-                    shellDbTablesInfo.ErrorMessage = $"Failed to replay the migration '{type}' from version '{version}'";
+                    context.ErrorMessage = $"Failed to replay the migration '{type}' from version '{version}'";
 
                     break;
                 }
