@@ -9,7 +9,7 @@
 }
 
 <div class="widget widget-editor card my-1 @(Model.Inline != true ? "collapsed" : "")">
-    <div class="widget-editor-header card-header text-muted  py-1 pl-3 pr-1">
+    <div class="widget-editor-header card-header text-muted py-1 ps-3 pe-1">
         @if (Model.CanMove != false)
         {
             <div class="widget-editor-handle"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div>
@@ -21,13 +21,13 @@
             <div class="btn-group">
                 @if (Model.CanInsert != false)
                 {
-                    <button type="button" title="@T["Insert Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" title="@T["Insert Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-plus" aria-hidden="true"></i>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-right">
+                    <ul class="dropdown-menu dropdown-menu-end">
                         @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
                         {
-                            <a class="dropdown-item insert-list-widget btn-sm"
+                            <li><a class="dropdown-item insert-list-widget btn-sm"
                                data-target-id="@Model.TargetId"
                                data-html-field-prefix="@Model.HtmlFieldPrefix"
                                data-prefixes-name="@Model.PrefixesName"
@@ -38,14 +38,14 @@
                                data-parent-content-type="@Model.ParentContentType"
                                data-part-name="@Model.CollectionPartName"
                                data-zone="@Model.ZoneValue"
-                               href="javascript:;">@type.DisplayName</a>
+                               href="javascript:;">@type.DisplayName</a></li>
                         }
-                    </div>
+                    </ul>
                 }
             </div>
         </div>
 
-        <div class="btn-group btn-group-sm float-sm-right" role="group">
+        <div class="btn-group btn-group-sm float-sm-end" role="group">
             @if (Model.CanDelete != false)
             {
                 <button type="button" class="btn btn-danger widget-list-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>

@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing.SQL
@@ -27,7 +27,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
     public class LinkFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
+        private readonly HashSet<string> _ignoredTypes = new();
         private IContentDefinitionManager _contentDefinitionManager;
 
         public LinkFieldIndexProvider(IServiceProvider serviceProvider)
@@ -81,43 +81,23 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                         return null;
                     }
 
-                    var results = new List<LinkFieldIndex>();
-
-                    foreach (var fieldDefinition in fieldDefinitions)
-                    {
-                        var jPart = (JObject)contentItem.Content[fieldDefinition.PartDefinition.Name];
-
-                        if (jPart == null)
-                        {
-                            continue;
-                        }
-
-                        var jField = (JObject)jPart[fieldDefinition.Name];
-
-                        if (jField == null)
-                        {
-                            continue;
-                        }
-
-                        var field = jField.ToObject<LinkField>();
-
-                        results.Add(new LinkFieldIndex
-                        {
-                            Latest = contentItem.Latest,
-                            Published = contentItem.Published,
-                            ContentItemId = contentItem.ContentItemId,
-                            ContentItemVersionId = contentItem.ContentItemVersionId,
-                            ContentType = contentItem.ContentType,
-                            ContentPart = fieldDefinition.PartDefinition.Name,
-                            ContentField = fieldDefinition.Name,
-                            Url = field.Url?.Substring(0, Math.Min(field.Url.Length, LinkFieldIndex.MaxUrlSize)),
-                            BigUrl = field.Url,
-                            Text = field.Text?.Substring(0, Math.Min(field.Text.Length, LinkFieldIndex.MaxTextSize)),
-                            BigText = field.Text
-                        });
-                    }
-
-                    return results;
+                    return fieldDefinitions
+                        .GetContentFields<LinkField>(contentItem)
+                        .Select(pair =>
+                            new LinkFieldIndex
+                            {
+                                Latest = contentItem.Latest,
+                                Published = contentItem.Published,
+                                ContentItemId = contentItem.ContentItemId,
+                                ContentItemVersionId = contentItem.ContentItemVersionId,
+                                ContentType = contentItem.ContentType,
+                                ContentPart = pair.Definition.PartDefinition.Name,
+                                ContentField = pair.Definition.Name,
+                                Url = pair.Field.Url?[..Math.Min(pair.Field.Url.Length, LinkFieldIndex.MaxUrlSize)],
+                                BigUrl = pair.Field.Url,
+                                Text = pair.Field.Text?[..Math.Min(pair.Field.Text.Length, LinkFieldIndex.MaxTextSize)],
+                                BigText = pair.Field.Text,
+                            });
                 });
         }
     }

@@ -175,7 +175,6 @@ namespace OrchardCore.OpenId
             {
                 ServiceDescriptor.Scoped<IRoleRemovedEventHandler, OpenIdApplicationRoleRemovedEventHandler>(),
                 ServiceDescriptor.Scoped<IDisplayDriver<OpenIdServerSettings>, OpenIdServerSettingsDisplayDriver>(),
-                ServiceDescriptor.Scoped<IDisplayManager<OpenIdServerSettings>, DisplayManager<OpenIdServerSettings>>(),
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdServerSettingsStep>(),
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdApplicationStep>(),
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdScopeStep>(),
@@ -303,7 +302,6 @@ namespace OrchardCore.OpenId
             services.TryAddEnumerable(new[]
             {
                 ServiceDescriptor.Scoped<IDisplayDriver<OpenIdValidationSettings>, OpenIdValidationSettingsDisplayDriver>(),
-                ServiceDescriptor.Scoped<IDisplayManager<OpenIdValidationSettings>, DisplayManager<OpenIdValidationSettings>>(),
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdValidationSettingsStep>()
             });
 

@@ -215,7 +215,6 @@ namespace OrchardCore.Users
 
             services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
 
-            services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserRoleDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserInformationDisplayDriver>();
@@ -227,7 +226,6 @@ namespace OrchardCore.Users
 
             services.AddScoped<IUsersAdminListQueryService, DefaultUsersAdminListQueryService>();
 
-            services.AddScoped<IDisplayManager<UserIndexOptions>, DisplayManager<UserIndexOptions>>();
             services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
 
             services.AddSingleton<IUsersAdminListFilterParser>(sp =>
@@ -246,6 +244,7 @@ namespace OrchardCore.Users
 
             services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
 
+            services.AddScoped<IUserEventHandler, UserDisabledEventHandler>();
         }
     }
 
