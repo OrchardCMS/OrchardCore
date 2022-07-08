@@ -1,0 +1,8 @@
+@model AuditTrailPartSettingsViewModel
+@using OrchardCore.Contents.AuditTrail.ViewModels
+
+<div class="form-check">
+    <input type="checkbox" asp-for="ShowCommentInput" class="form-check-input" checked="@Model.ShowCommentInput">
+    <label class="form-check-label" asp-for="ShowCommentInput">@T["Show comment"]</label>
+    <span class="hint dashed">@T["Whether the audit trail comment is shown while editing."]</span>
+</div>

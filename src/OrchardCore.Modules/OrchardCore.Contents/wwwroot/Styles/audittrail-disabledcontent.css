@@ -1,0 +1,6 @@
+.disabledContent__wrapper {
+  position: relative;
+}
+.disabledContent__wrapper .edit-item-secondary {
+  display: none;
+}

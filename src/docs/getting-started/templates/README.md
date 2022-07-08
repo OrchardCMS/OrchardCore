@@ -9,13 +9,13 @@ More information about `dotnet new` can be found at <https://docs.microsoft.com/
 Once the .NET Core SDK has been installed, type the following command to install the templates for creating Orchard Core web applications:
 
 ```CMD
-dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc2-*
+dotnet new -i OrchardCore.ProjectTemplates::1.4.0
 ```
 
-This will use the most stable release of Orchard Core. In order to use the latest `dev` branch of Orchard Core, the following command can be used:
+This will use the most stable release of Orchard Core. In order to use the latest `main` branch of Orchard Core, the following command can be used:
 
 ```CMD
-dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc2-* --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
+dotnet new -i OrchardCore.ProjectTemplates::1.4.0-* --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
 ```
 
 ## Create a new website
@@ -24,8 +24,11 @@ dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc2-* --nuget-source https://n
 
 #### Generate an Orchard Cms Web Application
 
+!!! warning
+    Due to a bug in the current published version, the following `dotnet new` commands will require the extra argument `--orchard-version 1.4.0`. For instance, instead of typing `dotnet new occms` use `dotnet new occms --orchard-version 1.4.0`
+
 ```CMD
-dotnet new occms  
+dotnet new occms
 ```
 
 The above command will use the default options.
@@ -44,7 +47,7 @@ Options:
 
   -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
                          string - Optional
-                         Default: 1.0.0-rc2
+                         Default: 1.4.0
 ```
 
 Logging can be ignored with this command:
@@ -78,7 +81,7 @@ Now that we created a new Web Application we need to add proper dependencies so 
 
 Finally, we will need to register Orchard CMS service in our `Startup.cs` file like this:
 
-```C#
+```csharp
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -137,7 +140,7 @@ Options:
 
   -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
                          string - Optional
-                         Default: 1.0.0-rc2
+                         Default: 1.4.0
 ```
 
 ```CMD
@@ -177,7 +180,7 @@ Once done, your new module will look like this:
 
 For Orchard Core to identify this module it will now require a `Manifest.cs` file. Here is an example of that file:
 
-```C#
+```csharp
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
@@ -209,7 +212,7 @@ dotnet new octheme -n "ThemeName.OrchardCore"
 
 Should be the same procedure as with modules but instead, we need to reference `OrchardCore.Theme.Targets` and the `Manifest.cs` file differs slightly:
 
-```C#
+```csharp
 using OrchardCore.DisplayManagement.Manifest;
 
 [assembly: Theme(

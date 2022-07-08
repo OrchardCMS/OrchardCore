@@ -8,19 +8,23 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
-using OrchardCore.Entities;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Controllers;
+using OrchardCore.Sitemaps.Deployment;
 using OrchardCore.Sitemaps.Drivers;
 using OrchardCore.Sitemaps.Handlers;
 using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Recipes;
 using OrchardCore.Sitemaps.Routing;
 using OrchardCore.Sitemaps.Services;
 
@@ -40,7 +44,6 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddIdGeneration();
 
             services.Configure<SitemapsOptions>(options =>
             {
@@ -57,15 +60,13 @@ namespace OrchardCore.Sitemaps
                 }
             });
 
+            services.AddSingleton<SitemapEntries>();
+            services.AddSingleton<ISitemapManager, SitemapManager>();
             services.AddSingleton<IShellRouteValuesAddressScheme, SitemapValuesAddressScheme>();
             services.AddSingleton<SitemapRouteTransformer>();
-            services.AddSingleton<SitemapEntries>();
 
             services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<ISitemapManager, SitemapManager>();
             services.AddScoped<ISitemapHelperService, SitemapHelperService>();
-            services.AddScoped<IDisplayManager<SitemapSource>, DisplayManager<SitemapSource>>();
             services.AddScoped<ISitemapBuilder, DefaultSitemapBuilder>();
             services.AddScoped<ISitemapTypeBuilder, SitemapTypeBuilder>();
             services.AddScoped<ISitemapCacheProvider, DefaultSitemapCacheProvider>();
@@ -80,6 +81,15 @@ namespace OrchardCore.Sitemaps
             services.AddContentPart<SitemapPart>()
                 .UseDisplayDriver<SitemapPartDisplayDriver>()
                 .AddHandler<SitemapPartHandler>();
+
+            // Custom sitemap path.
+            services.AddScoped<ISitemapSourceBuilder, CustomPathSitemapSourceBuilder>();
+            services.AddScoped<ISitemapSourceUpdateHandler, CustomPathSitemapSourceUpdateHandler>();
+            services.AddScoped<ISitemapSourceModifiedDateProvider, CustomPathSitemapSourceModifiedDateProvider>();
+            services.AddScoped<IDisplayDriver<SitemapSource>, CustomPathSitemapSourceDriver>();
+            services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<CustomPathSitemapSource>>();
+
+            services.AddRecipeExecutionStep<SitemapsStep>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -232,6 +242,17 @@ namespace OrchardCore.Sitemaps
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IBackgroundTask, SitemapCacheBackgroundTask>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Sitemaps")]
+    public class SitemapsDeployementStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, AllSitemapsDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllSitemapsDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllSitemapsDeploymentStepDriver>();
         }
     }
 }

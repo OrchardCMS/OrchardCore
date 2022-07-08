@@ -1,7 +1,9 @@
 using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -60,19 +62,17 @@ namespace OrchardCore.Contents.Handlers
 
                     if (bodyAspect != null && bodyAspect.Body != null)
                     {
-                        using (var sw = new StringWriter())
-                        {
-                            // Don't encode the body
-                            bodyAspect.Body.WriteTo(sw, NullHtmlEncoder.Default);
-                            fullTextAspect.Segments.Add(sw.ToString());
-                        }
+                        using var sw = new ZStringWriter();
+                        // Don't encode the body
+                        bodyAspect.Body.WriteTo(sw, NullHtmlEncoder.Default);
+                        fullTextAspect.Segments.Add(sw.ToString());
                     }
                 }
 
                 if (settings.IncludeFullTextTemplate && !String.IsNullOrEmpty(settings.FullTextTemplate))
                 {
-                    var result = await _liquidTemplateManager.RenderAsync(settings.FullTextTemplate, NullEncoder.Default, context.ContentItem,
-                        scope => scope.SetValue("ContentItem", context.ContentItem));
+                    var result = await _liquidTemplateManager.RenderStringAsync(settings.FullTextTemplate, NullEncoder.Default, context.ContentItem,
+                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(context.ContentItem) });
 
                     fullTextAspect.Segments.Add(result);
                 }

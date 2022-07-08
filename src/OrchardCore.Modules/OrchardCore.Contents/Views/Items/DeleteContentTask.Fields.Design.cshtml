@@ -1,7 +1,7 @@
 @model ContentTaskViewModel<DeleteContentTask>
 
 <header>
-    <h4><i class="fa fa-trash"></i>@Model.Activity.GetTitleOrDefault(() => T["Delete Content"])</h4>
+    <h4><i class="fa fa-trash" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Delete Content"])</h4>
 </header>
 @if (string.IsNullOrWhiteSpace(Model.Activity.Content?.Expression))
 {

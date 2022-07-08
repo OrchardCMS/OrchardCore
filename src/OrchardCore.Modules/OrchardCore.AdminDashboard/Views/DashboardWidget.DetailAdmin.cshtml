@@ -1,0 +1,36 @@
+<div class="card @String.Join(" ", Model.Classes.ToArray()) h-100">
+    @if (Model.Header != null || Model.Leading != null || Model.ActionsMenu != null)
+    {
+        <div class="card-header">
+            @await DisplayAsync(Model.Leading)
+            @await DisplayAsync(Model.Header)
+            @if(Model.ActionsMenu != null )
+            {
+                <div class="btn-group float-end" title="@T["Actions"]">
+                    <a type="button" class="btn btn-sm " data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                    </a>
+                    <div class="actions-menu dropdown-menu">
+                        @await DisplayAsync(Model.ActionsMenu)
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    @if (Model.Tags != null || Model.Meta != null)
+    {
+        <div class="dashboard-meta">
+            @await DisplayAsync(Model.Meta)
+            @await DisplayAsync(Model.Tags)
+        </div>
+    }
+    <div class="card-body">
+    @await DisplayAsync(Model.Content)
+    </div>
+    @if (Model.Footer != null)
+    {
+        <div class="card-footer">
+            @await DisplayAsync(Model.Footer)
+        </div>
+    }
+</div>

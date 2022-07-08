@@ -23,7 +23,19 @@ namespace OrchardCore.ContentManagement
         /// <returns>The content element instance or <code>null</code> if it doesn't exist.</returns>
         public static TElement Get<TElement>(this ContentElement contentElement, string name) where TElement : ContentElement
         {
-            return (TElement)contentElement.Get(typeof(TElement), name);
+            var result = contentElement.Get(typeof(TElement), name);
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            if (result is TElement te)
+            {
+                return te;
+            }
+
+            throw new InvalidCastException($"Failed casting content to '{typeof(TElement).Name}', check you have registered your content part with AddContentPart?");
         }
 
         /// <summary>
@@ -67,6 +79,18 @@ namespace OrchardCore.ContentManagement
         }
 
         /// <summary>
+        /// Removes a content element by its name.
+        /// </summary>
+        /// <param name="contentElement">The <see cref="ContentElement"/>.</param>
+        /// <param name="name">The name of the content element.</param>
+        /// <returns><see langword="True"/> is successfully found and removed; otherwise. <see langword="False"/> This method returns false if the name is not found.</returns>
+        public static bool Remove(this ContentElement contentElement, string name)
+        {
+            contentElement.Elements.Remove(name);
+            return contentElement.Data.Remove(name);
+        }
+
+        /// <summary>
         /// Gets a content element by its name or create a new one.
         /// </summary>
         /// <param name="contentElement">The <see cref="ContentElement"/>.</param>
@@ -100,7 +124,7 @@ namespace OrchardCore.ContentManagement
         {
             if (!contentElement.Data.ContainsKey(name))
             {
-                element.Data = JObject.FromObject(element, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+                element.Data = JObject.FromObject(element);
                 element.ContentItem = contentElement.ContentItem;
 
                 contentElement.Data[name] = element.Data;
@@ -158,7 +182,7 @@ namespace OrchardCore.ContentManagement
             }
             else
             {
-                elementData = JObject.FromObject(element, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+                elementData = JObject.FromObject(element);
                 contentElement.Data[name] = elementData;
             }
 
@@ -170,7 +194,7 @@ namespace OrchardCore.ContentManagement
 
             if (element is ContentField)
             {
-                contentElement.ContentItem.Elements.Clear();
+                contentElement.ContentItem?.Elements.Clear();
             }
 
             return contentElement;

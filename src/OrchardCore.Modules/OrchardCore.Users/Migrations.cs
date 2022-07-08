@@ -1,5 +1,7 @@
-using System.Threading.Tasks;
+using System;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using YesSql;
@@ -9,13 +11,6 @@ namespace OrchardCore.Users
 {
     public class Migrations : DataMigration
     {
-        private readonly ISession _session;
-
-        public Migrations(ISession session)
-        {
-            _session = session;
-        }
-
         // This is a sequenced migration. On a new schemas this is complete after UpdateFrom2.
         public int Create()
         {
@@ -23,24 +18,29 @@ namespace OrchardCore.Users
                 .Column<string>("NormalizedUserName") // TODO These should have defaults. on SQL Server they will fall at 255. Exceptions are currently thrown if you go over that.
                 .Column<string>("NormalizedEmail")
                 .Column<bool>("IsEnabled", c => c.NotNull().WithDefault(true))
+                .Column<bool>("IsLockoutEnabled", c => c.NotNull().WithDefault(false))
+                .Column<DateTime?>("LockoutEndUtc", c => c.Nullable())
+                .Column<int>("AccessFailedCount", c => c.NotNull().WithDefault(0))
                 .Column<string>("UserId")
             );
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .CreateIndex("IDX_UserIndex_IsEnabled", "DocumentId", "IsEnabled")
+                .CreateIndex("IDX_UserIndex_DocumentId",
+                    "DocumentId",
+                    "UserId",
+                    "NormalizedUserName",
+                    "NormalizedEmail",
+                    "IsEnabled"
+                    )
             );
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .CreateIndex("IDX_UserIndex_UserId", "DocumentId", "UserId")
-            );
-
-            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                // This index will be used for lookups when logging in.
-                .CreateIndex("IDX_UserIndex_UserName", "DocumentId", "NormalizedUserName")
-            );
-
-            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .CreateIndex("IDX_UserIndex_Email", "DocumentId", "NormalizedEmail")
+                .CreateIndex("IDX_UserIndex_Lockout",
+                    "DocumentId",
+                    "IsLockoutEnabled",
+                    "LockoutEndUtc",
+                    "AccessFailedCount"
+                    )
             );
 
             SchemaBuilder.CreateReduceIndexTable<UserByRoleNameIndex>(table => table
@@ -48,17 +48,49 @@ namespace OrchardCore.Users
                .Column<int>("Count")
             );
 
-            return UpdateFrom1();
+            SchemaBuilder.AlterIndexTable<UserByRoleNameIndex>(table => table
+                .CreateIndex("IDX_UserByRoleNameIndex_RoleName",
+                    "RoleName")
+            );
+
+            SchemaBuilder.CreateMapIndexTable<UserByLoginInfoIndex>(table => table
+                .Column<string>("LoginProvider")
+                .Column<string>("ProviderKey"));
+
+            SchemaBuilder.AlterIndexTable<UserByLoginInfoIndex>(table => table
+                .CreateIndex("IDX_UserByLoginInfoIndex_DocumentId",
+                    "DocumentId",
+                    "LoginProvider",
+                    "ProviderKey")
+            );
+
+            SchemaBuilder.CreateMapIndexTable<UserByClaimIndex>(table => table
+               .Column<string>(nameof(UserByClaimIndex.ClaimType))
+               .Column<string>(nameof(UserByClaimIndex.ClaimValue)),
+                null);
+
+            SchemaBuilder.AlterIndexTable<UserByClaimIndex>(table => table
+                .CreateIndex("IDX_UserByClaimIndex_DocumentId",
+                    "DocumentId",
+                    nameof(UserByClaimIndex.ClaimType),
+                    nameof(UserByClaimIndex.ClaimValue))
+            );
+
+            // Shortcut other migration steps on new content definition schemas.
+            return 12;
         }
 
+        // This code can be removed in a later version.
         public int UpdateFrom1()
         {
             SchemaBuilder.CreateMapIndexTable<UserByLoginInfoIndex>(table => table
                 .Column<string>("LoginProvider")
                 .Column<string>("ProviderKey"));
+
             return 2;
         }
 
+        // This code can be removed in a later version.
         public int UpdateFrom2()
         {
             SchemaBuilder.CreateMapIndexTable<UserByClaimIndex>(table => table
@@ -66,40 +98,24 @@ namespace OrchardCore.Users
                .Column<string>(nameof(UserByClaimIndex.ClaimValue)),
                 null);
 
-            // Return 8 here to skip migrations on new database schemas.
-            return 8;
+            return 3;
         }
 
+        // This code can be removed in a later version.
         public int UpdateFrom3()
         {
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .AddColumn<bool>(nameof(UserIndex.IsEnabled), c => c.NotNull().WithDefault(true)));
 
-            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .CreateIndex("IDX_UserIndex_IsEnabled", "IsEnabled")
-            );
-
             return 4;
         }
 
         // UserId database migration.
+        // This code can be removed in a later version.
         public int UpdateFrom4()
         {
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .AddColumn<string>("UserId"));
-
-            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .CreateIndex("IDX_UserIndex_UserId", "DocumentId", "UserId")
-            );
-
-            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                // This index will be used for lookups when logging in.
-                .CreateIndex("IDX_UserIndex_UserName", "DocumentId", "NormalizedUserName")
-            );
-
-            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .CreateIndex("IDX_UserIndex_Email", "DocumentId", "NormalizedEmail")
-            );
 
             return 5;
         }
@@ -107,37 +123,117 @@ namespace OrchardCore.Users
         // UserId column is added. This initializes the UserId property to the UserName for existing users.
         // The UserName property rather than the NormalizedUserName is used as the ContentItem.Owner property matches the UserName.
         // New users will be created with a generated Id.
-        public async Task<int> UpdateFrom5Async()
+        // This code can be removed in a later version.
+        public int UpdateFrom5()
         {
-            var users = await _session.Query<User>().ListAsync();
-            foreach(var user in users)
+            // Defer this until after the subsequent migrations have succeded as the schema has changed.
+            ShellScope.AddDeferredTask(async scope =>
             {
-                user.UserId = user.UserName;
-                _session.Save(user);
-            }
+                var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                var users = await session.Query<User>().ListAsync();
+                foreach (var user in users)
+                {
+                    user.UserId = user.UserName;
+                    session.Save(user);
+                }
+            });
 
-            // Return 7 to shortcut a buggy migration which has been removed.
-            return 7;
+            return 6;
         }
 
-        // This migration has been removed.
+        // This buggy migration has been removed.
+        // This code can be removed in a later version.
         public int UpdateFrom6()
         {
             return 7;
         }
 
         // Migrate any user names replacing '@' with '+' as user names can no longer be an email address.
-        public async Task<int> UpdateFrom7Async()
+        // This code can be removed in a later version.
+        public int UpdateFrom7()
         {
-            var users = await _session.Query<User, UserIndex>(u => u.NormalizedUserName.Contains("@")).ListAsync();
-            foreach(var user in users)
+            // Defer this until after the subsequent migrations have succeded as the schema has changed.
+            ShellScope.AddDeferredTask(async scope =>
             {
-                user.UserName = user.UserName.Replace('@', '+');
-                user.NormalizedUserName = user.NormalizedUserName.Replace('@', '+');
-                _session.Save(user);
-            }
+                var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                var users = await session.Query<User, UserIndex>(u => u.NormalizedUserName.Contains("@")).ListAsync();
+                foreach (var user in users)
+                {
+                    user.UserName = user.UserName.Replace('@', '+');
+                    user.NormalizedUserName = user.NormalizedUserName.Replace('@', '+');
+                    session.Save(user);
+                }
+            });
 
             return 8;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom8()
+        {
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
+                .CreateIndex("IDX_UserIndex_DocumentId",
+                    "DocumentId",
+                    "UserId",
+                    "NormalizedUserName",
+                    "NormalizedEmail",
+                    "IsEnabled")
+            );
+
+            SchemaBuilder.AlterIndexTable<UserByLoginInfoIndex>(table => table
+                .CreateIndex("IDX_UserByLoginInfoIndex_DocumentId",
+                    "DocumentId",
+                    "LoginProvider",
+                    "ProviderKey")
+            );
+
+            SchemaBuilder.AlterIndexTable<UserByClaimIndex>(table => table
+                .CreateIndex("IDX_UserByClaimIndex_DocumentId",
+                    "DocumentId",
+                    nameof(UserByClaimIndex.ClaimType),
+                    nameof(UserByClaimIndex.ClaimValue))
+            );
+
+            return 9;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom9()
+        {
+            SchemaBuilder.AlterIndexTable<UserByRoleNameIndex>(table => table
+                .CreateIndex("IDX_UserByRoleNameIndex_RoleName",
+                    "RoleName")
+            );
+
+            return 10;
+        }
+
+        public int UpdateFrom10()
+        {
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
+                .AddColumn<bool>(nameof(UserIndex.IsLockoutEnabled), c => c.NotNull().WithDefault(false)));
+
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
+                .AddColumn<DateTime?>(nameof(UserIndex.LockoutEndUtc), c => c.Nullable()));
+
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
+                .AddColumn<int>(nameof(UserIndex.AccessFailedCount), c => c.NotNull().WithDefault(0)));
+
+            return 11;
+        }
+
+        public int UpdateFrom11()
+        {
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
+                .CreateIndex("IDX_UserIndex_Lockout",
+                    "DocumentId",
+                    "IsLockoutEnabled",
+                    "LockoutEndUtc",
+                    "AccessFailedCount"
+                    )
+            );
+
+            return 12;
         }
     }
 }

@@ -32,6 +32,12 @@
                 foreColor: 'Textfarbe',
                 backColor: 'Hintergrundfarbe'
             },
+            et: {
+                foreColor: 'Teksti värv',
+                backColor: 'Taustavärv',
+                foreColorRemove: 'Eemalda teksti värv',
+                backColorRemove: 'Eemalda taustavärv'
+            },
             fr: {
                 foreColor: 'Couleur du texte',
                 backColor: 'Couleur de fond',
@@ -72,7 +78,9 @@
             },
             tr: {
                 foreColor: 'Yazı rengi',
-                backColor: 'Arkaplan rengi'
+                backColor: 'Arka plan rengi',
+                foreColorRemove: 'Yazı rengini kaldır',
+                backColorRemove: 'Arka plan rengini kaldır'
             },
             zh_cn: {
                 foreColor: '文字颜色',
@@ -98,7 +106,7 @@
         } else if (rgb === 'rgba(0, 0, 0, 0)') {
             return 'transparent';
         } else {
-            rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+))?\)$/);
+            rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
             return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
         }
     }

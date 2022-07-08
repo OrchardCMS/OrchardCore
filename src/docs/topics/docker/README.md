@@ -13,15 +13,15 @@ For Ubuntu/Linux users : https://docs.docker.com/engine/install/ubuntu/
 
 ## What you will build
 
-You will build Docker images and containers from command shell using `docker` and `docker-compose` commands. Images are built from Orchard Core source code targetting a specific OS. Then we can deploy "containers" from them. This allow you to see how Orchard Core respond in different environments or also deploy Orchard Core on a production server eventually.
+You will build Docker images and containers from command shell using `docker` and `docker-compose` commands. Images are built from Orchard Core source code targeting a specific OS. Then we can deploy "containers" from them. This allow you to see how Orchard Core respond in different environments or also deploy Orchard Core on a production server eventually.
 
 ## Dockerfile
 
-The Dockerfile that is provided in the Orchard Core source code is using an intermediate image to build Orchard Core in a specific environment which contains the .NET core SDK. Then we create the "real" image by using only the ASP.NET core runtime.
+The Dockerfile that is provided in the Orchard Core source code is using an intermediate image to build Orchard Core in a specific environment which contains the .NET SDK. Then we create the "real" image by using only the ASP.NET core runtime.
 
 ```dockerfile
 # Create an intermediate image using .NET Core SDK
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
 LABEL stage=build-env
 WORKDIR /app
 

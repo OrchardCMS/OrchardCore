@@ -16,5 +16,12 @@ namespace OrchardCore.OpenId.Settings
         public string ResponseType { get; set; }
         public string ResponseMode { get; set; }
         public bool StoreExternalTokens { get; set; }
+        public ParameterSetting[] Parameters { get; set; } = Array.Empty<ParameterSetting>();
+    }
+
+    public class ParameterSetting
+    {
+        public string Name { get; set; }
+        public string Value { get; set; }
     }
 }

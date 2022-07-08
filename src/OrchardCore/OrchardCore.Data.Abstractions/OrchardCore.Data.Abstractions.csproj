@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Data</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Data Abstractions</Title>
     <Description>$(OCCMSDescription)
-    
+
     Abstractions for data access functionality</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS Data Abstractions</PackageTags>
   </PropertyGroup>
@@ -16,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="YesSql.Core" />
+    <ProjectReference Include="..\OrchardCore.Queries.Abstractions\OrchardCore.Queries.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

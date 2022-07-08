@@ -11,7 +11,7 @@ Any module or theme can contain an optional `placement.json` file providing cust
 
 ### Format
 
-A `placement.json` file contains an object whose properties are shape names. Each of these properties is an array of placement rules.
+A `placement.json` file contains an object whose properties are shape types. Each of these properties is an array of placement rules.
 
 In the following example, we describe the placement for the `TextField` and `Parts_Contents_Publish` shapes.
 
@@ -29,9 +29,21 @@ A placement rule contains two sets of data:
 
 Currently you can filter shapes by:
 
-- Their original type, which is the property name of the placement rule, like `TextField`.
+- Their original type, which is the property name of the placement rule, like `TextField` or `ContentPart`.
 - `displayType` (Optional): The display type, like `Summary` and `Detail` for the most common ones.
 - `differentiator` (Optional): The differentiator which is used to distinguish shape types that are reused for multiple elements, like field names.
+
+!!! note
+    Shape type (placement.json property name) DOES NOT necessarily align with with your part type. For instance, if you created a Content Part `GalleryPart` without a part driver, your shape type will be `ContentPart` with differentiator `GalleryPart`. So your placement.json would look like
+```json
+{
+  "ContentPart": [{
+  "place":"SomeZone"
+  "differentiator":"GalleryPart"
+  }],
+  "GalleryPart": [{...}], //this wont work unless you registered a driver for the part
+}
+```
 
 Additional custom filter providers can be added by implementing `IPlacementNodeFilterProvider`.
 
@@ -134,7 +146,7 @@ Note: you need to add `@addTagHelper *, OrchardCore.Contents.TagHelpers` to your
 === "Liquid"
 
     ``` liquid
-    {% contentitem alias:"alias:main-menu" display_type="Detail" %}
+    {% contentitem alias: "alias:main-menu", display_type: "Detail" %}
     ```
 
 #### Manipulating shape metadata
@@ -310,4 +322,4 @@ We also specify that the `Content` column will take 9 columns, of the default 12
 
 ## Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/h0lZMQkUApo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/h0lZMQkUApo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -6,12 +6,12 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Twitter
 {
-    [Feature(TwitterConstants.Features.Twitter)]
-    public class AdminMenu : INavigationProvider
+    [Feature(TwitterConstants.Features.Signin)]
+    public class AdminMenuSignin : INavigationProvider
     {
         private readonly IStringLocalizer S;
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+        public AdminMenuSignin(IStringLocalizer<AdminMenuSignin> localizer)
         {
             S = localizer;
         }
@@ -33,12 +33,12 @@ namespace OrchardCore.Twitter
         }
     }
 
-    [Feature(TwitterConstants.Features.Signin)]
-    public class AdminMenuSignin : INavigationProvider
+    [Feature(TwitterConstants.Features.Twitter)]
+    public class AdminMenu : INavigationProvider
     {
         private readonly IStringLocalizer S;
 
-        public AdminMenuSignin(IStringLocalizer<AdminMenuSignin> localizer)
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
             S = localizer;
         }

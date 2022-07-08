@@ -30,6 +30,11 @@ namespace OrchardCore.Environment.Shell.Descriptor.Models
             return Id == other.Id;
         }
 
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ShellFeature);
+        }
+
         public override int GetHashCode()
         {
             return Id.GetHashCode();

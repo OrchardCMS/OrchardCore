@@ -39,10 +39,6 @@ namespace OrchardCore.Lists
     {
         private readonly AdminOptions _adminOptions;
 
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<ListPartViewModel>();
-        }
 
         public Startup(IOptions<AdminOptions> adminOptions)
         {
@@ -51,6 +47,14 @@ namespace OrchardCore.Lists
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<ListPartViewModel>();
+            })
+            .AddLiquidFilter<ListCountFilter>("list_count")
+            .AddLiquidFilter<ListItemsFilter>("list_items")
+            .AddLiquidFilter<ContainerFilter>("container");
+
             services.AddSingleton<IIndexProvider, ContainedPartIndexProvider>();
             services.AddScoped<IContentDisplayDriver, ContainedPartDisplayDriver>();
             services.AddScoped<IContentHandler, ContainedPartHandler>();
@@ -67,11 +71,6 @@ namespace OrchardCore.Lists
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentItemIndexHandler, ContainedPartContentIndexHandler>();
             services.AddScoped<IContainerService, ContainerService>();
-
-            // Liquid
-            services.AddLiquidFilter<ListCountFilter>("list_count");
-            services.AddLiquidFilter<ListItemsFilter>("list_items");
-            services.AddLiquidFilter<ContainerFilter>("container");
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

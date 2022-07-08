@@ -13,6 +13,10 @@ namespace OrchardCore.OpenId
                principal.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
                principal.FindFirst(ClaimTypes.Upn)?.Value ??
                throw new InvalidOperationException("No suitable user identifier can be found in the principal.");
+        internal static string GetUserName(this ClaimsPrincipal principal)
+            => principal.FindFirst(Claims.Name)?.Value ??
+               principal.FindFirst(ClaimTypes.Name)?.Value ??
+               throw new InvalidOperationException("No suitable user name can be found in the principal.");
 
         internal static async Task<bool> AnyAsync<T>(this IAsyncEnumerable<T> source)
         {

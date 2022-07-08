@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Apis.Context
 {
     public class AgencyContext : SiteContext
     {
-        public static IShellHost ShellHost { get; private set; }
+        public static IShellHost ShellHost { get; }
 
         static AgencyContext()
         {

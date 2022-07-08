@@ -12,6 +12,7 @@ namespace OrchardCore.Recipes
             services.AddTransient<IRecipeExecutor, RecipeExecutor>();
             services.AddScoped<IRecipeMigrator, RecipeMigrator>();
             services.AddScoped<IRecipeReader, RecipeReader>();
+            services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentFeatureProvider>();
 
             return services;
         }

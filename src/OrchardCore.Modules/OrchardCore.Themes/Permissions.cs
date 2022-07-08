@@ -7,7 +7,7 @@ namespace OrchardCore.Themes
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ApplyTheme = new Permission("ApplyTheme") { Description = "Apply a Theme" };
+        public static readonly Permission ApplyTheme = new Permission("ApplyTheme", "Apply a Theme");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {

@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using OrchardCore.ReCaptcha.Services;
+using OrchardCore.Users;
 using OrchardCore.Users.Events;
 
 namespace OrchardCore.ReCaptcha.Users.Handlers
@@ -14,7 +15,9 @@ namespace OrchardCore.ReCaptcha.Users.Handlers
             _reCaptchaService = reCaptchaService;
         }
 
-        public Task LoggedInAsync(string userName)
+        public Task IsLockedOutAsync(IUser user) => Task.CompletedTask;
+
+        public Task LoggedInAsync(IUser user)
         {
             _reCaptchaService.ThisIsAHuman();
             return Task.CompletedTask;
@@ -29,6 +32,12 @@ namespace OrchardCore.ReCaptcha.Users.Handlers
         }
 
         public Task LoggingInFailedAsync(string userName)
+        {
+            _reCaptchaService.MaybeThisIsARobot();
+            return Task.CompletedTask;
+        }
+
+        public Task LoggingInFailedAsync(IUser user)
         {
             _reCaptchaService.MaybeThisIsARobot();
             return Task.CompletedTask;

@@ -10,13 +10,13 @@ namespace OrchardCore.ReCaptcha.Forms
     [RequireFeatures("OrchardCore.Forms", "OrchardCore.ReCaptcha")]
     public class Startup : StartupBase
     {
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<ReCaptchaPart>();
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<ReCaptchaPart>();
+            });
+
             services.AddContentPart<ReCaptchaPart>()
                 .UseDisplayDriver<ReCaptchaPartDisplayDriver>();
 

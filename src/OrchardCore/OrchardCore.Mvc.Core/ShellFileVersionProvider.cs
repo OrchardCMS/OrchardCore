@@ -134,30 +134,12 @@ namespace OrchardCore.Mvc
 
         private static string GetHashForFile(IFileInfo fileInfo)
         {
-            using (var sha256 = CryptographyAlgorithms.CreateSHA256())
+            using (var sha256 = SHA256.Create())
             {
                 using (var readStream = fileInfo.CreateReadStream())
                 {
                     var hash = sha256.ComputeHash(readStream);
                     return WebEncoders.Base64UrlEncode(hash);
-                }
-            }
-        }
-
-        internal static class CryptographyAlgorithms
-        {
-            public static SHA256 CreateSHA256()
-            {
-                try
-                {
-                    return SHA256.Create();
-                }
-                // SHA256.Create is documented to throw this exception on FIPS compliant machines.
-                // See: https://msdn.microsoft.com/en-us/library/z08hz7ad%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
-                catch (System.Reflection.TargetInvocationException)
-                {
-                    // Fallback to a FIPS compliant SHA256 algorithm.
-                    return new SHA256CryptoServiceProvider();
                 }
             }
         }

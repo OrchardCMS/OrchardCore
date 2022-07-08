@@ -108,7 +108,7 @@ namespace OrchardCore.Sitemaps.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult ListFilterPOST(ListSitemapIndexViewModel model)
         {
-            return RedirectToAction("List", new RouteValueDictionary {
+            return RedirectToAction(nameof(List), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -181,7 +181,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
                 await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-                _notifier.Success(H["Sitemap index created successfully"]);
+                await _notifier.SuccessAsync(H["Sitemap index created successfully"]);
 
                 return RedirectToAction(nameof(List));
             }
@@ -270,7 +270,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
                 await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-                _notifier.Success(H["Sitemap index updated successfully"]);
+                await _notifier.SuccessAsync(H["Sitemap index updated successfully"]);
 
                 return RedirectToAction(nameof(List));
             }
@@ -296,7 +296,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             await _sitemapManager.DeleteSitemapAsync(sitemapId);
 
-            _notifier.Success(H["Sitemap index deleted successfully."]);
+            await _notifier.SuccessAsync(H["Sitemap index deleted successfully."]);
 
             return RedirectToAction(nameof(List));
         }
@@ -320,7 +320,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-            _notifier.Success(H["Sitemap index menu toggled successfully."]);
+            await _notifier.SuccessAsync(H["Sitemap index menu toggled successfully."]);
 
             return RedirectToAction(nameof(List));
         }
@@ -347,14 +347,14 @@ namespace OrchardCore.Sitemaps.Controllers
                         {
                             await _sitemapManager.DeleteSitemapAsync(item.SitemapId);
                         }
-                        _notifier.Success(H["Sitemap indices successfully removed."]);
+                        await _notifier.SuccessAsync(H["Sitemap indices successfully removed."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
 
-            return RedirectToAction("List");
+            return RedirectToAction(nameof(List));
         }
     }
 }

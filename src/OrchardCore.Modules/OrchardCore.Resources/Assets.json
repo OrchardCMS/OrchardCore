@@ -21,7 +21,7 @@
   },
   {
     "inputs": [
-      "node_modules/popper.js/dist/umd/popper.js"
+      "node_modules/@popperjs/core/dist/umd/popper.js"
     ],
     "output": "wwwroot/Scripts/popper.js"
   },
@@ -32,24 +32,11 @@
     ],
     "output": "wwwroot/Styles/bootstrap-select.css"
   },
-  {
+ {
     "inputs": [
       "node_modules/bootstrap-select/dist/js/bootstrap-select.js"
     ],
     "output": "wwwroot/Scripts/bootstrap-select.js"
-  },
-  {
-    "generateRTL": true,
-    "inputs": [
-      "node_modules/bootstrap-slider/dist/css/bootstrap-slider.css"
-    ],
-    "output": "wwwroot/Styles/bootstrap-slider.css"
-  },
-  {
-    "inputs": [
-      "node_modules/bootstrap-slider/dist/bootstrap-slider.js"
-    ],
-    "output": "wwwroot/Scripts/bootstrap-slider.js"
   },
   {
     "generateRTL": false,
@@ -180,7 +167,7 @@
   },
   {
     "inputs": [
-      "node_modules/popper.js/dist/umd/popper.js"
+      "node_modules/@popperjs/core/dist/umd/popper.js"
     ],
     "output": "wwwroot/Scripts/popper.js"
   },
@@ -217,12 +204,6 @@
       "Assets/trumbowyg/plugins/*/*.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg-plugins.js"
-  },
-  {
-    "inputs": [
-      "Assets/trumbowyg/js/resizable-resolveconflict.js"
-    ],
-    "output": "wwwroot/Scripts/resizable-resolveconflict.js"
   },
   {
     "copy": true,
@@ -297,8 +278,22 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "node_modules/js-cookie/src/js.cookie.js"
+      "node_modules/js-cookie/dist/js.cookie.js"
     ],
     "output": "wwwroot/Scripts/js.cookie.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "Assets/monaco/*"
+    ],
+    "output": "wwwroot/Scripts/monaco/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/monaco-editor/min/**/*"
+    ],
+    "output": "wwwroot/Scripts/monaco/@"
   }
 ]

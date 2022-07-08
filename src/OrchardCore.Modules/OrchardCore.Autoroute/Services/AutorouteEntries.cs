@@ -15,6 +15,8 @@ namespace OrchardCore.Autoroute.Services
 {
     public class AutorouteEntries : IAutorouteEntries
     {
+        private readonly IVolatileDocumentManager<AutorouteStateDocument> _autorouteStateManager;
+
         private ImmutableDictionary<string, AutorouteEntry> _paths = ImmutableDictionary<string, AutorouteEntry>.Empty;
         private ImmutableDictionary<string, AutorouteEntry> _contentItemIds = ImmutableDictionary<string, AutorouteEntry>.Empty;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
@@ -23,8 +25,9 @@ namespace OrchardCore.Autoroute.Services
         private string _stateIdentifier;
         private bool _initialized;
 
-        public AutorouteEntries()
+        public AutorouteEntries(IVolatileDocumentManager<AutorouteStateDocument> autorouteStateManager)
         {
+            _autorouteStateManager = autorouteStateManager;
             _contentItemIds = _contentItemIds.WithComparers(StringComparer.OrdinalIgnoreCase);
         }
 
@@ -32,7 +35,7 @@ namespace OrchardCore.Autoroute.Services
         {
             await EnsureInitializedAsync();
 
-            if (_contentItemIds.TryGetValue(path, out var entry))
+            if (_contentItemIds.TryGetValue(path.TrimEnd('/'), out var entry))
             {
                 return (true, entry);
             }
@@ -57,7 +60,7 @@ namespace OrchardCore.Autoroute.Services
             await EnsureInitializedAsync();
 
             // Update the cache with a new state and then refresh entries as it would be done on a next request.
-            await AutorouteStateManager.UpdateAsync(new AutorouteStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
+            await _autorouteStateManager.UpdateAsync(new AutorouteStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
         }
 
         private async Task EnsureInitializedAsync()
@@ -68,7 +71,7 @@ namespace OrchardCore.Autoroute.Services
             }
             else
             {
-                var state = await AutorouteStateManager.GetOrCreateImmutableAsync();
+                var state = await _autorouteStateManager.GetOrCreateImmutableAsync();
                 if (_stateIdentifier != state.Identifier)
                 {
                     await RefreshEntriesAsync(state);
@@ -80,10 +83,19 @@ namespace OrchardCore.Autoroute.Services
         {
             // Evict all entries related to a container item from autoroute entries.
             // This is necessary to account for deletions, disabling of an item, or disabling routing of contained items.
+            ILookup<string, AutorouteEntry> entriesByContainer = null;
             foreach (var entry in entries.Where(x => String.IsNullOrEmpty(x.ContainedContentItemId)))
             {
-                var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId &&
-                    !String.IsNullOrEmpty(x.ContainedContentItemId));
+                entriesByContainer ??= _paths.Values
+                    .Where(x => !String.IsNullOrEmpty(x.ContainedContentItemId))
+                    .ToLookup(x => x.ContentItemId);
+
+                if (!entriesByContainer.Contains(entry.ContentItemId))
+                {
+                    continue;
+                }
+
+                var entriesToRemove = entriesByContainer[entry.ContentItemId];
 
                 _paths = _paths.RemoveRange(entriesToRemove.Select(x => x.ContainedContentItemId));
                 _contentItemIds = _contentItemIds.RemoveRange(entriesToRemove.Select(x => x.Path));
@@ -144,19 +156,33 @@ namespace OrchardCore.Autoroute.Services
             {
                 if (_stateIdentifier != state.Identifier)
                 {
-                    var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Id > _lastIndexId).ListAsync();
+                    var indexes = await Session
+                        .QueryIndex<AutoroutePartIndex>(i => i.Id > _lastIndexId)
+                        .OrderBy(i => i.Id)
+                        .ListAsync();
 
-                    var contentItemIdsToRemove = indexes
+                    // A draft is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
+                    // so only if the entry 'DocumentId' matches, this because when a draft is saved more than once, the index
+                    // is not updated for the published version that may be already scanned, so the entry may not be re-added.
+
+                    var entriesToRemove = indexes
                         .Where(i => !i.Published || i.Path == null)
-                        .Select(i => i.ContentItemId)
-                        .Distinct();
-
-                    var entriesToRemove = contentItemIdsToRemove.SelectMany(id => _paths.Values
-                        .Where(e => e.ContentItemId == id || e.ContainedContentItemId == id));
+                        .SelectMany(i => _paths.Values.Where(e =>
+                            // The item was removed.
+                            ((!i.Published && !i.Latest) ||
+                            // The part was disabled or removed.
+                            (i.Path == null && i.Published) ||
+                            // The item was unpublished.
+                            (!i.Published && e.DocumentId == i.DocumentId)) &&
+                            (e.ContentItemId == i.ContentItemId ||
+                            e.ContainedContentItemId == i.ContentItemId)));
 
                     var entriesToAdd = indexes
                         .Where(i => i.Published && i.Path != null)
-                        .Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath));
+                        .Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath)
+                        {
+                            DocumentId = i.DocumentId
+                        });
 
                     RemoveEntries(entriesToRemove);
                     AddEntries(entriesToAdd);
@@ -183,10 +209,17 @@ namespace OrchardCore.Autoroute.Services
             {
                 if (!_initialized)
                 {
-                    var state = await AutorouteStateManager.GetOrCreateImmutableAsync();
+                    var state = await _autorouteStateManager.GetOrCreateImmutableAsync();
 
-                    var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null).ListAsync();
-                    var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath));
+                    var indexes = await Session
+                        .QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null)
+                        .OrderBy(i => i.Id)
+                        .ListAsync();
+
+                    var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath)
+                    {
+                        DocumentId = i.DocumentId
+                    });
 
                     AddEntries(entries);
 
@@ -203,8 +236,5 @@ namespace OrchardCore.Autoroute.Services
         }
 
         private static ISession Session => ShellScope.Services.GetRequiredService<ISession>();
-
-        private static IVolatileDocumentManager<AutorouteStateDocument> AutorouteStateManager
-            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<AutorouteStateDocument>>();
     }
 }

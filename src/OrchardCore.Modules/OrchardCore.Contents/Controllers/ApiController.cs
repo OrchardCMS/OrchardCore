@@ -7,10 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.Contents;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.ContentManagement.Metadata;
 
-namespace OrchardCore.Content.Controllers
+namespace OrchardCore.Contents.Controllers
 {
     [Route("api/content")]
     [ApiController]
@@ -20,16 +19,19 @@ namespace OrchardCore.Content.Controllers
         private static readonly JsonMergeSettings UpdateJsonMergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace };
 
         private readonly IContentManager _contentManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringLocalizer S;
 
         public ApiController(
             IContentManager contentManager,
+            IContentDefinitionManager contentDefinitionManager,
             IAuthorizationService authorizationService,
             IStringLocalizer<ApiController> stringLocalizer)
         {
-            _authorizationService = authorizationService;
             _contentManager = contentManager;
+            _contentDefinitionManager = contentDefinitionManager;
+            _authorizationService = authorizationService;
             S = stringLocalizer;
         }
 
@@ -100,6 +102,11 @@ namespace OrchardCore.Content.Controllers
                 if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent))
                 {
                     return this.ChallengeOrForbid("Api");
+                }
+
+                if (_contentDefinitionManager.GetTypeDefinition(model.ContentType) == null)
+                {
+                    return BadRequest();
                 }
 
                 var newContentItem = await _contentManager.NewAsync(model.ContentType);

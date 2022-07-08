@@ -3,13 +3,12 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Fluid.Tags;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class ClearAlternatesTag : ExpressionTag
+    public class ClearAlternatesTag
     {
-        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression)
+        public static async ValueTask<Completion> WriteToAsync(Expression expression, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue();
 

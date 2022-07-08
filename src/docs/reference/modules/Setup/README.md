@@ -1,5 +1,7 @@
 # Setup (`OrchardCore.Setup`)
 
+When you begin with an empty site, a start screen allows you to setup the different parameters as the Title, the selected database, or the recipe that will be used to generate the site. This is done by the Setup module.
+
 ## Recipe Parameters
 
 During setup, all recipes have access to the setup screen values using these parameters:
@@ -97,3 +99,20 @@ The following configuration values are used by default and can be customized:
 | --- | --- |
 | `DefaultCulture` | The default culture that will be used for the setup screen. |
 | `SupportedCultures` | The list of the supported cultures for the setup screen. |
+
+## CDN disabled by default
+
+The `UseCdn` option, configured in the _Configuration -> Settings -> General_ section, is disabled by default.
+This is to allow access to resources when an internet connection is not available or in countries like China, where CDNs are not always accessible.  
+
+!!! note
+    It is recommended to enable the CDN setting after setup.
+    
+## Additional information
+Please refer to separate sections for additional information on setup:
+
+- [Auto Setup - how to predefine setup parameters when deploying an empty site](../AutoSetup/README.md)
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/usjGbjwbmNo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

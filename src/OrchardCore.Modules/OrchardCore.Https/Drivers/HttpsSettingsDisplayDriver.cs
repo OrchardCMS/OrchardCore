@@ -42,17 +42,17 @@ namespace OrchardCore.Https.Drivers
         public override async Task<IDisplayResult> EditAsync(HttpsSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))
             {
                 return null;
             }
 
-            return Initialize<HttpsSettingsViewModel>("HttpsSettings_Edit", model =>
+            return Initialize<HttpsSettingsViewModel>("HttpsSettings_Edit", async model =>
             {
                 var isHttpsRequest = _httpContextAccessor.HttpContext.Request.IsHttps;
 
                 if (!isHttpsRequest)
-                    _notifier.Warning(H["For safety, Enabling require HTTPS over HTTP has been prevented."]);
+                    await _notifier.WarningAsync(H["For safety, Enabling require HTTPS over HTTP has been prevented."]);
 
                 model.EnableStrictTransportSecurity = settings.EnableStrictTransportSecurity;
                 model.IsHttpsRequest = isHttpsRequest;
@@ -69,6 +69,12 @@ namespace OrchardCore.Https.Drivers
         {
             if (context.GroupId == SettingsGroupId)
             {
+                var user = _httpContextAccessor.HttpContext?.User;
+                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))
+                {
+                    return null;
+                }
+
                 var model = new HttpsSettingsViewModel();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);

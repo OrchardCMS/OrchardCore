@@ -10,10 +10,16 @@ namespace OrchardCore.DisplayManagement.Title
 
         private readonly List<PositionalTitlePart> _titleParts;
         private IHtmlContent _title;
+        private IHtmlContent _fixedTitle;
 
         public PageTitleBuilder()
         {
             _titleParts = new List<PositionalTitlePart>(5);
+        }
+
+        public void SetFixedTitle(IHtmlContent title)
+        {
+            _fixedTitle = title;
         }
 
         public void AddSegment(IHtmlContent titlePart, string position)
@@ -37,6 +43,11 @@ namespace OrchardCore.DisplayManagement.Title
 
         public IHtmlContent GenerateTitle(IHtmlContent separator)
         {
+            if (_fixedTitle != null)
+            {
+                return _fixedTitle;
+            }
+
             if (_title != null)
             {
                 return _title;
@@ -73,6 +84,7 @@ namespace OrchardCore.DisplayManagement.Title
 
         public void Clear()
         {
+            _fixedTitle = null;
             _titleParts.Clear();
         }
     }

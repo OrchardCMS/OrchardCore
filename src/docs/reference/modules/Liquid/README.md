@@ -1,7 +1,8 @@
 # Liquid (`OrchardCore.Liquid`)
 
 This module provides a way to create templates securely from the admin site.  
-For more information about the Liquid syntax, please refer to this site: <https://shopify.github.io/liquid/>
+For more information about the Liquid syntax, please refer to this site: <https://shopify.github.io/liquid/>.
+Liquid syntax is powered by Fluid. Check <https://github.com/sebastienros/fluid> for extra examples and custom filters.
 
 ## General concepts
 
@@ -121,7 +122,58 @@ Output
 ```text
 Bonjour!
 ```
+
 ## Html Filters
+
+### `absolute_url`
+
+Creates the full absolute URL for the given relative virtual path.
+
+Input
+
+```liquid
+{{ '~/some-page' | absolute_url }}
+```
+
+Output if there is no URL prefix for the current tenant:
+
+```text
+https://example.com/some-page
+```
+
+Output if there is a URL prefix for the current tenant:
+
+```text
+https://example.com/url-prefix/some-page
+```
+
+If the input URL starts with a tilde then the output URL's base will always be the current tenant's root URL, including the tenant prefix if one is configured. E.g. `~/` will always point to the homepage of the tenant, regardless of configuration.
+
+The HTTP request scheme (e.g. "https") and port number are added too.
+
+### `href`
+
+Creates a content URL for a relative virtual path. Recommended for generating URLs in every case you want to refer to a relative path.
+
+Input
+
+```liquid
+{{ '~/some-page' | href }}
+```
+
+Output if there is no URL prefix for the current tenant:
+
+```text
+/some-page
+```
+
+Output if there is an URL prefix for the current tenant:
+
+```text
+/url-prefix/some-page
+```
+
+If the input URL starts with a tilde then the output URL will always be relative to the current tenant's root URL, including the tenant prefix if one is configured. E.g. `~/` will always point to the homepage of the tenant, regardless of configuration.
 
 ### `html_class`
 
@@ -184,6 +236,14 @@ Sanitizes some HTML content.
   <span class="text-primary">{{ Content }}</span>
 {% endcapture %}
 {{ output | sanitize_html | raw }}
+```
+
+### `shortcode`
+
+Renders Shortcodes. Should be combined with the `raw` filter.
+
+```liquid
+{{ Model.ContentItem.Content.RawHtml.Content.Html | shortcode | raw }}
 ```
 
 ## Json Filters
@@ -379,7 +439,6 @@ Gives access to the current site settings, e.g `Site.SiteName`.
 | -------- | ------- |------------ |
 | `BaseUrl` |  | The base URL of the site. | 
 | `Calendar` |  | The site's calendar. | 
-| `Culture` | `en-us` | The site's default culture as an ISO language code. | 
 | `MaxPagedCount` | `0` | The maximum number of pages that can be paged. | 
 | `MaxPageSize` | `100` | The maximum page size that can be set by a user. | 
 | `PageSize` | `10` | The default page size of lists. | 
@@ -399,7 +458,8 @@ The following properties are available on the `Request` object.
 
 | Property | Example | Description |
 | --------- | ---- |------------ |
-| `QueryString` | `?sort=name&page=1` | The query string. |
+| `QueryString` | `?sort=name&page=1` | The escaped query string with the leading '?' character. |
+| `UriQueryString` | `?sort=name&page=1` | The query string escaped in a way which is correct for combining into the URI representation. |
 | `ContentType` | `application/x-www-form-urlencoded; charset=UTF-8` | The `Content-Type` header. |
 | `ContentLength` | `600` | The `Content-Length` header. |
 | `Cookies` | Usage: `Request.Cookies.orchauth_Default` | The collection of cookies for this request. |
@@ -407,9 +467,12 @@ The following properties are available on the `Request` object.
 | `Query` | Usage: `Request.Query.sort` | The query value collection parsed from `QueryString`. Each property value is an array of values. |
 | `Form` | Usage: `Request.Form.value` | The collection of form values. |
 | `Protocol` | `https` | The protocol of this request. |
-| `Path` | `/OrchardCore.ContentPreview/Preview/Render` | The path of the request, unescaped. |
-| `PathBase` | `/mytenant` | The base path of the request, unescaped. |
-| `Host` | `localhost:44300` | The `Host` header. May contain the port. |
+| `Path` | `/OrchardCore.ContentPreview/Preview/Render` | The unescaped path of the request. |
+| `UriPath` | `/OrchardCore.ContentPreview/Preview/Render` | The path escaped in a way which is correct for combining into the URI representation. |
+| `PathBase` | `/mytenant` | The unescaped base path of the request. |
+| `UriPathBase` | `/mytenant` | The base path escaped in a way which is correct for combining into the URI representation. |
+| `Host` | `localhost:44300` | The unescaped `Host` header. May contain the port. |
+| `UriHost` | `localhost:44300` | The `Host` header properly formatted and encoded for use in a URI in a HTTP header. |
 | `IsHttps` | `true` | True if the scheme of the request is `https`. |
 | `Scheme` | `https` | The scheme of the request. |
 | `Method` | `GET` | The HTTP method. |
@@ -838,23 +901,23 @@ Using `helper` invokes the `validation_for` tag helper of ASP.NET Core with `spa
 
 ### `link`
 
-Invokes the `link` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#link-tag)
+Invokes the `link` tag helper from the `Orchard.ResourceManagement` package. [See this section.](../Resources/README.md#link-tag)
 
 ### `meta`
 
-Invokes the `meta` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#meta-tags)
+Invokes the `meta` tag helper from the `Orchard.ResourceManagement` package. [See this section.](../Resources/README.md#meta-tags)
 
 ### `resources`
 
-Invokes the `resources` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#rendering)
+Invokes the `resources` tag helper from the `Orchard.ResourceManagement` package. [See this section.](../Resources/README.md#rendering)
 
 ### `script`
 
-Invokes the `script` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#inline-definition)
+Invokes the `script` tag helper from the `Orchard.ResourceManagement` package. [See this section.](../Resources/README.md#inline-definition)
 
 ### `style`
 
-Invokes the `style` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#inline-definition)
+Invokes the `style` tag helper from the `Orchard.ResourceManagement` package. [See this section.](../Resources/README.md#inline-definition)
 
 ### `a`
 

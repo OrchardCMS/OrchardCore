@@ -98,7 +98,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             query = FilterContentType(query, context);
             query = OrderBy(query, context);
 
-            var contentItemsQuery = await FilterWhereArguments(query, where, context, session, graphContext);
+            var contentItemsQuery = FilterWhereArguments(query, where, context, session, graphContext);
             contentItemsQuery = PageQuery(contentItemsQuery, context, graphContext);
 
             var contentItems = await contentItemsQuery.ListAsync();
@@ -111,7 +111,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentItems;
         }
 
-        private async Task<IQuery<ContentItem>> FilterWhereArguments(
+        private IQuery<ContentItem> FilterWhereArguments(
             IQuery<ContentItem, ContentItemIndex> query,
             JObject where,
             ResolveFieldContext fieldContext,
@@ -124,8 +124,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
 
             string defaultTableAlias = query.GetTypeAlias(typeof(ContentItemIndex));
-
-            var transaction = await session.DemandAsync();
 
             IPredicateQuery predicateQuery = new PredicateQuery(
                 dialect: session.Store.Configuration.SqlDialect,

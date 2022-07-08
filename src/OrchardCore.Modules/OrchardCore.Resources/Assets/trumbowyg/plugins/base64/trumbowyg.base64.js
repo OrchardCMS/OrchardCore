@@ -36,6 +36,12 @@
                 errFileReaderNotSupported: 'FileReader er ikke understøttet af din browser.',
                 errInvalidImage: 'Ugyldig billedfil.'
             },
+            et: {
+                base64: 'Pilt base64 formaadis',
+                file: 'Fail',
+                errFileReaderNotSupported: 'Teie veebilehitseja ei toeta FileReader funktsiooni.',
+                errInvalidImage: 'Vigane pildifail.'
+            },
             fr: {
                 base64: 'Image en base64',
                 file: 'Fichier'

@@ -31,11 +31,7 @@ namespace OrchardCore.Autoroute
                 .Column<bool>("Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
-                .CreateIndex("IDX_AutoroutePartIndex_DocumentId", "DocumentId")
-            );
-
-            // Return 5 to shortcut other migrations on new content definition schemas.
+            // Shortcut other migration steps on new content definition schemas.
             return 5;
         }
 
@@ -75,10 +71,6 @@ namespace OrchardCore.Autoroute
         // This code can be removed in a later version.
         public int UpdateFrom4()
         {
-            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
-                .CreateIndex("IDX_AutoroutePartIndex_DocumentId", "DocumentId")
-            );
-
             return 5;
         }
     }

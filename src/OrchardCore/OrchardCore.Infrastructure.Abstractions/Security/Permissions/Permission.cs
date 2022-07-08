@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using Newtonsoft.Json;
 
 namespace OrchardCore.Security.Permissions
 {
@@ -30,11 +29,11 @@ namespace OrchardCore.Security.Permissions
             ImpliedBy = impliedBy;
         }
 
-        public string Name { get; set; }
+        public string Name { get; }
         public string Description { get; set; }
         public string Category { get; set; }
-        public IEnumerable<Permission> ImpliedBy { get; set; }
-        public bool IsSecurityCritical { get; set; }
+        public IEnumerable<Permission> ImpliedBy { get; }
+        public bool IsSecurityCritical { get; }
 
         public static implicit operator Claim(Permission p)
         {

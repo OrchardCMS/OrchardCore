@@ -114,7 +114,7 @@ namespace OrchardCore.Sitemaps.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult ListFilterPOST(ListSitemapViewModel model)
         {
-            return RedirectToAction("List", new RouteValueDictionary {
+            return RedirectToAction(nameof(List), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -270,7 +270,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
                 await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-                _notifier.Success(H["Sitemap updated successfully."]);
+                await _notifier.SuccessAsync(H["Sitemap updated successfully."]);
 
                 return RedirectToAction(nameof(List));
             }
@@ -296,7 +296,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             await _sitemapManager.DeleteSitemapAsync(sitemapId);
 
-            _notifier.Success(H["Sitemap deleted successfully."]);
+            await _notifier.SuccessAsync(H["Sitemap deleted successfully."]);
 
             return RedirectToAction(nameof(List));
         }
@@ -320,7 +320,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-            _notifier.Success(H["Sitemap toggled successfully."]);
+            await _notifier.SuccessAsync(H["Sitemap toggled successfully."]);
 
             return RedirectToAction(nameof(List));
         }
@@ -347,14 +347,14 @@ namespace OrchardCore.Sitemaps.Controllers
                         {
                             await _sitemapManager.DeleteSitemapAsync(item.SitemapId);
                         }
-                        _notifier.Success(H["Sitemaps successfully removed."]);
+                        await _notifier.SuccessAsync(H["Sitemaps successfully removed."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
 
-            return RedirectToAction("List");
+            return RedirectToAction(nameof(List));
         }
     }
 }

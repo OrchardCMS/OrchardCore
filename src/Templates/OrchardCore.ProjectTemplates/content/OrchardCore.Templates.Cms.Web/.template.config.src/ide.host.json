@@ -3,13 +3,17 @@
   "icon": "icon.png",
   "symbolInfo": [
     {
+      "id": "Framework",
+      "isVisible": "true"
+    },
+    {
       "id": "Logger",
       "isVisible": "true"
     },
     {
       "id": "OrchardVersion",
       "name": {
-        "text": "Orchard Version"
+        "text": "Orchard Core Version"
       },
       "isVisible": "true"
     }

@@ -63,6 +63,22 @@
                     value: '48px'
                 }
             },
+            et: {
+                fontsize: 'Teksti suurus',
+                fontsizes: {
+                    'x-small': 'Väga väike',
+                    'small': 'Väike',
+                    'medium': 'Tavaline',
+                    'large': 'Suur',
+                    'x-large': 'Väga suur',
+                    'custom': 'Määra ise'
+                },
+                fontCustomSize: {
+                    title: 'Kohandatud teksti suurus',
+                    label: 'Teksti suurus',
+                    value: '48px'
+                }
+            },
             fr: {
                 fontsize: 'Taille de la police',
                 fontsizes: {
@@ -155,14 +171,19 @@
                 }
             },
             tr: {
-                fontsize: 'Yazı Boyutu',
+                fontsize: 'Yazı boyutu',
                 fontsizes: {
-                    'x-small': 'Çok Küçük',
+                    'x-small': 'Çok küçük',
                     'small': 'Küçük',
                     'medium': 'Normal',
                     'large': 'Büyük',
-                    'x-large': 'Çok Büyük',
-                    'custom': 'Görenek'
+                    'x-large': 'Çok büyük',
+                    'custom': 'Özel'
+                },
+                fontCustomSize: {
+                    title: 'Özel Yazı Boyutu',
+                    label: 'Yazı Boyutu',
+                    value: '48px'
                 }
             },
             zh_tw: {
@@ -233,6 +254,8 @@
         $(trumbowyg.range.startContainer.parentElement).find('span[style=""]').contents().unwrap();
 
         trumbowyg.restoreRange();
+        trumbowyg.syncCode();
+        trumbowyg.$c.trigger('tbwchange');
     }
 
     function buildDropdown(trumbowyg) {

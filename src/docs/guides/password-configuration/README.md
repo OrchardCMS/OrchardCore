@@ -35,13 +35,13 @@ Using the `appsettings.{Environment}.json` settings files, for example `appsetti
 
 To do this, add a `Configuration` property in the `Startup` class:
 
-```cs
+```csharp
 public IConfiguration Configuration { get; }
 ```
 
 In order to initialize the `Configuration`, set the property in the constructor like this:
 
-```cs
+```csharp
 public Startup(IConfiguration configuration)
 {
     Configuration = configuration;
@@ -50,7 +50,7 @@ public Startup(IConfiguration configuration)
 
 Then, replace the hard coded configuration with this code that reads it from the configuration file:
 
-```cs
+```csharp
 services.Configure<IdentityOptions>(options =>
 {
     Configuration.GetSection("IdentityOptions").Bind(options);

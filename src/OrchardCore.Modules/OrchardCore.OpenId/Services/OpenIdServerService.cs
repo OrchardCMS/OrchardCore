@@ -52,6 +52,17 @@ namespace OrchardCore.OpenId.Services
         public async Task<OpenIdServerSettings> GetSettingsAsync()
         {
             var container = await _siteService.GetSiteSettingsAsync();
+            return GetSettingsFromContainer(container);
+        }
+
+        public async Task<OpenIdServerSettings> LoadSettingsAsync()
+        {
+            var container = await _siteService.LoadSiteSettingsAsync();
+            return GetSettingsFromContainer(container);
+        }
+
+        private OpenIdServerSettings GetSettingsFromContainer(ISite container)
+        {
             if (container.Properties.TryGetValue(nameof(OpenIdServerSettings), out var settings))
             {
                 return settings.ToObject<OpenIdServerSettings>();
@@ -109,7 +120,7 @@ namespace OrchardCore.OpenId.Services
                     }));
                 }
 
-                if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
+                if (!String.IsNullOrEmpty(settings.Authority.Query) || !String.IsNullOrEmpty(settings.Authority.Fragment))
                 {
                     results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
                     {
@@ -120,7 +131,7 @@ namespace OrchardCore.OpenId.Services
 
             if (settings.SigningCertificateStoreLocation != null &&
                 settings.SigningCertificateStoreName != null &&
-                !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
+                !String.IsNullOrEmpty(settings.SigningCertificateThumbprint))
             {
                 var certificate = GetCertificate(
                     settings.SigningCertificateStoreLocation.Value,
@@ -267,7 +278,7 @@ namespace OrchardCore.OpenId.Services
             // instead of using the fallback managed certificates logic.
             if (settings.EncryptionCertificateStoreLocation != null &&
                 settings.EncryptionCertificateStoreName != null &&
-                !string.IsNullOrEmpty(settings.EncryptionCertificateThumbprint))
+                !String.IsNullOrEmpty(settings.EncryptionCertificateThumbprint))
             {
                 var certificate = GetCertificate(
                     settings.EncryptionCertificateStoreLocation.Value,
@@ -336,7 +347,7 @@ namespace OrchardCore.OpenId.Services
             // instead of using the fallback managed certificates logic.
             if (settings.SigningCertificateStoreLocation != null &&
                 settings.SigningCertificateStoreName != null &&
-                !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
+                !String.IsNullOrEmpty(settings.SigningCertificateThumbprint))
             {
                 var certificate = GetCertificate(
                     settings.SigningCertificateStoreLocation.Value,

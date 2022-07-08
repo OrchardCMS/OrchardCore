@@ -22,6 +22,11 @@
                 formulas: 'Formler',
                 inline: 'Inline'
             },
+            et: {
+                mathml: 'Sisesta valem',
+                formulas: 'Valemid',
+                inline: 'Teksti sees'
+            },
             fr: {
                 mathml: 'Inserer une formule',
                 formulas: 'Formule',

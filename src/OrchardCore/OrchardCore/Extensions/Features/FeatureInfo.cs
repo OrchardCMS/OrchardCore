@@ -1,7 +1,16 @@
+using System;
+
 namespace OrchardCore.Environment.Extensions.Features
 {
     public class FeatureInfo : IFeatureInfo
     {
+        public FeatureInfo(string id, IExtensionInfo extensionInfo)
+        {
+            Id = Name = id;
+            Extension = extensionInfo;
+            Dependencies = Array.Empty<string>();
+        }
+
         public FeatureInfo(
             string id,
             string name,

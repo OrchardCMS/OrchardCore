@@ -9,7 +9,7 @@ namespace OrchardCore.Templates
     {
         private readonly IStringLocalizer S;
 
-        public AdminTemplatesAdminMenu(IStringLocalizer<AdminMenu> localizer)
+        public AdminTemplatesAdminMenu(IStringLocalizer<AdminTemplatesAdminMenu> localizer)
         {
             S = localizer;
         }
@@ -23,7 +23,7 @@ namespace OrchardCore.Templates
 
             builder
                 .Add(S["Design"], design => design
-                    .Add(S["Admin Templates"], "Admin Templates", import => import
+                    .Add(S["Admin Templates"], S["Admin Templates"].PrefixPosition(), import => import
                         .Action("Admin", "Template", new { area = "OrchardCore.Templates" })
                         .Permission(AdminTemplatesPermissions.ManageAdminTemplates)
                         .LocalNav()

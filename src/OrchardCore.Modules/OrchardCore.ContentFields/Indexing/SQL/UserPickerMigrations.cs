@@ -1,10 +1,11 @@
-using System;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
+using OrchardCore.Modules;
 using YesSql.Sql;
 
 namespace OrchardCore.ContentFields.Indexing.SQL
 {
+    [Feature("OrchardCore.ContentFields.Indexing.SQL.UserPicker")]
     public class UserPickerMigrations : DataMigration
     {
         public int Create()
@@ -21,38 +22,67 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
-                .CreateIndex("IDX_UserPickerFieldIndex_ContentItemId", "DocumentId", "ContentItemId")
+                .CreateIndex("IDX_UserPickerFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
-                .CreateIndex("IDX_UserPickerFieldIndex_ContentItemVersionId", "DocumentId", "ContentItemVersionId")
+                .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
-                .CreateIndex("IDX_UserPickerFieldIndex_ContentType", "DocumentId", "ContentType")
+                .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_SelectedUserId",
+                    "DocumentId",
+                    "SelectedUserId",
+                    "Published",
+                    "Latest")
+            );
+
+            // Shortcut other migration steps on new content definition schemas.
+            return 2;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom1()
+        {
+            SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
+                .CreateIndex("IDX_UserPickerFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
-                .CreateIndex("IDX_UserPickerFieldIndex_ContentPart", "DocumentId", "ContentPart")
+                .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
-                .CreateIndex("IDX_UserPickerFieldIndex_ContentField", "DocumentId", "ContentField")
+                .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_SelectedUserId",
+                    "DocumentId",
+                    "SelectedUserId",
+                    "Published",
+                    "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
-                .CreateIndex("IDX_UserPickerFieldIndex_Published", "DocumentId", "Published")
-            );
-
-            SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
-                .CreateIndex("IDX_UserPickerFieldIndex_Latest", "DocumentId", "Latest")
-            );
-
-            SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
-                .CreateIndex("IDX_UserPickerFieldIndex_SelectedUserId", "DocumentId", "SelectedUserId")
-            );
-
-            return 1;
+            return 2;
         }
     }
 }

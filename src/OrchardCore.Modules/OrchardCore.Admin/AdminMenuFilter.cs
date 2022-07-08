@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.Admin
 {
@@ -42,7 +41,7 @@ namespace OrchardCore.Admin
             }
 
             // Should only run for authenticated users
-            if (!filterContext.HttpContext.User.Identity.IsAuthenticated)
+            if (!(filterContext.HttpContext.User?.Identity?.IsAuthenticated ?? false))
             {
                 await next();
                 return;
@@ -61,18 +60,16 @@ namespace OrchardCore.Admin
                 Arguments.From(new
                 {
                     MenuName = "admin",
-                    RouteData = filterContext.RouteData,
+                    filterContext.RouteData,
                 }));
 
-            dynamic layout = await _layoutAccessor.GetLayoutAsync();
+            var layout = await _layoutAccessor.GetLayoutAsync();
 
-            if (layout.Navigation is ZoneOnDemand zoneOnDemand)
+            var navigation = layout.Zones["Navigation"];
+
+            if (navigation is Shape shape)
             {
-                await zoneOnDemand.AddAsync(menuShape);
-            }
-            else if (layout.Navigation is Shape shape)
-            {
-                shape.Add(menuShape);
+                await shape.AddAsync(menuShape);
             }
 
             await next();

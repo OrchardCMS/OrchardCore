@@ -7,7 +7,7 @@
     var fieldName = formInputElementPart.Name;
     var fieldId = !string.IsNullOrEmpty(elementId) ? elementId : !string.IsNullOrEmpty(fieldName) ? Html.GenerateIdFromName(fieldName) : default(string);
     var fieldValue = Model.Value.DefaultValue;
-    var fieldClass = "form-control";
+    var fieldClass = "form-select";
 
     if (ViewData.ModelState.TryGetValue(fieldName, out var fieldEntry))
     {
@@ -21,6 +21,8 @@
 <select id="@fieldId" name="@fieldName" class="@fieldClass">
     @foreach(var option in Model.Value.Options)
     {
-        <option value="@option.Value" selected="@(option.Value == fieldValue ? "selected" : null)">@option.Text</option>        
+        var optionValue = !string.IsNullOrWhiteSpace(option.Value) ? option.Value : option.Text;
+        var isOptionSelected = optionValue == fieldValue;
+        <option value="@optionValue" selected="@isOptionSelected">@option.Text</option>
     }
 </select>

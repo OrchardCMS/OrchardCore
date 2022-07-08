@@ -4,4 +4,10 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);wwwroot\is-cache\**;wwwroot\ms-cache\**</DefaultItemExcludes>
   </PropertyGroup>
 
+  <ItemDefinitionGroup>
+    <_InnerBuildProjects>
+      <Properties>IsCrossTargetedBuild=$(IsCrossTargetingBuild)</Properties>
+    </_InnerBuildProjects>
+  </ItemDefinitionGroup>
+
 </Project>

@@ -23,7 +23,7 @@ namespace OrchardCore.Title.Drivers
         {
             var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
 
-            if (!settings.RenderTitle)
+            if (!settings.RenderTitle || string.IsNullOrWhiteSpace(titlePart.Title))
             {
                 return null;
             }

@@ -9,7 +9,7 @@ You will build a modular ASP.NET Core MVC web application similar to the sample 
 
 ## What you will need
 
-- The current version of the .NET Core SDK. You can download it from here [https://www.microsoft.com/net/download/core](https://www.microsoft.com/net/download/core).
+- The current version of the .NET SDK. You can download it from here <https://dotnet.microsoft.com/download>.
 - A text editor and a terminal where you can run dotnet CLI commands.
 
 ## Creating an Orchard Core site and module
@@ -18,7 +18,7 @@ There are different ways to create sites and modules for Orchard Core. You can l
 
 In this guide we will use our [Code Generation Templates](../../getting-started/templates/). You can install the latest stable release of the templates using this command:
 
-```dotnet new -i OrchardCore.ProjectTemplates::1.0.0-*```
+```dotnet new -i OrchardCore.ProjectTemplates::1.4.0-*```
 
 !!! note
     To use the development branch of the template add `--nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json`

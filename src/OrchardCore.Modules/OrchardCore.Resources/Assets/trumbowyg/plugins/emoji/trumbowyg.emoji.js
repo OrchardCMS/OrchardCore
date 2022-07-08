@@ -1339,6 +1339,9 @@
             de: {
                 emoji: 'Emoticon einfügen'
             },
+            et: {
+                emoji: 'Lisa emotikon'
+            },
             fr: {
                 emoji: 'Ajouter un emoji'
             },

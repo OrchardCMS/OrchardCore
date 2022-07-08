@@ -9,7 +9,7 @@ namespace OrchardCore.Queries.Services
     public class QueryManager : IQueryManager
     {
         private readonly IDocumentManager<QueriesDocument> _documentManager;
-        private IEnumerable<IQuerySource> _querySources;
+        private readonly IEnumerable<IQuerySource> _querySources;
 
         public QueryManager(IDocumentManager<QueriesDocument> documentManager, IEnumerable<IQuerySource> querySources)
         {

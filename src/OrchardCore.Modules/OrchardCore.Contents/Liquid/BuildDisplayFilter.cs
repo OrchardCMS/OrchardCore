@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -16,11 +15,24 @@ namespace OrchardCore.Contents.Liquid
     {
         private const int DefaultMaxContentItemRecursions = 20;
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        private readonly IContentItemRecursionHelper<BuildDisplayFilter> _buildDisplayRecursionHelper;
+        private readonly IContentItemDisplayManager _contentItemDisplayManager;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
+
+        public BuildDisplayFilter(IContentItemRecursionHelper<BuildDisplayFilter> buildDisplayRecursionHelper,
+            IContentItemDisplayManager contentItemDisplayManager,
+            IUpdateModelAccessor updateModelAccessor)
         {
-            static async ValueTask<FluidValue> Awaited(Task<IShape> task)
+            _buildDisplayRecursionHelper = buildDisplayRecursionHelper;
+            _contentItemDisplayManager = contentItemDisplayManager;
+            _updateModelAccessor = updateModelAccessor;
+        }
+
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+        {
+            static async ValueTask<FluidValue> Awaited(Task<IShape> task, TemplateOptions options)
             {
-                return FluidValue.Create(await task);
+                return FluidValue.Create(await task, options);
             }
 
             var obj = input.ToObjectValue();
@@ -42,35 +54,24 @@ namespace OrchardCore.Contents.Liquid
                 return new ValueTask<FluidValue>(NilValue.Instance);
             }
 
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'shape_build_display'");
-            }
-
-            var serviceProvider = (IServiceProvider)services;
-
-            var buildDisplayRecursionHelper = serviceProvider.GetRequiredService<IContentItemRecursionHelper<BuildDisplayFilter>>();
-
             // When {{ Model.ContentItem | shape_build_display | shape_render }} is called prevent unlimited recursions.
             // max_recursions is an optional argument to override the default limit of 20.
             var maxRecursions = arguments["max_recursions"];
             var recursionLimit = maxRecursions.Type == FluidValues.Number ? Convert.ToInt32(maxRecursions.ToNumberValue()) : DefaultMaxContentItemRecursions;
-            if (buildDisplayRecursionHelper.IsRecursive(contentItem, recursionLimit))
+            if (_buildDisplayRecursionHelper.IsRecursive(contentItem, recursionLimit))
             {
                 return new ValueTask<FluidValue>(NilValue.Instance);
             }
 
             var displayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
-            var displayManager = serviceProvider.GetRequiredService<IContentItemDisplayManager>();
-            var updateModelAccessor = serviceProvider.GetRequiredService<IUpdateModelAccessor>();
 
-            var task = displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
+            var task = _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, displayType);
             if (task.IsCompletedSuccessfully)
             {
-                return new ValueTask<FluidValue>(FluidValue.Create(task.Result));
+                return new ValueTask<FluidValue>(FluidValue.Create(task.Result, ctx.Options));
             }
 
-            return Awaited(task);
+            return Awaited(task, ctx.Options);
         }
     }
 }

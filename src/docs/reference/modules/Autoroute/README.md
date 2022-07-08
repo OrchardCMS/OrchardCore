@@ -76,7 +76,7 @@ For example :
 
 - Content items _contained_ inside a `BagPart` are considered _contained or child_ content items.
 
-- `Terms` of a `Taxonomy` of a taxonomy are _contained_ by the `Taxonomy`.
+- `Terms` of a `Taxonomy` are _contained_ by the `Taxonomy`.
 
 _Contained_ content items are stored as part of the json inside the _container_ document.
 
@@ -89,7 +89,7 @@ The `AutoroutePart` supports routing of these _container_ types.
 
 ### Configuration
 
-To enabled routing of _contained_ content items the `AutoroutePart` must be configured correctly.
+To enable routing of _contained_ content items the `AutoroutePart` must be configured correctly.
 
 - Add the `AutoroutePart` to the _container or parent_ content type definition.
 - Enable `Allow contained item routing` on the `AutoroutePart Settings`.

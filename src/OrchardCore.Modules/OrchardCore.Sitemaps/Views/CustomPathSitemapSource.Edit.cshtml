@@ -1,0 +1,46 @@
+@model CustomPathSitemapSourceViewModel
+@using OrchardCore.Sitemaps.Models
+<h5>@T["Sitemap Custom Path"]</h5>
+
+<div id="index-all-row" class="row">
+    <div class="col-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="mb-3" asp-validation-class-for="Path">
+                    <label asp-for="Path">@T["Path"] </label>
+                    <div class="input-group">
+                        @if (!String.IsNullOrWhiteSpace(Site.BaseUrl))
+                        {
+                            <span class="input-group-text">@Site.BaseUrl</span>
+                        }
+                        <input asp-for="Path" class="form-control" autofocus />
+                    </div>
+                    <span asp-validation-for="Path"></span>
+                    <span class="hint">@T["The path to add to the sitemap. e.g. path/to/something"]</span>
+                </div>
+                <div class="mb-3" asp-validation-class-for="ChangeFrequency">
+                    <label asp-for="ChangeFrequency">@T["Change Frequency"] </label>
+                    <select asp-for="ChangeFrequency" class="form-select w-25" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
+                    <span class="hint">@T["The default frequency with which this path is likely to change."]</span>
+                </div>
+                <div class="mb-3" asp-validation-class-for="Priority">
+                    <label asp-for="Priority">@T["Priority"] </label>
+                    <select asp-for="Priority" class="form-select w-25">
+                        <option value="0">@T["0.0"]</option>
+                        <option value="1">@T["0.1"]</option>
+                        <option value="2">@T["0.2"]</option>
+                        <option value="3">@T["0.3"]</option>
+                        <option value="4">@T["0.4"]</option>
+                        <option value="5">@T["0.5"]</option>
+                        <option value="6">@T["0.6"]</option>
+                        <option value="7">@T["0.7"]</option>
+                        <option value="8">@T["0.8"]</option>
+                        <option value="9">@T["0.9"]</option>
+                        <option value="10">@T["1.0"]</option>
+                    </select>
+                    <span class="hint">@T["The default priority of this path relative to other content on your site."]</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

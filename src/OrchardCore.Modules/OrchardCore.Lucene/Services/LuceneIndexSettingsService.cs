@@ -1,29 +1,30 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Documents;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Lucene.Model;
 
 namespace OrchardCore.Lucene
 {
     public class LuceneIndexSettingsService
     {
-        public LuceneIndexSettingsService()
+        private readonly IDocumentManager<LuceneIndexSettingsDocument> _documentManager;
+
+        public LuceneIndexSettingsService(IDocumentManager<LuceneIndexSettingsDocument> documentManager)
         {
+            _documentManager = documentManager;
         }
 
         /// <summary>
         /// Loads the index settings document from the store for updating and that should not be cached.
         /// </summary>
-        public Task<LuceneIndexSettingsDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
+        public Task<LuceneIndexSettingsDocument> LoadDocumentAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <summary>
         /// Gets the index settings document from the cache for sharing and that should not be updated.
         /// </summary>
         public async Task<LuceneIndexSettingsDocument> GetDocumentAsync()
         {
-            var document = await DocumentManager.GetOrCreateImmutableAsync();
+            var document = await _documentManager.GetOrCreateImmutableAsync();
 
             foreach (var name in document.LuceneIndexSettings.Keys)
             {
@@ -78,17 +79,14 @@ namespace OrchardCore.Lucene
         {
             var document = await LoadDocumentAsync();
             document.LuceneIndexSettings[settings.IndexName] = settings;
-            await DocumentManager.UpdateAsync(document);
+            await _documentManager.UpdateAsync(document);
         }
 
         public async Task DeleteIndexAsync(string indexName)
         {
             var document = await LoadDocumentAsync();
             document.LuceneIndexSettings.Remove(indexName);
-            await DocumentManager.UpdateAsync(document);
+            await _documentManager.UpdateAsync(document);
         }
-
-        private static IDocumentManager<LuceneIndexSettingsDocument> DocumentManager =>
-            ShellScope.Services.GetRequiredService<IDocumentManager<LuceneIndexSettingsDocument>>();
     }
 }

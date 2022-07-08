@@ -14,6 +14,9 @@ namespace OrchardCore.Media.Azure
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
+        // Local instance since it can be discarded once the startup is over
+        private readonly FluidParser _fluidParser = new FluidParser();
+
         public MediaBlobStorageOptionsConfiguration(
             IShellConfiguration shellConfiguration,
             ShellSettings shellSettings,
@@ -34,9 +37,10 @@ namespace OrchardCore.Media.Azure
             options.ConnectionString = section.GetValue(nameof(options.ConnectionString), String.Empty);
             options.CreateContainer = section.GetValue(nameof(options.CreateContainer), true);
 
-            var templateContext = new TemplateContext();
-            templateContext.MemberAccessStrategy.Register<ShellSettings>();
-            templateContext.MemberAccessStrategy.Register<MediaBlobStorageOptions>();
+            var templateOptions = new TemplateOptions();
+            var templateContext = new TemplateContext(templateOptions);
+            templateOptions.MemberAccessStrategy.Register<ShellSettings>();
+            templateOptions.MemberAccessStrategy.Register<MediaBlobStorageOptions>();
             templateContext.SetValue("ShellSettings", _shellSettings);
 
             ParseContainerName(options, templateContext);
@@ -48,7 +52,7 @@ namespace OrchardCore.Media.Azure
             // Use Fluid directly as this is transient and cannot invoke _liquidTemplateManager.
             try
             {
-                var template = FluidTemplate.Parse(options.ContainerName);
+                var template = _fluidParser.Parse(options.ContainerName);
 
                 // container name must be lowercase
                 options.ContainerName = template.Render(templateContext, NullEncoder.Default).ToLower();
@@ -65,7 +69,7 @@ namespace OrchardCore.Media.Azure
         {
             try
             {
-                var template = FluidTemplate.Parse(options.BasePath);
+                var template = _fluidParser.Parse(options.BasePath);
 
                 options.BasePath = template.Render(templateContext, NullEncoder.Default);
                 options.BasePath = options.BasePath.Replace("\r", String.Empty).Replace("\n", String.Empty);

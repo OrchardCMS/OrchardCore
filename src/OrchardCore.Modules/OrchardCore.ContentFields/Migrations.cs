@@ -57,7 +57,7 @@ namespace OrchardCore.ContentFields
             // Youtube field
             _contentDefinitionManager.MigrateFieldSettings<YoutubeField, YoutubeFieldSettings>();
 
-            // Return 2 to shortcut migration on new content definition schemas.
+            // Shortcut other migration steps on new content definition schemas.
             return 2;
         }
 

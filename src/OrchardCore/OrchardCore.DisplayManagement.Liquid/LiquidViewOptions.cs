@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.FileProviders;
 
@@ -16,6 +17,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         /// At startup, this is initialized to include an instance of <see cref="PhysicalFileProvider"/> that is
         /// rooted at the application root.
         /// </remarks>
-        public IList<IFileProvider> FileProviders { get; } = new List<IFileProvider>();
+        public List<IFileProvider> FileProviders { get; } = new List<IFileProvider>();
+        public List<Action<LiquidViewParser>> LiquidViewParserConfiguration { get; } = new List<Action<LiquidViewParser>>();
     }
 }

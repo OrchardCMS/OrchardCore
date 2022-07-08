@@ -2,7 +2,6 @@ using System;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Media.Fields;
-using SixLabors.ImageSharp;
 
 namespace OrchardCore.Media.ViewModels
 {

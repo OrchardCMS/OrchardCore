@@ -12,7 +12,7 @@ namespace OrchardCore.Workflows.Services
         Task<IEnumerable<Workflow>> ListAsync(IEnumerable<string> workflowTypeIds);
         Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds);
         Task<IEnumerable<Workflow>> ListByActivityNameAsync(string activityName, string correlationId = null, bool isAlwaysCorrelated = false);
-        Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null);
+        Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null, bool isAlwaysCorrelated = false);
         Task<Workflow> GetAsync(int id);
         Task<Workflow> GetAsync(string uid);
         Task<IEnumerable<Workflow>> GetAsync(IEnumerable<int> ids);

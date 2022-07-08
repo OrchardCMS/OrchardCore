@@ -129,12 +129,12 @@
         plugins: {
             allowTagsFromPaste: {
                 init: function (trumbowyg) {
-                    // Force disable remove format pasted
-                    trumbowyg.o.removeformatPasted = false;
-
                     if (!trumbowyg.o.plugins.allowTagsFromPaste) {
                         return;
                     }
+
+                    // Force disable remove format pasted
+                    trumbowyg.o.removeformatPasted = false;
 
                     var allowedTags = trumbowyg.o.plugins.allowTagsFromPaste.allowedTags || defaultOptions.allowedTags;
                     var removableTags = trumbowyg.o.plugins.allowTagsFromPaste.removableTags || defaultOptions.removableTags;

@@ -100,7 +100,7 @@ Sample content:
 @using OrchardCore.Markdown.ViewModels;
 @model MarkdownBodyPartViewModel
 
-<fieldset class="form-group">
+<fieldset class="mb-3">
     <label asp-for="Markdown">@T["Markdown"]</label>
     <textarea asp-for="Markdown" rows="5" class="form-control"></textarea>
     <span class="hint">@T["The markdown of the content item."]</span>
@@ -209,17 +209,3 @@ services
             pipeline.UseEmojiAndSmiley();
         }));
 ```
-
-## CREDITS
-
-### Markdig
-
-<https://github.com/lunet-io/markdig>  
-Copyright (c) 2016, Alexandre Mutel  
-BSD-2
-
-### SimpleMDE
-
-<https://github.com/sparksuite/simplemde-markdown-editor>  
-Copyright (c) 2015 Next Step Webs, Inc.  
-MIT

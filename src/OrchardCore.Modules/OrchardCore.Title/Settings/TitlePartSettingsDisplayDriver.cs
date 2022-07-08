@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -11,7 +10,7 @@ using OrchardCore.Title.ViewModels;
 
 namespace OrchardCore.Title.Settings
 {
-    public class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<TitlePart>
     {
         private readonly ILiquidTemplateManager _templateManager;
         private readonly IStringLocalizer S;
@@ -24,11 +23,6 @@ namespace OrchardCore.Title.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(TitlePart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             return Initialize<TitlePartSettingsViewModel>("TitlePartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<TitlePartSettings>();
@@ -42,11 +36,6 @@ namespace OrchardCore.Title.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(TitlePart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             var model = new TitlePartSettingsViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix,

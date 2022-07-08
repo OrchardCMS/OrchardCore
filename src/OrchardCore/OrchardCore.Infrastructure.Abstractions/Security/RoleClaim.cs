@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 
 namespace OrchardCore.Security
 {
@@ -20,6 +20,11 @@ namespace OrchardCore.Security
         public Claim ToClaim()
         {
             return new Claim(ClaimType, ClaimValue);
+        }
+
+        public static implicit operator Claim(RoleClaim claim)
+        {
+            return claim.ToClaim();
         }
     }
 }

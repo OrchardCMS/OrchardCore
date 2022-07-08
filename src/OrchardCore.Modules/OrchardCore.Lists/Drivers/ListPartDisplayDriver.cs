@@ -52,7 +52,7 @@ namespace OrchardCore.Lists.Drivers
                         model.Pager = await context.New.PagerSlim(pager);
                     })
                     .Location("Detail", "Content:10"),
-                    Initialize<ListPartViewModel>("ListPart", async model =>
+                    Initialize<ListPartViewModel>("ListPartDetailAdmin", async model =>
                     {
                         var pager = await GetPagerSlimAsync(context);
                         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
@@ -77,7 +77,7 @@ namespace OrchardCore.Lists.Drivers
                         model.Pager = await context.New.PagerSlim(pager);
                     })
                     .Location("DetailAdmin", "Content:10"),
-                    Initialize<ContentItemViewModel>("ListPart", model => model.ContentItem = listPart.ContentItem)
+                    Initialize<ContentItemViewModel>("ListPartSummaryAdmin", model => model.ContentItem = listPart.ContentItem)
                     .Location("SummaryAdmin", "Actions:4")
                 );
         }

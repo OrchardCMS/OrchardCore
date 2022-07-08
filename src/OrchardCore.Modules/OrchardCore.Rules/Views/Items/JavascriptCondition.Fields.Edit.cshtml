@@ -1,0 +1,32 @@
+@model JavascriptConditionViewModel
+
+<h5>@T["Javascript"]</h5>
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+
+<div class="mb-3 row">
+    <div class="col-large">
+        <label asp-for="Script">@T["Script"]</label>
+        <textarea asp-for="Script" rows="5" class="form-control"></textarea>
+        <span class="hint">@T["The script must return true or false."]</span>
+    </div>
+</div>
+
+<script at="Foot" depends-on="jquery">
+    //<![CDATA[
+    $(function () {
+        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Script)'), {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "javascript" },
+        });
+    });
+    //]]>
+</script>

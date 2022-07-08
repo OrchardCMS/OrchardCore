@@ -95,7 +95,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(RemoteInstanceIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -129,7 +129,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 await _service.CreateRemoteInstanceAsync(model.Name, model.Url, model.ClientName, model.ApiKey);
 
-                _notifier.Success(H["Remote instance created successfully."]);
+                await _notifier.SuccessAsync(H["Remote instance created successfully."]);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -187,7 +187,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 await _service.UpdateRemoteInstance(model.Id, model.Name, model.Url, model.ClientName, model.ApiKey);
 
-                _notifier.Success(H["Remote instance updated successfully."]);
+                await _notifier.SuccessAsync(H["Remote instance updated successfully."]);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -213,7 +213,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             await _service.DeleteRemoteInstanceAsync(id);
 
-            _notifier.Success(H["Remote instance deleted successfully."]);
+            await _notifier.SuccessAsync(H["Remote instance deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -241,14 +241,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
                         {
                             await _service.DeleteRemoteInstanceAsync(item.Id);
                         }
-                        _notifier.Success(H["Remote instances successfully removed."]);
+                        await _notifier.SuccessAsync(H["Remote instances successfully removed."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         private void ValidateViewModel(EditRemoteInstanceViewModel model)

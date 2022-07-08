@@ -12,6 +12,7 @@ namespace OrchardCore.ContentLocalization.Security
     public class LocalizeContentAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
         private readonly IServiceProvider _serviceProvider;
+        private IAuthorizationService _authorizationService;
 
         public LocalizeContentAuthorizationHandler(IServiceProvider serviceProvider)
         {
@@ -49,9 +50,9 @@ namespace OrchardCore.ContentLocalization.Security
             }
 
             // Lazy load to prevent circular dependencies
-            var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
+            _authorizationService ??= _serviceProvider.GetService<IAuthorizationService>();
 
-            if (await authorizationService.AuthorizeAsync(context.User, permission))
+            if (await _authorizationService.AuthorizeAsync(context.User, permission))
             {
                 context.Succeed(requirement);
             }

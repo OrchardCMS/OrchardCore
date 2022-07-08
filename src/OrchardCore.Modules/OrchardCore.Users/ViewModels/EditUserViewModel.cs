@@ -1,8 +1,4 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using OrchardCore.Email;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Users.ViewModels
 {
@@ -12,6 +8,10 @@ namespace OrchardCore.Users.ViewModels
 
         public bool IsEnabled { get; set; }
 
-        public RoleViewModel[] Roles { get; set; }
+        /// <summary>
+        /// When a user only has rights to view they cannot update this model.
+        /// </summary>
+        [BindNever]
+        public bool IsEditingDisabled { get; set; }
     }
 }

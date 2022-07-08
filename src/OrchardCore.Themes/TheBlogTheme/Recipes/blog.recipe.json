@@ -4,7 +4,7 @@
   "description": "Provides a functional Blog with CMS features.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
-  "version": "1.0.0-rc2",
+  "version": "1.0.0",
   "issetuprecipe": true,
   "categories": [ "default" ],
   "tags": [ "blog" ],
@@ -38,6 +38,7 @@
         "OrchardCore.Recipes",
         "OrchardCore.Resources",
         "OrchardCore.Roles",
+        "OrchardCore.Security",
         "OrchardCore.Settings",
         "OrchardCore.Themes",
         "OrchardCore.Users",
@@ -50,7 +51,6 @@
         "OrchardCore.ContentFields",
         "OrchardCore.ContentPreview",
         "OrchardCore.Contents",
-        "OrchardCore.Contents.FileContentDefinition",
         "OrchardCore.ContentTypes",
         "OrchardCore.CustomSettings",
         "OrchardCore.Deployment",
@@ -59,14 +59,15 @@
         "OrchardCore.Flows",
         "OrchardCore.Indexing",
         "OrchardCore.Layers",
-        "OrchardCore.Lucene",
         "OrchardCore.Lists",
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
         "OrchardCore.Placements",
         "OrchardCore.Queries",
+        "OrchardCore.Queries.Sql",
         "OrchardCore.Shortcodes.Templates",
+        "OrchardCore.Rules",
         "OrchardCore.Taxonomies",
         "OrchardCore.Title",
         "OrchardCore.Templates",
@@ -141,62 +142,6 @@
                 "ContentTypePartSettings": {
                   "Editor": "Wysiwyg",
                   "Position": "2"
-                }
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "LiquidPage",
-          "DisplayName": "Liquid Page",
-          "Hidden": false,
-          "Settings": {
-            "ContentTypeSettings": {
-              "Creatable": true,
-              "Draftable": true,
-              "Versionable": true,
-              "Listable": true
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "LiquidPage",
-              "Name": "LiquidPage",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "2"
-                }
-              }
-            },
-            {
-              "PartName": "AutoroutePart",
-              "Name": "AutoroutePart",
-              "Settings": {
-                "AutoroutePartSettings": {
-                  "AllowCustomPath": true,
-                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
-                  "ShowHomepageOption": true
-                },
-                "ContentTypePartSettings": {
-                  "Position": "1"
-                }
-              }
-            },
-            {
-              "PartName": "LiquidPart",
-              "Name": "LiquidPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "3"
                 }
               }
             },
@@ -382,7 +327,7 @@
           "Name": "Blockquote",
           "DisplayName": "Blockquote",
           "Settings": {
-            "ContentTypeSettings": {
+            "ContentTypeSettings": {           
               "Draftable": true,
               "Versionable": true,
               "Securable": true,
@@ -402,73 +347,20 @@
           ]
         },
         {
-          "Name": "ImageWidget",
-          "DisplayName": "Image",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "Image",
-              "Name": "Image",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "LiquidWidget",
-          "DisplayName": "Liquid",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Listable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "LiquidPart",
-              "Name": "LiquidPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
           "Name": "Image",
           "DisplayName": "Image",
           "Settings": {
             "ContentTypeSettings": {
-              "Versionable": true
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
             }
           },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Image",
               "Name": "Image",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "0"
@@ -504,7 +396,7 @@
           "Name": "RawHtml",
           "DisplayName": "Raw Html",
           "Settings": {
-            "ContentTypeSettings": {
+            "ContentTypeSettings": {           
               "Draftable": true,
               "Versionable": true,
               "Securable": true,
@@ -904,66 +796,6 @@
       ]
     },
     {
-      // Create the indices before the content items so they are indexed automatically.
-      "name": "lucene-index",
-      "Indices": [
-        {
-          "Search": {
-            "AnalyzerName": "standardanalyzer",
-            "IndexLatest": false,
-            "IndexedContentTypes": [
-              "Article",
-              "Blockquote",
-              "Blog",
-              "BlogPost",
-              "Button",
-              "Container",
-              "Form",
-              "ImageWidget",
-              "Image",
-              "Input",
-              "Label",
-              "LinkMenuItem",
-              "LiquidWidget",
-              "LiquidPage",
-              "Menu",
-              "Page",
-              "Paragraph",
-              "RawHtml",
-              "Select",
-              "TextArea",
-              "Validation",
-              "ValidationSummary"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      // Create the search settings.
-      "name": "Settings",
-      "LuceneSettings": {
-        "SearchIndex": "Search",
-        "DefaultSearchFields": [
-          "Content.ContentItem.FullText"
-        ]
-      }
-    },
-    {
-      // Create the search index permissions.
-      "name": "Roles",
-      "Roles": [
-        {
-          "Name": "Anonymous",
-          "Description": "Anonymous role",
-          "Permissions": [
-            "ViewContent",
-            "QueryLuceneSearchIndex"
-          ]
-        }
-      ]
-    },
-    {
       "name": "content",
       "Data": [
         {
@@ -983,6 +815,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js: uuid()]",
+                "DisplayText": "Home",
                 "LinkMenuItemPart": {
                   "Name": "Home",
                   "Url": "~/"
@@ -991,6 +824,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js: uuid()]",
+                "DisplayText": "About",
                 "LinkMenuItemPart": {
                   "Name": "About",
                   "Url": "~/about"
@@ -1262,15 +1096,15 @@
       "Files": [
         {
           "TargetPath": "about-bg.jpg",
-          "SourcePath": "../wwwroot/img/about-bg.jpg"
+          "SourcePath": "../wwwroot/assets/img/about-bg.jpg"
         },
         {
           "TargetPath": "home-bg.jpg",
-          "SourcePath": "../wwwroot/img/home-bg.jpg"
+          "SourcePath": "../wwwroot/assets/img/home-bg.jpg"
         },
         {
           "TargetPath": "post-bg.jpg",
-          "SourcePath": "../wwwroot/img/post-bg.jpg"
+          "SourcePath": "../wwwroot/assets/img/post-bg.jpg"
         }
       ]
     },
@@ -1279,12 +1113,32 @@
       "Layers": [
         {
           "Name": "Always",
-          "Rule": "true",
+          "LayerRule": {
+            "ConditionId":"[js: uuid()]",
+            "Conditions": [
+              {
+                "$type": "OrchardCore.Rules.Models.BooleanCondition, OrchardCore.Rules",
+                "Name": "BooleanCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are displayed on any page of this site."
         },
         {
           "Name": "Homepage",
-          "Rule": "isHomepage()",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "$type": "OrchardCore.Rules.Models.HomepageCondition, OrchardCore.Rules",
+                "Name": "HomepageCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are only displayed on the homepage."
         }
       ]
@@ -1293,10 +1147,9 @@
       "name": "queries",
       "Queries": [
         {
-          "Source": "Lucene",
+          "Source": "Sql",
           "Name": "RecentBlogPosts",
-          "Index": "Search",
-          "Template": "[file:text('Snippets/recentBlogPosts.json')]",
+          "Template": "SELECT * FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC LIMIT 3",
           "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
           "ReturnContentItems": true
         }
@@ -1307,7 +1160,7 @@
       "data": [
         {
           "Id": "baef6f85ad13481681cde70ada401333",
-          "Name": "Admin menu from blog recipe",
+          "Name": "Admin menus",
           "Enabled": true,
           "MenuItems": [
             {

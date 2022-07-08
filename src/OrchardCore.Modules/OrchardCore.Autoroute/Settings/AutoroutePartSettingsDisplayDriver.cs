@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Autoroute.Models;
@@ -11,7 +10,7 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Autoroute.Settings
 {
-    public class AutoroutePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class AutoroutePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<AutoroutePart>
     {
         private readonly ILiquidTemplateManager _templateManager;
         private readonly IStringLocalizer S;
@@ -24,11 +23,6 @@ namespace OrchardCore.Autoroute.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(AutoroutePart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             return Initialize<AutoroutePartSettingsViewModel>("AutoroutePartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
@@ -47,11 +41,6 @@ namespace OrchardCore.Autoroute.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(AutoroutePart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             var model = new AutoroutePartSettingsViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix,

@@ -14,5 +14,7 @@ namespace OrchardCore.Google.Authentication.ViewModels
         public string CallbackPath { get; set; }
 
         public bool SaveTokens { get; set; }
+
+        public bool HasDecryptionError { get; set; }
     }
 }

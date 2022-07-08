@@ -77,12 +77,12 @@ namespace OrchardCore.Users.Services
         /// <summary>
         /// Resets the user password.
         /// </summary>
-        /// <param name="userIdentifier">The user ID.</param>
+        /// <param name="emailAddress">The user email address.</param>
         /// <param name="resetToken">The token used to reset the password.</param>
         /// <param name="newPassword">The new password.</param>
         /// <param name="reportError">The error reported in case failure happened during the reset process.</param>
         /// <returns>Returns <c>true</c> if the password reset, otherwise <c>false</c>.</returns>
-        Task<bool> ResetPasswordAsync(string userIdentifier, string resetToken, string newPassword, Action<string, string> reportError);
+        Task<bool> ResetPasswordAsync(string emailAddress, string resetToken, string newPassword, Action<string, string> reportError);
 
         /// <summary>
         /// Creates a <see cref="ClaimsPrincipal"/> for a given user.

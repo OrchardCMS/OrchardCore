@@ -39,7 +39,7 @@ namespace OrchardCore.Contents.Deployment
 
                 if (contentStep.ExportAsSetupRecipe)
                 {
-                    objectData[nameof(ContentItem.Owner)] = "[js: parameters('AdminUsername')]";
+                    objectData[nameof(ContentItem.Owner)] = "[js: parameters('AdminUserId')]";
                     objectData[nameof(ContentItem.Author)] = "[js: parameters('AdminUsername')]";
                     objectData[nameof(ContentItem.ContentItemId)] = "[js: uuid()]";
                     objectData.Remove(nameof(ContentItem.ContentItemVersionId));

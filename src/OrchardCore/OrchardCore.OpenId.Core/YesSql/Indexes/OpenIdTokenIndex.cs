@@ -19,6 +19,11 @@ namespace OrchardCore.OpenId.YesSql.Indexes
 
     public class OpenIdTokenIndexProvider : IndexProvider<OpenIdToken>
     {
+        private const string OpenIdCollection = OpenIdToken.OpenIdCollection;
+
+        public OpenIdTokenIndexProvider()
+            => CollectionName = OpenIdCollection;
+
         public override void Describe(DescribeContext<OpenIdToken> context)
         {
             context.For<OpenIdTokenIndex>()

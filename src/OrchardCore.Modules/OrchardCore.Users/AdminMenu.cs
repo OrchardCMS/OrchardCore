@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Users.Drivers;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users
 {
@@ -28,7 +29,8 @@ namespace OrchardCore.Users
                         .Add(S["Users"], S["Users"].PrefixPosition(), users => users
                             .AddClass("users").Id("users")
                             .Action("Index", "Admin", "OrchardCore.Users")
-                            .Permission(Permissions.ManageUsers)
+                            .Permission(Permissions.ViewUsers)
+                            .Resource(new User())
                             .LocalNav()
                          )
                         .Add(S["Settings"], settings => settings

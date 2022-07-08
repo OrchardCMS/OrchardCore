@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -21,6 +22,7 @@ using OrchardCore.Liquid;
 using OrchardCore.Localization;
 using OrchardCore.Settings;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Autoroute.Handlers
 {
@@ -229,7 +231,7 @@ namespace OrchardCore.Autoroute.Handlers
         private async Task GenerateContainedPathsFromPatternAsync(ContentItem contentItem, AutoroutePart part)
         {
             // Validate contained content item routes if container has valid path.
-            if (!String.IsNullOrWhiteSpace(part.Path) || !part.RouteContainedItems)
+            if (String.IsNullOrWhiteSpace(part.Path) || !part.RouteContainedItems)
             {
                 return;
             }
@@ -260,13 +262,16 @@ namespace OrchardCore.Autoroute.Handlers
                         var path = handlerAspect.Path;
                         if (!handlerAspect.Absolute)
                         {
-                            path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path;
+                            path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
                         }
 
-                        entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.Path));
+                        entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.Path)
+                        {
+                            DocumentId = contentItem.Id
+                        });
                     }
 
-                    var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path;
+                    var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
                     var childrenAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
                     await PopulateContainedContentItemRoutesAsync(entries, containerContentItemId, childrenAspect, jItem, itemBasePath);
                 }
@@ -306,7 +311,7 @@ namespace OrchardCore.Autoroute.Handlers
                         else
                         {
                             var currentItemBasePath = basePath.EndsWith('/') ? basePath : basePath + '/';
-                            path = currentItemBasePath + containedAutoroutePart.Path;
+                            path = currentItemBasePath + containedAutoroutePart.Path.TrimStart('/');
                             if (!IsRelativePathUnique(entries, path, containedAutoroutePart))
                             {
                                 path = GenerateRelativeUniquePath(entries, path, containedAutoroutePart);
@@ -335,7 +340,7 @@ namespace OrchardCore.Autoroute.Handlers
 
         private static bool IsRelativePathUnique(List<AutorouteEntry> entries, string path, AutoroutePart context)
         {
-            var result = !entries.Any(e => context.ContentItem.ContentItemId != e.ContainedContentItemId && String.Equals(e.Path, path, StringComparison.OrdinalIgnoreCase));
+            var result = !entries.Any(e => context.ContentItem.ContentItemId != e.ContainedContentItemId && String.Equals(e.Path.Trim('/'), path.Trim('/'), StringComparison.OrdinalIgnoreCase));
             return result;
         }
 
@@ -394,8 +399,8 @@ namespace OrchardCore.Autoroute.Handlers
                 var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect());
                 using (CultureScope.Create(cultureAspect.Culture))
                 {
-                    part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
-                        scope => scope.SetValue(nameof(ContentItem), model.ContentItem));
+                    part.Path = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
+                        new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
                 }
 
                 part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);
@@ -456,18 +461,16 @@ namespace OrchardCore.Autoroute.Handlers
 
         private async Task<bool> IsAbsolutePathUniqueAsync(string path, string contentItemId)
         {
-            var isUnique = true;
-            var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path == path).ListAsync();
-            if (possibleConflicts.Any())
+            path = path.Trim('/');
+            var paths = new string[] { path, "/" + path, path + "/", "/" + path + "/" };
+
+            var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync();
+            if (possibleConflicts.Any(x => x.ContentItemId != contentItemId && x.ContainedContentItemId != contentItemId))
             {
-                if (possibleConflicts.Any(x => x.ContentItemId != contentItemId) ||
-                    possibleConflicts.Any(x => !String.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != contentItemId))
-                {
-                    isUnique = false;
-                }
+                return false;
             }
 
-            return isUnique;
+            return true;
         }
     }
 }

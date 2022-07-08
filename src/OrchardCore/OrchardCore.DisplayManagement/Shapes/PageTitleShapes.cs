@@ -45,8 +45,8 @@ namespace OrchardCore.DisplayManagement.Shapes
                 var liquidTemplateManager = ShellScope.Services.GetRequiredService<ILiquidTemplateManager>();
                 var htmlEncoder = ShellScope.Services.GetRequiredService<HtmlEncoder>();
 
-                var result = await liquidTemplateManager.RenderAsync(siteSettings.PageTitleFormat, htmlEncoder);
-                return new HtmlString(result);
+                var result = await liquidTemplateManager.RenderHtmlContentAsync(siteSettings.PageTitleFormat, htmlEncoder);
+                return result;
             }
         }
     }

@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using Cysharp.Text;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 
@@ -14,19 +15,21 @@ namespace OrchardCore.Mvc.Utilities
     {
         public static string CamelFriendly(this string camel)
         {
+            // optimize common cases
             if (string.IsNullOrWhiteSpace(camel))
             {
                 return "";
             }
 
-            var sb = new StringBuilder(camel);
-
-            for (var i = camel.Length - 1; i > 0; i--)
+            using var sb = ZString.CreateStringBuilder();
+            for (var i = 0; i < camel.Length; ++i)
             {
-                if (char.IsUpper(sb[i]))
+                var c = camel[i];
+                if (i != 0 && char.IsUpper(c))
                 {
-                    sb.Insert(i, ' ');
+                    sb.Append(' ');
                 }
+                sb.Append(c);
             }
 
             return sb.ToString();
@@ -448,31 +451,49 @@ namespace OrchardCore.Mvc.Utilities
         /// </summary>
         public static string ToPascalCase(this string attribute, char upperAfterDelimiter)
         {
-            var nextIsUpper = true;
             attribute = attribute.Trim();
-            var result = new StringBuilder(attribute.Length);
 
-            foreach (var c in attribute)
+            var delimitersCount = 0;
+
+            for (var i = 0; i < attribute.Length; i++)
             {
-                if (c == upperAfterDelimiter)
+                if (attribute[i] == upperAfterDelimiter)
                 {
-                    nextIsUpper = true;
-                    continue;
+                    delimitersCount++;
                 }
-
-                if (nextIsUpper)
-                {
-                    result.Append(Char.ToUpperInvariant(c));
-                }
-                else
-                {
-                    result.Append(c);
-                }
-
-                nextIsUpper = false;
             }
 
-            return result.ToString();
+            var result = String.Create(attribute.Length - delimitersCount, new { attribute, upperAfterDelimiter }, (buffer, state) =>
+            {
+                var nextIsUpper = true;
+                var k = 0;
+
+                for (var i = 0; i < state.attribute.Length; i++)
+                {
+                    var c = state.attribute[i];
+
+                    if (c == state.upperAfterDelimiter)
+                    {
+                        nextIsUpper = true;
+                        continue;
+                    }
+
+                    if (nextIsUpper)
+                    {
+                        buffer[k] = Char.ToUpperInvariant(c);
+                    }
+                    else
+                    {
+                        buffer[k] = c;
+                    }
+
+                    nextIsUpper = false;
+
+                    k++;
+                }
+            });
+
+            return result;
         }
 
         /// <summary>

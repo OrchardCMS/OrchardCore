@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions.Features;
-using OrchardCore.Environment.Extensions.Loaders;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Extensions.Utility;
 using OrchardCore.Modules;
@@ -260,8 +259,8 @@ namespace OrchardCore.Environment.Extensions
                     {
                         return Task.CompletedTask;
                     }
-                    var manifestInfo = new ManifestInfo(module.ModuleInfo);
 
+                    var manifestInfo = new ManifestInfo(module.ModuleInfo);
                     var extensionInfo = new ExtensionInfo(module.SubPath, manifestInfo, (mi, ei) =>
                     {
                         return _featuresProvider.GetFeatures(ei, mi);
@@ -317,7 +316,7 @@ namespace OrchardCore.Environment.Extensions
                             featureTypes = Array.Empty<Type>();
                         }
 
-                        loadedFeatures.Add(feature.Id, new CompiledFeatureEntry(feature, featureTypes));
+                        loadedFeatures.Add(feature.Id, new FeatureEntry(feature, featureTypes));
                     }
                 };
 

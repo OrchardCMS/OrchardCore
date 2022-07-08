@@ -29,6 +29,12 @@
                     undo: 'Rückgängig'
                 }
             },
+            et: {
+                history: {
+                    redo: 'Võta tagasi',
+                    undo: 'Tee uuesti'
+                }
+            },
             fr: {
                 history: {
                     redo: 'Annuler',

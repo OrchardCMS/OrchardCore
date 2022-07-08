@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Documents;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Indexes;
@@ -12,6 +13,8 @@ namespace OrchardCore.Workflows.Http.Services
 {
     internal class WorkflowInstanceRouteEntries : WorkflowRouteEntries<WorkflowRouteDocument>, IWorkflowInstanceRouteEntries
     {
+        public WorkflowInstanceRouteEntries(IVolatileDocumentManager<WorkflowRouteDocument> documentManager) : base(documentManager) { }
+
         protected override async Task<WorkflowRouteDocument> CreateDocumentAsync()
         {
             var workflowTypeDictionary = (await Session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync()).ToDictionary(x => x.WorkflowTypeId);

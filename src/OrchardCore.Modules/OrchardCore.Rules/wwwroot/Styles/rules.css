@@ -1,0 +1,8 @@
+.condition-group {
+  list-style: none;
+  padding-left: 0;
+}
+.condition-group li {
+  list-style: none;
+  cursor: move;
+}

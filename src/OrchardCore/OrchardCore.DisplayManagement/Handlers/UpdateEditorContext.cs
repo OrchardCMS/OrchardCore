@@ -1,4 +1,5 @@
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Handlers
 {
@@ -6,7 +7,7 @@ namespace OrchardCore.DisplayManagement.Handlers
     {
 
         public UpdateEditorContext(IShape model, string groupId, bool isNew, string htmlFieldPrefix, IShapeFactory shapeFactory,
-            IShape layout, IUpdateModel updater)
+            IZoneHolding layout, IUpdateModel updater)
             : base(model, groupId, isNew, htmlFieldPrefix, shapeFactory, layout, updater)
         {
         }

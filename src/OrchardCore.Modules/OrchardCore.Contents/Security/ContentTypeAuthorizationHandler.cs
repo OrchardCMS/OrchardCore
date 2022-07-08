@@ -12,6 +12,7 @@ namespace OrchardCore.Contents.Security
     public class ContentTypeAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
         private readonly IServiceProvider _serviceProvider;
+        private IAuthorizationService _authorizationService;
 
         public ContentTypeAuthorizationHandler(IServiceProvider serviceProvider)
         {
@@ -38,9 +39,11 @@ namespace OrchardCore.Contents.Security
 
             if (contentItem != null)
             {
+                var ownerVariation = GetOwnerVariation(requirement.Permission);
+
                 if (OwnerVariationExists(requirement.Permission) && HasOwnership(context.User, contentItem))
                 {
-                    permission = GetOwnerVariation(requirement.Permission);
+                    permission = ownerVariation;
                 }
             }
 
@@ -51,7 +54,7 @@ namespace OrchardCore.Contents.Security
                 // The resource can be a content type name
                 var contentType = contentItem != null
                     ? contentItem.ContentType
-                    : Convert.ToString(context.Resource.ToString())
+                    : context.Resource.ToString()
                     ;
 
                 if (!String.IsNullOrEmpty(contentType))
@@ -66,9 +69,9 @@ namespace OrchardCore.Contents.Security
             }
 
             // Lazy load to prevent circular dependencies
-            var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
+            _authorizationService ??= _serviceProvider.GetService<IAuthorizationService>();
 
-            if (await authorizationService.AuthorizeAsync(context.User, permission))
+            if (await _authorizationService.AuthorizeAsync(context.User, permission))
             {
                 context.Succeed(requirement);
             }
@@ -76,34 +79,9 @@ namespace OrchardCore.Contents.Security
 
         private static Permission GetOwnerVariation(Permission permission)
         {
-            if (permission.Name == CommonPermissions.PublishContent.Name)
+            if (CommonPermissions.OwnerPermissionsByName.TryGetValue(permission.Name, out var ownerVariation))
             {
-                return CommonPermissions.PublishOwnContent;
-            }
-
-            if (permission.Name == CommonPermissions.EditContent.Name)
-            {
-                return CommonPermissions.EditOwnContent;
-            }
-
-            if (permission.Name == CommonPermissions.DeleteContent.Name)
-            {
-                return CommonPermissions.DeleteOwnContent;
-            }
-
-            if (permission.Name == CommonPermissions.ViewContent.Name)
-            {
-                return CommonPermissions.ViewOwnContent;
-            }
-
-            if (permission.Name == CommonPermissions.PreviewContent.Name)
-            {
-                return CommonPermissions.PreviewOwnContent;
-            }
-
-            if (permission.Name == CommonPermissions.CloneContent.Name)
-            {
-                return CommonPermissions.CloneOwnContent;
+                return ownerVariation;
             }
 
             return null;

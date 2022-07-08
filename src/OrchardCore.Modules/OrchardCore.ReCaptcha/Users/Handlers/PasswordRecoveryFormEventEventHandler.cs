@@ -19,7 +19,7 @@ namespace OrchardCore.ReCaptcha.Users.Handlers
             return _recaptchaService.ValidateCaptchaAsync(reportError);
         }
 
-        public Task PasswordResetAsync()
+        public Task PasswordResetAsync(PasswordRecoveryContext context)
         {
             return Task.CompletedTask;
         }
@@ -29,7 +29,7 @@ namespace OrchardCore.ReCaptcha.Users.Handlers
             return _recaptchaService.ValidateCaptchaAsync(reportError);
         }
 
-        public Task PasswordRecoveredAsync()
+        public Task PasswordRecoveredAsync(PasswordRecoveryContext context)
         {
             return Task.CompletedTask;
         }

@@ -108,6 +108,7 @@ OpenID Connect apps require the following configuration.
 - Logout Redirect Uri: logout callback URL.
 - Redirect Uri: callback URL.
 - Skip Consent: sets whether a consent form has to be completed by the user after log in.
+- Advanced Parameters: Allows setting additional parameters that can be sent with the authorize request. Note: The default parameters are set from the options above.
 
 A sample of OpenID Connect App recipe step:
 
@@ -304,10 +305,3 @@ A sample of OpenID Connect Client Settings recipe step:
       "ClientSecret": "secret"
 }
 ```
-
-## CREDITS
-
-### OpenIddict
-
-<https://github.com/openiddict>  
-License under Apache License 2.0

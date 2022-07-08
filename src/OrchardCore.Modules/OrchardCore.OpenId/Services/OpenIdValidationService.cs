@@ -41,6 +41,17 @@ namespace OrchardCore.OpenId.Services
         public async Task<OpenIdValidationSettings> GetSettingsAsync()
         {
             var container = await _siteService.GetSiteSettingsAsync();
+            return GetSettingsFromContainer(container);
+        }
+
+        public async Task<OpenIdValidationSettings> LoadSettingsAsync()
+        {
+            var container = await _siteService.LoadSiteSettingsAsync();
+            return GetSettingsFromContainer(container);
+        }
+
+        private OpenIdValidationSettings GetSettingsFromContainer(ISite container)
+        {
             if (container.Properties.TryGetValue(nameof(OpenIdValidationSettings), out var settings))
             {
                 return settings.ToObject<OpenIdValidationSettings>();
@@ -99,7 +110,7 @@ namespace OrchardCore.OpenId.Services
                     }));
                 }
 
-                if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
+                if (!String.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
                 {
                     results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
                     {
@@ -108,7 +119,7 @@ namespace OrchardCore.OpenId.Services
                 }
             }
 
-            if (!string.IsNullOrEmpty(settings.Tenant) && !string.IsNullOrEmpty(settings.Audience))
+            if (!String.IsNullOrEmpty(settings.Tenant) && !string.IsNullOrEmpty(settings.Audience))
             {
                 results.Add(new ValidationResult(S["No audience can be set when using another tenant."], new[]
                 {
@@ -132,7 +143,7 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-            if (!string.IsNullOrEmpty(settings.Audience) &&
+            if (!String.IsNullOrEmpty(settings.Audience) &&
                 settings.Audience.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.OrdinalIgnoreCase))
             {
                 results.Add(new ValidationResult(S["The audience cannot start with the special 'oct:' prefix."], new[]
@@ -143,8 +154,8 @@ namespace OrchardCore.OpenId.Services
 
             // If a tenant was specified, ensure it is valid, that the OpenID server feature
             // was enabled and that at least a scope linked with the current tenant exists.
-            if (!string.IsNullOrEmpty(settings.Tenant) &&
-                !string.Equals(settings.Tenant, _shellSettings.Name))
+            if (!String.IsNullOrEmpty(settings.Tenant) &&
+                !String.Equals(settings.Tenant, _shellSettings.Name))
             {
                 if (!_shellHost.TryGetSettings(settings.Tenant, out var shellSettings))
                 {

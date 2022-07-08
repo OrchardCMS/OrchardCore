@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents.Options;
@@ -13,12 +14,13 @@ namespace OrchardCore.Documents
         where TDocumentStore : IDocumentStore where TDocument : class, IDocument, new()
     {
         public DocumentManager(
-            TDocumentStore documentStore,
             IDistributedCache distributedCache,
             IMemoryCache memoryCache,
-            IOptionsSnapshot<DocumentOptions> options)
-            : base(documentStore, distributedCache, memoryCache, options)
+            IOptionsMonitor<DocumentOptions> options,
+            ILogger<DocumentManager<TDocument>> logger)
+            : base(distributedCache, memoryCache, options, logger)
         {
+            DocumentStoreServiceType = typeof(TDocumentStore);
         }
     }
 }

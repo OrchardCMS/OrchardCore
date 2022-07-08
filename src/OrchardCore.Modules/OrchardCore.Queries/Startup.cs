@@ -1,4 +1,6 @@
 using System;
+using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,7 +41,6 @@ namespace OrchardCore.Queries
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IQueryManager, QueryManager>();
-            services.AddScoped<IDisplayManager<Query>, DisplayManager<Query>>();
 
             services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
             services.AddRecipeExecutionStep<QueryStep>();
@@ -50,8 +51,18 @@ namespace OrchardCore.Queries
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllQueriesDeploymentStepDriver>();
             services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
 
-            services.AddScoped<ILiquidTemplateEventHandler, QueriesLiquidTemplateEventHandler>();
-            services.AddLiquidFilter<QueryFilter>("query");
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.Scope.SetValue("Queries", new ObjectValue(new LiquidQueriesAccessor()));
+                o.MemberAccessStrategy.Register<LiquidQueriesAccessor, FluidValue>(async (obj, name, context) =>
+                {
+                    var liquidTemplateContext = (LiquidTemplateContext)context;
+                    var queryManager = liquidTemplateContext.Services.GetRequiredService<IQueryManager>();
+
+                    return FluidValue.Create(await queryManager.GetQueryAsync(name), context.Options);
+                });
+            })
+            .AddLiquidFilter<QueryFilter>("query");
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

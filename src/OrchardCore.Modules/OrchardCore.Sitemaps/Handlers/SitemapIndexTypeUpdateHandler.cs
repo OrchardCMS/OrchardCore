@@ -51,22 +51,22 @@ namespace OrchardCore.Sitemaps.Handlers
                     if (source.IndexAll)
                     {
                         sitemap.Identifier = IdGenerator.GenerateId();
-                        return;
+                        break;
                     }
                     else if (source.LimitItems && String.Equals(source.LimitedContentType.ContentTypeName, contentTypeName))
                     {
                         sitemap.Identifier = IdGenerator.GenerateId();
-                        return;
+                        break;
                     }
                     else if (source.ContentTypes.Any(ct => String.Equals(ct.ContentTypeName, contentTypeName)))
                     {
                         sitemap.Identifier = IdGenerator.GenerateId();
-                        return;
+                        break;
                     }
                 }
-
-                await _sitemapManager.UpdateSitemapAsync();
             }
+
+            await _sitemapManager.UpdateSitemapAsync();
         }
     }
 }

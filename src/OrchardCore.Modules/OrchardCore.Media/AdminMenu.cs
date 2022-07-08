@@ -24,7 +24,7 @@ namespace OrchardCore.Media
             builder
                 .Add(S["Content"], content => content
                     .AddClass("media").Id("media")
-                    .Add(S["Media Library"], S["Media Library"].PrefixPosition(), layers => layers
+                    .Add(S["Media Library"], S["Media Library"].PrefixPosition(), media => media
                         .Permission(Permissions.ManageMedia)
                         .Action("Index", "Admin", new { area = "OrchardCore.Media" })
                         .LocalNav()
@@ -34,7 +34,7 @@ namespace OrchardCore.Media
                 .Add(S["Media"], S["Media"].PrefixPosition(), media => media
                     .Add(S["Media Options"], S["Media Options"].PrefixPosition(), options => options
                         .Action("Options", "Admin", new { area = "OrchardCore.Media" })
-                        .Permission(Permissions.ManageMedia)
+                        .Permission(Permissions.ViewMediaOptions)
                         .LocalNav())
                     .Add(S["Media Profiles"], S["Media Profiles"].PrefixPosition(), mediaProfiles => mediaProfiles
                         .Action("Index", "MediaProfiles", new { area = "OrchardCore.Media" })

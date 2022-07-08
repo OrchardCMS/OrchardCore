@@ -112,7 +112,7 @@ namespace OrchardCore.Templates.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(TemplateIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -181,7 +181,7 @@ namespace OrchardCore.Templates.Controllers
                     : _templatesManager.UpdateTemplateAsync(model.Name, template)
                     );
 
-                _notifier.Success(H["The \"{0}\" template has been created.", model.Name]);
+                await _notifier.SuccessAsync(H["The \"{0}\" template has been created.", model.Name]);
 
                 if (submit == "SaveAndContinue")
                 {
@@ -216,7 +216,7 @@ namespace OrchardCore.Templates.Controllers
 
             if (!templatesDocument.Templates.ContainsKey(name))
             {
-                return RedirectToAction("Create", new { name, returnUrl });
+                return RedirectToAction(nameof(Create), new { name, returnUrl });
             }
 
             var template = templatesDocument.Templates[name];
@@ -323,7 +323,7 @@ namespace OrchardCore.Templates.Controllers
                     ? _adminTemplatesManager.RemoveTemplateAsync(name)
                     : _templatesManager.RemoveTemplateAsync(name));
 
-            _notifier.Success(H["Template deleted successfully."]);
+            await _notifier.SuccessAsync(H["Template deleted successfully."]);
 
             return RedirectToReturnUrlOrIndex(returnUrl);
         }
@@ -355,7 +355,7 @@ namespace OrchardCore.Templates.Controllers
                                     ? _adminTemplatesManager.RemoveTemplateAsync(item.Key)
                                     : _templatesManager.RemoveTemplateAsync(item.Key));
                         }
-                        _notifier.Success(H["Templates successfully removed."]);
+                        await _notifier.SuccessAsync(H["Templates successfully removed."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -364,11 +364,11 @@ namespace OrchardCore.Templates.Controllers
 
             if (options.AdminTemplates)
             {
-                return RedirectToAction("Admin");
+                return RedirectToAction(nameof(Admin));
             }
             else
             {
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
         }
 
@@ -376,7 +376,7 @@ namespace OrchardCore.Templates.Controllers
         {
             if ((String.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
             {
-                return Redirect(returnUrl);
+                return this.Redirect(returnUrl, true);
             }
             else
             {

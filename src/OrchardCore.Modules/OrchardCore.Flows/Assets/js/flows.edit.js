@@ -1,30 +1,34 @@
 //variables used in FlowPart.Edit sortable
 var widgetDragItem, lastContainer, widgetItemSourceId, widgetItemDestId;
 
-
 $(function () {
-
-    function guid() {
-        function s4() {
-            return Math
-                .floor((1 + Math.random()) * 0x10000)
-                .toString(16)
-                .substring(1);
-        }
-        return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
-    }    
     $(document).on('click', '.add-widget', function (event) {
         var type = $(this).data("widget-type");
         var targetId = $(this).data("target-id");
+        var htmlFieldPrefix = $(this).data("html-field-prefix");
         var createEditorUrl = $('#' + targetId).data("buildeditorurl");
         var prefixesName = $(this).data("prefixes-name");
         var flowmetadata = $(this).data("flowmetadata");
         var parentContentType = $(this).data("parent-content-type");
         var partName = $(this).data("part-name");
-        var prefix = guid();
+
+        // Retrieve all index values knowing that some elements may have been moved / removed.
+        var indexes = $('#' + targetId).closest("form").find("input[name*='Prefixes']")
+            .filter(function (i, e) {
+                return $(e).val().substring(0, $(e).val().lastIndexOf('-')) === htmlFieldPrefix;
+            })
+            .map(function (i, e) {
+                return parseInt($(e).val().substring($(e).val().lastIndexOf('-') + 1)) || 0;
+            });
+
+        // Use a prefix based on the items count (not a guid) so that the browser autofill still works.
+        var index = indexes.length ? Math.max(...indexes) + 1 : 0;
+        var prefix = htmlFieldPrefix + '-' + index.toString();
+
         var contentTypesName = $(this).data("contenttypes-name");
+        var contentItemsName = $(this).data("contentitems-name");
         $.ajax({
-            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType +"&partName=" + partName
+            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&contentItemsName=" + contentItemsName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName
         }).done(function (data) {
             var result = JSON.parse(data);
             $(document.getElementById(targetId)).append(result.Content);
@@ -40,15 +44,30 @@ $(function () {
         var type = $(this).data("widget-type");
         var target = $(this).closest('.widget-template');
         var targetId = $(this).data("target-id");
+        var htmlFieldPrefix = $(this).data("html-field-prefix");
         var createEditorUrl = $('#' + targetId).data("buildeditorurl");
         var flowmetadata = $(this).data("flowmetadata");
         var prefixesName = $(this).data("prefixes-name");
         var parentContentType = $(this).data("parent-content-type");
         var partName = $(this).data("part-name");
-        var prefix = guid();
+
+        // Retrieve all index values knowing that some elements may have been moved / removed.
+        var indexes = $('#' + targetId).closest("form").find("input[name*='Prefixes']")
+            .filter(function (i, e) {
+                return $(e).val().substring(0, $(e).val().lastIndexOf('-')) === htmlFieldPrefix;
+            })
+            .map(function (i, e) {
+                return parseInt($(e).val().substring($(e).val().lastIndexOf('-') + 1)) || 0;
+            });
+
+        // Use a prefix based on the items count (not a guid) so that the browser autofill still works.
+        var index = indexes.length ? Math.max(...indexes) + 1 : 0;
+        var prefix = htmlFieldPrefix + '-' + index.toString();
+
         var contentTypesName = $(this).data("contenttypes-name");
+        var contentItemsName = $(this).data("contentitems-name");
         $.ajax({
-            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName
+            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&contentItemsName=" + contentItemsName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName
         }).done(function (data) {
             var result = JSON.parse(data);
             $(result.Content).insertBefore(target);
@@ -62,12 +81,14 @@ $(function () {
 
     $(document).on('click', '.widget-delete', function () {
         var $this = $(this);
-        confirmDialog({...$this.data(), callback: function(r) { 
+        confirmDialog({
+            ...$this.data(), callback: function (r) {
                 if (r) {
                     $this.closest('.widget-template').remove();
                     $(document).trigger('contentpreview:render');
                 }
-            }});
+            }
+        });
     });
 
     $(document).on('change', '.widget-editor-footer label, .widget-editor-header label', function () {
@@ -89,9 +110,11 @@ $(function () {
             var svg = $(this).find('svg')[0].outerHTML;
             var alignDropdown = $(this).closest('.dropdown-menu');
             var $btn = alignDropdown.prev('button');
-            $btn.html(svg );
-
+            $btn.html(svg);
         }
+
+        $(this).parent().find('.dropdown-item').removeClass('active');
+        $(this).toggleClass('active');
         $(document).trigger('contentpreview:render');
     });
 
