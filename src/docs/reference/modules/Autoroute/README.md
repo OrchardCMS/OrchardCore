@@ -34,9 +34,9 @@ it is compatible with a URL.
 {{ ContentItem.Content.Product.Color.Text | slugify }}
 ```
 
-## Autoroute Alias
+## Autoroute Slug Handle
 
-Content items with an `Autoroute` can be retrieved by URL anywhere you can retrieve content by alias (see example below). The syntax for this is `slug:<URL>`, e.g. `slug:my-blog/my-blog-post`.
+Content items with an `Autoroute` can be retrieved by URL anywhere you can retrieve content by its slug handle (see example below). The syntax for this is `slug:<URL>`, e.g. `slug:my-blog/my-blog-post`.
 
 ## Liquid
 
@@ -76,7 +76,7 @@ For example :
 
 - Content items _contained_ inside a `BagPart` are considered _contained or child_ content items.
 
-- `Terms` of a `Taxonomy` of a taxonomy are _contained_ by the `Taxonomy`.
+- `Terms` of a `Taxonomy` are _contained_ by the `Taxonomy`.
 
 _Contained_ content items are stored as part of the json inside the _container_ document.
 
@@ -89,10 +89,10 @@ The `AutoroutePart` supports routing of these _container_ types.
 
 ### Configuration
 
-To enabled routing of _contained_ content items the `AutoroutePart` must be configured correctly.
+To enable routing of _contained_ content items the `AutoroutePart` must be configured correctly.
 
 - Add the `AutoroutePart` to the _container or parent_ content type definition.
-- Enable `Allow Route Contained Items` on the `AutoroutePart Settings`.
+- Enable `Allow contained item routing` on the `AutoroutePart Settings`.
 - Enable `Route Contained Items` on the _container_ content item.
 
 Optionally, add the `AutoroutePart` to the content type definition of the _contained or child_ content items, to manage the contained item routes.

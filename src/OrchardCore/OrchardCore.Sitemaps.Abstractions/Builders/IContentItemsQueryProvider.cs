@@ -8,6 +8,6 @@ namespace OrchardCore.Sitemaps.Builders
         /// <summary>
         /// Get content items to evaluate for inclusion in a sitemap.
         /// </summary>
-        Task GetContentItems(ContentTypesSitemapSource source, ContentItemsQueryContext context);
+        Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context);
     }
 }

@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Workflows.Services;
 
@@ -8,8 +10,6 @@ namespace OrchardCore.Contents.Workflows.Handlers
 {
     public class ContentsHandler : ContentHandlerBase
     {
-        public const string ContentItemInputKey = "ContentItem";
-
         private readonly IWorkflowManager _workflowManager;
 
         public ContentsHandler(IWorkflowManager workflowManager)
@@ -25,6 +25,11 @@ namespace OrchardCore.Contents.Workflows.Handlers
         public override Task UpdatedAsync(UpdateContentContext context)
         {
             return TriggerWorkflowEventAsync(nameof(ContentUpdatedEvent), context.ContentItem);
+        }
+
+        public override Task DraftSavedAsync(SaveDraftContentContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(ContentDraftSavedEvent), context.ContentItem);
         }
 
         public override Task PublishedAsync(PublishContentContext context)
@@ -49,10 +54,20 @@ namespace OrchardCore.Contents.Workflows.Handlers
 
         private Task TriggerWorkflowEventAsync(string name, ContentItem contentItem)
         {
-            return _workflowManager.TriggerEventAsync(name,
-                input: new { ContentItem = contentItem },
-                correlationId: contentItem.ContentItemId
-            );
+            var contentEvent = new ContentEventContext()
+            {
+                Name = name,
+                ContentType = contentItem.ContentType,
+                ContentItemId = contentItem.ContentItemId
+            };
+
+            var input = new Dictionary<string, object>
+            {
+                { ContentEventConstants.ContentItemInputKey, contentItem },
+                { ContentEventConstants.ContentEventInputKey, contentEvent }
+            };
+
+            return _workflowManager.TriggerEventAsync(name, input, correlationId: contentItem.ContentItemId);
         }
     }
 }

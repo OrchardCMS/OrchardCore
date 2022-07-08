@@ -1,0 +1,27 @@
+@using OrchardCore.Deployment
+@model ExportContentToDeploymentTargetSettingsViewModel
+@inject IDeploymentPlanService DeploymentPlanService
+
+@{
+    var deploymentPlans = await DeploymentPlanService.GetAllDeploymentPlansAsync();
+    var exportContentToDeploymentTargetPlans = deploymentPlans.Where(x => x.DeploymentSteps.Any(x => x.Name == nameof(ExportContentToDeploymentTargetDeploymentStep)));
+}
+
+@if (!exportContentToDeploymentTargetPlans.Any())
+{
+    <p class="alert alert-warning">@T["No export content to deployment target plans found. Create a deployment plan and add a Export content to deployment target step to it."]</p>
+}
+else
+{
+    <div class="row">
+        <div class="mb-3 col-sm-6">
+            <label asp-for="ExportContentToDeploymentTargetPlanId">@T["Deployment Plan"]</label>
+            <select asp-for="ExportContentToDeploymentTargetPlanId" class="form-select">
+                @foreach (var exportContentToDeploymentTargetPlan in exportContentToDeploymentTargetPlans)
+                {
+                    <option value="@exportContentToDeploymentTargetPlan.Id">@exportContentToDeploymentTargetPlan.Name</option>
+                }
+            </select>
+        </div>
+    </div>
+}

@@ -12,15 +12,13 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         private readonly IFileVersionProvider _fileVersionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AppendVersionFilter(
-            IFileVersionProvider fileVersionProvider,
-            IHttpContextAccessor httpContextAccessor)
+        public AppendVersionFilter(IFileVersionProvider fileVersionProvider, IHttpContextAccessor httpContextAccessor)
         {
             _fileVersionProvider = fileVersionProvider;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             var url = input.ToStringValue();
 

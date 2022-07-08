@@ -1,10 +1,12 @@
+using System.IO.Enumeration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
-using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Descriptor.Settings;
+using OrchardCore.Environment.Shell.Distributed;
+using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -30,6 +32,8 @@ namespace OrchardCore.Environment.Shell
 
             services.AddSingleton<IRunningShellTable, RunningShellTable>();
 
+            services.AddHostedService<DistributedShellHostedService>();
+
             return services;
         }
 
@@ -42,13 +46,42 @@ namespace OrchardCore.Environment.Shell
 
         public static IServiceCollection AddSetFeaturesDescriptor(this IServiceCollection services)
         {
-            services.AddSingleton<IShellDescriptorManager>(sp =>
-            {
-                var shellFeatures = sp.GetServices<ShellFeature>();
-                return new SetFeaturesShellDescriptorManager(shellFeatures);
-            });
+            services.AddSingleton<IShellDescriptorManager, SetFeaturesShellDescriptorManager>();
 
             return services;
         }
+
+        public static IServiceCollection AddNullFeatureProfilesService(this IServiceCollection services)
+            => services.AddScoped<IFeatureProfilesService, NullFeatureProfilesService>();
+
+        public static IServiceCollection AddFeatureValidation(this IServiceCollection services)
+            => services
+                .AddScoped<IFeatureValidationProvider, FeatureProfilesValidationProvider>()
+                .AddScoped<IFeatureValidationProvider, DefaultTenantOnlyFeatureValidationProvider>();
+
+        public static IServiceCollection ConfigureFeatureProfilesRuleOptions(this IServiceCollection services)
+            => services
+                .Configure<FeatureProfilesRuleOptions>(o =>
+                {
+                    o.Rules["Include"] = (expression, name) =>
+                    {
+                        if (FileSystemName.MatchesSimpleExpression(expression, name))
+                        {
+                            return (true, true);
+                        }
+
+                        return (false, false);
+                    };
+
+                    o.Rules["Exclude"] = (expression, name) =>
+                    {
+                        if (FileSystemName.MatchesSimpleExpression(expression, name))
+                        {
+                            return (true, false);
+                        }
+
+                        return (false, false);
+                    };
+                });
     }
 }

@@ -1,0 +1,10 @@
+@model ShapeViewModel<CultureCondition>
+@inject IOptions<ConditionOperatorOptions> Options
+@{
+    var displayText = String.Empty;
+    if (Model.Value.Operation != null && Options.Value.ConditionOperatorOptionByType.TryGetValue(Model.Value.Operation.GetType(), out var option))
+    {
+        displayText = option.DisplayText(Context.RequestServices);
+    }
+}
+<span>@T["Culture"]</span><span class="ms-2 hint dashed">@displayText @Model.Value.Value</span>

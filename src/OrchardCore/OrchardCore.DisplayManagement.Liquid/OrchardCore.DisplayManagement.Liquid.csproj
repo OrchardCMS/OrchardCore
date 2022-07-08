@@ -1,7 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore DisplayManagement Liquid</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Liquid syntax support for DisplayManagement.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework DisplayManagement Liquid</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

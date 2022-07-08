@@ -126,19 +126,19 @@ namespace OrchardCore.Workflows.Activities
             return ActivityExecutionResult.Empty;
         }
 
-        protected virtual T GetProperty<T>(Func<T> defaultValue = null, [CallerMemberName]string name = null)
+        protected virtual T GetProperty<T>(Func<T> defaultValue = null, [CallerMemberName] string name = null)
         {
             var item = Properties[name];
             return item != null ? item.ToObject<T>() : defaultValue != null ? defaultValue() : default;
         }
 
-        protected virtual T GetProperty<T>(Type type, Func<T> defaultValue = null, [CallerMemberName]string name = null)
+        protected virtual T GetProperty<T>(Type type, Func<T> defaultValue = null, [CallerMemberName] string name = null)
         {
             var item = Properties[name];
             return item != null ? (T)item.ToObject(type) : defaultValue != null ? defaultValue() : default;
         }
 
-        protected virtual void SetProperty(object value, [CallerMemberName]string name = null)
+        protected virtual void SetProperty(object value, [CallerMemberName] string name = null)
         {
             Properties[name] = JToken.FromObject(value);
         }

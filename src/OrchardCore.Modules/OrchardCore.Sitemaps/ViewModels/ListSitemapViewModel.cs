@@ -1,11 +1,13 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.Sitemaps.ViewModels
 {
     public class ListSitemapViewModel
     {
         public IList<SitemapListEntry> Sitemaps { get; set; }
-        public SitemapListOptions Options { get; set; }
+        public ContentOptions Options { get; set; } = new ContentOptions();
         public dynamic Pager { get; set; }
     }
 
@@ -16,9 +18,23 @@ namespace OrchardCore.Sitemaps.ViewModels
         public bool Enabled { get; set; }
     }
 
-    public class SitemapListOptions
+    public class ContentOptions
     {
         public string Search { get; set; }
+        public ContentsBulkAction BulkAction { get; set; }
+
+        #region Lists to populate
+
+        [BindNever]
+        public List<SelectListItem> ContentsBulkAction { get; set; }
+
+        #endregion Lists to populate
+    }
+
+    public enum ContentsBulkAction
+    {
+        None,
+        Remove
     }
 
 }

@@ -1,10 +1,12 @@
 using Fluid;
 using Markdig;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Drivers;
@@ -22,17 +24,27 @@ namespace OrchardCore.Markdown
 {
     public class Startup : StartupBase
     {
-        static Startup()
+        private static readonly string DefaultMarkdownExtensions = "nohtml+advanced";
+
+        private readonly IShellConfiguration _shellConfiguration;
+
+        public Startup(IShellConfiguration shellConfiguration)
         {
-            TemplateContext.GlobalMemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<MarkdownFieldViewModel>();
+            _shellConfiguration = shellConfiguration;
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
+                o.MemberAccessStrategy.Register<MarkdownFieldViewModel>();
+            })
+            .AddLiquidFilter<Markdownify>("markdownify");
+
             // Markdown Part
             services.AddContentPart<MarkdownBodyPart>()
-                .UseDisplayDriver<MarkdownBodyPartDisplay>()
+                .UseDisplayDriver<MarkdownBodyPartDisplayDriver>()
                 .AddHandler<MarkdownBodyPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();
@@ -46,10 +58,12 @@ namespace OrchardCore.Markdown
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
 
-            services.AddLiquidFilter<Markdownify>("markdownify");
-
             services.AddOptions<MarkdownPipelineOptions>();
-            services.ConfigureMarkdownPipeline((pipeline) => pipeline.DisableHtml());
+            services.ConfigureMarkdownPipeline((pipeline) =>
+            {
+                var extensions = _shellConfiguration.GetValue("OrchardCore_Markdown:Extensions", DefaultMarkdownExtensions);
+                pipeline.Configure(extensions);
+            });
 
             services.AddScoped<IMarkdownService, DefaultMarkdownService>();
         }

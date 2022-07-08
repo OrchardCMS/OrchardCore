@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Lucene.Net.QueryParsers.Classic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
@@ -12,7 +13,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.Entities;
 using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Security.Permissions;
@@ -32,6 +32,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly ISearchQueryService _searchQueryService;
         private readonly ISession _session;
+        private readonly IStringLocalizer S;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly dynamic New;
         private readonly ILogger _logger;
@@ -45,6 +46,7 @@ namespace OrchardCore.Lucene.Controllers
             LuceneAnalyzerManager luceneAnalyzerManager,
             ISearchQueryService searchQueryService,
             ISession session,
+            IStringLocalizer<SearchController> stringLocalizer,
             IEnumerable<IPermissionProvider> permissionProviders,
             IShapeFactory shapeFactory,
             ILogger<SearchController> logger
@@ -58,6 +60,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _searchQueryService = searchQueryService;
             _session = session;
+            S = stringLocalizer;
             _permissionProviders = permissionProviders;
             New = shapeFactory;
             _logger = logger;
@@ -71,10 +74,11 @@ namespace OrchardCore.Lucene.Controllers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var searchSettings = siteSettings.As<LuceneSettings>();
+            var searchIndex = !String.IsNullOrWhiteSpace(viewModel.Index) ? viewModel.Index : searchSettings.SearchIndex;
 
-            if (permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchSettings.SearchIndex + "Index") != null)
+            if (permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchIndex + "Index") != null)
             {
-                if (!await _authorizationService.AuthorizeAsync(User, permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchSettings.SearchIndex + "Index")))
+                if (!await _authorizationService.AuthorizeAsync(User, permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchIndex + "Index")))
                 {
                     return this.ChallengeOrForbid();
                 }
@@ -85,7 +89,7 @@ namespace OrchardCore.Lucene.Controllers
                 return BadRequest("Search is not configured.");
             }
 
-            if (searchSettings.SearchIndex != null && !_luceneIndexProvider.Exists(searchSettings.SearchIndex))
+            if (searchIndex != null && !_luceneIndexProvider.Exists(searchIndex))
             {
                 _logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
                 return BadRequest("Search is not configured.");
@@ -99,12 +103,12 @@ namespace OrchardCore.Lucene.Controllers
                 return BadRequest("Search is not configured.");
             }
 
-            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(searchSettings.SearchIndex);
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(searchIndex);
 
             if (luceneIndexSettings == null)
             {
-                _logger.LogInformation($"Couldn't execute search. No Lucene index settings was defined for ({searchSettings.SearchIndex}) index.");
-                return BadRequest($"Search index ({searchSettings.SearchIndex}) is not configured.");
+                _logger.LogInformation($"Couldn't execute search. No Lucene index settings was defined for ({searchIndex}) index.");
+                return BadRequest($"Search index ({searchIndex}) is not configured.");
             }
 
             if (string.IsNullOrWhiteSpace(viewModel.Terms))
@@ -120,7 +124,6 @@ namespace OrchardCore.Lucene.Controllers
             // We Query Lucene index
             var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(luceneIndexSettings.IndexName));
             var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.DefaultSearchFields, analyzer);
-            var query = queryParser.Parse(QueryParser.Escape(viewModel.Terms));
 
             // Fetch one more result than PageSize to generate "More" links
             var start = 0;
@@ -137,7 +140,31 @@ namespace OrchardCore.Lucene.Controllers
                 end = Convert.ToInt32(pagerParameters.After) + pager.PageSize + 1;
             }
 
-            var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end);
+            var terms = viewModel.Terms;
+            if (!searchSettings.AllowLuceneQueriesInSearch)
+            {
+                terms = QueryParser.Escape(terms);
+            }
+
+            IList<string> contentItemIds;
+            try
+            {
+                var query = queryParser.Parse(terms);
+                contentItemIds = (await _searchQueryService.ExecuteQueryAsync(query, searchIndex, start, end))
+                    .ToList();
+            }
+            catch (ParseException e)
+            {
+                ModelState.AddModelError("Terms", S["Incorrect query syntax."]);
+                _logger.LogError(e, "Incorrect Lucene search query syntax provided in search:");
+
+                // Return a SearchIndexViewModel without SearchResults or Pager shapes since there is an error.
+                return View(new SearchIndexViewModel
+                {
+                    Terms = viewModel.Terms,
+                    SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms, Index = viewModel.Index },
+                });
+            }
 
             // We Query database to retrieve content items.
             IQuery<ContentItem> queryDb;
@@ -155,7 +182,8 @@ namespace OrchardCore.Lucene.Controllers
                     .Take(pager.PageSize + 1);
             }
 
-            var containedItems = await queryDb.ListAsync();
+            // Sort the content items by their rank in the search results returned by Lucene.
+            var containedItems = (await queryDb.ListAsync()).OrderBy(x => contentItemIds.IndexOf(x.ContentItemId));
 
             // We set the PagerSlim before and after links
             if (pagerParameters.After != null || pagerParameters.Before != null)
@@ -182,7 +210,7 @@ namespace OrchardCore.Lucene.Controllers
             var model = new SearchIndexViewModel
             {
                 Terms = viewModel.Terms,
-                SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms },
+                SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms, Index = viewModel.Index },
                 SearchResults = new SearchResultsViewModel("Search__Results") { ContentItems = containedItems.Take(pager.PageSize) },
                 Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, string>() { { "Terms", viewModel.Terms } })
             };

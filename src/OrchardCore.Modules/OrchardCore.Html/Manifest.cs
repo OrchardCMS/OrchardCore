@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "The Html module enables content items to have Html bodies.",
-    Dependencies = new[] { "OrchardCore.ContentTypes", "OrchardCore.ShortCodes" },
+    Dependencies = new[] { "OrchardCore.ContentTypes", "OrchardCore.Shortcodes" },
     Category = "Content Management"
 )]

@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Description = "The default Theme",
+    Description = "The default Theme.",
     Tags = new[] { "Bootstrap", "Default" }
 )]

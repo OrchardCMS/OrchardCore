@@ -35,7 +35,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
 
         /// <summary>
         /// Returns the <see cref="DisplayName"/> value of the type if defined,
-        /// or the <see cref="Name"/> otherwise.
+        /// or the <see cref="ContentDefinition.Name"/> otherwise.
         /// </summary>
         /// <returns></returns>
         public override string ToString()

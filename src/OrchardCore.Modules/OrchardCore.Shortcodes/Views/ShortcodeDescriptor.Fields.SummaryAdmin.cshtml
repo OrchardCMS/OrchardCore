@@ -1,0 +1,6 @@
+@model ShapeViewModel<ShortcodeDescriptor>
+
+<h4 class="card-title shortcode-name">[&nbsp @Model.Value.Name &nbsp]</h4>
+<p class="shortcode-hint">@Model.Value.Hint</p>
+
+<pre class="shortcode-usage">@Html.Raw(@Model.Value.Usage)</pre>

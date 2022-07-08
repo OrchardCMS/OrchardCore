@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
@@ -42,6 +43,7 @@ namespace OrchardCore.Tests.Workflows
             var workflowType = new WorkflowType
             {
                 Id = 1,
+                WorkflowTypeId = IdGenerator.GenerateId(),
                 Activities = new List<ActivityRecord>
                 {
                     new ActivityRecord { ActivityId = "1", IsStart = true, Name = addTask.Name, Properties = JObject.FromObject( new
@@ -110,6 +112,8 @@ namespace OrchardCore.Tests.Workflows
             var workflowTypeStore = new Mock<IWorkflowTypeStore>();
             var workflowStore = new Mock<IWorkflowStore>();
             var workflowIdGenerator = new Mock<IWorkflowIdGenerator>();
+            workflowIdGenerator.Setup(x => x.GenerateUniqueId(It.IsAny<Workflow>())).Returns(IdGenerator.GenerateId());
+            var distributedLock = new Mock<IDistributedLock>();
             var workflowManagerLogger = new Mock<ILogger<WorkflowManager>>();
             var workflowContextLogger = new Mock<ILogger<WorkflowExecutionContext>>();
             var missingActivityLogger = new Mock<ILogger<MissingActivity>>();
@@ -121,6 +125,7 @@ namespace OrchardCore.Tests.Workflows
                 workflowStore.Object,
                 workflowIdGenerator.Object,
                 workflowValueSerializers,
+                distributedLock.Object,
                 workflowManagerLogger.Object,
                 missingActivityLogger.Object,
                 missingActivityLocalizer.Object,

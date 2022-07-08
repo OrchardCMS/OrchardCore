@@ -1,14 +1,10 @@
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Records;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
-using YesSql;
 
 namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 {
@@ -56,7 +52,6 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 Assert.Equal(2, nodes.Count());
                 Assert.Equal("new version", nodes[0]["displayText"].ToString());
                 Assert.Equal("second content item display text", nodes[1]["displayText"].ToString());
-
             }
         }
     }

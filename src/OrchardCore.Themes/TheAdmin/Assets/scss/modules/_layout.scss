@@ -1,0 +1,180 @@
+.preload * { 
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -ms-transition: none !important;
+    -o-transition: none !important;
+}
+
+body {
+    margin-bottom: $footer-height;
+    cursor: default;
+    height: 100%;
+    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+a {
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+@include cursor-class(move);
+@include cursor-class(pointer);
+
+// Layout
+// -----------------------------
+
+.ta-wrapper {
+
+}
+
+.ta-content {
+    padding: 15px;
+    margin-left: $left-navigation-width;
+    margin-top: $top-nav-height;
+    margin-bottom: $footer-height;
+    transition: margin-left 0.2s ease-in-out;
+
+    h1 {
+        line-height: 40px;
+        font-size: 28px;
+        letter-spacing: -0.04em;
+        font-weight: bold;
+    }
+}
+
+.left-sidebar-compact .ta-content {
+    margin-left: $left-navigation-width-when-compact;
+}
+
+@include media-breakpoint-down(sm) {
+    .ta-content {
+        margin-left: $left-navigation-width-when-compact;
+        transition: margin-left 0.5s ease-in-out;
+    }
+}
+
+.auth-wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+}
+
+// END OF LAYOUT
+
+// Sortable
+// ------------------------------
+.ui-sortable {
+    min-height: $font-size-base;
+}
+
+.with-checkbox .list-group-item {
+    padding: 0.75rem 0.5rem;
+}
+
+
+// No transitions on load
+// Prevents Firefox and Edge transitions on load.
+// This class is added by default and removed trought Javascript
+// after a few milliseconds.
+// https://css-tricks.com/transitions-only-after-page-load/
+// ------------------------------
+.disable.custom-control-input:checked ~ .custom-control-label::before {
+    border-color: red;
+    background-color: red;
+}
+
+.action-bar {
+    top: 3.3rem;
+    z-index: $zindex-sticky;
+}
+
+.list-group-item+.list-group-item {
+    border-top-width: 0px;
+}
+
+svg {
+    vertical-align: -.125em;
+}
+
+// Dropdown menus
+
+/* rtl:ignore */
+[dir="rtl"] .dropdown-menu {
+    left: auto !important;
+    right: 0px !important;
+    transform: translate3d(0px, 38px, 0px) !important;
+}
+
+.dropdown-menu.scrollable {
+    overflow-y: auto;
+    max-height: 250px;
+}
+
+.btn-dropdown-wrapper {
+    &:hover {
+        > .btn-dropdown {
+            border-width: 5px;
+            opacity: 1;
+        }
+    }     
+}
+
+.btn-dropdown {
+    ::-webkit-scrollbar {
+        width: 4px;
+        background-color: #EAEAEA;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #495057;
+    }
+
+    .dropdown-menu {
+        max-height: 200px;
+        overflow: hidden auto;
+        scrollbar-width: thin;
+        scrollbar-color: #495057 #EAEAEA;
+    }
+}
+
+.btn-dropdown {
+    position: relative;
+    z-index: 1000;
+    opacity: 0.8;
+    transition: 0.3s opacity;
+    > .btn-group {        
+        margin: 0 auto;
+        bottom: 17px;
+    }
+}
+
+.btn-dropdown.show {
+    z-index: 1001;
+}
+
+[dir="ltr"] .btn-dropdown {
+    >  .btn-group {
+        left: calc(-14px + 50%);
+    }
+}
+
+[dir="rtl"] .btn-dropdown {
+    >  .btn-group {
+        right: calc(-14px + 50%);
+    }
+}
+
+.btn:hover {
+    text-decoration: none;
+}
+
+.dropdown-item:hover {
+    text-decoration: none !important;
+}
+
+.unset{
+    all: unset;
+}

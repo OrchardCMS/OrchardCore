@@ -21,20 +21,24 @@ An example of this can be found in TheAgencyTheme where four Named BagParts are 
 
 When templating in a decoupled manner the content items are accessed directly through the name of the BagPart.
 
-``` liquid tab="Liquid"
-{% for service in Model.ContentItem.Content.Services.ContentItems %}
-    <h4 class="service-heading">{{ service.DisplayText }}</h4>
-    <p class="text-muted">{{ service.HtmlBodyPart.Html | raw }}</p>
-{% endfor %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-@foreach (var item in Model.ContentItem.Content.Services.ContentItems)
-{
-    <h4 class="service-heading">@item.DisplayText</h4>
-    <p class="text-muted">@Html.Raw(item.Content.HtmlBodyPart.Html)</p>
-}
-```
+    ``` liquid
+    {% for service in Model.ContentItem.Content.Services.ContentItems %}
+        <h4 class="service-heading">{{ service.DisplayText }}</h4>
+        <p class="text-muted">{{ service.HtmlBodyPart.Html | raw }}</p>
+    {% endfor %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @foreach (var item in Model.ContentItem.Content.Services.ContentItems)
+    {
+        <h4 class="service-heading">@item.DisplayText</h4>
+        <p class="text-muted">@Html.Raw(item.Content.HtmlBodyPart.Html)</p>
+    }
+    ```
 
 In this example Services is a Named BagPart.
 
@@ -46,29 +50,33 @@ the display shapes for the content items, then the `shape_render` filter is used
 When templating with Razor the `IContentItemDisplayManager` is used on the contained items to call `BuildDisplayAsync`
 to build the display shapes for the  content items, then `DisplayAsync` is used to render these shapes.
 
-``` liquid tab="Liquid"
-<section class="flow">
-    {% for item in Model.ContentItems %}
-        {{ item | shape_build_display: "Detail" | shape_render }}
-    {% endfor %}
-</section>
-```
+=== "Liquid"
 
-``` html tab="Razor"
-@using OrchardCore.Flows.ViewModels
+    ``` liquid
+    <section class="flow">
+        {% for item in Model.ContentItems %}
+            {{ item | shape_build_display: "Detail" | shape_render }}
+        {% endfor %}
+    </section>
+    ```
 
-@model BagPartViewModel
-@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+=== "Razor"
 
-<section class="flow">
-    @foreach (var item in Model.BagPart.ContentItems)
-    {
-        var itemContent = await ContentItemDisplayManager.BuildDisplayAsync(item, Model.BuildPartDisplayContext.Updater, Model.Settings.DisplayType ?? "Detail", Model.BuildPartDisplayContext.GroupId);
+    ``` html
+    @using OrchardCore.Flows.ViewModels
 
-        @await DisplayAsync(itemContent)
-    }
-</section>
-```
+    @model BagPartViewModel
+    @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+    <section class="flow">
+        @foreach (var item in Model.BagPart.ContentItems)
+        {
+            var itemContent = await ContentItemDisplayManager.BuildDisplayAsync(item, Model.BuildPartDisplayContext.Updater, Model.Settings.DisplayType ?? "Detail", Model.BuildPartDisplayContext.GroupId);
+
+            @await DisplayAsync(itemContent)
+        }
+    </section>
+    ```
 
 ## Template Alternates
 

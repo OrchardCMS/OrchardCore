@@ -1,0 +1,30 @@
+@model OrchardCore.Deployment.ViewModels.ImportJsonViewModel
+<zone Name="Title"><h1>@RenderTitleSegments(T["JSON Import"])</h1></zone>
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+
+@Html.ValidationSummary()
+
+<form asp-action="Json">
+    <div class="mb-3">
+        <textarea asp-for="Json" class="form-control mb-2" rows="20"></textarea>
+    </div>
+    <button class="btn btn-primary import" type="submit">@T["Import"]</button>
+</form>
+
+<script at="Foot">
+$(function () {
+    var textArea = document.getElementById('@Html.IdFor(x => x.Json)');
+
+    var editor = CodeMirror.fromTextArea(textArea, {
+        autoRefresh: true,
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "javascript" },
+    });
+});
+</script>

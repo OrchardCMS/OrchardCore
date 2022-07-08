@@ -1,0 +1,9 @@
+@model ContentItemDeploymentStepViewModel
+<div class="mb-3" asp-validation-class-for="ContentItemId">
+    <label asp-for="ContentItemId">@T["Content Item Id"]</label>
+    <div class="input-group">
+        <input type="text" asp-for="ContentItemId" class="form-control" asp-validation-class-for="ContentItemId" />
+        <span asp-validation-for="ContentItemId"></span>
+    </div>
+    <span class="hint">@T["Provide a content item id."]</span>
+</div>

@@ -1,0 +1,19 @@
+@inject IOptions<AutorouteOptions> AutorouteOptions
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var menuItemPart = contentItem.As<ContentMenuItemPart>();
+    var routeValues = new RouteValueDictionary(AutorouteOptions.Value.GlobalRouteValues);
+    routeValues[AutorouteOptions.Value.ContentItemIdKey] = menuItemPart.ContentItem.Content.ContentMenuItemPart.SelectedContentItem.ContentItemIds[0];
+    var linkUrl = Url.RouteUrl(routeValues);
+
+    TagBuilder tag = Tag(Model, "a");
+    tag.Attributes["href"] = linkUrl;
+    tag.InnerHtml.Append(contentItem.DisplayText);
+
+    if (Model.Level == 0 && Model.HasItems)
+    {
+        tag.InnerHtml.AppendHtml("<b class=\"caret\"></b>");
+    }
+}
+
+@tag

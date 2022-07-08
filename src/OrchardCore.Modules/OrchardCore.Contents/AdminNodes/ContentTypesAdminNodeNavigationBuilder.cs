@@ -62,7 +62,7 @@ namespace OrchardCore.Contents.AdminNodes
                     cTypeMenu.Priority(node.Priority);
                     cTypeMenu.Position(node.Position);
                     cTypeMenu.Permission(
-                        ContentTypePermissions.CreateDynamicPermission(ContentTypePermissions.PermissionTemplates[Permissions.PublishOwnContent.Name], ctd));
+                        ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.PublishOwnContent.Name], ctd));
 
                     GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));
                 });
@@ -90,8 +90,6 @@ namespace OrchardCore.Contents.AdminNodes
 
             if (!node.ShowAll)
             {
-                node.ContentTypes = node.ContentTypes;
-
                 typesToShow = typesToShow
                     .Where(ctd => node.ContentTypes.ToList()
                                     .Any(s => String.Equals(ctd.Name, s.ContentTypeId, StringComparison.OrdinalIgnoreCase)));

@@ -33,7 +33,7 @@ namespace OrchardCore.Localization
         /// <summary>
         /// Gets the resource key.
         /// </summary>
-        public string Key { get; }
+        public CultureDictionaryRecordKey Key { get; }
 
         /// <summary>
         /// Gets the translation values.
@@ -46,19 +46,14 @@ namespace OrchardCore.Localization
         /// <param name="messageId">The message Id.</param>
         /// <param name="context">The message context.</param>
         /// <returns>The resource key.</returns>
-        public static string GetKey(string messageId, string context)
+        public static CultureDictionaryRecordKey GetKey(string messageId, string context)
         {
-            if (string.IsNullOrEmpty(messageId))
+            if (String.IsNullOrEmpty(messageId))
             {
                 throw new ArgumentException("MessageId can't be empty.", nameof(messageId));
             }
 
-            if (string.IsNullOrEmpty(context))
-            {
-                return messageId;
-            }
-
-            return context.ToLowerInvariant() + "|" + messageId;
+            return new CultureDictionaryRecordKey(messageId, context);
         }
     }
 }

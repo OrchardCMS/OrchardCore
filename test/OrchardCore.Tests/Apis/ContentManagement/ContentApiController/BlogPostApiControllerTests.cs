@@ -21,22 +21,20 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
         [Fact]
         public async Task ShouldCreateDraftOfExistingContentItem()
         {
-            using (var context = new BlogPostApiControllerContext())
-            {
-                // Setup
-                await context.InitializeAsync();
+            using var context = new BlogPostApiControllerContext();
 
-                context.BlogPost.Latest = false;
-                context.BlogPost.Published = true; // Deliberately set these incorrectly.
+            await context.InitializeAsync();
 
-                // Act
-                var content = await context.Client.PostAsJsonAsync("api/content?draft=true", context.BlogPost);
-                var draftContentItem = await content.Content.ReadAsAsync<ContentItem>();
+            context.BlogPost.Latest = false;
+            context.BlogPost.Published = true; // Deliberately set these incorrectly.
 
-                // Test
-                Assert.True(draftContentItem.Latest);
-                Assert.False(draftContentItem.Published);
-            }
+            // Act
+            var content = await context.Client.PostAsJsonAsync("api/content?draft=true", context.BlogPost);
+            var draftContentItem = await content.Content.ReadAsAsync<ContentItem>();
+
+            // Test
+            Assert.True(draftContentItem.Latest);
+            Assert.False(draftContentItem.Published);
         }
 
         [Fact]
@@ -75,17 +73,15 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                 await context.Client.PostAsJsonAsync("api/content", context.BlogPost);
 
                 // Test
-                using (var shellScope = await BlogPostApiControllerContext.ShellHost.GetScopeAsync(context.TenantName))
+                var shellScope = await BlogPostApiControllerContext.ShellHost.GetScopeAsync(context.TenantName);
+                await shellScope.UsingAsync(async scope =>
                 {
-                    await shellScope.UsingAsync(async scope =>
-                    {
-                        var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                        var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                            x.ContentType == "BlogPost").ListAsync();
+                    var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                    var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
+                        x.ContentType == "BlogPost").ListAsync();
 
-                        Assert.Equal(2, blogPosts.Count());
-                    });
-                }
+                    Assert.Equal(2, blogPosts.Count());
+                });
             }
         }
 
@@ -255,18 +251,15 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                 // Test
                 Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
                 Assert.Contains("Your permalink is already in use.", problemDetails.Detail);
-                using (var shellScope = await BlogPostApiControllerContext.ShellHost.GetScopeAsync(context.TenantName))
+                var shellScope = await BlogPostApiControllerContext.ShellHost.GetScopeAsync(context.TenantName);
+                await shellScope.UsingAsync(async scope =>
                 {
-                    await shellScope.UsingAsync(async scope =>
-                    {
-                        var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                        var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                            x.ContentType == "BlogPost").ListAsync();
+                    var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                    var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
+                        x.ContentType == "BlogPost").ListAsync();
 
-                        Assert.Single(blogPosts);
-                    });
-                }
-
+                    Assert.Single(blogPosts);
+                });
             }
         }
 
@@ -313,26 +306,24 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                 var publishedContentItem = await content.Content.ReadAsAsync<ContentItem>();
 
                 // Test
-                using (var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName))
-                {
-                    var blogPostContentItemIds = new List<string>
+                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
+                var blogPostContentItemIds = new List<string>
                     {
                         context.BlogPost.ContentItemId,
                         publishedContentItem.ContentItemId
                     };
 
-                    await shellScope.UsingAsync(async scope =>
-                    {
-                        var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                        var newAutoroutePartIndex = await session
-                            .QueryIndex<AutoroutePartIndex>(x => x.ContentItemId == publishedContentItem.ContentItemId)
-                            .FirstOrDefaultAsync();
+                await shellScope.UsingAsync(async scope =>
+                {
+                    var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                    var newAutoroutePartIndex = await session
+                        .QueryIndex<AutoroutePartIndex>(o => o.Published && o.ContentItemId == publishedContentItem.ContentItemId)
+                        .FirstOrDefaultAsync();
 
-                        // The Autoroute part was not welded on, so ContentManager.NewAsync should add it
-                        // with an empty path and then generate a unique path from the liquid pattern.
-                        Assert.Equal("blog/some-other-blog-post", publishedContentItem.As<AutoroutePart>().Path);
-                    });
-                }
+                    // The Autoroute part was not welded on, so ContentManager.NewAsync should add it
+                    // with an empty path and then generate a unique path from the liquid pattern.
+                    Assert.Equal("blog/some-other-blog-post", publishedContentItem.As<AutoroutePart>().Path);
+                });
             }
         }
     }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents
@@ -25,5 +26,18 @@ namespace OrchardCore.Contents
         public static readonly Permission PreviewOwnContent = new Permission("PreviewOwnContent", "Preview own content", new[] { PreviewContent });
         public static readonly Permission CloneContent = new Permission("CloneContent", "Clone content", new[] { EditContent });
         public static readonly Permission CloneOwnContent = new Permission("CloneOwnContent", "Clone own content", new[] { CloneContent });
+        public static readonly Permission ListContent = new Permission("ListContent", "List content item(s) owned by all users");
+
+        public static readonly Dictionary<string, Permission> OwnerPermissionsByName = new Dictionary<string, Permission>();
+
+        static CommonPermissions()
+        {
+            OwnerPermissionsByName["PublishContent"] = PublishOwnContent;
+            OwnerPermissionsByName["EditContent"] = EditOwnContent;
+            OwnerPermissionsByName["DeleteContent"] = DeleteOwnContent;
+            OwnerPermissionsByName["ViewContent"] = ViewOwnContent;
+            OwnerPermissionsByName["PreviewContent"] = PreviewOwnContent;
+            OwnerPermissionsByName["CloneContent"] = CloneOwnContent;
+        }
     }
 }

@@ -1,6 +1,6 @@
 # Lucene (`OrchardCore.Lucene`)
 
-The Lucene module allows to manage Lucene indices.
+The Lucene module allows you to manage Lucene indices.
 
 ## Recipe step
 
@@ -74,10 +74,111 @@ It is recommended to use it only if you are running the same tenant on multiple 
 
 If you are running on Azure App Services or if you are using Elasticsearch, then you don't need this feature.
 
-## CREDITS
+## Lucene Queries
 
-### Lucene.net
+The Lucene module provides a management UI and APIs for querying Lucene data using ElasticSearch Queries.
+See: https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
 
-<http://lucenenet.apache.org/index.html>  
-Copyright 2013 The Apache Software Foundation  
-Licensed under the Apache License, Version 2.0.
+### Query Filters
+
+Query filters are used to retrieve records from Lucene without taking care of the boost values on them. So, it is retrieving records just like a SQL database would do. 
+
+Here is an example of a filtered query: 
+
+```json
+{
+  "query": {
+    "bool": {
+      "filter": [
+        { "term": { "Content.ContentItem.Published" : "true" }},
+        { "wildcard": { "Content.ContentItem.DisplayText" : "Main*" }}
+      ]
+    }
+  }
+}
+```
+
+With a must query in the bool Query. "finding specific content type(s)"
+
+```json
+{
+  "query": {
+    "bool": {
+      "must" : {
+          "term" : { "Content.ContentItem.ContentType" : "Menu" }
+      },
+      "filter": [
+        { "term": { "Content.ContentItem.Published" : "true" }},
+        { "wildcard": { "Content.ContentItem.DisplayText" : "Main*" }}
+      ]
+    }
+  }
+}
+```
+
+Using the [`query_string` Lucene query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html) with the [Query Parser Syntax](https://lucene.apache.org/core/2_9_4/queryparsersyntax.html) (with syntax like `"exact match"` and `should AND contain`):
+
+```json
+{
+  "query":
+  {
+    "query_string": {
+      "query": "Content.ContentItem.FullText:\"exploration\""
+    }
+  }
+}
+```
+
+Or in a way that you don't have to select the fields in the query (to allow users to do simpler search):
+
+```json
+{
+  "query":
+  {
+    "query_string": {
+      "query": "\"exploration\"",
+      "default_field": "Content.ContentItem.FullText"
+    }
+  }
+}
+```
+
+An alternative to the previous one with [`simple_query_string`](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html):
+
+```json
+{
+  "query": {
+    "simple_query_string" : {
+        "query": "\"exploration\"",
+        "fields": ["Content.ContentItem.FullText"]
+    }
+  }
+}
+```
+
+As you can see it allows to filter on multiple query types. All of the Query types that are available in Lucene are also filters.
+
+So you can use: 
+
+- `bool`
+- `geo_distance`
+- `geo_bounding_box`
+- `fuzzy`
+- `match`
+- `match_all`
+- `match_phrase`
+- `prefix`
+- `query_string`
+- `range`
+- `regexp`
+- `simple_query_string`
+- `term`
+- `terms`
+- `wildcard`
+
+See ElasticSearch documentation for more details: 
+https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/9EgZ_J1npw4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

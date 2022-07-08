@@ -1,5 +1,5 @@
 /**
- * Trumbowyg v2.19.1 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.25.1 - A lightweight WYSIWYG editor
  * Trumbowyg plugin stylesheet
  * ------------------------
  * @link http://alex-d.github.io/Trumbowyg
@@ -26,10 +26,12 @@
   margin: 1px;
   padding: 0;
   background-color: #fff;
-  box-shadow: 0 0 0 1px #cecece inset; }
+  -webkit-box-shadow: 0 0 0 1px #cecece inset;
+          box-shadow: 0 0 0 1px #cecece inset; }
   .trumbowyg-dropdown-table table td.active {
     background-color: #00b393;
-    box-shadow: none;
+    -webkit-box-shadow: none;
+            box-shadow: none;
     cursor: pointer; }
 
 .trumbowyg-dropdown-table .trumbowyg-table-size {

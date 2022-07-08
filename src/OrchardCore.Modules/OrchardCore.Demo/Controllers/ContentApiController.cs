@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.Contents;
 
 namespace OrchardCore.Demo.Controllers
 {
@@ -36,14 +36,14 @@ namespace OrchardCore.Demo.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             var contentItem = await _contentManager.GetAsync(id);
 
-            if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             if (contentItem == null)
@@ -60,7 +60,7 @@ namespace OrchardCore.Demo.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             await _contentManager.CreateAsync(contentItem);

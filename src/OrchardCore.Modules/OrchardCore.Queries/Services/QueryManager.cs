@@ -2,49 +2,28 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Primitives;
-using OrchardCore.Data;
-using OrchardCore.Environment.Cache;
-using YesSql;
+using OrchardCore.Documents;
 
 namespace OrchardCore.Queries.Services
 {
     public class QueryManager : IQueryManager
     {
-        private const string QueriesDocumentCacheKey = nameof(QueriesDocumentCacheKey);
+        private readonly IDocumentManager<QueriesDocument> _documentManager;
+        private readonly IEnumerable<IQuerySource> _querySources;
 
-        private readonly ISignal _signal;
-        private readonly ISession _session;
-        private readonly ISessionHelper _sessionHelper;
-        private readonly IMemoryCache _memoryCache;
-        private IEnumerable<IQuerySource> _querySources;
-
-        public QueryManager(
-            ISignal signal,
-            ISession session,
-            ISessionHelper sessionHelper,
-            IMemoryCache memoryCache,
-            IEnumerable<IQuerySource> querySources)
+        public QueryManager(IDocumentManager<QueriesDocument> documentManager, IEnumerable<IQuerySource> querySources)
         {
-            _signal = signal;
-            _session = session;
-            _sessionHelper = sessionHelper;
-            _memoryCache = memoryCache;
+            _documentManager = documentManager;
             _querySources = querySources;
         }
 
-        public IChangeToken ChangeToken => _signal.GetToken(QueriesDocumentCacheKey);
+        public async Task<string> GetIdentifierAsync() => (await GetDocumentAsync()).Identifier;
 
         public async Task DeleteQueryAsync(string name)
         {
             var existing = await LoadDocumentAsync();
             existing.Queries.Remove(name);
-
-            _session.Save(existing);
-            _signal.DeferredSignalToken(QueriesDocumentCacheKey);
-
-            return;
+            await _documentManager.UpdateAsync(existing);
         }
 
         public async Task<Query> LoadQueryAsync(string name)
@@ -78,47 +57,21 @@ namespace OrchardCore.Queries.Services
 
         public async Task SaveQueryAsync(string name, Query query)
         {
-            if (query.IsReadonly)
-            {
-                throw new ArgumentException("The object is read-only");
-            }
-
             var existing = await LoadDocumentAsync();
             existing.Queries.Remove(name);
             existing.Queries[query.Name] = query;
-
-            _session.Save(existing);
-            _signal.DeferredSignalToken(QueriesDocumentCacheKey);
-
-            return;
+            await _documentManager.UpdateAsync(existing);
         }
 
         /// <summary>
-        /// Returns the document from the database to be updated.
+        /// Loads the queries document from the store for updating and that should not be cached.
         /// </summary>
-        public Task<QueriesDocument> LoadDocumentAsync() => _sessionHelper.LoadForUpdateAsync<QueriesDocument>();
+        public Task<QueriesDocument> LoadDocumentAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <summary>
-        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// Gets the queries document from the cache for sharing and that should not be updated.
         /// </summary>
-        private async Task<QueriesDocument> GetDocumentAsync()
-        {
-            if (!_memoryCache.TryGetValue<QueriesDocument>(QueriesDocumentCacheKey, out var queries))
-            {
-                var changeToken = ChangeToken;
-
-                queries = await _sessionHelper.GetForCachingAsync<QueriesDocument>();
-
-                foreach (var query in queries.Queries.Values)
-                {
-                    query.IsReadonly = true;
-                }
-
-                _memoryCache.Set(QueriesDocumentCacheKey, queries, changeToken);
-            }
-
-            return queries;
-        }
+        public Task<QueriesDocument> GetDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
 
         public Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {

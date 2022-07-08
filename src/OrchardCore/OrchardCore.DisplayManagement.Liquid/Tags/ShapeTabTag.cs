@@ -1,22 +1,22 @@
+using System;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class ShapeTabTag : ExpressionArgumentsTag
+    public class ShapeTabTag
     {
-        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
+        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue();
+            var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
 
             if (objectValue is IShape shape)
             {
-                var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
-                shape.Metadata.Tab = arguments["tab"].Or(arguments.At(0)).ToStringValue();
+                var shapeTab = (await arguments.Item2.EvaluateAsync(context)).ToStringValue();
+                shape.Metadata.Tab = shapeTab;
             }
 
             return Completion.Normal;

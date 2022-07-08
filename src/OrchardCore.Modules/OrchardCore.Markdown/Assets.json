@@ -3,15 +3,16 @@
     "generateSourceMaps": false,
     "generateRTL": true,
     "inputs": [
-      "Assets/Styles/simplemde.scss"
+      "Assets/Styles/mde.scss"
     ],
-    "output": "wwwroot/Styles/simplemde.css"
+    "output": "wwwroot/Styles/mde.css"
   },
   {
     "generateSourceMaps": false,
     "inputs": [
-      "Assets/Scripts/simplemde.mediatoolbar.js"
+      "node_modules/easymde/dist/easymde.min.js",
+      "Assets/Scripts/mde.mediatoolbar.js"
     ],
-    "output": "wwwroot/Scripts/simplemde.mediatoolbar.js"
+    "output": "wwwroot/Scripts/mde.mediatoolbar.js"
   }
 ]

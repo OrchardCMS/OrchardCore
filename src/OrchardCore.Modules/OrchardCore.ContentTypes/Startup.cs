@@ -45,6 +45,8 @@ namespace OrchardCore.ContentTypes
             // TODO: Put in its own feature to be able to execute this recipe without having to enable
             // Content Types management UI
             services.AddRecipeExecutionStep<ContentDefinitionStep>();
+            services.AddRecipeExecutionStep<ReplaceContentDefinitionStep>();
+            services.AddRecipeExecutionStep<DeleteContentDefinitionStep>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -138,6 +140,14 @@ namespace OrchardCore.ContentTypes
             services.AddTransient<IDeploymentSource, ContentDefinitionDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDefinitionDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDefinitionDeploymentStepDriver>();
+
+            services.AddTransient<IDeploymentSource, ReplaceContentDefinitionDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ReplaceContentDefinitionDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, ReplaceContentDefinitionDeploymentStepDriver>();
+
+            services.AddTransient<IDeploymentSource, DeleteContentDefinitionDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<DeleteContentDefinitionDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, DeleteContentDefinitionDeploymentStepDriver>();
         }
     }
 }

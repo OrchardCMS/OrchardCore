@@ -1,0 +1,18 @@
+.term-badge {
+    > a {
+        text-decoration: none;
+    }
+
+    .bg-secondary {
+        &:hover {
+            background-color: $primary;
+        }
+    }
+}
+
+.taxonomy-tag {
+    ul {
+        padding-left: 0;
+        list-style: none;
+    }
+}

@@ -1,0 +1,71 @@
+@using OrchardCore.Deployment
+@inject IDeploymentPlanService DeploymentPlanService
+@{
+    var deploymentPlans = await DeploymentPlanService.GetAllDeploymentPlansAsync();
+}
+<zone name="Footer">
+    <div class="modal fade" id="modalAddToDeploymentPlanContentsBulkActionsDeploymentPlan" tabindex="-1" role="dialog" aria-labelledby="deployment-plans-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deployment-plans-title">@T["Available Deployment Plans"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row row-cols-1 row-cols-md-2 g-2">
+                        @foreach (var deploymentPlan in deploymentPlans)
+                        {
+                            var url = Url.Action("AddContentItems", "AddToDeploymentPlan", new { area = "OrchardCore.Contents", deploymentPlanId = deploymentPlan.Id, returnUrl = FullRequestPath });
+
+                            <div class="col">
+                                <div class="card h-100 mb-3">
+                                    <div class="card-body">
+                                        <h4 class="card-title">@deploymentPlan.Name</h4>
+                                    </div>
+                                    <div class="card-footer text-muted text-sm-end">
+                                        <button type="button" class="add-to-deployment-plan-bulk-actions text-white btn btn-primary btn-sm" data-bs-dismiss="modal" data-target-url="@url">@T["Select"]</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</zone>
+
+<script at="Foot" depends-on="jQuery">
+    $(function () {
+        $('#modalAddToDeploymentPlanContentsBulkActionsDeploymentPlan').on('show.bs.modal', function () {
+            var itemIds = $(":checkbox[name='itemIds']:checked");
+            if (itemIds.length > 1) {
+                $('.add-to-deployment-plan-bulk-actions').one('click', function () {
+                    var targetButton = this;
+                    var magicToken = $("input[name=__RequestVerificationToken]").first();
+                    if (magicToken) {
+                        var hrefParts = $(targetButton).data("target-url").split("?");
+                        var deployForm = $("<form action=\"" + hrefParts[0] + "\" method=\"POST\" />");
+                        deployForm.append(magicToken.clone());
+                        if (hrefParts.length > 1) {
+                            var queryParts = hrefParts[1].split("&");
+                            for (var i = 0; i < queryParts.length; i++) {
+                                var queryPartKVP = queryParts[i].split("=");
+                                //trusting hrefs in the page here
+                                deployForm.append($("<input type=\"hidden\" name=\"" + decodeURIComponent(queryPartKVP[0]) + "\" value=\"" + decodeURIComponent(queryPartKVP[1]) + "\" />"));
+                            }
+                        }
+                        for (var i = 0; i < itemIds.length; i++) {
+                            deployForm.append($("<input type=\"hidden\" name=\"itemIds[" + i + "]\" + value=\"" + itemIds[i].value + "\"/>"));
+                        }
+                        $("body").append(deployForm);
+                        deployForm.submit();
+                    }
+                })
+            }
+        })
+    });
+</script>

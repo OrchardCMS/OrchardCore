@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Scripting;
 
@@ -14,7 +15,7 @@ namespace OrchardCore.Recipes
             _globalMethod = new GlobalMethod
             {
                 Name = "configuration",
-                Method = serviceprovider => (Func<string, object>)(name => configuration[name])
+                Method = serviceprovider => (Func<string, object, object>)((key, defaultValue) => configuration.GetValue<object>(key, defaultValue))
             };
         }
 

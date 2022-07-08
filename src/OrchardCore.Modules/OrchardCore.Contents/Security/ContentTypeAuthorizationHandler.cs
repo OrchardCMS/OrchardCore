@@ -12,6 +12,7 @@ namespace OrchardCore.Contents.Security
     public class ContentTypeAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
         private readonly IServiceProvider _serviceProvider;
+        private IAuthorizationService _authorizationService;
 
         public ContentTypeAuthorizationHandler(IServiceProvider serviceProvider)
         {
@@ -26,6 +27,7 @@ namespace OrchardCore.Contents.Security
                 return;
             }
 
+            // If we are not evaluating a ContentItem then return.
             if (context.Resource == null)
             {
                 return;
@@ -37,25 +39,27 @@ namespace OrchardCore.Contents.Security
 
             if (contentItem != null)
             {
+                var ownerVariation = GetOwnerVariation(requirement.Permission);
+
                 if (OwnerVariationExists(requirement.Permission) && HasOwnership(context.User, contentItem))
                 {
-                    permission = GetOwnerVariation(requirement.Permission);
+                    permission = ownerVariation;
                 }
             }
 
-            var contentTypePermission = ContentTypePermissions.ConvertToDynamicPermission(permission ?? requirement.Permission);
+            var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission ?? requirement.Permission);
 
             if (contentTypePermission != null)
             {
                 // The resource can be a content type name
                 var contentType = contentItem != null
                     ? contentItem.ContentType
-                    : Convert.ToString(context.Resource.ToString())
+                    : context.Resource.ToString()
                     ;
 
                 if (!String.IsNullOrEmpty(contentType))
                 {
-                    permission = ContentTypePermissions.CreateDynamicPermission(contentTypePermission, contentType);
+                    permission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentType);
                 }
             }
 
@@ -65,9 +69,9 @@ namespace OrchardCore.Contents.Security
             }
 
             // Lazy load to prevent circular dependencies
-            var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
+            _authorizationService ??= _serviceProvider.GetService<IAuthorizationService>();
 
-            if (await authorizationService.AuthorizeAsync(context.User, permission))
+            if (await _authorizationService.AuthorizeAsync(context.User, permission))
             {
                 context.Succeed(requirement);
             }
@@ -75,29 +79,9 @@ namespace OrchardCore.Contents.Security
 
         private static Permission GetOwnerVariation(Permission permission)
         {
-            if (permission.Name == Permissions.PublishContent.Name)
+            if (CommonPermissions.OwnerPermissionsByName.TryGetValue(permission.Name, out var ownerVariation))
             {
-                return Permissions.PublishOwnContent;
-            }
-
-            if (permission.Name == Permissions.EditContent.Name)
-            {
-                return Permissions.EditOwnContent;
-            }
-
-            if (permission.Name == Permissions.DeleteContent.Name)
-            {
-                return Permissions.DeleteOwnContent;
-            }
-
-            if (permission.Name == Permissions.ViewContent.Name)
-            {
-                return Permissions.ViewOwnContent;
-            }
-
-            if (permission.Name == Permissions.PreviewContent.Name)
-            {
-                return Permissions.PreviewOwnContent;
+                return ownerVariation;
             }
 
             return null;
@@ -110,7 +94,7 @@ namespace OrchardCore.Contents.Security
                 return false;
             }
 
-            return user.Identity.Name == content.Owner;
+            return user.FindFirstValue(ClaimTypes.NameIdentifier) == content.Owner;
         }
 
         private static bool OwnerVariationExists(Permission permission)

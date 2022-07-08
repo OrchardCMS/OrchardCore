@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid.Values;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -9,9 +11,11 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
-using OrchardCore.ShortCodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
+using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 
 namespace OrchardCore.Html.Drivers
 {
@@ -20,27 +24,28 @@ namespace OrchardCore.Html.Drivers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly IShortCodeService _shortCodeService;
+        private readonly IShortcodeService _shortcodeService;
         private readonly IStringLocalizer S;
 
         public HtmlBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             IHtmlSanitizerService htmlSanitizerService,
             HtmlEncoder htmlEncoder,
-            IShortCodeService shortCodeService,
+            IShortcodeService shortcodeService,
             IStringLocalizer<HtmlBodyPartDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlSanitizerService = htmlSanitizerService;
             _htmlEncoder = htmlEncoder;
-            _shortCodeService = shortCodeService;
+            _shortcodeService = shortcodeService;
             S = localizer;
         }
 
         public override IDisplayResult Display(HtmlBodyPart HtmlBodyPart, BuildPartDisplayContext context)
         {
-            return Initialize<HtmlBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, HtmlBodyPart, context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>()))
+            return Initialize<HtmlBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, HtmlBodyPart, context))
                 .Location("Detail", "Content:5")
-                .Location("Summary", "Content:10");
+                .Location("Summary", "Content:10")
+                ;
         }
 
         public override IDisplayResult Edit(HtmlBodyPart HtmlBodyPart, BuildPartEditorContext context)
@@ -65,7 +70,7 @@ namespace OrchardCore.Html.Drivers
                 if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
                 {
                     var partName = context.TypePartDefinition.DisplayName();
-                    context.Updater.ModelState.AddModelError(nameof(model.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
                 }
                 else
                 {
@@ -76,19 +81,25 @@ namespace OrchardCore.Html.Drivers
             return Edit(model, context);
         }
 
-        private async ValueTask BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart htmlBodyPart, HtmlBodyPartSettings settings)
+        private async ValueTask BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart htmlBodyPart, BuildPartDisplayContext context)
         {
             model.Html = htmlBodyPart.Html;
             model.HtmlBodyPart = htmlBodyPart;
             model.ContentItem = htmlBodyPart.ContentItem;
+            var settings = context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
             if (!settings.SanitizeHtml)
             {
-                model.Html = await _liquidTemplateManager.RenderAsync(htmlBodyPart.Html, _htmlEncoder, model,
-                    scope => scope.SetValue("ContentItem", model.ContentItem));
+                model.Html = await _liquidTemplateManager.RenderStringAsync(htmlBodyPart.Html, _htmlEncoder, model,
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
             }
 
-            model.Html = await _shortCodeService.ProcessAsync(model.Html);
+            model.Html = await _shortcodeService.ProcessAsync(model.Html,
+                new Context
+                {
+                    ["ContentItem"] = htmlBodyPart.ContentItem,
+                    ["TypePartDefinition"] = context.TypePartDefinition
+                });
         }
     }
 }

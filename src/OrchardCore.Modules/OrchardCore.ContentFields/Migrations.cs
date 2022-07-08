@@ -40,6 +40,9 @@ namespace OrchardCore.ContentFields
             // Localization set content picker field
             _contentDefinitionManager.MigrateFieldSettings<LocalizationSetContentPickerField, LocalizationSetContentPickerFieldSettings>();
 
+            // MultiText field
+            _contentDefinitionManager.MigrateFieldSettings<MultiTextField, MultiTextFieldSettings>();
+
             // Numeric field
             _contentDefinitionManager.MigrateFieldSettings<NumericField, NumericFieldSettings>();
 
@@ -54,7 +57,7 @@ namespace OrchardCore.ContentFields
             // Youtube field
             _contentDefinitionManager.MigrateFieldSettings<YoutubeField, YoutubeFieldSettings>();
 
-            // Return 2 to shortcut migration on new content definition schemas.
+            // Shortcut other migration steps on new content definition schemas.
             return 2;
         }
 

@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Settings;
@@ -13,15 +16,21 @@ namespace OrchardCore.ContentLocalization.Services
         private readonly IAutorouteEntries _autorouteEntries;
         private readonly ILocalizationEntries _localizationEntries;
         private readonly ISiteService _siteService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly CulturePickerOptions _culturePickerOptions;
 
         public ContentCulturePickerService(
             IAutorouteEntries autorouteEntries,
             ILocalizationEntries localizationEntries,
-            ISiteService siteService)
+            ISiteService siteService,
+            IHttpContextAccessor httpContextAccessor,
+            IOptions<CulturePickerOptions> culturePickerOptions)
         {
             _autorouteEntries = autorouteEntries;
             _localizationEntries = localizationEntries;
             _siteService = siteService;
+            _httpContextAccessor = httpContextAccessor;
+            _culturePickerOptions = culturePickerOptions.Value;
         }
 
         public async Task<string> GetContentItemIdFromRouteAsync(PathString url)
@@ -43,13 +52,15 @@ namespace OrchardCore.ContentLocalization.Services
             {
                 // Try to get from autorouteEntries.
                 // This should not consider contained items, so will redirect to the parent item.
-                if (_autorouteEntries.TryGetEntryByPath(url.Value, out var entry))
+                (var found, var entry) = await _autorouteEntries.TryGetEntryByPathAsync(url.Value);
+
+                if (found)
                 {
                     contentItemId = entry.ContentItemId;
-                };
+                }
             }
 
-            if (string.IsNullOrEmpty(contentItemId))
+            if (String.IsNullOrEmpty(contentItemId))
             {
                 return null;
             }
@@ -61,9 +72,11 @@ namespace OrchardCore.ContentLocalization.Services
         {
             var contentItemId = await GetContentItemIdFromRouteAsync(url);
 
-            if (!string.IsNullOrEmpty(contentItemId))
+            if (!String.IsNullOrEmpty(contentItemId))
             {
-                if (_localizationEntries.TryGetLocalization(contentItemId, out var localization))
+                (var found, var localization) = await _localizationEntries.TryGetLocalizationAsync(contentItemId);
+
+                if (found)
                 {
                     return localization;
                 }
@@ -76,15 +89,29 @@ namespace OrchardCore.ContentLocalization.Services
         {
             var contentItemId = await GetContentItemIdFromRouteAsync(url);
 
-            if (!string.IsNullOrEmpty(contentItemId))
+            if (!String.IsNullOrEmpty(contentItemId))
             {
-                if (_localizationEntries.TryGetLocalization(contentItemId, out var localization))
+                (var found, var localization) = await _localizationEntries.TryGetLocalizationAsync(contentItemId);
+
+                if (found)
                 {
-                    return _localizationEntries.GetLocalizations(localization.LocalizationSet);
+                    return await _localizationEntries.GetLocalizationsAsync(localization.LocalizationSet);
                 }
             }
 
             return Enumerable.Empty<LocalizationEntry>();
+        }
+
+        public void SetContentCulturePickerCookie(string targetCulture)
+        {
+            var response = _httpContextAccessor.HttpContext.Response;
+            // Set the cookie to handle redirecting to a custom controller
+            response.Cookies.Delete(CookieRequestCultureProvider.DefaultCookieName);
+            response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(targetCulture)),
+                new CookieOptions { Expires = DateTime.UtcNow.AddDays(_culturePickerOptions.CookieLifeTime) }
+            );
         }
     }
 }

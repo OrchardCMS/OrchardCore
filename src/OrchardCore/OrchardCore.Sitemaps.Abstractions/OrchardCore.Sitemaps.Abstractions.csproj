@@ -1,8 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Sitemaps</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Sitemaps Abstractions</Title>
+    <Description>$(OCCMSDescription)
+
+    Abstractions for the Sitemaps module.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

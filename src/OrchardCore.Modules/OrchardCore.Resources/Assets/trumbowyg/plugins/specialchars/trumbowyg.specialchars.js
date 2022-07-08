@@ -28,8 +28,14 @@
             en: {
                 specialChars: 'Special characters'
             },
+            et: {
+                specialChars: 'Erimärgid'
+            },
             fr: {
                 specialChars: 'Caractères spéciaux'
+            },
+            hu: {
+                specialChars: 'Speciális karakterek'
             },
             ko: {
                 specialChars: '특수문자'

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Modules;
@@ -28,7 +29,8 @@ namespace OrchardCore.ContentManagement.Handlers
             var httpContext = _httpContextAccessor.HttpContext;
             if (context.ContentItem.Owner == null && (httpContext?.User?.Identity?.IsAuthenticated ?? false))
             {
-                context.ContentItem.Owner = context.ContentItem.Author = httpContext.User.Identity.Name;
+                context.ContentItem.Owner = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                context.ContentItem.Author = httpContext.User.Identity.Name;
             }
 
             return Task.CompletedTask;

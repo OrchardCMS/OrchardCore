@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using Cysharp.Text;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.ContentManagement.Utilities
@@ -12,17 +13,21 @@ namespace OrchardCore.ContentManagement.Utilities
     {
         public static string CamelFriendly(this string camel)
         {
+            // optimize common cases
             if (string.IsNullOrWhiteSpace(camel))
-                return "";
-
-            var sb = new StringBuilder(camel);
-
-            for (int i = camel.Length - 1; i > 0; i--)
             {
-                if (char.IsUpper(sb[i]))
+                return "";
+            }
+
+            using var sb = ZString.CreateStringBuilder();
+            for (var i = 0; i < camel.Length; ++i)
+            {
+                var c = camel[i];
+                if (i != 0 && char.IsUpper(c))
                 {
-                    sb.Insert(i, ' ');
+                    sb.Append(' ');
                 }
+                sb.Append(c);
             }
 
             return sb.ToString();
@@ -202,6 +207,32 @@ namespace OrchardCore.ContentManagement.Utilities
                 name = name.Substring(0, 128);
 
             return name;
+        }
+
+        private static HashSet<string> _reservedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            nameof(ContentItem.Id),
+            nameof(ContentItem.ContentItemId),
+            nameof(ContentItem.ContentItemVersionId),
+            nameof(ContentItem.ContentType),
+            nameof(ContentItem.Published),
+            nameof(ContentItem.Latest),
+            nameof(ContentItem.ModifiedUtc),
+            nameof(ContentItem.PublishedUtc),
+            nameof(ContentItem.CreatedUtc),
+            nameof(ContentItem.Owner),
+            nameof(ContentItem.Author),
+            nameof(ContentItem.DisplayText)
+        };
+
+        public static bool IsReservedContentName(this string name)
+        {
+            if (_reservedNames.Contains(name))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>

@@ -72,7 +72,7 @@ namespace OrchardCore.OpenId.Controllers
                 Pager = (await New.Pager(pager)).TotalItemCount(count)
             };
 
-            foreach (var scope in await _scopeManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
+            await foreach (var scope in _scopeManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
             {
                 model.Scopes.Add(new OpenIdScopeEntry
                 {
@@ -152,7 +152,7 @@ namespace OrchardCore.OpenId.Controllers
                 return RedirectToAction("Index");
             }
 
-            return LocalRedirect(returnUrl);
+            return this.LocalRedirect(returnUrl, true);
         }
 
         public async Task<IActionResult> Edit(string id, string returnUrl = null)
@@ -254,7 +254,7 @@ namespace OrchardCore.OpenId.Controllers
                 return RedirectToAction("Index");
             }
 
-            return LocalRedirect(returnUrl);
+            return this.LocalRedirect(returnUrl, true);
         }
 
         [HttpPost]

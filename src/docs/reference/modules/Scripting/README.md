@@ -8,24 +8,26 @@ The scripting module provides an API allowing you to evaluate custom scripts in 
 
 ### Executing some script
 
-The main interface is `IScriptingManager`.
-
-```csharp
-public interface IScriptingManager
-{
-    IScriptingEngine GetScriptingEngine(string prefix);
-    object Evaluate(string directive);  
-    IList<IGlobalMethodProvider> GlobalMethodProviders { get; }
-}
-```
+The main interface is [IScriptingManager](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Infrastructure.Abstractions/Scripting/IScriptingManager.cs)
 
 To evaluate an expression using a scripting engine, you must know which ones are available in the system.  
 For instance, a JavaScript one is available by default and its prefix is `js`.  
-To return the current date and time as a string we could do something like this:
+To return the current date and time as an object we could do something like this:
 
 ```csharp
 var scriptingManager = serviceProvider.GetService<IScriptingManager>();
-var date = scriptingManager.Evaluate("js: Date().toISOString()");
+
+// Find the javascript engine by its prefix
+var engine = scriptingManager.GetScriptingEngine("js");
+
+// Find all global methods in the system. Here you could add more methods to the scope as needed
+var globalMethods = _scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods());
+
+// Create scope for the engine
+var scope = engine.CreateScope(globalMethods, serviceProvider, null, null);
+
+// Evaluate the given script
+var date = engine.Evaluate("js: new Date().toISOString()");
 ```
 
 The `js:` prefix is used to describe in which language the code is written. Any module can provide
@@ -36,14 +38,8 @@ a new scripting engine by implementing the `IScriptingEngine` interface.
 Any module can provide custom methods for scripts independently of the chosen language.  
 For instance the `Contents` module provides a `uuid()` helper method that computes a unique content item identifier.
 
-To create a global method, implement `IGlobalMethodProvider` then add it to the current `IScriptingManager` instance like this:
+To create a global method, implement the `IGlobalMethodProvider`. Then, add it to the current `IScriptingManager` instance by registering it as a singleton in your Module's `Startup`
 
-```csharp
-var scriptingManager = serviceProvider.GetService<IScriptingManager>();
-var globalMethodProvider = new MyGlobalMethodProvider();
-scriptingManager.GlobalMethodProviders.Add(globalMethodProvider);
-```
-Or register your GlobalMethodProvider as a singleton in your Module's `Startup`
 ```csharp
  services.AddSingleton<IGlobalMethodProvider, MyGlobalMethodProvider>();
 ```
@@ -75,19 +71,16 @@ Here is a list of javascript methods provided by Orchard Modules.
 | `base64(String): String` | Decodes the specified string from Base64 encoding. Use https://www.base64-image.de/ to convert your files to base64. |
 | `html(String): String` | Decodes the specified string from HTML encoding. |
 | `gzip(String): String` | Decodes the specified string from gzip/base64 encoding. Use http://www.txtwizard.net/compression to gzip your strings. |
-| `variables()` | Declare variables at the root of a recipe. Ex: `"variables": { "blogContentItemId": "[js:uuid()]" }`  Retrieve a variable value like this: `"ContentItemId": "[js: variables('blogContentItemId')]"` |
-| `parameters()` | Retrieves the parameters specified during the setup. Ex: `"Owner": "[js: parameters('AdminUsername')]"` See the available [Setup Recipe parameters](../Setup/#recipe-parameters) |
-| `configuration()` | Retrieves the specified configuration setting by its name. |
 
 #### Content (`OrchardCore.Contents`)
 
 | Function | Description 
 | -------- | ----------- |
-|`newContentItem(contentTypeName: String): IContent`| Creates a new instance of a ContentType (does not persist)|
-|`createContentItem(contentTypeName: String, publish: Boolean, properties: Object): IContent`| Creates and persists a new ContentItem. Conditionally publishes it. |
-|`updateContentItem(contentItem: IContent, properties: Object)`| Updates an existing content item with the properties |
-|`deleteContentItem(contentItem: IContent)`| Deletes an existing content item |
-|`getUrlPrefix(path: String): String `| Prefixes the path with the Tenant prefix (if specified) |
+| `newContentItem(contentTypeName: String): IContent`| Creates a new instance of a ContentType (does not persist)|
+| `createContentItem(contentTypeName: String, publish: Boolean, properties: Object): IContent`| Creates and persists a new ContentItem. Conditionally publishes it. |
+| `updateContentItem(contentItem: IContent, properties: Object)`| Updates an existing content item with the properties |
+| `deleteContentItem(contentItem: IContent)`| Deletes an existing content item |
+| `getUrlPrefix(path: String): String `| Prefixes the path with the Tenant prefix (if specified) |
 
 #### Layers (`OrchardCore.Layers`)
 
@@ -110,15 +103,21 @@ Here is a list of javascript methods provided by Orchard Modules.
 
 | Function | Description 
 | -------- | ----------- |
-|  `httpContext(): HttpContext` | Returns the `HttpContext` which encapsulates all HTTP-specific information about an individual HTTP request. |
+| `httpContext(): HttpContext` | Returns the `HttpContext` which encapsulates all HTTP-specific information about an individual HTTP request. |
 | `queryString(name: String): String | Array` | Returns the entire query string (including the leading `?`) when invoked with no arguments, or the value(s) of the parameter name passed in as an argument. |
 | `responseWrite(text: String): void` | Writes the argument string directly to the HTTP response stream. |
 | `absoluteUrl(relativePath: String): String` | Returns the absolute URL for the relative path argument.  |
 | `readBody(): String` | Returns the raw HTTP request body.  |
 | `requestForm(name: String): String | Array` | Returns the value(s) of the form field name passed in as an argument. |
-| `queryStringAsJson(): JObject` | Returns the entire query string as a JSON object. Example: ` { "param1": [ "param1-value1", "param1-value2" ], "param2": [ "param2-value1", "param2-value2" ], ... }` |
-| `requestFormAsJson(): JObject` | Returns the entire request form as a JSON object. Example: ` { "field1": [ "field1-value1", "field1-value2" ], "field2": [ "field2-value1", "field2-value2" ], ... }` |
+| `deserializeRequestData(): Dictionary<string, object>` | Deserializes the request data as a Dictionary<string, object> for requests that send JSON or form data. Replaces deprecated queryStringAsJson and requestFormAsJson methods |
 
+#### Recipes (`OrchardCore.Recipes`)
+
+| Function | Description 
+| -------- | ----------- |
+| `variables()` | Declare variables at the root of a recipe. Ex: `"variables": { "blogContentItemId": "[js:uuid()]" }`  Retrieve a variable value like this: `"ContentItemId": "[js: variables('blogContentItemId')]"` |
+| `parameters()` | Retrieves the parameters specified during the setup. Ex: `"Owner": "[js: parameters('AdminUserId')]"` See the available [Setup Recipe parameters](../Setup/#recipe-parameters) |
+| `configuration(key: String, defaultValue: String)` | Retrieves the specified configuration setting by its key, optionally providing a default. Ex: `[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]` See [IShellConfiguration](../../core/Configuration/README.md) |
 
 #### Workflows (`OrchardCore.Workflows.Http`)
 
@@ -130,9 +129,9 @@ The following JavaScript functions are available by default to any workflow acti
 | `workflowId(): String` | Returns the unique workflow ID. |
 | `input(name: String): Any` | Returns the input parameter with the specified name. Input to the workflow is provided when the workflow is executed by the workflow manager. |
 | `output(name: String, value: Any): void` | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. |
-|  `property(name: String): Any` | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. |
+| `property(name: String): Any` | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. |
 | `lastResult(): Any` | Returns the value that the previous activity provided, if any. |
 | `correlationId(): String` | Returns the correlation value of the workflow instance. |
 | `signalUrl(signal: String): String` | Returns workflow trigger URL with a protected SAS token into which the specified signal name is encoded. Use this to generate URLs that can be shared with trusted parties to trigger the current workflow if it is blocked on the Signal activity that is configured with the same signal name. |
-|`setOutcome(outcome: String): void` | Adds the provided outcome to the list of outcomes of the current activity |
+| `setOutcome(outcome: String): void` | Adds the provided outcome to the list of outcomes of the current activity |
 | `createWorkflowToken(workflowTypeId: String, activityId: String, expiresInDays: Integer): String` | Generates a workflow SAS token for the specidied workflowTypeid, activityId. You can also set the expiration date in number of days. |

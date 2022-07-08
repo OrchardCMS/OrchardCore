@@ -1,0 +1,9 @@
+@using OrchardCore.Contents.Workflows.ViewModels
+@model ContentDraftSavedEventViewModel
+
+<div class="mb-3" asp-validation-class-for="SelectedContentTypeNames">
+    <label asp-for="SelectedContentTypeNames">@T["Content Types"]</label>
+    @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.SelectedContentTypeNames, htmlName = Html.NameFor(m => m.SelectedContentTypeNames) })
+    <span asp-validation-for="SelectedContentTypeNames"></span>
+    <span class="hint">@T["Select any content types to filter on."]</span>
+</div>

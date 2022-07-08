@@ -1,18 +1,21 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid.Values;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ShortCodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
+using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 
 namespace OrchardCore.Markdown.GraphQL
 {
@@ -25,7 +28,6 @@ namespace OrchardCore.Markdown.GraphQL
 
             Field("markdown", x => x.Markdown, nullable: true)
                 .Description(S["the markdown value"]);
-
             Field<StringGraphType>()
                 .Name("html")
                 .Description(S["the HTML representation of the markdown content"])
@@ -41,7 +43,7 @@ namespace OrchardCore.Markdown.GraphQL
 
             var serviceProvider = ctx.ResolveServiceProvider();
             var markdownService = serviceProvider.GetRequiredService<IMarkdownService>();
-            var shortCodeService = serviceProvider.GetRequiredService<IShortCodeService>();
+            var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
             var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
@@ -57,7 +59,6 @@ namespace OrchardCore.Markdown.GraphQL
             {
                 var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
                 var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
-
                 var model = new MarkdownBodyPartViewModel()
                 {
                     Markdown = ctx.Source.Markdown,
@@ -66,11 +67,16 @@ namespace OrchardCore.Markdown.GraphQL
                     ContentItem = ctx.Source.ContentItem
                 };
 
-                html = await liquidTemplateManager.RenderAsync(html, htmlEncoder, model,
-                    scope => scope.SetValue("ContentItem", model.ContentItem));
+                html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
             }
 
-            html = await shortCodeService.ProcessAsync(html);
+            html = await shortcodeService.ProcessAsync(html,
+                new Context
+                {
+                    ["ContentItem"] = ctx.Source.ContentItem,
+                    ["PartFieldDefinition"] = contentTypePartDefinition
+                });
 
             if (settings.SanitizeHtml)
             {

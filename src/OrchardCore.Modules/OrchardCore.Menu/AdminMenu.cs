@@ -24,6 +24,7 @@ namespace OrchardCore.Menu
 
             var rvd = new RouteValueDictionary
             {
+                { "contentTypeId", "Menu" },
                 { "Area", "OrchardCore.Contents" },
                 { "Options.SelectedContentType", "Menu" },
                 { "Options.CanCreateSelectedContentType", true }

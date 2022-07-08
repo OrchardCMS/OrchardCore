@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -5,6 +6,8 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Google.Authentication.Services;
 using OrchardCore.Google.Authentication.Settings;
 
@@ -16,15 +19,18 @@ namespace OrchardCore.Google.Authentication.Configuration
     {
         private readonly GoogleAuthenticationService _googleAuthenticationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public GoogleOptionsConfiguration(
             GoogleAuthenticationService googleAuthenticationService,
             IDataProtectionProvider dataProtectionProvider,
+            ShellSettings shellSettings,
             ILogger<GoogleOptionsConfiguration> logger)
         {
             _googleAuthenticationService = googleAuthenticationService;
             _dataProtectionProvider = dataProtectionProvider;
+            _shellSettings = shellSettings;
             _logger = logger;
         }
 
@@ -32,11 +38,6 @@ namespace OrchardCore.Google.Authentication.Configuration
         {
             var settings = GetGoogleAuthenticationSettingsAsync().GetAwaiter().GetResult();
             if (settings == null)
-            {
-                return;
-            }
-
-            if (!_googleAuthenticationService.CheckSettings(settings))
             {
                 return;
             }
@@ -50,12 +51,18 @@ namespace OrchardCore.Google.Authentication.Configuration
 
         public void Configure(string name, GoogleOptions options)
         {
-            if (!string.Equals(name, GoogleDefaults.AuthenticationScheme))
+            if (!String.Equals(name, GoogleDefaults.AuthenticationScheme))
             {
                 return;
             }
+
             var settings = GetGoogleAuthenticationSettingsAsync().GetAwaiter().GetResult();
-            options.ClientId = settings?.ClientID ?? string.Empty;
+            if (settings == null)
+            {
+                return;
+            }
+
+            options.ClientId = settings.ClientID;
             try
             {
                 options.ClientSecret = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication).Unprotect(settings.ClientSecret);
@@ -80,9 +87,14 @@ namespace OrchardCore.Google.Authentication.Configuration
             var settings = await _googleAuthenticationService.GetSettingsAsync();
             if (!_googleAuthenticationService.CheckSettings(settings))
             {
-                _logger.LogWarning("Google Authentication is not correctly configured.");
+                if (_shellSettings.State == TenantState.Running)
+                {
+                    _logger.LogWarning("Google Authentication is not correctly configured.");
+                }
+
                 return null;
             }
+
             return settings;
         }
     }

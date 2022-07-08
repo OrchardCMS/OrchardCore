@@ -93,6 +93,10 @@ namespace OrchardCore.Settings.Recipes
                         site.HomeRoute = property.Value.ToObject<RouteValueDictionary>();
                         break;
 
+                    case "CacheMode":
+                        site.CacheMode = (CacheMode)property.Value.Value<int>();
+                        break;
+
                     default:
                         site.Properties[property.Name] = property.Value;
                         break;

@@ -1,0 +1,17 @@
+@model dynamic
+<div class="card h-100">
+    <div class="card-body">
+        @if (Model.Content != null)
+        {
+            @await DisplayAsync(Model.Content)        
+        }
+    </div>
+    @if (Model.Actions != null)
+    {    
+        <div class="card-footer text-muted text-xs-right">
+
+        @await DisplayAsync(Model.Actions) 
+        
+        </div>
+    }
+</div>

@@ -1,0 +1,14 @@
+.list-group li:hover {
+    background-color: $li-hover-bg-color;
+}
+
+.list-group-item.first-child-visible {
+    border-top-width: 1px !important;
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+}
+
+.list-group-item.last-child-visible {
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+}

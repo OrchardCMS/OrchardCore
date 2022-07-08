@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Drivers;
+using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Shell.Configuration;
@@ -18,6 +19,7 @@ using OrchardCore.Mvc.Routing;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Admin
 {
@@ -79,6 +81,15 @@ namespace OrchardCore.Admin
                 var adminOptions = ShellScope.Services.GetRequiredService<IOptions<AdminOptions>>().Value;
                 options.Conventions.Add(new AdminPageRouteModelConvention(adminOptions.AdminUrlPrefix));
             });
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSiteSettingsPropertyDeploymentStep<AdminSettings, DeploymentStartup>(S => S["Admin settings"], S => S["Exports the admin settings."]);
         }
     }
 }

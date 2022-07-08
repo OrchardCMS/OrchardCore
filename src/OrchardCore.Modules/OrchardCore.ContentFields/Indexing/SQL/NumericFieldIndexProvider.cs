@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing.SQL
@@ -18,7 +18,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
     public class NumericFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
+        private readonly HashSet<string> _ignoredTypes = new();
         private IContentDefinitionManager _contentDefinitionManager;
 
         public NumericFieldIndexProvider(IServiceProvider serviceProvider)
@@ -31,6 +31,12 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             context.For<NumericFieldIndex>()
                 .Map(contentItem =>
                 {
+                    // Remove index records of soft deleted items.
+                    if (!contentItem.Published && !contentItem.Latest)
+                    {
+                        return null;
+                    }
+
                     // Can we safely ignore this content item?
                     if (_ignoredTypes.Contains(contentItem.ContentType))
                     {
@@ -38,48 +44,43 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     }
 
                     // Lazy initialization because of ISession cyclic dependency
-                    _contentDefinitionManager = _contentDefinitionManager ?? _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+                    _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-                    // Search for Text fields
-                    var fieldDefinitions = _contentDefinitionManager
-                        .GetTypeDefinition(contentItem.ContentType)
+                    // Search for NumericField
+                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+                    // This can occur when content items become orphaned, particularly layer widgets when a layer is removed, before its widgets have been unpublished.
+                    if (contentTypeDefinition == null)
+                    {
+                        _ignoredTypes.Add(contentItem.ContentType);
+                        return null;
+                    }
+
+                    var fieldDefinitions = contentTypeDefinition
                         .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(NumericField)))
                         .ToArray();
 
-                    var results = new List<NumericFieldIndex>();
-
-                    foreach (var fieldDefinition in fieldDefinitions)
+                    // This type doesn't have any NumericField, ignore it
+                    if (fieldDefinitions.Length == 0)
                     {
-                        var jPart = (JObject)contentItem.Content[fieldDefinition.PartDefinition.Name];
-
-                        if (jPart == null)
-                        {
-                            continue;
-                        }
-
-                        var jField = (JObject)jPart[fieldDefinition.Name];
-
-                        if (jField == null)
-                        {
-                            continue;
-                        }
-
-                        var field = jField.ToObject<NumericField>();
-
-                        results.Add(new NumericFieldIndex
-                        {
-                            Latest = contentItem.Latest,
-                            Published = contentItem.Published,
-                            ContentItemId = contentItem.ContentItemId,
-                            ContentItemVersionId = contentItem.ContentItemVersionId,
-                            ContentType = contentItem.ContentType,
-                            ContentPart = fieldDefinition.PartDefinition.Name,
-                            ContentField = fieldDefinition.Name,
-                            Numeric = field.Value
-                        });
+                        _ignoredTypes.Add(contentItem.ContentType);
+                        return null;
                     }
 
-                    return results;
+                    return fieldDefinitions
+                        .GetContentFields<NumericField>(contentItem)
+                        .Select(pair =>
+                            new NumericFieldIndex
+                            {
+                                Latest = contentItem.Latest,
+                                Published = contentItem.Published,
+                                ContentItemId = contentItem.ContentItemId,
+                                ContentItemVersionId = contentItem.ContentItemVersionId,
+                                ContentType = contentItem.ContentType,
+                                ContentPart = pair.Definition.PartDefinition.Name,
+                                ContentField = pair.Definition.Name,
+                                Numeric = pair.Field.Value,
+                            });
                 });
         }
     }

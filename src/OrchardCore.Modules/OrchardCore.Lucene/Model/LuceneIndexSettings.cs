@@ -1,16 +1,11 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Lucene.Model
 {
     public class LuceneIndexSettings
     {
-        /// <summary>
-        /// True if the object can't be used to update the database.
-        /// </summary>
-        [JsonIgnore]
-        public bool IsReadonly { get; set; }
-
         [JsonIgnore]
         public string IndexName { get; set; }
 
@@ -23,7 +18,7 @@ namespace OrchardCore.Lucene.Model
         public string Culture { get; set; }
     }
 
-    public class LuceneIndexSettingsDocument
+    public class LuceneIndexSettingsDocument : Document
     {
         public Dictionary<string, LuceneIndexSettings> LuceneIndexSettings { get; set; } = new Dictionary<string, LuceneIndexSettings>();
     }

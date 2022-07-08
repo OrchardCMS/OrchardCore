@@ -3,7 +3,7 @@ using System;
 namespace OrchardCore.Environment.Shell
 {
     /// <summary>
-    /// The <see cref="Exception"/> that is thrown if <see cref="IShellHost.ReloadShellContextAsync(ShellSettings)"/> fails.
+    /// The <see cref="Exception"/> that is thrown if <see cref="IShellHost.ReloadShellContextAsync(ShellSettings, bool)"/> fails.
     /// </summary>
     public class ShellHostReloadException : Exception
     {

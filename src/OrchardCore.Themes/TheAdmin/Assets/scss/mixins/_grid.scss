@@ -1,0 +1,21 @@
+// Row / Column Groupings
+// Creates mixins to target columns contained inside a column grouping to expand small sizes.
+// ------------------------------
+
+@mixin make-col-fix($breakpoint) {
+    .col-#{$breakpoint} {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+@mixin make-col-grouping($grouping) {
+    &.col-#{$grouping} {
+        @each $breakpoint in map-keys($grid-breakpoints) {
+            @include make-col-fix(#{$breakpoint});
+            @for $i from 1 through math.div($grid-columns, 2) {
+                @include make-col-fix(#{$breakpoint}-#{$i});
+            }
+        }
+    }
+}

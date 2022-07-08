@@ -28,7 +28,7 @@ namespace OrchardCore.Admin
 
             if (!await AuthorizeAsync(context.HttpContext))
             {
-                context.Result = context.HttpContext.User.Identity.IsAuthenticated ? (IActionResult)new ForbidResult() : (IActionResult)new ChallengeResult();
+                context.Result = context.HttpContext.User?.Identity?.IsAuthenticated ?? false ? (IActionResult)new ForbidResult() : new ChallengeResult();
                 return;
             }
 

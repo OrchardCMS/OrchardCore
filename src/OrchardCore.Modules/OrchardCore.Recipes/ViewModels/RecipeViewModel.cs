@@ -4,6 +4,7 @@ namespace OrchardCore.Recipes.ViewModels
     {
         public string FileName { get; set; }
         public string Name { get; set; }
+        public string DisplayName { get; set; }
         public string[] Tags { get; set; }
         public bool IsSetupRecipe { get; set; }
         public string Description { get; set; }

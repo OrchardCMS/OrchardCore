@@ -9,16 +9,16 @@
 
 @if (includeAll)
 {
-    <span class="badge badge-success">@T["All"]</span>
+    <span class="badge bg-success">@T["All"]</span>
 }
 else if (settingsTypeNames?.Length > 0)
 {
     foreach (var settingsTypeName in settingsTypeNames)
     {
-        <span class="badge badge-info">@settingsTypeName</span>
+        <span class="badge ta-badge">@settingsTypeName</span>
     }
 }
 else
 {
-    <span class="badge badge-warning">@T["No custom settings selected."]</span>
+    <span class="badge bg-warning">@T["No custom settings selected."]</span>
 }

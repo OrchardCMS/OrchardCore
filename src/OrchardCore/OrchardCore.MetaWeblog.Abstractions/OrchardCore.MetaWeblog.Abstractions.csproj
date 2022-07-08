@@ -1,8 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.MetaWeblog</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore MetaWeblog</Title>
+    <Description>$(OCCMSDescription)
+
+    Abstractions for MetaWeblog.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Infrastructure</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

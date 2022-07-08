@@ -1,19 +1,18 @@
-using Newtonsoft.Json;
-
 namespace OrchardCore.Queries
 {
+    /// <summary>
+    /// Represents a query.
+    /// </summary>
     public class Query
     {
+        /// <summary>
+        /// Initializes a new instance of a <see cref="Query"/>.
+        /// </summary>
+        /// <param name="source"></param>
         protected Query(string source)
         {
             Source = source;
         }
-
-        /// <summary>
-        /// True if the object can't be used to update the database.
-        /// </summary>
-        [JsonIgnore]
-        public bool IsReadonly { get; set; }
 
         /// <summary>
         /// Gets or sets the technical name of the query.

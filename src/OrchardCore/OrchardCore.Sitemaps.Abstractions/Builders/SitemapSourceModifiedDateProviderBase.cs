@@ -9,16 +9,16 @@ namespace OrchardCore.Sitemaps.Builders
     /// </summary>
     public abstract class SitemapSourceModifiedDateProviderBase<TSitemapSource> : ISitemapSourceModifiedDateProvider where TSitemapSource : SitemapSource
     {
-        async Task<DateTime?> ISitemapSourceModifiedDateProvider.GetLastModifiedDateAsync(SitemapSource source)
+        Task<DateTime?> ISitemapSourceModifiedDateProvider.GetLastModifiedDateAsync(SitemapSource source)
         {
             var tSource = source as TSitemapSource;
 
             if (tSource == null)
             {
-                return null;
+                return Task.FromResult<DateTime?>(null);
             }
 
-            return await GetLastModifiedDateAsync(tSource);
+            return GetLastModifiedDateAsync(tSource);
         }
 
         /// <summary>

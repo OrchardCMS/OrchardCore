@@ -14,5 +14,7 @@ namespace OrchardCore.Lucene.Model
         public string SearchIndex { get; set; }
 
         public string[] DefaultSearchFields { get; set; } = FullTextField;
+
+        public bool AllowLuceneQueriesInSearch { get; set; } = false;
     }
 }

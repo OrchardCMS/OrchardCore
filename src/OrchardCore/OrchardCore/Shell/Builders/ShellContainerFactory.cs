@@ -32,13 +32,6 @@ namespace OrchardCore.Environment.Shell.Builders
             _serviceProvider = serviceProvider;
         }
 
-        public void AddCoreServices(IServiceCollection services)
-        {
-            services.TryAddScoped<IShellStateUpdater, ShellStateUpdater>();
-            services.TryAddScoped<IShellStateManager, NullShellStateManager>();
-            services.AddScoped<IShellDescriptorManagerEventHandler, ShellStateCoordinator>();
-        }
-
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
         {
             var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
@@ -54,16 +47,14 @@ namespace OrchardCore.Environment.Shell.Builders
             tenantServiceCollection.AddSingleton(blueprint.Descriptor);
             tenantServiceCollection.AddSingleton(blueprint);
 
-            AddCoreServices(tenantServiceCollection);
-
             // Execute IStartup registrations
 
             var moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
             foreach (var dependency in blueprint.Dependencies.Where(t => typeof(IStartup).IsAssignableFrom(t.Key)))
             {
-                moduleServiceCollection.AddSingleton(typeof(IStartup), dependency.Key);
-                tenantServiceCollection.AddSingleton(typeof(IStartup), dependency.Key);
+                moduleServiceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IStartup), dependency.Key));
+                tenantServiceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IStartup), dependency.Key));
             }
 
             // To not trigger features loading before it is normally done by 'ShellHost',

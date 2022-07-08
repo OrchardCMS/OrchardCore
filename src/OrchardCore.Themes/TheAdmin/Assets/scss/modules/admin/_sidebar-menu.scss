@@ -1,0 +1,921 @@
+// Layout 3 : ta-left-sidebar when expanded
+// ----------------------------------------
+
+body:not(.left-sidebar-compact) {
+    #ta-left-sidebar {
+        background-color: $admin-menu-bg-color;
+        z-index: calc(#{$zindex-sticky} + 1);
+        position: fixed;
+        top: $top-nav-height;
+        bottom: 0;
+        left: 0px;
+        width: $left-navigation-width;
+        color: $admin-menu-font-color;
+        border-right: $border-content;
+        transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: $scrollbar-color;
+        }
+
+        figure {
+            margin: 0;
+        }
+        // Rotate the chevron's icon when the menu is active
+        a[aria-expanded="true"] {
+            .chevron {
+                transform: rotate(90deg);
+                transition-duration: 0.2s;
+            }
+        }
+
+        a[aria-expanded="false"] {
+            .chevron {
+                transition-duration: 0.2s;
+            }
+        }
+
+        .collapse {
+            display: none;
+        }
+
+        .collapse.show {
+            display: block;
+        }
+
+        .chevron {
+            position: absolute;
+            top: 38%;
+            left: 100%;
+            margin-left: -25px;
+        }
+
+        figcaption,
+        a {
+            position: relative;
+            display: block;
+            margin: 0;
+        }
+
+        #left-nav {
+            position: relative;
+            flex: 1 1 auto;
+            height: calc(100% - 51px - 38px); // minus footer and search input heights
+            ul {
+                margin: 0;
+                padding: 0;
+                white-space: nowrap;
+            }
+
+            > ul {
+                li {
+                    position: relative;
+                    margin: 0;
+                    padding: 0;
+                    display: list-item;
+                    list-style: none;
+
+                    .item-label {
+                        flex-grow: 1;
+                        cursor: pointer;
+                    }
+                }
+
+                > li {
+                    line-height: 3em;
+                    width: $left-navigation-width;
+                    transition: width 0.2s ease-in-out;
+                    background-color: $admin-menu-bg-color;
+                }
+
+                > li > figure > ul > li {
+                    line-height: 2.5em;
+                }
+                // first level menu items that have no items and are active
+                > li.active:not(.has-items)::before {
+                    border-left: 3px solid;
+                    border-left-color: #0078d4;
+                    bottom: 0;
+                    content: "";
+                    left: 0;
+                    position: absolute;
+                    top: 0;
+                }
+
+                > li.new:after {
+                    content: "";
+                    width: 92%;
+                    height: 1px;
+                    background: rgba(140, 130, 115, 0.13);
+                    display: block;
+                    margin: 0px auto;
+                }
+
+                // changing the padding of the icons on the first level to match
+                // the padding when leftbar is collapsed. Avoid small movement
+                // when switching between the two states
+                &.menu-admin {
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    height: 100%;
+                    margin-bottom: 40px;
+                    scrollbar-width: thin;
+                    scrollbar-color: $scrollbar-color $admin-menu-bg-color;
+
+                    .item-label {
+                        padding-left: 0px !important;
+                        display: flex;
+
+                        > span.icon {
+                            padding: 0 5px;
+                            flex-shrink: 0;
+                            font-size: 22px;
+                            width: $left-navigation-width-when-compact;
+
+                            svg {
+                                width: 35px;
+                            }
+                        }
+
+                        > span.title {
+                            flex-grow: 1;
+                            font-size: 14px;
+                            width: calc(100% - 48px - 45px);
+                            overflow: hidden;
+                            white-space: nowrap;
+                            text-overflow: ellipsis;
+                        }
+                    }
+
+                    > li > figure > figcaption > .item-label > .collapse-icon {
+                        color: rgba(255, 0, 0, 0);
+                        display: flex;
+                        justify-content: center;
+                    }
+                }
+            }
+
+            ul li .item-label,
+            li a:hover,
+            li a:active,
+            li a:visited {
+                color: $admin-menu-item-font-color;
+                text-decoration: none;
+                padding-left: $link-padding-left;
+            }
+
+            .btn-nostyle {
+                background: none;
+                color: inherit;
+                border: none;
+                padding: 0;
+                font: inherit;
+                cursor: pointer;
+                width: 45px;
+                outline: none;
+            }
+
+            > li > figure > figcaption > .item-label {
+                width: 100%;
+            }
+            //for accessibility testing
+            /*.btn-nostyle:focus, .btn-nostyle:active {
+                background-color: rgba(0, 0, 0, 0.3);
+                color: white;
+            }*/
+        }
+
+        li.has-items .item-label,
+        li.has-items a:hover,
+        li.has-items a:active,
+        li.has-items a:visited {
+            padding-left: $link-padding-left - 4px;
+        }
+
+        li .item-label:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        li > figure > ul > li.active > .item-label {
+            background: rgba(0, 0, 0, 0.1);
+            color: $admin-menu-item-font-color-active !important;
+            font-weight: 600;
+            padding-left: (2 * $link-padding-left + 16) !important;
+        }
+
+        li.active > figure > ul > li.active > .item-label::before {
+            border-left: 3px solid;
+            border-left-color: #0078d4;
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li.active > figure > ul > li > .item-label::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0, 0, 0, 0.2);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li.has-items.active > figure > figcaption > .item-label {
+            padding-left: (2 * $link-padding-left + 16) !important;
+        }
+
+        li.has-items.active > figure > figcaption > .item-label::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0, 0, 0, 0.1);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li.active > figure > figcaption > .item-label {
+            background-color: rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+        }
+
+        li.active > figure > figcaption > .item-label:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        li .active::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0, 0, 0, 0.05);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li .active .item-label::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0, 0, 0, 0.1);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li ul > li > .item-label,
+        li ul > li > figure > figcaption > .item-label {
+            background: rgba(0, 0, 0, 0.05);
+            color: $admin-menu-item-font-color !important;
+
+            > span.icon {
+                font-size: 16px !important;
+            }
+        }
+
+        li.active ul > li > figure > figcaption > .item-label::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0, 0, 0, 0.2);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li ul > li ul > li {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        // third level indent
+        li ul > li ul > li > a {
+            color: $admin-menu-item-font-color-active;
+            padding-left: 3 * $link-padding-left !important;
+        }
+
+        li ul > li ul > .active > a {
+            padding-left: (3 * $link-padding-left - 4) !important;
+        }
+
+        .footer {
+            background-color: $admin-menu-bg-color !important;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer:before {
+            content: "";
+            width: 92%;
+            height: 1px;
+            background: rgba(140, 130, 115, 0.13);
+            display: block;
+            margin: 0px auto;
+        }
+
+        #filter,
+        #filter:focus {
+            border: none;
+            box-shadow: unset;
+            border-radius: unset;
+        }
+    }
+}
+// Layout 4 : ta-left-sidebar when compacted
+// -----------------------------------------
+.left-sidebar-compact {
+    #ta-left-sidebar {
+        background-color: $admin-menu-bg-color;
+        z-index: calc(#{$zindex-sticky} + 1);
+        position: fixed;
+        top: $top-nav-height;
+        bottom: 0;
+        left: 0px;
+        width: $left-navigation-width-when-compact;
+        color: $admin-menu-font-color;
+        border-right: $border-content;
+        transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+        font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue",
+            Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: $scrollbar-color;
+        }
+
+        figure {
+            margin: 0;
+        }
+
+        a[aria-expanded="false"] {
+            .chevron {
+                transition-duration: 0.2s;
+            }
+        }
+
+        .collapse {
+            display: none;
+        }
+
+        .collapse.show {
+            display: block;
+        }
+
+        .chevron {
+            position: absolute;
+            top: 38%;
+            left: 100%;
+            margin-left: -25px;
+        }
+
+        figcaption,
+        a {
+            position: relative;
+            display: block;
+            margin: 0;
+        }
+
+        #left-nav {
+            flex: 1 1 auto;
+            height: calc(100% - 51px);
+            overflow-x: hidden;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: $scrollbar-color $admin-menu-bg-color;
+
+            ul {
+                margin: 0;
+                padding: 0;
+                white-space: nowrap;
+                background-color: $admin-menu-item-bg-color;
+            }
+
+            > ul {
+                li {
+                    position: relative;
+                    margin: 0;
+                    padding: 0;
+                    display: list-item;
+                    list-style: none;
+
+                    .item-label {
+                        cursor: pointer;
+                    }
+                }
+
+                > li {
+                    height: 48px;
+                    line-height: 3em;
+                    width: $left-navigation-width-when-compact - 1;
+                    transition: width 0.2s ease-in-out;
+                    background-color: $admin-menu-bg-color;
+
+                    &:first-child > span.title:after {
+                        content: "";
+                        width: 75%;
+                        height: 1px;
+                        background: rgba(0, 0, 0, 0.1);
+                        display: block;
+                        margin: 0px auto 4px auto;
+                    }
+
+                    > figure > figcaption > .item-label > .btn-nostyle {
+                        display: none;
+                    }
+                }
+
+                > li > figure > ul > li {
+                    line-height: 2.5em;
+                }
+
+                > li:not(.has-items) .item-label {
+                    > span.icon {
+                        font-size: 22px;
+                    }
+                }
+
+                .item-label {
+                    padding-left: 0px !important;
+                    display: flex;
+
+                    > span.icon {
+                        padding: 0 5px;
+                        flex-shrink: 0;
+                        font-size: 16px;
+
+                        svg {
+                            width: 35px;
+                        }
+                    }
+
+                    > span.icon-none {
+                        flex-shrink: 0;
+                        font-size: 16px;
+                        width: 37px;
+                    }
+
+                    > span.title {
+                        flex-grow: 1;
+                        font-size: 14px;
+                        width: calc(100% - 48px);
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                    }
+                }
+
+                > li > figure > figcaption > .item-label > .collapse-icon {
+                    color: rgba(255, 0, 0, 0);
+                    display: flex;
+                    justify-content: center;
+                }
+
+                > li > figure > figcaption > .item-label {
+                    .icon:hover {
+                        background-color: rgba(0, 0, 0, 0.1);
+                    }
+
+                    .title:hover {
+                        color: $admin-menu-font-color-hover;
+                        background-color: rgba(0, 0, 0, 0.1);
+                    }
+                }
+
+                > li.active:not(.has-items) > figure > figcaption > .item-label::before {
+                    border-left: 3px solid;
+                    border-left-color: #0078d4;
+                    bottom: 0;
+                    content: "";
+                    left: 0;
+                    position: absolute;
+                    top: 0;
+                }
+
+                > li.has-items.visible > figure > figcaption {
+                    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+
+                    > a.item-label {
+                        z-index: 9999;
+                    }
+                }
+
+                > li .item-label:hover:not(:first-child) {
+                    color: $admin-menu-font-color-hover;
+                    background-color: rgba(0, 0, 0, 0.1);
+                }
+
+                // formatting of icons
+                > li > figure > figcaption > .item-label > span.icon {
+                    display: inline-block !important;
+                    color: $admin-menu-item-font-color;
+                    background-color: $admin-menu-bg-color;
+                    width: $left-navigation-width-when-compact;
+                }
+
+                > li.has-items.active > figure > figcaption > .item-label::before {
+                    border-left: 3px solid;
+                    border-left-color: #0078d4;
+                    bottom: 0;
+                    content: "";
+                    left: 0;
+                    position: absolute;
+                    top: 0;
+                }
+
+                > li.has-items.visible {
+                    -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+                    -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+                    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+                    z-index: 1;
+                }
+
+                li .active > figure > figcaption > .item-label:hover {
+                    background-color: rgba(0, 0, 0, 0.1);
+                }
+
+                > li {
+                    overflow: hidden;
+
+                    span.title {
+                        display: none;
+                    }
+                }
+
+                > li.visible {
+                    overflow: visible;
+                    width: $left-navigation-width-when-compact + $left-navigation-width;
+                    transition: none;
+                    position: static;
+
+                    > figure {
+                        position: absolute;
+                        z-index: 999;
+                    }
+
+                    span.title,
+                    span.icon {
+                        display: block;
+                    }
+                }
+
+                > li > figure > ul {
+                    position: absolute;
+                    left: $left-navigation-width-when-compact;
+                    width: $left-navigation-width;
+                    -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+                    -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+                    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+                    max-height: 250px;
+                    z-index: 1;
+                    overflow-x: hidden;
+                    overflow-y: auto;
+                    scrollbar-width: thin;
+                    scrollbar-color: $scrollbar-color $admin-menu-bg-color;
+                }
+
+                > li > figure > ul li .item-label:hover {
+                    background-color: rgba(0, 0, 0, 0.05);
+                }
+
+                > li > figure > figcaption > .item-label {
+                    background-color: $admin-menu-item-bg-color;
+                    color: $admin-menu-item-font-color;
+                    padding-left: 0px !important;
+                    display: flex;
+
+                    .title {
+                        padding: 0 20px;
+
+                        &:hover {
+                            background-color: $admin-menu-item-bg-color !important;
+                            color: $admin-menu-item-font-color;
+                        }
+                    }
+
+                    > span.icon {
+                        padding: 0 5px;
+                        flex-shrink: 0;
+                        font-size: 22px;
+                        width: $left-navigation-width-when-compact;
+
+                        svg {
+                            width: 35px;
+                        }
+                    }
+
+                    > span.title {
+                        flex-grow: 1;
+                        font-size: 14px;
+                        font-weight: bold;
+                        width: calc(100% - 48px);
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        width: 260px;
+                    }
+
+                    > span.title:after {
+                        content: "";
+                        height: 1px;
+                        background: rgba(0, 0, 0, 0.1);
+                        display: block;
+                        margin: 0px auto;
+                        position: absolute;
+                        width: 75%;
+                        left: 63px;
+                    }
+                }
+
+                // first level menu items that have no items and are active
+                > li.active:not(.has-items)::before {
+                    border-left: 3px solid;
+                    border-left-color: #0078d4;
+                    bottom: 0;
+                    content: "";
+                    left: 0;
+                    position: absolute;
+                    top: 0;
+                }
+            }
+
+            ul li .item-label,
+            li a:hover,
+            li a:active,
+            li a:visited {
+                text-decoration: none;
+                padding-left: $link-padding-left;
+            }
+
+            .btn-nostyle {
+                background: none;
+                color: inherit;
+                border: none;
+                padding: 0;
+                font: inherit;
+                cursor: pointer;
+                width: 45px;
+                outline: none;
+            }
+        }
+
+        li.has-items .item-label,
+        li.has-items a:hover,
+        li.has-items a:active,
+        li.has-items a:visited {
+            padding-left: $link-padding-left - 4px;
+        }
+
+        li > figure > ul > li.active ul > li.active .item-label {
+            background: rgba(0, 0, 0, 0.05);
+            color: rgba($admin-menu-item-font-color-active, 0.9) !important;
+            font-weight: 600;
+            padding-left: (2 * $link-padding-left + 16) !important;
+        }
+
+        li.active > figure > ul > li.active > .item-label::before {
+            border-left: 3px solid;
+            border-left-color: #0078d4;
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li.active > figure > ul > li.active ul > li.active .item-label::before {
+            border-left: 3px solid;
+            border-left-color: #0078d4;
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li.active > figure > ul > li.active > figure > figcaption > .item-label::before {
+            border-left: 3px solid;
+            border-left-color: #0078d4;
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li.active > figure > ul > li .item-label::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0, 0, 0, 0.2);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li.has-items.active > .item-label {
+            padding-left: (2 * $link-padding-left + 16) !important;
+        }
+
+        li.has-items.active > .item-label::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0, 0, 0, 0.2);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li.active > .item-label {
+            background-color: rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+        }
+
+        li .active::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0, 0, 0, 0.1);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li .active .item-label::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0, 0, 0, 0.2);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li > figure ul > li > figure .item-label {
+            color: $admin-menu-item-font-color !important;
+        }
+
+        li > .item-label {
+            color: $admin-menu-item-font-color !important;
+        }
+
+        li.active > figure ul > li > figure > figcaption > .item-label::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0, 0, 0, 0.2);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li > figure ul > li > figure ul > li {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        // third level indent
+        li > figure ul > li > figure ul > li > figure > figcaption > a {
+            color: $admin-menu-item-font-color-active;
+            padding-left: 3 * $link-padding-left !important;
+        }
+
+        li > figure ul > li > figure ul > .active > a {
+            padding-left: (3 * $link-padding-left - 4) !important;
+        }
+
+        .footer {
+            background-color: $admin-menu-bg-color !important;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer:before {
+            content: "";
+            width: 60%;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.1);
+            display: block;
+            margin: 0px auto;
+        }
+
+        #filter,
+        #filter:focus {
+            display: none;
+        }
+    }
+}
+
+// Left sidebar when compacted with a scrollbar
+.left-sidebar-compact.scroll {
+    #ta-left-sidebar {
+        #left-nav {
+            > ul {
+                > li.visible {
+                    > figure {
+                        position: static;
+                        z-index: unset;
+
+                        > ul:before {
+                            content: attr(data-title);
+                            padding: 0 20px;
+                            font-size: 14px;
+                            font-weight: bold;
+                            width: 100%;
+                            display: block;
+                        }
+
+                        > ul > li:first-child::before
+                        {
+                            background: rgba(0, 0, 0, 0.1);
+                            margin: 0px auto;
+                            content: "";
+                            height: 1px;
+                            display: block;
+                            position: absolute;
+                            width: 90%;
+                            left: 15px;
+                        }
+                    }
+                }
+
+                > li > figure > ul {
+                    position: absolute;
+                    left: $left-navigation-width-when-compact;
+                    width: $left-navigation-width;
+                    -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+                    -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+                    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+                    height: calc(100vh - 52px);
+                    max-height: unset;
+                    z-index: 1;
+                    overflow-x: hidden;
+                    overflow-y: auto;
+                    scrollbar-width: thin;
+                    scrollbar-color: $scrollbar-color $admin-menu-bg-color;
+                    top: 0px;
+                }
+            }
+        }
+    }
+}
+
+/* rtl:ignore */
+.left-sidebar-compact {
+    #ta-left-sidebar {
+        // Rotate the chevron's icon when the menu is active
+        a[aria-expanded="true"] {
+            .chevron {
+                transform: rotate(90deg);
+                transition-duration: 0.2s;
+            }
+        }
+    }
+}
+
+// fixing a flickering that occurs on compact leftbar while icons load.
+html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label {
+    background-color: $gray-100 !important;
+}
+// Layout 5 : leftbar compactor button
+// -----------------------------------
+.leftbar-compactor {
+    display: block;
+    width: $left-navigation-width-when-compact;
+    height: 50px;
+    padding: 10px;
+    border: none;
+    background-color: transparent;
+    color: $admin-menu-font-color;
+    cursor: pointer;
+    font-size: 20px;
+    float: right;
+    transition-duration: 0.2s;
+    display: block;
+    transform: scale(2, 1);
+
+    &:focus {
+        outline: none;
+    }
+
+    &:hover {
+        color: rgba(0, 120, 212, 1);
+        color: var(rgba(0, 120, 212, 1));
+        text-shadow: 0 0 4px rgba(0, 120, 212, 0.5);
+    }
+
+    &:before {
+        content: "\27EA";
+    }
+}
+
+.left-sidebar-compact .leftbar-compactor {
+    transition-duration: 0.2s;
+    transform: scale(-2, 1);
+}

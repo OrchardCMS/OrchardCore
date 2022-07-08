@@ -15,10 +15,10 @@ namespace OrchardCore.OpenId.Services.Managers
     {
         public OpenIdAuthorizationManager(
             IOpenIddictAuthorizationCache<TAuthorization> cache,
-            IOpenIddictAuthorizationStoreResolver resolver,
             ILogger<OpenIddictAuthorizationManager<TAuthorization>> logger,
-            IOptionsMonitor<OpenIddictCoreOptions> options)
-            : base(cache, resolver, logger, options)
+            IOptionsMonitor<OpenIddictCoreOptions> options,
+            IOpenIddictAuthorizationStoreResolver resolver)
+            : base(cache, logger, options, resolver)
         {
         }
 
@@ -38,9 +38,9 @@ namespace OrchardCore.OpenId.Services.Managers
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
 
-            return new ValueTask<TAuthorization>(Store is IOpenIdAuthorizationStore<TAuthorization> store ?
+            return Store is IOpenIdApplicationStore<TAuthorization> store ?
                 store.FindByPhysicalIdAsync(identifier, cancellationToken) :
-                Store.FindByIdAsync(identifier, cancellationToken));
+                Store.FindByIdAsync(identifier, cancellationToken);
         }
 
         /// <summary>

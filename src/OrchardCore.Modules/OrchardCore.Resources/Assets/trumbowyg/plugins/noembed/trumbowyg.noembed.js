@@ -24,23 +24,39 @@
                 noembed: 'Noembed',
                 noembedError: 'Error'
             },
+            cs: {
+                noembedError: 'Chyba'
+            },
             da: {
                 noembedError: 'Fejl'
             },
-            sk: {
-                noembedError: 'Chyba'
+            et: {
+                noembed: 'Noembed',
+                noembedError: 'Viga'
             },
             fr: {
                 noembedError: 'Erreur'
             },
-            cs: {
-                noembedError: 'Chyba'
+            hu: {
+                noembed: 'Noembed',
+                noembedError: 'Hiba'
+            },
+            ja: {
+                noembedError: 'エラー'
+            },
+            ko: {
+                noembed: 'oEmbed 넣기',
+                noembedError: '에러'
+            },
+            pt_br: {
+                noembed: 'Incorporar',
+                noembedError: 'Erro'
             },
             ru: {
                 noembedError: 'Ошибка'
             },
-            ja: {
-                noembedError: 'エラー'
+            sk: {
+                noembedError: 'Chyba'
             },
             tr: {
                 noembedError: 'Hata'
@@ -48,14 +64,6 @@
             zh_tw: {
                 noembed: '插入影片',
                 noembedError: '錯誤'
-            },
-            pt_br: {
-                noembed: 'Incorporar',
-                noembedError: 'Erro'
-            },
-            ko: {
-                noembed: 'oEmbed 넣기',
-                noembedError: '에러'
             },
             // jshint camelcase:true
         },

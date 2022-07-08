@@ -52,7 +52,7 @@ namespace OrchardCore.Contents.Indexing
                 var typePartIndexSettings = contentTypePartDefinition.GetSettings<ContentIndexSettings>();
 
                 // Skip this part if it's not included in the index and it's not the default type part
-                if (partName != partTypeName && !typePartIndexSettings.Included)
+                if (contentTypeDefinition.Name != partTypeName && !typePartIndexSettings.Included)
                 {
                     continue;
                 }

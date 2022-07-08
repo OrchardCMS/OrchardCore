@@ -5,9 +5,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Routing;
 using SixLabors.ImageSharp.Web;
-using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.Middleware;
-using SixLabors.ImageSharp.Web.Processors;
 using SixLabors.ImageSharp.Web.Providers;
 using SixLabors.ImageSharp.Web.Resolvers;
 
@@ -17,7 +15,6 @@ namespace OrchardCore.Media.Processing
     {
         private readonly IMediaFileProvider _mediaFileProvider;
         private readonly FormatUtilities _formatUtilities;
-        private readonly int[] _supportedSizes;
         private readonly PathString _assetsRequestPath;
 
         /// <summary>
@@ -32,8 +29,7 @@ namespace OrchardCore.Media.Processing
             )
         {
             _mediaFileProvider = mediaFileProvider;
-            _formatUtilities = new FormatUtilities(imageSharpOptions.Value.Configuration);
-            _supportedSizes = mediaOptions.Value.SupportedSizes;
+            _formatUtilities = new FormatUtilities(imageSharpOptions);
             _assetsRequestPath = mediaOptions.Value.AssetsRequestPath;
         }
 
@@ -48,34 +44,7 @@ namespace OrchardCore.Media.Processing
 
         /// <inheritdoc/>
         public bool IsValidRequest(HttpContext context)
-        {
-            if (_formatUtilities.GetExtensionFromUri(context.Request.GetDisplayUrl()) == null)
-            {
-                return false;
-            }
-
-            if (context.Request.Query.TryGetValue(ResizeWebProcessor.Width, out var widthString))
-            {
-                var width = CommandParser.Instance.ParseValue<int>(widthString);
-
-                if (Array.BinarySearch<int>(_supportedSizes, width) < 0)
-                {
-                    return false;
-                }
-            }
-
-            if (context.Request.Query.TryGetValue(ResizeWebProcessor.Height, out var heightString))
-            {
-                var height = CommandParser.Instance.ParseValue<int>(heightString);
-
-                if (Array.BinarySearch<int>(_supportedSizes, height) < 0)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
+            => _formatUtilities.TryGetExtensionFromUri(context.Request.GetDisplayUrl(), out _);
 
         /// <inheritdoc/>
         public Task<IImageResolver> GetAsync(HttpContext context)
@@ -92,8 +61,7 @@ namespace OrchardCore.Media.Processing
             }
 
             // We don't care about the content type nor cache control max age here.
-            var metadata = new ImageMetadata(fileInfo.LastModified.UtcDateTime);
-            return Task.FromResult<IImageResolver>(new PhysicalFileSystemResolver(fileInfo, metadata));
+            return Task.FromResult<IImageResolver>(new FileProviderImageResolver(fileInfo));
         }
 
         private bool IsMatch(HttpContext context)

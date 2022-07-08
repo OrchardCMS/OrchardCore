@@ -97,3 +97,9 @@
         background-color: white;
     }
 }
+
+:root[data-theme='darkmode'] {
+    .workflow-canvas {
+        color: #000000;
+    }
+}

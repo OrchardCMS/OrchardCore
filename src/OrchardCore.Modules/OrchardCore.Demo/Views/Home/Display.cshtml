@@ -6,7 +6,7 @@
 @(Model.As<TestContentPartA>().Line)
 
 @{
-    ThemeLayout.Footer.Add("In the footer", "2.0");
-    ThemeLayout.Footer.Add("Before", "before");
-    ThemeLayout.Footer.Add(new HtmlString("AFTER"), "after");
+    await ThemeLayout.Zones["Footer"].AddAsync("In the footer", "2.0");
+    await ThemeLayout.Zones["Footer"].AddAsync("Before", "before");
+    await ThemeLayout.Zones["Footer"].AddAsync(new HtmlString("AFTER"), "after");
 }

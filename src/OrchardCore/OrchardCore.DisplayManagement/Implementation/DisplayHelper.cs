@@ -39,23 +39,23 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         public Task<IHtmlContent> InvokeAsync(string name, INamedEnumerable<object> parameters)
         {
-            if (!string.IsNullOrEmpty(name))
+            if (!String.IsNullOrEmpty(name))
             {
                 return ShapeTypeExecuteAsync(name, parameters);
             }
 
-            if (parameters.Positional.Count() == 1)
+            if (parameters.Positional.Count == 1)
             {
-                return ShapeExecuteAsync(parameters.Positional.First());
+                return ShapeExecuteAsync(parameters.Positional.First() as IShape);
             }
 
-            if (parameters.Positional.Any())
+            if (parameters.Positional.Count > 0)
             {
-                return ShapeExecuteAsync(parameters.Positional);
+                return ShapeExecuteAsync(parameters.Positional.Cast<IShape>());
             }
 
             // zero args - no display to execute
-            return null;
+            return Task.FromResult<IHtmlContent>(null);
         }
 
         private async Task<IHtmlContent> ShapeTypeExecuteAsync(string name, INamedEnumerable<object> parameters)
@@ -64,16 +64,23 @@ namespace OrchardCore.DisplayManagement.Implementation
             return await ShapeExecuteAsync(shape);
         }
 
-        public Task<IHtmlContent> ShapeExecuteAsync(object shape)
+        public Task<IHtmlContent> ShapeExecuteAsync(IShape shape)
         {
-            if (shape == null)
+            // Check if the shape is null or empty.
+            if (shape.IsNullOrEmpty())
             {
                 return Task.FromResult<IHtmlContent>(HtmlString.Empty);
             }
 
+            // Check if the shape is pre-rendered.
+            if (shape is IHtmlContent htmlContent)
+            {
+                return Task.FromResult(htmlContent);
+            }
+
             var context = new DisplayContext
             {
-                DisplayAsync = this,
+                DisplayHelper = this,
                 Value = shape,
                 ServiceProvider = _serviceProvider
             };
@@ -81,7 +88,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             return _htmlDisplay.ExecuteAsync(context);
         }
 
-        public async Task<IHtmlContent> ShapeExecuteAsync(IEnumerable<object> shapes)
+        public async Task<IHtmlContent> ShapeExecuteAsync(IEnumerable<IShape> shapes)
         {
             var htmlContentBuilder = new HtmlContentBuilder();
 

@@ -5,8 +5,8 @@ namespace OrchardCore.Environment.Cache
 {
     public interface ITagCache
     {
-        void Tag(string key, params string[] tags);
-        IEnumerable<string> GetTaggedItems(string tag);
+        Task TagAsync(string key, params string[] tags);
+        Task<IEnumerable<string>> GetTaggedItemsAsync(string tag);
         Task RemoveTagAsync(string tag);
     }
 

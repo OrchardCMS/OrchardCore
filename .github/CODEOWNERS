@@ -1,0 +1,27 @@
+src/docs/ @agriffard
+
+src/OrchardCore/OrchardCore.Data/ @sebastienros
+
+src/OrchardCore/OrchardCore.Infrastructure/ @jtkech
+
+src/OrchardCore.Modules/OrchardCore.Apis.GraphQL/ @Jetski5822 @carlwoodhouse
+
+src/OrchardCore.Modules/OrchardCore.Email/ @hishamco
+
+src/OrchardCore.Modules/OrchardCore.Lucene/ @Skrypt
+
+src/OrchardCore.Modules/OrchardCore.Facebook/ @MichaelPetrinolis
+
+src/OrchardCore.Modules/OrchardCore.GitHub/ @MichaelPetrinolis
+
+src/OrchardCore.Modules/OrchardCore.Google/ @MichaelPetrinolis
+
+src/OrchardCore.Modules/OrchardCore.Microsoft.Authentication/ @MichaelPetrinolis
+
+src/OrchardCore.Modules/OrchardCore.OpenId/ @kevinchalet
+
+src/OrchardCore.Modules/OrchardCore.Shortcodes/ @deanmarcussen
+
+src/OrchardCore.Modules/OrchardCore.Twitter/ @MichaelPetrinolis
+
+src/OrchardCore.Modules/OrchardCore.Workflows/ @sfmskywalker

@@ -27,6 +27,19 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         void CreateAlias(string path, string alias);
 
         /// <summary>
+        /// Creates an actual sql table alias for a specified path.
+        /// </summary>
+        /// <param name="path">The path of the property.</param>
+        /// <param name="tableAlias">The sql table alias name.</param>
+        void CreateTableAlias(string path, string tableAlias);
+
+        /// <summary>
+        /// search used alias for the given property path.
+        /// </summary>
+        /// <param name="propertyPath">The path of the property.</param>
+        void SearchUsedAlias(string propertyPath);
+
+        /// <summary>
         /// Gets the formatted column name for the given property path.
         /// </summary>
         /// <param name="propertyPath">The path of the property.</param>

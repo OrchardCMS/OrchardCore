@@ -11,7 +11,7 @@ namespace OrchardCore.Twitter.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddActivity<UpdateTwitterStatusTask, UpdateTwitterStatusTaskDisplay>();
+            services.AddActivity<UpdateTwitterStatusTask, UpdateTwitterStatusTaskDisplayDriver>();
         }
     }
 }

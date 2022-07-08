@@ -1,0 +1,11 @@
+@model DisplayGeoPointFieldViewModel
+@using OrchardCore.Mvc.Utilities;
+@using OrchardCore.Spatial.ViewModels
+
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+}
+
+<div class="field field-type-geopointfield field-name-@name">
+    @String.Format("{0:N6}", Model.Field.Latitude), @String.Format("{0:N6}", Model.Field.Longitude)
+</div>

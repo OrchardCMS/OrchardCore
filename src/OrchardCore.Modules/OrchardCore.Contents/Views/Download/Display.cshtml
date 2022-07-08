@@ -1,0 +1,55 @@
+@model DisplayJsonContentItemViewModel
+@inject IContentDefinitionManager ContentDefinitionManager
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var contentTypeDefinition = ContentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+    var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
+
+    var returnUrl = Context.Request.Query["returnUrl"];
+}
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["View As JSON {0}", typeDisplayName])</h1></zone>
+
+<form asp-action="Download" asp-route-contentItemId="@contentItem.ContentItemId" method="post" enctype="multipart/form-data" class="no-multisubmit">
+    <div class="mb-3">
+        <div class="d-flex flex-row-reverse">
+            <div class="btn">
+                <i class="far fa-copy" aria-hidden="true" id="json-copy-to-clipboard"></i>
+            </div>
+        </div>
+        <textarea asp-for="ContentItemJson" class="form-control"></textarea>
+    </div>
+
+    <button class="btn btn-success download" type="submit">@T["Download"]</button>
+
+    @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+    {
+        <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+    }
+
+</form>
+
+<script at="Foot">
+    $(function () {
+        var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ContentItemJson)'), {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "javascript" },
+        });
+
+        $('#json-copy-to-clipboard').on('click', function () {
+            var $temp = $("<textarea>");
+            $("body").append($temp);
+            $temp.val($('#@Html.IdFor(x => x.ContentItemJson)').text()).select();
+            document.execCommand("copy");
+            $temp.remove();
+        })
+    });
+</script>

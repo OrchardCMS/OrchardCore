@@ -7,7 +7,7 @@ namespace OrchardCore.Templates
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageTemplates = new Permission("ManageTemplates", "Manage templates");
+        public static readonly Permission ManageTemplates = new Permission("ManageTemplates", "Manage templates", isSecurityCritical: true);
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {

@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
@@ -28,12 +28,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   var ie_version = ie && (ie_upto10 ? document.documentMode || 6 : +(edge || ie_11up)[1]);
   var webkit = !edge && /WebKit\//.test(userAgent);
   var qtwebkit = webkit && /Qt\/\d+\.\d+/.test(userAgent);
-  var chrome = !edge && /Chrome\//.test(userAgent);
+  var chrome = !edge && /Chrome\/(\d+)/.exec(userAgent);
+  var chrome_version = chrome && +chrome[1];
   var presto = /Opera\//.test(userAgent);
   var safari = /Apple Computer/.test(navigator.vendor);
   var mac_geMountainLion = /Mac OS X 1\d\D([8-9]|\d\d)\D/.test(userAgent);
   var phantom = /PhantomJS/.test(userAgent);
-  var ios = !edge && /AppleWebKit/.test(userAgent) && /Mobile\/\w+/.test(userAgent);
+  var ios = safari && (/Mobile\/\w+/.test(userAgent) || navigator.maxTouchPoints > 2);
   var android = /Android/.test(userAgent); // This is woefully incomplete. Suggestions for alternative methods welcome.
 
   var mobile = ios || android || /webOS|BlackBerry|Opera Mini|Opera Mobi|IEMobile/i.test(userAgent);
@@ -2032,8 +2033,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   } // Add a span to a line.
 
 
-  function addMarkedSpan(line, span) {
-    line.markedSpans = line.markedSpans ? line.markedSpans.concat([span]) : [span];
+  function addMarkedSpan(line, span, op) {
+    var inThisOp = op && window.WeakSet && (op.markedSpans || (op.markedSpans = new WeakSet()));
+
+    if (inThisOp && line.markedSpans && inThisOp.has(line.markedSpans)) {
+      line.markedSpans.push(span);
+    } else {
+      line.markedSpans = line.markedSpans ? line.markedSpans.concat([span]) : [span];
+
+      if (inThisOp) {
+        inThisOp.add(line.markedSpans);
+      }
+    }
+
     span.marker.attachLine(line);
   } // Used for the algorithm that adjusts markers for a change in the
   // document. These functions cut an array of spans at a given
@@ -2832,7 +2844,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
     builder.trailingSpace = displayText.charCodeAt(text.length - 1) == 32;
 
-    if (style || startStyle || endStyle || mustWrap || css) {
+    if (style || startStyle || endStyle || mustWrap || css || attributes) {
       var fullStyle = style || "";
 
       if (startStyle) {
@@ -3346,6 +3358,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     if (cm.options.lineNumbers || markers) {
       var wrap$1 = ensureLineWrapped(lineView);
       var gutterWrap = lineView.gutter = elt("div", null, "CodeMirror-gutter-wrapper", "left: " + (cm.options.fixedGutter ? dims.fixedPos : -dims.gutterTotalWidth) + "px");
+      gutterWrap.setAttribute("aria-hidden", "true");
       cm.display.input.setUneditable(gutterWrap);
       wrap$1.insertBefore(gutterWrap, lineView.text);
 
@@ -3588,22 +3601,24 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       };
     }
 
-    for (var i = 0; i < lineView.rest.length; i++) {
-      if (lineView.rest[i] == line) {
-        return {
-          map: lineView.measure.maps[i],
-          cache: lineView.measure.caches[i]
-        };
+    if (lineView.rest) {
+      for (var i = 0; i < lineView.rest.length; i++) {
+        if (lineView.rest[i] == line) {
+          return {
+            map: lineView.measure.maps[i],
+            cache: lineView.measure.caches[i]
+          };
+        }
       }
-    }
 
-    for (var i$1 = 0; i$1 < lineView.rest.length; i$1++) {
-      if (lineNo(lineView.rest[i$1]) > lineN) {
-        return {
-          map: lineView.measure.maps[i$1],
-          cache: lineView.measure.caches[i$1],
-          before: true
-        };
+      for (var i$1 = 0; i$1 < lineView.rest.length; i$1++) {
+        if (lineNo(lineView.rest[i$1]) > lineN) {
+          return {
+            map: lineView.measure.maps[i$1],
+            cache: lineView.measure.caches[i$1],
+            before: true
+          };
+        }
       }
     }
   } // Render a line into the hidden node display.externalMeasured. Used
@@ -3966,12 +3981,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
 
   function widgetTopHeight(lineObj) {
+    var ref = visualLine(lineObj);
+    var widgets = ref.widgets;
     var height = 0;
 
-    if (lineObj.widgets) {
-      for (var i = 0; i < lineObj.widgets.length; ++i) {
-        if (lineObj.widgets[i].above) {
-          height += widgetHeight(lineObj.widgets[i]);
+    if (widgets) {
+      for (var i = 0; i < widgets.length; ++i) {
+        if (widgets[i].above) {
+          height += widgetHeight(widgets[i]);
         }
       }
     }
@@ -4802,6 +4819,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         result = {};
     var curFragment = result.cursors = document.createDocumentFragment();
     var selFragment = result.selection = document.createDocumentFragment();
+    var customCursor = cm.options.$customCursor;
+
+    if (customCursor) {
+      primary = true;
+    }
 
     for (var i = 0; i < doc.sel.ranges.length; i++) {
       if (!primary && i == doc.sel.primIndex) {
@@ -4816,7 +4838,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
       var collapsed = range.empty();
 
-      if (collapsed || cm.options.showCursorWhenSelecting) {
+      if (customCursor) {
+        var head = customCursor(cm, range);
+
+        if (head) {
+          drawSelectionCursor(cm, head, curFragment);
+        }
+      } else if (collapsed || cm.options.showCursorWhenSelecting) {
         drawSelectionCursor(cm, range.head, curFragment);
       }
 
@@ -4836,6 +4864,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     cursor.style.left = pos.left + "px";
     cursor.style.top = pos.top + "px";
     cursor.style.height = Math.max(0, pos.bottom - pos.top) * cm.options.cursorHeight + "px";
+
+    if (/\bcm-fat-cursor\b/.test(cm.getWrapperElement().className)) {
+      var charPos = _charCoords(cm, head, "div", null, null);
+
+      var width = charPos.right - charPos.left;
+      cursor.style.width = (width > 0 ? width : cm.defaultCharWidth()) + "px";
+    }
 
     if (pos.other) {
       // Secondary cursor, shown when on a 'jump' in bi-directional text
@@ -4993,7 +5028,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
     if (cm.options.cursorBlinkRate > 0) {
       display.blinker = setInterval(function () {
-        return display.cursorDiv.style.visibility = (on = !on) ? "" : "hidden";
+        if (!cm.hasFocus()) {
+          onBlur(cm);
+        }
+
+        display.cursorDiv.style.visibility = (on = !on) ? "" : "hidden";
       }, cm.options.cursorBlinkRate);
     } else if (cm.options.cursorBlinkRate < 0) {
       display.cursorDiv.style.visibility = "hidden";
@@ -5001,9 +5040,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
 
   function ensureFocus(cm) {
-    if (!cm.state.focused) {
+    if (!cm.hasFocus()) {
       cm.display.input.focus();
-      onFocus(cm);
+
+      if (!cm.state.focused) {
+        onFocus(cm);
+      }
     }
   }
 
@@ -5012,13 +5054,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     setTimeout(function () {
       if (cm.state.delayingBlurEvent) {
         cm.state.delayingBlurEvent = false;
-        onBlur(cm);
+
+        if (cm.state.focused) {
+          onBlur(cm);
+        }
       }
     }, 100);
   }
 
   function onFocus(cm, e) {
-    if (cm.state.delayingBlurEvent) {
+    if (cm.state.delayingBlurEvent && !cm.state.draggingText) {
       cm.state.delayingBlurEvent = false;
     }
 
@@ -5074,6 +5119,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   function updateHeightsInViewport(cm) {
     var display = cm.display;
     var prevBottom = display.lineDiv.offsetTop;
+    var viewTop = Math.max(0, display.scroller.getBoundingClientRect().top);
+    var oldHeight = display.lineDiv.getBoundingClientRect().top;
+    var mustScroll = 0;
 
     for (var i = 0; i < display.view.length; i++) {
       var cur = display.view[i],
@@ -5084,6 +5132,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       if (cur.hidden) {
         continue;
       }
+
+      oldHeight += cur.line.height;
 
       if (ie && ie_version < 8) {
         var bot = cur.node.offsetTop + cur.node.offsetHeight;
@@ -5102,6 +5152,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       var diff = cur.line.height - height;
 
       if (diff > .005 || diff < -.005) {
+        if (oldHeight < viewTop) {
+          mustScroll -= diff;
+        }
+
         updateLineHeight(cur.line, height);
         updateWidgetHeight(cur.line);
 
@@ -5121,6 +5175,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           cm.display.maxLineChanged = true;
         }
       }
+    }
+
+    if (Math.abs(mustScroll) > 2) {
+      display.scroller.scrollTop += mustScroll;
     }
   } // Read and store the height of line widgets associated with the
   // given line.
@@ -5211,8 +5269,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       // Set pos and end to the cursor positions around the character pos sticks to
       // If pos.sticky == "before", that is around pos.ch - 1, otherwise around pos.ch
       // If pos == Pos(_, 0, "before"), pos and end are unchanged
-      pos = pos.ch ? Pos(pos.line, pos.sticky == "before" ? pos.ch - 1 : pos.ch, "after") : pos;
       end = pos.sticky == "before" ? Pos(pos.line, pos.ch + 1, "before") : pos;
+      pos = pos.ch ? Pos(pos.line, pos.sticky == "before" ? pos.ch - 1 : pos.ch, "after") : pos;
     }
 
     for (var limit = 0; limit < 5; limit++) {
@@ -5302,8 +5360,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       }
     }
 
-    var screenleft = cm.curOp && cm.curOp.scrollLeft != null ? cm.curOp.scrollLeft : display.scroller.scrollLeft;
-    var screenw = displayWidth(cm) - (cm.options.fixedGutter ? display.gutters.offsetWidth : 0);
+    var gutterSpace = cm.options.fixedGutter ? 0 : display.gutters.offsetWidth;
+    var screenleft = cm.curOp && cm.curOp.scrollLeft != null ? cm.curOp.scrollLeft : display.scroller.scrollLeft - gutterSpace;
+    var screenw = displayWidth(cm) - display.gutters.offsetWidth;
     var tooWide = rect.right - rect.left > screenw;
 
     if (tooWide) {
@@ -5313,7 +5372,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     if (rect.left < 10) {
       result.scrollLeft = 0;
     } else if (rect.left < screenleft) {
-      result.scrollLeft = Math.max(0, rect.left - (tooWide ? 0 : 10));
+      result.scrollLeft = Math.max(0, rect.left + gutterSpace - (tooWide ? 0 : 10));
     } else if (rect.right > screenw + screenleft - 3) {
       result.scrollLeft = rect.right + (tooWide ? 0 : 10) - screenw;
     }
@@ -5501,6 +5560,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
       this.vert.firstChild.style.height = Math.max(0, measure.scrollHeight - measure.clientHeight + totalHeight) + "px";
     } else {
+      this.vert.scrollTop = 0;
       this.vert.style.display = "";
       this.vert.firstChild.style.height = "0";
     }
@@ -5722,7 +5782,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       scrollToPos: null,
       // Used to scroll to a specific position
       focus: false,
-      id: ++nextOpId // Unique ID
+      id: ++nextOpId,
+      // Unique ID
+      markArrays: null // Used by addMarkedSpan
 
     };
     pushOperation(cm.curOp);
@@ -6360,7 +6422,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   function updateGutterSpace(display) {
     var width = display.gutters.offsetWidth;
-    display.sizer.style.marginLeft = width + "px";
+    display.sizer.style.marginLeft = width + "px"; // Send an event to consumers responding to changes in gutter width.
+
+    signalLater(display, "gutterChanged", display);
   }
 
   function setDocumentHeight(cm, measure) {
@@ -6550,7 +6614,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     d.scroller = elt("div", [d.sizer, d.heightForcer, d.gutters], "CodeMirror-scroll");
     d.scroller.setAttribute("tabIndex", "-1"); // The element in which the editor lives.
 
-    d.wrapper = elt("div", [d.scrollbarFiller, d.gutterFiller, d.scroller], "CodeMirror"); // Work around IE7 z-index bug (not perfect, hence IE7 not really being supported)
+    d.wrapper = elt("div", [d.scrollbarFiller, d.gutterFiller, d.scroller], "CodeMirror"); // This attribute is respected by automatic translation systems such as Google Translate,
+    // and may also be respected by tools used by human translators.
+
+    d.wrapper.setAttribute('translate', 'no'); // Work around IE7 z-index bug (not perfect, hence IE7 not really being supported)
 
     if (ie && ie_version < 8) {
       d.gutters.style.zIndex = -1;
@@ -6664,9 +6731,33 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
 
   function onScrollWheel(cm, e) {
+    // On Chrome 102, viewport updates somehow stop wheel-based
+    // scrolling. Turning off pointer events during the scroll seems
+    // to avoid the issue.
+    if (chrome && chrome_version >= 102) {
+      if (cm.display.chromeScrollHack == null) {
+        cm.display.sizer.style.pointerEvents = "none";
+      } else {
+        clearTimeout(cm.display.chromeScrollHack);
+      }
+
+      cm.display.chromeScrollHack = setTimeout(function () {
+        cm.display.chromeScrollHack = null;
+        cm.display.sizer.style.pointerEvents = "";
+      }, 100);
+    }
+
     var delta = wheelEventDelta(e),
         dx = delta.x,
         dy = delta.y;
+    var pixelsPerUnit = wheelPixelsPerUnit;
+
+    if (e.deltaMode === 0) {
+      dx = e.deltaX;
+      dy = e.deltaY;
+      pixelsPerUnit = 1;
+    }
+
     var display = cm.display,
         scroll = display.scroller; // Quit if there's nothing to scroll here
 
@@ -6698,12 +6789,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     // better than glitching out.
 
 
-    if (dx && !gecko && !presto && wheelPixelsPerUnit != null) {
+    if (dx && !gecko && !presto && pixelsPerUnit != null) {
       if (dy && canScrollY) {
-        updateScrollTop(cm, Math.max(0, scroll.scrollTop + dy * wheelPixelsPerUnit));
+        updateScrollTop(cm, Math.max(0, scroll.scrollTop + dy * pixelsPerUnit));
       }
 
-      setScrollLeft(cm, Math.max(0, scroll.scrollLeft + dx * wheelPixelsPerUnit)); // Only prevent default scrolling if vertical scrolling is
+      setScrollLeft(cm, Math.max(0, scroll.scrollLeft + dx * pixelsPerUnit)); // Only prevent default scrolling if vertical scrolling is
       // actually possible. Otherwise, it causes vertical scroll
       // jitter on OSX trackpads when deltaX is small and deltaY
       // is large (issue #3579)
@@ -6719,8 +6810,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     // scrolled into view (if we know enough to estimate it).
 
 
-    if (dy && wheelPixelsPerUnit != null) {
-      var pixels = dy * wheelPixelsPerUnit;
+    if (dy && pixelsPerUnit != null) {
+      var pixels = dy * pixelsPerUnit;
       var top = cm.doc.scrollTop,
           bot = top + display.wrapper.clientHeight;
 
@@ -6736,7 +6827,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       });
     }
 
-    if (wheelSamples < 20) {
+    if (wheelSamples < 20 && e.deltaMode !== 0) {
       if (display.wheelStartX == null) {
         display.wheelStartX = scroll.scrollLeft;
         display.wheelStartY = scroll.scrollTop;
@@ -7109,6 +7200,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     estimateLineHeights(cm);
     loadMode(cm);
     setDirectionClass(cm);
+    cm.options.direction = doc.direction;
 
     if (!cm.options.lineWrapping) {
       findMaxLine(cm);
@@ -7129,20 +7221,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     });
   }
 
-  function History(startGen) {
+  function History(prev) {
     // Arrays of change events and selections. Doing something adds an
     // event to done and clears undo. Undoing moves events from done
     // to undone, redoing moves them in the other direction.
     this.done = [];
     this.undone = [];
-    this.undoDepth = Infinity; // Used to track when changes can be merged into a single undo
+    this.undoDepth = prev ? prev.undoDepth : Infinity; // Used to track when changes can be merged into a single undo
     // event
 
     this.lastModTime = this.lastSelTime = 0;
     this.lastOp = this.lastSelOp = null;
     this.lastOrigin = this.lastSelOrigin = null; // Used by the isClean() method
 
-    this.generation = this.maxGeneration = startGen || 1;
+    this.generation = this.maxGeneration = prev ? prev.maxGeneration : 1;
   } // Create a history change event from an updateDoc-style change
   // object.
 
@@ -7535,7 +7627,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var bias = options && options.bias || (cmp(sel.primary().head, doc.sel.primary().head) < 0 ? -1 : 1);
     setSelectionInner(doc, skipAtomicInSelection(doc, sel, bias, true));
 
-    if (!(options && options.scroll === false) && doc.cm) {
+    if (!(options && options.scroll === false) && doc.cm && doc.cm.getOption("readOnly") != "nocursor") {
       ensureCursorVisible(doc.cm);
     }
   }
@@ -8468,7 +8560,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       if (widget.insertAt == null) {
         widgets.push(widget);
       } else {
-        widgets.splice(Math.min(widgets.length - 1, Math.max(0, widget.insertAt)), 0, widget);
+        widgets.splice(Math.min(widgets.length, Math.max(0, widget.insertAt)), 0, widget);
       }
 
       widget.line = line;
@@ -8771,7 +8863,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         updateLineHeight(line, 0);
       }
 
-      addMarkedSpan(line, new MarkedSpan(marker, curLine == from.line ? from.ch : null, curLine == to.line ? to.ch : null));
+      addMarkedSpan(line, new MarkedSpan(marker, curLine == from.line ? from.ch : null, curLine == to.line ? to.ch : null), doc.cm && doc.cm.curOp);
       ++curLine;
     }); // lineIsHidden depends on the presence of the spans, so needs a second pass
 
@@ -9033,6 +9125,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return lines;
       }
 
+      if (lineSep === '') {
+        return lines.join('');
+      }
+
       return lines.join(lineSep || this.lineSeparator());
     },
     getLine: function getLine(line) {
@@ -9112,7 +9208,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       var out = [];
 
       for (var i = 0; i < ranges.length; i++) {
-        out[i] = new Range(_clipPos(this, ranges[i].anchor), _clipPos(this, ranges[i].head));
+        out[i] = new Range(_clipPos(this, ranges[i].anchor), _clipPos(this, ranges[i].head || ranges[i].anchor));
       }
 
       if (primary == null) {
@@ -9234,7 +9330,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     },
     clearHistory: function clearHistory() {
       var this$1 = this;
-      this.history = new History(this.history.maxGeneration);
+      this.history = new History(this.history);
       linkedDocs(this, function (doc) {
         return doc.history = this$1.history;
       }, true);
@@ -9259,7 +9355,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       };
     },
     setHistory: function setHistory(histData) {
-      var hist = this.history = new History(this.history.maxGeneration);
+      var hist = this.history = new History(this.history);
       hist.done = copyHistoryArray(histData.done.slice(0), null, true);
       hist.undone = copyHistoryArray(histData.undone.slice(0), null, true);
     },
@@ -9873,6 +9969,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     220: "\\",
     221: "]",
     222: "'",
+    224: "Mod",
     63232: "Up",
     63233: "Down",
     63234: "Left",
@@ -9956,15 +10053,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     "Ctrl-B": "goCharLeft",
     "Ctrl-P": "goLineUp",
     "Ctrl-N": "goLineDown",
-    "Alt-F": "goWordRight",
-    "Alt-B": "goWordLeft",
     "Ctrl-A": "goLineStart",
     "Ctrl-E": "goLineEnd",
     "Ctrl-V": "goPageDown",
     "Shift-Ctrl-V": "goPageUp",
     "Ctrl-D": "delCharAfter",
     "Ctrl-H": "delCharBefore",
-    "Alt-D": "delWordAfter",
     "Alt-Backspace": "delWordBefore",
     "Ctrl-K": "killLine",
     "Ctrl-T": "transposeChars",
@@ -10149,7 +10243,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       name = "Ctrl-" + name;
     }
 
-    if ((flipCtrlCmd ? event.ctrlKey : event.metaKey) && base != "Cmd") {
+    if ((flipCtrlCmd ? event.ctrlKey : event.metaKey) && base != "Mod") {
       name = "Cmd-" + name;
     }
 
@@ -10554,7 +10648,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       return cm.moveH(1, "word");
     },
     delCharBefore: function delCharBefore(cm) {
-      return cm.deleteH(-1, "char");
+      return cm.deleteH(-1, "codepoint");
     },
     delCharAfter: function delCharAfter(cm) {
       return cm.deleteH(1, "char");
@@ -11128,6 +11222,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       }
 
       cm.state.draggingText = false;
+
+      if (cm.state.delayingBlurEvent) {
+        if (cm.hasFocus()) {
+          cm.state.delayingBlurEvent = false;
+        } else {
+          delayBlurEvent(cm);
+        }
+      }
+
       off(display.wrapper.ownerDocument, "mouseup", dragEnd);
       off(display.wrapper.ownerDocument, "mousemove", mouseMove);
       off(display.scroller, "dragstart", dragStart);
@@ -11168,20 +11271,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
 
     cm.state.draggingText = dragEnd;
-    dragEnd.copy = !behavior.moveOnDrag; // IE's approach to draggable
-
-    if (display.scroller.dragDrop) {
-      display.scroller.dragDrop();
-    }
-
+    dragEnd.copy = !behavior.moveOnDrag;
     on(display.wrapper.ownerDocument, "mouseup", dragEnd);
     on(display.wrapper.ownerDocument, "mousemove", mouseMove);
     on(display.scroller, "dragstart", dragStart);
     on(display.scroller, "drop", dragEnd);
-    delayBlurEvent(cm);
+    cm.state.delayingBlurEvent = true;
     setTimeout(function () {
       return display.input.focus();
-    }, 20);
+    }, 20); // IE's approach to draggable
+
+    if (display.scroller.dragDrop) {
+      display.scroller.dragDrop();
+    }
   }
 
   function rangeForUnit(cm, pos, unit) {
@@ -11203,6 +11305,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 
   function leftButtonSelect(cm, event, start, behavior) {
+    if (ie) {
+      delayBlurEvent(cm);
+    }
+
     var display = cm.display,
         doc = cm.doc;
     e_preventDefault(event);
@@ -11597,7 +11703,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         _replaceRange(cm.doc, val, newBreaks[i], Pos(newBreaks[i].line, newBreaks[i].ch + val.length));
       }
     });
-    option("specialChars", /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u200b-\u200c\u200e\u200f\u2028\u2029\ufeff\ufff9-\ufffc]/g, function (cm, val, old) {
+    option("specialChars", /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u200b\u200e\u200f\u2028\u2029\ufeff\ufff9-\ufffc]/g, function (cm, val, old) {
       cm.state.specialChars = new RegExp(val.source + (val.test("\t") ? "" : "|\t"), "g");
 
       if (old != Init) {
@@ -11830,7 +11936,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     attachDoc(this, doc);
 
     if (options.autofocus && !mobile || this.hasFocus()) {
-      setTimeout(bind(onFocus, this), 20);
+      setTimeout(function () {
+        if (this$1.hasFocus() && !this$1.state.focused) {
+          onFocus(this$1);
+        }
+      }, 20);
     } else {
       onBlur(this);
     }
@@ -12197,7 +12307,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           } else if (cm.state.overwrite && !paste) // Handle overwrite
           {
             to = Pos(to.line, Math.min(getLine(doc, to.line).text.length, to.ch + lst(textLines).length));
-          } else if (paste && lastCopied && lastCopied.lineWise && lastCopied.text.join("\n") == inserted) {
+          } else if (paste && lastCopied && lastCopied.lineWise && lastCopied.text.join("\n") == textLines.join("\n")) {
           from = to = Pos(from.line, 0);
         }
       }
@@ -12232,7 +12342,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     if (pasted) {
       e.preventDefault();
 
-      if (!cm.isReadOnly() && !cm.options.disableInput) {
+      if (!cm.isReadOnly() && !cm.options.disableInput && cm.hasFocus()) {
         runInOp(cm, function () {
           return applyTextInput(cm, pasted, 0, null, "paste");
         });
@@ -12306,7 +12416,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
 
   function hiddenTextarea() {
-    var te = elt("textarea", null, null, "position: absolute; bottom: -1em; padding: 0; width: 1px; height: 1em; outline: none");
+    var te = elt("textarea", null, null, "position: absolute; bottom: -1em; padding: 0; width: 1px; height: 1em; min-height: 1em; outline: none");
     var div = elt("div", [te], null, "overflow: hidden; position: relative; width: 3px; height: 0px;"); // The textarea is kept positioned near the cursor to prevent the
     // fact that it'll be scrolled into view on input from scrolling
     // our fake cursor out of view. On webkit, when wrap=off, paste is
@@ -13000,14 +13110,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       });
     };
   } // Used for horizontal relative motion. Dir is -1 or 1 (left or
-  // right), unit can be "char", "column" (like char, but doesn't
-  // cross line boundaries), "word" (across next word), or "group" (to
-  // the start of next group of word or non-word-non-whitespace
-  // chars). The visually param controls whether, in right-to-left
-  // text, direction 1 means to move towards the next index in the
-  // string, or towards the character to the right of the current
-  // position. The resulting position will have a hitSide=true
-  // property if it reached the end of the document.
+  // right), unit can be "codepoint", "char", "column" (like char, but
+  // doesn't cross line boundaries), "word" (across next word), or
+  // "group" (to the start of next group of word or
+  // non-word-non-whitespace chars). The visually param controls
+  // whether, in right-to-left text, direction 1 means to move towards
+  // the next index in the string, or towards the character to the right
+  // of the current position. The resulting position will have a
+  // hitSide=true property if it reached the end of the document.
 
 
   function _findPosH(doc, pos, dir, unit, visually) {
@@ -13030,7 +13140,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     function moveOnce(boundToLine) {
       var next;
 
-      if (visually) {
+      if (unit == "codepoint") {
+        var ch = lineObj.text.charCodeAt(pos.ch + (dir > 0 ? 0 : -1));
+
+        if (isNaN(ch)) {
+          next = null;
+        } else {
+          var astral = dir > 0 ? ch >= 0xD800 && ch < 0xDC00 : ch >= 0xDC00 && ch < 0xDFFF;
+          next = new Pos(pos.line, Math.max(0, Math.min(lineObj.text.length, pos.ch + dir * (astral ? 2 : 1))), -dir);
+        }
+      } else if (visually) {
         next = moveVisually(doc.cm, lineObj, pos, dir);
       } else {
         next = moveLogically(lineObj, pos, dir);
@@ -13049,7 +13168,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       return true;
     }
 
-    if (unit == "char") {
+    if (unit == "char" || unit == "codepoint") {
       moveOnce();
     } else if (unit == "column") {
       moveOnce(true);
@@ -13150,6 +13269,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var input = this,
         cm = input.cm;
     var div = input.div = display.lineDiv;
+    div.contentEditable = true;
     disableBrowserMagic(div, cm.options.spellcheck, cm.options.autocorrect, cm.options.autocapitalize);
 
     function belongsToInput(e) {
@@ -13258,7 +13378,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           te = kludge.firstChild;
       cm.display.lineSpace.insertBefore(kludge, cm.display.lineSpace.firstChild);
       te.value = lastCopied.text.join("\n");
-      var hadFocus = document.activeElement;
+      var hadFocus = activeElt();
       selectInput(te);
       setTimeout(function () {
         cm.display.lineSpace.removeChild(kludge);
@@ -13285,7 +13405,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   ContentEditableInput.prototype.prepareSelection = function () {
     var result = prepareSelection(this.cm, false);
-    result.focus = document.activeElement == this.div;
+    result.focus = activeElt() == this.div;
     return result;
   };
 
@@ -13416,7 +13536,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   ContentEditableInput.prototype.focus = function () {
     if (this.cm.options.readOnly != "nocursor") {
-      if (!this.selectionInEditor() || document.activeElement != this.div) {
+      if (!this.selectionInEditor() || activeElt() != this.div) {
         this.showSelection(this.prepareSelection(), true);
       }
 
@@ -13437,10 +13557,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
 
   ContentEditableInput.prototype.receivedFocus = function () {
+    var this$1 = this;
     var input = this;
 
     if (this.selectionInEditor()) {
-      this.pollSelection();
+      setTimeout(function () {
+        return this$1.pollSelection();
+      }, 20);
     } else {
       runInOp(this.cm, function () {
         return input.cm.curOp.selectionChanged = true;
@@ -14433,6 +14556,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
 
     this.textarea.disabled = val == "nocursor";
+    this.textarea.readOnly = !!val;
   };
 
   TextareaInput.prototype.setUneditable = function () {};
@@ -14612,6 +14736,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.55.0";
+  CodeMirror.version = "5.65.5";
   return CodeMirror;
 });

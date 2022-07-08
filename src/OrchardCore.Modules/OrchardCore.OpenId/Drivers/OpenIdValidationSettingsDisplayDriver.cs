@@ -25,6 +25,7 @@ namespace OrchardCore.OpenId.Drivers
             {
                 model.Authority = settings.Authority?.AbsoluteUri;
                 model.Audience = settings.Audience;
+                model.DisableTokenTypeValidation = settings.DisableTokenTypeValidation;
                 model.Tenant = settings.Tenant;
 
                 var availableTenants = new List<string>();
@@ -56,6 +57,7 @@ namespace OrchardCore.OpenId.Drivers
 
             settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
             settings.Audience = model.Audience?.Trim();
+            settings.DisableTokenTypeValidation = model.DisableTokenTypeValidation;
             settings.Tenant = model.Tenant;
 
             return await EditAsync(settings, context);

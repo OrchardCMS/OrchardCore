@@ -1,5 +1,5 @@
-using OrchardCore.Modules.Manifest;
 using OrchardCore.Google;
+using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Google",
@@ -21,4 +21,12 @@ using OrchardCore.Google;
     Name = "Google Analytics",
     Category = "Google",
     Description = "Integrate Google Analytics gtagjs"
+)]
+
+[assembly: Feature(
+    Id = GoogleConstants.Features.GoogleTagManager,
+    Name = "Google Tag Manager",
+    Category = "Google",
+    Description = "Integrate Google Tag Manager",
+    Dependencies = new[] { GoogleConstants.Features.GoogleAnalytics }
 )]

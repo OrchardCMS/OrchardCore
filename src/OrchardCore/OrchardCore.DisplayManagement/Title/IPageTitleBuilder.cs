@@ -5,6 +5,12 @@ namespace OrchardCore.DisplayManagement.Title
     public interface IPageTitleBuilder
     {
         /// <summary>
+        /// Sets a fixed title that will be used instead of any segmented titles added later.
+        /// Can be cleared with <see cref="Clear()"/>.
+        /// </summary>
+        void SetFixedTitle(IHtmlContent title);
+
+        /// <summary>
         /// Clears the current list of segments.
         /// </summary>
         void Clear();
@@ -13,6 +19,7 @@ namespace OrchardCore.DisplayManagement.Title
         /// Adds a segment to the title.
         /// </summary>
         /// <param name="segment">A segments to add at the specific location in the title.</param>
+        /// <param name="position">The position, defaults to 0.</param>
         void AddSegment(IHtmlContent segment, string position = "0");
 
         /// <summary>

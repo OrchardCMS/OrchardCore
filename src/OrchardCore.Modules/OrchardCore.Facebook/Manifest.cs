@@ -1,5 +1,5 @@
-using OrchardCore.Modules.Manifest;
 using OrchardCore.Facebook;
+using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Facebook",

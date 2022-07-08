@@ -1,0 +1,40 @@
+
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/mixins/breakpoints";
+
+.shortcode-modal-btn {
+    position: absolute; 
+    top: 0; 
+    right:0;    
+    svg {
+        width: 24px;
+    }
+    z-index: 500;
+}
+
+.shortcode-modal-wrapper {
+    position: relative;
+}
+
+@include media-breakpoint-up(lg) {
+    .modal-shortcodes {
+        .modal-lg {
+            max-width: 1200px;
+        }
+    }
+}
+
+#shortcodePreview {
+    max-width: 310px;
+}
+
+$icon-shortcode-bg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M16 4.2v1.5h2.5v12.5H16v1.5h4V4.2h-4zM4.2 19.8h4v-1.5H5.8V5.8h2.5V4.2h-4l-.1 15.6zm5.1-3.1l1.4.6 4-10-1.4-.6-4 10z'></path></svg>") !default;
+
+.icon-shortcode {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: no-repeat 50% / 100% 100% !important;    
+    background-image: escape-svg($icon-shortcode-bg) !important;
+}

@@ -12,16 +12,16 @@
 
 @if (includeAll)
 {
-    <span class="badge badge-success">@T["All"]</span>
+    <span class="badge bg-success">@T["All"]</span>
 }
 else if (deploymentPlanNames?.Length > 0)
 {
     foreach (var deploymentPlanName in deploymentPlanNames)
     {
-        <span class="badge badge-info">@deploymentPlanName</span>
+        <span class="badge ta-badge">@deploymentPlanName</span>
     }
 }
 else
 {
-    <span class="badge badge-warning">@T["No deployment plan selected."]</span>
+    <span class="badge bg-warning">@T["No deployment plan selected."]</span>
 }

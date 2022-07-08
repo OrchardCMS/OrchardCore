@@ -1,7 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Logging NLog</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Provides NLog logging for application.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Logging</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

@@ -34,9 +34,12 @@ namespace OrchardCore.Admin.Drivers
             }
 
             return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
-                {
-                    model.DisplayMenuFilter = settings.DisplayMenuFilter;
-                }).Location("Content:3").OnGroup(GroupId);
+            {
+                model.DisplayDarkMode = settings.DisplayDarkMode;
+                model.DisplayMenuFilter = settings.DisplayMenuFilter;
+                model.DisplayNewMenu = settings.DisplayNewMenu;
+                model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
+            }).Location("Content:3").OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AdminSettings settings, BuildEditorContext context)
@@ -54,7 +57,10 @@ namespace OrchardCore.Admin.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+                settings.DisplayDarkMode = model.DisplayDarkMode;
                 settings.DisplayMenuFilter = model.DisplayMenuFilter;
+                settings.DisplayNewMenu = model.DisplayNewMenu;
+                settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
             }
 
             return await EditAsync(settings, context);

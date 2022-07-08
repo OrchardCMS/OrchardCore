@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -11,7 +10,7 @@ using OrchardCore.Title.ViewModels;
 
 namespace OrchardCore.Title.Settings
 {
-    public class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<TitlePart>
     {
         private readonly ILiquidTemplateManager _templateManager;
         private readonly IStringLocalizer S;
@@ -24,33 +23,25 @@ namespace OrchardCore.Title.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(TitlePart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             return Initialize<TitlePartSettingsViewModel>("TitlePartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<TitlePartSettings>();
 
                 model.Options = settings.Options;
                 model.Pattern = settings.Pattern;
+                model.RenderTitle = settings.RenderTitle;
                 model.TitlePartSettings = settings;
             }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(TitlePart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             var model = new TitlePartSettingsViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix,
                 m => m.Pattern,
-                m => m.Options);
+                m => m.Options,
+                m => m.RenderTitle);
 
             if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
             {
@@ -58,7 +49,7 @@ namespace OrchardCore.Title.Settings
             }
             else
             {
-                context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options });
+                context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options, RenderTitle = model.RenderTitle });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

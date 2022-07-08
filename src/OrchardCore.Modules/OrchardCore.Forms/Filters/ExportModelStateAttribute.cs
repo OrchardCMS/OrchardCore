@@ -31,6 +31,7 @@ namespace OrchardCore.Forms.Filters
                 result is RedirectResult ||
                 result is RedirectToRouteResult ||
                 result is RedirectToActionResult ||
+                result is LocalRedirectResult ||
                 statusCode == (int)HttpStatusCode.Redirect ||
                 statusCode == (int)HttpStatusCode.TemporaryRedirect;
         }

@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Abstractions.Pooling;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Implementation;
 
@@ -96,31 +97,25 @@ namespace OrchardCore.DisplayManagement.Razor
             var actionContext = await GetActionContextAsync();
             var view = FindView(actionContext, viewName, viewEngine);
 
-            using (var sb = StringBuilderPool.GetInstance())
-            {
-                using (var output = new StringWriter(sb.Builder))
+            using var output = new ZStringWriter();
+            var viewContext = new ViewContext(
+                actionContext,
+                view,
+                new ViewDataDictionary(
+                    metadataProvider: new EmptyModelMetadataProvider(),
+                    modelState: new ModelStateDictionary())
                 {
-                    var viewContext = new ViewContext(
-                        actionContext,
-                        view,
-                        new ViewDataDictionary(
-                            metadataProvider: new EmptyModelMetadataProvider(),
-                            modelState: new ModelStateDictionary())
-                        {
-                            Model = model
-                        },
-                        new TempDataDictionary(
-                            actionContext.HttpContext,
-                            _tempDataProvider),
-                        output,
-                        new HtmlHelperOptions());
+                    Model = model
+                },
+                new TempDataDictionary(
+                    actionContext.HttpContext,
+                    _tempDataProvider),
+                output,
+                new HtmlHelperOptions());
 
-                    await view.RenderAsync(viewContext);
-                    await output.FlushAsync();
-                }
+            await view.RenderAsync(viewContext);
 
-                return sb.Builder.ToString();
-            }
+            return output.ToString();
         }
 
         private IView FindView(ActionContext actionContext, string viewName, IViewEngine viewEngine)

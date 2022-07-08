@@ -1,0 +1,147 @@
+@model ReplaceContentDefinitionStepViewModel
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+
+@{
+    var contentTypes = (string[])Model.ContentTypes;
+    var contentParts = (string[])Model.ContentParts;
+
+    var allTypes = ContentDefinitionManager.ListTypeDefinitions();
+    var allParts = ContentDefinitionManager.ListPartDefinitions();
+
+    var avaParts = allParts.Where(x => !allTypes.Any(y => y.Name == x.Name));
+}
+
+<h5>@T["Replace Content Definitions"]</h5>
+
+<div class="mb-3 mt-4 mb-5">
+    <div class="row">
+        <div class="col">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="IncludeAll" data-reverseToggle=".cdsel">
+                <label class="form-check-label" asp-for="IncludeAll">@T["Include all content types and parts definitions."]</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="cdsel mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
+    <div class="row mb-3">
+        <div class="col">
+            <h6>Content Types</h6>
+            <span class="hint">@T["The content types to add as part of the plan."]</span>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col">
+            <ul class="list-group">
+                @foreach (var contentTypeDefinition in allTypes)
+                {
+                    var ctypename = contentTypeDefinition.Name;
+                    var checkd = contentTypes?.Contains(ctypename);
+
+                    <li class="list-group-item">
+                        @* Make sure that the part with the same name is included in the step if the content type is selected. *@
+                        @if (contentTypeDefinition.Parts.Any(x => x.Name == ctypename))
+                        {
+                            <input class="invisible" style="position:absolute" type="checkbox" name="@Html.NameFor(m => m.ContentParts)" value="@ctypename"
+                                   id="part_@ctypename" checked="@checkd" />
+                        }
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="@(Html.IdFor(m => m.ContentTypes) + "_" + ctypename)" name="@Html.NameFor(m => m.ContentTypes)" value="@ctypename" checked="@checkd" data-bs-toggle="collapse" data-bs-target="#sub_@ctypename" data-checkbox="#part_@ctypename">
+                            <label class="form-check-label" for="@(Html.IdFor(m => m.ContentTypes) + "_" + ctypename)">@contentTypeDefinition.DisplayName</label>
+                        </div>
+
+                        <ul class="list-group @(checkd??false ? "" : "collapse")" id="sub_@ctypename">
+                            @foreach (var part in contentTypeDefinition.Parts.Where(x => x.Name != ctypename))
+                            {
+                                var partName = part.PartDefinition.Name;
+                                var partChecked = contentParts?.Contains(partName);
+
+                                <li class="list-group-item">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input part_@partName" id="@(ctypename + "_" + partName + '_' + part.Name)" name="tempparts" value="" type="checkbox" checked="@partChecked" data-checkboxChecked="#part_@part.PartDefinition.Name">
+                                        <label class="form-check-label" for="@(ctypename + "_" + partName + '_' + part.Name)">
+                                            @if (part.PartDefinition.Name == part.Name)
+                                            {
+                                                @part.Name
+                                            }
+                                            else
+                                            {
+                                                @part.PartDefinition.Name <text> (@part.Name)</text>
+                                            }
+                                        </label>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="cdsel mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
+    <div class="row mb-3">
+        <div class="col">
+            <h6>Content Parts</h6>
+            <span class="hint">@T["The content parts to add as part of the plan."]</span>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col">
+            <ul class="list-group">
+                @foreach (var contentPartDefinition in avaParts)
+                {
+                    var partName = contentPartDefinition.Name;
+                    var checkd = contentParts?.Contains(partName);
+
+                    <li class="list-group-item">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="@Html.NameFor(m => m.ContentParts)" value="@partName" checked="@checkd" id="part_@partName" data-checkboxUnchecked=".part_@partName">
+                            <label class="form-check-label" for="part_@partName">@partName</label>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script at="Foot">
+    $(function () {
+        $("[data-reversetoggle]").on("click", function () {
+            var state = this.checked;
+            if (state) {
+                $($(this).attr("data-reversetoggle")).collapse('hide');
+            } else {
+                $($(this).attr("data-reversetoggle")).collapse('show');
+            }
+        });
+        $("[data-checkbox]").on("click", function () {
+            var state = this.checked;
+            $($(this).attr("data-checkbox"))
+                .prop("checked", state);
+        });
+
+        $("[data-checkboxChecked]").on("click", function () {
+            var state = this.checked;
+            if (state) {
+                $($(this).attr("data-checkboxChecked"))
+                    .prop("checked", state);
+            }
+        });
+
+        $("[data-checkboxUnchecked]").on("click", function () {
+            var state = this.checked;
+            if (!state) {
+                $($(this).attr("data-checkboxUnchecked"))
+                    .prop("checked", state);
+            }
+        });
+    });
+</script>
+
+<script at="Foot" depends-on="jQuery" asp-name="test">
+    console.log('test');
+</script>

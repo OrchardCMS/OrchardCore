@@ -2,6 +2,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ModelBinding;
 
@@ -14,8 +15,8 @@ namespace OrchardCore.Contents
             builder.Describe("Content")
                 .OnDisplaying(displaying =>
                 {
-                    dynamic shape = displaying.Shape;
-                    ContentItem contentItem = shape.ContentItem;
+                    var shape = displaying.Shape;
+                    var contentItem = shape.GetProperty<ContentItem>("ContentItem");
 
                     if (contentItem != null)
                     {
@@ -44,24 +45,29 @@ namespace OrchardCore.Contents
             builder.Describe("ContentItem")
                 .OnProcessing(async context =>
                 {
-                    dynamic content = context.Shape;
-                    string alias = content.Alias;
-                    string displayType = content.DisplayType;
-                    string alternate = content.Alternate;
+                    var content = context.Shape;
+                    var handle = content.GetProperty<string>("Handle");
+                    var displayType = content.GetProperty<string>("DisplayType");
+                    var alternate = content.GetProperty<string>("Alternate");
 
-                    if (String.IsNullOrEmpty(alias))
+                    if (String.IsNullOrEmpty(handle))
                     {
-                        return;
+                        // This code is provided for backwards compatibility and can be removed in a future version.
+                        handle = content.GetProperty<string>("Alias");
+                        if (String.IsNullOrEmpty(handle))
+                        {
+                            return;
+                        }
                     }
 
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
-                    var aliasManager = context.ServiceProvider.GetRequiredService<IContentAliasManager>();
+                    var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
                     var displayManager = context.ServiceProvider.GetRequiredService<IContentItemDisplayManager>();
                     var updateModelAccessor = context.ServiceProvider.GetRequiredService<IUpdateModelAccessor>();
 
-                    var contentItemId = await aliasManager.GetContentItemIdAsync(alias);
+                    var contentItemId = await handleManager.GetContentItemIdAsync(handle);
 
-                    if (string.IsNullOrEmpty(contentItemId))
+                    if (String.IsNullOrEmpty(contentItemId))
                     {
                         return;
                     }
@@ -73,7 +79,7 @@ namespace OrchardCore.Contents
                         return;
                     }
 
-                    content.ContentItem = contentItem;
+                    content.Properties["ContentItem"] = contentItem;
 
                     var displayShape = await displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
 
@@ -82,7 +88,7 @@ namespace OrchardCore.Contents
                         displayShape.Metadata.Alternates.Add(alternate);
                     }
 
-                    content.Add(displayShape);
+                    await context.Shape.AddAsync(displayShape, "");
                 });
         }
 
@@ -91,7 +97,7 @@ namespace OrchardCore.Contents
         /// </summary>
         /// <param name="alternateElement"></param>
         /// <returns></returns>
-        private string EncodeAlternateElement(string alternateElement)
+        private static string EncodeAlternateElement(string alternateElement)
         {
             return alternateElement.Replace("-", "__").Replace('.', '_');
         }

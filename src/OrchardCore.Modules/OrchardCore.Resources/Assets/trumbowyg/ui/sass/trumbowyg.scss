@@ -1,0 +1,814 @@
+$light-color: #ecf0f1 !default;
+$dark-color: #222 !default;
+
+$modal-submit-color: #2ecc71 !default;
+$modal-reset-color: #EEE !default;
+
+$transition-duration: 150ms !default;
+$slow-transition-duration: 300ms !default;
+
+#trumbowyg-icons {
+    overflow: hidden;
+    visibility: hidden;
+    height: 0;
+    width: 0;
+
+    svg {
+        height: 0;
+        width: 0;
+    }
+}
+
+.trumbowyg-box,
+.trumbowyg-modal {
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    svg {
+        width: 17px;
+        height: 100%;
+        fill: $dark-color;
+    }
+}
+
+.trumbowyg-box,
+.trumbowyg-editor {
+    display: block;
+    position: relative;
+    border: 1px solid #DDD;
+    width: 100%;
+    min-height: 300px;
+}
+
+.trumbowyg-box .trumbowyg-editor {
+    margin: 0 auto;
+}
+
+.trumbowyg-box.trumbowyg-fullscreen {
+    background: #FEFEFE;
+    border: none !important;
+}
+
+.trumbowyg-editor,
+.trumbowyg-textarea {
+    position: relative;
+    box-sizing: border-box;
+    padding: 20px;
+    min-height: 300px;
+    width: 100%;
+    border-style: none;
+    resize: none;
+    outline: none;
+    overflow: auto;
+    user-select: text; // Avoid issues on iOS
+
+    &.trumbowyg-autogrow-on-enter {
+        transition: height $slow-transition-duration ease-out;
+    }
+}
+
+.trumbowyg-box-blur .trumbowyg-editor {
+    *,
+    &::before {
+        color: transparent !important;
+        text-shadow: 0 0 7px #333;
+
+        @media screen and (min-width: 0 \0) {
+            color: rgba(200, 200, 200, 0.6) !important;
+        }
+        @supports (-ms-accelerator:true) {
+            color: rgba(200, 200, 200, 0.6) !important;
+        }
+    }
+    img,
+    hr {
+        opacity: 0.2;
+    }
+}
+
+.trumbowyg-textarea {
+    position: relative;
+    display: block;
+    overflow: auto;
+    border: none;
+    font-size: 14px;
+    font-family: "Inconsolata", "Consolas", "Courier", "Courier New", sans-serif;
+    line-height: 18px;
+}
+
+.trumbowyg-box.trumbowyg-editor-visible {
+    .trumbowyg-textarea {
+        height: 1px !important;
+        width: 25%;
+        min-height: 0 !important;
+        padding: 0 !important;
+        background: none;
+        opacity: 0 !important;
+    }
+}
+
+.trumbowyg-box.trumbowyg-editor-hidden {
+    .trumbowyg-textarea {
+        display: block;
+        margin-bottom: 1px;
+    }
+    .trumbowyg-editor {
+        display: none;
+    }
+}
+
+.trumbowyg-box.trumbowyg-disabled {
+    .trumbowyg-textarea {
+        opacity: 0.8;
+        background: none;
+    }
+}
+
+.trumbowyg-editor[contenteditable=true]:empty:not(:focus)::before {
+    content: attr(placeholder);
+    color: #999;
+    pointer-events: none;
+    white-space: break-spaces;
+}
+
+.trumbowyg-button-pane {
+    width: 100%;
+    min-height: 36px;
+    background: $light-color;
+    border-bottom: 1px solid darken($light-color, 7%);
+    margin: 0;
+    padding: 0 5px;
+    position: relative;
+    list-style-type: none;
+    line-height: 10px;
+    backface-visibility: hidden;
+    z-index: 11;
+
+    &::after {
+        content: " ";
+        display: block;
+        position: absolute;
+        top: 36px;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 1px;
+        background: darken($light-color, 7%);
+    }
+
+    .trumbowyg-button-group {
+        display: inline-block;
+
+        .trumbowyg-fullscreen-button svg {
+            color: transparent;
+        }
+
+        &::after {
+            content: " ";
+            display: inline-block;
+            width: 1px;
+            background: darken($light-color, 7%);
+            margin: 0 5px;
+            height: 35px;
+            vertical-align: top;
+        }
+
+        &:last-child::after {
+            content: none;
+        }
+    }
+
+    button {
+        display: inline-block;
+        position: relative;
+        width: 35px;
+        height: 35px;
+        padding: 1px 6px !important;
+        margin-bottom: 1px;
+        overflow: hidden;
+        border: none;
+        cursor: pointer;
+        background: none;
+        vertical-align: middle;
+        transition: background-color $transition-duration, opacity $transition-duration;
+
+        &.trumbowyg-textual-button {
+            width: auto;
+            line-height: 35px;
+            user-select: none;
+        }
+    }
+
+    &.trumbowyg-disable button:not(.trumbowyg-not-disable):not(.trumbowyg-active),
+    button.trumbowyg-disable,
+    .trumbowyg-disabled & button:not(.trumbowyg-not-disable):not(.trumbowyg-viewHTML-button) {
+        opacity: 0.2;
+        cursor: default;
+        pointer-events: none;
+    }
+    &.trumbowyg-disable,
+    .trumbowyg-disabled & {
+        .trumbowyg-button-group::before {
+            background: darken($light-color, 3%);
+        }
+    }
+
+    button:not(.trumbowyg-disable):hover,
+    button:not(.trumbowyg-disable):focus,
+    button.trumbowyg-active {
+        background-color: #FFF;
+        outline: none;
+    }
+
+    .trumbowyg-open-dropdown {
+        &::after {
+            display: block;
+            content: " ";
+            position: absolute;
+            top: 25px;
+            right: 3px;
+            height: 0;
+            width: 0;
+            border: 3px solid transparent;
+            border-top-color: #555;
+        }
+
+        &.trumbowyg-textual-button {
+            padding-left: 10px !important;
+            padding-right: 18px !important;
+
+            &::after {
+                top: 17px;
+                right: 7px;
+            }
+        }
+    }
+
+    .trumbowyg-right {
+        float: right;
+    }
+}
+
+.trumbowyg-dropdown {
+    max-width: 300px;
+    max-height: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    white-space: nowrap;
+    border: 1px solid $light-color;
+    padding: 5px 0;
+    border-top: none;
+    background: #FFF;
+    margin-left: -1px;
+    box-shadow: rgba(0, 0, 0, .1) 0 2px 3px;
+    z-index: 12;
+
+    button {
+        display: block;
+        width: 100%;
+        height: 35px;
+        line-height: 35px;
+        text-decoration: none;
+        background: #FFF;
+        padding: 0 20px 0 10px;
+        color: #333 !important;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        font-size: 15px;
+        transition: all $transition-duration;
+
+        &:hover,
+        &:focus {
+            background: $light-color;
+        }
+
+        svg {
+            float: left;
+            margin-right: 14px;
+        }
+    }
+}
+
+/* Modal box */
+.trumbowyg-modal {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 520px;
+    width: 100%;
+    height: 350px;
+    z-index: 12;
+    overflow: hidden;
+    backface-visibility: hidden;
+}
+
+.trumbowyg-modal-box {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 500px;
+    width: calc(100% - 20px);
+    padding-bottom: 45px;
+    z-index: 1;
+    background-color: #FFF;
+    text-align: center;
+    font-size: 14px;
+    box-shadow: rgba(0, 0, 0, .2) 0 2px 3px;
+    backface-visibility: hidden;
+
+    .trumbowyg-modal-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0 0 20px;
+        padding: 15px 0 13px;
+        display: block;
+        border-bottom: 1px solid #EEE;
+        color: #333;
+        background: lighten($light-color, 5%);
+    }
+
+    .trumbowyg-progress {
+        width: 100%;
+        height: 3px;
+        position: absolute;
+        top: 58px;
+
+        .trumbowyg-progress-bar {
+            background: #2BC06A;
+            width: 0;
+            height: 100%;
+            transition: width $transition-duration linear;
+        }
+    }
+
+    label {
+        display: block;
+        position: relative;
+        margin: 15px 12px;
+        height: 29px;
+        line-height: 29px;
+        overflow: hidden;
+
+        .trumbowyg-input-infos {
+            display: block;
+            text-align: left;
+            height: 25px;
+            line-height: 25px;
+            transition: all 150ms;
+
+            span {
+                display: block;
+                color: darken($light-color, 45%);
+                background-color: lighten($light-color, 5%);
+                border: 1px solid #DEDEDE;
+                padding: 0 7px;
+                width: 150px;
+            }
+            span.trumbowyg-msg-error {
+                color: #e74c3c;
+            }
+        }
+
+        &.trumbowyg-input-error {
+            input,
+            textarea {
+                border: 1px solid #e74c3c;
+            }
+
+            .trumbowyg-input-infos {
+                margin-top: -27px;
+            }
+        }
+
+        input {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 27px;
+            line-height: 27px;
+            border: 1px solid #DEDEDE;
+            background: #fff;
+            font-size: 14px;
+            max-width: 330px;
+            width: 70%;
+            padding: 0 7px;
+            transition: all $transition-duration;
+
+            &:hover,
+            &:focus {
+                outline: none;
+                border: 1px solid #95a5a6;
+            }
+            &:focus {
+                background: lighten($light-color, 5%);
+            }
+        }
+
+        input[type="checkbox"]{
+            left: 6px;
+            top: 6px;
+            right: auto;
+            height: 16px;
+            width: 16px;
+
+            + .trumbowyg-input-infos span{
+                width: auto;
+                padding-left: 25px;
+            }
+        }
+    }
+
+    .error {
+        margin-top: 25px;
+        display: block;
+        color: red;
+    }
+
+    .trumbowyg-modal-button {
+        position: absolute;
+        bottom: 10px;
+        right: 0;
+        text-decoration: none;
+        color: #FFF;
+        display: block;
+        width: 100px;
+        height: 35px;
+        line-height: 33px;
+        margin: 0 10px;
+        background-color: #333;
+        border: none;
+        cursor: pointer;
+        font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif;
+        font-size: 16px;
+        transition: all $transition-duration;
+
+        &.trumbowyg-modal-submit {
+            right: 110px;
+            background: darken($modal-submit-color, 3%);
+
+            &:hover,
+            &:focus {
+                background: lighten($modal-submit-color, 5%);
+                outline: none;
+            }
+            &:active {
+                background: darken($modal-submit-color, 10%);
+            }
+        }
+
+        &.trumbowyg-modal-reset {
+            color: #555;
+            background: darken($modal-reset-color, 3%);
+
+            &:hover,
+            &:focus {
+                background: lighten($modal-reset-color, 5%);
+                outline: none;
+            }
+            &:active {
+                background: darken($modal-reset-color, 10%);
+            }
+        }
+    }
+}
+
+.trumbowyg-overlay {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.5);
+    height: 100%;
+    width: 100%;
+    left: 0;
+    display: none;
+    top: 0;
+    z-index: 10;
+}
+
+/**
+ * Fullscreen
+ */
+body.trumbowyg-body-fullscreen {
+    overflow: hidden;
+}
+
+.trumbowyg-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    z-index: 99999;
+
+    &.trumbowyg-box,
+    .trumbowyg-editor {
+        border: none;
+    }
+    .trumbowyg-editor,
+    .trumbowyg-textarea {
+        height: calc(100% - 37px) !important;
+        overflow: auto;
+    }
+    .trumbowyg-overlay {
+        height: 100% !important;
+    }
+    .trumbowyg-button-group .trumbowyg-fullscreen-button svg {
+        color: $dark-color;
+        fill: transparent;
+    }
+}
+
+.trumbowyg-editor {
+    object,
+    embed,
+    video,
+    img {
+        max-width: 100%;
+    }
+    video,
+    img {
+        height: auto;
+    }
+    img {
+        cursor: move;
+    }
+    canvas:focus {
+        outline: none;
+    }
+
+    /*
+     * lset for resetCss option
+     */
+    &.trumbowyg-reset-css {
+        background: #FEFEFE !important;
+        font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
+        font-size: 14px !important;
+        line-height: 1.45em !important;
+        color: #333;
+
+        a {
+            color: #15c !important;
+            text-decoration: underline !important;
+        }
+
+        div,
+        p,
+        ul,
+        ol,
+        blockquote {
+            box-shadow: none !important;
+            background: none !important;
+            margin: 0 !important;
+            margin-bottom: 15px !important;
+            line-height: 1.4em !important;
+            font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
+            font-size: 14px !important;
+            border: none;
+        }
+        iframe,
+        object,
+        hr {
+            margin-bottom: 15px !important;
+        }
+        blockquote {
+            margin-left: 32px !important;
+            font-style: italic !important;
+            color: #555;
+        }
+        ul {
+            list-style: disc;
+        }
+        ol {
+            list-style: decimal;
+        }
+        ul,
+        ol {
+            padding-left: 20px !important;
+        }
+        ul ul,
+        ol ol,
+        ul ol,
+        ol ul {
+            border: none;
+            margin: 2px !important;
+            padding: 0 !important;
+            padding-left: 24px !important;
+        }
+        hr {
+            display: block;
+            height: 1px;
+            border: none;
+            border-top: 1px solid #CCC;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            color: #111;
+            background: none;
+            margin: 0 !important;
+            padding: 0 !important;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 32px !important;
+            line-height: 38px !important;
+            margin-bottom: 20px !important;
+        }
+        h2 {
+            font-size: 26px !important;
+            line-height: 34px !important;
+            margin-bottom: 15px !important;
+        }
+        h3 {
+            font-size: 22px !important;
+            line-height: 28px !important;
+            margin-bottom: 7px !important;
+        }
+        h4 {
+            font-size: 16px !important;
+            line-height: 22px !important;
+            margin-bottom: 7px !important;
+        }
+    }
+}
+
+/*
+ * Dark theme
+ */
+.trumbowyg-dark {
+    .trumbowyg-textarea {
+        background: #111;
+        color: #ddd;
+    }
+    .trumbowyg-box {
+        border: 1px solid lighten($dark-color, 7%);
+
+        &.trumbowyg-fullscreen {
+            background: #111;
+        }
+        &.trumbowyg-box-blur .trumbowyg-editor {
+            *,
+            &::before {
+                text-shadow: 0 0 7px #ccc;
+
+                @media screen and (min-width: 0 \0
+                ) {
+                    color: rgba(20, 20, 20, 0.6) !important;
+                }
+                @supports (-ms-accelerator:true) {
+                    color: rgba(20, 20, 20, 0.6) !important;
+                }
+            }
+        }
+
+        svg {
+            fill: $light-color;
+            color: $light-color;
+        }
+    }
+    .trumbowyg-button-pane {
+        background-color: $dark-color;
+        border-bottom-color: lighten($dark-color, 7%);
+
+        &::after {
+            background: lighten($dark-color, 7%);
+        }
+
+        .trumbowyg-button-group:not(:empty) {
+            &::after {
+                background-color: lighten($dark-color, 7%);
+            }
+            .trumbowyg-fullscreen-button svg {
+                color: transparent;
+            }
+        }
+
+        &.trumbowyg-disable {
+            .trumbowyg-button-group::after {
+                background-color: lighten($dark-color, 3%);
+            }
+        }
+
+        button:not(.trumbowyg-disable):hover,
+        button:not(.trumbowyg-disable):focus,
+        button.trumbowyg-active {
+            background-color: #333;
+        }
+
+        .trumbowyg-open-dropdown::after {
+            border-top-color: #fff;
+        }
+    }
+    .trumbowyg-fullscreen {
+        .trumbowyg-button-pane .trumbowyg-button-group:not(:empty) .trumbowyg-fullscreen-button svg {
+            color: $light-color;
+            fill: transparent;
+        }
+    }
+
+    .trumbowyg-dropdown {
+        border-color: $dark-color;
+        background: #333;
+        box-shadow: rgba(0, 0, 0, .3) 0 2px 3px;
+
+        button {
+            background: #333;
+            color: #fff !important;
+
+            &:hover,
+            &:focus {
+                background: $dark-color;
+            }
+        }
+    }
+
+    // Modal box
+    .trumbowyg-modal-box {
+        background-color: $dark-color;
+
+        .trumbowyg-modal-title {
+            border-bottom: 1px solid #555;
+            color: #fff;
+            background: lighten($dark-color, 10%);
+        }
+
+        label {
+            display: block;
+            position: relative;
+            margin: 15px 12px;
+            height: 27px;
+            line-height: 27px;
+            overflow: hidden;
+
+            .trumbowyg-input-infos {
+                span {
+                    color: #eee;
+                    background-color: lighten($dark-color, 5%);
+                    border-color: $dark-color;
+                }
+                span.trumbowyg-msg-error {
+                    color: #e74c3c;
+                }
+            }
+
+            &.trumbowyg-input-error {
+                input,
+                textarea {
+                    border-color: #e74c3c;
+                }
+            }
+
+            input {
+                border-color: $dark-color;
+                color: #eee;
+                background: #333;
+
+                &:hover,
+                &:focus {
+                    border-color: lighten($dark-color, 25%);
+                }
+                &:focus {
+                    background-color: lighten($dark-color, 5%);
+                }
+            }
+        }
+
+        .trumbowyg-modal-button {
+            &.trumbowyg-modal-submit {
+                background: darken($modal-submit-color, 20%);
+
+                &:hover,
+                &:focus {
+                    background: darken($modal-submit-color, 10%);
+                }
+                &:active {
+                    background: darken($modal-submit-color, 25%);
+                }
+            }
+            &.trumbowyg-modal-reset {
+                background: #333;
+                color: #ccc;
+
+                &:hover,
+                &:focus {
+                    background: #444;
+                }
+                &:active {
+                    background: #111;
+                }
+            }
+        }
+    }
+    .trumbowyg-overlay {
+        background-color: rgba(15, 15, 15, 0.6);
+    }
+}

@@ -11,7 +11,7 @@ namespace OrchardCore.Email.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddActivity<EmailTask, EmailTaskDisplay>();
+            services.AddActivity<EmailTask, EmailTaskDisplayDriver>();
         }
     }
 }

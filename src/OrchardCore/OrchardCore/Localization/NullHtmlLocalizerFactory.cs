@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -55,8 +54,6 @@ namespace OrchardCore.Localization
 
             public LocalizedString GetString(string name, params object[] arguments) =>
                 NullStringLocalizerFactory.NullLocalizer.Instance.GetString(name, arguments);
-
-            IHtmlLocalizer IHtmlLocalizer.WithCulture(CultureInfo culture) => Instance;
         }
     }
 }

@@ -14,18 +14,19 @@ namespace OrchardCore.Contents.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddActivity<ContentCreatedEvent, ContentCreatedEventDisplay>();
-            services.AddActivity<ContentDeletedEvent, ContentDeletedEventDisplay>();
-            services.AddActivity<ContentPublishedEvent, ContentPublishedEventDisplay>();
-            services.AddActivity<ContentUnpublishedEvent, ContentUnpublishedEventDisplay>();
-            services.AddActivity<ContentUpdatedEvent, ContentUpdatedEventDisplay>();
-            services.AddActivity<ContentVersionedEvent, ContentVersionedEventDisplay>();
-            services.AddActivity<DeleteContentTask, DeleteContentTaskDisplay>();
-            services.AddActivity<PublishContentTask, PublishContentTaskDisplay>();
-            services.AddActivity<UnpublishContentTask, UnpublishContentTaskDisplay>();
-            services.AddActivity<CreateContentTask, CreateContentTaskDisplay>();
-            services.AddActivity<RetrieveContentTask, RetrieveContentTaskDisplay>();
-            services.AddActivity<UpdateContentTask, UpdateContentTaskDisplay>();
+            services.AddActivity<ContentCreatedEvent, ContentCreatedEventDisplayDriver>();
+            services.AddActivity<ContentDeletedEvent, ContentDeletedEventDisplayDriver>();
+            services.AddActivity<ContentPublishedEvent, ContentPublishedEventDisplayDriver>();
+            services.AddActivity<ContentUnpublishedEvent, ContentUnpublishedEventDisplayDriver>();
+            services.AddActivity<ContentUpdatedEvent, ContentUpdatedEventDisplayDriver>();
+            services.AddActivity<ContentDraftSavedEvent, ContentDraftSavedEventDisplayDriver>();
+            services.AddActivity<ContentVersionedEvent, ContentVersionedEventDisplayDriver>();
+            services.AddActivity<DeleteContentTask, DeleteContentTaskDisplayDriver>();
+            services.AddActivity<PublishContentTask, PublishContentTaskDisplayDriver>();
+            services.AddActivity<UnpublishContentTask, UnpublishContentTaskDisplayDriver>();
+            services.AddActivity<CreateContentTask, CreateContentTaskDisplayDriver>();
+            services.AddActivity<RetrieveContentTask, RetrieveContentTaskDisplayDriver>();
+            services.AddActivity<UpdateContentTask, UpdateContentTaskDisplayDriver>();
 
             services.AddScoped<IContentHandler, ContentsHandler>();
             services.AddScoped<IWorkflowValueSerializer, ContentItemSerializer>();

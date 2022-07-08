@@ -1,0 +1,20 @@
+@model ShapeViewModel<ContentItemDeploymentStep>
+@inject OrchardCore.ContentManagement.IContentManager ContentManager
+
+@{
+    ContentItem contentItem = null;
+    if (!String.IsNullOrEmpty(Model.Value.ContentItemId))
+    {
+        contentItem = await ContentManager.GetAsync(Model.Value.ContentItemId);
+    }
+}
+
+<h5>@T["Content Item"]</h5>
+@if (contentItem != null)
+{
+    <span class="badge ta-badge">@contentItem.ToString()</span>
+}
+else
+{
+    <span class="badge bg-warning">@T["Nothing here!"]</span>
+}

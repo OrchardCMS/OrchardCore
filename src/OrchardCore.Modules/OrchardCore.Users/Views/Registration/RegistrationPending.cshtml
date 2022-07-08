@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewLayout = "Layout__Login";
+    var returnUrl = Context.Request.Query["ReturnUrl"];
+}
+
+<h2>@T["User Registration Pending"]</h2>
+<div>
+    <p>@T["Your user account has been created but has to be approved before it can be used."]</p>
+
+    @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+    {
+        <a href="@returnUrl">@T["Previous Page"]</a>
+    }
+    else
+    {
+        <a href="@Url.Content("~/")">@T["Home"]</a>
+    }
+</div>

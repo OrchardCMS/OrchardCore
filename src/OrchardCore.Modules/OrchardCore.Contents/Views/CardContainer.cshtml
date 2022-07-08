@@ -1,9 +1,0 @@
-@model dynamic
-@using OrchardCore.Mvc.Utilities
-
-<div class="mb-3">
-    @foreach(var card in Model.Items)
-    {
-        @await DisplayAsync(card)
-    }
-</div>

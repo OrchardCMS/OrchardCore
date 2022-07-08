@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.AspNetCore.Html;
 
 namespace OrchardCore.ResourceManagement
@@ -95,31 +96,36 @@ namespace OrchardCore.ResourceManagement
         /// <summary>
         /// Renders the registered meta tags.
         /// </summary>
-        void RenderMeta(IHtmlContentBuilder builder);
+        void RenderMeta(TextWriter writer);
 
         /// <summary>
         /// Renders the registered header link tags.
         /// </summary>
-        void RenderHeadLink(IHtmlContentBuilder builder);
+        void RenderHeadLink(TextWriter writer);
 
         /// <summary>
         /// Renders the registered stylesheets.
         /// </summary>
-        void RenderStylesheet(IHtmlContentBuilder builder);
+        void RenderStylesheet(TextWriter writer);
 
         /// <summary>
         /// Renders the registered header script tags.
         /// </summary>
-        void RenderHeadScript(IHtmlContentBuilder builder);
+        void RenderHeadScript(TextWriter writer);
 
         /// <summary>
         /// Renders the registered footer script tags.
         /// </summary>
-        void RenderFootScript(IHtmlContentBuilder builder);
+        void RenderFootScript(TextWriter writer);
 
         /// <summary>
         /// Renders the registered local script tags.
         /// </summary>
-        void RenderLocalScript(RequireSettings settings, IHtmlContentBuilder builder);
+        void RenderLocalScript(RequireSettings settings, TextWriter writer);
+
+        /// <summary>
+        /// Renders the registered local style tags.
+        /// </summary>
+        void RenderLocalStyle(RequireSettings settings, TextWriter writer);
     }
 }

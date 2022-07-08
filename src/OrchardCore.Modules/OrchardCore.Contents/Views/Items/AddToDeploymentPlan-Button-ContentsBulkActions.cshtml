@@ -1,0 +1,18 @@
+<a id="addToDeploymentPlanBulkActions" class="dropdown-item" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to add these items to a deployment plan?"]">@T["Add to deployment plan"]</a>
+<script at="Foot" depends-on="jQuery">
+    $(function () {
+        $('#addToDeploymentPlanBulkActions').on('click', function () {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                var $this = $(this);
+                confirmDialog({
+                    ...$this.data(), callback: function (r) {
+                        if (r) {
+                            var modal = new bootstrap.Modal($('#modalAddToDeploymentPlanContentsBulkActionsDeploymentPlan'));
+                            modal.show();
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>

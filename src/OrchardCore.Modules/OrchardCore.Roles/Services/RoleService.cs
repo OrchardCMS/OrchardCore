@@ -44,5 +44,10 @@ namespace OrchardCore.Roles.Services
         {
             return Task.FromResult<IEnumerable<string>>(_roleManager.Roles.Select(a => a.RoleName));
         }
+
+        public Task<IEnumerable<string>> GetNormalizedRoleNamesAsync()
+        {
+            return Task.FromResult<IEnumerable<string>>(_roleManager.Roles.Select(a => _roleManager.NormalizeKey(a.RoleName)));
+        }
     }
 }

@@ -5,5 +5,5 @@
 @model ActivityViewModel<UpdateTwitterStatusTask>
 
 <header>
-    <h4><i class="fab fa-twitter"></i>@Model.Activity.GetTitleOrDefault(() => T["Update Twitter Status"])</h4>
+    <h4><i class="fab fa-twitter" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Update Twitter Status"])</h4>
 </header>

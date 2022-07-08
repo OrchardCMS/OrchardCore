@@ -9,7 +9,6 @@ namespace OrchardCore.Scripting
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScripting();
             services.AddJavaScriptEngine();
             services.AddSingleton<IGlobalMethodProvider, LogProvider>();
         }

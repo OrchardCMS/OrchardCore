@@ -1,0 +1,120 @@
+.ta-navbar-top {
+    @extend .navbar, .navbar-expand-md, .fixed-top;
+    border-bottom: $border-content;
+    z-index: $zindex-fixed;
+    padding: 0.3rem 1rem;
+    padding-left: 0;
+    box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+
+    h1 {
+        font-size: 24px;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+    }
+
+    @include media-breakpoint-down(sm) {
+
+        h1 {
+            max-width: 180px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            height: 32px;
+        }
+    }
+
+    .nav-link {
+        font-size: 14px;
+    }
+
+    .breadcrumb {
+        background-color: transparent;
+        margin-top: 1rem;
+    }
+
+    .btn.nav-link {
+        display: inline-block;
+    }
+
+    @include media-breakpoint-up(sm) {
+        h1 {
+            left: 275px; // $left-navigation-width + 10px
+        }
+    }
+
+    @include media-breakpoint-down(sm) {
+        .navbar-collapse {
+            li:first-child .nav-link {
+                padding-top: 15px;
+            }
+
+            li:last-child .nav-link {
+                padding-bottom: 0px;
+            }
+        }
+    }
+}
+
+body:not(.left-sidebar-compact) {
+    @include media-breakpoint-down(sm) {
+        .ta-navbar-top {
+            h1 {
+                display: none;
+            }
+        }
+    }
+}
+
+.ta-navbar-brand {
+    @extend .navbar-brand;
+    overflow: hidden;
+    height: 42px;
+    width: 259px;
+    margin-left: 5px;
+    padding-top: 10px;
+    white-space: nowrap;
+    font-size: 14px;
+    transition: width 0.2s ease-in-out;
+
+    span:first-child {
+        margin-left: 5px;
+    }
+
+    span:last-child {
+        font-weight: bold;
+        color: $white;
+    }
+}
+
+.ta-navbar-brand img {
+    margin-left: 5px;
+    margin-right: 11px;
+    width: 25px;
+}
+
+// When left-sidebar is compact nav brand is compacted too.
+// It displays logo only, not text.
+.left-sidebar-compact .ta-navbar-brand {
+    width: 47px;
+    height: 42px;
+
+    span {
+        display: none;
+    }
+}
+
+.left-sidebar-compact .ta-navbar-top {
+    h1 {
+        left: 63px; // $left-navigation-width-when-compact + 15px
+    }
+
+    .nav-item {
+        margin-left: 10px;
+    }
+}
+
+.action-bar {
+    top: 3.3rem;
+    z-index: 1050;
+}

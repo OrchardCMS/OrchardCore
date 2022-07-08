@@ -1,0 +1,29 @@
+@model OrchardCore.Seo.ViewModels.SeoMetaPartGoogleSchemaViewModel
+
+<div class="mb-3" asp-validation-class-for="GoogleSchema">
+    <label asp-for="GoogleSchema">@T["Google Schema"] </label>
+    <textarea asp-for="GoogleSchema" class="form-control content-preview-text" rows="5"></textarea>
+    <span class="hint">@T["The Social Meta Settings Google Schema is used by default, or can be overridden here."]</span>
+</div>
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script at="Foot">
+    $(function () {
+        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.GoogleSchema)');
+        // When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist.
+        if (optionsTextArea) {
+            var editor = CodeMirror.fromTextArea(optionsTextArea, {
+                autoRefresh: true,
+                lineNumbers: true,
+                lineWrapping: true,
+                matchBrackets: true,
+                styleActiveLine: true,
+                mode: { name: "javascript" }
+            });
+        }
+    });
+</script>

@@ -1,11 +1,10 @@
 {% zone "Header" %}
     <!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
-    <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/img/post-bg.jpg" | href }}')">
-        <div class="overlay"></div>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-md-10 mx-auto">
+    <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/assets/img/post-bg.jpg" | href }}')">
+        <div class="container position-relative px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
                     <div class="site-heading">
                         <h1>{{ Model.ContentItem.DisplayText }}</h1>
                     </div>

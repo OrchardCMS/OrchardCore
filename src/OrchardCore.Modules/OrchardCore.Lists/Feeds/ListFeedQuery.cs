@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
@@ -63,10 +62,10 @@ namespace OrchardCore.Lists.Feeds
             if (context.Format == "rss")
             {
                 var link = new XElement("link");
-                context.Response.Element.SetElementValue("title", WebUtility.HtmlEncode(contentItem.DisplayText));
+                context.Response.Element.SetElementValue("title", contentItem.DisplayText);
                 context.Response.Element.Add(link);
 
-                context.Response.Element.SetElementValue("description", bodyAspect.Body != null ? $"<![CDATA[{bodyAspect.Body?.ToString()}]]>" : String.Empty);
+                context.Response.Element.Add(new XElement("description", new XCData(bodyAspect.Body?.ToString() ?? String.Empty)));
 
                 context.Response.Contextualize(contextualize =>
                 {
@@ -79,8 +78,7 @@ namespace OrchardCore.Lists.Feeds
             else
             {
                 context.Builder.AddProperty(context, null, "title", contentItem.DisplayText);
-
-                context.Builder.AddProperty(context, null, "description", bodyAspect.Body != null ? $"<![CDATA[{bodyAspect.Body?.ToString()}]]>" : String.Empty);
+                context.Builder.AddProperty(context, null, new XElement("description", new XCData(bodyAspect.Body?.ToString() ?? String.Empty)));
 
                 context.Response.Contextualize(contextualize =>
                 {

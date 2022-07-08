@@ -23,6 +23,7 @@ namespace OrchardCore.Users.Services
         IUserEmailStore<IUser>,
         IUserSecurityStampStore<IUser>,
         IUserLoginStore<IUser>,
+        IUserLockoutStore<IUser>,
         IUserAuthenticationTokenStore<IUser>
     {
         private const string TokenProtector = "OrchardCore.UserStore.Token";
@@ -30,12 +31,14 @@ namespace OrchardCore.Users.Services
         private readonly ISession _session;
         private readonly IRoleService _roleService;
         private readonly ILookupNormalizer _keyNormalizer;
+        private readonly IUserIdGenerator _userIdGenerator;
         private readonly ILogger _logger;
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
         public UserStore(ISession session,
             IRoleService roleService,
             ILookupNormalizer keyNormalizer,
+            IUserIdGenerator userIdGenerator,
             ILogger<UserStore> logger,
             IEnumerable<IUserEventHandler> handlers,
             IDataProtectionProvider dataProtectionProvider)
@@ -43,6 +46,7 @@ namespace OrchardCore.Users.Services
             _session = session;
             _roleService = roleService;
             _keyNormalizer = keyNormalizer;
+            _userIdGenerator = userIdGenerator;
             _logger = logger;
             _dataProtectionProvider = dataProtectionProvider;
             Handlers = handlers;
@@ -67,17 +71,52 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            _session.Save(user);
+            if (!(user is User newUser))
+            {
+                throw new ArgumentException("Expected a User instance.", nameof(user));
+            }
+
+            var newUserId = newUser.UserId;
+
+            if (String.IsNullOrEmpty(newUserId))
+            {
+                // Due to database collation we normalize the userId to lower invariant.
+                newUserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
+            }
 
             try
             {
-                await _session.CommitAsync();
+                var attempts = 10;
 
-                var context = new UserContext(user);
+                while (await _session.QueryIndex<UserIndex>(x => x.UserId == newUserId).CountAsync() != 0)
+                {
+                    if (attempts-- == 0)
+                    {
+                        throw new ApplicationException("Couldn't generate a unique user id. Too many attempts.");
+                    }
+
+                    newUserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
+                }
+
+                newUser.UserId = newUserId;
+
+                var context = new UserCreateContext(user);
+
+                await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
+
+                if (context.Cancel)
+                {
+                    return IdentityResult.Failed();
+                }
+
+                _session.Save(user);
+                await _session.SaveChangesAsync();
                 await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
             }
-            catch
+            catch (Exception e)
             {
+                _logger.LogError(e, "Unexpected error while creating a new user.");
+
                 return IdentityResult.Failed();
             }
 
@@ -91,14 +130,24 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            _session.Delete(user);
-
             try
             {
-                await _session.CommitAsync();
+                var context = new UserDeleteContext(user);
+                await Handlers.InvokeAsync((handler, context) => handler.DeletingAsync(context), context, _logger);
+
+                if (context.Cancel)
+                {
+                    return IdentityResult.Failed();
+                }
+
+                _session.Delete(user);
+                await _session.SaveChangesAsync();
+                await Handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
             }
-            catch
+            catch (Exception e)
             {
+                _logger.LogError(e, "Unexpected error while deleting a user.");
+
                 return IdentityResult.Failed();
             }
 
@@ -107,13 +156,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            int id;
-            if (!int.TryParse(userId, out id))
-            {
-                return null;
-            }
-
-            return await _session.GetAsync<User>(id);
+            return await _session.Query<User, UserIndex>(u => u.UserId == userId).FirstOrDefaultAsync();
         }
 
         public async Task<IUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
@@ -138,7 +181,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(((User)user).Id.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            return Task.FromResult(((User)user).UserId);
         }
 
         public Task<string> GetUserNameAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
@@ -175,16 +218,35 @@ namespace OrchardCore.Users.Services
             return Task.CompletedTask;
         }
 
-        public Task<IdentityResult> UpdateAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IdentityResult> UpdateAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            _session.Save(user);
+            try
+            {
+                var context = new UserUpdateContext(user);
+                await Handlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), context, _logger);
 
-            return Task.FromResult(IdentityResult.Success);
+                if (context.Cancel)
+                {
+                    return IdentityResult.Failed();
+                }
+
+                _session.Save(user);
+                await _session.SaveChangesAsync();
+                await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unexpected error while updating a user.");
+
+                return IdentityResult.Failed();
+            }
+
+            return IdentityResult.Success;
         }
 
         #endregion IUserStore<IUser>
@@ -632,5 +694,101 @@ namespace OrchardCore.Users.Services
                                                                 ut.Name == name);
         }
         #endregion
+
+        #region IUserLockoutStore<IUser>
+
+        public Task<int> GetAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(((User)user).AccessFailedCount);
+        }
+
+        public Task<bool> GetLockoutEnabledAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(((User)user).IsLockoutEnabled);
+        }
+
+        public Task<DateTimeOffset?> GetLockoutEndDateAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (((User)user).LockoutEndUtc.HasValue)
+            {
+                return Task.FromResult<DateTimeOffset?>(((User)user).LockoutEndUtc.Value.ToUniversalTime());
+            }
+            else
+            {
+                return Task.FromResult<DateTimeOffset?>(null);
+            }
+        }
+
+        public Task<int> IncrementAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            ((User)user).AccessFailedCount++;
+
+            return Task.FromResult(((User)user).AccessFailedCount);
+        }
+
+        public Task ResetAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            ((User)user).AccessFailedCount = 0;
+
+            return Task.CompletedTask;
+        }
+
+        public Task SetLockoutEnabledAsync(IUser user, bool enabled, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            ((User)user).IsLockoutEnabled = enabled;
+
+            return Task.CompletedTask;
+        }
+
+        public Task SetLockoutEndDateAsync(IUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (lockoutEnd.HasValue)
+            {
+                ((User)user).LockoutEndUtc = lockoutEnd.Value.UtcDateTime;
+            }
+            else
+            {
+                ((User)user).LockoutEndUtc = null;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        #endregion IUserLockoutStore<IUser>
     }
 }

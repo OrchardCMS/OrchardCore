@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Services;
@@ -50,16 +49,9 @@ namespace OrchardCore.ContentLocalization.Controllers
             if (supportedCultures.Any(t => t == targetCulture))
             {
                 var settings = (await _siteService.GetSiteSettingsAsync()).As<ContentCulturePickerSettings>();
-
                 if (settings.SetCookie)
                 {
-                    // Set the cookie to handle redirecting to a custom controller
-                    Response.Cookies.Delete(CookieRequestCultureProvider.DefaultCookieName);
-                    Response.Cookies.Append(
-                        CookieRequestCultureProvider.DefaultCookieName,
-                        CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(targetCulture)),
-                        new CookieOptions { Expires = DateTime.UtcNow.AddDays(14) }
-                    );
+                    _culturePickerService.SetContentCulturePickerCookie(targetCulture);
                 }
 
                 // Redirect the user to the Content with the same localizationSet as the ContentItem of the current url
@@ -89,7 +81,7 @@ namespace OrchardCore.ContentLocalization.Controllers
                 return false;
             }
 
-            return LocalRedirect(url);
+            return this.LocalRedirect(url, true);
         }
     }
 }

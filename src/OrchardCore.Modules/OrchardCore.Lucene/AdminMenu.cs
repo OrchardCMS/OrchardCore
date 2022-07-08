@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Lucene.Drivers;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Lucene
@@ -34,10 +35,10 @@ namespace OrchardCore.Lucene
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav()))
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Search"],S["Search"].PrefixPosition(), entry => entry
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "search" })
-                            .Permission(Permissions.ManageIndexes)
-                            .LocalNav()
+                        .Add(S["Search"], S["Search"].PrefixPosition(), entry => entry
+                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LuceneSettingsDisplayDriver.GroupId })
+                             .Permission(Permissions.ManageIndexes)
+                             .LocalNav()
                         )));
 
             return Task.CompletedTask;

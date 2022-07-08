@@ -1,7 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore Contents TagHelpers</Title>
+    <Description>$(OCCMSDescription)
+
+    TagHelpers for Contents</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS ContentManagement TagHelpers</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

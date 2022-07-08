@@ -1,3 +1,4 @@
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Settings;
 
@@ -16,7 +17,7 @@ namespace OrchardCore.DisplayManagement.Razor
         /// <summary>
         /// The current theme layout.
         /// </summary>
-        public IShape ThemeLayout { get; set; }
+        public IZoneHolding ThemeLayout { get; set; }
 
         /// <summary>
         /// The current theme.

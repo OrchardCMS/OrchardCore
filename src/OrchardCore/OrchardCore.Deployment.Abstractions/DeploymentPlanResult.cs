@@ -20,7 +20,7 @@ namespace OrchardCore.Deployment
             Recipe["name"] = recipeDescriptor.Name ?? "";
             Recipe["displayName"] = recipeDescriptor.DisplayName ?? "";
             Recipe["description"] = recipeDescriptor.Description ?? "";
-            Recipe["author"] = recipeDescriptor.Author ??  "";
+            Recipe["author"] = recipeDescriptor.Author ?? "";
             Recipe["website"] = recipeDescriptor.WebSite ?? "";
             Recipe["version"] = recipeDescriptor.Version ?? "";
             Recipe["issetuprecipe"] = recipeDescriptor.IsSetupRecipe;

@@ -21,7 +21,7 @@
   },
   {
     "inputs": [
-      "node_modules/popper.js/dist/umd/popper.js"
+      "node_modules/@popperjs/core/dist/umd/popper.js"
     ],
     "output": "wwwroot/Scripts/popper.js"
   },
@@ -32,24 +32,11 @@
     ],
     "output": "wwwroot/Styles/bootstrap-select.css"
   },
-  {
+ {
     "inputs": [
       "node_modules/bootstrap-select/dist/js/bootstrap-select.js"
     ],
     "output": "wwwroot/Scripts/bootstrap-select.js"
-  },
-  {
-    "generateRTL": true,
-    "inputs": [
-      "node_modules/bootstrap-slider/dist/css/bootstrap-slider.css"
-    ],
-    "output": "wwwroot/Styles/bootstrap-slider.css"
-  },
-  {
-    "inputs": [
-      "node_modules/bootstrap-slider/dist/bootstrap-slider.js"
-    ],
-    "output": "wwwroot/Scripts/bootstrap-slider.js"
   },
   {
     "generateRTL": false,
@@ -168,13 +155,19 @@
   },
   {
     "inputs": [
+      "node_modules/jquery.easing/jquery.easing.js"
+    ],
+    "output": "wwwroot/Scripts/jquery.easing.js"
+  },
+  {
+    "inputs": [
       "node_modules/jquery-resizable-dom/dist/jquery-resizable.js"
     ],
     "output": "wwwroot/Scripts/jquery-resizable.js"
   },
   {
     "inputs": [
-      "node_modules/popper.js/dist/umd/popper.js"
+      "node_modules/@popperjs/core/dist/umd/popper.js"
     ],
     "output": "wwwroot/Scripts/popper.js"
   },
@@ -202,15 +195,15 @@
   },
   {
     "inputs": [
-      "Assets/trumbowyg/plugins/*/*.js"
+      "Assets/trumbowyg/js/trumbowyg.shortcodes.js"
     ],
-    "output": "wwwroot/Scripts/trumbowyg-plugins.js"
+    "output": "wwwroot/Scripts/trumbowyg.shortcodes.js"
   },
   {
     "inputs": [
-      "Assets/trumbowyg/js/resizable-resolveconflict.js"
+      "Assets/trumbowyg/plugins/*/*.js"
     ],
-    "output": "wwwroot/Scripts/resizable-resolveconflict.js"
+    "output": "wwwroot/Scripts/trumbowyg-plugins.js"
   },
   {
     "copy": true,
@@ -281,5 +274,26 @@
       "node_modules/@fortawesome/fontawesome-free/webfonts/*"
     ],
     "output": "wwwroot/Vendor/fontawesome-free/webfonts/@"
+  },
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "node_modules/js-cookie/dist/js.cookie.js"
+    ],
+    "output": "wwwroot/Scripts/js.cookie.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "Assets/monaco/*"
+    ],
+    "output": "wwwroot/Scripts/monaco/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/monaco-editor/min/**/*"
+    ],
+    "output": "wwwroot/Scripts/monaco/@"
   }
 ]

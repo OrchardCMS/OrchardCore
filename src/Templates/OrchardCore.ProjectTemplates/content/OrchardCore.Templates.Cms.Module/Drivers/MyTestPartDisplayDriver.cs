@@ -1,6 +1,6 @@
-﻿using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -19,42 +19,34 @@ namespace OrchardCore.Templates.Cms.Module.Drivers
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public override IDisplayResult Display(MyTestPart MyTestPart)
+        public override IDisplayResult Display(MyTestPart part, BuildPartDisplayContext context)
         {
-            return Combine(
-                Initialize<MyTestPartViewModel>("MyTestPart", m => BuildViewModel(m, MyTestPart))
-                    .Location("Detail", "Content:20"),
-                Initialize<MyTestPartViewModel>("MyTestPart_Summary", m => BuildViewModel(m, MyTestPart))
-                    .Location("Summary", "Meta:5")
-            );
+            return Initialize<MyTestPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, part, context))
+                .Location("Detail", "Content:10")
+                .Location("Summary", "Content:10")
+                ;
         }
-        
-        public override IDisplayResult Edit(MyTestPart MyTestPart)
+
+        public override IDisplayResult Edit(MyTestPart part, BuildPartEditorContext context)
         {
-            return Initialize<MyTestPartViewModel>("MyTestPart_Edit", m => BuildViewModel(m, MyTestPart));
+            return Initialize<MyTestPartViewModel>(GetEditorShapeType(context), model =>
+            {
+                model.Show = part.Show;
+                model.ContentItem = part.ContentItem;
+                model.MyTestPart = part;
+            });
         }
 
         public override async Task<IDisplayResult> UpdateAsync(MyTestPart model, IUpdateModel updater)
         {
-            var settings = GetMyTestPartSettings(model);
-
             await updater.TryUpdateModelAsync(model, Prefix, t => t.Show);
-            
+
             return Edit(model);
         }
 
-        public MyTestPartSettings GetMyTestPartSettings(MyTestPart part)
+        private Task BuildViewModel(MyTestPartViewModel model, MyTestPart part, BuildPartDisplayContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(MyTestPart));
-            var settings = contentTypePartDefinition.GetSettings<MyTestPartSettings>();
-
-            return settings;
-        }
-
-        private Task BuildViewModel(MyTestPartViewModel model, MyTestPart part)
-        {
-            var settings = GetMyTestPartSettings(part);
+            var settings = context.TypePartDefinition.GetSettings<MyTestPartSettings>();
 
             model.ContentItem = part.ContentItem;
             model.MySetting = settings.MySetting;

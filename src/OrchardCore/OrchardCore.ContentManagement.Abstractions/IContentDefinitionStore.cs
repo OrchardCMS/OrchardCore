@@ -6,15 +6,18 @@ namespace OrchardCore.ContentManagement
     public interface IContentDefinitionStore
     {
         /// <summary>
-        /// Loads a single document (or create a new one) for updating and that should not be cached.
+        /// Loads the content definition from the store for updating and that should not be cached.
         /// </summary>
         Task<ContentDefinitionRecord> LoadContentDefinitionAsync();
 
         /// <summary>
-        /// Gets a single document (or create a new one) for caching and that should not be updated.
+        /// Gets the content definition from the cache for sharing and that should not be updated.
         /// </summary>
         Task<ContentDefinitionRecord> GetContentDefinitionAsync();
 
+        /// <summary>
+        /// Updates the store with the provided content definition and then updates the cache.
+        /// </summary>
         Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord);
     }
 }

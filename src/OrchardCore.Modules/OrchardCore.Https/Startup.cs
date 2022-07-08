@@ -7,10 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Https.Drivers;
 using OrchardCore.Https.Services;
+using OrchardCore.Https.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Https
 {
@@ -48,10 +50,7 @@ namespace OrchardCore.Https
                         options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
                     }
 
-                    if (settings.SslPort != null)
-                    {
-                        options.HttpsPort = settings.SslPort;
-                    }
+                    options.HttpsPort = settings.SslPort;
                 });
 
             services.AddHsts(options =>
@@ -60,6 +59,15 @@ namespace OrchardCore.Https
                 options.IncludeSubDomains = true;
                 options.MaxAge = TimeSpan.FromDays(365);
             });
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSiteSettingsPropertyDeploymentStep<HttpsSettings, DeploymentStartup>(S => S["Https settings"], S => S["Exports the Https settings."]);
         }
     }
 }

@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
@@ -97,6 +97,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
     if (val instanceof RegExp) {
       if (val.ignoreCase) flags = "i";
+      if (val.unicode) flags += "u";
       val = val.source;
     } else {
       val = String(val);
@@ -170,10 +171,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           if (token && token.apply) token = token(matches);
 
           if (matches.length > 2 && rule.token && typeof rule.token != "string") {
-            state.pending = [];
-
             for (var j = 2; j < matches.length; j++) {
-              if (matches[j]) state.pending.push({
+              if (matches[j]) (state.pending || (state.pending = [])).push({
                 text: matches[j],
                 token: rule.token[j - 1]
               });

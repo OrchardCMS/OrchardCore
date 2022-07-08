@@ -18,8 +18,8 @@ namespace OrchardCore.Workflows.Activities
         private readonly HtmlEncoder _htmlEncoder;
 
         public NotifyTask(
-            INotifier notifier, 
-            IWorkflowExpressionEvaluator expressionvaluator, 
+            INotifier notifier,
+            IWorkflowExpressionEvaluator expressionvaluator,
             IStringLocalizer<NotifyTask> localizer,
             HtmlEncoder htmlEncoder)
         {
@@ -55,7 +55,9 @@ namespace OrchardCore.Workflows.Activities
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var message = await _expressionEvaluator.EvaluateAsync(Message, workflowContext, _htmlEncoder);
-            _notifier.Add(NotificationType, new LocalizedHtmlString(nameof(NotifyTask), message));
+
+            // The notification message can contain HTML by design
+            await _notifier.AddAsync(NotificationType, new LocalizedHtmlString(nameof(NotifyTask), message));
 
             return Outcomes("Done");
         }

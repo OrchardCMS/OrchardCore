@@ -29,19 +29,17 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.PostRecipeAsync(recipe);
 
                 // Test
-                using (var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName))
+                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
+                await shellScope.UsingAsync(async scope =>
                 {
-                    await shellScope.UsingAsync(async scope =>
-                    {
-                        var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                        var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                            x.ContentType == "BlogPost").ListAsync();
+                    var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                    var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
+                        x.ContentType == "BlogPost").ListAsync();
 
-                        Assert.Single(blogPosts);
-                        var mutatedVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
-                        Assert.Equal("existing version mutated", mutatedVersion?.DisplayText);
-                    });
-                }
+                    Assert.Single(blogPosts);
+                    var mutatedVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
+                    Assert.Equal("existing version mutated", mutatedVersion?.DisplayText);
+                });
             }
         }
 
@@ -65,25 +63,23 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.PostRecipeAsync(recipe);
 
                 // Test
-                using (var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName))
+                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
+                await shellScope.UsingAsync(async scope =>
                 {
-                    await shellScope.UsingAsync(async scope =>
-                    {
-                        var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                        var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                            x.ContentType == "BlogPost").ListAsync();
+                    var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                    var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
+                        x.ContentType == "BlogPost").ListAsync();
 
-                        Assert.Equal(2, blogPosts.Count());
+                    Assert.Equal(2, blogPosts.Count());
 
-                        var mutatedVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
-                        Assert.True(mutatedVersion?.Latest);
-                        Assert.True(mutatedVersion?.Published);
-                        Assert.Equal("existing version mutated", mutatedVersion?.DisplayText);
+                    var mutatedVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
+                    Assert.True(mutatedVersion?.Latest);
+                    Assert.True(mutatedVersion?.Published);
+                    Assert.Equal("existing version mutated", mutatedVersion?.DisplayText);
 
-                        var draftVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == draftContentItemVersionId);
-                        Assert.False(draftVersion.Latest);
-                    });
-                }
+                    var draftVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == draftContentItemVersionId);
+                    Assert.False(draftVersion.Latest);
+                });
             }
         }
 
@@ -109,26 +105,24 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.PostRecipeAsync(recipe);
 
                 // Test
-                using (var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName))
+                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
+                await shellScope.UsingAsync(async scope =>
                 {
-                    await shellScope.UsingAsync(async scope =>
-                    {
-                        var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                        var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                            x.ContentType == "BlogPost").ListAsync();
+                    var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                    var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
+                        x.ContentType == "BlogPost").ListAsync();
 
-                        Assert.Equal(2, blogPosts.Count());
+                    Assert.Equal(2, blogPosts.Count());
 
-                        var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
-                        Assert.False(originalVersion?.Latest);
-                        Assert.False(originalVersion?.Published);
+                    var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
+                    Assert.False(originalVersion?.Latest);
+                    Assert.False(originalVersion?.Published);
 
-                        var draftVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == draftContentItem.ContentItemVersionId);
-                        Assert.True(draftVersion?.Latest);
-                        Assert.True(draftVersion?.Published);
-                        Assert.Equal("draft version mutated", draftVersion?.DisplayText);
-                    });
-                }
+                    var draftVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == draftContentItem.ContentItemVersionId);
+                    Assert.True(draftVersion?.Latest);
+                    Assert.True(draftVersion?.Published);
+                    Assert.Equal("draft version mutated", draftVersion?.DisplayText);
+                });
             }
         }
     }

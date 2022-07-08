@@ -1,0 +1,37 @@
+// Responsive sizes
+// Creates mixins to target all breakpoints
+// ------------------------------
+.col-xsmall {
+    @extend .col-8, .col-sm-4, .col-md-3, .col-lg-2, .col-xl-1;
+}
+
+.col-small {
+    @extend .col-12, .col-sm-9, .col-md-6, .col-lg-3, .col-xl-3;
+}
+
+.col-medium {
+    @extend .col-12, .col-sm-12, .col-md-10, .col-lg-8, .col-xl-6;
+}
+
+.col-large {
+    @extend .col-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-9;
+}
+
+.col-xlarge {
+    @extend .col-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-12;
+}
+
+.ta-col-grouping {
+    // Column fixes
+    @each $breakpoint in map-keys($grid-breakpoints) {
+        @if $grid-row-columns > 0 {
+            // Column fixes
+            @include make-col-grouping(#{$breakpoint}); // Include a fix for unspecified cols, i.e. col-md
+            // Only apply to the lower half of the grid.
+            @for $i from 1 through math.div($grid-columns, 2) {
+                // Include a fix for specified cols, i.e. col-md-3
+                @include make-col-grouping(#{$breakpoint}-#{$i});
+            }
+        }
+    }
+}

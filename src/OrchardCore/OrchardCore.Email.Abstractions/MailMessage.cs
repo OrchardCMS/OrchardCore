@@ -1,7 +1,9 @@
+using System.Collections.Generic;
+
 namespace OrchardCore.Email
 {
     /// <summary>
-    /// Represents a class that contains an information for the mail message.
+    /// Represents a class that contains information of the mail message.
     /// </summary>
     public class MailMessage
     {
@@ -49,8 +51,23 @@ namespace OrchardCore.Email
         public string Body { get; set; }
 
         /// <summary>
+        /// Gets or sets the message content as plain text.
+        /// </summary>
+        public string BodyText { get; set; }
+
+        /// <summary>
         /// Gets or sets whether the message body is an HTML.
         /// </summary>
         public bool IsBodyHtml { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the message body is plain text.
+        /// </summary>
+        public bool IsBodyText { get; set; }
+
+        /// <summary>
+        /// The collection of message attachments.
+        /// </summary>
+        public List<MailMessageAttachment> Attachments { get; } = new List<MailMessageAttachment>();
     }
 }

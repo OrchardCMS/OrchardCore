@@ -46,7 +46,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Execute(int id, string remoteInstanceId)
+        public async Task<IActionResult> Execute(int id, string remoteInstanceId, string returnUrl)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
             {
@@ -104,16 +104,21 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    _notifier.Success(H["Deployment executed successfully."]);
+                    await _notifier.SuccessAsync(H["Deployment executed successfully."]);
                 }
                 else
                 {
-                    _notifier.Error(H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]);
+                    await _notifier.ErrorAsync(H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]);
                 }
             }
             finally
             {
                 System.IO.File.Delete(archiveFileName);
+            }
+
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                return this.LocalRedirect(returnUrl, true);
             }
 
             return RedirectToAction("Display", "DeploymentPlan", new { area = "OrchardCore.Deployment", id });

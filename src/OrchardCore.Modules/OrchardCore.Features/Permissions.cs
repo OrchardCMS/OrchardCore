@@ -7,7 +7,7 @@ namespace OrchardCore.Features
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageFeatures = new Permission("ManageFeatures") { Description = "Manage Features" };
+        public static readonly Permission ManageFeatures = new Permission("ManageFeatures", "Manage Features");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -6,10 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.Contents;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.ContentManagement.Metadata;
 
-namespace OrchardCore.Content.Controllers
+namespace OrchardCore.Contents.Controllers
 {
     [Route("api/content")]
     [ApiController]
@@ -19,16 +19,19 @@ namespace OrchardCore.Content.Controllers
         private static readonly JsonMergeSettings UpdateJsonMergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace };
 
         private readonly IContentManager _contentManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringLocalizer S;
 
         public ApiController(
             IContentManager contentManager,
+            IContentDefinitionManager contentDefinitionManager,
             IAuthorizationService authorizationService,
             IStringLocalizer<ApiController> stringLocalizer)
         {
-            _authorizationService = authorizationService;
             _contentManager = contentManager;
+            _contentDefinitionManager = contentDefinitionManager;
+            _authorizationService = authorizationService;
             S = stringLocalizer;
         }
 
@@ -37,7 +40,7 @@ namespace OrchardCore.Content.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessContentApi))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             var contentItem = await _contentManager.GetAsync(contentItemId);
@@ -47,9 +50,9 @@ namespace OrchardCore.Content.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             return Ok(contentItem);
@@ -61,7 +64,7 @@ namespace OrchardCore.Content.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessContentApi))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             var contentItem = await _contentManager.GetAsync(contentItemId);
@@ -71,9 +74,9 @@ namespace OrchardCore.Content.Controllers
                 return StatusCode(204);
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteContent, contentItem))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             await _contentManager.RemoveAsync(contentItem);
@@ -86,7 +89,7 @@ namespace OrchardCore.Content.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessContentApi))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             // It is really important to keep the proper method calls order with the ContentManager
@@ -96,32 +99,45 @@ namespace OrchardCore.Content.Controllers
 
             if (contentItem == null)
             {
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent))
+                if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent))
                 {
-                    return this.ChallengeOrForbid();
+                    return this.ChallengeOrForbid("Api");
+                }
+
+                if (_contentDefinitionManager.GetTypeDefinition(model.ContentType) == null)
+                {
+                    return BadRequest();
                 }
 
                 var newContentItem = await _contentManager.NewAsync(model.ContentType);
                 newContentItem.Merge(model);
 
-                var result = await _contentManager.UpdateValidateAndCreateAsync(newContentItem, draft ? VersionOptions.DraftRequired : VersionOptions.Published);
-                if (result.Succeeded)
-                {
-                    contentItem = newContentItem;
-                }
-                else
+                var result = await _contentManager.UpdateValidateAndCreateAsync(newContentItem, VersionOptions.Draft);
+
+                if (!result.Succeeded)
                 {
                     return Problem(
                         title: S["One or more validation errors occurred."],
                         detail: string.Join(',', result.Errors),
                         statusCode: (int)HttpStatusCode.BadRequest);
                 }
+                // We check the model state after calling all handlers because they trigger WF content events so, even they are not
+                // intended to add model errors (only drivers), a WF content task may be executed inline and add some model errors.
+                else if (!ModelState.IsValid)
+                {
+                    return Problem(
+                        title: S["One or more validation errors occurred."],
+                        detail: String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
+                        statusCode: (int)HttpStatusCode.BadRequest);
+                }
+
+                contentItem = newContentItem;
             }
             else
             {
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
+                if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
                 {
-                    return this.ChallengeOrForbid();
+                    return this.ChallengeOrForbid("Api");
                 }
 
                 contentItem.Merge(model, UpdateJsonMergeSettings);
@@ -129,20 +145,31 @@ namespace OrchardCore.Content.Controllers
                 await _contentManager.UpdateAsync(contentItem);
                 var result = await _contentManager.ValidateAsync(contentItem);
 
-                if (result.Succeeded)
-                {
-                    if (!draft)
-                    {
-                        await _contentManager.PublishAsync(contentItem);
-                    }
-                }
-                else
+                if (!result.Succeeded)
                 {
                     return Problem(
                         title: S["One or more validation errors occurred."],
                         detail: string.Join(',', result.Errors),
                         statusCode: (int)HttpStatusCode.BadRequest);
                 }
+                // We check the model state after calling all handlers because they trigger WF content events so, even they are not
+                // intended to add model errors (only drivers), a WF content task may be executed inline and add some model errors.
+                else if (!ModelState.IsValid)
+                {
+                    return Problem(
+                        title: S["One or more validation errors occurred."],
+                        detail: String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
+                        statusCode: (int)HttpStatusCode.BadRequest);
+                }
+            }
+
+            if (!draft)
+            {
+                await _contentManager.PublishAsync(contentItem);
+            }
+            else
+            {
+                await _contentManager.SaveDraftAsync(contentItem);
             }
 
             return Ok(contentItem);

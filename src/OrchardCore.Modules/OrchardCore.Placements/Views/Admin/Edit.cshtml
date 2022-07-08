@@ -1,0 +1,67 @@
+@model EditShapePlacementViewModel
+@{
+    var returnUrl = ViewData["returnUrl"]?.ToString();
+}
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+
+<zone Name="Title"><h1>@RenderTitleSegments(Model.Creating ? T["Create Placement"] : T["Edit Placement"])</h1></zone>
+
+<form asp-action="Edit" asp-route-returnUrl="@ViewData["returnUrl"]" method="post" class="no-multisubmit">
+    @Html.HiddenFor(m => m.Creating)
+    @if (!Model.Creating)
+    {
+        @Html.HiddenFor(m => m.ShapeType)
+    }
+
+    <div class="mb-3" asp-validation-class-for="ShapeType">
+        <label asp-for="ShapeType">@T["Shape type"]</label>
+        <input asp-for="ShapeType" asp-is-disabled="!Model.Creating" class="form-control" required autofocus />
+        <span asp-validation-for="ShapeType"></span>
+        <span class="hint">@T["The type of the shape."]</span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="Nodes">
+        <label asp-for="Nodes">@T["Placement rules"]</label>
+        <textarea asp-for="Nodes" rows="10" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <div class="btn-group">
+            <button type="submit" name="submit" class="btn btn-primary">@T["Save"]</button>
+            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="visually-hidden">@T["Toggle Dropdown"]</span>
+            </button>
+            <div class="dropdown-menu">
+                <button class="dropdown-item" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
+            </div>
+        </div>
+
+        @if (!Model.Creating)
+        {
+            <a asp-route-action="Delete" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" class="btn btn-danger" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Delete"]</a>
+        }
+
+        <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+    </div>
+</form>
+
+<script at="Foot">
+    $(function () {
+        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Nodes)');
+        if (optionsTextArea) {
+            var editor = CodeMirror.fromTextArea(optionsTextArea, {
+                autoRefresh: true,
+                lineNumbers: true,
+                lineWrapping: true,
+                matchBrackets: true,
+                styleActiveLine: true,
+                mode: { name: "javascript" }
+            });
+        }
+    });
+</script>

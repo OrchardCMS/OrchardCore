@@ -1,0 +1,329 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore.Security.Options
+@using OrchardCore.Security.ViewModels
+@model SecuritySettingsViewModel
+
+@functions
+{
+    public LocalizedHtmlString GetContentSecurityPolicyName(string value)
+    {
+        LocalizedHtmlString name = null;
+        switch (value)
+        {
+            case ContentSecurityPolicyValue.BaseUri:
+                name = T["Base URI"];
+                break;
+            case ContentSecurityPolicyValue.ChildSource:
+                name = T["Child Source"];
+                break;
+            case ContentSecurityPolicyValue.ConnectSource:
+                name = T["Connect Source"];
+                break;
+            case ContentSecurityPolicyValue.DefaultSource:
+                name = T["Default Source"];
+                break;
+            case ContentSecurityPolicyValue.FontSource:
+                name = T["Font Source"];
+                break;
+            case ContentSecurityPolicyValue.FormAction:
+                name = T["Form Action"];
+                break;
+            case ContentSecurityPolicyValue.FrameAncestors:
+                name = T["Frame Ancestors"];
+                break;
+            case ContentSecurityPolicyValue.FrameSource:
+                name = T["Frame Source"];
+                break;
+            case ContentSecurityPolicyValue.ImageSource:
+                name = T["Image Source"];
+                break;
+            case ContentSecurityPolicyValue.ManifestSource:
+                name = T["Manifest Source"];
+                break;
+            case ContentSecurityPolicyValue.MediaSource:
+                name = T["Media Source"];
+                break;
+            case ContentSecurityPolicyValue.ObjectSource:
+                name = T["Object Source"];
+                break;
+            case ContentSecurityPolicyValue.Sandbox:
+                name = T["Sandbox"];
+                break;
+            case ContentSecurityPolicyValue.ScriptSource:
+                name = T["Script Source"];
+                break;
+            case ContentSecurityPolicyValue.StyleSource:
+                name = T["Style Source"];
+                break;
+        }
+
+        return name;
+    }
+
+    public LocalizedHtmlString GetPermissionPolicyName(string value)
+    {
+        LocalizedHtmlString name = null;
+        switch (value)
+        {
+            case PermissionsPolicyValue.Accelerometer:
+                name = T["Accelerometer"];
+                break;
+            case PermissionsPolicyValue.AmbientLightSensor:
+                name = T["Ambient Light Sensor"];
+                break;
+            case PermissionsPolicyValue.Autoplay:
+                name = T["Autoplay"];
+                break;
+            case PermissionsPolicyValue.Battery:
+                name = T["Battery"];
+                break;
+            case PermissionsPolicyValue.Camera:
+                name = T["Camera"];
+                break;
+            case PermissionsPolicyValue.DisplayCapture:
+                name = T["Display Capture"];
+                break;
+            case PermissionsPolicyValue.DocumentDomain:
+                name = T["Document Domain"];
+                break;
+            case PermissionsPolicyValue.EncryptedMedia:
+                name = T["Encrypted Media"];
+                break;
+            case PermissionsPolicyValue.FullScreen:
+                name = T["Full Screen"];
+                break;
+            case PermissionsPolicyValue.GamePad:
+                name = T["Game Pad"];
+                break;
+            case PermissionsPolicyValue.Geolocation:
+                name = T["Geolocation"];
+                break;
+            case PermissionsPolicyValue.Gyroscope:
+                name = T["Gyroscope"];
+                break;
+            case PermissionsPolicyValue.LayoutAnimations:
+                name = T["Layout Animations"];
+                break;
+            case PermissionsPolicyValue.LegacyImageFormat:
+                name = T["Legacy ImageFormat"];
+                break;
+            case PermissionsPolicyValue.Magnetometer:
+                name = T["Magnetometer"];
+                break;
+            case PermissionsPolicyValue.Microphone:
+                name = T["Microphone"];
+                break;
+            case PermissionsPolicyValue.Midi:
+                name = T["Midi"];
+                break;
+            case PermissionsPolicyValue.OversizedImages:
+                name = T["Oversized Images"];
+                break;
+            case PermissionsPolicyValue.Payment:
+                name = T["Payment"];
+                break;
+            case PermissionsPolicyValue.PictureInPicture:
+                name = T["Picture In Picture"];
+                break;
+            case PermissionsPolicyValue.PublicKeyRetrieval:
+                name = T["Public Key Retrieval"];
+                break;
+            case PermissionsPolicyValue.Push:
+                name = T["Push"];
+                break;
+            case PermissionsPolicyValue.SpeakerSelection:
+                name = T["Speaker Selection"];
+                break;
+            case PermissionsPolicyValue.ScreenWakeLock:
+                name = T["Screen Wake Lock"];
+                break;
+            case PermissionsPolicyValue.SyncXhr:
+                name = T["Synchronous XML Http Request"];
+                break;
+            case PermissionsPolicyValue.UnoptimizedImages:
+                name = T["Unoptimized Images"];
+                break;
+            case PermissionsPolicyValue.UnsizedMedia:
+                name = T["Unsized Media"];
+                break;
+            case PermissionsPolicyValue.Usb:
+                name = T["USB"];
+                break;
+            case PermissionsPolicyValue.WebShare:
+                name = T["Web Share"];
+                break;
+            case PermissionsPolicyValue.WebXR:
+                name = T["Web XR"];
+                break;
+        }
+
+        return name;
+    }
+}
+
+<p class="alert alert-warning">
+    @T["The current tenant will be reloaded when the settings are saved."]
+</p>
+
+@if (Model.FromConfiguration)
+{
+    <p class="alert alert-info">
+        @T["The current settings are coming from configuration sources, saving the settings will affect the AdminSettings not the configuration."]
+    </p>
+}
+
+<div class="mb-3">
+    <label asp-for="ContentSecurityPolicy">@T["Content Security Policy"]</label>
+    <div class="mb-3" asp-validation-class-for="EnableSandbox">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="EnableSandbox" />
+            <label class="form-check-label" asp-for="EnableSandbox">@T["Enable Sandbox"]</label>
+            <span class="hint dashed">@T["Enables a sandbox for the requested resource similar to the iframe sandbox attribute."]</span>
+        </div>
+    </div>
+    <div class="mb-3" asp-validation-class-for="UpgradeInsecureRequests">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="UpgradeInsecureRequests" />
+            <label class="form-check-label" asp-for="UpgradeInsecureRequests">@T["Upgrade Insecure Requests"]</label>
+        </div>
+    </div>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>@T["Name"]</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var key in Model.ContentSecurityPolicy.Keys)
+            {
+                var value = Model.ContentSecurityPolicy[key];
+
+                <tr>
+                    <td>@GetContentSecurityPolicyName(key)</td>
+                    <td>
+                        <div class="mb-0">
+                            <input class="form-control" id="@Html.IdFor(m => m.ContentSecurityPolicy[key])" name="@Html.NameFor(m => m.ContentSecurityPolicy[key])" value="@value" />
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <span class="hint">@T["Allows administrators to control resources the user agent is allowed to load for a given page."]</span>
+</div>
+<div class="mb-3">
+    <label asp-for="PermissionsPolicy">@T["Permissions Policy"]</label>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>@T["Name"]</th>
+                <th>@T["None"]</th>
+                <th>@T["Any"]</th>
+                <th>@T["Self"]</th>
+                <th style="width:40%"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var key in Model.PermissionsPolicy.Keys)
+            {
+                var value = Model.PermissionsPolicy[key];
+                var originType = value ?? PermissionsPolicyOriginValue.None;
+                var allowedOrigins = String.Empty;
+
+                if (value != null)
+                {
+                    var originsSeparatorIndex = value.IndexOf(' ');
+                    if (originsSeparatorIndex > -1)
+                    {
+                        originType = value.Substring(0, originsSeparatorIndex);
+                        allowedOrigins = value.Substring(originsSeparatorIndex + 1);
+                    }
+                }
+
+                <tr>
+                    <td>@GetPermissionPolicyName(key)</td>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="@key" value="None" @(originType == PermissionsPolicyOriginValue.None ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.None');">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="@key" value="Any" @(originType == PermissionsPolicyOriginValue.Any ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.Any');">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="@key" value="Self" @(originType == PermissionsPolicyOriginValue.Self ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.Self');">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group mb-0">
+                            <input class="form-control d-@(originType == PermissionsPolicyOriginValue.Self ? "block" : "none")" id="@(key)AllowedOrigins" placeholder="https://www.domain.com https://www.another.domain.com" value="@allowedOrigins" oninput="changeAllowedOrigins(this)" />
+                            <input id="@Html.IdFor(m => m.PermissionsPolicy[key])" name="@Html.NameFor(m => m.PermissionsPolicy[key])" type="hidden" value="@originType" />
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <span class="hint">@T["Allows a site to control which features and APIs can be used in the browser."]</span>
+</div>
+<div class="mb-3" asp-validation-class-for="ReferrerPolicy">
+    <label asp-for="ReferrerPolicy">@T["Referrer Policy"]</label>
+    <select asp-for="ReferrerPolicy" class="form-select">
+        <option value="@ReferrerPolicyValue.NoReferrer" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.NoReferrer)">
+            @T["No referrer"]
+        </option>
+        <option value="@ReferrerPolicyValue.NoReferrerWhenDowngrade" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.NoReferrerWhenDowngrade)">
+            @T["No referrer when downgrade"]
+        </option>
+        <option value="@ReferrerPolicyValue.Origin" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.Origin)">
+            @T["Origin"]
+        </option>
+        <option value="@ReferrerPolicyValue.OriginWhenCrossOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.OriginWhenCrossOrigin)">
+            @T["Origin when cross origin"]
+        </option>
+        <option value="@ReferrerPolicyValue.SameOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.SameOrigin)">
+            @T["Same origin"]
+        </option>
+        <option value="@ReferrerPolicyValue.StrictOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.StrictOrigin)">
+            @T["Strict origin"]
+        </option>
+        <option value="@ReferrerPolicyValue.StrictOriginWhenCrossOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.StrictOriginWhenCrossOrigin)">
+            @T["Strict origin when cross origin"]
+        </option>
+        <option value="@ReferrerPolicyValue.UnsafeUrl" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.UnsafeUrl)">
+            @T["Unsafe URL"]
+        </option>
+    </select>
+    <span asp-validation-for="ReferrerPolicy"></span>
+    <span class="hint">@T["Allows a site to control how much information the browser includes when navigating away from a page."]</span>
+</div>
+<script>
+    function changeOrigin(e, origin) {
+        var allowedOrigins = $('#' + e.name + 'AllowedOrigins');
+
+        if (e.value == "Self") {
+            allowedOrigins.removeClass('d-none').addClass('d-block');
+
+            if (allowedOrigins.val() != '') {
+                origin += ' ' + allowedOrigins.val().trim();
+            }
+        }
+        else {
+            allowedOrigins.removeClass('d-block').addClass('d-none');
+        }
+
+        allowedOrigins.siblings().val(origin);
+    }
+
+    function changeAllowedOrigins(e) {
+        var permissionValue = $(e).siblings();
+
+        if (permissionValue.val().startsWith('self')) {
+            permissionValue.val('self ' + e.value.trim());
+        }
+    }
+</script>

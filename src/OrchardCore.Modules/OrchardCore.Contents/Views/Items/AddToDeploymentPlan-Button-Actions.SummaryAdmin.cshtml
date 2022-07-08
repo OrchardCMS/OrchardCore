@@ -1,0 +1,8 @@
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+@{
+    ContentItem contentItem = Model.ContentItem;
+
+    <div class="dropdown-divider"></div>
+    <button class="dropdown-item btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#modalAddToDeploymentPlanActionDeploymentPlan" data-content-item-id="@contentItem.ContentItemId">@T["Add to Deployment Plan"]</button>
+}

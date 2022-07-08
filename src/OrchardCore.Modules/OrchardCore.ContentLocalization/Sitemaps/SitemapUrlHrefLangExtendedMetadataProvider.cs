@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.Sitemaps.Aspects;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Services;
 
@@ -10,18 +11,18 @@ namespace OrchardCore.ContentLocalization.Sitemaps
 {
     public class SitemapUrlHrefLangExtendedMetadataProvider : ISitemapContentItemExtendedMetadataProvider
     {
-        private static readonly XNamespace ExtendedNamespace = "http://www.w3.org/TR/xhtml11/xhtml11_schema.html";
+        private static readonly XNamespace ExtendedNamespace = "http://www.w3.org/1999/xhtml";
         private static readonly XAttribute ExtendedAttribute = new XAttribute(XNamespace.Xmlns + "xhtml", ExtendedNamespace);
 
-        private readonly ISitemapPartContentItemValidationProvider _sitemapPartContentItemValidationProvider;
+        private readonly IContentManager _contentManager;
         private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
 
         public SitemapUrlHrefLangExtendedMetadataProvider(
-            ISitemapPartContentItemValidationProvider sitemapPartContentItemValidationProvider,
+            IContentManager contentManager,
             IRouteableContentTypeCoordinator routeableContentTypeCoordinator
             )
         {
-            _sitemapPartContentItemValidationProvider = sitemapPartContentItemValidationProvider;
+            _contentManager = contentManager;
             _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
         }
 
@@ -45,7 +46,8 @@ namespace OrchardCore.ContentLocalization.Sitemaps
 
             foreach (var localizedPart in localizedContentParts)
             {
-                if (!await _sitemapPartContentItemValidationProvider.ValidateContentItem(localizedPart.ContentItem))
+                var sitemapMetadataAspect = await _contentManager.PopulateAspectAsync<SitemapMetadataAspect>(localizedPart.ContentItem);
+                if (sitemapMetadataAspect.Exclude)
                 {
                     continue;
                 }

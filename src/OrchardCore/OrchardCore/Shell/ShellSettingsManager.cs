@@ -21,9 +21,10 @@ namespace OrchardCore.Environment.Shell
 
         private IConfiguration _configuration;
         private IEnumerable<string> _configuredTenants;
-        private Func<string, Task<IConfigurationBuilder>> _configBuilderFactory;
-
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+
+        private Func<string, Task<IConfigurationBuilder>> _tenantConfigBuilderFactory;
+        private readonly SemaphoreSlim _tenantConfigSemaphore = new SemaphoreSlim(1);
 
         public ShellSettingsManager(
             IConfiguration applicationConfiguration,
@@ -48,11 +49,11 @@ namespace OrchardCore.Environment.Shell
 
         public async Task<IEnumerable<ShellSettings>> LoadSettingsAsync()
         {
-            await EnsureConfigurationAsync();
-
             await _semaphore.WaitAsync();
             try
             {
+                await EnsureConfigurationAsync();
+
                 var tenantsSettings = (await new ConfigurationBuilder()
                     .AddSourcesAsync(_settingsSources))
                     .Build();
@@ -71,7 +72,7 @@ namespace OrchardCore.Environment.Shell
                         .Build();
 
                     var settings = new ShellConfiguration(tenantSettings);
-                    var configuration = new ShellConfiguration(tenant, _configBuilderFactory);
+                    var configuration = new ShellConfiguration(tenant, _tenantConfigBuilderFactory);
 
                     var shellSettings = new ShellSettings(settings, configuration)
                     {
@@ -89,13 +90,33 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
-        public async Task<ShellSettings> LoadSettingsAsync(string tenant)
+        public async Task<IEnumerable<string>> LoadSettingsNamesAsync()
         {
-            await EnsureConfigurationAsync();
-
             await _semaphore.WaitAsync();
             try
             {
+                await EnsureConfigurationAsync();
+
+                var tenantsSettings = (await new ConfigurationBuilder()
+                    .AddSourcesAsync(_settingsSources))
+                    .Build();
+
+                var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
+                return _configuredTenants.Concat(tenants).Distinct().ToArray();
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task<ShellSettings> LoadSettingsAsync(string tenant)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                await EnsureConfigurationAsync();
+
                 var tenantsSettings = (await new ConfigurationBuilder()
                     .AddSourcesAsync(_settingsSources))
                     .Build();
@@ -107,7 +128,7 @@ namespace OrchardCore.Environment.Shell
                     .Build();
 
                 var settings = new ShellConfiguration(tenantSettings);
-                var configuration = new ShellConfiguration(tenant, _configBuilderFactory);
+                var configuration = new ShellConfiguration(tenant, _tenantConfigBuilderFactory);
 
                 return new ShellSettings(settings, configuration)
                 {
@@ -122,11 +143,11 @@ namespace OrchardCore.Environment.Shell
 
         public async Task SaveSettingsAsync(ShellSettings settings)
         {
-            await EnsureConfigurationAsync();
-
             await _semaphore.WaitAsync();
             try
             {
+                await EnsureConfigurationAsync();
+
                 if (settings == null)
                 {
                     throw new ArgumentNullException(nameof(settings));
@@ -186,7 +207,15 @@ namespace OrchardCore.Environment.Shell
 
                 tenantConfig.Remove("Name");
 
-                await _tenantConfigSources.SaveAsync(settings.Name, tenantConfig.ToObject<Dictionary<string, string>>());
+                await _tenantConfigSemaphore.WaitAsync();
+                try
+                {
+                    await _tenantConfigSources.SaveAsync(settings.Name, tenantConfig.ToObject<Dictionary<string, string>>());
+                }
+                finally
+                {
+                    _tenantConfigSemaphore.Release();
+                }
             }
             finally
             {
@@ -201,57 +230,44 @@ namespace OrchardCore.Environment.Shell
                 return;
             }
 
-            await _semaphore.WaitAsync();
-            try
+            var lastProviders = (_applicationConfiguration as IConfigurationRoot)?.Providers
+                .Where(p => p is EnvironmentVariablesConfigurationProvider ||
+                            p is CommandLineConfigurationProvider)
+                .ToArray();
+
+            var configurationBuilder = await new ConfigurationBuilder()
+                .AddConfiguration(_applicationConfiguration)
+                .AddSourcesAsync(_tenantsConfigSources);
+
+            if (lastProviders.Count() > 0)
             {
-                if (_configuration != null)
-                {
-                    return;
-                }
-
-                var lastProviders = (_applicationConfiguration as IConfigurationRoot)?.Providers
-                    .Where(p => p is EnvironmentVariablesConfigurationProvider ||
-                                p is CommandLineConfigurationProvider)
-                    .ToArray();
-
-                var configurationBuilder = await new ConfigurationBuilder()
-                    .AddConfiguration(_applicationConfiguration)
-                    .AddSourcesAsync(_tenantsConfigSources);
-
-                if (lastProviders.Count() > 0)
-                {
-                    configurationBuilder.AddConfiguration(new ConfigurationRoot(lastProviders));
-                }
-
-                var configuration = configurationBuilder.Build().GetSection("OrchardCore");
-
-                _configuredTenants = configuration.GetChildren()
-                    .Where(section => Enum.TryParse<TenantState>(section["State"], ignoreCase: true, out var result))
-                    .Select(section => section.Key)
-                    .Distinct()
-                    .ToArray();
-
-                _configBuilderFactory = async (tenant) =>
-                {
-                    await _semaphore.WaitAsync();
-                    try
-                    {
-                        var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
-                        builder.AddConfiguration(configuration.GetSection(tenant));
-                        return await builder.AddSourcesAsync(tenant, _tenantConfigSources);
-                    }
-                    finally
-                    {
-                        _semaphore.Release();
-                    }
-                };
-
-                _configuration = configuration;
+                configurationBuilder.AddConfiguration(new ConfigurationRoot(lastProviders));
             }
-            finally
+
+            var configuration = configurationBuilder.Build().GetSection("OrchardCore");
+
+            _configuredTenants = configuration.GetChildren()
+                .Where(section => Enum.TryParse<TenantState>(section["State"], ignoreCase: true, out _))
+                .Select(section => section.Key)
+                .Distinct()
+                .ToArray();
+
+            _tenantConfigBuilderFactory = async (tenant) =>
             {
-                _semaphore.Release();
-            }
+                await _tenantConfigSemaphore.WaitAsync();
+                try
+                {
+                    var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
+                    builder.AddConfiguration(configuration.GetSection(tenant));
+                    return await builder.AddSourcesAsync(tenant, _tenantConfigSources);
+                }
+                finally
+                {
+                    _tenantConfigSemaphore.Release();
+                }
+            };
+
+            _configuration = configuration;
         }
     }
 }

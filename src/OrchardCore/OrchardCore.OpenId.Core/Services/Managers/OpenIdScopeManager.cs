@@ -14,10 +14,10 @@ namespace OrchardCore.OpenId.Services.Managers
     {
         public OpenIdScopeManager(
             IOpenIddictScopeCache<TScope> cache,
-            IOpenIddictScopeStoreResolver resolver,
             ILogger<OpenIddictScopeManager<TScope>> logger,
-            IOptionsMonitor<OpenIddictCoreOptions> options)
-            : base(cache, resolver, logger, options)
+            IOptionsMonitor<OpenIddictCoreOptions> options,
+            IOpenIddictScopeStoreResolver resolver)
+            : base(cache, logger, options, resolver)
         {
         }
 
@@ -37,15 +37,15 @@ namespace OrchardCore.OpenId.Services.Managers
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
 
-            return new ValueTask<TScope>(Store is IOpenIdScopeStore<TScope> store ?
+            return Store is IOpenIdScopeStore<TScope> store ?
                 store.FindByPhysicalIdAsync(identifier, cancellationToken) :
-                Store.FindByIdAsync(identifier, cancellationToken));
+                Store.FindByIdAsync(identifier, cancellationToken);
         }
 
         /// <summary>
         /// Retrieves the physical identifier associated with an authorization.
         /// </summary>
-        /// <param name="authorization">The authorization.</param>
+        /// <param name="scope">The scope.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
         /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,

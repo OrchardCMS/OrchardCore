@@ -1,10 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.FileStorage;
@@ -20,7 +20,9 @@ namespace OrchardCore.Media.GraphQL
             S = localizer;
         }
 
-        public Task<IChangeToken> BuildAsync(ISchema schema)
+        public Task<string> GetIdentifierAsync() => Task.FromResult(String.Empty);
+
+        public Task BuildAsync(ISchema schema)
         {
             var field = new FieldType
             {
@@ -44,7 +46,7 @@ namespace OrchardCore.Media.GraphQL
 
             schema.Query.AddField(field);
 
-            return Task.FromResult<IChangeToken>(null);
+            return Task.CompletedTask;
         }
 
         private async Task<IEnumerable<IFileStoreEntry>> ResolveAsync(ResolveFieldContext resolveContext)
@@ -54,15 +56,15 @@ namespace OrchardCore.Media.GraphQL
             var path = resolveContext.GetArgument("path", string.Empty);
             var includeSubDirectories = resolveContext.GetArgument("includeSubDirectories", false);
 
-            var allFiles = await mediaFileStore.GetDirectoryContentAsync(path, includeSubDirectories);
+            var allFiles = mediaFileStore.GetDirectoryContentAsync(path, includeSubDirectories);
 
             if (includeSubDirectories)
             {
-                return allFiles;
+                return await allFiles.ToListAsync();
             }
             else
             {
-                return allFiles.Where(x => !x.IsDirectory);
+                return await allFiles.Where(x => !x.IsDirectory).ToListAsync();
             }
         }
     }

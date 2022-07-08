@@ -29,7 +29,7 @@ namespace OrchardCore.Lucene.QueryProviders
                         throw new ArgumentException("Missing value in wildcard query");
                     }
 
-                    var wildCardQuery = new WildcardQuery(new Term(value.Value<string>()));
+                    var wildCardQuery = new WildcardQuery(new Term(first.Name, value.Value<string>()));
 
                     if (obj.TryGetValue("boost", out var boost))
                     {

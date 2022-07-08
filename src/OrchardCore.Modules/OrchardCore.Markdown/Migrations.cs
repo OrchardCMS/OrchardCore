@@ -22,7 +22,7 @@ namespace OrchardCore.Markdown
                 .Attachable()
                 .WithDescription("Provides a Markdown formatted body for your content item."));
 
-            // Return 4 to shortcut the third migration on new content definition schemas.
+            // Shortcut other migration steps on new content definition schemas.
             return 4;
         }
 

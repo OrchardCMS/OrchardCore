@@ -1,5 +1,29 @@
 # Data (`OrchardCore.Data`)
 
+## Configuring Databases
+
+Most database configuration is handled automatically, but there are limited options which can affect the way the database works.
+
+### Sqlite
+
+#### `UseConnectionPooling` (boolean)
+
+By default in `.NET 6`, `Microsoft.Data.Sqlite` pools connections to the database. It achieves this by putting locking the database file and leaving connections open to be reused. If the lock is preventing tasks like backups, this functionality can be disabled.
+
+There may be a performance penalty associated with disabling connection pooling.
+
+See the [`Microsoft.Data.Sqlite` documentation](https://docs.microsoft.com/en-us/dotnet/standard/data/sqlite/connection-strings#pooling) for more details.
+
+##### `appsettings.json`
+
+```json
+{
+    "OrchardCore_Data_Sqlite": {
+        "PoolConnections": false
+    }
+}
+```
+
 ## Running SQL queries
 
 ### Creating a `DbConnection` instance
@@ -8,7 +32,7 @@ To get a new `DbConnection` pointing to the same database as the running site, u
 
 ### Writing database provider agnostic queries
 
-Once a connection has been created, a custom `ISqlDialect` can be obtained from `SqlDialectFactory.For(connection)` from the `YesSql` namespace in the `YesSql.Abstractions` package.
+Once a connection has been created, a custom `ISqlDialect` can be obtained from `IStore` from the `YesSql` namespace in the `YesSql.Abstractions` package.
 This service provides methods to build SQL queries that can will be use the syntax of the underlying connection.
 
 ### Handling prefixed tables
@@ -29,11 +53,13 @@ using OrchardCore.Environment.Shell
 public class AdminController : Controller
 {
     private readonly IDbConnectionAccessor _dbAccessor;
+    private readonly IStore _store;
     private readonly string _tablePrefix;
 
-    public AdminController(IDbConnectionAccessor dbAccessor, ShellSettings settings)
+    public AdminController(IDbConnectionAccessor dbAccessor, IStore store, ShellSettings settings)
     {
         _dbAccessor = dbAccessor;
+        _store = store;
         _tablePrefix = settings["TablePrefix"];
     }
 
@@ -43,7 +69,7 @@ public class AdminController : Controller
        {
            using(var transaction = connection.BeginTransaction())
            {
-                var dialect = SqlDialectFactory.For(connection);
+                var dialect = _store.Configuration.SqlDialect;
                 var customTable = dialect.QuoteForTableName($"{_tablePrefix}CustomTable");
 
                 var selectCommand = $"SELECT * FROM {customTable}";
@@ -59,12 +85,3 @@ public class AdminController : Controller
     }
 }
 ```
-
-## Credits
-
-### YesSQL
-
-<https://github.com/sebastienros/yessql>
-
-Copyright (c) 2017 Sebastien Ros  
-MIT License

@@ -1,4 +1,6 @@
-﻿namespace OrchardCore.DisplayManagement.Handlers
+using OrchardCore.DisplayManagement.Zones;
+
+namespace OrchardCore.DisplayManagement.Handlers
 {
     /// <summary>
     /// Represents a context object that is used to build and place a list of shape representing
@@ -9,7 +11,7 @@
         IShape Shape { get; }
         IShapeFactory ShapeFactory { get; }
         dynamic New { get; }
-        IShape Layout { get; set; }
+        IZoneHolding Layout { get; set; }
         string GroupId { get; }
         FindPlacementDelegate FindPlacement { get; set; }
     }
