@@ -13,32 +13,36 @@ namespace OrchardCore.Environment.Shell.Removing;
 public class ShellRemovingManager : IShellRemovingManager
 {
     private readonly IShellHost _shellHost;
-    private readonly IEnumerable<IShellRemovingHandler> _hostHandlers;
+    private readonly IEnumerable<IShellRemovingHostHandler> _shellRemovingHostHandler;
     private readonly IShellContextFactory _shellContextFactory;
     private readonly ILogger _logger;
 
     public ShellRemovingManager(
         IShellHost shellHost,
-        IEnumerable<IShellRemovingHandler> hostHandlers,
+        IEnumerable<IShellRemovingHostHandler> shellRemovingHostHandler,
         IShellContextFactory shellContextFactory,
         ILogger<ShellRemovingManager> logger)
     {
         _shellHost = shellHost;
-        _hostHandlers = hostHandlers;
+        _shellRemovingHostHandler = shellRemovingHostHandler;
         _shellContextFactory = shellContextFactory;
         _logger = logger;
     }
 
     public async Task<ShellRemovingContext> RemoveAsync(string tenant)
     {
-        var context = new ShellRemovingContext();
         if (!_shellHost.TryGetSettings(tenant, out var shellSettings))
         {
-            context.ErrorMessage = $"The tenant '{tenant}' doesn't exist.";
-            return context;
+            return new ShellRemovingContext
+            {
+                ErrorMessage = $"The tenant '{tenant}' doesn't exist.",
+            };
         }
 
-        context.ShellSettings = shellSettings;
+        var context = new ShellRemovingContext
+        {
+            ShellSettings = shellSettings
+        };
 
         if (shellSettings.Name == ShellHelper.DefaultShellName)
         {
@@ -56,7 +60,7 @@ public class ShellRemovingManager : IShellRemovingManager
         using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
         await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
         {
-            // Executes tenant level removing handlers (singletons or scoped) in a reverse order.
+            // Execute removing tenant level handlers (singletons or scoped) in a reverse order.
             var tenantHandlers = scope.ServiceProvider.GetServices<IModularTenantEvents>().Reverse();
             foreach (var handler in tenantHandlers)
             {
@@ -74,19 +78,20 @@ public class ShellRemovingManager : IShellRemovingManager
 
                     _logger.LogError(
                         ex,
-                        "Failed to execute the tenant handler '{TenantHandler}' while removing the tenant '{TenantName}'.",
+                        "Failed to execute the removing tenant handler '{TenantHandler}' while removing the tenant '{TenantName}'.",
                         type,
                         tenant);
 
-                    context.ErrorMessage = $"Failed to execute the tenant handler '{type}'.";
+                    context.ErrorMessage = $"Failed to execute the removing tenant handler '{type}'.";
+                    context.Error = ex;
 
                     break;
                 }
             }
         });
 
-        // Executes host level removing handlers in a reverse order.
-        foreach (var handler in _hostHandlers.Reverse())
+        // Execute removing host level handlers in a reverse order.
+        foreach (var handler in _shellRemovingHostHandler.Reverse())
         {
             try
             {
@@ -102,11 +107,12 @@ public class ShellRemovingManager : IShellRemovingManager
 
                 _logger.LogError(
                     ex,
-                    "Failed to execute the host handler '{HostHandler}' while removing the tenant '{TenantName}'.",
+                    "Failed to execute the removing host handler '{HostHandler}' while removing the tenant '{TenantName}'.",
                     type,
                     tenant);
 
-                context.ErrorMessage = $"Failed to execute the host handler '{type}'.";
+                context.ErrorMessage = $"Failed to execute the removing host handler '{type}'.";
+                context.Error = ex;
 
                 break;
             }

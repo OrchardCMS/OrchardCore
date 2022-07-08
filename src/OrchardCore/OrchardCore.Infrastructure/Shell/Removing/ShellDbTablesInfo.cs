@@ -13,7 +13,6 @@ namespace OrchardCore.Environment.Shell.Removing;
 internal class ShellDbTablesInfo : ISchemaBuilder
 {
     private ICommandInterpreter _commandInterpreter;
-
     public string DatabaseProvider { get; set; }
     public string TablePrefix { get; set; }
     public IEnumerable<string> TableNames { get; set; } = Enumerable.Empty<string>();

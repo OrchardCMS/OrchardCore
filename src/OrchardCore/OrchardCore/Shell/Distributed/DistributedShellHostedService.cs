@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Distributed
@@ -30,6 +32,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         private readonly IShellHost _shellHost;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IShellSettingsManager _shellSettingsManager;
+        private readonly IEnumerable<IShellRemovingHostHandler> _shellRemovingHostHandler;
         private readonly ILogger _logger;
 
         private readonly ConcurrentDictionary<string, ShellIdentifier> _identifiers = new ConcurrentDictionary<string, ShellIdentifier>();
@@ -48,11 +51,13 @@ namespace OrchardCore.Environment.Shell.Distributed
             IShellHost shellHost,
             IShellContextFactory shellContextFactory,
             IShellSettingsManager shellSettingsManager,
+            IEnumerable<IShellRemovingHostHandler> shellRemovingHostHandler,
             ILogger<DistributedShellHostedService> logger)
         {
             _shellHost = shellHost;
             _shellContextFactory = shellContextFactory;
             _shellSettingsManager = shellSettingsManager;
+            _shellRemovingHostHandler = shellRemovingHostHandler;
             _logger = logger;
 
             shellHost.LoadingAsync += LoadingAsync;
@@ -216,7 +221,35 @@ namespace OrchardCore.Environment.Shell.Distributed
                                     // Keep in sync this tenant by removing it locally.
                                     await _shellHost.RemoveShellContextAsync(settings, eventSource: false);
 
-                                    // TODO: Maybe remove the local tenant folder.
+                                    var removingContext = new ShellRemovingContext
+                                    {
+                                        ShellSettings = settings
+                                    };
+
+                                    // Execute removing host level handlers in a reverse order.
+                                    foreach (var handler in _shellRemovingHostHandler.Reverse())
+                                    {
+                                        try
+                                        {
+                                            await handler.LocalRemovingAsync(removingContext);
+                                            if (!removingContext.Success)
+                                            {
+                                                break;
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            var type = handler.GetType().FullName;
+
+                                            _logger.LogError(
+                                                ex,
+                                                "Failed to execute the local host removing handler '{HostHandler}' while removing the tenant '{TenantName}'.",
+                                                type,
+                                                settings.Name);
+
+                                            break;
+                                        }
+                                    }
                                 }
                             }
                         }

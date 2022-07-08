@@ -6,19 +6,22 @@ using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Environment.Shell.Removing;
 
-public class SiteFolderRemovingHandler : IShellRemovingHandler
+public class SiteFolderRemovingHandler : IShellRemovingHostHandler
 {
     private readonly ShellOptions _shellOptions;
     private readonly ILogger _logger;
 
     public SiteFolderRemovingHandler(
         IOptions<ShellOptions> shellOptions,
-        ILogger<ShellSettingsRemovingHandler> logger)
+        ILogger<SiteFolderRemovingHandler> logger)
     {
         _shellOptions = shellOptions.Value;
         _logger = logger;
     }
 
+    /// <summary>
+    /// Removes the folder of the provided tenant.
+    /// </summary>
     public Task RemovingAsync(ShellRemovingContext context)
     {
         var tenantFolder = Path.Combine(
@@ -41,8 +44,15 @@ public class SiteFolderRemovingHandler : IShellRemovingHandler
                 context.ShellSettings.Name);
 
             context.ErrorMessage = $"Failed to remove the site folder '{tenantFolder}'.";
+            context.Error = ex;
         }
 
         return Task.CompletedTask;
     }
+
+
+    /// <summary>
+    /// In a distributed environment, removes locally the folder of the provided tenant.
+    /// </summary>
+    public Task LocalRemovingAsync(ShellRemovingContext context) => RemovingAsync(context);
 }

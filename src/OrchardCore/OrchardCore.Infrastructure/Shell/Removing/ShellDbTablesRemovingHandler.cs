@@ -14,7 +14,7 @@ namespace OrchardCore.Environment.Shell.Removing;
 /// <summary>
 /// Allows to remove the database tables retrieved from the migrations of a given tenant.
 /// </summary>
-public class ShellDbTablesRemovingHandler : IShellRemovingHandler
+public class ShellDbTablesRemovingHandler : IShellRemovingHostHandler
 {
     private readonly IShellContextFactory _shellContextFactory;
     private readonly ILogger _logger;
@@ -67,8 +67,11 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         {
             _logger.LogError(ex, "Failed to remove the tables of tenant '{TenantName}'.", context.ShellSettings.Name);
             context.ErrorMessage = $"Failed to remove the tables.";
+            context.Error = ex;
         }
     }
+
+    public Task LocalRemovingAsync(ShellRemovingContext context) => Task.CompletedTask;
 
     /// <summary>
     /// Gets the database tables retrieved from the migrations of the provided tenant.
@@ -109,6 +112,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
                         context.ShellSettings.Name);
 
                     context.ErrorMessage = $"Failed to replay the migration '{type}' from version '{version}'";
+                    context.Error = ex;
 
                     break;
                 }

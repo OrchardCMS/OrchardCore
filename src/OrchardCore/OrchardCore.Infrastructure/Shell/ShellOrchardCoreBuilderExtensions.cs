@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddDataStorage(this OrchardCoreBuilder builder)
         {
-            builder.ApplicationServices.AddSingleton<IShellRemovingHandler, ShellDbTablesRemovingHandler>();
+            builder.ApplicationServices.AddSingleton<IShellRemovingHostHandler, ShellDbTablesRemovingHandler>();
 
             builder.AddSitesFolder()
                 .ConfigureServices(services =>
