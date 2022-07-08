@@ -537,6 +537,7 @@ namespace OrchardCore.Workflows.Controllers
             {
                 id = workflowTypeId, localId = localId
             });
+
             return activityShape;
         }
 
