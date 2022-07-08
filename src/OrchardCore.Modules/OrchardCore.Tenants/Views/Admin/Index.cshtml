@@ -100,6 +100,8 @@
         </li>
         @if (Model.ShellSettingsEntries.Count > 0)
         {
+            var requestPath = FullRequestPath + (FullRequestPath.Contains('?') ? "&": "?");
+
             @foreach (var entry in Model.ShellSettingsEntries)
             {
                 <li class="list-group-item">
@@ -123,7 +125,7 @@
                                 {
                                     <span class="badge ta-badge font-weight-normal"><i class="fa fa-image text-info" aria-hidden="true"></i> @entry.ShellSettings["RecipeName"]</span>
                                 }
-                                <a href="@FullRequestPath&Options.Filter=@entry.ShellSettings.State">
+                                <a href="@(requestPath)Options.Status=@entry.ShellSettings.State">
                                     @switch (entry.ShellSettings.State)
                                     {
                                         case TenantState.Uninitialized:
