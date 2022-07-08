@@ -19,14 +19,19 @@ namespace OrchardCore.Security
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
-                    .AddClass("security").Id("security")
+                builder
+                    .Add(S["Configuration"], configuration => configuration
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
-                                .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SecuritySettingsDisplayDriver.SettingsGroupId })
-                                .LocalNav())));
-            }
+                            .Add(S["Security"], security => security.Id("security")
+                                .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
+                                    .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
+                                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SecuritySettingsDisplayDriver.SettingsGroupId })
+                                    .LocalNav();
+                                )
+                            )
+                        )
+                    );
+            }   
 
             return Task.CompletedTask;
         }
