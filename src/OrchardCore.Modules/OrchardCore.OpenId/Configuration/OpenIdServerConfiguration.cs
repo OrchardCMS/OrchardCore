@@ -92,7 +92,7 @@ namespace OrchardCore.OpenId.Configuration
 
             if (settings.UserinfoEndpointPath.HasValue)
             {
-                options.UserinfoEndpointUris.Add(new Uri(settings.UserinfoEndpointPath.Value, UriKind.Relative));                
+                options.UserinfoEndpointUris.Add(new Uri(settings.UserinfoEndpointPath.Value, UriKind.Relative));
             }
 
             if (settings.IntrospectionEndpointPath.HasValue)
