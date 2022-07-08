@@ -45,7 +45,6 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
-        private readonly ISecurityTokenService _securityTokenService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
         private readonly dynamic New;
@@ -64,7 +63,6 @@ namespace OrchardCore.Workflows.Controllers
             IActivityDisplayManager activityDisplayManager,
             IShapeFactory shapeFactory,
             INotifier notifier,
-            ISecurityTokenService securityTokenService,
             IStringLocalizer<WorkflowTypeController> s,
             IHtmlLocalizer<WorkflowTypeController> h,
             IUpdateModelAccessor updateModelAccessor)
@@ -78,7 +76,6 @@ namespace OrchardCore.Workflows.Controllers
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
-            _securityTokenService = securityTokenService;
             _updateModelAccessor = updateModelAccessor;
 
             New = shapeFactory;
@@ -232,6 +229,7 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var resultFileName = await ExportWorkflows(id);
+
             return new PhysicalFileResult(resultFileName, "application/zip")
             {
                 FileDownloadName = "WorkflowType.zip"
@@ -448,6 +446,7 @@ namespace OrchardCore.Workflows.Controllers
                 LoadLocalState = !string.IsNullOrWhiteSpace(localId),
                 WorkflowCount = workflowCount
             };
+
             return View(viewModel);
         }
 
@@ -553,6 +552,7 @@ namespace OrchardCore.Workflows.Controllers
             {
                 id = workflowTypeId, localId = localId
             });
+
             return activityShape;
         }
 
