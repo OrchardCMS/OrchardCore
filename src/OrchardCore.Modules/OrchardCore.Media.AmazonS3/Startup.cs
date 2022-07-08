@@ -2,8 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Amazon;
-using Amazon.Runtime;
 using Amazon.S3;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -36,7 +34,7 @@ public class Startup : Modules.StartupBase
     {
         services.AddTransient<IConfigureOptions<AwsStorageOptions>, AwsStorageOptionsConfiguration>();
 
-        var storeOptions = new AwsStorageOptions().BindConfiguration(_configuration);
+        var storeOptions = new AwsStorageOptions().BindConfiguration(_configuration, _logger);
         var validationErrors = storeOptions.Validate().ToList();
         var stringBuilder = new StringBuilder();
 
@@ -87,31 +85,8 @@ public class Startup : Modules.StartupBase
             services.AddSingleton<IMediaFileStoreCache>(serviceProvider =>
                 serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>());
 
-            services.AddSingleton<IAmazonS3>(serviceProvider =>
-            {
-                var options = serviceProvider.GetRequiredService<IOptions<AwsStorageOptions>>().Value;
-                if (options.Credentials == null)
-                {
-                    return new AmazonS3Client();
-                }
-
-                var config = new AmazonS3Config
-                {
-                    RegionEndpoint = RegionEndpoint.GetBySystemName(options.Credentials.RegionEndpoint),
-                    UseHttp = true,
-                    ForcePathStyle = true,
-                    UseArnRegion = true
-                };
-
-                if (String.IsNullOrWhiteSpace(options.Credentials.AccessKeyId))
-                {
-                    return new AmazonS3Client(new ECSTaskCredentials(), config);
-                }
-
-                return new AmazonS3Client(options.Credentials.AccessKeyId,
-                    options.Credentials.SecretKey,
-                    config);
-            });
+            // Registering IAmazonS3 client using AWS registration factory.
+            services.AddAWSService<IAmazonS3>(storeOptions.AwsOptions);
 
             services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
             {

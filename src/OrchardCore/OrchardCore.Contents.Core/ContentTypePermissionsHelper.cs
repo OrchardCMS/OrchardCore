@@ -70,7 +70,7 @@ namespace OrchardCore.Contents.Security
                 (template.ImpliedBy ?? Array.Empty<Permission>()).Select(t => CreateDynamicPermission(t, typeDefinition))
             )
             {
-                Category = typeDefinition.DisplayName
+                Category = $"{typeDefinition.DisplayName} Content Type - {typeDefinition.Name}",
             };
         }
 
