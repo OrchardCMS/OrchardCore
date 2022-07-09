@@ -117,7 +117,7 @@
         $(".dropdown-menu .dropdown-item").filter(function() {
             return $(this).data("action");
         }).on("click", function () {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+            if ($(":checkbox[name='itemIds']").is(":checked")) {
                 var $this = $(this);
                 confirmDialog({title: $this.data('title'), message: $this.data('message'), callback: function(r) {
                     if (r) {
