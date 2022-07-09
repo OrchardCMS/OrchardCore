@@ -30,7 +30,7 @@ namespace OrchardCore.Roles
             };
 
             var roles = (await _roleService.GetRoleNamesAsync())
-                .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
+                .Except(new[] { BuiltInRole.Anonymous, BuiltInRole.Authenticated }, StringComparer.OrdinalIgnoreCase);
 
             foreach (var role in roles)
             {
@@ -44,7 +44,7 @@ namespace OrchardCore.Roles
         {
             return new[] {
                 new PermissionStereotype {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = new[] { ManageRoles, StandardPermissions.SiteOwner }
                 },
             };

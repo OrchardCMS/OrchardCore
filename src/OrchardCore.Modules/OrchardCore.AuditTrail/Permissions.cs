@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AuditTrail
@@ -12,7 +13,7 @@ namespace OrchardCore.AuditTrail
             {
                 new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = new[]
                     {
                         AuditTrailPermissions.ViewAuditTrail,

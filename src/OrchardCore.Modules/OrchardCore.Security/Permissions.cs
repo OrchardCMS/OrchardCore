@@ -17,7 +17,7 @@ namespace OrchardCore.Security
                 {
                     new PermissionStereotype
                     {
-                        Name = "Administrator",
+                        Name = BuiltInRole.Administrator,
                         Permissions = new[] { ManageSecurityHeadersSettings }
                     },
                 };

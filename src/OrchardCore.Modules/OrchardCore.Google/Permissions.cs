@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Google
@@ -31,7 +32,7 @@ namespace OrchardCore.Google
             {
                 yield return new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = new[]
                     {
                         ManageGoogleAuthentication
@@ -55,7 +56,7 @@ namespace OrchardCore.Google
             {
                 yield return new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = new[]
                     {
                         ManageGoogleAnalytics
@@ -79,7 +80,7 @@ namespace OrchardCore.Google
             {
                 yield return new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = new[]
                     {
                         ManageGoogleTagManager

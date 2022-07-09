@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Apis.GraphQL
@@ -23,7 +24,7 @@ namespace OrchardCore.Apis.GraphQL
         {
             return new[] {
                 new PermissionStereotype {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = new[] { ExecuteGraphQLMutations }
                 }
             };

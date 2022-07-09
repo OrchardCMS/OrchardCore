@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Deployment.Remote
@@ -22,7 +23,7 @@ namespace OrchardCore.Deployment.Remote
             {
                 new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = new[] { ManageRemoteInstances, ManageRemoteClients, Export }
                 }
             };

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Microsoft.Authentication
@@ -19,7 +20,7 @@ namespace OrchardCore.Microsoft.Authentication
         {
             yield return new PermissionStereotype
             {
-                Name = "Administrator",
+                Name = BuiltInRole.Administrator,
                 Permissions = new[]
                 {
                     ManageMicrosoftAuthentication

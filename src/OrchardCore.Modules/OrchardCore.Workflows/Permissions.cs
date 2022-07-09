@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Workflows
@@ -19,11 +20,11 @@ namespace OrchardCore.Workflows
         {
             return new[] {
                 new PermissionStereotype {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = new[] { ManageWorkflows, ExecuteWorkflows }
                 },
                 new PermissionStereotype {
-                    Name = "Editor",
+                    Name = BuiltInRole.Editor,
                     Permissions = new[] { ManageWorkflows, ExecuteWorkflows }
                 }
             };
