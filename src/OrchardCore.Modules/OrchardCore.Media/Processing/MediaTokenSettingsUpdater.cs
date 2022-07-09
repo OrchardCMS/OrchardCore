@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 
@@ -15,14 +16,23 @@ namespace OrchardCore.Media.Processing
     public class MediaTokenSettingsUpdater : ModularTenantEvents, IFeatureEventHandler
     {
         private readonly ISiteService _siteService;
+        private readonly ShellSettings _shellSettings;
 
-        public MediaTokenSettingsUpdater(ISiteService siteService)
+        public MediaTokenSettingsUpdater(ISiteService siteService, ShellSettings shellSettings)
         {
             _siteService = siteService;
+            _shellSettings = shellSettings;
         }
 
         public override async Task ActivatedAsync()
         {
+            if (_shellSettings.State != TenantState.Running)
+            {
+                // At this point the tenant is not running which mean the request is likely tp be coming from setup request
+                // We can't activate this class since siteService will have no ISession instance available
+                return;
+            }
+
             var mediaTokenSettings = (await _siteService.GetSiteSettingsAsync()).As<MediaTokenSettings>();
 
             if (mediaTokenSettings.HashKey == null)

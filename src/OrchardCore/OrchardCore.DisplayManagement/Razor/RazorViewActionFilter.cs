@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor
@@ -52,10 +54,11 @@ namespace OrchardCore.DisplayManagement.Razor
 
             if (razorViewFeature.Site == null)
             {
+                var shellSettings = context.HttpContext.RequestServices.GetService<ShellSettings>();
                 var siteService = context.HttpContext.RequestServices.GetService<ISiteService>();
 
-                // siteService can be null during Setup
-                if (siteService != null)
+                // siteService can be null during Setup and can't be accessed if the tenant isn't running
+                if (siteService != null && shellSettings.State == TenantState.Running)
                 {
                     razorViewFeature.Site = await siteService.GetSiteSettingsAsync();
                 }
