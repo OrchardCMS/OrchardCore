@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.ResourceManagement.Core;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Resources;
 

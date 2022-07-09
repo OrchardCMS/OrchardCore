@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using OrchardCore.ResourceManagement.Core;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Settings;
 
@@ -9,7 +9,9 @@ public class ResourceConfigureOptions : IConfigureOptions<ResourceOptions>
     private readonly ISiteService _siteService;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public ResourceConfigureOptions(ISiteService siteService, IHttpContextAccessor httpContextAccessor)
+    public ResourceConfigureOptions(
+        ISiteService siteService,
+        IHttpContextAccessor httpContextAccessor)
     {
         _siteService = siteService;
         _httpContextAccessor = httpContextAccessor;
@@ -24,7 +26,5 @@ public class ResourceConfigureOptions : IConfigureOptions<ResourceOptions>
         options.CdnBaseUrl = site.CdnBaseUrl;
         options.AppendVersion = site.AppendVersion;
         options.ContentBasePath = _httpContextAccessor.HttpContext.Request.PathBase.Value;
-
     }
-
 }

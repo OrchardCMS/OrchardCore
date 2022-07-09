@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.ResourceManagement;
-using OrchardCore.ResourceManagement.Core;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Resources
