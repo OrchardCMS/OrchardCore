@@ -17,7 +17,7 @@
 {
     <span class="badge ta-badge font-weight-normal"><i class="fa fa-image text-info" aria-hidden="true"></i> @Model.Value.ShellSettings["RecipeName"]</span>
 }
-<a href="@FullRequestPath&Options.Filter=@Model.Value.ShellSettings.State">
+<a asp-controller="Admin" asp-action="Index" asp-route-Options.Status="@Model.Value.ShellSettings.State">
     @switch (Model.Value.ShellSettings.State)
     {
         case TenantState.Uninitialized:
