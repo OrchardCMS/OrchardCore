@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media
@@ -35,7 +36,7 @@ namespace OrchardCore.Media
             {
                 new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = new[] {
                         ManageMediaFolder,
                         ManageMediaProfiles,
@@ -43,21 +44,21 @@ namespace OrchardCore.Media
                 },
                 new PermissionStereotype
                 {
-                    Name = "Editor",
+                    Name = BuiltInRole.Editor,
                     Permissions = new[] { ManageMedia, ManageOwnMedia }
                 },
                 new PermissionStereotype
                 {
-                    Name = "Moderator",
+                    Name = BuiltInRole.Moderator,
                 },
                 new PermissionStereotype
                 {
-                    Name = "Author",
+                    Name = BuiltInRole.Author,
                     Permissions = new[] { ManageOwnMedia }
                 },
                 new PermissionStereotype
                 {
-                    Name = "Contributor",
+                    Name = BuiltInRole.Contributor,
                     Permissions = new[] { ManageOwnMedia }
                 },
             };
@@ -79,7 +80,7 @@ namespace OrchardCore.Media
             {
                 new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = new[] { ManageAssetCache }
                 }
             };

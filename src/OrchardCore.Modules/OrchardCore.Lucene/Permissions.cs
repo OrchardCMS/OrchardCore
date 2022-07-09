@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Lucene
@@ -38,12 +39,12 @@ namespace OrchardCore.Lucene
             {
                 new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = new[] { ManageIndexes }
                 },
                 new PermissionStereotype
                 {
-                    Name = "Editor",
+                    Name = BuiltInRole.Editor,
                     Permissions = new[] { QueryLuceneApi }
                 }
             };

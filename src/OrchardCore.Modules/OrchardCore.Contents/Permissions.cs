@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents
@@ -55,30 +56,30 @@ namespace OrchardCore.Contents
         {
             return new[] {
                 new PermissionStereotype {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = new[] { PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, AccessContentApi, ListContent }
                 },
                 new PermissionStereotype {
-                    Name = "Editor",
+                    Name = BuiltInRole.Editor,
                     Permissions = new[] { PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, ListContent }
                 },
                 new PermissionStereotype {
-                    Name = "Moderator"
+                    Name = BuiltInRole.Moderator
                 },
                 new PermissionStereotype {
-                    Name = "Author",
+                    Name = BuiltInRole.Author,
                     Permissions = new[] { PublishOwnContent, EditOwnContent, DeleteOwnContent, PreviewOwnContent, CloneOwnContent }
                 },
                 new PermissionStereotype {
-                    Name = "Contributor",
+                    Name = BuiltInRole.Contributor,
                     Permissions = new[] { EditOwnContent, PreviewOwnContent, CloneOwnContent }
                 },
                 new PermissionStereotype {
-                    Name = "Authenticated",
+                    Name = BuiltInRole.Authenticated,
                     Permissions = new[] { ViewContent }
                 },
                 new PermissionStereotype {
-                    Name = "Anonymous",
+                    Name = BuiltInRole.Anonymous,
                     Permissions = new[] { ViewContent }
                 },
             };

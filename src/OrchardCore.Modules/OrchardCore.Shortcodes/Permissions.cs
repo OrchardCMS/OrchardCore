@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Shortcodes
@@ -20,12 +21,12 @@ namespace OrchardCore.Shortcodes
             {
                 new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = new[] { ManageShortcodeTemplates }
                 },
                 new PermissionStereotype
                 {
-                    Name = "Editor",
+                    Name = BuiltInRole.Editor,
                     Permissions = new[] { ManageShortcodeTemplates }
                 }
             };

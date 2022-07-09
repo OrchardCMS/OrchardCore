@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Taxonomies
@@ -20,7 +21,7 @@ namespace OrchardCore.Taxonomies
             {
                 new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = new[] { ManageTaxonomies }
                 }
             };

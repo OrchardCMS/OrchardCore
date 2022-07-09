@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Placements
@@ -20,12 +21,12 @@ namespace OrchardCore.Placements
             {
                 new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = new[] { ManagePlacements }
                 },
                 new PermissionStereotype
                 {
-                    Name = "Editor",
+                    Name = BuiltInRole.Editor,
                     Permissions = new[] { ManagePlacements }
                 }
             };

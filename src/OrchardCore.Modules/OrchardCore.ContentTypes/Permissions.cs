@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentTypes
@@ -18,7 +19,7 @@ namespace OrchardCore.ContentTypes
         {
             return new[] {
                 new PermissionStereotype {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = GetPermissions()
                 }
             };

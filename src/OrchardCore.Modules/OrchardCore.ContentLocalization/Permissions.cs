@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentLocalization
@@ -28,35 +29,35 @@ namespace OrchardCore.ContentLocalization
             {
                 new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = BuiltInRole.Administrator,
                     Permissions = new[] { LocalizeContent, LocalizeOwnContent, ManageContentCulturePicker }
                 },
                 new PermissionStereotype
                 {
-                    Name = "Editor",
+                    Name = BuiltInRole.Editor,
                     Permissions = new[] { LocalizeContent, LocalizeOwnContent, ManageContentCulturePicker }
                 },
                 new PermissionStereotype
                 {
-                    Name = "Moderator"
+                    Name = BuiltInRole.Moderator
                 },
                 new PermissionStereotype
                 {
-                    Name = "Author",
+                    Name = BuiltInRole.Author,
                     Permissions = new[] { LocalizeOwnContent }
                 },
                 new PermissionStereotype
                 {
-                    Name = "Contributor",
+                    Name = BuiltInRole.Contributor,
                     Permissions = new[] { LocalizeOwnContent }
                 },
                 new PermissionStereotype
                 {
-                    Name = "Authenticated"
+                    Name = BuiltInRole.Authenticated
                 },
                 new PermissionStereotype
                 {
-                    Name = "Anonymous"
+                    Name = BuiltInRole.Anonymous
                 },
             };
         }
