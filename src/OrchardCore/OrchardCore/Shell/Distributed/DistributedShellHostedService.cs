@@ -237,14 +237,12 @@ namespace OrchardCore.Environment.Shell.Distributed
                                                 break;
                                             }
                                         }
-                                        catch (Exception ex)
+                                        catch (Exception ex) when (!ex.IsFatal())
                                         {
-                                            var type = handler.GetType().FullName;
-
                                             _logger.LogError(
                                                 ex,
                                                 "Failed to execute the local host removing handler '{HostHandler}' while removing the tenant '{TenantName}'.",
-                                                type,
+                                                handler.GetType().FullName,
                                                 settings.Name);
 
                                             break;

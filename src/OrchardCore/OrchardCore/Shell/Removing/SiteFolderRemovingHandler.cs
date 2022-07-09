@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Environment.Shell.Removing;
 
-public class SiteFolderRemovingHandler : IShellRemovingHostHandler
+public class SiteFolderRemovingHandler : ShellRemovingHostHandler
 {
     private readonly ShellOptions _shellOptions;
     private readonly ILogger _logger;
@@ -22,7 +22,7 @@ public class SiteFolderRemovingHandler : IShellRemovingHostHandler
     /// <summary>
     /// Removes the folder of the provided tenant.
     /// </summary>
-    public Task RemovingAsync(ShellRemovingContext context)
+    public override Task RemovingAsync(ShellRemovingContext context)
     {
         var tenantFolder = Path.Combine(
             _shellOptions.ShellsApplicationDataPath,
@@ -54,5 +54,5 @@ public class SiteFolderRemovingHandler : IShellRemovingHostHandler
     /// <summary>
     /// In a distributed environment, removes locally the folder of the provided tenant.
     /// </summary>
-    public Task LocalRemovingAsync(ShellRemovingContext context) => RemovingAsync(context);
+    public override Task LocalRemovingAsync(ShellRemovingContext context) => RemovingAsync(context);
 }

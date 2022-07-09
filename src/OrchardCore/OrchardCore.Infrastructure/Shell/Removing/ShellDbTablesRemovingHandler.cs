@@ -14,7 +14,7 @@ namespace OrchardCore.Environment.Shell.Removing;
 /// <summary>
 /// Allows to remove the database tables retrieved from the migrations of a given tenant.
 /// </summary>
-public class ShellDbTablesRemovingHandler : IShellRemovingHostHandler
+public class ShellDbTablesRemovingHandler : ShellRemovingHostHandler
 {
     private readonly IShellContextFactory _shellContextFactory;
     private readonly ILogger _logger;
@@ -30,9 +30,9 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHostHandler
     /// <summary>
     /// Removes the database tables retrieved from the migrations of the provided tenant.
     /// </summary>
-    public async Task RemovingAsync(ShellRemovingContext context)
+    public override async Task RemovingAsync(ShellRemovingContext context)
     {
-        var shellDbTablesInfo = await GetTablesAsync(context);
+        var shellDbTablesInfo = await GetTablesToRemoveAsync(context);
         if (!context.Success)
         {
             return;
@@ -71,14 +71,19 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHostHandler
         }
     }
 
-    public Task LocalRemovingAsync(ShellRemovingContext context) => Task.CompletedTask;
-
     /// <summary>
     /// Gets the database tables retrieved from the migrations of the provided tenant.
     /// </summary>
-    private async Task<ShellDbTablesInfo> GetTablesAsync(ShellRemovingContext context)
+    private async Task<ShellDbTablesInfo> GetTablesToRemoveAsync(ShellRemovingContext context)
     {
         var shellDbTablesInfo = new ShellDbTablesInfo().Configure(context.ShellSettings);
+        if (shellDbTablesInfo.DatabaseProvider == "Sqlite")
+        {
+            // The whole database file will be removed.
+            return shellDbTablesInfo;
+        }
+
+        var logger = _logger;
 
         // Create a shell context composed of all features that have been installed.
         using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(context.ShellSettings);
@@ -104,7 +109,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHostHandler
                 {
                     var type = migration.GetType().FullName;
 
-                    _logger.LogError(
+                    logger.LogError(
                         ex,
                         "Failed to replay the migration '{MigrationType}' from version '{Version}' on tenant '{TenantName}'.",
                         type,

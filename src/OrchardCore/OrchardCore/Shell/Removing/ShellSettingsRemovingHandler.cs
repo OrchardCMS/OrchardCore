@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Environment.Shell.Removing;
 
-public class ShellSettingsRemovingHandler : IShellRemovingHostHandler
+public class ShellSettingsRemovingHandler : ShellRemovingHostHandler
 {
     private readonly IShellHost _shellHost;
     private readonly ILogger _logger;
@@ -18,7 +18,7 @@ public class ShellSettingsRemovingHandler : IShellRemovingHostHandler
     /// <summary>
     /// Removes the shell settings of the provided tenant.
     /// </summary>
-    public async Task RemovingAsync(ShellRemovingContext context)
+    public override async Task RemovingAsync(ShellRemovingContext context)
     {
         try
         {
@@ -35,6 +35,4 @@ public class ShellSettingsRemovingHandler : IShellRemovingHostHandler
             context.Error = ex;
         }
     }
-
-    public Task LocalRemovingAsync(ShellRemovingContext context) => Task.CompletedTask;
 }
