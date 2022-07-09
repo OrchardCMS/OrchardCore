@@ -92,9 +92,21 @@ namespace OrchardCore.Flows.Drivers
         {
             var settings = typePartDefinition.GetSettings<BagPartSettings>();
 
-            return settings.ContainedContentTypes
-                .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                .Where(contentType => contentType != null);
+            if (settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0)
+            {
+                return _contentDefinitionManager
+                            .ListTypeDefinitions()
+                            .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotype(), StringComparer.OrdinalIgnoreCase));
+            }
+
+            if (settings.ContainedContentTypes != null && settings.ContainedContentTypes.Length > 0)
+            {
+                return settings.ContainedContentTypes
+                               .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
+                               .Where(contentType => contentType != null);
+            }
+
+            return Enumerable.Empty<ContentTypeDefinition>();
         }
     }
 }

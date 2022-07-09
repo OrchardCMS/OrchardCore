@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -8,6 +9,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Flows.Settings
 {
@@ -28,11 +30,14 @@ namespace OrchardCore.Flows.Settings
         {
             return Initialize<BagPartSettingsViewModel>("BagPartSettings_Edit", model =>
             {
-                model.BagPartSettings = contentTypePartDefinition.GetSettings<BagPartSettings>();
+                var settings = contentTypePartDefinition.GetSettings<BagPartSettings>();
+
+                model.BagPartSettings = settings;
                 model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
                 model.DisplayType = model.BagPartSettings.DisplayType;
                 model.ContentTypes = new NameValueCollection();
-
+                model.Source = settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0 ? "Stereotypes" : "ContentTypes";
+                model.Stereotypes = String.Join(',', settings.ContainedStereotypes);
                 foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
                 {
                     model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
@@ -44,19 +49,43 @@ namespace OrchardCore.Flows.Settings
         {
             var model = new BagPartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.DisplayType);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.DisplayType, m => m.Source, m => m.Stereotypes);
 
-            if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
+            if ("ContentTypes".Equals(model.Source, StringComparison.OrdinalIgnoreCase))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.ContainedContentTypes), S["At least one content type must be selected."]);
+                if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.ContainedContentTypes), S["At least one content type must be selected."]);
+                }
+                else
+                {
+                    context.Builder.WithSettings(new BagPartSettings
+                    {
+                        ContainedContentTypes = model.ContainedContentTypes,
+                        ContainedStereotypes = Array.Empty<string>(),
+                        DisplayType = model.DisplayType
+                    });
+                }
+            }
+            else if ("Stereotypes".Equals(model.Source, StringComparison.OrdinalIgnoreCase))
+            {
+                if (String.IsNullOrEmpty(model.Stereotypes))
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Stereotypes), S["Please provide a Stereotype."]);
+                }
+                else
+                {
+                    context.Builder.WithSettings(new BagPartSettings
+                    {
+                        ContainedContentTypes = Array.Empty<string>(),
+                        ContainedStereotypes = model.Stereotypes.Split(',', ';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries),
+                        DisplayType = model.DisplayType
+                    });
+                }
             }
             else
             {
-                context.Builder.WithSettings(new BagPartSettings
-                {
-                    ContainedContentTypes = model.ContainedContentTypes,
-                    DisplayType = model.DisplayType
-                });
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Source), S["Content type source must be set with a valid value."]);
             }
 
             return Edit(contentTypePartDefinition, context.Updater);
