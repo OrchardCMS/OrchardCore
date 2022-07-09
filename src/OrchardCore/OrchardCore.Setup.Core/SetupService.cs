@@ -165,13 +165,13 @@ namespace OrchardCore.Setup.Services
             switch (await _dbConnectionValidator.ValidateAsync(shellSettings["DatabaseProvider"], shellSettings["ConnectionString"], shellSettings["TablePrefix"]))
             {
                 case DbConnectionValidatorResult.NoProvider:
-                    context.Errors.Add(String.Empty, S["DatabaseProvider is required."]);
+                    context.Errors.Add(String.Empty, S["DatabaseProvider setting is required."]);
                     break;
                 case DbConnectionValidatorResult.UnsupportedProvider:
                     context.Errors.Add(String.Empty, S["The provided database provider is not supported."]);
                     break;
                 case DbConnectionValidatorResult.InvalidConnection:
-                    context.Errors.Add(String.Empty, S["The provided connection string is invalid or unreachable."]);
+                    context.Errors.Add(String.Empty, S["The provided connection string is invalid or server is unreachable."]);
                     break;
                 case DbConnectionValidatorResult.DocumentFound:
                     context.Errors.Add(String.Empty, S["The provided database table is already in use."]);

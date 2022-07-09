@@ -116,7 +116,7 @@ namespace OrchardCore.Tenants.Services
                     errors.Add(new ModelError(nameof(TenantViewModel.DatabaseProvider), S["The provided database provider is not supported."]));
                     break;
                 case DbConnectionValidatorResult.InvalidConnection:
-                    errors.Add(new ModelError(nameof(TenantViewModel.ConnectionString), S["The provided connection string is invalid or unreachable."]));
+                    errors.Add(new ModelError(nameof(TenantViewModel.ConnectionString), S["The provided connection string is invalid or server is unreachable."]));
                     break;
                 case DbConnectionValidatorResult.DocumentFound:
                     errors.Add(new ModelError(nameof(TenantViewModel.TablePrefix), S["The provided table prefix already exists."]));
