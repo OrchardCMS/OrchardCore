@@ -100,7 +100,6 @@
         </li>
         @if (Model.ShellSettingsEntries.Count > 0)
         {
-            var requestPath = FullRequestPath + (FullRequestPath.Contains('?') ? "&": "?");
 
             @foreach (var entry in Model.ShellSettingsEntries)
             {
