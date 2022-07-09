@@ -20,6 +20,9 @@ namespace OrchardCore.OpenId.Recipes
         public bool AllowHybridFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
         public bool AllowLogoutEndpoint { get; set; }
+        public bool AllowIntrospectionEndpoint { get; set; }
+        public bool AllowRevocationEndpoint { get; set; }
+        public bool RequireProofKeyForCodeExchange { get; set; }
 
         public class RoleEntry
         {

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
+using OrchardCore.Data.YesSql.Abstractions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
@@ -48,21 +49,17 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.TryAddDataProvider(name: "Postgres", value: DatabaseProviderName.Postgres, hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
 
                 // Configuring data access
-
                 services.AddSingleton(sp =>
                 {
                     var shellSettings = sp.GetService<ShellSettings>();
 
-                    // Before the setup a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
+                    // Before the setup, a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
                     if (shellSettings.State == TenantState.Uninitialized || shellSettings["DatabaseProvider"] == null)
                     {
                         return null;
                     }
 
-                    IConfiguration storeConfiguration = new YesSql.Configuration
-                    {
-                        ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
-                    };
+                    var storeConfiguration = GetStoreConfiguration(sp);
 
                     Enum.TryParse(shellSettings["DatabaseProvider"], out DatabaseProviderName providerName);
 
@@ -165,6 +162,45 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
             return builder;
+        }
+
+        private static IConfiguration GetStoreConfiguration(IServiceProvider sp)
+        {
+            var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
+
+            var storeConfiguration = new YesSql.Configuration
+            {
+                CommandsPageSize = yesSqlOptions.CommandsPageSize,
+                QueryGatingEnabled = yesSqlOptions.QueryGatingEnabled,
+                ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
+            };
+
+            if (yesSqlOptions.IdGenerator != null)
+            {
+                storeConfiguration.IdGenerator = yesSqlOptions.IdGenerator;
+            }
+
+            if (yesSqlOptions.TableNameConvention != null)
+            {
+                storeConfiguration.TableNameConvention = yesSqlOptions.TableNameConvention;
+            }
+
+            if (yesSqlOptions.IdentifierAccessorFactory != null)
+            {
+                storeConfiguration.IdentifierAccessorFactory = yesSqlOptions.IdentifierAccessorFactory;
+            }
+
+            if (yesSqlOptions.VersionAccessorFactory != null)
+            {
+                storeConfiguration.VersionAccessorFactory = yesSqlOptions.VersionAccessorFactory;
+            }
+
+            if (yesSqlOptions.ContentSerializer != null)
+            {
+                storeConfiguration.ContentSerializer = yesSqlOptions.ContentSerializer;
+            }
+
+            return storeConfiguration;
         }
     }
 }

@@ -163,9 +163,11 @@ namespace OrchardCore.OpenId.Controllers
                 AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
                 AllowHybridFlow = model.AllowHybridFlow,
                 AllowImplicitFlow = model.AllowImplicitFlow,
+                AllowIntrospectionEndpoint = model.AllowIntrospectionEndpoint,
                 AllowLogoutEndpoint = model.AllowLogoutEndpoint,
                 AllowPasswordFlow = model.AllowPasswordFlow,
                 AllowRefreshTokenFlow = model.AllowRefreshTokenFlow,
+                AllowRevocationEndpoint = model.AllowRevocationEndpoint,
                 ClientId = model.ClientId,
                 ClientSecret = model.ClientSecret,
                 ConsentType = model.ConsentType,
@@ -174,7 +176,8 @@ namespace OrchardCore.OpenId.Controllers
                 RedirectUris = model.RedirectUris,
                 Roles = model.RoleEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
                 Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
-                Type = model.Type
+                Type = model.Type,
+                RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange
             };
 
             await _applicationManager.UpdateDescriptorFromSettings(settings);
@@ -201,6 +204,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             ValueTask<bool> HasPermissionAsync(string permission) => _applicationManager.HasPermissionAsync(application, permission);
+            ValueTask<bool> HasRequirementAsync(string requirement) => _applicationManager.HasRequirementAsync(application, requirement);
 
             var model = new EditOpenIdApplicationViewModel
             {
@@ -226,13 +230,16 @@ namespace OrchardCore.OpenId.Controllers
                 AllowPasswordFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.Password),
                 AllowRefreshTokenFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.RefreshToken),
                 AllowLogoutEndpoint = await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.Logout),
+                AllowIntrospectionEndpoint = await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.Introspection),
+                AllowRevocationEndpoint = await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.Revocation),
                 ClientId = await _applicationManager.GetClientIdAsync(application),
                 ConsentType = await _applicationManager.GetConsentTypeAsync(application),
                 DisplayName = await _applicationManager.GetDisplayNameAsync(application),
                 Id = await _applicationManager.GetPhysicalIdAsync(application),
                 PostLogoutRedirectUris = string.Join(" ", await _applicationManager.GetPostLogoutRedirectUrisAsync(application)),
                 RedirectUris = string.Join(" ", await _applicationManager.GetRedirectUrisAsync(application)),
-                Type = await _applicationManager.GetClientTypeAsync(application)
+                Type = await _applicationManager.GetClientTypeAsync(application),
+                RequireProofKeyForCodeExchange = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange)
             };
 
             var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
@@ -322,9 +329,11 @@ namespace OrchardCore.OpenId.Controllers
                 AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
                 AllowHybridFlow = model.AllowHybridFlow,
                 AllowImplicitFlow = model.AllowImplicitFlow,
+                AllowIntrospectionEndpoint = model.AllowIntrospectionEndpoint,
                 AllowLogoutEndpoint = model.AllowLogoutEndpoint,
                 AllowPasswordFlow = model.AllowPasswordFlow,
                 AllowRefreshTokenFlow = model.AllowRefreshTokenFlow,
+                AllowRevocationEndpoint = model.AllowRevocationEndpoint,
                 ClientId = model.ClientId,
                 ClientSecret = model.ClientSecret,
                 ConsentType = model.ConsentType,
@@ -333,7 +342,8 @@ namespace OrchardCore.OpenId.Controllers
                 RedirectUris = model.RedirectUris,
                 Roles = model.RoleEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
                 Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
-                Type = model.Type
+                Type = model.Type,
+                RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange
             };
 
             await _applicationManager.UpdateDescriptorFromSettings(settings, application);

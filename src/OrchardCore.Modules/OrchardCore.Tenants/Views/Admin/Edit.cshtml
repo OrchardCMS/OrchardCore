@@ -49,7 +49,7 @@
         </h6>
         <div class="row recipes" asp-validation-class-for="RecipeName">
             <div class="mb-3 col-md-6">
-                <select asp-for="RecipeName" class="form-control">
+                <select asp-for="RecipeName" class="form-select">
 
                     <option value=""></option>
                     @foreach (var recipe in Model.Recipes)
@@ -71,7 +71,7 @@
             {
                 <div class="mb-3 col-md-6">
                     <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>
-                    <select asp-for="DatabaseProvider" class="form-control">
+                    <select asp-for="DatabaseProvider" class="form-select">
                         <option value="" data-connection-string="false">@T["None"]</option>
                         @foreach (var provider in DatabaseProviders)
                         {
@@ -108,7 +108,7 @@
         </h6>
         <div class="row" asp-validation-class-for="FeatureProfile">
             <div class="mb-3 col-md-6">
-                <select asp-for="FeatureProfile" asp-items="Model.FeatureProfiles" class="form-control"></select>
+                <select asp-for="FeatureProfile" asp-items="Model.FeatureProfiles" class="form-select"></select>
             </div>
         </div>
     }
