@@ -15,6 +15,29 @@ namespace OrchardCore.ContentFields.GraphQL
         {
             Name = nameof(ContentPickerField);
 
+            Field<StringGraphType>()
+                .Name("firstValue")
+                .Description("The first content item id in the content picker field.")
+                .Resolve(x => x.Source?.ContentItemIds?.FirstOrDefault());
+
+            Field<ContentItemInterface, ContentItem>()
+                .Name("firstContentItem")
+                .Description("The first content item in the content picker field.")
+                .ResolveAsync(async x =>
+                {
+                    var contentItemLoader = x.GetOrAddPublishedContentItemByIdDataLoader();
+                    if (x.Source.ContentItemIds != null && x.Source.ContentItemIds.Any())
+                    {
+                        var firstValue = x.Source.ContentItemIds.FirstOrDefault(x => x != null);
+                        if (firstValue == null) return null;
+                        var result = await contentItemLoader.LoadAsync(firstValue);
+
+                        return result;
+                    }
+
+                    return null;
+                });
+
             Field<ListGraphType<StringGraphType>, IEnumerable<string>>()
                 .Name("contentItemIds")
                 .Description("content item ids")
