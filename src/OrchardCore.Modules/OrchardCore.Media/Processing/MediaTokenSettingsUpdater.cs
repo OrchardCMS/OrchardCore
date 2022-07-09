@@ -26,10 +26,11 @@ namespace OrchardCore.Media.Processing
 
         public override async Task ActivatedAsync()
         {
-            if (_shellSettings.State != TenantState.Running)
+
+            if (_shellSettings.State == TenantState.Uninitialized)
             {
-                // At this point the tenant is not running which mean the request is likely tp be coming from setup request
-                // We can't activate this class since siteService will have no ISession instance available
+                // At this point the tenant is uninitialized which mean the request is likely tp be coming from setup request
+                // We have to bail out since siteService will have no ISession instance available
                 return;
             }
 
