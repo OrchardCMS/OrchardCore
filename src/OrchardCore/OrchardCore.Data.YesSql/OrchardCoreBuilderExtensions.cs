@@ -72,9 +72,13 @@ namespace Microsoft.Extensions.DependencyInjection
                         return null;
                     }
 
-                    var storeConfiguration = GetStoreConfiguration(sp);
+                    var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
+                    var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions);
 
-                    Enum.TryParse(shellSettings["DatabaseProvider"], out DatabaseProviderName providerName);
+                    if (!Enum.TryParse(shellSettings["DatabaseProvider"], out DatabaseProviderName providerName))
+                    {
+                        throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
+                    }
 
                     switch (providerName)
                     {
@@ -115,10 +119,13 @@ namespace Microsoft.Extensions.DependencyInjection
                             throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
                     }
 
-                    var tablePrefix = DatabaseHelper.GetStandardPrefix(shellSettings["TablePrefix"]);
-
-                    if (!string.IsNullOrEmpty(tablePrefix))
+                    if (!String.IsNullOrEmpty(shellSettings["TablePrefix"]))
                     {
+                        // For backward compatibility, if the TablePrefixSeparator isn't set, we use _ as the default value.
+                        var seperator = shellSettings["TablePrefixSeparator"] ?? "_";
+
+                        var tablePrefix = shellSettings["TablePrefix"].Trim() + (seperator ?? String.Empty);
+
                         storeConfiguration = storeConfiguration.SetTablePrefix(tablePrefix);
                     }
 
@@ -177,10 +184,8 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        private static IConfiguration GetStoreConfiguration(IServiceProvider sp)
+        private static IConfiguration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions)
         {
-            var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
-
             var storeConfiguration = new YesSql.Configuration
             {
                 CommandsPageSize = yesSqlOptions.CommandsPageSize,

@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Options;
 using MySqlConnector;
 using Npgsql;
+using OrchardCore.Data.YesSql.Abstractions;
 using YesSql;
 using YesSql.Provider.MySql;
 using YesSql.Provider.PostgreSql;
@@ -19,11 +21,17 @@ public class DbConnectionValidator : IDbConnectionValidator
 {
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
     private readonly ITableNameConvention _tableNameConvention;
+    private readonly YesSqlOptions _yesSqlOptions;
 
-    public DbConnectionValidator(IEnumerable<DatabaseProvider> databaseProviders, ITableNameConvention tableNameConvention)
+    public DbConnectionValidator(
+        IEnumerable<DatabaseProvider> databaseProviders,
+        ITableNameConvention tableNameConvention,
+        IOptions<YesSqlOptions> yesSqlOptions
+        )
     {
         _databaseProviders = databaseProviders;
         _tableNameConvention = tableNameConvention;
+        _yesSqlOptions = yesSqlOptions.Value;
     }
 
     public async Task<DbConnectionValidatorResult> ValidateAsync(string databaseProvider, string connectionString, string tablePrefix)
@@ -107,7 +115,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         };
     }
 
-    private static ISqlBuilder GetSqlBuilder(DatabaseProviderName providerName, string tablePrefix)
+    private ISqlBuilder GetSqlBuilder(DatabaseProviderName providerName, string tablePrefix)
     {
         ISqlDialect dialect = providerName switch
         {
@@ -118,6 +126,13 @@ public class DbConnectionValidator : IDbConnectionValidator
             _ => throw new ArgumentOutOfRangeException("Unsupported Database Provider"),
         };
 
-        return new SqlBuilder(DatabaseHelper.GetStandardPrefix(tablePrefix), dialect);
+        var prefix = String.Empty;
+
+        if (!String.IsNullOrEmpty(tablePrefix))
+        {
+            prefix = tablePrefix.Trim() + (_yesSqlOptions.TablePrefixSeparator ?? String.Empty);
+        }
+
+        return new SqlBuilder(prefix, dialect);
     }
 }
