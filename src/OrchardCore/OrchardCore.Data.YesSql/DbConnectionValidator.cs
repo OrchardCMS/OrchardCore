@@ -11,7 +11,6 @@ using YesSql.Provider.MySql;
 using YesSql.Provider.PostgreSql;
 using YesSql.Provider.Sqlite;
 using YesSql.Provider.SqlServer;
-using YesSql.Services;
 using YesSql.Sql;
 
 namespace OrchardCore.Data;
@@ -19,10 +18,12 @@ namespace OrchardCore.Data;
 public class DbConnectionValidator : IDbConnectionValidator
 {
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
+    private readonly ITableNameConvention _tableNameConvention;
 
-    public DbConnectionValidator(IEnumerable<DatabaseProvider> databaseProviders)
+    public DbConnectionValidator(IEnumerable<DatabaseProvider> databaseProviders, ITableNameConvention tableNameConvention)
     {
         _databaseProviders = databaseProviders;
+        _tableNameConvention = tableNameConvention;
     }
 
     public async Task<DbConnectionValidatorResult> ValidateAsync(string databaseProvider, string connectionString, string tablePrefix)
@@ -82,14 +83,13 @@ public class DbConnectionValidator : IDbConnectionValidator
         }
     }
 
-    private static ISqlBuilder GetSelectBuilderForDocumentTable(string tablePrefix, DatabaseProviderName providerName)
+    private ISqlBuilder GetSelectBuilderForDocumentTable(string tablePrefix, DatabaseProviderName providerName)
     {
-        var tableConvention = new DefaultTableNameConvention();
         var selectBuilder = GetSqlBuilder(providerName, tablePrefix);
 
         selectBuilder.Select();
         selectBuilder.AddSelector("*");
-        selectBuilder.Table(tableConvention.GetDocumentTable());
+        selectBuilder.Table(_tableNameConvention.GetDocumentTable());
         selectBuilder.Take("1");
 
         return selectBuilder;

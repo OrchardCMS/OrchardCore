@@ -48,6 +48,19 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.TryAddDataProvider(name: "MySql", value: DatabaseProviderName.MySql, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
                 services.TryAddDataProvider(name: "Postgres", value: DatabaseProviderName.Postgres, hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
 
+                // register ITableNameConvention
+                services.AddScoped(sp =>
+                {
+                    var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
+
+                    if (yesSqlOptions.TableNameConvention != null)
+                    {
+                        return yesSqlOptions.TableNameConvention;
+                    }
+
+                    return new YesSql.Configuration().TableNameConvention;
+                });
+
                 // Configuring data access
                 services.AddSingleton(sp =>
                 {
