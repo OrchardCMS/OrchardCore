@@ -29,8 +29,7 @@ namespace OrchardCore.Media.Processing
 
             if (_shellSettings.State == TenantState.Uninitialized)
             {
-                // At this point the tenant is uninitialized which mean the request is likely tp be coming from setup request
-                // We have to bail out since siteService will have no ISession instance available
+                // If the tenant is 'Uninitialized' there is no registered 'ISession' and then 'ISiteService' can't be used.
                 return;
             }
 
