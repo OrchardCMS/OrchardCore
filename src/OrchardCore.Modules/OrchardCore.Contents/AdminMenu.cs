@@ -61,9 +61,9 @@ namespace OrchardCore.Contents
                 content.AddClass("content").Id("content");
                 await content.AddAsync(S["Content Items"], S["Content Items"].PrefixPosition(), async contentItems =>
                 {
-                    if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(context.User, CommonPermissions.EditContent, contentTypes, _contentManager))
+                    if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(context.User, CommonPermissions.ViewContent, contentTypes, _contentManager))
                     {
-                        contentItems.Permission(Permissions.EditContent);
+                        contentItems.Permission(Permissions.ViewContent);
                     }
 
                     contentItems.Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), new { area = "OrchardCore.Contents", contentTypeId = "" });
