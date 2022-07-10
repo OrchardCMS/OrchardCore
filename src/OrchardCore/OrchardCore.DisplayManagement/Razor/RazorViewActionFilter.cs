@@ -57,7 +57,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 var shellSettings = context.HttpContext.RequestServices.GetService<ShellSettings>();
                 var siteService = context.HttpContext.RequestServices.GetService<ISiteService>();
 
-                // siteService can be null during Setup and can't be accessed if the tenant is uninitialized
+                // 'ISiteService' may be null during Setup and can't be used if the tenant is 'Uninitialized'.
                 if (siteService != null && shellSettings.State != TenantState.Uninitialized)
                 {
                     razorViewFeature.Site = await siteService.GetSiteSettingsAsync();
