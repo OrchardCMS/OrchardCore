@@ -468,6 +468,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.FileStorage.Ama
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Media.AmazonS3", "src\OrchardCore.Modules\OrchardCore.Media.AmazonS3\OrchardCore.Media.AmazonS3.csproj", "{FF1C550C-6D30-499A-AF11-68DE7C8B6869}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.ContentFields.Abstractions", "src\OrchardCore\OrchardCore.ContentFields.Abstractions\OrchardCore.ContentFields.Abstractions.csproj", "{BB9F1427-8EE5-453D-A2DF-98D8D1389527}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.ContentFields.Core", "src\OrchardCore\OrchardCore.ContentFields.Core\OrchardCore.ContentFields.Core.csproj", "{72600481-85B7-4D75-9AC4-C592333A17C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
