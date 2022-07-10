@@ -8,7 +8,7 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Media.Azure.Storage",
+    Id = "OrchardCore.Media.Azure",
     Name = "Azure Media Storage",
     Description = "Enables support for storing media files in Microsoft Azure Blob Storage.",
     Dependencies = new[]

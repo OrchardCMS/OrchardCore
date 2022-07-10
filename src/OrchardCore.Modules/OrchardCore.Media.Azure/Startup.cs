@@ -24,7 +24,6 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media.Azure
 {
-    [Feature("OrchardCore.Media.Azure.Storage")]
     public class Startup : Modules.StartupBase
     {
         private readonly AdminOptions _adminOptions;
