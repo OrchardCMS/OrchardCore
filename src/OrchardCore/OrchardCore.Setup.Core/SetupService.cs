@@ -161,14 +161,7 @@ namespace OrchardCore.Setup.Services
 
             var shellSettings = new ShellSettings(context.ShellSettings);
 
-            var tablePrefixSeparator = _yesSqlOptions.TablePrefixSeparator;
-
-            if (context.Properties.TryGetValue(SetupConstants.TablePrefixSeparator, out var prefixSeparator))
-            {
-                tablePrefixSeparator = prefixSeparator?.ToString();
-            }
-
-            shellSettings["TablePrefixSeparator"] = tablePrefixSeparator ?? String.Empty;
+            shellSettings["TablePrefixSeparator"] = _yesSqlOptions.TablePrefixSeparator ?? String.Empty;
 
             if (String.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
             {
