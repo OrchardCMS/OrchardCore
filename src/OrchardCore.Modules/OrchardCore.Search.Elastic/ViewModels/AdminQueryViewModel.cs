@@ -12,7 +12,7 @@ namespace OrchardCore.Search.Elastic.ViewModels
         public string Parameters { get; set; }
 
         [BindNever]
-        public int Count { get; set; }
+        public long Count { get; set; }
 
         [BindNever]
         public string[] Indices { get; set; }
