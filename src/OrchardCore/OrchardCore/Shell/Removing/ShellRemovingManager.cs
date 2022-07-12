@@ -58,6 +58,15 @@ public class ShellRemovingManager : IShellRemovingManager
 
         // Create a shell context composed of all features that have been installed.
         using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
+        (var locker, var locked) = await shellContext.TryAcquireShellRemovingLockAsync();
+        if (!locked)
+        {
+            context.ErrorMessage = $"Failed to acquire a lock before removing the tenant: {tenant}.";
+            return context;
+        }
+
+        await using var acquiredLock = locker;
+
         await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
         {
             // Execute removing tenant level handlers (singletons or scoped) in a reverse order.

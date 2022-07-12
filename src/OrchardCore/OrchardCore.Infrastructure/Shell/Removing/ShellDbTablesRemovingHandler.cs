@@ -83,8 +83,6 @@ public class ShellDbTablesRemovingHandler : ShellRemovingHostHandler
             return shellDbTablesInfo;
         }
 
-        var logger = _logger;
-
         // Create a shell context composed of all features that have been installed.
         using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(context.ShellSettings);
         await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
@@ -109,14 +107,14 @@ public class ShellDbTablesRemovingHandler : ShellRemovingHostHandler
                 {
                     var type = migration.GetType().FullName;
 
-                    logger.LogError(
+                    _logger.LogError(
                         ex,
                         "Failed to replay the migration '{MigrationType}' from version '{Version}' on tenant '{TenantName}'.",
                         type,
                         version,
                         context.ShellSettings.Name);
 
-                    context.ErrorMessage = $"Failed to replay the migration '{type}' from version '{version}'";
+                    context.ErrorMessage = $"Failed to replay the migration '{type}' from version '{version}'.";
                     context.Error = ex;
 
                     break;

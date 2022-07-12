@@ -13,5 +13,17 @@ namespace OrchardCore.Environment.Shell.Builders
         /// Note: Only used if the current distributed lock implementation is not a local lock.
         /// </summary>
         public int ShellActivateLockExpiration { get; set; }
+
+        /// <summary>
+        /// The timeout in milliseconds to acquire a distributed lock before removing a given shell.
+        /// Note: Only used if the current distributed lock implementation is not a local lock.
+        /// </summary>
+        public int ShellRemovingLockTimeout { get; set; }
+
+        /// <summary>
+        /// The expiration in milliseconds of the distributed lock acquired before removing a shell.
+        /// Note: Only used if the current distributed lock implementation is not a local lock.
+        /// </summary>
+        public int ShellRemovingLockExpiration { get; set; }
     }
 }

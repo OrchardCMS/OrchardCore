@@ -27,6 +27,16 @@ namespace OrchardCore.Environment.Shell.Builders
             {
                 options.ShellActivateLockExpiration = 30_000;
             }
+
+            if (options.ShellRemovingLockTimeout <= 0)
+            {
+                options.ShellRemovingLockTimeout = 500;
+            }
+
+            if (options.ShellRemovingLockExpiration <= 0)
+            {
+                options.ShellRemovingLockExpiration = 60_000;
+            }
         }
     }
 }
