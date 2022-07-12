@@ -20,7 +20,7 @@ namespace OrchardCore.DisplayManagement.ModelBinding
                 return updateModel ?? new NullModelUpdater();
             }
 
-            set { _httpContext.Items[Key] = value; }
+            set { _httpContextAccessor.HttpContext.Items[Key] = value; }
         }
     }
 }
