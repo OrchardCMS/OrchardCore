@@ -46,7 +46,7 @@ namespace OrchardCore.Search.Elastic
                     => s.Index(context.IndexName).Query(q => new RawQuery(queryProp.ToString())));
                 if (searchResponse.IsValid)
                 {
-                    elasticTopDocs.Count = searchResponse.Documents.Count;
+                    elasticTopDocs.Count = searchResponse.Total;
                     elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
                 }
                 else
