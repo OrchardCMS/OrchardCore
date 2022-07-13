@@ -56,7 +56,7 @@ public class ShellRemovingManager : IShellRemovingManager
             return context;
         }
 
-        // Create a shell context composed of all features that have been installed.
+        // Create an isolated shell context composed of all features that have been installed.
         using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
         (var locker, var locked) = await shellContext.TryAcquireShellRemovingLockAsync();
         if (!locked)

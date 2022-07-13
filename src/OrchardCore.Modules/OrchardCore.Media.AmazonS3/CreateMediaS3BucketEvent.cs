@@ -108,14 +108,14 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
                 var response = await _amazonS3Client.DeleteBucketAsync(bucketRequest);
                 if (!response.IsSuccessful())
                 {
-                    _logger.LogError("Unable to remove Amazon S3 Bucket {BucketName}", _options.BucketName);
-                    context.ErrorMessage = $"Failed to remove Amazon S3 Bucket '{_options.BucketName}'.";
+                    _logger.LogError("Unable to remove the Amazon S3 Bucket {BucketName}", _options.BucketName);
+                    context.ErrorMessage = $"Failed to remove the Amazon S3 Bucket '{_options.BucketName}'.";
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to remove Amazon S3 Bucket {BucketName}", _options.BucketName);
-                context.ErrorMessage = $"Failed to remove Amazon S3 Bucket '{_options.BucketName}'.";
+                _logger.LogError(ex, "Failed to remove the Amazon S3 Bucket {BucketName}", _options.BucketName);
+                context.ErrorMessage = $"Failed to remove the Amazon S3 Bucket '{_options.BucketName}'.";
                 context.Error = ex;
             }
         }

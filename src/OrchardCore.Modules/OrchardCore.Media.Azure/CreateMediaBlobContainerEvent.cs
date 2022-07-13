@@ -68,14 +68,14 @@ namespace OrchardCore.Media.Azure
                     var response = await _blobContainer.DeleteIfExistsAsync();
                     if (!response.Value)
                     {
-                        _logger.LogError("Unable to remove Azure Media Storage Container {ContainerName}.", _options.ContainerName);
-                        context.ErrorMessage = $"Unable to remove Azure Media Storage Container '{_options.ContainerName}'.";
+                        _logger.LogError("Unable to remove the Azure Media Storage Container {ContainerName}.", _options.ContainerName);
+                        context.ErrorMessage = $"Unable to remove the Azure Media Storage Container '{_options.ContainerName}'.";
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to remove Azure Media Storage Container {ContainerName}.", _options.ContainerName);
-                    context.ErrorMessage = $"Failed to remove Azure Media Storage Container '{_options.ContainerName}'.";
+                    _logger.LogError(ex, "Failed to remove the Azure Media Storage Container {ContainerName}.", _options.ContainerName);
+                    context.ErrorMessage = $"Failed to remove the Azure Media Storage Container '{_options.ContainerName}'.";
                     context.Error = ex;
                 }
             }

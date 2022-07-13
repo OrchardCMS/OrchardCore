@@ -1,37 +1,39 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Environment.Shell.Removing;
 
-public class SiteFolderRemovingHandler : ShellRemovingHostHandler
+/// <summary>
+/// Allows to remove the web root folder of a given tenant.
+/// </summary>
+public class ShellWebRootRemovingHandler : ShellRemovingHostHandler
 {
-    private readonly ShellOptions _shellOptions;
+    private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly ILogger _logger;
 
-    public SiteFolderRemovingHandler(
-        IOptions<ShellOptions> shellOptions,
-        ILogger<SiteFolderRemovingHandler> logger)
+    public ShellWebRootRemovingHandler(
+        IWebHostEnvironment webHostEnvironment,
+        ILogger<ShellWebRootRemovingHandler> logger)
     {
-        _shellOptions = shellOptions.Value;
+        _webHostEnvironment = webHostEnvironment;
         _logger = logger;
     }
 
     /// <summary>
-    /// Removes the folder of the provided tenant.
+    /// Removes the web root folder of the provided tenant.
     /// </summary>
     public override Task RemovingAsync(ShellRemovingContext context)
     {
-        var tenantFolder = Path.Combine(
-            _shellOptions.ShellsApplicationDataPath,
-            _shellOptions.ShellsContainerName,
+        var shellWebRootFolder = Path.Combine(
+            _webHostEnvironment.WebRootPath,
             context.ShellSettings.Name);
 
         try
         {
-            Directory.Delete(tenantFolder, true);
+            Directory.Delete(shellWebRootFolder, true);
         }
         catch (Exception ex) when (ex is DirectoryNotFoundException)
         {
@@ -40,17 +42,16 @@ public class SiteFolderRemovingHandler : ShellRemovingHostHandler
         {
             _logger.LogError(
                 ex,
-                "Failed to remove the site folder '{TenantFolder}' of tenant '{TenantName}'.",
-                tenantFolder,
+                "Failed to remove the web root folder '{TenantFolder}' of tenant '{TenantName}'.",
+                shellWebRootFolder,
                 context.ShellSettings.Name);
 
-            context.ErrorMessage = $"Failed to remove the site folder '{tenantFolder}'.";
+            context.ErrorMessage = $"Failed to remove the web root folder '{shellWebRootFolder}'.";
             context.Error = ex;
         }
 
         return Task.CompletedTask;
     }
-
 
     /// <summary>
     /// In a distributed environment, removes locally the folder of the provided tenant.

@@ -83,7 +83,7 @@ public class ShellDbTablesRemovingHandler : ShellRemovingHostHandler
             return shellDbTablesInfo;
         }
 
-        // Create a shell context composed of all features that have been installed.
+        // Create an isolated shell context composed of all features that have been installed.
         using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(context.ShellSettings);
         await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
         {

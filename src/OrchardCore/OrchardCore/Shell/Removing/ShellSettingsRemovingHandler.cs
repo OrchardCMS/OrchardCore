@@ -4,6 +4,9 @@ using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Environment.Shell.Removing;
 
+/// <summary>
+/// Allows to remove the shell settings of a given tenant.
+/// </summary>
 public class ShellSettingsRemovingHandler : ShellRemovingHostHandler
 {
     private readonly IShellHost _shellHost;

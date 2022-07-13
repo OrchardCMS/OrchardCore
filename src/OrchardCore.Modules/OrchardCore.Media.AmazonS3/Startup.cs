@@ -65,20 +65,16 @@ public class Startup : Modules.StartupBase
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStoreCacheFileProvider>>();
 
-                var mediaCachePath = GetMediaCachePath(hostingEnvironment,
-                    DefaultMediaFileStoreCacheFileProvider.AssetsCachePath, shellSettings);
+                var mediaCachePath = GetMediaCachePath(
+                    hostingEnvironment, shellSettings, DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
 
                 if (!Directory.Exists(mediaCachePath))
                 {
                     Directory.CreateDirectory(mediaCachePath);
                 }
 
-                return new DefaultMediaFileStoreCacheFileProvider(logger, mediaOptions.AssetsRequestPath,
-                    mediaCachePath);
+                return new DefaultMediaFileStoreCacheFileProvider(logger, mediaOptions.AssetsRequestPath, mediaCachePath);
             });
-
-            // The 'DefaultMediaFileStoreCacheFileProvider' is used to remove the tenant cache folder on shell removing.
-            services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<IMediaFileStoreCacheFileProvider>());
 
             // Replace the default media file provider with the media cache file provider.
             services.Replace(ServiceDescriptor.Singleton<IMediaFileProvider>(serviceProvider =>
@@ -129,8 +125,8 @@ public class Startup : Modules.StartupBase
         }
     }
 
-    private string GetMediaCachePath(IWebHostEnvironment hostingEnvironment,
-        string assetsPath, ShellSettings shellSettings)
-        => PathExtensions.Combine(hostingEnvironment.WebRootPath,
-            assetsPath, shellSettings.Name);
+    private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
+    {
+        return PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
+    }
 }

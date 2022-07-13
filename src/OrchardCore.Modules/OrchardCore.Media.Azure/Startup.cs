@@ -77,7 +77,8 @@ namespace OrchardCore.Media.Azure
                     var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                     var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStoreCacheFileProvider>>();
 
-                    var mediaCachePath = GetMediaCachePath(hostingEnvironment, DefaultMediaFileStoreCacheFileProvider.AssetsCachePath, shellSettings);
+                    var mediaCachePath = GetMediaCachePath(
+                        hostingEnvironment, shellSettings, DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
 
                     if (!Directory.Exists(mediaCachePath))
                     {
@@ -86,9 +87,6 @@ namespace OrchardCore.Media.Azure
 
                     return new DefaultMediaFileStoreCacheFileProvider(logger, mediaOptions.AssetsRequestPath, mediaCachePath);
                 });
-
-                // The 'DefaultMediaFileStoreCacheFileProvider' is used to remove the tenant cache folder on shell removing.
-                services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<IMediaFileStoreCacheFileProvider>());
 
                 // Replace the default media file provider with the media cache file provider.
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileProvider>(serviceProvider =>
@@ -139,9 +137,9 @@ namespace OrchardCore.Media.Azure
             return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
         }
 
-        private string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, string assetsPath, ShellSettings shellSettings)
+        private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
         {
-            return PathExtensions.Combine(hostingEnvironment.WebRootPath, assetsPath, shellSettings.Name);
+            return PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
         }
 
         private static bool CheckOptions(string connectionString, string containerName, ILogger logger)
