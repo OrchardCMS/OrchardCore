@@ -36,6 +36,7 @@ using OrchardCore.Media.Indexing;
 using OrchardCore.Media.Liquid;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
+using OrchardCore.Media.Removing;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.Settings;
 using OrchardCore.Media.Shortcodes;
@@ -58,10 +59,12 @@ namespace OrchardCore.Media
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
+        private readonly ShellSettings _shellSettings;
 
-        public Startup(IOptions<AdminOptions> adminOptions)
+        public Startup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
         {
             _adminOptions = adminOptions.Value;
+            _shellSettings = shellSettings;
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -140,11 +143,15 @@ namespace OrchardCore.Media
                 .SetCacheKey<BackwardsCompatibleCacheKey>()
                 .Configure<PhysicalFileSystemCacheOptions>(options =>
                 {
+                    options.CacheFolder = $"is-cache/{_shellSettings.Name}";
                     options.CacheFolderDepth = 12;
                 })
                 .AddProvider<MediaResizingFileProvider>()
                 .AddProcessor<ImageVersionProcessor>()
                 .AddProcessor<TokenCommandProcessor>();
+
+            // Used to remove the 'ImageSharp' cache folder of a given tenant on shell removing.
+            services.AddScoped<IModularTenantEvents, ShellMediaCacheRemovingHandler>();
 
             services.AddScoped<MediaTokenSettingsUpdater>();
             services.AddSingleton<IMediaTokenService, MediaTokenService>();

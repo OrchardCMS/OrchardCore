@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -6,6 +6,7 @@ using Amazon.S3.Util;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.FileStorage.AmazonS3;
 using OrchardCore.Modules;
 
@@ -52,12 +53,12 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
                     UseClientRegion = true
                 };
 
-                // Tying to create bucket
+                // Trying to create bucket.
                 var response = await _amazonS3Client.PutBucketAsync(bucketRequest);
 
                 if (!response.IsSuccessful())
                 {
-                    _logger.LogError("Unable to create Amazon S3 Bucket. {Response}", response);
+                    _logger.LogError("Unable to create Amazon S3 Bucket {BucketName}", _options.BucketName);
                     return;
                 }
 
@@ -81,6 +82,41 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
             catch (Exception e)
             {
                 _logger.LogError(e, "Unable to create Amazon S3 Bucket.");
+            }
+        }
+    }
+
+    public override async Task RemovingAsync(ShellRemovingContext context)
+    {
+        if (_options.RemoveBucket && !String.IsNullOrEmpty(_options.BucketName))
+        {
+            try
+            {
+                var isBucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(_amazonS3Client, _options.BucketName);
+                if (!isBucketExists)
+                {
+                    return;
+                }
+
+                var bucketRequest = new DeleteBucketRequest
+                {
+                    BucketName = _options.BucketName,
+                    UseClientRegion = true
+                };
+
+                // Trying to create bucket.
+                var response = await _amazonS3Client.DeleteBucketAsync(bucketRequest);
+                if (!response.IsSuccessful())
+                {
+                    _logger.LogError("Unable to remove Amazon S3 Bucket {BucketName}", _options.BucketName);
+                    context.ErrorMessage = $"Failed to remove Amazon S3 Bucket '{_options.BucketName}'.";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to remove Amazon S3 Bucket {BucketName}", _options.BucketName);
+                context.ErrorMessage = $"Failed to remove Amazon S3 Bucket '{_options.BucketName}'.";
+                context.Error = ex;
             }
         }
     }

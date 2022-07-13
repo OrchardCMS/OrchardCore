@@ -6,11 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Core
 {
-    public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMediaFileProvider, IMediaFileStoreCacheFileProvider
+    public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMediaFileStoreCacheFileProvider
     {
         /// <summary>
         /// The path in the wwwroot folder containing the asset cache.
@@ -167,6 +168,38 @@ namespace OrchardCore.Media.Core
             {
                 return Task.FromResult(false);
             }
+        }
+
+        public Task ActivatingAsync() => Task.CompletedTask;
+        public Task ActivatedAsync() => Task.CompletedTask;
+        public Task TerminatingAsync() => Task.CompletedTask;
+        public Task TerminatedAsync() => Task.CompletedTask;
+
+        /// <summary>
+        /// Removes the media cache folder of a given tenant.
+        /// </summary>
+        public Task RemovingAsync(ShellRemovingContext context)
+        {
+            try
+            {
+                Directory.Delete(Root, true);
+            }
+            catch (Exception ex) when (ex is DirectoryNotFoundException)
+            {
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Failed to remove the media cache folder '{CacheFolder}' of tenant '{TenantName}'.",
+                    Root,
+                    context.ShellSettings.Name);
+
+                context.ErrorMessage = $"Failed to remove the media cache folder '{Root}'.";
+                context.Error = ex;
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

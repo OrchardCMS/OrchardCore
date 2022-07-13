@@ -5,6 +5,7 @@ using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Azure
@@ -48,6 +49,34 @@ namespace OrchardCore.Media.Azure
                 catch (Exception e)
                 {
                     _logger.LogError(e, "Unable to create Azure Media Storage Container.");
+                }
+            }
+        }
+
+        public override async Task RemovingAsync(ShellRemovingContext context)
+        {
+            // Only remove container if options are valid.
+
+            if (_options.RemoveContainer &&
+                !String.IsNullOrEmpty(_options.ConnectionString) &&
+                !String.IsNullOrEmpty(_options.ContainerName))
+            {
+                try
+                {
+                    var _blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
+
+                    var response = await _blobContainer.DeleteIfExistsAsync();
+                    if (!response.Value)
+                    {
+                        _logger.LogError("Unable to remove Azure Media Storage Container {ContainerName}.", _options.ContainerName);
+                        context.ErrorMessage = $"Unable to remove Azure Media Storage Container '{_options.ContainerName}'.";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to remove Azure Media Storage Container {ContainerName}.", _options.ContainerName);
+                    context.ErrorMessage = $"Failed to remove Azure Media Storage Container '{_options.ContainerName}'.";
+                    context.Error = ex;
                 }
             }
         }

@@ -1,4 +1,4 @@
-﻿using Amazon.Extensions.NETCore.Setup;
+using Amazon.Extensions.NETCore.Setup;
 
 namespace OrchardCore.FileStorage.AmazonS3;
 
@@ -18,7 +18,7 @@ public class AwsStorageOptions
     public string BasePath { get; set; }
 
     /// <summary>
-    /// Indicates if bucket should be created on module startup
+    /// Indicates if bucket should be created on module startup.
     /// </summary>
     public bool CreateBucket { get; set; }
 
@@ -26,5 +26,9 @@ public class AwsStorageOptions
     /// Gets or sets the AWS Options.
     /// </summary>
     public AWSOptions AwsOptions { get; set; }
-}
 
+    /// <summary>
+    /// Indicates if bucket should be removed on shell removing.
+    /// </summary>
+    public bool RemoveBucket { get; set; }
+}

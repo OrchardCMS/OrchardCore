@@ -87,6 +87,9 @@ namespace OrchardCore.Media.Azure
                     return new DefaultMediaFileStoreCacheFileProvider(logger, mediaOptions.AssetsRequestPath, mediaCachePath);
                 });
 
+                // The 'DefaultMediaFileStoreCacheFileProvider' is used to remove the tenant cache folder on shell removing.
+                services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<IMediaFileStoreCacheFileProvider>());
+
                 // Replace the default media file provider with the media cache file provider.
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileProvider>(serviceProvider =>
                     serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>()));
