@@ -10,6 +10,7 @@ using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using YesSql;
@@ -27,11 +28,13 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class OrchardCoreBuilderExtensions
     {
         /// <summary>
-        /// Adds tenant level data access services.
+        /// Adds host and tenant level data access services.
         /// </summary>
         /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
         public static OrchardCoreBuilder AddDataAccess(this OrchardCoreBuilder builder)
         {
+            builder.ApplicationServices.AddSingleton<IShellRemovingHostHandler, ShellDbTablesRemovingHandler>();
+
             builder.ConfigureServices(services =>
             {
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();

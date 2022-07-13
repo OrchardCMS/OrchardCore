@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using OrchardCore.Data.Migration;
 
-namespace OrchardCore.Environment.Shell;
+namespace OrchardCore.Data.Migration;
 
 public static class DataMigrationExtensions
 {
