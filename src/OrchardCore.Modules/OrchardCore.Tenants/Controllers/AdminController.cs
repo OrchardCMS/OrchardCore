@@ -207,7 +207,7 @@ namespace OrchardCore.Tenants.Controllers
             model.Options.TenantsBulkAction = new List<SelectListItem>() {
                 new SelectListItem() { Text = S["Disable"], Value = nameof(TenantsBulkAction.Disable) },
                 new SelectListItem() { Text = S["Enable"], Value = nameof(TenantsBulkAction.Enable) },
-                new SelectListItem() { Text = S["Enable"], Value = nameof(TenantsBulkAction.Remove) },
+                new SelectListItem() { Text = S["Remove"], Value = nameof(TenantsBulkAction.Remove) },
             };
 
             return View(model);
@@ -240,15 +240,9 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var allSettings = _shellHost.GetAllSettings();
-
             foreach (var tenantName in model.TenantNames ?? Enumerable.Empty<string>())
             {
-                var shellSettings = allSettings
-                    .Where(x => String.Equals(x.Name, tenantName, StringComparison.OrdinalIgnoreCase))
-                    .FirstOrDefault();
-
-                if (shellSettings == null)
+                if (!_shellHost.TryGetSettings(tenantName, out var shellSettings))
                 {
                     break;
                 }
@@ -296,7 +290,11 @@ namespace OrchardCore.Tenants.Controllers
                         }
                         else
                         {
-                            await _shellRemovingManager.RemoveAsync(shellSettings.Name);
+                            var context = await _shellRemovingManager.RemoveAsync(shellSettings.Name);
+                            if (!context.Success)
+                            {
+                                await _notifier.ErrorAsync(H["Failed to remove the tenant '{0}'. {1}", shellSettings.Name, context.ErrorMessage]);
+                            }
                         }
 
                         break;
@@ -413,11 +411,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
             {
                 return NotFound();
             }
@@ -474,11 +468,7 @@ namespace OrchardCore.Tenants.Controllers
                 await ValidateViewModelAsync(model, false);
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))
             {
                 return NotFound();
             }
@@ -542,11 +532,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(s => String.Equals(s.Name, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
             {
                 return NotFound();
             }
@@ -582,11 +568,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
             {
                 return NotFound();
             }
@@ -594,6 +576,7 @@ namespace OrchardCore.Tenants.Controllers
             if (shellSettings.State != TenantState.Disabled)
             {
                 await _notifier.ErrorAsync(H["You can only enable a Disabled tenant."]);
+                return RedirectToAction(nameof(Index));
             }
 
             shellSettings.State = TenantState.Running;
@@ -615,11 +598,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
             {
                 return NotFound();
             }
@@ -655,10 +634,15 @@ namespace OrchardCore.Tenants.Controllers
 
             if (shellSettings.State != TenantState.Disabled)
             {
-                await _notifier.ErrorAsync(H["You can only remove a Disabled tenant."]);
+                await _notifier.ErrorAsync(H["You can only remove a 'Disabled' tenant."]);
+                return RedirectToAction(nameof(Index));
             }
 
-            await _shellRemovingManager.RemoveAsync(shellSettings.Name);
+            var context = await _shellRemovingManager.RemoveAsync(shellSettings.Name);
+            if (!context.Success)
+            {
+                await _notifier.ErrorAsync(H["Failed to remove the tenant '{0}'. {1}", id, context.ErrorMessage]);
+            }
 
             return RedirectToAction(nameof(Index));
         }

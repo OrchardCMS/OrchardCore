@@ -24,7 +24,8 @@ namespace OrchardCore.Tenants.ViewModels
     public enum BulkAction
     {
         Disable,
-        Enable
+        Enable,
+        Remove
     }
 
     public class ShellSettingsEntry
