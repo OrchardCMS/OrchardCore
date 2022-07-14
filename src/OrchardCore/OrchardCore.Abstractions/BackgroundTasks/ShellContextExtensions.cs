@@ -9,6 +9,10 @@ namespace OrchardCore.BackgroundTasks;
 
 internal static class ShellContextExtensions
 {
+    private const string Localhost = "localhost";
+
+    private static readonly char[] _urlHostSeparators = new[] { ',', ' ' };
+
     public static HttpContext CreateHttpContext(this ShellContext shell)
     {
         var context = CreateHttpContext(shell.Settings);
@@ -27,8 +31,8 @@ internal static class ShellContextExtensions
         var context = new DefaultHttpContext().UseShellScopeServices();
 
         context.Request.Scheme = "https";
-        var urlHost = settings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-        context.Request.Host = new HostString(urlHost ?? "localhost");
+        var urlHost = settings.RequestUrlHost?.Split(_urlHostSeparators, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        context.Request.Host = new HostString(urlHost ?? Localhost);
 
         if (!String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
         {
