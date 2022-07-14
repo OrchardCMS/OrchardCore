@@ -360,4 +360,61 @@ namespace OrchardCore.Modules
             }
         }
     }
+
+    internal static class HttpContextExtensions
+    {
+        public static void SetBaseUrl(this HttpContext context, string baseUrl)
+        {
+            if (Uri.TryCreate(baseUrl, UriKind.Absolute, out var uri))
+            {
+                context.Request.Scheme = uri.Scheme;
+                context.Request.Host = new HostString(uri.Host, uri.Port);
+                context.Request.PathBase = uri.AbsolutePath;
+
+                if (!String.IsNullOrWhiteSpace(uri.Query))
+                {
+                    context.Request.QueryString = new QueryString(uri.Query);
+                }
+            }
+        }
+    }
+
+    internal static class ShellExtensions
+    {
+        public static HttpContext CreateHttpContext(this ShellContext shell)
+        {
+            var context = shell.Settings.CreateHttpContext();
+
+            context.Features.Set(new ShellContextFeature
+            {
+                ShellContext = shell,
+                OriginalPathBase = String.Empty,
+                OriginalPath = "/"
+            });
+
+            return context;
+        }
+
+        public static HttpContext CreateHttpContext(this ShellSettings settings)
+        {
+            var context = new DefaultHttpContext().UseShellScopeServices();
+
+            context.Request.Scheme = "https";
+
+            var urlHost = settings.RequestUrlHost?.Split(new[] { ',', ' ' },
+                StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+
+            context.Request.Host = new HostString(urlHost ?? "localhost");
+
+            if (!String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
+            {
+                context.Request.PathBase = "/" + settings.RequestUrlPrefix;
+            }
+
+            context.Request.Path = "/";
+            context.Items["IsBackground"] = true;
+
+            return context;
+        }
+    }
 }
