@@ -81,7 +81,8 @@ namespace OrchardCore.Tenants.ViewModels
     {
         None,
         Disable,
-        Enable
+        Enable,
+        Remove
     }
 
     public enum TenantsOrder

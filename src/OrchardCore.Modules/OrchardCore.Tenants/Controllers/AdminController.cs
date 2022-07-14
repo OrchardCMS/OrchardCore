@@ -14,6 +14,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Navigation;
@@ -29,6 +30,7 @@ namespace OrchardCore.Tenants.Controllers
     {
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
+        private readonly IShellRemovingManager _shellRemovingManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _currentShellSettings;
@@ -47,6 +49,7 @@ namespace OrchardCore.Tenants.Controllers
         public AdminController(
             IShellHost shellHost,
             IShellSettingsManager shellSettingsManager,
+            IShellRemovingManager shellRemovingManager,
             IEnumerable<DatabaseProvider> databaseProviders,
             IAuthorizationService authorizationService,
             ShellSettings currentShellSettings,
@@ -63,6 +66,7 @@ namespace OrchardCore.Tenants.Controllers
         {
             _shellHost = shellHost;
             _shellSettingsManager = shellSettingsManager;
+            _shellRemovingManager = shellRemovingManager;
             _databaseProviders = databaseProviders;
             _authorizationService = authorizationService;
             _currentShellSettings = currentShellSettings;
@@ -202,7 +206,8 @@ namespace OrchardCore.Tenants.Controllers
 
             model.Options.TenantsBulkAction = new List<SelectListItem>() {
                 new SelectListItem() { Text = S["Disable"], Value = nameof(TenantsBulkAction.Disable) },
-                new SelectListItem() { Text = S["Enable"], Value = nameof(TenantsBulkAction.Enable) }
+                new SelectListItem() { Text = S["Enable"], Value = nameof(TenantsBulkAction.Enable) },
+                new SelectListItem() { Text = S["Enable"], Value = nameof(TenantsBulkAction.Remove) },
             };
 
             return View(model);
@@ -276,6 +281,22 @@ namespace OrchardCore.Tenants.Controllers
                         {
                             shellSettings.State = TenantState.Running;
                             await _shellHost.UpdateShellSettingsAsync(shellSettings);
+                        }
+
+                        break;
+
+                    case "Remove":
+                        if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            await _notifier.WarningAsync(H["You cannot remove the default tenant."]);
+                        }
+                        else if (shellSettings.State != TenantState.Disabled)
+                        {
+                            await _notifier.WarningAsync(H["The tenant '{0}' should be disabled.", shellSettings.Name]);
+                        }
+                        else
+                        {
+                            await _shellRemovingManager.RemoveAsync(shellSettings.Name);
                         }
 
                         break;
@@ -612,6 +633,34 @@ namespace OrchardCore.Tenants.Controllers
             await _shellHost.ReloadShellContextAsync(shellSettings);
 
             return Redirect(redirectUrl);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Remove(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return Forbid();
+            }
+
+            if (!_currentShellSettings.IsDefaultShell())
+            {
+                return Forbid();
+            }
+
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
+            {
+                return NotFound();
+            }
+
+            if (shellSettings.State != TenantState.Disabled)
+            {
+                await _notifier.ErrorAsync(H["You can only remove a Disabled tenant."]);
+            }
+
+            await _shellRemovingManager.RemoveAsync(shellSettings.Name);
+
+            return RedirectToAction(nameof(Index));
         }
 
         private void SetConfigurationShellValues(EditTenantViewModel model)

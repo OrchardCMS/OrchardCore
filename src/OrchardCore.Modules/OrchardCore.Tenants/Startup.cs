@@ -69,6 +69,12 @@ namespace OrchardCore.Tenants
                 pattern: _adminOptions.AdminUrlPrefix + "/Tenants/Reload/{id}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Reload) }
             );
+            routes.MapAreaControllerRoute(
+                name: "TenantsRemove",
+                areaName: "OrchardCore.Tenants",
+                pattern: _adminOptions.AdminUrlPrefix + "/Tenants/Remove/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Remove) }
+            );
         }
     }
 
