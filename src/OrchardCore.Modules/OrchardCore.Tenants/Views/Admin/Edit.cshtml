@@ -75,7 +75,7 @@
                         <option value="" data-connection-string="false">@T["None"]</option>
                         @foreach (var provider in DatabaseProviders)
                         {
-                            <option value="@provider.Value" data-connection-string="@provider.HasConnectionString.ToString().ToLower()" data-table-prefix="@provider.HasTablePrefix.ToString().ToLower()" data-connection-string-sample="@T["The connection string to your database instance. e.g., {0}", provider.SampleConnectionString]">@provider.Name</option>
+                            <option value="@provider.Value" data-connection-string="@provider.HasConnectionString.ToString().ToLower()" data-connection-string-sample="@T["The connection string to your database instance. e.g., {0}", provider.SampleConnectionString]">@provider.Name</option>
                         }
                     </select>
                 </div>

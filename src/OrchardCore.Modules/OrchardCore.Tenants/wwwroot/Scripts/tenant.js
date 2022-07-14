@@ -14,7 +14,7 @@ function toggleConnectionStringAndPrefix() {
             ? $(".connectionString").show()
             : $(".connectionString").hide();
 
-        $(this).data("table-prefix") === true
+        $(this).val() != '' === true
             ? $(".tablePrefix").show()
             : $(".tablePrefix").hide();
 
