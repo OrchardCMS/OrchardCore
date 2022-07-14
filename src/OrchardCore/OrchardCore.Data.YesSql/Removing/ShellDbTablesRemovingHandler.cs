@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Models;
 using YesSql;
 
 namespace OrchardCore.Environment.Shell.Removing;
@@ -32,6 +33,11 @@ public class ShellDbTablesRemovingHandler : ShellRemovingHostHandler
     /// </summary>
     public override async Task RemovingAsync(ShellRemovingContext context)
     {
+        if (context.ShellSettings.State == TenantState.Uninitialized)
+        {
+            return;
+        }
+
         var shellDbTablesInfo = await GetTablesToRemoveAsync(context);
         if (!context.Success)
         {

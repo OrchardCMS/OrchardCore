@@ -284,9 +284,9 @@ namespace OrchardCore.Tenants.Controllers
                         {
                             await _notifier.WarningAsync(H["You cannot remove the default tenant."]);
                         }
-                        else if (shellSettings.State != TenantState.Disabled)
+                        else if (shellSettings.State != TenantState.Disabled && shellSettings.State != TenantState.Uninitialized)
                         {
-                            await _notifier.WarningAsync(H["The tenant '{0}' should be disabled.", shellSettings.Name]);
+                            await _notifier.WarningAsync(H["The tenant '{0}' should be disabled or unitialized.", shellSettings.Name]);
                         }
                         else
                         {
@@ -632,9 +632,9 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            if (shellSettings.State != TenantState.Disabled)
+            if (shellSettings.State != TenantState.Disabled && shellSettings.State != TenantState.Uninitialized)
             {
-                await _notifier.ErrorAsync(H["You can only remove a 'Disabled' tenant."]);
+                await _notifier.ErrorAsync(H["You can only remove a 'Disabled' or 'Uninitialized' tenant."]);
                 return RedirectToAction(nameof(Index));
             }
 

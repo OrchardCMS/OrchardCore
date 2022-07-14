@@ -213,7 +213,9 @@ namespace OrchardCore.Environment.Shell.Distributed
                             {
                                 // Check if the remove identifier has changed and if the tenant is already disabled.
                                 var identifier = _identifiers.GetOrAdd(settings.Name, name => new ShellIdentifier());
-                                if (identifier.RemoveId != removeId && settings.State == TenantState.Disabled)
+                                if (identifier.RemoveId != removeId &&
+                                    (settings.State == TenantState.Disabled ||
+                                    settings.State == TenantState.Uninitialized))
                                 {
                                     // Upate the local identifier.
                                     identifier.RemoveId = removeId;

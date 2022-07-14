@@ -501,7 +501,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         private void CheckCanRemoveShell(ShellSettings settings)
         {
-            if (settings.State != TenantState.Disabled ||
+            if ((settings.State != TenantState.Disabled && settings.State != TenantState.Uninitialized) ||
                 _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
             {
                 throw new InvalidOperationException(

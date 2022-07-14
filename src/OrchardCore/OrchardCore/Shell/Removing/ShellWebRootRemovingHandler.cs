@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell.Removing;
 
@@ -27,6 +28,11 @@ public class ShellWebRootRemovingHandler : ShellRemovingHostHandler
     /// </summary>
     public override Task RemovingAsync(ShellRemovingContext context)
     {
+        if (context.ShellSettings.State == TenantState.Uninitialized)
+        {
+            return Task.CompletedTask;
+        }
+
         var shellWebRootFolder = Path.Combine(
             _webHostEnvironment.WebRootPath,
             context.ShellSettings.Name);

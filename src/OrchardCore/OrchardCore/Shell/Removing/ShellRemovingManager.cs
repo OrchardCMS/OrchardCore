@@ -50,9 +50,16 @@ public class ShellRemovingManager : IShellRemovingManager
             return context;
         }
 
-        if (shellSettings.State != TenantState.Disabled)
+        if (shellSettings.State != TenantState.Disabled && shellSettings.State != TenantState.Uninitialized)
         {
-            context.ErrorMessage = $"The tenant '{tenant}' should be 'Disabled'.";
+            context.ErrorMessage = $"The tenant '{tenant}' should be 'Disabled' or 'Uninitialized'.";
+            return context;
+        }
+
+        if (shellSettings.State == TenantState.Uninitialized)
+        {
+            // Only host handlers without any locking.
+            await ExecuteHostHandlersAsync(context);
             return context;
         }
 
@@ -99,6 +106,14 @@ public class ShellRemovingManager : IShellRemovingManager
             }
         });
 
+        // Execute host level handlers.
+        await ExecuteHostHandlersAsync(context);
+
+        return context;
+    }
+
+    private async Task ExecuteHostHandlersAsync(ShellRemovingContext context)
+    {
         // Execute removing host level handlers in a reverse order.
         foreach (var handler in _shellRemovingHostHandler.Reverse())
         {
@@ -118,7 +133,7 @@ public class ShellRemovingManager : IShellRemovingManager
                     ex,
                     "Failed to execute the removing host handler '{HostHandler}' while removing the tenant '{TenantName}'.",
                     type,
-                    tenant);
+                    context.ShellSettings.Name);
 
                 context.ErrorMessage = $"Failed to execute the removing host handler '{type}'.";
                 context.Error = ex;
@@ -126,7 +141,5 @@ public class ShellRemovingManager : IShellRemovingManager
                 break;
             }
         }
-
-        return context;
     }
 }
