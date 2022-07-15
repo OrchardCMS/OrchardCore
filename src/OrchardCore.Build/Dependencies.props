@@ -15,7 +15,7 @@
     <PackageManagement Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.1" />
     <PackageManagement Include="Azure.Identity" Version="1.6.0" />
-    <PackageManagement Include="Azure.Storage.Blobs" Version="12.12.0" />
+    <PackageManagement Include="Azure.Storage.Blobs" Version="12.13.0" />
     <PackageManagement Include="BenchmarkDotNet" Version="0.13.1" />
     <PackageManagement Include="Castle.Core" Version="5.0.0" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
