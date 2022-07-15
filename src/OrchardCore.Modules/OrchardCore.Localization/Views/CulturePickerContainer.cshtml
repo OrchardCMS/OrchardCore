@@ -1,0 +1,22 @@
+@using OrchardCore.Localization
+
+@{
+    var selectedCultureName = Model.CurrentCulture.Name;
+}
+<select id="culture" name="culture" class="form-select me-3" onchange="changeCulture()">
+  @foreach (var culture in Model.SupportedCultures)
+  {
+    <option selected="@(culture.Name == selectedCultureName ? "selected" : null)" value="@culture.Name">@culture.DisplayName</option>
+  }
+</select>
+
+<script at="Foot">
+    function changeCulture() {
+        var culture = document.getElementById('culture');
+        if (culture != '@selectedCultureName') {
+            var cookieValue = '@CulturePickerStartup.AdminSiteCookieName=c=' + culture.options[culture.selectedIndex].value + '|ui=' + culture.options[culture.selectedIndex].value;
+            document.cookie = cookieValue;
+            window.location = window.location.href.split('?')[0];
+        }
+    }
+</script>

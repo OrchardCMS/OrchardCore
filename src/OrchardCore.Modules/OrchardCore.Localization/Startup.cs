@@ -1,5 +1,7 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -71,6 +73,38 @@ namespace OrchardCore.Localization
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<RequestLocalizationOptions>(options => options.ApplyCurrentCultureToResponseHeaders = true);
+        }
+    }
+
+    [Feature("OrchardCore.Localization.CulturePicker")]
+    public class CulturePickerStartup : StartupBase
+    {
+        internal static readonly string AdminSiteCookieName = ".OrchardCore.AdminSiteCulture";
+
+        private static readonly Task<ProviderCultureResult> NullProviderCultureResult = Task.FromResult(default(ProviderCultureResult));
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new CustomRequestCultureProvider(context =>
+            {
+                if (context.Request.Path.Value.Contains("/Admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    var cookie = context.Request.Cookies[AdminSiteCookieName];
+
+                    if (String.IsNullOrEmpty(cookie))
+                    {
+                        return NullProviderCultureResult;
+                    }
+
+                    var providerResultCulture = CookieRequestCultureProvider.ParseCookieValue(cookie);
+
+                    return Task.FromResult(providerResultCulture);
+                }
+                else
+                {
+                    return NullProviderCultureResult;
+                }
+            })));
         }
     }
 }
