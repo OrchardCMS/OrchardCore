@@ -159,11 +159,13 @@
                                 @if (entry.ShellSettings.State == TenantState.Disabled)
                                 {
                                     <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm enable" data-url-af="UnsafeUrl">@T["Enable"]</a>
-                                    <a asp-action="Remove" asp-route-id="@entry.Name" class="btn btn-danger btn-sm remove" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Remove"]" data-message="@T["Are you sure you want to remove this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Remove"]</a>
                                 }
                                 @if (entry.ShellSettings.State == TenantState.Uninitialized)
                                 {
                                     <a class="btn btn-info btn-sm setup" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)">@T["Setup"]</a>
+                                }
+                                @if (entry.ShellSettings.State == TenantState.Disabled || entry.ShellSettings.State == TenantState.Uninitialized)
+                                {
                                     <a asp-action="Remove" asp-route-id="@entry.Name" class="btn btn-danger btn-sm remove" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Remove"]" data-message="@T["Are you sure you want to remove this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Remove"]</a>
                                 }
                                 <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm reload" data-url-af="UnsafeUrl">@T["Reload"]</a>
