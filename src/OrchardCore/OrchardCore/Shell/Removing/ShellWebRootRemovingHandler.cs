@@ -10,14 +10,14 @@ namespace OrchardCore.Environment.Shell.Removing;
 /// <summary>
 /// Allows to remove the web root folder of a given tenant.
 /// </summary>
-public class ShellWebRootFolderRemovingHandler : IShellRemovingHostHandler
+public class ShellWebRootRemovingHandler : IShellRemovingHostHandler
 {
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly ILogger _logger;
 
-    public ShellWebRootFolderRemovingHandler(
+    public ShellWebRootRemovingHandler(
         IWebHostEnvironment webHostEnvironment,
-        ILogger<ShellWebRootFolderRemovingHandler> logger)
+        ILogger<ShellWebRootRemovingHandler> logger)
     {
         _webHostEnvironment = webHostEnvironment;
         _logger = logger;

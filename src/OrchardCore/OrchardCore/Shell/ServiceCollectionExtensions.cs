@@ -36,7 +36,7 @@ namespace OrchardCore.Environment.Shell
             services.AddHostedService<DistributedShellHostedService>();
 
             services.AddSingleton<IShellRemovingManager, ShellRemovingManager>();
-            services.AddSingleton<IShellRemovingHostHandler, ShellWebRootFolderRemovingHandler>();
+            services.AddSingleton<IShellRemovingHostHandler, ShellWebRootRemovingHandler>();
             services.AddSingleton<IShellRemovingHostHandler, ShellSiteFolderRemovingHandler>();
             services.AddSingleton<IShellRemovingHostHandler, ShellSettingsRemovingHandler>();
 

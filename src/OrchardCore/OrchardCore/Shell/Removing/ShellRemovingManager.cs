@@ -68,7 +68,7 @@ public class ShellRemovingManager : IShellRemovingManager
 
             await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
             {
-                // Execute removing tenant level handlers (singletons or scoped) in a reverse order.
+                // Execute tenant level removing handlers (singletons or scoped) in a reverse order.
                 var tenantHandlers = scope.ServiceProvider.GetServices<IModularTenantEvents>().Reverse();
                 foreach (var handler in tenantHandlers)
                 {
@@ -116,7 +116,7 @@ public class ShellRemovingManager : IShellRemovingManager
 
             await using var acquiredLock = locker;
 
-            // Execute removing host level handlers in a reverse order.
+            // Execute host level removing handlers in a reverse order.
             foreach (var handler in _shellRemovingHostHandlers.Reverse())
             {
                 try
