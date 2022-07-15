@@ -7,7 +7,7 @@ namespace OrchardCore.Environment.Shell.Removing;
 /// <summary>
 /// Allows to remove the shell settings of a given tenant.
 /// </summary>
-public class ShellSettingsRemovingHandler : ShellRemovingHostHandler
+public class ShellSettingsRemovingHandler : IShellRemovingHostHandler
 {
     private readonly IShellHost _shellHost;
     private readonly ILogger _logger;
@@ -21,11 +21,18 @@ public class ShellSettingsRemovingHandler : ShellRemovingHostHandler
     /// <summary>
     /// Removes the shell settings of the provided tenant.
     /// </summary>
-    public override async Task RemovingAsync(ShellRemovingContext context)
+    public async Task RemovingAsync(ShellRemovingContext context)
     {
         try
         {
-            await _shellHost.RemoveShellSettingsAsync(context.ShellSettings);
+            if (context.LocalResourcesOnly)
+            {
+                await _shellHost.RemoveShellContextAsync(context.ShellSettings);
+            }
+            else
+            {
+                await _shellHost.RemoveShellSettingsAsync(context.ShellSettings);
+            }
         }
         catch (Exception ex)
         {

@@ -10,14 +10,14 @@ namespace OrchardCore.Environment.Shell.Removing;
 /// <summary>
 /// Allows to remove the web root folder of a given tenant.
 /// </summary>
-public class ShellWebRootRemovingHandler : ShellRemovingHostHandler
+public class ShellWebRootFolderRemovingHandler : IShellRemovingHostHandler
 {
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly ILogger _logger;
 
-    public ShellWebRootRemovingHandler(
+    public ShellWebRootFolderRemovingHandler(
         IWebHostEnvironment webHostEnvironment,
-        ILogger<ShellWebRootRemovingHandler> logger)
+        ILogger<ShellWebRootFolderRemovingHandler> logger)
     {
         _webHostEnvironment = webHostEnvironment;
         _logger = logger;
@@ -26,7 +26,7 @@ public class ShellWebRootRemovingHandler : ShellRemovingHostHandler
     /// <summary>
     /// Removes the web root folder of the provided tenant.
     /// </summary>
-    public override Task RemovingAsync(ShellRemovingContext context)
+    public Task RemovingAsync(ShellRemovingContext context)
     {
         if (context.ShellSettings.State == TenantState.Uninitialized)
         {
@@ -58,9 +58,4 @@ public class ShellWebRootRemovingHandler : ShellRemovingHostHandler
 
         return Task.CompletedTask;
     }
-
-    /// <summary>
-    /// In a distributed environment, removes locally the folder of the provided tenant.
-    /// </summary>
-    public override Task LocalRemovingAsync(ShellRemovingContext context) => RemovingAsync(context);
 }

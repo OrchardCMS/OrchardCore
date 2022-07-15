@@ -10,5 +10,11 @@ public interface IShellRemovingManager
     /// <summary>
     /// Removes the provided tenant.
     /// </summary>
-    Task<ShellRemovingContext> RemoveAsync(string tenant);
+    /// <param name="settings">The tenant <see cref="ShellSettings"/>.</param>
+    /// <param name="localResourcesOnly">
+    /// Indicates that only local (non shared) resources should be removed.
+    /// Used to sync locally a tenant that was removed by another instance.
+    /// </param>
+    /// <returns>A <see cref="ShellRemovingContext"/>.</returns>
+    Task<ShellRemovingContext> RemoveAsync(ShellSettings settings, bool localResourcesOnly = false);
 }

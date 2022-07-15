@@ -7,25 +7,25 @@ using Microsoft.Extensions.Options;
 namespace OrchardCore.Environment.Shell.Removing;
 
 /// <summary>
-/// Allows to remove the app data folder of a given tenant.
+/// Allows to remove site folder of a given tenant.
 /// </summary>
-public class ShellAppDataRemovingHandler : ShellRemovingHostHandler
+public class ShellSiteFolderRemovingHandler : IShellRemovingHostHandler
 {
     private readonly ShellOptions _shellOptions;
     private readonly ILogger _logger;
 
-    public ShellAppDataRemovingHandler(
+    public ShellSiteFolderRemovingHandler(
         IOptions<ShellOptions> shellOptions,
-        ILogger<ShellAppDataRemovingHandler> logger)
+        ILogger<ShellSiteFolderRemovingHandler> logger)
     {
         _shellOptions = shellOptions.Value;
         _logger = logger;
     }
 
     /// <summary>
-    /// Removes the app data folder of the provided tenant.
+    /// Removes the site folder of the provided tenant.
     /// </summary>
-    public override Task RemovingAsync(ShellRemovingContext context)
+    public Task RemovingAsync(ShellRemovingContext context)
     {
         var shellAppDataFolder = Path.Combine(
             _shellOptions.ShellsApplicationDataPath,
@@ -53,9 +53,4 @@ public class ShellAppDataRemovingHandler : ShellRemovingHostHandler
 
         return Task.CompletedTask;
     }
-
-    /// <summary>
-    /// In a distributed environment, removes locally the app data folder of the provided tenant.
-    /// </summary>
-    public override Task LocalRemovingAsync(ShellRemovingContext context) => RemovingAsync(context);
 }

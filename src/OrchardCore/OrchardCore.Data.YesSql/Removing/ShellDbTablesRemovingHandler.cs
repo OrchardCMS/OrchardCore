@@ -15,7 +15,7 @@ namespace OrchardCore.Environment.Shell.Removing;
 /// <summary>
 /// Allows to remove the database tables retrieved from the migrations of a given tenant.
 /// </summary>
-public class ShellDbTablesRemovingHandler : ShellRemovingHostHandler
+public class ShellDbTablesRemovingHandler : IShellRemovingHostHandler
 {
     private readonly IShellContextFactory _shellContextFactory;
     private readonly ILogger _logger;
@@ -31,9 +31,9 @@ public class ShellDbTablesRemovingHandler : ShellRemovingHostHandler
     /// <summary>
     /// Removes the database tables retrieved from the migrations of the provided tenant.
     /// </summary>
-    public override async Task RemovingAsync(ShellRemovingContext context)
+    public async Task RemovingAsync(ShellRemovingContext context)
     {
-        if (context.ShellSettings.State == TenantState.Uninitialized)
+        if (context.LocalResourcesOnly || context.ShellSettings.State == TenantState.Uninitialized)
         {
             return;
         }

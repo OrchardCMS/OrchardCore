@@ -4,10 +4,12 @@ namespace OrchardCore.Environment.Shell.Removing;
 
 public class ShellRemovingContext
 {
+    private string _errorMessage;
+
     public ShellSettings ShellSettings { get; set; }
+    public bool LocalResourcesOnly { get; set; }
     public bool Success => ErrorMessage == null;
 
-    private string _errorMessage;
     public string ErrorMessage
     {
         get => Error != null

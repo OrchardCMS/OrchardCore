@@ -290,7 +290,7 @@ namespace OrchardCore.Tenants.Controllers
                         }
                         else
                         {
-                            var context = await _shellRemovingManager.RemoveAsync(shellSettings.Name);
+                            var context = await _shellRemovingManager.RemoveAsync(shellSettings);
                             if (!context.Success)
                             {
                                 await _notifier.ErrorAsync(H["Failed to remove the tenant '{0}'. {1}", shellSettings.Name, context.ErrorMessage]);
@@ -638,7 +638,7 @@ namespace OrchardCore.Tenants.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var context = await _shellRemovingManager.RemoveAsync(shellSettings.Name);
+            var context = await _shellRemovingManager.RemoveAsync(shellSettings);
             if (!context.Success)
             {
                 await _notifier.ErrorAsync(H["Failed to remove the tenant '{0}'. {1}", id, context.ErrorMessage]);
