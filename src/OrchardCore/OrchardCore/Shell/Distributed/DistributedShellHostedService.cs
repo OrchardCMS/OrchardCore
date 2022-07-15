@@ -219,7 +219,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                                     // Upate the local identifier.
                                     identifier.RemoveId = removeId;
 
-                                    // Keep in sync this tenant by removing its local and non shared resources.
+                                    // Keep in sync this tenant by removing its local (non shared) resources.
                                     await _shellRemovingManager.RemoveAsync(settings, localResourcesOnly: true);
                                 }
                             }
