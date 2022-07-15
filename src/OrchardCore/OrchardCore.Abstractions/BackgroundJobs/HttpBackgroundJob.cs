@@ -14,7 +14,7 @@ public static class HttpBackgroundJob
     /// <summary>
     /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
     /// </summary>
-    public static Task AfterEndOfRequestAsync(string jobName, Func<ShellScope, Task> job)
+    public static Task ExecuteAfterEndOfRequestAsync(string jobName, Func<ShellScope, Task> job)
     {
         var scope = ShellScope.Current;
 
