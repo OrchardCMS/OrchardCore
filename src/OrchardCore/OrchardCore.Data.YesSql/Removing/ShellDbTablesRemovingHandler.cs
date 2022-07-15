@@ -15,7 +15,7 @@ namespace OrchardCore.Environment.Shell.Removing;
 /// <summary>
 /// Allows to remove the database tables retrieved from the migrations of a given tenant.
 /// </summary>
-public class ShellDbTablesRemovingHandler : IShellRemovingHostHandler
+public class ShellDbTablesRemovingHandler : IShellRemovingHandler
 {
     private readonly IShellContextFactory _shellContextFactory;
     private readonly ILogger _logger;

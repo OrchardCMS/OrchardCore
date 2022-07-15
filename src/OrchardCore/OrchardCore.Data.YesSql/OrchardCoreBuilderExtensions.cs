@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
         public static OrchardCoreBuilder AddDataAccess(this OrchardCoreBuilder builder)
         {
-            builder.ApplicationServices.AddSingleton<IShellRemovingHostHandler, ShellDbTablesRemovingHandler>();
+            builder.ApplicationServices.AddSingleton<IShellRemovingHandler, ShellDbTablesRemovingHandler>();
 
             builder.ConfigureServices(services =>
             {

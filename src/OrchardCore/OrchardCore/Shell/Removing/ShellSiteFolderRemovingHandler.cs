@@ -9,7 +9,7 @@ namespace OrchardCore.Environment.Shell.Removing;
 /// <summary>
 /// Allows to remove site folder of a given tenant.
 /// </summary>
-public class ShellSiteFolderRemovingHandler : IShellRemovingHostHandler
+public class ShellSiteFolderRemovingHandler : IShellRemovingHandler
 {
     private readonly ShellOptions _shellOptions;
     private readonly ILogger _logger;

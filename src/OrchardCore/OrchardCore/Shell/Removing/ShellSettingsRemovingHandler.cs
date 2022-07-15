@@ -7,7 +7,7 @@ namespace OrchardCore.Environment.Shell.Removing;
 /// <summary>
 /// Allows to remove the shell settings of a given tenant.
 /// </summary>
-public class ShellSettingsRemovingHandler : IShellRemovingHostHandler
+public class ShellSettingsRemovingHandler : IShellRemovingHandler
 {
     private readonly IShellHost _shellHost;
     private readonly ILogger _logger;

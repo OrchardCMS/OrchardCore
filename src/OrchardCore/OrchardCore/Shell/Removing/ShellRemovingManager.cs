@@ -14,51 +14,51 @@ public class ShellRemovingManager : IShellRemovingManager
 {
     private readonly IShellHost _shellHost;
     private readonly IShellContextFactory _shellContextFactory;
-    private readonly IEnumerable<IShellRemovingHostHandler> _shellRemovingHostHandlers;
+    private readonly IEnumerable<IShellRemovingHandler> _shellRemovingHandlers;
     private readonly ILogger _logger;
 
     public ShellRemovingManager(
         IShellHost shellHost,
         IShellContextFactory shellContextFactory,
-        IEnumerable<IShellRemovingHostHandler> shellRemovingHostHandlers,
+        IEnumerable<IShellRemovingHandler> shellRemovingHandlers,
         ILogger<ShellRemovingManager> logger)
     {
         _shellHost = shellHost;
         _shellContextFactory = shellContextFactory;
-        _shellRemovingHostHandlers = shellRemovingHostHandlers;
+        _shellRemovingHandlers = shellRemovingHandlers;
         _logger = logger;
     }
 
-    public async Task<ShellRemovingContext> RemoveAsync(ShellSettings settings, bool localResourcesOnly = false)
+    public async Task<ShellRemovingContext> RemoveAsync(ShellSettings shellSettings, bool localResourcesOnly = false)
     {
         var context = new ShellRemovingContext
         {
-            ShellSettings = settings,
+            ShellSettings = shellSettings,
             LocalResourcesOnly = localResourcesOnly,
         };
 
-        if (settings.Name == ShellHelper.DefaultShellName)
+        if (shellSettings.Name == ShellHelper.DefaultShellName)
         {
             context.ErrorMessage = $"The tenant should not be the '{ShellHelper.DefaultShellName}' tenant.";
             return context;
         }
 
-        if (settings.State != TenantState.Disabled && settings.State != TenantState.Uninitialized)
+        if (shellSettings.State != TenantState.Disabled && shellSettings.State != TenantState.Uninitialized)
         {
-            context.ErrorMessage = $"The tenant '{settings.Name}' should be 'Disabled' or 'Uninitialized'.";
+            context.ErrorMessage = $"The tenant '{shellSettings.Name}' should be 'Disabled' or 'Uninitialized'.";
             return context;
         }
 
-        if (settings.State == TenantState.Disabled && !context.LocalResourcesOnly)
+        if (shellSettings.State == TenantState.Disabled && !context.LocalResourcesOnly)
         {
             // Create an isolated shell context composed of all features that have been installed.
-            using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(settings);
+            using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
             (var locker, var locked) = await shellContext.TryAcquireShellRemovingLockAsync();
             if (!locked)
             {
                 _logger.LogError(
                     "Failed to acquire a lock before executing the tenant level removing handlers while removing the tenant '{TenantName}'.",
-                    settings.Name);
+                    shellSettings.Name);
 
                 context.ErrorMessage = $"Failed to acquire a lock before executing the tenant level removing handlers.";
                 return context;
@@ -88,7 +88,7 @@ public class ShellRemovingManager : IShellRemovingManager
                             ex,
                             "Failed to execute the tenant level removing handler '{TenantHandler}' while removing the tenant '{TenantName}'.",
                             type,
-                            settings.Name);
+                            shellSettings.Name);
 
                         context.ErrorMessage = $"Failed to execute the tenant level removing handler '{type}'.";
                         context.Error = ex;
@@ -99,16 +99,16 @@ public class ShellRemovingManager : IShellRemovingManager
             });
         }
 
-        if (_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var shellSettings))
+        if (_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
         {
             // Use the default shell context to execute the host level removing handlers.
-            var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
+            var shellContext = await _shellHost.GetOrCreateShellContextAsync(defaultSettings);
             (var locker, var locked) = await shellContext.TryAcquireShellRemovingLockAsync();
             if (!locked)
             {
                 _logger.LogError(
                     "Failed to acquire a lock before executing the host level removing handlers while removing the tenant '{TenantName}'.",
-                    settings.Name);
+                    shellSettings.Name);
 
                 context.ErrorMessage = $"Failed to acquire a lock before executing the host level removing handlers.";
                 return context;
@@ -117,7 +117,7 @@ public class ShellRemovingManager : IShellRemovingManager
             await using var acquiredLock = locker;
 
             // Execute host level removing handlers in a reverse order.
-            foreach (var handler in _shellRemovingHostHandlers.Reverse())
+            foreach (var handler in _shellRemovingHandlers.Reverse())
             {
                 try
                 {
@@ -135,7 +135,7 @@ public class ShellRemovingManager : IShellRemovingManager
                         ex,
                         "Failed to execute the host level removing handler '{HostHandler}' while removing the tenant '{TenantName}'.",
                         type,
-                        settings.Name);
+                        shellSettings.Name);
 
                     context.ErrorMessage = $"Failed to execute the host level removing handler '{type}'.";
                     context.Error = ex;
