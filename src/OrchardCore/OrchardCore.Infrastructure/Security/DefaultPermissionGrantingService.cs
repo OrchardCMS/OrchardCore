@@ -41,7 +41,7 @@ namespace OrchardCore.Security
                 foreach (var impliedBy in permission.ImpliedBy)
                 {
                     // Avoid potential recursion
-                    if (stack.Contains(impliedBy.Name))
+                    if (impliedBy == null || stack.Contains(impliedBy.Name))
                     {
                         continue;
                     }

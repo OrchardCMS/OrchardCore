@@ -75,7 +75,7 @@ namespace OrchardCore.ContentFields.Drivers
                         HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
                     });
                 }
-            }));
+            });
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPickerField field, IUpdateModel updater, UpdateFieldEditorContext context)

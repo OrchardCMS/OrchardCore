@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -114,9 +115,9 @@ namespace OrchardCore.Media.Processing
             }
         }
 
-        public bool TryValidateToken(IDictionary<string, string> commands, string token)
+        public bool TryValidateToken(KeyedCollection<string, KeyValuePair<string, string>> commands, string token)
         {
-            var queryStringTokenKey = CreateQueryStringTokenKey(commands);
+            var queryStringTokenKey = CreateCommandCollectionTokenKey(commands);
 
             // Store a hash of the valid query string commands.
             var queryStringToken = GetHash(queryStringTokenKey);
@@ -140,10 +141,11 @@ namespace OrchardCore.Media.Processing
             {
                 builder.Append(pair.Value.ToString());
             }
+
             return builder.ToString();
         }
 
-        private static string CreateQueryStringTokenKey(IDictionary<string, string> values)
+        private static string CreateCommandCollectionTokenKey(KeyedCollection<string, KeyValuePair<string, string>> values)
         {
             using var builder = ZString.CreateStringBuilder();
             builder.Append(TokenCacheKeyPrefix);
@@ -151,6 +153,7 @@ namespace OrchardCore.Media.Processing
             {
                 builder.Append(pair.Value);
             }
+
             return builder.ToString();
         }
 
@@ -183,11 +186,11 @@ namespace OrchardCore.Media.Processing
                 entry.Value = result = Convert.ToBase64String(hashBytes.Slice(0, hashBytesLength));
             }
 
-            return (string) result;
+            return (string)result;
         }
 
         /// <summary>
-        /// Custom version of <see cref="QueryHelpers.AddQueryString(string,string,string)"/> that takes our pre-built
+        /// Custom version of <see cref="QueryHelpers.AddQueryString(String,String,String)"/> that takes our pre-built
         /// dictionary, uri as ReadOnlySpan&lt;char&gt; and uses ZString. Otherwise same logic.
         /// </summary>
         private static string AddQueryString(
@@ -219,6 +222,7 @@ namespace OrchardCore.Media.Processing
             }
 
             sb.Append(anchorText);
+
             return sb.ToString();
         }
     }
