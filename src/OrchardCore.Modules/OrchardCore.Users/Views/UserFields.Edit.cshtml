@@ -1,6 +1,9 @@
 @model EditUserViewModel
 @using OrchardCore.Entities
 @using OrchardCore.Users.Models
+@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Identity
+@inject IOptions<IdentityOptions> IdentityOptions
 
 @if (Site.As<RegistrationSettings>().UsersMustValidateEmail)
 {
@@ -47,7 +50,6 @@
 
     <script at="Foot" asp-name="userFieldsPassword">
         document.addEventListener('DOMContentLoaded', function() {
-            const strongPasswordLength = 12;
             let password = document.getElementById('@Html.IdFor(p => p.Password)');
             let passwordConfirmation = document.getElementById('@Html.IdFor(p => p.PasswordConfirmation)');
             let passwordToggle = document.getElementById('passwordToggle');
@@ -72,15 +74,58 @@
 
                 element.type = 'password';
             }
+            @* The generated password should be at least 12 characters in length. But, it should meet the minimum requirements *@
+            const strongPasswordLength = @(Math.Max(12, Math.Max(IdentityOptions.Value.Password.RequiredLength, IdentityOptions.Value.Password.RequiredUniqueChars)));
+            const allowed = {
+                uppers: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                lowers: 'abcdefghijklmnopqrstuvwxyz',
+                digits: '0123456789',
+                symbols: '!@@#$%^&*'
+            };
+
+            const getRandomChar = (str) => str.charAt(Math.floor(Math.random() * str.length));
+            const shuffle = (str) => str.sort(function() { return 0.5 - Math.random() });
+            const meetUniqueRule = (str) => {
+                let uniqueCharacters = str.filter((item, i, ar) => ar.indexOf(item) === i);
+
+                return uniqueCharacters.length >= @(IdentityOptions.Value.Password.RequiredUniqueChars);
+            };
+
             function generatePassword() {
-                const chars = '0123456789abcdefghijklmnopqrstuvwxyz!@@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                let password = '';
-                for (var i = 0; i <= strongPasswordLength; i++) {
-                    var randomNumber = Math.floor(Math.random() * chars.length);
-                    password += chars.substring(randomNumber, randomNumber + 1);
+                let password = [];
+
+                @* At least one uppercase *@
+                password.push(getRandomChar(allowed.uppers));
+
+                @* At least one lowercase *@
+                password.push(getRandomChar(allowed.lowers));
+
+                @* At least one digit *@
+                password.push(getRandomChar(allowed.digits));
+
+                @* At least one special character *@
+                password.push(getRandomChar(allowed.symbols));
+
+                let passwordLength = password.length;
+
+                if (passwordLength < strongPasswordLength) {
+                    @* At this point we need lengthier password. Fill the rest of the password with random characters *@
+                    let combineAllowed = shuffle(Object.values(allowed)).join('');
+                    for (let i = passwordLength; i < strongPasswordLength; i++) {
+                        password.push(getRandomChar(combineAllowed));
+                    }
+                }
+                @* The generated password does not meet the required-unique-chars requirment, create another one *@
+                @if (IdentityOptions.Value.Password.RequiredUniqueChars+5 > 1)
+                {
+                    <text>
+                    if (!meetUniqueRule(password)) {
+                        return generatePassword();
+                    }
+                    </text>
                 }
 
-                return password;
+                return shuffle(password).join('');
             }
             function copyPassword(text) {
                 navigator.clipboard.writeText(text);
