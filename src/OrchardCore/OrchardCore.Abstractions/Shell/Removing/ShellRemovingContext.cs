@@ -7,8 +7,9 @@ public class ShellRemovingContext
     private string _errorMessage;
 
     public ShellSettings ShellSettings { get; set; }
-    public bool LocalResourcesOnly { get; set; }
     public bool Success => ErrorMessage == null;
+    public bool LocalResourcesOnly { get; set; }
+    public bool FailedOnLockTimeout { get; set; }
 
     public string ErrorMessage
     {

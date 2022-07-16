@@ -30,7 +30,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
             if (options.ShellRemovingLockTimeout <= 0)
             {
-                options.ShellRemovingLockTimeout = 500;
+                options.ShellRemovingLockTimeout = 1_000;
             }
 
             if (options.ShellRemovingLockExpiration <= 0)

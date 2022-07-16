@@ -49,6 +49,7 @@ public class ShellRemovingManager : IShellRemovingManager
             return context;
         }
 
+        // Check if the tenant is not 'Uninitialized' and that all resources should be removed.
         if (shellSettings.State == TenantState.Disabled && !context.LocalResourcesOnly)
         {
             // Create an isolated shell context composed of all features that have been installed.
@@ -111,6 +112,13 @@ public class ShellRemovingManager : IShellRemovingManager
                     shellSettings.Name);
 
                 context.ErrorMessage = $"Failed to acquire a lock before executing the host level removing handlers.";
+
+                // If only local resources should be removed while syncing tenants.
+                if (context.LocalResourcesOnly)
+                {
+                    context.FailedOnLockTimeout = true;
+                }
+
                 return context;
             }
 
