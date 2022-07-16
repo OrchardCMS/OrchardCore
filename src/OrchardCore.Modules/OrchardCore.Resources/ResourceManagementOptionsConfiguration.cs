@@ -11,12 +11,12 @@ namespace OrchardCore.Resources
         private readonly ResourceOptions _resourceSetting;
         private readonly IHostEnvironment _env;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly string _pathBase;
-        private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
+        private readonly PathString _pathBase;
         // Versions
         private const string codeMirrorVersion = "5.65.4";
         private const string monacoEditorVersion = "0.33.0";
         // URLs
+        private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
 
         public ResourceManagementOptionsConfiguration(IOptions<ResourceOptions> resourceSettingOptions, IHostEnvironment env, IHttpContextAccessor httpContextAccessor)
@@ -473,7 +473,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("monaco")
-                .SetAttribute("data-tenant-prefix", _pathBase)
+                .SetAttribute("data-tenant-prefix", _pathBase.Value)
                 .SetUrl("~/OrchardCore.Resources/Scripts/monaco/ocmonaco.js")
                 .SetDependencies("monaco-loader")
                 .SetVersion(monacoEditorVersion);
@@ -503,7 +503,7 @@ namespace OrchardCore.Resources
             options.UseCdn = _resourceSetting.UseCdn;
             options.CdnBaseUrl = _resourceSetting.CdnBaseUrl;
             options.AppendVersion = _resourceSetting.AppendVersion;
-            options.ContentBasePath = _pathBase;
+            options.ContentBasePath = _pathBase.Value;
         }
     }
 }
