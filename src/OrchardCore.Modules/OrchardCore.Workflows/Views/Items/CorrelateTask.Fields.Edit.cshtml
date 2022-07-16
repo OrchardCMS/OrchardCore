@@ -1,12 +1,23 @@
 @using OrchardCore.Workflows.ViewModels;
 @model CorrelateTaskViewModel
 
+<div class="form-group mb-3">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="IsLiquidSyntax" checked="@Model.IsLiquidSyntax" />
+        <label class="custom-control-label" asp-for="IsLiquidSyntax">@T["Is Liquid syntax"]</label>
+        <span class="hint dashed">
+            @T["Choose between Liquid or Javascript support."]
+        </span>
+    </div>
+</div>
+
 <div class="mb-3" asp-validation-class-for="Value">
     <label asp-for="Value">@T["Value"]</label>
-    <input  type="hidden" asp-for="Value" class="form-control "/>
-    <div id="@Html.IdFor(x => x.Value)_editor" asp-for="Text" class="form-control"></div>
+    <input type="hidden" asp-for="Value" class="form-control"/>
+     <div id="@Html.IdFor(x => x.Value)_editor" asp-for="Text" class="form-control" style="min-height: 40px;"></div>
     <span asp-validation-for="Value"></span>
-    <span class="hint">@T["The value to correlate workflow instances with. With Javascript support."]</span>
+    <span id="liquid_hint" class="hint @(Model.IsLiquidSyntax ? "" : "d-none")">@T["The value to correlate workflow instances with. With Liquid support."]</span>
+    <span id="javascript_hint" class="hint @(Model.IsLiquidSyntax ? "d-none" : "")">@T["The value to correlate workflow instances with. With Javascript support."]</span>
 </div> 
 <script asp-name="monaco" depends-on="admin" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
@@ -14,7 +25,7 @@
         require(['vs/editor/editor.main'], function () {
             var settings=  {
                   "automaticLayout": true,
-                  "language": "javascript"
+                  "language": "@(Model.IsLiquidSyntax ? "liquid" : "javascript")"
                 };
 
             var html = document.getElementsByTagName("html")[0];
@@ -40,6 +51,19 @@
             window.addEventListener("submit", function () {
                 textArea.value = editor.getValue();
             });
+
+            $('#@Html.IdFor(x => x.IsLiquidSyntax)').on('change', function() {
+                if ($(this).is(":checked")) {
+                    monaco.editor.setModelLanguage(editor.getModel(), 'liquid');
+                    document.getElementById('javascript_hint').classList.add('d-none');
+                    document.getElementById('liquid_hint').classList.remove('d-none');
+                } else {
+                    monaco.editor.setModelLanguage(editor.getModel(), 'javascript');
+                    document.getElementById('liquid_hint').classList.add('d-none');
+                    document.getElementById('javascript_hint').classList.remove('d-none');
+                }
+            });
         });
     });
 </script>
+
