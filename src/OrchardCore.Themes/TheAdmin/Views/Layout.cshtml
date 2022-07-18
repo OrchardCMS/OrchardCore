@@ -41,7 +41,7 @@
                 </div>
                 <div class="d-flex align-items-center">
                     @await RenderSectionAsync("NavbarTop", required: false)
-                    @await DisplayAsync(await New.CulturePicker())
+                    @await DisplayAsync(await New.CulturePicker(), "OrchardCore.Localization.CulturePicker")
                     @if (adminSettings.DisplayDarkMode)
                     {
                         <a id="btn-darkmode" class="me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
