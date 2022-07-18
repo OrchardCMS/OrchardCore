@@ -1,10 +1,9 @@
 using System;
 
-namespace OrchardCore.Flows.Models
+namespace OrchardCore.Flows.Models;
+
+public class BagPartSettings
 {
-    public class BagPartSettings
-    {
-        public string[] ContainedContentTypes { get; set; } = Array.Empty<string>();
-        public string DisplayType { get; set; }
-    }
+    public string[] ContainedContentTypes { get; set; } = Array.Empty<string>();
+    public string DisplayType { get; set; }
 }

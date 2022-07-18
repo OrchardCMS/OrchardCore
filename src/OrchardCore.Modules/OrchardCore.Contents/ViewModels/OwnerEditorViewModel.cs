@@ -1,7 +1,6 @@
-namespace OrchardCore.Contents.ViewModels
+namespace OrchardCore.Contents.ViewModels;
+
+public class OwnerEditorViewModel
 {
-    public class OwnerEditorViewModel
-    {
-        public string OwnerName { get; set; }
-    }
+    public string OwnerName { get; set; }
 }

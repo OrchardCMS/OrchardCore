@@ -1,7 +1,6 @@
-namespace OrchardCore.Sitemaps.ViewModels
+namespace OrchardCore.Sitemaps.ViewModels;
+
+public class ListSitemapCacheViewModel
 {
-    public class ListSitemapCacheViewModel
-    {
-        public string[] CachedFileNames { get; set; }
-    }
+    public string[] CachedFileNames { get; set; }
 }

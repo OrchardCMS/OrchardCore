@@ -3,13 +3,12 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.Themes.TheAdmin
+namespace OrchardCore.Themes.TheAdmin;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection serviceCollection)
     {
-        public override void ConfigureServices(IServiceCollection serviceCollection)
-        {
-            serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
-        }
+        serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
     }
 }

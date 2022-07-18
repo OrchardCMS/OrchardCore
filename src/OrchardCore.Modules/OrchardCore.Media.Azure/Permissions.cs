@@ -3,27 +3,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Media.Azure
+namespace OrchardCore.Media.Azure;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
+    public static readonly Permission ViewAzureMediaOptions = new Permission(nameof(ViewAzureMediaOptions), "View Azure Media Options");
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        public static readonly Permission ViewAzureMediaOptions = new Permission(nameof(ViewAzureMediaOptions), "View Azure Media Options");
+        return Task.FromResult(new[] { ViewAzureMediaOptions }.AsEnumerable());
+    }
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return Task.FromResult(new[] { ViewAzureMediaOptions }.AsEnumerable());
-        }
-
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
+            new PermissionStereotype
             {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[] { ViewAzureMediaOptions }
-                }
-            };
-        }
+                Name = "Administrator",
+                Permissions = new[] { ViewAzureMediaOptions }
+            }
+        };
     }
 }

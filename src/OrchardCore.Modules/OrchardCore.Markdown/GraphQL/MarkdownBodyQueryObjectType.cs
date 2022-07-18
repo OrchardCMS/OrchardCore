@@ -17,74 +17,73 @@ using OrchardCore.Markdown.ViewModels;
 using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 
-namespace OrchardCore.Markdown.GraphQL
+namespace OrchardCore.Markdown.GraphQL;
+
+public class MarkdownBodyQueryObjectType : ObjectGraphType<MarkdownBodyPart>
 {
-    public class MarkdownBodyQueryObjectType : ObjectGraphType<MarkdownBodyPart>
+    public MarkdownBodyQueryObjectType(IStringLocalizer<MarkdownBodyQueryObjectType> S)
     {
-        public MarkdownBodyQueryObjectType(IStringLocalizer<MarkdownBodyQueryObjectType> S)
-        {
-            Name = nameof(MarkdownBodyPart);
-            Description = S["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
+        Name = nameof(MarkdownBodyPart);
+        Description = S["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
 
-            Field("markdown", x => x.Markdown, nullable: true)
-                .Description(S["the markdown value"]);
-            Field<StringGraphType>()
-                .Name("html")
-                .Description(S["the HTML representation of the markdown content"])
-                .ResolveLockedAsync(ToHtml);
+        Field("markdown", x => x.Markdown, nullable: true)
+            .Description(S["the markdown value"]);
+        Field<StringGraphType>()
+            .Name("html")
+            .Description(S["the HTML representation of the markdown content"])
+            .ResolveLockedAsync(ToHtml);
+    }
+
+    private static async Task<object> ToHtml(ResolveFieldContext<MarkdownBodyPart> ctx)
+    {
+        if (string.IsNullOrEmpty(ctx.Source.Markdown))
+        {
+            return ctx.Source.Markdown;
         }
 
-        private static async Task<object> ToHtml(ResolveFieldContext<MarkdownBodyPart> ctx)
+        var serviceProvider = ctx.ResolveServiceProvider();
+        var markdownService = serviceProvider.GetRequiredService<IMarkdownService>();
+        var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
+        var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
+
+        var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
+        var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart"));
+        var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
+
+        // The default Markdown option is to entity escape html
+        // so filters must be run after the markdown has been processed.
+        var html = markdownService.ToHtml(ctx.Source.Markdown);
+
+        // The liquid rendering is for backwards compatability and can be removed in a future version.
+        if (!settings.SanitizeHtml)
         {
-            if (string.IsNullOrEmpty(ctx.Source.Markdown))
+            var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
+            var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
+            var model = new MarkdownBodyPartViewModel()
             {
-                return ctx.Source.Markdown;
-            }
+                Markdown = ctx.Source.Markdown,
+                Html = html,
+                MarkdownBodyPart = ctx.Source,
+                ContentItem = ctx.Source.ContentItem
+            };
 
-            var serviceProvider = ctx.ResolveServiceProvider();
-            var markdownService = serviceProvider.GetRequiredService<IMarkdownService>();
-            var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
-            var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
-
-            var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart"));
-            var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
-
-            // The default Markdown option is to entity escape html
-            // so filters must be run after the markdown has been processed.
-            var html = markdownService.ToHtml(ctx.Source.Markdown);
-
-            // The liquid rendering is for backwards compatability and can be removed in a future version.
-            if (!settings.SanitizeHtml)
-            {
-                var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
-                var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
-                var model = new MarkdownBodyPartViewModel()
-                {
-                    Markdown = ctx.Source.Markdown,
-                    Html = html,
-                    MarkdownBodyPart = ctx.Source,
-                    ContentItem = ctx.Source.ContentItem
-                };
-
-                html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
-            }
-
-            html = await shortcodeService.ProcessAsync(html,
-                new Context
-                {
-                    ["ContentItem"] = ctx.Source.ContentItem,
-                    ["PartFieldDefinition"] = contentTypePartDefinition
-                });
-
-            if (settings.SanitizeHtml)
-            {
-                var htmlSanitizerService = serviceProvider.GetRequiredService<IHtmlSanitizerService>();
-                html = htmlSanitizerService.Sanitize(html);
-            }
-
-            return html;
+            html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
+                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
         }
+
+        html = await shortcodeService.ProcessAsync(html,
+            new Context
+            {
+                ["ContentItem"] = ctx.Source.ContentItem,
+                ["PartFieldDefinition"] = contentTypePartDefinition
+            });
+
+        if (settings.SanitizeHtml)
+        {
+            var htmlSanitizerService = serviceProvider.GetRequiredService<IHtmlSanitizerService>();
+            html = htmlSanitizerService.Sanitize(html);
+        }
+
+        return html;
     }
 }

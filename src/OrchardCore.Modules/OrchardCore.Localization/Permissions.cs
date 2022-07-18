@@ -3,35 +3,34 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Localization
+namespace OrchardCore.Localization;
+
+/// <summary>
+/// Represents the localization module permissions.
+/// </summary>
+public class Permissions : IPermissionProvider
 {
     /// <summary>
-    /// Represents the localization module permissions.
+    /// Gets a permission for managing the cultures.
     /// </summary>
-    public class Permissions : IPermissionProvider
+    public static readonly Permission ManageCultures = new Permission("ManageCultures", "Manage supported culture");
+
+    /// <inheritdocs />
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        /// <summary>
-        /// Gets a permission for managing the cultures.
-        /// </summary>
-        public static readonly Permission ManageCultures = new Permission("ManageCultures", "Manage supported culture");
+        return Task.FromResult(new[] { ManageCultures }.AsEnumerable());
+    }
 
-        /// <inheritdocs />
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    /// <inheritdocs />
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return Task.FromResult(new[] { ManageCultures }.AsEnumerable());
-        }
-
-        /// <inheritdocs />
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
+            new PermissionStereotype
             {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[] { ManageCultures }
-                }
-            };
-        }
+                Name = "Administrator",
+                Permissions = new[] { ManageCultures }
+            }
+        };
     }
 }

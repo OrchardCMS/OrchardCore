@@ -13,96 +13,95 @@ using OrchardCore.Spatial.Fields;
 using OrchardCore.Spatial.Settings;
 using OrchardCore.Spatial.ViewModels;
 
-namespace OrchardCore.Spatial.Drivers
+namespace OrchardCore.Spatial.Drivers;
+
+public class GeoPointFieldDisplayDriver : ContentFieldDisplayDriver<GeoPointField>
 {
-    public class GeoPointFieldDisplayDriver : ContentFieldDisplayDriver<GeoPointField>
+    private readonly IStringLocalizer S;
+
+    public GeoPointFieldDisplayDriver(IStringLocalizer<GeoPointFieldDisplayDriver> localizer)
     {
-        private readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public GeoPointFieldDisplayDriver(IStringLocalizer<GeoPointFieldDisplayDriver> localizer)
-        {
-            S = localizer;
-        }
-
-        public override IDisplayResult Display(GeoPointField field, BuildFieldDisplayContext context)
-        {
-            return Initialize<DisplayGeoPointFieldViewModel>(GetDisplayShapeType(context), model =>
-                {
-                    model.Field = field;
-                    model.Part = context.ContentPart;
-                    model.PartFieldDefinition = context.PartFieldDefinition;
-                })
-                .Location("Detail", "Content")
-                .Location("Summary", "Content");
-        }
-
-        public override IDisplayResult Edit(GeoPointField field, BuildFieldEditorContext context)
-        {
-            return Initialize<EditGeoPointFieldViewModel>(GetEditorShapeType(context), model =>
+    public override IDisplayResult Display(GeoPointField field, BuildFieldDisplayContext context)
+    {
+        return Initialize<DisplayGeoPointFieldViewModel>(GetDisplayShapeType(context), model =>
             {
-                model.Latitude = Convert.ToString(field.Latitude, CultureInfo.InvariantCulture);
-                model.Longitude = Convert.ToString(field.Longitude, CultureInfo.InvariantCulture);
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
-            });
-        }
+            })
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
+    }
 
-        public override async Task<IDisplayResult> UpdateAsync(GeoPointField field, IUpdateModel updater, UpdateFieldEditorContext context)
+    public override IDisplayResult Edit(GeoPointField field, BuildFieldEditorContext context)
+    {
+        return Initialize<EditGeoPointFieldViewModel>(GetEditorShapeType(context), model =>
         {
-            var viewModel = new EditGeoPointFieldViewModel();
+            model.Latitude = Convert.ToString(field.Latitude, CultureInfo.InvariantCulture);
+            model.Longitude = Convert.ToString(field.Longitude, CultureInfo.InvariantCulture);
+            model.Field = field;
+            model.Part = context.ContentPart;
+            model.PartFieldDefinition = context.PartFieldDefinition;
+        });
+    }
 
-            var modelUpdated = await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Latitude, f => f.Longitude);
+    public override async Task<IDisplayResult> UpdateAsync(GeoPointField field, IUpdateModel updater, UpdateFieldEditorContext context)
+    {
+        var viewModel = new EditGeoPointFieldViewModel();
 
-            if (modelUpdated)
+        var modelUpdated = await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Latitude, f => f.Longitude);
+
+        if (modelUpdated)
+        {
+            decimal latitude;
+            decimal longitude;
+
+            var settings = context.PartFieldDefinition.GetSettings<GeoPointFieldSettings>();
+
+            if (String.IsNullOrWhiteSpace(viewModel.Latitude))
             {
-                decimal latitude;
-                decimal longitude;
-
-                var settings = context.PartFieldDefinition.GetSettings<GeoPointFieldSettings>();
-
-                if (String.IsNullOrWhiteSpace(viewModel.Latitude))
+                if (settings.Required)
                 {
-                    if (settings.Required)
-                    {
-                        updater.ModelState.AddModelError(Prefix, nameof(field.Latitude), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
-                    }
-                    else
-                    {
-                        field.Latitude = null;
-                    }
-                }
-                else if (!Decimal.TryParse(viewModel.Latitude, NumberStyles.Any, CultureInfo.InvariantCulture, out latitude))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Latitude), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, nameof(field.Latitude), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else
                 {
-                    field.Latitude = latitude;
-                }
-
-                if (String.IsNullOrWhiteSpace(viewModel.Longitude))
-                {
-                    if (settings.Required)
-                    {
-                        updater.ModelState.AddModelError(Prefix, nameof(field.Longitude), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
-                    }
-                    else
-                    {
-                        field.Longitude = null;
-                    }
-                }
-                else if (!Decimal.TryParse(viewModel.Longitude, NumberStyles.Any, CultureInfo.InvariantCulture, out longitude))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Longitude), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
-                }
-                else
-                {
-                    field.Longitude = longitude;
+                    field.Latitude = null;
                 }
             }
+            else if (!Decimal.TryParse(viewModel.Latitude, NumberStyles.Any, CultureInfo.InvariantCulture, out latitude))
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Latitude), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
+            }
+            else
+            {
+                field.Latitude = latitude;
+            }
 
-            return Edit(field, context);
+            if (String.IsNullOrWhiteSpace(viewModel.Longitude))
+            {
+                if (settings.Required)
+                {
+                    updater.ModelState.AddModelError(Prefix, nameof(field.Longitude), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
+                }
+                else
+                {
+                    field.Longitude = null;
+                }
+            }
+            else if (!Decimal.TryParse(viewModel.Longitude, NumberStyles.Any, CultureInfo.InvariantCulture, out longitude))
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Longitude), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
+            }
+            else
+            {
+                field.Longitude = longitude;
+            }
         }
+
+        return Edit(field, context);
     }
 }

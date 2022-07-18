@@ -7,58 +7,57 @@ using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.ViewModels;
 using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.Liquid.Drivers
+namespace OrchardCore.Liquid.Drivers;
+
+public class LiquidPartDisplayDriver : ContentPartDisplayDriver<LiquidPart>
 {
-    public class LiquidPartDisplayDriver : ContentPartDisplayDriver<LiquidPart>
+    private readonly ILiquidTemplateManager _liquidTemplatemanager;
+    private readonly IStringLocalizer S;
+
+    public LiquidPartDisplayDriver(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<LiquidPartDisplayDriver> localizer)
     {
-        private readonly ILiquidTemplateManager _liquidTemplatemanager;
-        private readonly IStringLocalizer S;
+        _liquidTemplatemanager = liquidTemplatemanager;
+        S = localizer;
+    }
 
-        public LiquidPartDisplayDriver(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<LiquidPartDisplayDriver> localizer)
+    public override IDisplayResult Display(LiquidPart liquidPart)
+    {
+        return Combine(
+            Initialize<LiquidPartViewModel>("LiquidPart", m => BuildViewModel(m, liquidPart))
+                .Location("Detail", "Content:10"),
+            Initialize<LiquidPartViewModel>("LiquidPart_Summary", m => BuildViewModel(m, liquidPart))
+                .Location("Summary", "Content:10")
+        );
+    }
+
+    public override IDisplayResult Edit(LiquidPart liquidPart)
+    {
+        return Initialize<LiquidPartViewModel>("LiquidPart_Edit", m => BuildViewModel(m, liquidPart));
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(LiquidPart model, IUpdateModel updater)
+    {
+        var viewModel = new LiquidPartViewModel();
+
+        if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
         {
-            _liquidTemplatemanager = liquidTemplatemanager;
-            S = localizer;
-        }
-
-        public override IDisplayResult Display(LiquidPart liquidPart)
-        {
-            return Combine(
-                Initialize<LiquidPartViewModel>("LiquidPart", m => BuildViewModel(m, liquidPart))
-                    .Location("Detail", "Content:10"),
-                Initialize<LiquidPartViewModel>("LiquidPart_Summary", m => BuildViewModel(m, liquidPart))
-                    .Location("Summary", "Content:10")
-            );
-        }
-
-        public override IDisplayResult Edit(LiquidPart liquidPart)
-        {
-            return Initialize<LiquidPartViewModel>("LiquidPart_Edit", m => BuildViewModel(m, liquidPart));
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(LiquidPart model, IUpdateModel updater)
-        {
-            var viewModel = new LiquidPartViewModel();
-
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
+            if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
             {
-                if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Liquid), S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
-                }
-                else
-                {
-                    model.Liquid = viewModel.Liquid;
-                }
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Liquid), S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
             }
-
-            return Edit(model);
+            else
+            {
+                model.Liquid = viewModel.Liquid;
+            }
         }
 
-        private void BuildViewModel(LiquidPartViewModel model, LiquidPart liquidPart)
-        {
-            model.Liquid = liquidPart.Liquid;
-            model.LiquidPart = liquidPart;
-            model.ContentItem = liquidPart.ContentItem;
-        }
+        return Edit(model);
+    }
+
+    private void BuildViewModel(LiquidPartViewModel model, LiquidPart liquidPart)
+    {
+        model.Liquid = liquidPart.Liquid;
+        model.LiquidPart = liquidPart;
+        model.ContentItem = liquidPart.ContentItem;
     }
 }

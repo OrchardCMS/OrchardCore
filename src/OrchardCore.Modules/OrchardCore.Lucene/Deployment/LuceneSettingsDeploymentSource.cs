@@ -2,33 +2,32 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Lucene.Deployment
+namespace OrchardCore.Lucene.Deployment;
+
+public class LuceneSettingsDeploymentSource : IDeploymentSource
 {
-    public class LuceneSettingsDeploymentSource : IDeploymentSource
+    private readonly LuceneIndexingService _luceneIndexingService;
+
+    public LuceneSettingsDeploymentSource(LuceneIndexingService luceneIndexingService)
     {
-        private readonly LuceneIndexingService _luceneIndexingService;
+        _luceneIndexingService = luceneIndexingService;
+    }
 
-        public LuceneSettingsDeploymentSource(LuceneIndexingService luceneIndexingService)
+    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    {
+        var luceneSettingsStep = step as LuceneSettingsDeploymentStep;
+
+        if (luceneSettingsStep == null)
         {
-            _luceneIndexingService = luceneIndexingService;
+            return;
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-        {
-            var luceneSettingsStep = step as LuceneSettingsDeploymentStep;
+        var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
 
-            if (luceneSettingsStep == null)
-            {
-                return;
-            }
-
-            var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
-
-            // Adding Lucene settings
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Settings"),
-                new JProperty("LuceneSettings", JObject.FromObject(luceneSettings))
-            ));
-        }
+        // Adding Lucene settings
+        result.Steps.Add(new JObject(
+            new JProperty("name", "Settings"),
+            new JProperty("LuceneSettings", JObject.FromObject(luceneSettings))
+        ));
     }
 }

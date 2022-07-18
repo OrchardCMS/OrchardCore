@@ -7,90 +7,89 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Deployment.Recipes
+namespace OrchardCore.Deployment.Recipes;
+
+/// <summary>
+/// This recipe step creates a deployment plan.
+/// </summary>
+public class DeploymentPlansRecipeStep : IRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step creates a deployment plan.
-    /// </summary>
-    public class DeploymentPlansRecipeStep : IRecipeStepHandler
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IDeploymentPlanService _deploymentPlanService;
+
+    public DeploymentPlansRecipeStep(
+        IServiceProvider serviceProvider,
+        IDeploymentPlanService deploymentPlanService)
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IDeploymentPlanService _deploymentPlanService;
+        _serviceProvider = serviceProvider;
+        _deploymentPlanService = deploymentPlanService;
+    }
 
-        public DeploymentPlansRecipeStep(
-            IServiceProvider serviceProvider,
-            IDeploymentPlanService deploymentPlanService)
+    public Task ExecuteAsync(RecipeExecutionContext context)
+    {
+        if (!String.Equals(context.Name, "deployment", StringComparison.OrdinalIgnoreCase))
         {
-            _serviceProvider = serviceProvider;
-            _deploymentPlanService = deploymentPlanService;
+            return Task.CompletedTask;
         }
 
-        public Task ExecuteAsync(RecipeExecutionContext context)
+        var deploymentStepFactories = _serviceProvider.GetServices<IDeploymentStepFactory>().ToDictionary(f => f.Name);
+
+        var model = context.Step.ToObject<DeploymentPlansModel>();
+
+        var unknownTypes = new List<string>();
+        var deploymentPlans = new List<DeploymentPlan>();
+
+        foreach (var plan in model.Plans)
         {
-            if (!String.Equals(context.Name, "deployment", StringComparison.OrdinalIgnoreCase))
+            var deploymentPlan = new DeploymentPlan
             {
-                return Task.CompletedTask;
-            }
+                Name = plan.Name
+            };
 
-            var deploymentStepFactories = _serviceProvider.GetServices<IDeploymentStepFactory>().ToDictionary(f => f.Name);
-
-            var model = context.Step.ToObject<DeploymentPlansModel>();
-
-            var unknownTypes = new List<string>();
-            var deploymentPlans = new List<DeploymentPlan>();
-
-            foreach (var plan in model.Plans)
+            foreach (var step in plan.Steps)
             {
-                var deploymentPlan = new DeploymentPlan
+                if (deploymentStepFactories.TryGetValue(step.Type, out var deploymentStepFactory))
                 {
-                    Name = plan.Name
-                };
+                    var deploymentStep = (DeploymentStep)step.Step.ToObject(deploymentStepFactory.Create().GetType());
 
-                foreach (var step in plan.Steps)
-                {
-                    if (deploymentStepFactories.TryGetValue(step.Type, out var deploymentStepFactory))
-                    {
-                        var deploymentStep = (DeploymentStep)step.Step.ToObject(deploymentStepFactory.Create().GetType());
-
-                        deploymentPlan.DeploymentSteps.Add(deploymentStep);
-                    }
-                    else
-                    {
-                        unknownTypes.Add(step.Type);
-                    }
+                    deploymentPlan.DeploymentSteps.Add(deploymentStep);
                 }
-
-                deploymentPlans.Add(deploymentPlan);
+                else
+                {
+                    unknownTypes.Add(step.Type);
+                }
             }
 
-            if (unknownTypes.Count != 0)
-            {
-                var prefix = "No changes have been made. The following types of deployment plans cannot be added:";
-                var suffix = "Please ensure that the related features are enabled to add these types of deployment plans.";
-
-                throw new InvalidOperationException($"{prefix} {String.Join(", ", unknownTypes)}. {suffix}");
-            }
-
-            return _deploymentPlanService.CreateOrUpdateDeploymentPlansAsync(deploymentPlans);
+            deploymentPlans.Add(deploymentPlan);
         }
 
-        private class DeploymentPlansModel
+        if (unknownTypes.Count != 0)
         {
-            public DeploymentPlanModel[] Plans { get; set; }
+            var prefix = "No changes have been made. The following types of deployment plans cannot be added:";
+            var suffix = "Please ensure that the related features are enabled to add these types of deployment plans.";
+
+            throw new InvalidOperationException($"{prefix} {String.Join(", ", unknownTypes)}. {suffix}");
         }
 
-        private class DeploymentPlanModel
-        {
-            public string Name { get; set; }
+        return _deploymentPlanService.CreateOrUpdateDeploymentPlansAsync(deploymentPlans);
+    }
 
-            public DeploymentStepModel[] Steps { get; set; }
-        }
+    private class DeploymentPlansModel
+    {
+        public DeploymentPlanModel[] Plans { get; set; }
+    }
 
-        private class DeploymentStepModel
-        {
-            public string Type { get; set; }
+    private class DeploymentPlanModel
+    {
+        public string Name { get; set; }
 
-            public JObject Step { get; set; }
-        }
+        public DeploymentStepModel[] Steps { get; set; }
+    }
+
+    private class DeploymentStepModel
+    {
+        public string Type { get; set; }
+
+        public JObject Step { get; set; }
     }
 }

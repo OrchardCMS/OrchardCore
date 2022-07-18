@@ -8,62 +8,61 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Admin.Drivers
+namespace OrchardCore.Admin.Drivers;
+
+public class AdminSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, AdminSettings>
 {
-    public class AdminSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, AdminSettings>
+    public const string GroupId = "admin";
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+
+    public AdminSiteSettingsDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService)
     {
-        public const string GroupId = "admin";
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+    }
 
-        public AdminSiteSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+    public override async Task<IDisplayResult> EditAsync(AdminSettings settings, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, PermissionsAdminSettings.ManageAdminSettings))
         {
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
+            return null;
         }
 
-        public override async Task<IDisplayResult> EditAsync(AdminSettings settings, BuildEditorContext context)
+        return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
+            model.DisplayDarkMode = settings.DisplayDarkMode;
+            model.DisplayMenuFilter = settings.DisplayMenuFilter;
+            model.DisplayNewMenu = settings.DisplayNewMenu;
+            model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
+        }).Location("Content:3").OnGroup(GroupId);
+    }
 
-            if (!await _authorizationService.AuthorizeAsync(user, PermissionsAdminSettings.ManageAdminSettings))
-            {
-                return null;
-            }
+    public override async Task<IDisplayResult> UpdateAsync(AdminSettings settings, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
 
-            return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
-            {
-                model.DisplayDarkMode = settings.DisplayDarkMode;
-                model.DisplayMenuFilter = settings.DisplayMenuFilter;
-                model.DisplayNewMenu = settings.DisplayNewMenu;
-                model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
-            }).Location("Content:3").OnGroup(GroupId);
+        if (!await _authorizationService.AuthorizeAsync(user, PermissionsAdminSettings.ManageAdminSettings))
+        {
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AdminSettings settings, BuildEditorContext context)
+        if (context.GroupId == GroupId)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
+            var model = new AdminSettingsViewModel();
 
-            if (!await _authorizationService.AuthorizeAsync(user, PermissionsAdminSettings.ManageAdminSettings))
-            {
-                return null;
-            }
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            if (context.GroupId == GroupId)
-            {
-                var model = new AdminSettingsViewModel();
-
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                settings.DisplayDarkMode = model.DisplayDarkMode;
-                settings.DisplayMenuFilter = model.DisplayMenuFilter;
-                settings.DisplayNewMenu = model.DisplayNewMenu;
-                settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
-            }
-
-            return await EditAsync(settings, context);
+            settings.DisplayDarkMode = model.DisplayDarkMode;
+            settings.DisplayMenuFilter = model.DisplayMenuFilter;
+            settings.DisplayNewMenu = model.DisplayNewMenu;
+            settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
         }
+
+        return await EditAsync(settings, context);
     }
 }

@@ -7,117 +7,116 @@ using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
+namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
+
+public class TypedContentTypeBuilder : IContentTypeBuilder
 {
-    public class TypedContentTypeBuilder : IContentTypeBuilder
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly GraphQLContentOptions _contentOptions;
+
+    public TypedContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
+        IOptions<GraphQLContentOptions> contentOptionsAccessor)
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly GraphQLContentOptions _contentOptions;
+        _httpContextAccessor = httpContextAccessor;
+        _contentOptions = contentOptionsAccessor.Value;
+    }
 
-        public TypedContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
-            IOptions<GraphQLContentOptions> contentOptionsAccessor)
+    public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
+    {
+        var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
+        var typeActivator = serviceProvider.GetService<ITypeActivatorFactory<ContentPart>>();
+
+        foreach (var part in contentTypeDefinition.Parts)
         {
-            _httpContextAccessor = httpContextAccessor;
-            _contentOptions = contentOptionsAccessor.Value;
-        }
+            if (_contentOptions.ShouldSkip(part)) continue;
 
-        public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
-        {
-            var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-            var typeActivator = serviceProvider.GetService<ITypeActivatorFactory<ContentPart>>();
+            var partName = part.Name;
 
-            foreach (var part in contentTypeDefinition.Parts)
+            // Check if another builder has already added a field for this part.
+            if (contentItemType.HasField(partName)) continue;
+
+            var activator = typeActivator.GetTypeActivator(part.PartDefinition.Name);
+
+            var queryGraphType = typeof(ObjectGraphType<>).MakeGenericType(activator.Type);
+
+            var collapsePart = _contentOptions.ShouldCollapse(part);
+
+            if (serviceProvider.GetService(queryGraphType) is IObjectGraphType queryGraphTypeResolved)
             {
-                if (_contentOptions.ShouldSkip(part)) continue;
-
-                var partName = part.Name;
-
-                // Check if another builder has already added a field for this part.
-                if (contentItemType.HasField(partName)) continue;
-
-                var activator = typeActivator.GetTypeActivator(part.PartDefinition.Name);
-
-                var queryGraphType = typeof(ObjectGraphType<>).MakeGenericType(activator.Type);
-
-                var collapsePart = _contentOptions.ShouldCollapse(part);
-
-                if (serviceProvider.GetService(queryGraphType) is IObjectGraphType queryGraphTypeResolved)
+                if (collapsePart)
                 {
-                    if (collapsePart)
+                    foreach (var field in queryGraphTypeResolved.Fields)
                     {
-                        foreach (var field in queryGraphTypeResolved.Fields)
+                        if (_contentOptions.ShouldSkip(queryGraphType, field.Name)) continue;
+
+                        var rolledUpField = new FieldType
                         {
-                            if (_contentOptions.ShouldSkip(queryGraphType, field.Name)) continue;
-
-                            var rolledUpField = new FieldType
-                            {
-                                Name = field.Name,
-                                Type = field.Type,
-                                Description = field.Description,
-                                DeprecationReason = field.DeprecationReason,
-                                Arguments = field.Arguments,
-                                Resolver = new FuncFieldResolver<ContentItem, object>(context =>
-                                {
-                                    var nameToResolve = partName;
-                                    var resolvedPart = context.Source.Get(activator.Type, nameToResolve);
-
-                                    return field.Resolver.Resolve(new ResolveFieldContext
-                                    {
-                                        Arguments = context.Arguments,
-                                        Source = resolvedPart,
-                                        FieldDefinition = field,
-                                        UserContext = context.UserContext
-                                    });
-                                })
-                            };
-
-                            contentItemType.AddField(rolledUpField);
-                        }
-                    }
-                    else
-                    {
-                        contentItemType.Field(
-                            queryGraphTypeResolved.GetType(),
-                            partName.ToFieldName(),
-                            description: queryGraphTypeResolved.Description,
-                            resolve: context =>
+                            Name = field.Name,
+                            Type = field.Type,
+                            Description = field.Description,
+                            DeprecationReason = field.DeprecationReason,
+                            Arguments = field.Arguments,
+                            Resolver = new FuncFieldResolver<ContentItem, object>(context =>
                             {
                                 var nameToResolve = partName;
-                                var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
+                                var resolvedPart = context.Source.Get(activator.Type, nameToResolve);
 
-                                return context.Source.Get(typeToResolve, nameToResolve);
-                            });
+                                return field.Resolver.Resolve(new ResolveFieldContext
+                                {
+                                    Arguments = context.Arguments,
+                                    Source = resolvedPart,
+                                    FieldDefinition = field,
+                                    UserContext = context.UserContext
+                                });
+                            })
+                        };
+
+                        contentItemType.AddField(rolledUpField);
                     }
                 }
-
-                var inputGraphType = typeof(InputObjectGraphType<>).MakeGenericType(activator.Type);
-
-                if (serviceProvider.GetService(inputGraphType) is IInputObjectGraphType inputGraphTypeResolved)
+                else
                 {
-                    var whereArgument = contentQuery.Arguments.FirstOrDefault(x => x.Name == "where");
-                    if (whereArgument == null)
-                    {
-                        return;
-                    }
-
-                    var whereInput = (ContentItemWhereInput)whereArgument.ResolvedType;
-
-                    if (collapsePart)
-                    {
-                        foreach (var field in inputGraphTypeResolved.Fields)
+                    contentItemType.Field(
+                        queryGraphTypeResolved.GetType(),
+                        partName.ToFieldName(),
+                        description: queryGraphTypeResolved.Description,
+                        resolve: context =>
                         {
-                            whereInput.AddField(field.WithPartCollapsedMetaData().WithPartNameMetaData(partName));
-                        }
-                    }
-                    else
+                            var nameToResolve = partName;
+                            var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
+
+                            return context.Source.Get(typeToResolve, nameToResolve);
+                        });
+                }
+            }
+
+            var inputGraphType = typeof(InputObjectGraphType<>).MakeGenericType(activator.Type);
+
+            if (serviceProvider.GetService(inputGraphType) is IInputObjectGraphType inputGraphTypeResolved)
+            {
+                var whereArgument = contentQuery.Arguments.FirstOrDefault(x => x.Name == "where");
+                if (whereArgument == null)
+                {
+                    return;
+                }
+
+                var whereInput = (ContentItemWhereInput)whereArgument.ResolvedType;
+
+                if (collapsePart)
+                {
+                    foreach (var field in inputGraphTypeResolved.Fields)
                     {
-                        whereInput.AddField(new FieldType
-                        {
-                            Type = inputGraphTypeResolved.GetType(),
-                            Name = partName.ToFieldName(),
-                            Description = inputGraphTypeResolved.Description
-                        }.WithPartNameMetaData(partName));
+                        whereInput.AddField(field.WithPartCollapsedMetaData().WithPartNameMetaData(partName));
                     }
+                }
+                else
+                {
+                    whereInput.AddField(new FieldType
+                    {
+                        Type = inputGraphTypeResolved.GetType(),
+                        Name = partName.ToFieldName(),
+                        Description = inputGraphTypeResolved.Description
+                    }.WithPartNameMetaData(partName));
                 }
             }
         }

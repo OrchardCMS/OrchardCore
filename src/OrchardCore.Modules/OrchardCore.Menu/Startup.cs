@@ -21,69 +21,68 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Menu
+namespace OrchardCore.Menu;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    private readonly AdminOptions _adminOptions;
+
+    public Startup(IOptions<AdminOptions> adminOptions)
     {
-        private readonly AdminOptions _adminOptions;
+        _adminOptions = adminOptions.Value;
+    }
 
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IDataMigration, Migrations>();
+        services.AddScoped<IShapeTableProvider, MenuShapes>();
+        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
 
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IDataMigration, Migrations>();
-            services.AddScoped<IShapeTableProvider, MenuShapes>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
+        // MenuPart
+        services.AddScoped<IContentHandler, MenuContentHandler>();
+        services.AddContentPart<MenuPart>()
+            .UseDisplayDriver<MenuPartDisplayDriver>();
 
-            // MenuPart
-            services.AddScoped<IContentHandler, MenuContentHandler>();
-            services.AddContentPart<MenuPart>()
-                .UseDisplayDriver<MenuPartDisplayDriver>();
+        services.AddContentPart<MenuItemsListPart>();
 
-            services.AddContentPart<MenuItemsListPart>();
+        // LinkMenuItemPart
+        services.AddContentPart<LinkMenuItemPart>()
+            .UseDisplayDriver<LinkMenuItemPartDisplayDriver>();
 
-            // LinkMenuItemPart
-            services.AddContentPart<LinkMenuItemPart>()
-                .UseDisplayDriver<LinkMenuItemPartDisplayDriver>();
+        // ContentMenuItemPart
+        services.AddContentPart<ContentMenuItemPart>()
+            .UseDisplayDriver<ContentMenuItemPartDisplayDriver>();
 
-            // ContentMenuItemPart
-            services.AddContentPart<ContentMenuItemPart>()
-                .UseDisplayDriver<ContentMenuItemPartDisplayDriver>();
+        // HtmlMenuItemPart
+        services.AddContentPart<HtmlMenuItemPart>()
+            .UseDisplayDriver<HtmlMenuItemPartDisplayDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlMenuItemPartSettingsDisplayDriver>();
 
-            // HtmlMenuItemPart
-            services.AddContentPart<HtmlMenuItemPart>()
-                .UseDisplayDriver<HtmlMenuItemPartDisplayDriver>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlMenuItemPartSettingsDisplayDriver>();
+        services.AddTagHelpers<MenuTagHelper>();
+    }
 
-            services.AddTagHelpers<MenuTagHelper>();
-        }
+    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        var adminControllerName = typeof(AdminController).ControllerName();
 
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var adminControllerName = typeof(AdminController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "MenuCreate",
-                areaName: "OrchardCore.Menu",
-                pattern: _adminOptions.AdminUrlPrefix + "/Menu/Create/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "MenuDelete",
-                areaName: "OrchardCore.Menu",
-                pattern: _adminOptions.AdminUrlPrefix + "/Menu/Delete",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "MenuEdit",
-                areaName: "OrchardCore.Menu",
-                pattern: _adminOptions.AdminUrlPrefix + "/Menu/Edit",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
-            );
-        }
+        routes.MapAreaControllerRoute(
+            name: "MenuCreate",
+            areaName: "OrchardCore.Menu",
+            pattern: _adminOptions.AdminUrlPrefix + "/Menu/Create/{id}",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
+        );
+        routes.MapAreaControllerRoute(
+            name: "MenuDelete",
+            areaName: "OrchardCore.Menu",
+            pattern: _adminOptions.AdminUrlPrefix + "/Menu/Delete",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
+        );
+        routes.MapAreaControllerRoute(
+            name: "MenuEdit",
+            areaName: "OrchardCore.Menu",
+            pattern: _adminOptions.AdminUrlPrefix + "/Menu/Edit",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
+        );
     }
 }

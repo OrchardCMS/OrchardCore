@@ -8,36 +8,35 @@ using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-namespace OrchardCore.ContentLocalization.GraphQL
+namespace OrchardCore.ContentLocalization.GraphQL;
+
+public class LocalizationQueryObjectType : ObjectGraphType<LocalizationPart>
 {
-    public class LocalizationQueryObjectType : ObjectGraphType<LocalizationPart>
+    public LocalizationQueryObjectType(IStringLocalizer<LocalizationQueryObjectType> S)
     {
-        public LocalizationQueryObjectType(IStringLocalizer<LocalizationQueryObjectType> S)
-        {
-            Name = "LocalizationPart";
-            Description = S["Localization cultures for your content item."];
+        Name = "LocalizationPart";
+        Description = S["Localization cultures for your content item."];
 
-            Field(x => x.Culture).Description(S["The culture for your content item."]);
-            Field(x => x.LocalizationSet).Description(S["The localization set for your content item."]);
+        Field(x => x.Culture).Description(S["The culture for your content item."]);
+        Field(x => x.LocalizationSet).Description(S["The localization set for your content item."]);
 
-            Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>()
-                .Name("Localizations")
-                .Description(S["The localizations of the content item."])
-                .Argument<StringGraphType, string>("culture", "the culture of the content item")
-                .ResolveLockedAsync(async ctx =>
+        Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>()
+            .Name("Localizations")
+            .Description(S["The localizations of the content item."])
+            .Argument<StringGraphType, string>("culture", "the culture of the content item")
+            .ResolveLockedAsync(async ctx =>
+           {
+               var culture = ctx.GetArgument<string>("culture");
+               var contentLocalizationManager = ctx.ResolveServiceProvider().GetService<IContentLocalizationManager>();
+
+               if (culture != null)
                {
-                   var culture = ctx.GetArgument<string>("culture");
-                   var contentLocalizationManager = ctx.ResolveServiceProvider().GetService<IContentLocalizationManager>();
+                   var contentItem = await contentLocalizationManager.GetContentItemAsync(ctx.Source.LocalizationSet, culture);
 
-                   if (culture != null)
-                   {
-                       var contentItem = await contentLocalizationManager.GetContentItemAsync(ctx.Source.LocalizationSet, culture);
+                   return contentItem != null ? new[] { contentItem } : Enumerable.Empty<ContentItem>();
+               }
 
-                       return contentItem != null ? new[] { contentItem } : Enumerable.Empty<ContentItem>();
-                   }
-
-                   return await contentLocalizationManager.GetItemsForSetAsync(ctx.Source.LocalizationSet);
-               });
-        }
+               return await contentLocalizationManager.GetItemsForSetAsync(ctx.Source.LocalizationSet);
+           });
     }
 }

@@ -1,8 +1,7 @@
-namespace OrchardCore.ContentFields.Settings
+namespace OrchardCore.ContentFields.Settings;
+
+public class DateTimeFieldSettings
 {
-    public class DateTimeFieldSettings
-    {
-        public string Hint { get; set; }
-        public bool Required { get; set; }
-    }
+    public string Hint { get; set; }
+    public bool Required { get; set; }
 }

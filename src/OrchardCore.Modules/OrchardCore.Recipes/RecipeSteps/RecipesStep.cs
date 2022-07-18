@@ -5,62 +5,61 @@ using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Recipes.RecipeSteps
+namespace OrchardCore.Recipes.RecipeSteps;
+
+/// <summary>
+/// This recipe step executes a set of external recipes.
+/// </summary>
+public class RecipesStep : IRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step executes a set of external recipes.
-    /// </summary>
-    public class RecipesStep : IRecipeStepHandler
+    private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
+
+    public RecipesStep(IEnumerable<IRecipeHarvester> recipeHarvesters)
     {
-        private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
+        _recipeHarvesters = recipeHarvesters;
+    }
 
-        public RecipesStep(IEnumerable<IRecipeHarvester> recipeHarvesters)
+    public async Task ExecuteAsync(RecipeExecutionContext context)
+    {
+        if (!String.Equals(context.Name, "Recipes", StringComparison.OrdinalIgnoreCase))
         {
-            _recipeHarvesters = recipeHarvesters;
+            return;
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        var step = context.Step.ToObject<InternalStep>();
+        var recipesDictionary = new Dictionary<string, IDictionary<string, RecipeDescriptor>>();
+        IList<RecipeDescriptor> innerRecipes = new List<RecipeDescriptor>();
+
+        foreach (var recipe in step.Values)
         {
-            if (!String.Equals(context.Name, "Recipes", StringComparison.OrdinalIgnoreCase))
+            IDictionary<string, RecipeDescriptor> recipes;
+
+            if (!recipesDictionary.TryGetValue(recipe.ExecutionId, out recipes))
             {
-                return;
+                var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
+                recipes = recipeCollections.SelectMany(x => x).ToDictionary(x => x.Name);
+                recipesDictionary[recipe.ExecutionId] = recipes;
             }
 
-            var step = context.Step.ToObject<InternalStep>();
-            var recipesDictionary = new Dictionary<string, IDictionary<string, RecipeDescriptor>>();
-            IList<RecipeDescriptor> innerRecipes = new List<RecipeDescriptor>();
-
-            foreach (var recipe in step.Values)
+            if (!recipes.ContainsKey(recipe.Name))
             {
-                IDictionary<string, RecipeDescriptor> recipes;
-
-                if (!recipesDictionary.TryGetValue(recipe.ExecutionId, out recipes))
-                {
-                    var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
-                    recipes = recipeCollections.SelectMany(x => x).ToDictionary(x => x.Name);
-                    recipesDictionary[recipe.ExecutionId] = recipes;
-                }
-
-                if (!recipes.ContainsKey(recipe.Name))
-                {
-                    throw new ArgumentException($"No recipe named '{recipe.Name}' was found in extension '{recipe.ExecutionId}'.");
-                }
-
-                innerRecipes.Add(recipes[recipe.Name]);
+                throw new ArgumentException($"No recipe named '{recipe.Name}' was found in extension '{recipe.ExecutionId}'.");
             }
 
-            context.InnerRecipes = innerRecipes;
+            innerRecipes.Add(recipes[recipe.Name]);
         }
 
-        private class InternalStep
-        {
-            public InternalStepValue[] Values { get; set; }
-        }
+        context.InnerRecipes = innerRecipes;
+    }
 
-        private class InternalStepValue
-        {
-            public string ExecutionId { get; set; }
-            public string Name { get; set; }
-        }
+    private class InternalStep
+    {
+        public InternalStepValue[] Values { get; set; }
+    }
+
+    private class InternalStepValue
+    {
+        public string ExecutionId { get; set; }
+        public string Name { get; set; }
     }
 }

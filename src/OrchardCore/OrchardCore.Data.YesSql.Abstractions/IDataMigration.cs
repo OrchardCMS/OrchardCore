@@ -1,15 +1,14 @@
 using YesSql.Sql;
 
-namespace OrchardCore.Data.Migration
+namespace OrchardCore.Data.Migration;
+
+/// <summary>
+/// Represents a contract for a database migration.
+/// </summary>
+public interface IDataMigration
 {
     /// <summary>
-    /// Represents a contract for a database migration.
+    /// Gets or sets the database schema builder.
     /// </summary>
-    public interface IDataMigration
-    {
-        /// <summary>
-        /// Gets or sets the database schema builder.
-        /// </summary>
-        ISchemaBuilder SchemaBuilder { get; set; }
-    }
+    ISchemaBuilder SchemaBuilder { get; set; }
 }

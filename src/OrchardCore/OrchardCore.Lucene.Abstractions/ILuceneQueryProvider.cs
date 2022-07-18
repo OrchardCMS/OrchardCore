@@ -1,10 +1,9 @@
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.Lucene
+namespace OrchardCore.Lucene;
+
+public interface ILuceneQueryProvider
 {
-    public interface ILuceneQueryProvider
-    {
-        Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject query);
-    }
+    Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject query);
 }

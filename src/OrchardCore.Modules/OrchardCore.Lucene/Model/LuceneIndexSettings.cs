@@ -2,24 +2,23 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using OrchardCore.Data.Documents;
 
-namespace OrchardCore.Lucene.Model
+namespace OrchardCore.Lucene.Model;
+
+public class LuceneIndexSettings
 {
-    public class LuceneIndexSettings
-    {
-        [JsonIgnore]
-        public string IndexName { get; set; }
+    [JsonIgnore]
+    public string IndexName { get; set; }
 
-        public string AnalyzerName { get; set; }
+    public string AnalyzerName { get; set; }
 
-        public bool IndexLatest { get; set; }
+    public bool IndexLatest { get; set; }
 
-        public string[] IndexedContentTypes { get; set; }
+    public string[] IndexedContentTypes { get; set; }
 
-        public string Culture { get; set; }
-    }
+    public string Culture { get; set; }
+}
 
-    public class LuceneIndexSettingsDocument : Document
-    {
-        public Dictionary<string, LuceneIndexSettings> LuceneIndexSettings { get; set; } = new Dictionary<string, LuceneIndexSettings>();
-    }
+public class LuceneIndexSettingsDocument : Document
+{
+    public Dictionary<string, LuceneIndexSettings> LuceneIndexSettings { get; set; } = new Dictionary<string, LuceneIndexSettings>();
 }

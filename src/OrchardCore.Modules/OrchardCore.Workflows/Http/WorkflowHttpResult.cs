@@ -1,7 +1,6 @@
-namespace OrchardCore.Workflows.Http
+namespace OrchardCore.Workflows.Http;
+
+public class WorkflowHttpResult
 {
-    public class WorkflowHttpResult
-    {
-        public static readonly WorkflowHttpResult Instance = new WorkflowHttpResult();
-    }
+    public static readonly WorkflowHttpResult Instance = new WorkflowHttpResult();
 }

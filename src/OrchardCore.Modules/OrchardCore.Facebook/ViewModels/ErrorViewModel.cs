@@ -1,9 +1,8 @@
-namespace OrchardCore.Facebook.ViewModels
-{
-    public class ErrorViewModel
-    {
-        public string Error { get; set; }
+namespace OrchardCore.Facebook.ViewModels;
 
-        public string ErrorDescription { get; set; }
-    }
+public class ErrorViewModel
+{
+    public string Error { get; set; }
+
+    public string ErrorDescription { get; set; }
 }

@@ -1,36 +1,35 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace OrchardCore.ContentManagement.Handlers
+namespace OrchardCore.ContentManagement.Handlers;
+
+public class ValidateContentContext : ContentContextBase
 {
-    public class ValidateContentContext : ContentContextBase
+    public ValidateContentContext(ContentItem contentItem) : base(contentItem)
     {
-        public ValidateContentContext(ContentItem contentItem) : base(contentItem)
-        {
-        }
-
-        public ContentValidateResult ContentValidateResult { get; } = new ContentValidateResult();
-
     }
 
-    public static class ValidateContentContextExtensions
+    public ContentValidateResult ContentValidateResult { get; } = new ContentValidateResult();
+
+}
+
+public static class ValidateContentContextExtensions
+{
+
+    public static void Fail(this ValidateContentContext context, ValidationResult error)
     {
+        context.ContentValidateResult.Fail(error);
+    }
 
-        public static void Fail(this ValidateContentContext context, ValidationResult error)
+    public static void Fail(this ValidateContentContext context, string errorMessage, params string[] memberNames)
+    {
+        if (memberNames != null && memberNames.Any())
         {
-            context.ContentValidateResult.Fail(error);
+            context.ContentValidateResult.Fail(new ValidationResult(errorMessage, memberNames));
         }
-
-        public static void Fail(this ValidateContentContext context, string errorMessage, params string[] memberNames)
+        else
         {
-            if (memberNames != null && memberNames.Any())
-            {
-                context.ContentValidateResult.Fail(new ValidationResult(errorMessage, memberNames));
-            }
-            else
-            {
-                context.ContentValidateResult.Fail(new ValidationResult(errorMessage));
-            }
+            context.ContentValidateResult.Fail(new ValidationResult(errorMessage));
         }
     }
 }

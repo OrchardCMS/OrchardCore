@@ -1,9 +1,8 @@
 using System;
 
-namespace OrchardCore.DynamicCache
+namespace OrchardCore.DynamicCache;
+
+public class DynamicCacheOptions
 {
-    public class DynamicCacheOptions
-    {
-        public TimeSpan? FailoverRetryLatency { get; set; }
-    }
+    public TimeSpan? FailoverRetryLatency { get; set; }
 }

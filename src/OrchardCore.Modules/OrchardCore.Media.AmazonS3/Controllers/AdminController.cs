@@ -5,36 +5,35 @@ using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage.AmazonS3;
 using OrchardCore.Media.AmazonS3.ViewModels;
 
-namespace OrchardCore.Media.AmazonS3
+namespace OrchardCore.Media.AmazonS3;
+
+public class AdminController : Controller
 {
-    public class AdminController : Controller
+    private readonly IAuthorizationService _authorizationService;
+    private readonly AwsStorageOptions _options;
+
+    public AdminController(
+        IAuthorizationService authorizationService,
+        IOptions<AwsStorageOptions> options)
     {
-        private readonly IAuthorizationService _authorizationService;
-        private readonly AwsStorageOptions _options;
+        _authorizationService = authorizationService;
+        _options = options.Value;
+    }
 
-        public AdminController(
-            IAuthorizationService authorizationService,
-            IOptions<AwsStorageOptions> options)
+    public async Task<IActionResult> Options()
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewAmazonS3MediaOptions))
         {
-            _authorizationService = authorizationService;
-            _options = options.Value;
+            return Forbid();
         }
 
-        public async Task<IActionResult> Options()
+        var model = new OptionsViewModel
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewAmazonS3MediaOptions))
-            {
-                return Forbid();
-            }
+            BucketName = _options.BucketName,
+            BasePath = _options.BasePath,
+            CreateBucket = _options.CreateBucket
+        };
 
-            var model = new OptionsViewModel
-            {
-                BucketName = _options.BucketName,
-                BasePath = _options.BasePath,
-                CreateBucket = _options.CreateBucket
-            };
-
-            return View(model);
-        }
+        return View(model);
     }
 }

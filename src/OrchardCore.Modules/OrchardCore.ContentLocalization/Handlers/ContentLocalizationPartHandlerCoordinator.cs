@@ -5,64 +5,63 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Modules;
 
-namespace OrchardCore.ContentLocalization.Handlers
+namespace OrchardCore.ContentLocalization.Handlers;
+
+internal class ContentLocalizationPartHandlerCoordinator : ContentLocalizationHandlerBase
 {
-    internal class ContentLocalizationPartHandlerCoordinator : ContentLocalizationHandlerBase
+    private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
+    private readonly IEnumerable<IContentLocalizationPartHandler> _partHandlers;
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly ILogger _logger;
+
+    public ContentLocalizationPartHandlerCoordinator(
+
+        ITypeActivatorFactory<ContentPart> contentPartFactory,
+        IEnumerable<IContentLocalizationPartHandler> partHandlers,
+        IContentDefinitionManager contentDefinitionManager,
+        ILogger<ContentLocalizationPartHandlerCoordinator> logger
+    )
     {
-        private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
-        private readonly IEnumerable<IContentLocalizationPartHandler> _partHandlers;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ILogger _logger;
+        _contentPartFactory = contentPartFactory;
+        _partHandlers = partHandlers;
+        _contentDefinitionManager = contentDefinitionManager;
+        _logger = logger;
+    }
 
-        public ContentLocalizationPartHandlerCoordinator(
+    public override async Task LocalizingAsync(LocalizationContentContext context)
+    {
+        var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+        if (contentTypeDefinition == null)
+            return;
 
-            ITypeActivatorFactory<ContentPart> contentPartFactory,
-            IEnumerable<IContentLocalizationPartHandler> partHandlers,
-            IContentDefinitionManager contentDefinitionManager,
-            ILogger<ContentLocalizationPartHandlerCoordinator> logger
-        )
+        foreach (var typePartDefinition in contentTypeDefinition.Parts)
         {
-            _contentPartFactory = contentPartFactory;
-            _partHandlers = partHandlers;
-            _contentDefinitionManager = contentDefinitionManager;
-            _logger = logger;
-        }
+            var partName = typePartDefinition.PartDefinition.Name;
+            var activator = _contentPartFactory.GetTypeActivator(partName);
+            var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
-        public override async Task LocalizingAsync(LocalizationContentContext context)
-        {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            if (part != null)
             {
-                var partName = typePartDefinition.PartDefinition.Name;
-                var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-
-                if (part != null)
-                {
-                    await _partHandlers.InvokeAsync((handler, context, part) => handler.LocalizingAsync(context, part), context, part, _logger);
-                }
+                await _partHandlers.InvokeAsync((handler, context, part) => handler.LocalizingAsync(context, part), context, part, _logger);
             }
         }
+    }
 
-        public override async Task LocalizedAsync(LocalizationContentContext context)
+    public override async Task LocalizedAsync(LocalizationContentContext context)
+    {
+        var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+        if (contentTypeDefinition == null)
+            return;
+
+        foreach (var typePartDefinition in contentTypeDefinition.Parts)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
+            var partName = typePartDefinition.PartDefinition.Name;
+            var activator = _contentPartFactory.GetTypeActivator(partName);
+            var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
-            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            if (part != null)
             {
-                var partName = typePartDefinition.PartDefinition.Name;
-                var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-
-                if (part != null)
-                {
-                    await _partHandlers.InvokeAsync((handler, context, part) => handler.LocalizedAsync(context, part), context, part, _logger);
-                }
+                await _partHandlers.InvokeAsync((handler, context, part) => handler.LocalizedAsync(context, part), context, part, _logger);
             }
         }
     }

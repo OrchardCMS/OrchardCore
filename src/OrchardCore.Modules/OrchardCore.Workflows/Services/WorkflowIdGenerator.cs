@@ -1,20 +1,19 @@
 using OrchardCore.Entities;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Workflows.Services
+namespace OrchardCore.Workflows.Services;
+
+public class WorkflowIdGenerator : IWorkflowIdGenerator
 {
-    public class WorkflowIdGenerator : IWorkflowIdGenerator
+    private readonly IIdGenerator _idGenerator;
+
+    public WorkflowIdGenerator(IIdGenerator idGenerator)
     {
-        private readonly IIdGenerator _idGenerator;
+        _idGenerator = idGenerator;
+    }
 
-        public WorkflowIdGenerator(IIdGenerator idGenerator)
-        {
-            _idGenerator = idGenerator;
-        }
-
-        public string GenerateUniqueId(Workflow workflow)
-        {
-            return _idGenerator.GenerateUniqueId();
-        }
+    public string GenerateUniqueId(Workflow workflow)
+    {
+        return _idGenerator.GenerateUniqueId();
     }
 }

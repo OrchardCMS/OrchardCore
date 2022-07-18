@@ -3,27 +3,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Media.AmazonS3
+namespace OrchardCore.Media.AmazonS3;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
+    public static readonly Permission ViewAmazonS3MediaOptions = new Permission(nameof(ViewAmazonS3MediaOptions), "View Amazon S3 Media Options");
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        public static readonly Permission ViewAmazonS3MediaOptions = new Permission(nameof(ViewAmazonS3MediaOptions), "View Amazon S3 Media Options");
+        return Task.FromResult(new[] { ViewAmazonS3MediaOptions }.AsEnumerable());
+    }
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return Task.FromResult(new[] { ViewAmazonS3MediaOptions }.AsEnumerable());
-        }
-
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
+            new PermissionStereotype
             {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[] { ViewAmazonS3MediaOptions }
-                }
-            };
-        }
+                Name = "Administrator",
+                Permissions = new[] { ViewAmazonS3MediaOptions }
+            }
+        };
     }
 }

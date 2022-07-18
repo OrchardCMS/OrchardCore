@@ -4,58 +4,57 @@ using System.Threading.Tasks;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.AdminMenu
+namespace OrchardCore.AdminMenu;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
+    public static readonly Permission ManageAdminMenu = new Permission("ManageAdminMenu", "Manage the admin menu");
+
+    public static readonly Permission ViewAdminMenuAll = new Permission("ViewAdminMenuAll", "View Admin Menu - View All", new[] { ManageAdminMenu });
+
+    private static readonly Permission ViewAdminMenu = new Permission("ViewAdminMenu_{0}", "View Admin Menu - {0}", new[] { ManageAdminMenu, ViewAdminMenuAll });
+
+    private readonly IAdminMenuService _adminMenuService;
+
+    public Permissions(IAdminMenuService adminMenuService)
     {
-        public static readonly Permission ManageAdminMenu = new Permission("ManageAdminMenu", "Manage the admin menu");
+        _adminMenuService = adminMenuService;
+    }
 
-        public static readonly Permission ViewAdminMenuAll = new Permission("ViewAdminMenuAll", "View Admin Menu - View All", new[] { ManageAdminMenu });
+    public async Task<IEnumerable<Permission>> GetPermissionsAsync()
+    {
+        var list = new List<Permission> { ManageAdminMenu, ViewAdminMenuAll };
 
-        private static readonly Permission ViewAdminMenu = new Permission("ViewAdminMenu_{0}", "View Admin Menu - {0}", new[] { ManageAdminMenu, ViewAdminMenuAll });
-
-        private readonly IAdminMenuService _adminMenuService;
-
-        public Permissions(IAdminMenuService adminMenuService)
+        foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
         {
-            _adminMenuService = adminMenuService;
+            list.Add(CreatePermissionForAdminMenu(adminMenu.Name));
         }
 
-        public async Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            var list = new List<Permission> { ManageAdminMenu, ViewAdminMenuAll };
+        return list;
+    }
 
-            foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
+        {
+            new PermissionStereotype
             {
-                list.Add(CreatePermissionForAdminMenu(adminMenu.Name));
+                Name = "Administrator",
+                Permissions = new[] { ManageAdminMenu }
+            },
+            new PermissionStereotype {
+                Name = "Editor",
+                Permissions = new[] { ManageAdminMenu }
             }
+        };
+    }
 
-            return list;
-        }
-
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
-            {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[] { ManageAdminMenu }
-                },
-                new PermissionStereotype {
-                    Name = "Editor",
-                    Permissions = new[] { ManageAdminMenu }
-                }
-            };
-        }
-
-        public static Permission CreatePermissionForAdminMenu(string name)
-        {
-            return new Permission(
-                    String.Format(ViewAdminMenu.Name, name),
-                    String.Format(ViewAdminMenu.Description, name),
-                    ViewAdminMenu.ImpliedBy
-                );
-        }
+    public static Permission CreatePermissionForAdminMenu(string name)
+    {
+        return new Permission(
+                String.Format(ViewAdminMenu.Name, name),
+                String.Format(ViewAdminMenu.Description, name),
+                ViewAdminMenu.ImpliedBy
+            );
     }
 }

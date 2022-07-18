@@ -18,250 +18,249 @@ using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
 using OrchardCore.Setup.ViewModels;
 
-namespace OrchardCore.Setup.Controllers
-{
-    public class SetupController : Controller
-    {
-        private readonly IClock _clock;
-        private readonly ISetupService _setupService;
-        private readonly ShellSettings _shellSettings;
-        private readonly IShellHost _shellHost;
-        private IdentityOptions _identityOptions;
-        private readonly IEmailAddressValidator _emailAddressValidator;
-        private readonly IEnumerable<DatabaseProvider> _databaseProviders;
-        private readonly ILogger _logger;
-        private readonly IStringLocalizer S;
+namespace OrchardCore.Setup.Controllers;
 
-        public SetupController(
-            IClock clock,
-            ISetupService setupService,
-            ShellSettings shellSettings,
-            IShellHost shellHost,
-            IOptions<IdentityOptions> identityOptions,
-            IEmailAddressValidator emailAddressValidator,
-            IEnumerable<DatabaseProvider> databaseProviders,
-            IStringLocalizer<SetupController> localizer,
-            ILogger<SetupController> logger)
+public class SetupController : Controller
+{
+    private readonly IClock _clock;
+    private readonly ISetupService _setupService;
+    private readonly ShellSettings _shellSettings;
+    private readonly IShellHost _shellHost;
+    private IdentityOptions _identityOptions;
+    private readonly IEmailAddressValidator _emailAddressValidator;
+    private readonly IEnumerable<DatabaseProvider> _databaseProviders;
+    private readonly ILogger _logger;
+    private readonly IStringLocalizer S;
+
+    public SetupController(
+        IClock clock,
+        ISetupService setupService,
+        ShellSettings shellSettings,
+        IShellHost shellHost,
+        IOptions<IdentityOptions> identityOptions,
+        IEmailAddressValidator emailAddressValidator,
+        IEnumerable<DatabaseProvider> databaseProviders,
+        IStringLocalizer<SetupController> localizer,
+        ILogger<SetupController> logger)
+    {
+        _clock = clock;
+        _setupService = setupService;
+        _shellSettings = shellSettings;
+        _shellHost = shellHost;
+        _identityOptions = identityOptions.Value;
+        _emailAddressValidator = emailAddressValidator;
+        _databaseProviders = databaseProviders;
+        _logger = logger;
+        S = localizer;
+    }
+
+    public async Task<ActionResult> Index(string token)
+    {
+        var recipes = await _setupService.GetSetupRecipesAsync();
+        var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
+
+        if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
         {
-            _clock = clock;
-            _setupService = setupService;
-            _shellSettings = shellSettings;
-            _shellHost = shellHost;
-            _identityOptions = identityOptions.Value;
-            _emailAddressValidator = emailAddressValidator;
-            _databaseProviders = databaseProviders;
-            _logger = logger;
-            S = localizer;
+            if (string.IsNullOrEmpty(token) || !await IsTokenValid(token))
+            {
+                _logger.LogWarning("An attempt to access '{TenantName}' without providing a secret was made", _shellSettings.Name);
+                return StatusCode(404);
+            }
         }
 
-        public async Task<ActionResult> Index(string token)
+        var model = new SetupViewModel
         {
-            var recipes = await _setupService.GetSetupRecipesAsync();
-            var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
+            DatabaseProviders = _databaseProviders,
+            Recipes = recipes,
+            RecipeName = defaultRecipe?.Name,
+            Secret = token
+        };
 
-            if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
+        CopyShellSettingsValues(model);
+
+        if (!String.IsNullOrEmpty(_shellSettings["TablePrefix"]))
+        {
+            model.DatabaseConfigurationPreset = true;
+            model.TablePrefix = _shellSettings["TablePrefix"];
+        }
+
+        return View(model);
+    }
+
+    [HttpPost, ActionName("Index")]
+    public async Task<ActionResult> IndexPOST(SetupViewModel model)
+    {
+        if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
+        {
+            if (string.IsNullOrEmpty(model.Secret) || !await IsTokenValid(model.Secret))
             {
-                if (string.IsNullOrEmpty(token) || !await IsTokenValid(token))
-                {
-                    _logger.LogWarning("An attempt to access '{TenantName}' without providing a secret was made", _shellSettings.Name);
-                    return StatusCode(404);
-                }
+                _logger.LogWarning("An attempt to access '{TenantName}' without providing a valid secret was made", _shellSettings.Name);
+                return StatusCode(404);
             }
+        }
 
-            var model = new SetupViewModel
+        model.DatabaseProviders = _databaseProviders;
+        model.Recipes = await _setupService.GetSetupRecipesAsync();
+
+        var selectedProvider = model.DatabaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
+
+        if (!model.DatabaseConfigurationPreset)
+        {
+            if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(model.ConnectionString))
             {
-                DatabaseProviders = _databaseProviders,
-                Recipes = recipes,
-                RecipeName = defaultRecipe?.Name,
-                Secret = token
-            };
+                ModelState.AddModelError(nameof(model.ConnectionString), S["The connection string is mandatory for this provider."]);
+            }
+        }
 
+        if (String.IsNullOrEmpty(model.Password))
+        {
+            ModelState.AddModelError(nameof(model.Password), S["The password is required."]);
+        }
+
+        if (model.Password != model.PasswordConfirmation)
+        {
+            ModelState.AddModelError(nameof(model.PasswordConfirmation), S["The password confirmation doesn't match the password."]);
+        }
+
+        RecipeDescriptor selectedRecipe = null;
+        if (!string.IsNullOrEmpty(_shellSettings["RecipeName"]))
+        {
+            selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings["RecipeName"]);
+            if (selectedRecipe == null)
+            {
+                ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
+            }
+        }
+        else if (String.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
+        {
+            ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
+        }
+
+        // Only add additional errors if attribute validation has passed.
+        if (!String.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
+        {
+            ModelState.AddModelError(nameof(model.Email), S["The email is invalid."]);
+        }
+
+        if (!String.IsNullOrEmpty(model.UserName) && model.UserName.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
+        {
+            ModelState.AddModelError(nameof(model.UserName), S["User name '{0}' is invalid, can only contain letters or digits.", model.UserName]);
+        }
+
+        if (!ModelState.IsValid)
+        {
             CopyShellSettingsValues(model);
+            return View(model);
+        }
 
-            if (!String.IsNullOrEmpty(_shellSettings["TablePrefix"]))
+        var setupContext = new SetupContext
+        {
+            ShellSettings = _shellSettings,
+            EnabledFeatures = null, // default list,
+            Errors = new Dictionary<string, string>(),
+            Recipe = selectedRecipe,
+            Properties = new Dictionary<string, object>
             {
-                model.DatabaseConfigurationPreset = true;
-                model.TablePrefix = _shellSettings["TablePrefix"];
+                { SetupConstants.SiteName, model.SiteName },
+                { SetupConstants.AdminUsername, model.UserName },
+                { SetupConstants.AdminEmail, model.Email },
+                { SetupConstants.AdminPassword, model.Password },
+                { SetupConstants.SiteTimeZone, model.SiteTimeZone },
+            }
+        };
+
+        if (!string.IsNullOrEmpty(_shellSettings["ConnectionString"]))
+        {
+            setupContext.Properties[SetupConstants.DatabaseProvider] = _shellSettings["DatabaseProvider"];
+            setupContext.Properties[SetupConstants.DatabaseConnectionString] = _shellSettings["ConnectionString"];
+            setupContext.Properties[SetupConstants.DatabaseTablePrefix] = _shellSettings["TablePrefix"];
+        }
+        else
+        {
+            setupContext.Properties[SetupConstants.DatabaseProvider] = model.DatabaseProvider;
+            setupContext.Properties[SetupConstants.DatabaseConnectionString] = model.ConnectionString;
+            setupContext.Properties[SetupConstants.DatabaseTablePrefix] = model.TablePrefix;
+        }
+
+        var executionId = await _setupService.SetupAsync(setupContext);
+
+        // Check if a component in the Setup failed
+        if (setupContext.Errors.Any())
+        {
+            foreach (var error in setupContext.Errors)
+            {
+                ModelState.AddModelError(error.Key, error.Value);
             }
 
             return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
-        public async Task<ActionResult> IndexPOST(SetupViewModel model)
+        return Redirect("~/");
+    }
+
+    private void CopyShellSettingsValues(SetupViewModel model)
+    {
+        if (!String.IsNullOrEmpty(_shellSettings["ConnectionString"]))
         {
-            if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
-            {
-                if (string.IsNullOrEmpty(model.Secret) || !await IsTokenValid(model.Secret))
-                {
-                    _logger.LogWarning("An attempt to access '{TenantName}' without providing a valid secret was made", _shellSettings.Name);
-                    return StatusCode(404);
-                }
-            }
-
-            model.DatabaseProviders = _databaseProviders;
-            model.Recipes = await _setupService.GetSetupRecipesAsync();
-
-            var selectedProvider = model.DatabaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
-
-            if (!model.DatabaseConfigurationPreset)
-            {
-                if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(model.ConnectionString))
-                {
-                    ModelState.AddModelError(nameof(model.ConnectionString), S["The connection string is mandatory for this provider."]);
-                }
-            }
-
-            if (String.IsNullOrEmpty(model.Password))
-            {
-                ModelState.AddModelError(nameof(model.Password), S["The password is required."]);
-            }
-
-            if (model.Password != model.PasswordConfirmation)
-            {
-                ModelState.AddModelError(nameof(model.PasswordConfirmation), S["The password confirmation doesn't match the password."]);
-            }
-
-            RecipeDescriptor selectedRecipe = null;
-            if (!string.IsNullOrEmpty(_shellSettings["RecipeName"]))
-            {
-                selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings["RecipeName"]);
-                if (selectedRecipe == null)
-                {
-                    ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
-                }
-            }
-            else if (String.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
-            {
-                ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
-            }
-
-            // Only add additional errors if attribute validation has passed.
-            if (!String.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
-            {
-                ModelState.AddModelError(nameof(model.Email), S["The email is invalid."]);
-            }
-
-            if (!String.IsNullOrEmpty(model.UserName) && model.UserName.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
-            {
-                ModelState.AddModelError(nameof(model.UserName), S["User name '{0}' is invalid, can only contain letters or digits.", model.UserName]);
-            }
-
-            if (!ModelState.IsValid)
-            {
-                CopyShellSettingsValues(model);
-                return View(model);
-            }
-
-            var setupContext = new SetupContext
-            {
-                ShellSettings = _shellSettings,
-                EnabledFeatures = null, // default list,
-                Errors = new Dictionary<string, string>(),
-                Recipe = selectedRecipe,
-                Properties = new Dictionary<string, object>
-                {
-                    { SetupConstants.SiteName, model.SiteName },
-                    { SetupConstants.AdminUsername, model.UserName },
-                    { SetupConstants.AdminEmail, model.Email },
-                    { SetupConstants.AdminPassword, model.Password },
-                    { SetupConstants.SiteTimeZone, model.SiteTimeZone },
-                }
-            };
-
-            if (!string.IsNullOrEmpty(_shellSettings["ConnectionString"]))
-            {
-                setupContext.Properties[SetupConstants.DatabaseProvider] = _shellSettings["DatabaseProvider"];
-                setupContext.Properties[SetupConstants.DatabaseConnectionString] = _shellSettings["ConnectionString"];
-                setupContext.Properties[SetupConstants.DatabaseTablePrefix] = _shellSettings["TablePrefix"];
-            }
-            else
-            {
-                setupContext.Properties[SetupConstants.DatabaseProvider] = model.DatabaseProvider;
-                setupContext.Properties[SetupConstants.DatabaseConnectionString] = model.ConnectionString;
-                setupContext.Properties[SetupConstants.DatabaseTablePrefix] = model.TablePrefix;
-            }
-
-            var executionId = await _setupService.SetupAsync(setupContext);
-
-            // Check if a component in the Setup failed
-            if (setupContext.Errors.Any())
-            {
-                foreach (var error in setupContext.Errors)
-                {
-                    ModelState.AddModelError(error.Key, error.Value);
-                }
-
-                return View(model);
-            }
-
-            return Redirect("~/");
+            model.DatabaseConfigurationPreset = true;
+            model.ConnectionString = _shellSettings["ConnectionString"];
         }
 
-        private void CopyShellSettingsValues(SetupViewModel model)
+        if (!String.IsNullOrEmpty(_shellSettings["RecipeName"]))
         {
-            if (!String.IsNullOrEmpty(_shellSettings["ConnectionString"]))
-            {
-                model.DatabaseConfigurationPreset = true;
-                model.ConnectionString = _shellSettings["ConnectionString"];
-            }
-
-            if (!String.IsNullOrEmpty(_shellSettings["RecipeName"]))
-            {
-                model.RecipeNamePreset = true;
-                model.RecipeName = _shellSettings["RecipeName"];
-            }
-
-            if (!String.IsNullOrEmpty(_shellSettings["DatabaseProvider"]))
-            {
-                model.DatabaseConfigurationPreset = true;
-                model.DatabaseProvider = _shellSettings["DatabaseProvider"];
-            }
-            else
-            {
-                model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
-            }
-
-            if (!String.IsNullOrEmpty(_shellSettings["Description"]))
-            {
-                model.Description = _shellSettings["Description"];
-            }
+            model.RecipeNamePreset = true;
+            model.RecipeName = _shellSettings["RecipeName"];
         }
 
-        private async Task<bool> IsTokenValid(string token)
+        if (!String.IsNullOrEmpty(_shellSettings["DatabaseProvider"]))
         {
-            try
+            model.DatabaseConfigurationPreset = true;
+            model.DatabaseProvider = _shellSettings["DatabaseProvider"];
+        }
+        else
+        {
+            model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
+        }
+
+        if (!String.IsNullOrEmpty(_shellSettings["Description"]))
+        {
+            model.Description = _shellSettings["Description"];
+        }
+    }
+
+    private async Task<bool> IsTokenValid(string token)
+    {
+        try
+        {
+            var result = false;
+
+            var shellScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
+
+            await shellScope.UsingAsync(scope =>
             {
-                var result = false;
+                var dataProtectionProvider = scope.ServiceProvider.GetRequiredService<IDataProtectionProvider>();
+                var dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 
-                var shellScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
+                var tokenValue = dataProtector.Unprotect(token, out var expiration);
 
-                await shellScope.UsingAsync(scope =>
+                if (_clock.UtcNow < expiration.ToUniversalTime())
                 {
-                    var dataProtectionProvider = scope.ServiceProvider.GetRequiredService<IDataProtectionProvider>();
-                    var dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
-
-                    var tokenValue = dataProtector.Unprotect(token, out var expiration);
-
-                    if (_clock.UtcNow < expiration.ToUniversalTime())
+                    if (_shellSettings["Secret"] == tokenValue)
                     {
-                        if (_shellSettings["Secret"] == tokenValue)
-                        {
-                            result = true;
-                        }
+                        result = true;
                     }
+                }
 
-                    return Task.CompletedTask;
-                });
+                return Task.CompletedTask;
+            });
 
-                return result;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in decrypting the token");
-            }
-
-            return false;
+            return result;
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in decrypting the token");
+        }
+
+        return false;
     }
 }

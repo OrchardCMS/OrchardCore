@@ -1,7 +1,6 @@
-namespace OrchardCore.Forms.ViewModels
+namespace OrchardCore.Forms.ViewModels;
+
+public class LabelPartEditViewModel
 {
-    public class LabelPartEditViewModel
-    {
-        public string For { get; set; }
-    }
+    public string For { get; set; }
 }

@@ -8,57 +8,56 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Display;
 
-namespace OrchardCore.Contents.Workflows.Drivers
+namespace OrchardCore.Contents.Workflows.Drivers;
+
+public abstract class ContentEventDisplayDriver<TActivity, TViewModel> : ActivityDisplayDriver<TActivity, TViewModel> where TActivity : ContentEvent where TViewModel : ContentEventViewModel<TActivity>, new()
 {
-    public abstract class ContentEventDisplayDriver<TActivity, TViewModel> : ActivityDisplayDriver<TActivity, TViewModel> where TActivity : ContentEvent where TViewModel : ContentEventViewModel<TActivity>, new()
+    protected ContentEventDisplayDriver(IContentDefinitionManager contentDefinitionManager)
     {
-        protected ContentEventDisplayDriver(IContentDefinitionManager contentDefinitionManager)
+        ContentDefinitionManager = contentDefinitionManager;
+    }
+
+    protected IContentDefinitionManager ContentDefinitionManager { get; }
+
+    protected override void EditActivity(TActivity source, TViewModel target)
+    {
+        target.SelectedContentTypeNames = source.ContentTypeFilter;
+    }
+
+    public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
+    {
+        var viewModel = new TViewModel();
+        if (await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.SelectedContentTypeNames))
         {
-            ContentDefinitionManager = contentDefinitionManager;
+            model.ContentTypeFilter = FilterContentTypesQuery(viewModel.SelectedContentTypeNames).ToList();
         }
+        return Edit(model);
+    }
 
-        protected IContentDefinitionManager ContentDefinitionManager { get; }
-
-        protected override void EditActivity(TActivity source, TViewModel target)
-        {
-            target.SelectedContentTypeNames = source.ContentTypeFilter;
-        }
-
-        public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
-        {
-            var viewModel = new TViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.SelectedContentTypeNames))
+    public override IDisplayResult Display(TActivity activity)
+    {
+        return Combine(
+            Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new ContentEventViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
+            Factory($"{typeof(TActivity).Name}_Fields_Design", ctx =>
             {
-                model.ContentTypeFilter = FilterContentTypesQuery(viewModel.SelectedContentTypeNames).ToList();
-            }
-            return Edit(model);
-        }
+                var contentTypeDefinitions = ContentDefinitionManager.ListTypeDefinitions().ToDictionary(x => x.Name);
+                var selectedContentTypeDefinitions = activity.ContentTypeFilter.Select(x => contentTypeDefinitions[x]).ToList();
 
-        public override IDisplayResult Display(TActivity activity)
-        {
-            return Combine(
-                Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new ContentEventViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
-                Factory($"{typeof(TActivity).Name}_Fields_Design", ctx =>
-                {
-                    var contentTypeDefinitions = ContentDefinitionManager.ListTypeDefinitions().ToDictionary(x => x.Name);
-                    var selectedContentTypeDefinitions = activity.ContentTypeFilter.Select(x => contentTypeDefinitions[x]).ToList();
+                var shape = new ContentEventViewModel<TActivity>();
+                shape.ContentTypeFilter = selectedContentTypeDefinitions;
+                shape.Activity = activity;
 
-                    var shape = new ContentEventViewModel<TActivity>();
-                    shape.ContentTypeFilter = selectedContentTypeDefinitions;
-                    shape.Activity = activity;
+                return shape;
+            }).Location("Design", "Content")
+        );
+    }
 
-                    return shape;
-                }).Location("Design", "Content")
-            );
-        }
-
-        /// <summary>
-        /// Filters out any content type that doesn't exist.
-        /// </summary>
-        protected IEnumerable<string> FilterContentTypesQuery(IEnumerable<string> contentTypeNames)
-        {
-            var contentTypeDefinitions = ContentDefinitionManager.ListTypeDefinitions().ToDictionary(x => x.Name);
-            return contentTypeNames.Where(x => !string.IsNullOrWhiteSpace(x) && contentTypeDefinitions.ContainsKey(x));
-        }
+    /// <summary>
+    /// Filters out any content type that doesn't exist.
+    /// </summary>
+    protected IEnumerable<string> FilterContentTypesQuery(IEnumerable<string> contentTypeNames)
+    {
+        var contentTypeDefinitions = ContentDefinitionManager.ListTypeDefinitions().ToDictionary(x => x.Name);
+        return contentTypeNames.Where(x => !string.IsNullOrWhiteSpace(x) && contentTypeDefinitions.ContainsKey(x));
     }
 }

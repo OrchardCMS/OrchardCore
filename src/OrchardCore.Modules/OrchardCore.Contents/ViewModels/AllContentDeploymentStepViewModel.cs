@@ -1,7 +1,6 @@
-namespace OrchardCore.Contents.ViewModels
+namespace OrchardCore.Contents.ViewModels;
+
+public class AllContentDeploymentStepViewModel
 {
-    public class AllContentDeploymentStepViewModel
-    {
-        public bool ExportAsSetupRecipe { get; set; }
-    }
+    public bool ExportAsSetupRecipe { get; set; }
 }

@@ -6,79 +6,78 @@ using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Settings;
 
-namespace OrchardCore.DisplayManagement.Razor
+namespace OrchardCore.DisplayManagement.Razor;
+
+/// <summary>
+/// Inject commonly used data through an HttpContext feature <see cref="RazorViewFeature"/> such that
+/// e.g a <see cref="RazorPage"/> can reuse them when it's executed.
+/// </summary>
+public class RazorViewActionFilter : IAsyncViewActionFilter
 {
-    /// <summary>
-    /// Inject commonly used data through an HttpContext feature <see cref="RazorViewFeature"/> such that
-    /// e.g a <see cref="RazorPage"/> can reuse them when it's executed.
-    /// </summary>
-    public class RazorViewActionFilter : IAsyncViewActionFilter
+    public Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        public Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        static async Task Awaited(Task task, ActionExecutionDelegate next)
         {
-            static async Task Awaited(Task task, ActionExecutionDelegate next)
-            {
-                await task;
-                await next();
-            }
-
-            var task = OnActionExecutionAsync(context);
-            return !task.IsCompletedSuccessfully
-                ? Awaited(task, next)
-                : next();
-        }
-
-        public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
-        {
-            await OnActionExecutionAsync(context);
+            await task;
             await next();
         }
 
-        public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context)
+        var task = OnActionExecutionAsync(context);
+        return !task.IsCompletedSuccessfully
+            ? Awaited(task, next)
+            : next();
+    }
+
+    public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
+    {
+        await OnActionExecutionAsync(context);
+        await next();
+    }
+
+    public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context)
+    {
+        return Task.CompletedTask;
+    }
+
+    // Used as a service when we create a fake 'ActionContext'.
+    public async Task OnActionExecutionAsync(ActionContext context)
+    {
+        var razorViewFeature = context.HttpContext.Features.Get<RazorViewFeature>();
+
+        if (razorViewFeature == null)
         {
-            return Task.CompletedTask;
+            razorViewFeature = new RazorViewFeature();
+            context.HttpContext.Features.Set(razorViewFeature);
         }
 
-        // Used as a service when we create a fake 'ActionContext'.
-        public async Task OnActionExecutionAsync(ActionContext context)
+        if (razorViewFeature.Site == null)
         {
-            var razorViewFeature = context.HttpContext.Features.Get<RazorViewFeature>();
+            var siteService = context.HttpContext.RequestServices.GetService<ISiteService>();
 
-            if (razorViewFeature == null)
+            // siteService can be null during Setup
+            if (siteService != null)
             {
-                razorViewFeature = new RazorViewFeature();
-                context.HttpContext.Features.Set(razorViewFeature);
+                razorViewFeature.Site = await siteService.GetSiteSettingsAsync();
             }
+        }
 
-            if (razorViewFeature.Site == null)
+        if (razorViewFeature.ThemeLayout == null)
+        {
+            var layoutAccessor = context.HttpContext.RequestServices.GetService<ILayoutAccessor>();
+
+            if (layoutAccessor != null)
             {
-                var siteService = context.HttpContext.RequestServices.GetService<ISiteService>();
-
-                // siteService can be null during Setup
-                if (siteService != null)
-                {
-                    razorViewFeature.Site = await siteService.GetSiteSettingsAsync();
-                }
+                razorViewFeature.ThemeLayout = await layoutAccessor.GetLayoutAsync();
             }
+        }
 
-            if (razorViewFeature.ThemeLayout == null)
+        if (razorViewFeature.Theme == null)
+        {
+            var themeManager = context.HttpContext.RequestServices.GetService<IThemeManager>();
+
+            if (themeManager != null)
             {
-                var layoutAccessor = context.HttpContext.RequestServices.GetService<ILayoutAccessor>();
-
-                if (layoutAccessor != null)
-                {
-                    razorViewFeature.ThemeLayout = await layoutAccessor.GetLayoutAsync();
-                }
-            }
-
-            if (razorViewFeature.Theme == null)
-            {
-                var themeManager = context.HttpContext.RequestServices.GetService<IThemeManager>();
-
-                if (themeManager != null)
-                {
-                    razorViewFeature.Theme = await themeManager.GetThemeAsync();
-                }
+                razorViewFeature.Theme = await themeManager.GetThemeAsync();
             }
         }
     }

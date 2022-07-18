@@ -3,16 +3,15 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.PublishLater.Models;
 
-namespace OrchardCore.PublishLater.Handlers
-{
-    public class PublishLaterPartHandler : ContentPartHandler<PublishLaterPart>
-    {
-        public override Task PublishedAsync(PublishContentContext context, PublishLaterPart part)
-        {
-            part.ScheduledPublishUtc = null;
-            part.Apply();
+namespace OrchardCore.PublishLater.Handlers;
 
-            return Task.CompletedTask;
-        }
+public class PublishLaterPartHandler : ContentPartHandler<PublishLaterPart>
+{
+    public override Task PublishedAsync(PublishContentContext context, PublishLaterPart part)
+    {
+        part.ScheduledPublishUtc = null;
+        part.Apply();
+
+        return Task.CompletedTask;
     }
 }

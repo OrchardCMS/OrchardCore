@@ -6,48 +6,47 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.CustomSettings
+namespace OrchardCore.CustomSettings;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
+    private static readonly Permission ManageCustomSettings = new Permission("ManageCustomSettings_{0}", "Manage Custom Settings - {0}", new[] { new Permission("ManageResourceSettings") });
+
+    private readonly CustomSettingsService _customSettingsService;
+
+    public Permissions(CustomSettingsService customSettingsService)
     {
-        private static readonly Permission ManageCustomSettings = new Permission("ManageCustomSettings_{0}", "Manage Custom Settings - {0}", new[] { new Permission("ManageResourceSettings") });
+        _customSettingsService = customSettingsService;
+    }
 
-        private readonly CustomSettingsService _customSettingsService;
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    {
+        var list = new List<Permission>();
 
-        public Permissions(CustomSettingsService customSettingsService)
+        foreach (var type in _customSettingsService.GetAllSettingsTypes())
         {
-            _customSettingsService = customSettingsService;
+            list.Add(CreatePermissionForType(type));
         }
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            var list = new List<Permission>();
+        return Task.FromResult(list.AsEnumerable());
+    }
 
-            foreach (var type in _customSettingsService.GetAllSettingsTypes())
-            {
-                list.Add(CreatePermissionForType(type));
-            }
+    public static string CreatePermissionName(string name)
+    {
+        return String.Format(ManageCustomSettings.Name, name);
+    }
 
-            return Task.FromResult(list.AsEnumerable());
-        }
+    public static Permission CreatePermissionForType(ContentTypeDefinition type)
+    {
+        return new Permission(
+                CreatePermissionName(type.Name),
+                String.Format(ManageCustomSettings.Description, type.DisplayName),
+                ManageCustomSettings.ImpliedBy
+            );
+    }
 
-        public static string CreatePermissionName(string name)
-        {
-            return String.Format(ManageCustomSettings.Name, name);
-        }
-
-        public static Permission CreatePermissionForType(ContentTypeDefinition type)
-        {
-            return new Permission(
-                    CreatePermissionName(type.Name),
-                    String.Format(ManageCustomSettings.Description, type.DisplayName),
-                    ManageCustomSettings.ImpliedBy
-                );
-        }
-
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return Enumerable.Empty<PermissionStereotype>();
-        }
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return Enumerable.Empty<PermissionStereotype>();
     }
 }

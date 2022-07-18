@@ -1,8 +1,7 @@
-namespace OrchardCore.Forms.Workflows.ViewModels
+namespace OrchardCore.Forms.Workflows.ViewModels;
+
+public class AddModelValidationErrorTaskViewModel
 {
-    public class AddModelValidationErrorTaskViewModel
-    {
-        public string Key { get; set; }
-        public string ErrorMessage { get; set; }
-    }
+    public string Key { get; set; }
+    public string ErrorMessage { get; set; }
 }

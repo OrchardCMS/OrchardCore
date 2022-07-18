@@ -1,29 +1,28 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.Facebook
+namespace OrchardCore.Facebook;
+
+public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+    private static ResourceManifest _manifest;
+
+    static ResourceManagementOptionsConfiguration()
     {
-        private static ResourceManifest _manifest;
+        _manifest = new ResourceManifest();
 
-        static ResourceManagementOptionsConfiguration()
-        {
-            _manifest = new ResourceManifest();
+        _manifest
+            .DefineScript("fb")
+            .SetDependencies("fbsdk")
+            .SetUrl("~/OrchardCore.Facebook/sdk/fb.js");
 
-            _manifest
-                .DefineScript("fb")
-                .SetDependencies("fbsdk")
-                .SetUrl("~/OrchardCore.Facebook/sdk/fb.js");
+        _manifest
+            .DefineScript("fbsdk")
+            .SetUrl("~/OrchardCore.Facebook/sdk/fbsdk.js");
+    }
 
-            _manifest
-                .DefineScript("fbsdk")
-                .SetUrl("~/OrchardCore.Facebook/sdk/fbsdk.js");
-        }
-
-        public void Configure(ResourceManagementOptions options)
-        {
-            options.ResourceManifests.Add(_manifest);
-        }
+    public void Configure(ResourceManagementOptions options)
+    {
+        options.ResourceManifests.Add(_manifest);
     }
 }

@@ -5,14 +5,13 @@ using System.Threading.Tasks;
 using Fluid.Ast;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags
+namespace OrchardCore.DisplayManagement.Liquid.Tags;
+
+public interface IAnchorTag
 {
-    public interface IAnchorTag
-    {
-        bool Match(List<FilterArgument> argumentsList);
+    bool Match(List<FilterArgument> argumentsList);
 
-        ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context);
+    ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context);
 
-        int Order { get; }
-    }
+    int Order { get; }
 }

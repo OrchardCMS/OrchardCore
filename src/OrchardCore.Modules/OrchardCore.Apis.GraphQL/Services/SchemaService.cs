@@ -9,25 +9,43 @@ using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell.Scope;
 
-namespace OrchardCore.Apis.GraphQL.Services
+namespace OrchardCore.Apis.GraphQL.Services;
+
+public class SchemaService : ISchemaFactory
 {
-    public class SchemaService : ISchemaFactory
+    private readonly IEnumerable<ISchemaBuilder> _schemaBuilders;
+    private readonly SemaphoreSlim _schemaGenerationSemaphore = new SemaphoreSlim(1, 1);
+    private readonly ConcurrentDictionary<ISchemaBuilder, string> _identifiers = new ConcurrentDictionary<ISchemaBuilder, string>();
+
+    private ISchema _schema;
+
+    public SchemaService(IEnumerable<ISchemaBuilder> schemaBuilders)
     {
-        private readonly IEnumerable<ISchemaBuilder> _schemaBuilders;
-        private readonly SemaphoreSlim _schemaGenerationSemaphore = new SemaphoreSlim(1, 1);
-        private readonly ConcurrentDictionary<ISchemaBuilder, string> _identifiers = new ConcurrentDictionary<ISchemaBuilder, string>();
+        _schemaBuilders = schemaBuilders;
+    }
 
-        private ISchema _schema;
+    public async Task<ISchema> GetSchemaAsync()
+    {
+        var hasChanged = false;
 
-        public SchemaService(IEnumerable<ISchemaBuilder> schemaBuilders)
+        foreach (var builder in _schemaBuilders)
         {
-            _schemaBuilders = schemaBuilders;
+            if (_identifiers.TryGetValue(builder, out var identifier) && await builder.GetIdentifierAsync() != identifier)
+            {
+                hasChanged = true;
+                break;
+            }
         }
 
-        public async Task<ISchema> GetSchemaAsync()
+        if (_schema is object && !hasChanged)
         {
-            var hasChanged = false;
+            return _schema;
+        }
 
+        await _schemaGenerationSemaphore.WaitAsync();
+
+        try
+        {
             foreach (var builder in _schemaBuilders)
             {
                 if (_identifiers.TryGetValue(builder, out var identifier) && await builder.GetIdentifierAsync() != identifier)
@@ -42,83 +60,64 @@ namespace OrchardCore.Apis.GraphQL.Services
                 return _schema;
             }
 
-            await _schemaGenerationSemaphore.WaitAsync();
+            var serviceProvider = ShellScope.Services;
 
-            try
+            var schema = new Schema
             {
-                foreach (var builder in _schemaBuilders)
-                {
-                    if (_identifiers.TryGetValue(builder, out var identifier) && await builder.GetIdentifierAsync() != identifier)
-                    {
-                        hasChanged = true;
-                        break;
-                    }
-                }
+                Query = new ObjectGraphType { Name = "Query" },
+                Mutation = new ObjectGraphType { Name = "Mutation" },
+                Subscription = new ObjectGraphType { Name = "Subscription" },
+                FieldNameConverter = new OrchardFieldNameConverter(),
+                DependencyResolver = serviceProvider.GetService<IDependencyResolver>()
+            };
 
-                if (_schema is object && !hasChanged)
-                {
-                    return _schema;
-                }
-
-                var serviceProvider = ShellScope.Services;
-
-                var schema = new Schema
-                {
-                    Query = new ObjectGraphType { Name = "Query" },
-                    Mutation = new ObjectGraphType { Name = "Mutation" },
-                    Subscription = new ObjectGraphType { Name = "Subscription" },
-                    FieldNameConverter = new OrchardFieldNameConverter(),
-                    DependencyResolver = serviceProvider.GetService<IDependencyResolver>()
-                };
-
-                foreach (var builder in _schemaBuilders)
-                {
-                    var identifier = await builder.GetIdentifierAsync();
-
-                    // null being a valid value not yet updated.
-                    if (identifier != String.Empty)
-                    {
-                        _identifiers[builder] = identifier;
-                    }
-
-                    await builder.BuildAsync(schema);
-                }
-
-                foreach (var type in serviceProvider.GetServices<IInputObjectGraphType>())
-                {
-                    schema.RegisterType(type);
-                }
-
-                foreach (var type in serviceProvider.GetServices<IObjectGraphType>())
-                {
-                    schema.RegisterType(type);
-                }
-
-                // Clean Query, Mutation and Subscription if they have no fields
-                // to prevent GraphQL configuration errors.
-
-                if (!schema.Query.Fields.Any())
-                {
-                    schema.Query = null;
-                }
-
-                if (!schema.Mutation.Fields.Any())
-                {
-                    schema.Mutation = null;
-                }
-
-                if (!schema.Subscription.Fields.Any())
-                {
-                    schema.Subscription = null;
-                }
-
-                schema.Initialize();
-                return _schema = schema;
-            }
-            finally
+            foreach (var builder in _schemaBuilders)
             {
-                _schemaGenerationSemaphore.Release();
+                var identifier = await builder.GetIdentifierAsync();
+
+                // null being a valid value not yet updated.
+                if (identifier != String.Empty)
+                {
+                    _identifiers[builder] = identifier;
+                }
+
+                await builder.BuildAsync(schema);
             }
+
+            foreach (var type in serviceProvider.GetServices<IInputObjectGraphType>())
+            {
+                schema.RegisterType(type);
+            }
+
+            foreach (var type in serviceProvider.GetServices<IObjectGraphType>())
+            {
+                schema.RegisterType(type);
+            }
+
+            // Clean Query, Mutation and Subscription if they have no fields
+            // to prevent GraphQL configuration errors.
+
+            if (!schema.Query.Fields.Any())
+            {
+                schema.Query = null;
+            }
+
+            if (!schema.Mutation.Fields.Any())
+            {
+                schema.Mutation = null;
+            }
+
+            if (!schema.Subscription.Fields.Any())
+            {
+                schema.Subscription = null;
+            }
+
+            schema.Initialize();
+            return _schema = schema;
+        }
+        finally
+        {
+            _schemaGenerationSemaphore.Release();
         }
     }
 }

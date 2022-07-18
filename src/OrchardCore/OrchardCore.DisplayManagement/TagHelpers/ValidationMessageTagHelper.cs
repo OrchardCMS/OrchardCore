@@ -4,87 +4,86 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace OrchardCore.DisplayManagement.TagHelpers
+namespace OrchardCore.DisplayManagement.TagHelpers;
+
+/// <summary>
+/// <see cref="ITagHelper"/> implementation targeting any HTML element with an <c>asp-validation-for</c>
+/// attribute.
+/// </summary>
+[HtmlTargetElement("*", Attributes = ValidationForAttributeName)]
+public class ValidationMessageTagHelper : TagHelper
 {
-    /// <summary>
-    /// <see cref="ITagHelper"/> implementation targeting any HTML element with an <c>asp-validation-for</c>
-    /// attribute.
-    /// </summary>
-    [HtmlTargetElement("*", Attributes = ValidationForAttributeName)]
-    public class ValidationMessageTagHelper : TagHelper
+    private const string ValidationForAttributeName = "asp-validation-class-for";
+    private const string HasValidationErrorClassName = "has-validation-error";
+    private readonly IHtmlHelper _htmlHelper;
+
+    public ValidationMessageTagHelper(IHtmlHelper htmlHelper)
     {
-        private const string ValidationForAttributeName = "asp-validation-class-for";
-        private const string HasValidationErrorClassName = "has-validation-error";
-        private readonly IHtmlHelper _htmlHelper;
+        _htmlHelper = htmlHelper;
+    }
 
-        public ValidationMessageTagHelper(IHtmlHelper htmlHelper)
+    /// <inheritdoc />
+    public override int Order
+    {
+        get
         {
-            _htmlHelper = htmlHelper;
+            return -1000;
+        }
+    }
+
+    [HtmlAttributeNotBound]
+    [ViewContext]
+    public ViewContext ViewContext { get; set; }
+
+    /// <summary>
+    /// Name to be validated on the current model.
+    /// </summary>
+    [HtmlAttributeName(ValidationForAttributeName)]
+    public ModelExpression For { get; set; }
+
+    /// <inheritdoc />
+    /// <remarks>Does nothing if <see cref="For"/> is <c>null</c>.</remarks>
+    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    {
+        if (context == null)
+        {
+            throw new ArgumentNullException(nameof(context));
         }
 
-        /// <inheritdoc />
-        public override int Order
+        if (output == null)
         {
-            get
-            {
-                return -1000;
-            }
+            throw new ArgumentNullException(nameof(output));
         }
 
-        [HtmlAttributeNotBound]
-        [ViewContext]
-        public ViewContext ViewContext { get; set; }
-
-        /// <summary>
-        /// Name to be validated on the current model.
-        /// </summary>
-        [HtmlAttributeName(ValidationForAttributeName)]
-        public ModelExpression For { get; set; }
-
-        /// <inheritdoc />
-        /// <remarks>Does nothing if <see cref="For"/> is <c>null</c>.</remarks>
-        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+        if (For != null)
         {
-            if (context == null)
+            //contextualize IHtmlHelper
+            var viewContextAware = _htmlHelper as IViewContextAware;
+            viewContextAware?.Contextualize(ViewContext);
+
+            var fullName = _htmlHelper.Name(For.Name);
+
+            if (ViewContext.ViewData.ModelState.TryGetValue(fullName, out var entry) && entry.Errors.Count > 0)
             {
-                throw new ArgumentNullException(nameof(context));
+                TagHelperAttribute classAttribute;
+
+                if (output.Attributes.TryGetAttribute("class", out classAttribute))
+                {
+                    output.Attributes.SetAttribute("class", classAttribute.Value + " " + HasValidationErrorClassName);
+                }
+                else
+                {
+                    output.Attributes.Add("class", HasValidationErrorClassName);
+                }
             }
 
-            if (output == null)
+            // We check for whitespace to detect scenarios such as:
+            // <span validation-for="Name">
+            // </span>
+            if (!output.IsContentModified)
             {
-                throw new ArgumentNullException(nameof(output));
-            }
-
-            if (For != null)
-            {
-                //contextualize IHtmlHelper
-                var viewContextAware = _htmlHelper as IViewContextAware;
-                viewContextAware?.Contextualize(ViewContext);
-
-                var fullName = _htmlHelper.Name(For.Name);
-
-                if (ViewContext.ViewData.ModelState.TryGetValue(fullName, out var entry) && entry.Errors.Count > 0)
-                {
-                    TagHelperAttribute classAttribute;
-
-                    if (output.Attributes.TryGetAttribute("class", out classAttribute))
-                    {
-                        output.Attributes.SetAttribute("class", classAttribute.Value + " " + HasValidationErrorClassName);
-                    }
-                    else
-                    {
-                        output.Attributes.Add("class", HasValidationErrorClassName);
-                    }
-                }
-
-                // We check for whitespace to detect scenarios such as:
-                // <span validation-for="Name">
-                // </span>
-                if (!output.IsContentModified)
-                {
-                    var childContent = await output.GetChildContentAsync();
-                    output.Content.SetHtmlContent(childContent);
-                }
+                var childContent = await output.GetChildContentAsync();
+                output.Content.SetHtmlContent(childContent);
             }
         }
     }

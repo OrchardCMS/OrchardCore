@@ -7,67 +7,66 @@ using OrchardCore.Entities;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Microsoft.Authentication.Services
+namespace OrchardCore.Microsoft.Authentication.Services;
+
+public class MicrosoftAccountService : IMicrosoftAccountService
 {
-    public class MicrosoftAccountService : IMicrosoftAccountService
+    private readonly ISiteService _siteService;
+    private readonly IStringLocalizer S;
+
+    public MicrosoftAccountService(
+        ISiteService siteService,
+        IStringLocalizer<MicrosoftAccountService> stringLocalizer)
     {
-        private readonly ISiteService _siteService;
-        private readonly IStringLocalizer S;
+        _siteService = siteService;
+        S = stringLocalizer;
+    }
 
-        public MicrosoftAccountService(
-            ISiteService siteService,
-            IStringLocalizer<MicrosoftAccountService> stringLocalizer)
+    public async Task<MicrosoftAccountSettings> GetSettingsAsync()
+    {
+        var container = await _siteService.GetSiteSettingsAsync();
+        return container.As<MicrosoftAccountSettings>();
+    }
+
+    public async Task<MicrosoftAccountSettings> LoadSettingsAsync()
+    {
+        var container = await _siteService.LoadSiteSettingsAsync();
+        return container.As<MicrosoftAccountSettings>();
+    }
+
+    public async Task UpdateSettingsAsync(MicrosoftAccountSettings settings)
+    {
+        if (settings == null)
         {
-            _siteService = siteService;
-            S = stringLocalizer;
+            throw new ArgumentNullException(nameof(settings));
         }
 
-        public async Task<MicrosoftAccountSettings> GetSettingsAsync()
+        var container = await _siteService.LoadSiteSettingsAsync();
+        container.Alter<MicrosoftAccountSettings>(nameof(MicrosoftAccountSettings), aspect =>
         {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<MicrosoftAccountSettings>();
+            aspect.AppId = settings.AppId;
+            aspect.AppSecret = settings.AppSecret;
+            aspect.CallbackPath = settings.CallbackPath;
+        });
+
+        await _siteService.UpdateSiteSettingsAsync(container);
+    }
+
+    public IEnumerable<ValidationResult> ValidateSettings(MicrosoftAccountSettings settings)
+    {
+        if (settings == null)
+        {
+            throw new ArgumentNullException(nameof(settings));
         }
 
-        public async Task<MicrosoftAccountSettings> LoadSettingsAsync()
+        if (String.IsNullOrWhiteSpace(settings.AppId))
         {
-            var container = await _siteService.LoadSiteSettingsAsync();
-            return container.As<MicrosoftAccountSettings>();
+            yield return new ValidationResult(S["AppId is required"], new string[] { nameof(settings.AppId) });
         }
 
-        public async Task UpdateSettingsAsync(MicrosoftAccountSettings settings)
+        if (String.IsNullOrWhiteSpace(settings.AppSecret))
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<MicrosoftAccountSettings>(nameof(MicrosoftAccountSettings), aspect =>
-            {
-                aspect.AppId = settings.AppId;
-                aspect.AppSecret = settings.AppSecret;
-                aspect.CallbackPath = settings.CallbackPath;
-            });
-
-            await _siteService.UpdateSiteSettingsAsync(container);
-        }
-
-        public IEnumerable<ValidationResult> ValidateSettings(MicrosoftAccountSettings settings)
-        {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            if (String.IsNullOrWhiteSpace(settings.AppId))
-            {
-                yield return new ValidationResult(S["AppId is required"], new string[] { nameof(settings.AppId) });
-            }
-
-            if (String.IsNullOrWhiteSpace(settings.AppSecret))
-            {
-                yield return new ValidationResult(S["AppSecret is required"], new string[] { nameof(settings.AppSecret) });
-            }
+            yield return new ValidationResult(S["AppSecret is required"], new string[] { nameof(settings.AppSecret) });
         }
     }
 }

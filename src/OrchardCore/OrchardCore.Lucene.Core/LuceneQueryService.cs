@@ -7,52 +7,67 @@ using Lucene.Net.Analysis.TokenAttributes;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.Lucene
-{
-    public class LuceneQueryService : ILuceneQueryService
-    {
-        private readonly IEnumerable<ILuceneQueryProvider> _queryProviders;
+namespace OrchardCore.Lucene;
 
-        public LuceneQueryService(IEnumerable<ILuceneQueryProvider> queryProviders)
+public class LuceneQueryService : ILuceneQueryService
+{
+    private readonly IEnumerable<ILuceneQueryProvider> _queryProviders;
+
+    public LuceneQueryService(IEnumerable<ILuceneQueryProvider> queryProviders)
+    {
+        _queryProviders = queryProviders;
+    }
+
+    public Task<LuceneTopDocs> SearchAsync(LuceneQueryContext context, JObject queryObj)
+    {
+        var queryProp = queryObj["query"] as JObject;
+
+        if (queryProp == null)
         {
-            _queryProviders = queryProviders;
+            throw new ArgumentException("Query DSL requires a [query] property");
         }
 
-        public Task<LuceneTopDocs> SearchAsync(LuceneQueryContext context, JObject queryObj)
+        var query = CreateQueryFragment(context, queryProp);
+
+        var sortProperty = queryObj["sort"];
+        var fromProperty = queryObj["from"];
+        var sizeProperty = queryObj["size"];
+
+        var size = sizeProperty?.Value<int>() ?? 50;
+        var from = fromProperty?.Value<int>() ?? 0;
+
+        string sortField = null;
+        string sortOrder = null;
+        string sortType = null;
+        var sortFields = new List<SortField>();
+
+        if (sortProperty != null)
         {
-            var queryProp = queryObj["query"] as JObject;
-
-            if (queryProp == null)
+            if (sortProperty.Type == JTokenType.String)
             {
-                throw new ArgumentException("Query DSL requires a [query] property");
+                sortField = sortProperty.ToString();
+                sortFields.Add(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"));
             }
-
-            var query = CreateQueryFragment(context, queryProp);
-
-            var sortProperty = queryObj["sort"];
-            var fromProperty = queryObj["from"];
-            var sizeProperty = queryObj["size"];
-
-            var size = sizeProperty?.Value<int>() ?? 50;
-            var from = fromProperty?.Value<int>() ?? 0;
-
-            string sortField = null;
-            string sortOrder = null;
-            string sortType = null;
-            var sortFields = new List<SortField>();
-
-            if (sortProperty != null)
+            else if (sortProperty.Type == JTokenType.Object)
             {
-                if (sortProperty.Type == JTokenType.String)
+                sortField = ((JProperty)sortProperty.First).Name;
+                sortOrder = ((JProperty)sortProperty.First).Value["order"].ToString();
+                sortType = ((JProperty)sortProperty.First).Value["type"]?.ToString();
+                var sortFieldType = SortFieldType.STRING;
+                if (sortType != null)
                 {
-                    sortField = sortProperty.ToString();
-                    sortFields.Add(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"));
+                    sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpper());
                 }
-                else if (sortProperty.Type == JTokenType.Object)
+
+                sortFields.Add(new SortField(sortField, sortFieldType, sortOrder == "desc"));
+            }
+            else if (sortProperty.Type == JTokenType.Array)
+            {
+                foreach (var item in sortProperty.Children())
                 {
-                    sortField = ((JProperty)sortProperty.First).Name;
-                    sortOrder = ((JProperty)sortProperty.First).Value["order"].ToString();
-                    sortType = ((JProperty)sortProperty.First).Value["type"]?.ToString();
+                    sortField = ((JProperty)item.First).Name;
+                    sortOrder = ((JProperty)item.First).Value["order"].ToString();
+                    sortType = ((JProperty)item.First).Value["type"]?.ToString();
                     var sortFieldType = SortFieldType.STRING;
                     if (sortType != null)
                     {
@@ -61,91 +76,75 @@ namespace OrchardCore.Lucene
 
                     sortFields.Add(new SortField(sortField, sortFieldType, sortOrder == "desc"));
                 }
-                else if (sortProperty.Type == JTokenType.Array)
-                {
-                    foreach (var item in sortProperty.Children())
-                    {
-                        sortField = ((JProperty)item.First).Name;
-                        sortOrder = ((JProperty)item.First).Value["order"].ToString();
-                        sortType = ((JProperty)item.First).Value["type"]?.ToString();
-                        var sortFieldType = SortFieldType.STRING;
-                        if (sortType != null)
-                        {
-                            sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpper());
-                        }
-
-                        sortFields.Add(new SortField(sortField, sortFieldType, sortOrder == "desc"));
-                    }
-                }
             }
-
-            LuceneTopDocs result = null;
-            TopDocs topDocs = null;
-
-            if (size > 0)
-            {
-                topDocs = context.IndexSearcher.Search(
-                    query,
-                    size + from,
-                    sortField == null ? Sort.RELEVANCE : new Sort(sortFields.ToArray())
-                );
-
-                if (from > 0)
-                {
-                    topDocs = new TopDocs(topDocs.TotalHits - from, topDocs.ScoreDocs.Skip(from).ToArray(), topDocs.MaxScore);
-                }
-
-                var collector = new TotalHitCountCollector();
-                context.IndexSearcher.Search(query, collector);
-
-                result = new LuceneTopDocs() { TopDocs = topDocs, Count = collector.TotalHits };
-            }
-
-            return Task.FromResult(result);
         }
 
-        public Query CreateQueryFragment(LuceneQueryContext context, JObject queryObj)
+        LuceneTopDocs result = null;
+        TopDocs topDocs = null;
+
+        if (size > 0)
         {
-            var first = queryObj.Properties().First();
+            topDocs = context.IndexSearcher.Search(
+                query,
+                size + from,
+                sortField == null ? Sort.RELEVANCE : new Sort(sortFields.ToArray())
+            );
 
-            Query query = null;
-
-            foreach (var queryProvider in _queryProviders)
+            if (from > 0)
             {
-                query = queryProvider.CreateQuery(this, context, first.Name, (JObject)first.Value);
-
-                if (query != null)
-                {
-                    break;
-                }
+                topDocs = new TopDocs(topDocs.TotalHits - from, topDocs.ScoreDocs.Skip(from).ToArray(), topDocs.MaxScore);
             }
 
-            return query;
+            var collector = new TotalHitCountCollector();
+            context.IndexSearcher.Search(query, collector);
+
+            result = new LuceneTopDocs() { TopDocs = topDocs, Count = collector.TotalHits };
         }
 
-        public static List<string> Tokenize(string fieldName, string text, Analyzer analyzer)
+        return Task.FromResult(result);
+    }
+
+    public Query CreateQueryFragment(LuceneQueryContext context, JObject queryObj)
+    {
+        var first = queryObj.Properties().First();
+
+        Query query = null;
+
+        foreach (var queryProvider in _queryProviders)
         {
-            if (string.IsNullOrEmpty(text))
+            query = queryProvider.CreateQuery(this, context, first.Name, (JObject)first.Value);
+
+            if (query != null)
             {
-                return new List<string>();
+                break;
             }
+        }
 
-            var result = new List<string>();
-            using (var tokenStream = analyzer.GetTokenStream(fieldName, text))
+        return query;
+    }
+
+    public static List<string> Tokenize(string fieldName, string text, Analyzer analyzer)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return new List<string>();
+        }
+
+        var result = new List<string>();
+        using (var tokenStream = analyzer.GetTokenStream(fieldName, text))
+        {
+            tokenStream.Reset();
+            while (tokenStream.IncrementToken())
             {
-                tokenStream.Reset();
-                while (tokenStream.IncrementToken())
-                {
-                    var termAttribute = tokenStream.GetAttribute<ICharTermAttribute>();
+                var termAttribute = tokenStream.GetAttribute<ICharTermAttribute>();
 
-                    if (termAttribute != null)
-                    {
-                        result.Add(termAttribute.ToString());
-                    }
+                if (termAttribute != null)
+                {
+                    result.Add(termAttribute.ToString());
                 }
             }
-
-            return result;
         }
+
+        return result;
     }
 }

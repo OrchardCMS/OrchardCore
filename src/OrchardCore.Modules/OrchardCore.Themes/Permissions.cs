@@ -3,31 +3,30 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Themes
+namespace OrchardCore.Themes;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
+    public static readonly Permission ApplyTheme = new Permission("ApplyTheme", "Apply a Theme");
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        public static readonly Permission ApplyTheme = new Permission("ApplyTheme", "Apply a Theme");
-
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        return Task.FromResult(new[]
         {
-            return Task.FromResult(new[]
-            {
-                ApplyTheme
-            }
-            .AsEnumerable());
+            ApplyTheme
         }
+        .AsEnumerable());
+    }
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return new[]
+            new PermissionStereotype
             {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[] { ApplyTheme }
-                },
-            };
-        }
+                Name = "Administrator",
+                Permissions = new[] { ApplyTheme }
+            },
+        };
     }
 }

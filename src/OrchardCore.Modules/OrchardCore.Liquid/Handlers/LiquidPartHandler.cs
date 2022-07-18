@@ -8,41 +8,40 @@ using OrchardCore.ContentManagement.Models;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.ViewModels;
 
-namespace OrchardCore.Liquid.Handlers
+namespace OrchardCore.Liquid.Handlers;
+
+public class LiquidPartHandler : ContentPartHandler<LiquidPart>
 {
-    public class LiquidPartHandler : ContentPartHandler<LiquidPart>
+    private readonly ILiquidTemplateManager _liquidTemplateManager;
+    private readonly HtmlEncoder _htmlEncoder;
+
+    public LiquidPartHandler(ILiquidTemplateManager liquidTemplateManager, HtmlEncoder htmlEncoder)
     {
-        private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly HtmlEncoder _htmlEncoder;
+        _liquidTemplateManager = liquidTemplateManager;
+        _htmlEncoder = htmlEncoder;
+    }
 
-        public LiquidPartHandler(ILiquidTemplateManager liquidTemplateManager, HtmlEncoder htmlEncoder)
+    public override Task GetContentItemAspectAsync(ContentItemAspectContext context, LiquidPart part)
+    {
+        return context.ForAsync<BodyAspect>(async bodyAspect =>
         {
-            _liquidTemplateManager = liquidTemplateManager;
-            _htmlEncoder = htmlEncoder;
-        }
-
-        public override Task GetContentItemAspectAsync(ContentItemAspectContext context, LiquidPart part)
-        {
-            return context.ForAsync<BodyAspect>(async bodyAspect =>
+            try
             {
-                try
+                var model = new LiquidPartViewModel()
                 {
-                    var model = new LiquidPartViewModel()
-                    {
-                        LiquidPart = part,
-                        ContentItem = part.ContentItem
-                    };
+                    LiquidPart = part,
+                    ContentItem = part.ContentItem
+                };
 
-                    var result = await _liquidTemplateManager.RenderHtmlContentAsync(part.Liquid, _htmlEncoder, model,
-                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+                var result = await _liquidTemplateManager.RenderHtmlContentAsync(part.Liquid, _htmlEncoder, model,
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
 
-                    bodyAspect.Body = result;
-                }
-                catch
-                {
-                    bodyAspect.Body = HtmlString.Empty;
-                }
-            });
-        }
+                bodyAspect.Body = result;
+            }
+            catch
+            {
+                bodyAspect.Body = HtmlString.Empty;
+            }
+        });
     }
 }

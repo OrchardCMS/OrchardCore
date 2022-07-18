@@ -15,93 +15,92 @@ using OrchardCore.Redis.Options;
 using OrchardCore.Redis.Services;
 using StackExchange.Redis;
 
-namespace OrchardCore.Redis
+namespace OrchardCore.Redis;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    private readonly string _tenant;
+    private readonly IShellConfiguration _configuration;
+    private readonly ILogger _logger;
+
+    public Startup(ShellSettings shellSettings, IShellConfiguration configuration, ILogger<Startup> logger)
     {
-        private readonly string _tenant;
-        private readonly IShellConfiguration _configuration;
-        private readonly ILogger _logger;
-
-        public Startup(ShellSettings shellSettings, IShellConfiguration configuration, ILogger<Startup> logger)
-        {
-            _tenant = shellSettings.Name;
-            _configuration = configuration;
-            _logger = logger;
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            try
-            {
-                var configurationString = _configuration["OrchardCore_Redis:Configuration"];
-                var _ = ConfigurationOptions.Parse(configurationString);
-                var instancePrefix = _configuration["OrchardCore_Redis:InstancePrefix"];
-
-                services.Configure<RedisOptions>(options =>
-                {
-                    options.Configuration = configurationString;
-                    options.InstancePrefix = instancePrefix;
-                });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError("'Redis' features are not active on tenant '{TenantName}' as the 'Configuration' string is missing or invalid: " + e.Message, _tenant);
-                return;
-            }
-
-            services.AddSingleton<IRedisService, RedisService>();
-            services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<IRedisService>());
-        }
+        _tenant = shellSettings.Name;
+        _configuration = configuration;
+        _logger = logger;
     }
 
-    [Feature("OrchardCore.Redis.Cache")]
-    public class RedisCacheStartup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        try
         {
-            if (services.Any(d => d.ServiceType == typeof(IRedisService)))
+            var configurationString = _configuration["OrchardCore_Redis:Configuration"];
+            var _ = ConfigurationOptions.Parse(configurationString);
+            var instancePrefix = _configuration["OrchardCore_Redis:InstancePrefix"];
+
+            services.Configure<RedisOptions>(options =>
             {
-                services.AddStackExchangeRedisCache(o => { });
-                services.AddTransient<IConfigureOptions<RedisCacheOptions>, RedisCacheOptionsSetup>();
-                services.AddScoped<ITagCache, RedisTagCache>();
-            }
+                options.Configuration = configurationString;
+                options.InstancePrefix = instancePrefix;
+            });
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("'Redis' features are not active on tenant '{TenantName}' as the 'Configuration' string is missing or invalid: " + e.Message, _tenant);
+            return;
+        }
+
+        services.AddSingleton<IRedisService, RedisService>();
+        services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<IRedisService>());
+    }
+}
+
+[Feature("OrchardCore.Redis.Cache")]
+public class RedisCacheStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        if (services.Any(d => d.ServiceType == typeof(IRedisService)))
+        {
+            services.AddStackExchangeRedisCache(o => { });
+            services.AddTransient<IConfigureOptions<RedisCacheOptions>, RedisCacheOptionsSetup>();
+            services.AddScoped<ITagCache, RedisTagCache>();
         }
     }
+}
 
-    [Feature("OrchardCore.Redis.Bus")]
-    public class RedisBusStartup : StartupBase
+[Feature("OrchardCore.Redis.Bus")]
+public class RedisBusStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        if (services.Any(d => d.ServiceType == typeof(IRedisService)))
         {
-            if (services.Any(d => d.ServiceType == typeof(IRedisService)))
-            {
-                services.AddSingleton<IMessageBus, RedisBus>();
-            }
+            services.AddSingleton<IMessageBus, RedisBus>();
         }
     }
+}
 
-    [Feature("OrchardCore.Redis.Lock")]
-    public class RedisLockStartup : StartupBase
+[Feature("OrchardCore.Redis.Lock")]
+public class RedisLockStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        if (services.Any(d => d.ServiceType == typeof(IRedisService)))
         {
-            if (services.Any(d => d.ServiceType == typeof(IRedisService)))
-            {
-                services.AddSingleton<IDistributedLock, RedisLock>();
-            }
+            services.AddSingleton<IDistributedLock, RedisLock>();
         }
     }
+}
 
-    [Feature("OrchardCore.Redis.DataProtection")]
-    public class RedisDataProtectionStartup : StartupBase
+[Feature("OrchardCore.Redis.DataProtection")]
+public class RedisDataProtectionStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        if (services.Any(d => d.ServiceType == typeof(IRedisService)))
         {
-            if (services.Any(d => d.ServiceType == typeof(IRedisService)))
-            {
-                services.AddTransient<IConfigureOptions<KeyManagementOptions>, RedisKeyManagementOptionsSetup>();
-            }
+            services.AddTransient<IConfigureOptions<KeyManagementOptions>, RedisKeyManagementOptionsSetup>();
         }
     }
 }

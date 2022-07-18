@@ -6,66 +6,65 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Configuration.KeyVault.Services;
 
-namespace OrchardCore.Configuration.KeyVault.Extensions
+namespace OrchardCore.Configuration.KeyVault.Extensions;
+
+public static class AzureKeyVaultWebHostBuilderExtension
 {
-    public static class AzureKeyVaultWebHostBuilderExtension
+    /// <summary>
+    /// Adds Azure Key Vault as a Configuration Source.
+    /// </summary>
+    /// <param name="builder">The web host builder to configure.</param>
+    /// <returns>The web host builder.</returns>
+    public static IHostBuilder AddOrchardCoreAzureKeyVault(this IHostBuilder builder)
     {
-        /// <summary>
-        /// Adds Azure Key Vault as a Configuration Source.
-        /// </summary>
-        /// <param name="builder">The web host builder to configure.</param>
-        /// <returns>The web host builder.</returns>
-        public static IHostBuilder AddOrchardCoreAzureKeyVault(this IHostBuilder builder)
+        if (builder == null)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            builder.AddOrchardCoreAzureKeyVault(new DefaultAzureCredential(includeInteractiveCredentials: true));
-
-            return builder;
+            throw new ArgumentNullException(nameof(builder));
         }
 
-        /// <summary>
-        /// Adds Azure Key Vault as a Configuration Source.
-        /// </summary>
-        /// <param name="builder">The web host builder to configure.</param>
-        /// <param name="tokenCredential">The token credential to use for authentication.</param>
-        /// <returns>The web host builder.</returns>
-        public static IHostBuilder AddOrchardCoreAzureKeyVault(this IHostBuilder builder, TokenCredential tokenCredential)
+        builder.AddOrchardCoreAzureKeyVault(new DefaultAzureCredential(includeInteractiveCredentials: true));
+
+        return builder;
+    }
+
+    /// <summary>
+    /// Adds Azure Key Vault as a Configuration Source.
+    /// </summary>
+    /// <param name="builder">The web host builder to configure.</param>
+    /// <param name="tokenCredential">The token credential to use for authentication.</param>
+    /// <returns>The web host builder.</returns>
+    public static IHostBuilder AddOrchardCoreAzureKeyVault(this IHostBuilder builder, TokenCredential tokenCredential)
+    {
+        if (builder == null)
         {
-            if (builder == null)
+            throw new ArgumentNullException(nameof(builder));
+        }
+
+        builder.ConfigureAppConfiguration((context, configuration) =>
+        {
+            var builtConfig = configuration.Build();
+            var keyVaultName = builtConfig["OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName"];
+
+            TimeSpan? reloadInterval = null;
+            if (Double.TryParse(builtConfig["OrchardCore:OrchardCore_KeyVault_Azure:ReloadInterval"], out var interval))
             {
-                throw new ArgumentNullException(nameof(builder));
+                reloadInterval = TimeSpan.FromSeconds(interval);
             }
 
-            builder.ConfigureAppConfiguration((context, configuration) =>
+            var keyVaultEndpointUri = new Uri("https://" + keyVaultName + ".vault.azure.net");
+            var configOptions = new AzureKeyVaultConfigurationOptions()
             {
-                var builtConfig = configuration.Build();
-                var keyVaultName = builtConfig["OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName"];
+                Manager = new AzureKeyVaultSecretManager(),
+                ReloadInterval = reloadInterval
+            };
 
-                TimeSpan? reloadInterval = null;
-                if (Double.TryParse(builtConfig["OrchardCore:OrchardCore_KeyVault_Azure:ReloadInterval"], out var interval))
-                {
-                    reloadInterval = TimeSpan.FromSeconds(interval);
-                }
+            configuration.AddAzureKeyVault(
+                keyVaultEndpointUri,
+                tokenCredential,
+                configOptions
+            );
+        });
 
-                var keyVaultEndpointUri = new Uri("https://" + keyVaultName + ".vault.azure.net");
-                var configOptions = new AzureKeyVaultConfigurationOptions()
-                {
-                    Manager = new AzureKeyVaultSecretManager(),
-                    ReloadInterval = reloadInterval
-                };
-
-                configuration.AddAzureKeyVault(
-                    keyVaultEndpointUri,
-                    tokenCredential,
-                    configOptions
-                );
-            });
-
-            return builder;
-        }
+        return builder;
     }
 }

@@ -1,61 +1,60 @@
 using System;
 using Microsoft.Extensions.Logging;
 
-namespace OrchardCore.Tests
+namespace OrchardCore.Tests;
+
+public class StubLoggerFactory : ILoggerFactory
 {
-    public class StubLoggerFactory : ILoggerFactory
+    public LogLevel MinimumLevel
     {
-        public LogLevel MinimumLevel
+        get
         {
-            get
-            {
-                return LogLevel.Critical;
-            }
-
-            set
-            {
-            }
+            return LogLevel.Critical;
         }
 
-        public void AddProvider(ILoggerProvider provider)
+        set
         {
         }
+    }
 
-        public ILogger CreateLogger(string categoryName)
-        {
-            return new NullLogger();
-        }
+    public void AddProvider(ILoggerProvider provider)
+    {
+    }
 
+    public ILogger CreateLogger(string categoryName)
+    {
+        return new NullLogger();
+    }
+
+    public void Dispose()
+    {
+    }
+}
+
+public class NullLogger : ILogger
+{
+    public IDisposable BeginScope<TState>(TState state)
+    {
+        return new FakeScope();
+    }
+
+    public bool IsEnabled(LogLevel logLevel)
+    {
+        return false;
+    }
+
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+    {
+    }
+
+    private class FakeScope : IDisposable
+    {
         public void Dispose()
         {
         }
     }
+}
 
-    public class NullLogger : ILogger
-    {
-        public IDisposable BeginScope<TState>(TState state)
-        {
-            return new FakeScope();
-        }
-
-        public bool IsEnabled(LogLevel logLevel)
-        {
-            return false;
-        }
-
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-        {
-        }
-
-        private class FakeScope : IDisposable
-        {
-            public void Dispose()
-            {
-            }
-        }
-    }
-
-    public class NullLogger<T> : NullLogger, ILogger<T>
-    {
-    }
+public class NullLogger<T> : NullLogger, ILogger<T>
+{
 }

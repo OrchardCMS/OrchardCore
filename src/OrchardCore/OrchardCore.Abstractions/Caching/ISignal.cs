@@ -3,22 +3,21 @@ using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Environment.Cache
-{
-    public interface ISignal : IModularTenantEvents
-    {
-        IChangeToken GetToken(string key);
-        Task SignalTokenAsync(string key);
-    }
+namespace OrchardCore.Environment.Cache;
 
-    public static class SignalExtensions
+public interface ISignal : IModularTenantEvents
+{
+    IChangeToken GetToken(string key);
+    Task SignalTokenAsync(string key);
+}
+
+public static class SignalExtensions
+{
+    /// <summary>
+    /// Adds a Signal (if not already present) to be sent at the end of the shell scope.
+    /// </summary>
+    public static void DeferredSignalToken(this ISignal signal, string key)
     {
-        /// <summary>
-        /// Adds a Signal (if not already present) to be sent at the end of the shell scope.
-        /// </summary>
-        public static void DeferredSignalToken(this ISignal signal, string key)
-        {
-            ShellScope.AddDeferredSignal(key);
-        }
+        ShellScope.AddDeferredSignal(key);
     }
 }

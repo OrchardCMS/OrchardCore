@@ -17,52 +17,51 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Security.Permissions;
 using YesSql.Indexes;
 
-namespace OrchardCore.AdminDashboard
+namespace OrchardCore.AdminDashboard;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override int ConfigureOrder => -10;
+
+    private readonly AdminOptions _adminOptions;
+
+    public Startup(IOptions<AdminOptions> adminOptions)
     {
-        public override int ConfigureOrder => -10;
+        _adminOptions = adminOptions.Value;
+    }
 
-        private readonly AdminOptions _adminOptions;
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IPermissionProvider, Permissions>();
 
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
+        services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+        services.AddSingleton<IIndexProvider, DashboardPartIndexProvider>();
 
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddContentPart<DashboardPart>()
+            .UseDisplayDriver<DashboardPartDisplayDriver>();
 
-            services.AddScoped<IAdminDashboardService, AdminDashboardService>();
-            services.AddSingleton<IIndexProvider, DashboardPartIndexProvider>();
+        services.AddScoped<IContentDisplayDriver, DashboardContentDisplayDriver>();
 
-            services.AddContentPart<DashboardPart>()
-                .UseDisplayDriver<DashboardPartDisplayDriver>();
+        services.AddScoped<IDataMigration, Migrations>();
+    }
 
-            services.AddScoped<IContentDisplayDriver, DashboardContentDisplayDriver>();
+    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        // Dashboard
+        var dashboardControllerName = typeof(DashboardController).ControllerName();
 
-            services.AddScoped<IDataMigration, Migrations>();
-        }
+        routes.MapAreaControllerRoute(
+            name: "AdminDashboard",
+            areaName: "OrchardCore.AdminDashboard",
+            pattern: _adminOptions.AdminUrlPrefix,
+            defaults: new { controller = dashboardControllerName, action = nameof(DashboardController.Index) }
+        );
 
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            // Dashboard
-            var dashboardControllerName = typeof(DashboardController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "AdminDashboard",
-                areaName: "OrchardCore.AdminDashboard",
-                pattern: _adminOptions.AdminUrlPrefix,
-                defaults: new { controller = dashboardControllerName, action = nameof(DashboardController.Index) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "AdminDashboard",
-                areaName: "OrchardCore.AdminDashboard",
-                pattern: $"{_adminOptions.AdminUrlPrefix}/dashboard/manage",
-                defaults: new { controller = dashboardControllerName, action = nameof(DashboardController.Manage) }
-            );
-        }
+        routes.MapAreaControllerRoute(
+            name: "AdminDashboard",
+            areaName: "OrchardCore.AdminDashboard",
+            pattern: $"{_adminOptions.AdminUrlPrefix}/dashboard/manage",
+            defaults: new { controller = dashboardControllerName, action = nameof(DashboardController.Manage) }
+        );
     }
 }

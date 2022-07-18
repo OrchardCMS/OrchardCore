@@ -6,33 +6,32 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
 
-namespace OrchardCore.Forms.Drivers
+namespace OrchardCore.Forms.Drivers;
+
+public class LabelPartDisplayDriver : ContentPartDisplayDriver<LabelPart>
 {
-    public class LabelPartDisplayDriver : ContentPartDisplayDriver<LabelPart>
+    public override IDisplayResult Display(LabelPart part)
     {
-        public override IDisplayResult Display(LabelPart part)
+        return View("LabelPart", part).Location("Detail", "Content");
+    }
+
+    public override IDisplayResult Edit(LabelPart part, BuildPartEditorContext context)
+    {
+        return Initialize<LabelPartEditViewModel>("LabelPart_Fields_Edit", m =>
         {
-            return View("LabelPart", part).Location("Detail", "Content");
+            m.For = part.For;
+        });
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(LabelPart part, IUpdateModel updater, UpdatePartEditorContext context)
+    {
+        var viewModel = new LabelPartEditViewModel();
+
+        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+        {
+            part.For = viewModel.For?.Trim();
         }
 
-        public override IDisplayResult Edit(LabelPart part, BuildPartEditorContext context)
-        {
-            return Initialize<LabelPartEditViewModel>("LabelPart_Fields_Edit", m =>
-            {
-                m.For = part.For;
-            });
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(LabelPart part, IUpdateModel updater, UpdatePartEditorContext context)
-        {
-            var viewModel = new LabelPartEditViewModel();
-
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                part.For = viewModel.For?.Trim();
-            }
-
-            return Edit(part, context);
-        }
+        return Edit(part, context);
     }
 }

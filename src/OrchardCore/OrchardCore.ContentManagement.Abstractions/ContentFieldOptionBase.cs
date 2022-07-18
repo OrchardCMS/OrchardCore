@@ -1,19 +1,18 @@
 using System;
 
-namespace OrchardCore.ContentManagement
-{
-    public abstract class ContentFieldOptionBase
-    {
-        public ContentFieldOptionBase(Type contentFieldType)
-        {
-            if (contentFieldType == null)
-            {
-                throw new ArgumentNullException(nameof(contentFieldType));
-            }
+namespace OrchardCore.ContentManagement;
 
-            Type = contentFieldType;
+public abstract class ContentFieldOptionBase
+{
+    public ContentFieldOptionBase(Type contentFieldType)
+    {
+        if (contentFieldType == null)
+        {
+            throw new ArgumentNullException(nameof(contentFieldType));
         }
 
-        public Type Type { get; }
+        Type = contentFieldType;
     }
+
+    public Type Type { get; }
 }

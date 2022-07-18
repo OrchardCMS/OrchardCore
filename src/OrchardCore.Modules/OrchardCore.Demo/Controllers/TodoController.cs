@@ -5,111 +5,110 @@ using OrchardCore.Demo.Models;
 using OrchardCore.Demo.ViewModels;
 using YesSql;
 
-namespace OrchardCore.Demo.Controllers
+namespace OrchardCore.Demo.Controllers;
+
+public class TodoController : Controller
 {
-    public class TodoController : Controller
+    private readonly ISession _session;
+    private readonly Entities.IIdGenerator _idGenerator;
+
+    public TodoController(ISession session, Entities.IIdGenerator idGenerator)
     {
-        private readonly ISession _session;
-        private readonly Entities.IIdGenerator _idGenerator;
+        _session = session;
+        _idGenerator = idGenerator;
+    }
 
-        public TodoController(ISession session, Entities.IIdGenerator idGenerator)
+    public async Task<IActionResult> Index()
+    {
+        var list = (await _session.Query<TodoModel>().ListAsync())
+            .Select(m => new TodoViewModel()
+            {
+                TodoId = m.TodoId,
+                Text = m.Text,
+                DueDate = m.DueDate,
+                IsCompleted = m.IsCompleted
+            })
+            .ToList();
+
+        return View(list);
+    }
+
+    public IActionResult Create()
+    {
+        var viewModel = new TodoViewModel();
+        viewModel.TodoId = _idGenerator.GenerateUniqueId();
+        viewModel.DisplayMode = "Edit";
+        return View(nameof(Edit), viewModel);
+    }
+
+    public async Task<IActionResult> Edit(string todoId)
+    {
+        var model = (await _session.Query<TodoModel>().ListAsync())
+            .Where(m => m.TodoId == todoId)
+            .FirstOrDefault();
+
+        if (model == null)
         {
-            _session = session;
-            _idGenerator = idGenerator;
+            return NotFound();
         }
 
-        public async Task<IActionResult> Index()
+        var viewModel = new TodoViewModel()
         {
-            var list = (await _session.Query<TodoModel>().ListAsync())
-                .Select(m => new TodoViewModel()
-                {
-                    TodoId = m.TodoId,
-                    Text = m.Text,
-                    DueDate = m.DueDate,
-                    IsCompleted = m.IsCompleted
-                })
-                .ToList();
+            TodoId = model.TodoId,
+            Text = model.Text,
+            DueDate = model.DueDate,
+            IsCompleted = model.IsCompleted,
+            DisplayMode = "Edit"
+        };
 
-            return View(list);
-        }
+        return View(viewModel);
+    }
 
-        public IActionResult Create()
-        {
-            var viewModel = new TodoViewModel();
-            viewModel.TodoId = _idGenerator.GenerateUniqueId();
-            viewModel.DisplayMode = "Edit";
-            return View(nameof(Edit), viewModel);
-        }
-
-        public async Task<IActionResult> Edit(string todoId)
+    [HttpPost]
+    public async Task<IActionResult> Update(TodoViewModel viewModel, string returnUrl = "")
+    {
+        if (ModelState.IsValid)
         {
             var model = (await _session.Query<TodoModel>().ListAsync())
-                .Where(m => m.TodoId == todoId)
+                .Where(m => m.TodoId == viewModel.TodoId)
                 .FirstOrDefault();
 
             if (model == null)
             {
-                return NotFound();
+                model = new TodoModel() { TodoId = viewModel.TodoId };
             }
 
-            var viewModel = new TodoViewModel()
+            model.Text = viewModel.Text;
+            model.DueDate = viewModel.DueDate;
+            model.IsCompleted = viewModel.IsCompleted;
+
+            _session.Save(model);
+
+            if (Url.IsLocalUrl(returnUrl))
             {
-                TodoId = model.TodoId,
-                Text = model.Text,
-                DueDate = model.DueDate,
-                IsCompleted = model.IsCompleted,
-                DisplayMode = "Edit"
-            };
-
-            return View(viewModel);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Update(TodoViewModel viewModel, string returnUrl = "")
-        {
-            if (ModelState.IsValid)
-            {
-                var model = (await _session.Query<TodoModel>().ListAsync())
-                    .Where(m => m.TodoId == viewModel.TodoId)
-                    .FirstOrDefault();
-
-                if (model == null)
-                {
-                    model = new TodoModel() { TodoId = viewModel.TodoId };
-                }
-
-                model.Text = viewModel.Text;
-                model.DueDate = viewModel.DueDate;
-                model.IsCompleted = viewModel.IsCompleted;
-
-                _session.Save(model);
-
-                if (Url.IsLocalUrl(returnUrl))
-                {
-                    return this.Redirect(returnUrl, true);
-                }
-
-                return RedirectToAction(nameof(Index), "Todo");
+                return this.Redirect(returnUrl, true);
             }
-
-            viewModel.DisplayMode = "Edit";
-            return View(nameof(Edit), viewModel);
-        }
-
-        public async Task<IActionResult> Delete(string todoId)
-        {
-            var model = (await _session.Query<TodoModel>().ListAsync())
-                .Where(m => m.TodoId == todoId)
-                .FirstOrDefault();
-
-            if (model == null)
-            {
-                return NotFound();
-            }
-
-            _session.Delete(model);
 
             return RedirectToAction(nameof(Index), "Todo");
         }
+
+        viewModel.DisplayMode = "Edit";
+        return View(nameof(Edit), viewModel);
+    }
+
+    public async Task<IActionResult> Delete(string todoId)
+    {
+        var model = (await _session.Query<TodoModel>().ListAsync())
+            .Where(m => m.TodoId == todoId)
+            .FirstOrDefault();
+
+        if (model == null)
+        {
+            return NotFound();
+        }
+
+        _session.Delete(model);
+
+        return RedirectToAction(nameof(Index), "Todo");
     }
 }

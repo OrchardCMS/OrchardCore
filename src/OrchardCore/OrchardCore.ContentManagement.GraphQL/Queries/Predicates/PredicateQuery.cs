@@ -4,142 +4,141 @@ using System.Linq;
 using OrchardCore.Environment.Shell;
 using YesSql;
 
-namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
+namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
+
+public class PredicateQuery : IPredicateQuery
 {
-    public class PredicateQuery : IPredicateQuery
+    private readonly IEnumerable<IIndexPropertyProvider> _propertyProviders;
+    private readonly HashSet<string> _usedAliases = new HashSet<string>();
+    private readonly Dictionary<string, string> _aliases = new Dictionary<string, string>();
+    private readonly Dictionary<string, string> _tableAliases = new Dictionary<string, string>();
+
+    public PredicateQuery(ISqlDialect dialect, ShellSettings shellSettings, IEnumerable<IIndexPropertyProvider> propertyProviders)
     {
-        private readonly IEnumerable<IIndexPropertyProvider> _propertyProviders;
-        private readonly HashSet<string> _usedAliases = new HashSet<string>();
-        private readonly Dictionary<string, string> _aliases = new Dictionary<string, string>();
-        private readonly Dictionary<string, string> _tableAliases = new Dictionary<string, string>();
+        Dialect = dialect;
+        _propertyProviders = propertyProviders;
+    }
 
-        public PredicateQuery(ISqlDialect dialect, ShellSettings shellSettings, IEnumerable<IIndexPropertyProvider> propertyProviders)
+    public ISqlDialect Dialect { get; set; }
+
+    public IDictionary<string, object> Parameters { get; } = new Dictionary<string, object>();
+
+
+    public string NewQueryParameter(object value)
+    {
+        var count = Parameters.Count;
+        var parameterName = $"@x{count + 1}";
+
+        Parameters.Add(parameterName, value);
+
+        return parameterName;
+    }
+
+    public void CreateAlias(string path, string alias)
+    {
+        if (path == null) throw new ArgumentNullException(nameof(path));
+        if (alias == null) throw new ArgumentNullException(nameof(alias));
+
+        _aliases[path] = alias;
+    }
+    public void CreateTableAlias(string path, string tableAlias)
+    {
+        if (path == null) throw new ArgumentNullException(nameof(path));
+        if (tableAlias == null) throw new ArgumentNullException(nameof(tableAlias));
+
+        _tableAliases[path] = tableAlias;
+    }
+
+
+    public void SearchUsedAlias(string propertyPath)
+    {
+        if (propertyPath == null) throw new ArgumentNullException(nameof(propertyPath));
+
+        // Check if there's an alias for the full path
+        // aliasPart.Alias -> AliasFieldIndex.Alias
+        if (_aliases.TryGetValue(propertyPath, out string alias))
         {
-            Dialect = dialect;
-            _propertyProviders = propertyProviders;
+            _usedAliases.Add(alias);
+            return;
         }
 
-        public ISqlDialect Dialect { get; set; }
+        var values = propertyPath.Split('.', 2);
 
-        public IDictionary<string, object> Parameters { get; } = new Dictionary<string, object>();
+        // if empty prefix, use default (empty alias)
+        var aliasPath = values.Length == 1 ? string.Empty : values[0];
 
-
-        public string NewQueryParameter(object value)
+        // get the actual index from the alias
+        if (_aliases.TryGetValue(aliasPath, out alias))
         {
-            var count = Parameters.Count;
-            var parameterName = $"@x{count + 1}";
+            // get the index property provider fore the alias
+            var propertyProvider = _propertyProviders.FirstOrDefault(x => x.IndexName.Equals(alias, StringComparison.OrdinalIgnoreCase));
 
-            Parameters.Add(parameterName, value);
-
-            return parameterName;
-        }
-
-        public void CreateAlias(string path, string alias)
-        {
-            if (path == null) throw new ArgumentNullException(nameof(path));
-            if (alias == null) throw new ArgumentNullException(nameof(alias));
-
-            _aliases[path] = alias;
-        }
-        public void CreateTableAlias(string path, string tableAlias)
-        {
-            if (path == null) throw new ArgumentNullException(nameof(path));
-            if (tableAlias == null) throw new ArgumentNullException(nameof(tableAlias));
-
-            _tableAliases[path] = tableAlias;
-        }
-
-
-        public void SearchUsedAlias(string propertyPath)
-        {
-            if (propertyPath == null) throw new ArgumentNullException(nameof(propertyPath));
-
-            // Check if there's an alias for the full path
-            // aliasPart.Alias -> AliasFieldIndex.Alias
-            if (_aliases.TryGetValue(propertyPath, out string alias))
+            if (propertyProvider != null)
             {
-                _usedAliases.Add(alias);
-                return;
-            }
-
-            var values = propertyPath.Split('.', 2);
-
-            // if empty prefix, use default (empty alias)
-            var aliasPath = values.Length == 1 ? string.Empty : values[0];
-
-            // get the actual index from the alias
-            if (_aliases.TryGetValue(aliasPath, out alias))
-            {
-                // get the index property provider fore the alias
-                var propertyProvider = _propertyProviders.FirstOrDefault(x => x.IndexName.Equals(alias, StringComparison.OrdinalIgnoreCase));
-
-                if (propertyProvider != null)
-                {
-                    if (propertyProvider.TryGetValue(values.Last(), out var columnName))
-                    {
-                        _usedAliases.Add(alias);
-                        return;
-                    }
-                }
-                else
+                if (propertyProvider.TryGetValue(values.Last(), out var columnName))
                 {
                     _usedAliases.Add(alias);
                     return;
                 }
             }
-
-            // No aliases registered for this path, return the formatted path.
-            return;
+            else
+            {
+                _usedAliases.Add(alias);
+                return;
+            }
         }
 
-        public string GetColumnName(string propertyPath)
+        // No aliases registered for this path, return the formatted path.
+        return;
+    }
+
+    public string GetColumnName(string propertyPath)
+    {
+        if (propertyPath == null) throw new ArgumentNullException(nameof(propertyPath));
+
+        // Check if there's an alias for the full path
+        // aliasPart.Alias -> AliasFieldIndex.Alias
+        if (_aliases.TryGetValue(propertyPath, out string alias))
         {
-            if (propertyPath == null) throw new ArgumentNullException(nameof(propertyPath));
+            return Dialect.QuoteForColumnName(alias);
+        }
 
-            // Check if there's an alias for the full path
-            // aliasPart.Alias -> AliasFieldIndex.Alias
-            if (_aliases.TryGetValue(propertyPath, out string alias))
+        var values = propertyPath.Split('.', 2);
+
+        // if empty prefix, use default (empty alias)
+        var aliasPath = values.Length == 1 ? string.Empty : values[0];
+
+        // get the actual index from the alias
+        if (_aliases.TryGetValue(aliasPath, out alias))
+        {
+            string tableAlias = _tableAliases[alias];
+            // get the index property provider fore the alias
+            var propertyProvider = _propertyProviders.FirstOrDefault(x => x.IndexName.Equals(alias, StringComparison.OrdinalIgnoreCase));
+
+            if (propertyProvider != null)
             {
-                return Dialect.QuoteForColumnName(alias);
-            }
-
-            var values = propertyPath.Split('.', 2);
-
-            // if empty prefix, use default (empty alias)
-            var aliasPath = values.Length == 1 ? string.Empty : values[0];
-
-            // get the actual index from the alias
-            if (_aliases.TryGetValue(aliasPath, out alias))
-            {
-                string tableAlias = _tableAliases[alias];
-                // get the index property provider fore the alias
-                var propertyProvider = _propertyProviders.FirstOrDefault(x => x.IndexName.Equals(alias, StringComparison.OrdinalIgnoreCase));
-
-                if (propertyProvider != null)
+                if (propertyProvider.TryGetValue(values.Last(), out var columnName))
                 {
-                    if (propertyProvider.TryGetValue(values.Last(), out var columnName))
-                    {
-                        // Switch the given alias in the path with the mapped alias.
-                        // aliasPart.alias -> AliasPartIndex.Alias
-                        return Dialect.QuoteForTableName($"{tableAlias}") + "." + Dialect.QuoteForColumnName(columnName);
-                    }
-                }
-                else
-                {
-                    // no property provider exists; hope sql is case-insensitive (will break postgres; property providers must be supplied for postgres)
                     // Switch the given alias in the path with the mapped alias.
-                    // aliasPart.Alias -> AliasPartIndex.alias
-                    return Dialect.QuoteForTableName($"{tableAlias}") + "." + Dialect.QuoteForColumnName(values[1]);
+                    // aliasPart.alias -> AliasPartIndex.Alias
+                    return Dialect.QuoteForTableName($"{tableAlias}") + "." + Dialect.QuoteForColumnName(columnName);
                 }
             }
-
-            // No aliases registered for this path, return the formatted path.
-            return Dialect.QuoteForColumnName(propertyPath);
+            else
+            {
+                // no property provider exists; hope sql is case-insensitive (will break postgres; property providers must be supplied for postgres)
+                // Switch the given alias in the path with the mapped alias.
+                // aliasPart.Alias -> AliasPartIndex.alias
+                return Dialect.QuoteForTableName($"{tableAlias}") + "." + Dialect.QuoteForColumnName(values[1]);
+            }
         }
 
-        public IEnumerable<string> GetUsedAliases()
-        {
-            return _usedAliases;
-        }
+        // No aliases registered for this path, return the formatted path.
+        return Dialect.QuoteForColumnName(propertyPath);
+    }
+
+    public IEnumerable<string> GetUsedAliases()
+    {
+        return _usedAliases;
     }
 }

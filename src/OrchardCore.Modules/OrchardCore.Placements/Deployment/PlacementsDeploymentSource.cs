@@ -3,38 +3,37 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Placements.Services;
 
-namespace OrchardCore.Placements.Deployment
+namespace OrchardCore.Placements.Deployment;
+
+public class PlacementsDeploymentSource : IDeploymentSource
 {
-    public class PlacementsDeploymentSource : IDeploymentSource
+    private readonly PlacementsManager _placementsManager;
+
+    public PlacementsDeploymentSource(PlacementsManager placementsManager)
     {
-        private readonly PlacementsManager _placementsManager;
+        _placementsManager = placementsManager;
+    }
 
-        public PlacementsDeploymentSource(PlacementsManager placementsManager)
+    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    {
+        var placementsStep = step as PlacementsDeploymentStep;
+
+        if (placementsStep == null)
         {
-            _placementsManager = placementsManager;
+            return;
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        var placementObjects = new JObject();
+        var placements = await _placementsManager.ListShapePlacementsAsync();
+
+        foreach (var placement in placements)
         {
-            var placementsStep = step as PlacementsDeploymentStep;
-
-            if (placementsStep == null)
-            {
-                return;
-            }
-
-            var placementObjects = new JObject();
-            var placements = await _placementsManager.ListShapePlacementsAsync();
-
-            foreach (var placement in placements)
-            {
-                placementObjects[placement.Key] = JArray.FromObject(placement.Value);
-            }
-
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Placements"),
-                new JProperty("Placements", placementObjects)
-            ));
+            placementObjects[placement.Key] = JArray.FromObject(placement.Value);
         }
+
+        result.Steps.Add(new JObject(
+            new JProperty("name", "Placements"),
+            new JProperty("Placements", placementObjects)
+        ));
     }
 }

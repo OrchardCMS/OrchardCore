@@ -5,33 +5,32 @@ using OrchardCore.Deployment;
 using OrchardCore.Themes.Recipes;
 using OrchardCore.Themes.Services;
 
-namespace OrchardCore.Themes.Deployment
+namespace OrchardCore.Themes.Deployment;
+
+public class ThemesDeploymentSource : IDeploymentSource
 {
-    public class ThemesDeploymentSource : IDeploymentSource
+    private readonly ISiteThemeService _siteThemeService;
+    private readonly IAdminThemeService _adminThemeService;
+
+    public ThemesDeploymentSource(ISiteThemeService siteThemeService, IAdminThemeService adminThemeService)
     {
-        private readonly ISiteThemeService _siteThemeService;
-        private readonly IAdminThemeService _adminThemeService;
+        _siteThemeService = siteThemeService;
+        _adminThemeService = adminThemeService;
+    }
 
-        public ThemesDeploymentSource(ISiteThemeService siteThemeService, IAdminThemeService adminThemeService)
+    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    {
+        var themesStep = step as ThemesDeploymentStep;
+
+        if (themesStep == null)
         {
-            _siteThemeService = siteThemeService;
-            _adminThemeService = adminThemeService;
+            return;
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-        {
-            var themesStep = step as ThemesDeploymentStep;
-
-            if (themesStep == null)
-            {
-                return;
-            }
-
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Themes"),
-                new JProperty(nameof(ThemeStepModel.Site), await _siteThemeService.GetCurrentThemeNameAsync()),
-                new JProperty(nameof(ThemeStepModel.Admin), await _adminThemeService.GetAdminThemeNameAsync())
-            ));
-        }
+        result.Steps.Add(new JObject(
+            new JProperty("name", "Themes"),
+            new JProperty(nameof(ThemeStepModel.Site), await _siteThemeService.GetCurrentThemeNameAsync()),
+            new JProperty(nameof(ThemeStepModel.Admin), await _adminThemeService.GetAdminThemeNameAsync())
+        ));
     }
 }

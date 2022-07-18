@@ -10,44 +10,43 @@ using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 
-namespace OrchardCore.DisplayManagement.Shapes
+namespace OrchardCore.DisplayManagement.Shapes;
+
+[Feature(Application.DefaultFeatureId)]
+public class PageTitleShapes : IShapeAttributeProvider
 {
-    [Feature(Application.DefaultFeatureId)]
-    public class PageTitleShapes : IShapeAttributeProvider
+    private IPageTitleBuilder _pageTitleBuilder;
+
+    public IPageTitleBuilder Title
     {
-        private IPageTitleBuilder _pageTitleBuilder;
-
-        public IPageTitleBuilder Title
+        get
         {
-            get
+            if (_pageTitleBuilder == null)
             {
-                if (_pageTitleBuilder == null)
-                {
-                    _pageTitleBuilder = ShellScope.Services.GetRequiredService<IPageTitleBuilder>();
-                }
-
-                return _pageTitleBuilder;
+                _pageTitleBuilder = ShellScope.Services.GetRequiredService<IPageTitleBuilder>();
             }
+
+            return _pageTitleBuilder;
         }
+    }
 
-        [Shape]
-        public async Task<IHtmlContent> PageTitle()
+    [Shape]
+    public async Task<IHtmlContent> PageTitle()
+    {
+        var siteSettings = await ShellScope.Services.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
+
+        // We must return a page title so if the format setting is blank just use the current title unformatted
+        if (String.IsNullOrWhiteSpace(siteSettings.PageTitleFormat))
         {
-            var siteSettings = await ShellScope.Services.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
+            return Title.GenerateTitle(null);
+        }
+        else
+        {
+            var liquidTemplateManager = ShellScope.Services.GetRequiredService<ILiquidTemplateManager>();
+            var htmlEncoder = ShellScope.Services.GetRequiredService<HtmlEncoder>();
 
-            // We must return a page title so if the format setting is blank just use the current title unformatted
-            if (String.IsNullOrWhiteSpace(siteSettings.PageTitleFormat))
-            {
-                return Title.GenerateTitle(null);
-            }
-            else
-            {
-                var liquidTemplateManager = ShellScope.Services.GetRequiredService<ILiquidTemplateManager>();
-                var htmlEncoder = ShellScope.Services.GetRequiredService<HtmlEncoder>();
-
-                var result = await liquidTemplateManager.RenderHtmlContentAsync(siteSettings.PageTitleFormat, htmlEncoder);
-                return result;
-            }
+            var result = await liquidTemplateManager.RenderHtmlContentAsync(siteSettings.PageTitleFormat, htmlEncoder);
+            return result;
         }
     }
 }

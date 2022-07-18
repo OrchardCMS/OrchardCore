@@ -1,38 +1,37 @@
 using System.Collections.Generic;
 using GraphQL.Types;
 
-namespace OrchardCore.ContentManagement.GraphQL
+namespace OrchardCore.ContentManagement.GraphQL;
+
+public static class FieldTypeExtensions
 {
-    public static class FieldTypeExtensions
+    public static FieldType WithPartCollapsedMetaData(this FieldType fieldType, bool collapsed = true)
     {
-        public static FieldType WithPartCollapsedMetaData(this FieldType fieldType, bool collapsed = true)
+        return fieldType.WithMetaData("PartCollapsed", collapsed);
+    }
+
+    public static FieldType WithPartNameMetaData(this FieldType fieldType, string partName)
+    {
+        return fieldType.WithMetaData("PartName", partName);
+    }
+
+    internal static FieldType WithMetaData(this FieldType fieldType, string name, object value)
+    {
+        if (fieldType == null)
         {
-            return fieldType.WithMetaData("PartCollapsed", collapsed);
+            return null;
         }
 
-        public static FieldType WithPartNameMetaData(this FieldType fieldType, string partName)
+        if (fieldType.Metadata == null)
         {
-            return fieldType.WithMetaData("PartName", partName);
+            fieldType.Metadata = new Dictionary<string, object>();
         }
 
-        internal static FieldType WithMetaData(this FieldType fieldType, string name, object value)
+        if (!fieldType.HasMetadata(name))
         {
-            if (fieldType == null)
-            {
-                return null;
-            }
-
-            if (fieldType.Metadata == null)
-            {
-                fieldType.Metadata = new Dictionary<string, object>();
-            }
-
-            if (!fieldType.HasMetadata(name))
-            {
-                fieldType.Metadata.Add(name, value);
-            }
-
-            return fieldType;
+            fieldType.Metadata.Add(name, value);
         }
+
+        return fieldType;
     }
 }

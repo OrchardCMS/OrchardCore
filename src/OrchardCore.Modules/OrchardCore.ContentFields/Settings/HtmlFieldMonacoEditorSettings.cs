@@ -1,7 +1,6 @@
-namespace OrchardCore.ContentFields.Settings
+namespace OrchardCore.ContentFields.Settings;
+
+public class HtmlFieldMonacoEditorSettings
 {
-    public class HtmlFieldMonacoEditorSettings
-    {
-        public string Options { get; set; }
-    }
+    public string Options { get; set; }
 }

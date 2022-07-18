@@ -20,312 +20,311 @@ using OrchardCore.Settings;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
-namespace OrchardCore.Tenants.Controllers
+namespace OrchardCore.Tenants.Controllers;
+
+[Feature("OrchardCore.Tenants.FeatureProfiles")]
+[Admin]
+public class FeatureProfilesController : Controller
 {
-    [Feature("OrchardCore.Tenants.FeatureProfiles")]
-    [Admin]
-    public class FeatureProfilesController : Controller
+    private readonly IAuthorizationService _authorizationService;
+    private readonly FeatureProfilesManager _featureProfilesManager;
+    private readonly ISiteService _siteService;
+    private readonly INotifier _notifier;
+    private readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
+    private readonly dynamic New;
+
+    public FeatureProfilesController(
+        IAuthorizationService authorizationService,
+        FeatureProfilesManager featueProfilesManager,
+        ISiteService siteService,
+        INotifier notifier,
+        IShapeFactory shapeFactory,
+        IStringLocalizer<FeatureProfilesController> stringLocalizer,
+        IHtmlLocalizer<FeatureProfilesController> htmlLocalizer
+        )
     {
-        private readonly IAuthorizationService _authorizationService;
-        private readonly FeatureProfilesManager _featureProfilesManager;
-        private readonly ISiteService _siteService;
-        private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        _authorizationService = authorizationService;
+        _featureProfilesManager = featueProfilesManager;
+        _siteService = siteService;
+        _notifier = notifier;
+        New = shapeFactory;
+        S = stringLocalizer;
+        H = htmlLocalizer;
+    }
 
-        public FeatureProfilesController(
-            IAuthorizationService authorizationService,
-            FeatureProfilesManager featueProfilesManager,
-            ISiteService siteService,
-            INotifier notifier,
-            IShapeFactory shapeFactory,
-            IStringLocalizer<FeatureProfilesController> stringLocalizer,
-            IHtmlLocalizer<FeatureProfilesController> htmlLocalizer
-            )
+    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
         {
-            _authorizationService = authorizationService;
-            _featureProfilesManager = featueProfilesManager;
-            _siteService = siteService;
-            _notifier = notifier;
-            New = shapeFactory;
-            S = stringLocalizer;
-            H = htmlLocalizer;
+            return Forbid();
         }
 
-        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
+        var pager = new Pager(pagerParameters, siteSettings.PageSize);
+        var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
+
+        var featureProfiles = featureProfilesDocument.FeatureProfiles.ToList();
+
+        if (!String.IsNullOrWhiteSpace(options.Search))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
+            featureProfiles = featureProfiles.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        var count = featureProfiles.Count;
+
+        featureProfiles = featureProfiles.OrderBy(x => x.Key)
+            .Skip(pager.GetStartIndex())
+            .Take(pager.PageSize).ToList();
+
+        var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
+
+        var model = new FeatureProfilesIndexViewModel
+        {
+            FeatureProfiles = featureProfiles.Select(x => new FeatureProfileEntry { Name = x.Key, FeatureProfile = x.Value }).ToList(),
+            Options = options,
+            Pager = pagerShape
+        };
+
+        model.Options.ContentsBulkAction = new List<SelectListItem>() {
+            new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+        };
+
+        return View("Index", model);
+    }
+
+    [HttpPost, ActionName("Index")]
+    [FormValueRequired("submit.Filter")]
+    public ActionResult IndexFilterPOST(FeatureProfilesIndexViewModel model)
+    {
+        return RedirectToAction(nameof(Index), new RouteValueDictionary {
+            { "Options.Search", model.Options.Search }
+        });
+    }
+
+    public async Task<IActionResult> Create()
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
+        {
+            return Forbid();
+        }
+
+        return View(new FeatureProfileViewModel());
+    }
+
+    [HttpPost, ActionName("Create")]
+    public async Task<IActionResult> CreatePost(FeatureProfileViewModel model, string submit)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
+        {
+            return Forbid();
+        }
+
+        List<FeatureRule> featureRules = null;
+
+        if (ModelState.IsValid)
+        {
+            if (String.IsNullOrWhiteSpace(model.Name))
             {
-                return Forbid();
+                ModelState.AddModelError(nameof(FeatureProfileViewModel.Name), S["The name is mandatory."]);
+            }
+            else
+            {
+                var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
+
+                if (featureProfilesDocument.FeatureProfiles.ContainsKey(model.Name))
+                {
+                    ModelState.AddModelError(nameof(FeatureProfileViewModel.Name), S["A profile with the same name already exists."]);
+                }
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
-            var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
-
-            var featureProfiles = featureProfilesDocument.FeatureProfiles.ToList();
-
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (String.IsNullOrEmpty(model.FeatureRules))
             {
-                featureProfiles = featureProfiles.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
+                ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["The feature rules are mandatory."]);
             }
-
-            var count = featureProfiles.Count;
-
-            featureProfiles = featureProfiles.OrderBy(x => x.Key)
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize).ToList();
-
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
-
-            var model = new FeatureProfilesIndexViewModel
+            else
             {
-                FeatureProfiles = featureProfiles.Select(x => new FeatureProfileEntry { Name = x.Key, FeatureProfile = x.Value }).ToList(),
-                Options = options,
-                Pager = pagerShape
+                try
+                {
+                    featureRules = JsonConvert.DeserializeObject<List<FeatureRule>>(model.FeatureRules);
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["Invalid json supplied."]);
+                }
+            }
+        }
+
+        if (ModelState.IsValid)
+        {
+            var template = new FeatureProfile
+            {
+                FeatureRules = featureRules
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+            await _featureProfilesManager.UpdateFeatureProfileAsync(model.Name, template);
+
+            if (submit == "SaveAndContinue")
+            {
+                return RedirectToAction(nameof(Edit), new { name = model.Name });
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        // If we got this far, something failed, redisplay form
+        return View(model);
+    }
+
+    public async Task<IActionResult> Edit(string name)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
+        {
+            return Forbid();
+        }
+
+        var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
+
+        if (!featureProfilesDocument.FeatureProfiles.ContainsKey(name))
+        {
+            return RedirectToAction(nameof(Create), new { name });
+        }
+
+        var featureProfile = featureProfilesDocument.FeatureProfiles[name];
+
+        var model = new FeatureProfileViewModel
+        {
+            Name = name,
+            FeatureRules = JsonConvert.SerializeObject(featureProfile.FeatureRules, Formatting.Indented)
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Edit(string sourceName, FeatureProfileViewModel model, string submit)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
+        {
+            return Forbid();
+        }
+
+        var featureProfilesDocument = await _featureProfilesManager.LoadFeatureProfilesDocumentAsync();
+
+        if (!featureProfilesDocument.FeatureProfiles.ContainsKey(sourceName))
+        {
+            return NotFound();
+        }
+
+        List<FeatureRule> featureRules = null;
+
+        if (ModelState.IsValid)
+        {
+            if (String.IsNullOrWhiteSpace(model.Name))
+            {
+                ModelState.AddModelError(nameof(FeatureProfileViewModel.Name), S["The name is mandatory."]);
+            }
+            else if (!String.Equals(model.Name, sourceName, StringComparison.OrdinalIgnoreCase)
+                && featureProfilesDocument.FeatureProfiles.ContainsKey(model.Name))
+            {
+                ModelState.AddModelError(nameof(FeatureProfileViewModel.Name), S["A feature profile with the same name already exists."]);
+            }
+
+            if (String.IsNullOrEmpty(model.FeatureRules))
+            {
+                ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["The feature rules are mandatory."]);
+            }
+            else
+            {
+                try
+                {
+                    featureRules = JsonConvert.DeserializeObject<List<FeatureRule>>(model.FeatureRules);
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["Invalid json supplied."]);
+                }
+            }
+        }
+
+        if (ModelState.IsValid)
+        {
+            var featureProfile = new FeatureProfile
+            {
+                FeatureRules = featureRules
             };
 
-            return View("Index", model);
+            await _featureProfilesManager.RemoveFeatureProfileAsync(sourceName);
+
+            await _featureProfilesManager.UpdateFeatureProfileAsync(model.Name, featureProfile);
+
+            if (submit == "SaveAndContinue")
+            {
+                return RedirectToAction(nameof(Edit), new { name = model.Name });
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        [HttpPost, ActionName("Index")]
-        [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(FeatureProfilesIndexViewModel model)
+        // If we got this far, something failed, redisplay form
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(string name)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
         {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
-            });
+            return Forbid();
         }
 
-        public async Task<IActionResult> Create()
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
-            {
-                return Forbid();
-            }
+        var featureProfilesDocument = await _featureProfilesManager.LoadFeatureProfilesDocumentAsync();
 
-            return View(new FeatureProfileViewModel());
+        if (!featureProfilesDocument.FeatureProfiles.ContainsKey(name))
+        {
+            return NotFound();
         }
 
-        [HttpPost, ActionName("Create")]
-        public async Task<IActionResult> CreatePost(FeatureProfileViewModel model, string submit)
+        await _featureProfilesManager.RemoveFeatureProfileAsync(name);
+
+        await _notifier.SuccessAsync(H["Feature profile deleted successfully."]);
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost, ActionName("Index")]
+    [FormValueRequired("submit.BulkAction")]
+    public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
-            {
-                return Forbid();
-            }
-
-            List<FeatureRule> featureRules = null;
-
-            if (ModelState.IsValid)
-            {
-                if (String.IsNullOrWhiteSpace(model.Name))
-                {
-                    ModelState.AddModelError(nameof(FeatureProfileViewModel.Name), S["The name is mandatory."]);
-                }
-                else
-                {
-                    var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
-
-                    if (featureProfilesDocument.FeatureProfiles.ContainsKey(model.Name))
-                    {
-                        ModelState.AddModelError(nameof(FeatureProfileViewModel.Name), S["A profile with the same name already exists."]);
-                    }
-                }
-
-                if (String.IsNullOrEmpty(model.FeatureRules))
-                {
-                    ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["The feature rules are mandatory."]);
-                }
-                else
-                {
-                    try
-                    {
-                        featureRules = JsonConvert.DeserializeObject<List<FeatureRule>>(model.FeatureRules);
-                    }
-                    catch (Exception)
-                    {
-                        ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["Invalid json supplied."]);
-                    }
-                }
-            }
-
-            if (ModelState.IsValid)
-            {
-                var template = new FeatureProfile
-                {
-                    FeatureRules = featureRules
-                };
-
-                await _featureProfilesManager.UpdateFeatureProfileAsync(model.Name, template);
-
-                if (submit == "SaveAndContinue")
-                {
-                    return RedirectToAction(nameof(Edit), new { name = model.Name });
-                }
-                else
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-            }
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
+            return Forbid();
         }
 
-        public async Task<IActionResult> Edit(string name)
+        if (itemIds?.Count() > 0)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
-            {
-                return Forbid();
-            }
-
-            var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
-
-            if (!featureProfilesDocument.FeatureProfiles.ContainsKey(name))
-            {
-                return RedirectToAction(nameof(Create), new { name });
-            }
-
-            var featureProfile = featureProfilesDocument.FeatureProfiles[name];
-
-            var model = new FeatureProfileViewModel
-            {
-                Name = name,
-                FeatureRules = JsonConvert.SerializeObject(featureProfile.FeatureRules, Formatting.Indented)
-            };
-
-            return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Edit(string sourceName, FeatureProfileViewModel model, string submit)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
-            {
-                return Forbid();
-            }
-
             var featureProfilesDocument = await _featureProfilesManager.LoadFeatureProfilesDocumentAsync();
-
-            if (!featureProfilesDocument.FeatureProfiles.ContainsKey(sourceName))
+            var checkItems = featureProfilesDocument.FeatureProfiles.Where(x => itemIds.Contains(x.Key));
+            switch (options.BulkAction)
             {
-                return NotFound();
-            }
-
-            List<FeatureRule> featureRules = null;
-
-            if (ModelState.IsValid)
-            {
-                if (String.IsNullOrWhiteSpace(model.Name))
-                {
-                    ModelState.AddModelError(nameof(FeatureProfileViewModel.Name), S["The name is mandatory."]);
-                }
-                else if (!String.Equals(model.Name, sourceName, StringComparison.OrdinalIgnoreCase)
-                    && featureProfilesDocument.FeatureProfiles.ContainsKey(model.Name))
-                {
-                    ModelState.AddModelError(nameof(FeatureProfileViewModel.Name), S["A feature profile with the same name already exists."]);
-                }
-
-                if (String.IsNullOrEmpty(model.FeatureRules))
-                {
-                    ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["The feature rules are mandatory."]);
-                }
-                else
-                {
-                    try
+                case ContentsBulkAction.None:
+                    break;
+                case ContentsBulkAction.Remove:
+                    foreach (var item in checkItems)
                     {
-                        featureRules = JsonConvert.DeserializeObject<List<FeatureRule>>(model.FeatureRules);
+                        await _featureProfilesManager.RemoveFeatureProfileAsync(item.Key);
                     }
-                    catch (Exception)
-                    {
-                        ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["Invalid json supplied."]);
-                    }
-                }
+                    await _notifier.SuccessAsync(H["Feature profiles successfully removed."]);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-
-            if (ModelState.IsValid)
-            {
-                var featureProfile = new FeatureProfile
-                {
-                    FeatureRules = featureRules
-                };
-
-                await _featureProfilesManager.RemoveFeatureProfileAsync(sourceName);
-
-                await _featureProfilesManager.UpdateFeatureProfileAsync(model.Name, featureProfile);
-
-                if (submit == "SaveAndContinue")
-                {
-                    return RedirectToAction(nameof(Edit), new { name = model.Name });
-                }
-                else
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-            }
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(string name)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
-            {
-                return Forbid();
-            }
-
-            var featureProfilesDocument = await _featureProfilesManager.LoadFeatureProfilesDocumentAsync();
-
-            if (!featureProfilesDocument.FeatureProfiles.ContainsKey(name))
-            {
-                return NotFound();
-            }
-
-            await _featureProfilesManager.RemoveFeatureProfileAsync(name);
-
-            await _notifier.SuccessAsync(H["Feature profile deleted successfully."]);
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost, ActionName("Index")]
-        [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
-            {
-                return Forbid();
-            }
-
-            if (itemIds?.Count() > 0)
-            {
-                var featureProfilesDocument = await _featureProfilesManager.LoadFeatureProfilesDocumentAsync();
-                var checkItems = featureProfilesDocument.FeatureProfiles.Where(x => itemIds.Contains(x.Key));
-                switch (options.BulkAction)
-                {
-                    case ContentsBulkAction.None:
-                        break;
-                    case ContentsBulkAction.Remove:
-                        foreach (var item in checkItems)
-                        {
-                            await _featureProfilesManager.RemoveFeatureProfileAsync(item.Key);
-                        }
-                        await _notifier.SuccessAsync(H["Feature profiles successfully removed."]);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-
-            return RedirectToAction(nameof(Index));
-        }
+        return RedirectToAction(nameof(Index));
     }
 }

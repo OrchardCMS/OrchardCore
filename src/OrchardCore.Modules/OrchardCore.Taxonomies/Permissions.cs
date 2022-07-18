@@ -3,27 +3,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Taxonomies
+namespace OrchardCore.Taxonomies;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
+    public static readonly Permission ManageTaxonomies = new Permission("ManageTaxonomy", "Manage taxonomies");
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        public static readonly Permission ManageTaxonomies = new Permission("ManageTaxonomy", "Manage taxonomies");
+        return Task.FromResult(new[] { ManageTaxonomies }.AsEnumerable());
+    }
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return Task.FromResult(new[] { ManageTaxonomies }.AsEnumerable());
-        }
-
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
+            new PermissionStereotype
             {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[] { ManageTaxonomies }
-                }
-            };
-        }
+                Name = "Administrator",
+                Permissions = new[] { ManageTaxonomies }
+            }
+        };
     }
 }

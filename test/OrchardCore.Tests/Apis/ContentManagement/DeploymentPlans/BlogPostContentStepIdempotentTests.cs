@@ -8,85 +8,84 @@ using OrchardCore.Tests.Apis.Context;
 using Xunit;
 using YesSql;
 
-namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
+namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans;
+
+public class BlogPostContentStepIdempotentTests
 {
-    public class BlogPostContentStepIdempotentTests
+    [Fact]
+    public async Task ShouldProduceSameOutcomeForNewContentOnMultipleExecutions()
     {
-        [Fact]
-        public async Task ShouldProduceSameOutcomeForNewContentOnMultipleExecutions()
+        using (var context = new BlogPostDeploymentContext())
         {
-            using (var context = new BlogPostDeploymentContext())
+            // Setup
+            await context.InitializeAsync();
+
+            // Act
+            var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
             {
-                // Setup
-                await context.InitializeAsync();
+                jItem[nameof(ContentItem.ContentItemVersionId)] = "newversion";
+                jItem[nameof(ContentItem.DisplayText)] = "new version";
+            });
 
-                // Act
-                var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
+            for (var i = 0; i < 2; i++)
+            {
+                await context.PostRecipeAsync(recipe);
+
+                // Test
+                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
+                await shellScope.UsingAsync(async scope =>
                 {
-                    jItem[nameof(ContentItem.ContentItemVersionId)] = "newversion";
-                    jItem[nameof(ContentItem.DisplayText)] = "new version";
+                    var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                    var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
+                        x.ContentType == "BlogPost").ListAsync();
+
+                    Assert.Equal(2, blogPosts.Count());
+
+                    var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
+                    Assert.False(originalVersion?.Latest);
+                    Assert.False(originalVersion?.Published);
+
+                    var newVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == "newversion");
+                    Assert.Equal("new version", newVersion?.DisplayText);
+                    Assert.True(newVersion?.Latest);
+                    Assert.True(newVersion?.Published);
                 });
-
-                for (var i = 0; i < 2; i++)
-                {
-                    await context.PostRecipeAsync(recipe);
-
-                    // Test
-                    var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
-                    await shellScope.UsingAsync(async scope =>
-                    {
-                        var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                        var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                            x.ContentType == "BlogPost").ListAsync();
-
-                        Assert.Equal(2, blogPosts.Count());
-
-                        var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
-                        Assert.False(originalVersion?.Latest);
-                        Assert.False(originalVersion?.Published);
-
-                        var newVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == "newversion");
-                        Assert.Equal("new version", newVersion?.DisplayText);
-                        Assert.True(newVersion?.Latest);
-                        Assert.True(newVersion?.Published);
-                    });
-                }
             }
         }
-
-        [Fact]
-        public async Task ShouldProduceSameOutcomeForExistingContentItemVersionOnMultipleExecutions()
-        {
-            using (var context = new BlogPostDeploymentContext())
-            {
-                // Setup
-                await context.InitializeAsync();
-
-                // Act
-                var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
-                {
-                    jItem[nameof(ContentItem.DisplayText)] = "existing version mutated";
-                });
-
-                for (var i = 0; i < 2; i++)
-                {
-                    await context.PostRecipeAsync(recipe);
-
-                    // Test
-                    var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
-                    await shellScope.UsingAsync(async scope =>
-                    {
-                        var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                        var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                            x.ContentType == "BlogPost").ListAsync();
-
-                        Assert.Single(blogPosts);
-                        var mutatedVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
-                        Assert.Equal("existing version mutated", mutatedVersion?.DisplayText);
-                    });
-                }
-            }
-        }
-
     }
+
+    [Fact]
+    public async Task ShouldProduceSameOutcomeForExistingContentItemVersionOnMultipleExecutions()
+    {
+        using (var context = new BlogPostDeploymentContext())
+        {
+            // Setup
+            await context.InitializeAsync();
+
+            // Act
+            var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
+            {
+                jItem[nameof(ContentItem.DisplayText)] = "existing version mutated";
+            });
+
+            for (var i = 0; i < 2; i++)
+            {
+                await context.PostRecipeAsync(recipe);
+
+                // Test
+                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
+                await shellScope.UsingAsync(async scope =>
+                {
+                    var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                    var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
+                        x.ContentType == "BlogPost").ListAsync();
+
+                    Assert.Single(blogPosts);
+                    var mutatedVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
+                    Assert.Equal("existing version mutated", mutatedVersion?.DisplayText);
+                });
+            }
+        }
+    }
+
 }

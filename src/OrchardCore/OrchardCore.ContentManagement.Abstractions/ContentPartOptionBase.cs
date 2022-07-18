@@ -1,19 +1,18 @@
 using System;
 
-namespace OrchardCore.ContentManagement
-{
-    public abstract class ContentPartOptionBase
-    {
-        public ContentPartOptionBase(Type contentPartType)
-        {
-            if (contentPartType == null)
-            {
-                throw new ArgumentNullException(nameof(contentPartType));
-            }
+namespace OrchardCore.ContentManagement;
 
-            Type = contentPartType;
+public abstract class ContentPartOptionBase
+{
+    public ContentPartOptionBase(Type contentPartType)
+    {
+        if (contentPartType == null)
+        {
+            throw new ArgumentNullException(nameof(contentPartType));
         }
 
-        public Type Type { get; }
+        Type = contentPartType;
     }
+
+    public Type Type { get; }
 }

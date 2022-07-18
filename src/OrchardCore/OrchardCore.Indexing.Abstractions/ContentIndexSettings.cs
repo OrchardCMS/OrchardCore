@@ -1,29 +1,28 @@
-﻿namespace OrchardCore.Indexing
+﻿namespace OrchardCore.Indexing;
+
+/// <summary>
+/// Represents the indexing settings for a content part or a field.
+/// </summary>
+public class ContentIndexSettings
 {
-    /// <summary>
-    /// Represents the indexing settings for a content part or a field.
-    /// </summary>
-    public class ContentIndexSettings
+    public bool Included { get; set; }
+    public bool Stored { get; set; }
+    public bool Analyzed { get; set; }
+
+    public DocumentIndexOptions ToOptions()
     {
-        public bool Included { get; set; }
-        public bool Stored { get; set; }
-        public bool Analyzed { get; set; }
+        var options = DocumentIndexOptions.None;
 
-        public DocumentIndexOptions ToOptions()
+        if (Stored)
         {
-            var options = DocumentIndexOptions.None;
-
-            if (Stored)
-            {
-                options |= DocumentIndexOptions.Store;
-            }
-
-            if (Analyzed)
-            {
-                options |= DocumentIndexOptions.Analyze;
-            }
-
-            return options;
+            options |= DocumentIndexOptions.Store;
         }
+
+        if (Analyzed)
+        {
+            options |= DocumentIndexOptions.Analyze;
+        }
+
+        return options;
     }
 }

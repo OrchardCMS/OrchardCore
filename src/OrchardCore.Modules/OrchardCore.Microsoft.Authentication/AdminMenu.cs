@@ -5,63 +5,62 @@ using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Microsoft.Authentication
+namespace OrchardCore.Microsoft.Authentication;
+
+[Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
+public class AdminMenuMicrosoftAccount : INavigationProvider
 {
-    [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
-    public class AdminMenuMicrosoftAccount : INavigationProvider
+    private readonly IStringLocalizer S;
+
+    public AdminMenuMicrosoftAccount(IStringLocalizer<AdminMenuMicrosoftAccount> localizer)
     {
-        private readonly IStringLocalizer S;
-
-        public AdminMenuMicrosoftAccount(IStringLocalizer<AdminMenuMicrosoftAccount> localizer)
-        {
-            S = localizer;
-        }
-
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                builder.Add(S["Security"], security => security
-                        .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Microsoft"], S["Microsoft"].PrefixPosition(), client => client
-                        .AddClass("microsoft").Id("microsoft")
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.MicrosoftAccount })
-                            .Permission(Permissions.ManageMicrosoftAuthentication)
-                            .LocalNav())
-                    ));
-            }
-            return Task.CompletedTask;
-        }
+        S = localizer;
     }
 
-    [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
-    public class AdminMenuAAD : INavigationProvider
+    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
     {
-        private readonly ShellDescriptor _shellDescriptor;
-        private readonly IStringLocalizer S;
-
-        public AdminMenuAAD(
-            IStringLocalizer<AdminMenuAAD> localizer,
-            ShellDescriptor shellDescriptor)
+        if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
         {
-            S = localizer;
-            _shellDescriptor = shellDescriptor;
+            builder.Add(S["Security"], security => security
+                    .Add(S["Authentication"], authentication => authentication
+                    .Add(S["Microsoft"], S["Microsoft"].PrefixPosition(), client => client
+                    .AddClass("microsoft").Id("microsoft")
+                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.MicrosoftAccount })
+                        .Permission(Permissions.ManageMicrosoftAuthentication)
+                        .LocalNav())
+                ));
         }
+        return Task.CompletedTask;
+    }
+}
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+[Feature(MicrosoftAuthenticationConstants.Features.AAD)]
+public class AdminMenuAAD : INavigationProvider
+{
+    private readonly ShellDescriptor _shellDescriptor;
+    private readonly IStringLocalizer S;
+
+    public AdminMenuAAD(
+        IStringLocalizer<AdminMenuAAD> localizer,
+        ShellDescriptor shellDescriptor)
+    {
+        S = localizer;
+        _shellDescriptor = shellDescriptor;
+    }
+
+    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    {
+        if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
         {
-            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                builder.Add(S["Security"], security => security
-                        .Add(S["Authentication"], authentication => authentication
-                            .Add(S["Azure Active Directory"], S["Azure Active Directory"].PrefixPosition(), client => client
-                                .AddClass("azuread").Id("azuread")
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.AAD })
-                                .Permission(Permissions.ManageMicrosoftAuthentication)
-                                .LocalNav())
-                    ));
-            }
-            return Task.CompletedTask;
+            builder.Add(S["Security"], security => security
+                    .Add(S["Authentication"], authentication => authentication
+                        .Add(S["Azure Active Directory"], S["Azure Active Directory"].PrefixPosition(), client => client
+                            .AddClass("azuread").Id("azuread")
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.AAD })
+                            .Permission(Permissions.ManageMicrosoftAuthentication)
+                            .LocalNav())
+                ));
         }
+        return Task.CompletedTask;
     }
 }

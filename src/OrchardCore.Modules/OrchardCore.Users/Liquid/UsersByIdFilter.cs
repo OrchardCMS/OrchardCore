@@ -8,30 +8,29 @@ using OrchardCore.Users.Models;
 using YesSql;
 using YesSql.Services;
 
-namespace OrchardCore.Users.Liquid
+namespace OrchardCore.Users.Liquid;
+
+public class UsersByIdFilter : ILiquidFilter
 {
-    public class UsersByIdFilter : ILiquidFilter
+    private readonly ISession _session;
+
+    public UsersByIdFilter(ISession session)
     {
-        private readonly ISession _session;
+        _session = session;
+    }
 
-        public UsersByIdFilter(ISession session)
+    public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+    {
+        if (input.Type == FluidValues.Array)
         {
-            _session = session;
+            // List of user ids
+            var userIds = input.Enumerate(ctx).Select(x => x.ToStringValue()).ToArray();
+
+            return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId.IsIn(userIds)).ListAsync(), ctx.Options);
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
-        {
-            if (input.Type == FluidValues.Array)
-            {
-                // List of user ids
-                var userIds = input.Enumerate(ctx).Select(x => x.ToStringValue()).ToArray();
+        var userId = input.ToStringValue();
 
-                return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId.IsIn(userIds)).ListAsync(), ctx.Options);
-            }
-
-            var userId = input.ToStringValue();
-
-            return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId == userId).FirstOrDefaultAsync(), ctx.Options);
-        }
+        return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId == userId).FirstOrDefaultAsync(), ctx.Options);
     }
 }

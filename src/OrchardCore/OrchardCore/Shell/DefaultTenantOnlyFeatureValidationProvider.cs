@@ -2,36 +2,35 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
 
-namespace OrchardCore.Environment.Shell
+namespace OrchardCore.Environment.Shell;
+
+public class DefaultTenantOnlyFeatureValidationProvider : IFeatureValidationProvider
 {
-    public class DefaultTenantOnlyFeatureValidationProvider : IFeatureValidationProvider
+    private readonly IExtensionManager _extensionManager;
+    private readonly ShellSettings _shellSettings;
+
+    public DefaultTenantOnlyFeatureValidationProvider(
+        IExtensionManager extensionManager,
+        ShellSettings shellSettings
+        )
     {
-        private readonly IExtensionManager _extensionManager;
-        private readonly ShellSettings _shellSettings;
+        _extensionManager = extensionManager;
+        _shellSettings = shellSettings;
+    }
 
-        public DefaultTenantOnlyFeatureValidationProvider(
-            IExtensionManager extensionManager,
-            ShellSettings shellSettings
-            )
+    public ValueTask<bool> IsFeatureValidAsync(string id)
+    {
+        var features = _extensionManager.GetFeatures(new[] { id });
+        if (!features.Any())
         {
-            _extensionManager = extensionManager;
-            _shellSettings = shellSettings;
+            return new ValueTask<bool>(false);
         }
 
-        public ValueTask<bool> IsFeatureValidAsync(string id)
+        if (_shellSettings.Name == ShellHelper.DefaultShellName)
         {
-            var features = _extensionManager.GetFeatures(new[] { id });
-            if (!features.Any())
-            {
-                return new ValueTask<bool>(false);
-            }
-
-            if (_shellSettings.Name == ShellHelper.DefaultShellName)
-            {
-                return new ValueTask<bool>(true);
-            }
-
-            return new ValueTask<bool>(!features.Any(f => f.DefaultTenantOnly));
+            return new ValueTask<bool>(true);
         }
+
+        return new ValueTask<bool>(!features.Any(f => f.DefaultTenantOnly));
     }
 }

@@ -11,102 +11,101 @@ using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Workflows.Http.Activities
+namespace OrchardCore.Workflows.Http.Activities;
+
+public class HttpResponseTask : TaskActivity
 {
-    public class HttpResponseTask : TaskActivity
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IStringLocalizer S;
+    private readonly UrlEncoder _urlEncoder;
+
+    public HttpResponseTask(
+        IStringLocalizer<HttpResponseTask> localizer,
+        IHttpContextAccessor httpContextAccessor,
+        IWorkflowExpressionEvaluator expressionEvaluator,
+        UrlEncoder urlEncoder
+    )
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer S;
-        private readonly UrlEncoder _urlEncoder;
+        S = localizer;
+        _httpContextAccessor = httpContextAccessor;
+        _expressionEvaluator = expressionEvaluator;
+        _urlEncoder = urlEncoder;
+    }
 
-        public HttpResponseTask(
-            IStringLocalizer<HttpResponseTask> localizer,
-            IHttpContextAccessor httpContextAccessor,
-            IWorkflowExpressionEvaluator expressionEvaluator,
-            UrlEncoder urlEncoder
-        )
+    public override string Name => nameof(HttpResponseTask);
+
+    public override LocalizedString DisplayText => S["Http Response Task"];
+
+    public override LocalizedString Category => S["HTTP"];
+
+    public WorkflowExpression<string> Content
+    {
+        get => GetProperty(() => new WorkflowExpression<string>());
+        set => SetProperty(value);
+    }
+
+    public int HttpStatusCode
+    {
+        get => GetProperty(() => 200);
+        set => SetProperty(value);
+    }
+
+    public WorkflowExpression<string> Headers
+    {
+        get => GetProperty(() => new WorkflowExpression<string>());
+        set => SetProperty(value);
+    }
+
+    public WorkflowExpression<string> ContentType
+    {
+        get => GetProperty(() => new WorkflowExpression<string>("application/json"));
+        set => SetProperty(value);
+    }
+
+    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        return Outcomes(S["Done"]);
+    }
+
+    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        var headersString = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext, _urlEncoder);
+        var content = await _expressionEvaluator.EvaluateAsync(Content, workflowContext, null);
+        var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext, _urlEncoder);
+        var headers = ParseHeaders(headersString);
+        var response = _httpContextAccessor.HttpContext.Response;
+
+        response.StatusCode = HttpStatusCode;
+
+        foreach (var header in headers)
         {
-            S = localizer;
-            _httpContextAccessor = httpContextAccessor;
-            _expressionEvaluator = expressionEvaluator;
-            _urlEncoder = urlEncoder;
+            response.Headers.Add(header);
         }
 
-        public override string Name => nameof(HttpResponseTask);
-
-        public override LocalizedString DisplayText => S["Http Response Task"];
-
-        public override LocalizedString Category => S["HTTP"];
-
-        public WorkflowExpression<string> Content
+        if (!string.IsNullOrWhiteSpace(contentType))
         {
-            get => GetProperty(() => new WorkflowExpression<string>());
-            set => SetProperty(value);
+            response.ContentType = contentType;
         }
 
-        public int HttpStatusCode
+        if (!string.IsNullOrWhiteSpace(content))
         {
-            get => GetProperty(() => 200);
-            set => SetProperty(value);
+            await response.WriteAsync(content);
         }
 
-        public WorkflowExpression<string> Headers
-        {
-            get => GetProperty(() => new WorkflowExpression<string>());
-            set => SetProperty(value);
-        }
+        _httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
+        return Outcomes("Done");
+    }
 
-        public WorkflowExpression<string> ContentType
-        {
-            get => GetProperty(() => new WorkflowExpression<string>("application/json"));
-            set => SetProperty(value);
-        }
+    private IEnumerable<KeyValuePair<string, StringValues>> ParseHeaders(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return Enumerable.Empty<KeyValuePair<string, StringValues>>();
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            return Outcomes(S["Done"]);
-        }
-
-        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            var headersString = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext, _urlEncoder);
-            var content = await _expressionEvaluator.EvaluateAsync(Content, workflowContext, null);
-            var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext, _urlEncoder);
-            var headers = ParseHeaders(headersString);
-            var response = _httpContextAccessor.HttpContext.Response;
-
-            response.StatusCode = HttpStatusCode;
-
-            foreach (var header in headers)
-            {
-                response.Headers.Add(header);
-            }
-
-            if (!string.IsNullOrWhiteSpace(contentType))
-            {
-                response.ContentType = contentType;
-            }
-
-            if (!string.IsNullOrWhiteSpace(content))
-            {
-                await response.WriteAsync(content);
-            }
-
-            _httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
-            return Outcomes("Done");
-        }
-
-        private IEnumerable<KeyValuePair<string, StringValues>> ParseHeaders(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                return Enumerable.Empty<KeyValuePair<string, StringValues>>();
-
-            return
-                from header in text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
-                let pair = header.Split(':')
-                where pair.Length == 2
-                select new KeyValuePair<string, StringValues>(pair[0], pair[1]);
-        }
+        return
+            from header in text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
+            let pair = header.Split(':')
+            where pair.Length == 2
+            select new KeyValuePair<string, StringValues>(pair[0], pair[1]);
     }
 }

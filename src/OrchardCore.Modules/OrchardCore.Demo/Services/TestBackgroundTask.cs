@@ -3,17 +3,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using OrchardCore.BackgroundTasks;
 
-namespace OrchardCore.Demo.Services
+namespace OrchardCore.Demo.Services;
+
+public class TestBackgroundTask : IBackgroundTask
 {
-    public class TestBackgroundTask : IBackgroundTask
+    private int _count;
+
+    public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        private int _count;
+        _count++;
 
-        public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
-        {
-            _count++;
-
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

@@ -52,3 +52,4 @@ dotnet_style_explicit_tuple_names                          = true : suggestion
 trim_trailing_whitespace = true
 insert_final_newline = true
 csharp_style_namespace_declarations = file_scoped
+

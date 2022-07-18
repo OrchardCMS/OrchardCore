@@ -3,32 +3,31 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Services;
 
-namespace OrchardCore.OpenId.Deployment
+namespace OrchardCore.OpenId.Deployment;
+
+public class OpenIdValidationDeploymentSource : IDeploymentSource
 {
-    public class OpenIdValidationDeploymentSource : IDeploymentSource
+    private readonly IOpenIdValidationService _openIdValidationService;
+
+    public OpenIdValidationDeploymentSource(IOpenIdValidationService openIdValidationService)
     {
-        private readonly IOpenIdValidationService _openIdValidationService;
+        _openIdValidationService = openIdValidationService;
+    }
 
-        public OpenIdValidationDeploymentSource(IOpenIdValidationService openIdValidationService)
+    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    {
+        var openIdValidationStep = step as OpenIdValidationDeploymentStep;
+
+        if (openIdValidationStep == null)
         {
-            _openIdValidationService = openIdValidationService;
+            return;
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-        {
-            var openIdValidationStep = step as OpenIdValidationDeploymentStep;
+        var validationSettings = await _openIdValidationService.GetSettingsAsync();
 
-            if (openIdValidationStep == null)
-            {
-                return;
-            }
-
-            var validationSettings = await _openIdValidationService.GetSettingsAsync();
-
-            result.Steps.Add(new JObject(
-                new JProperty("name", "OpenIdValidation"),
-                new JProperty("OpenIdValidation", JObject.FromObject(validationSettings))
-            ));
-        }
+        result.Steps.Add(new JObject(
+            new JProperty("name", "OpenIdValidation"),
+            new JProperty("OpenIdValidation", JObject.FromObject(validationSettings))
+        ));
     }
 }

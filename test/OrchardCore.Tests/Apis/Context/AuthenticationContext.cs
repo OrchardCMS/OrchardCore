@@ -7,71 +7,70 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Tests.Apis.Context
+namespace OrchardCore.Tests.Apis.Context;
+
+internal class PermissionContextAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
-    internal class PermissionContextAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+    private readonly PermissionsContext _permissionsContext;
+
+    // Used for http based graphql tests, marries a permission context to a request
+    public PermissionContextAuthorizationHandler(IHttpContextAccessor httpContextAccessor, IDictionary<string, PermissionsContext> permissionsContexts)
     {
-        private readonly PermissionsContext _permissionsContext;
+        _permissionsContext = new PermissionsContext();
 
-        // Used for http based graphql tests, marries a permission context to a request
-        public PermissionContextAuthorizationHandler(IHttpContextAccessor httpContextAccessor, IDictionary<string, PermissionsContext> permissionsContexts)
+        if (httpContextAccessor.HttpContext == null)
         {
-            _permissionsContext = new PermissionsContext();
-
-            if (httpContextAccessor.HttpContext == null)
-            {
-                return;
-            }
-
-            var requestContext = httpContextAccessor.HttpContext.Request;
-
-            if (requestContext?.Headers.ContainsKey("PermissionsContext") == true &&
-                permissionsContexts.TryGetValue(requestContext.Headers["PermissionsContext"], out var permissionsContext))
-            {
-                _permissionsContext = permissionsContext;
-            }
+            return;
         }
 
-        // Used for static graphql test; passes a permissionsContext directly
-        public PermissionContextAuthorizationHandler(PermissionsContext permissionsContext)
+        var requestContext = httpContextAccessor.HttpContext.Request;
+
+        if (requestContext?.Headers.ContainsKey("PermissionsContext") == true &&
+            permissionsContexts.TryGetValue(requestContext.Headers["PermissionsContext"], out var permissionsContext))
         {
             _permissionsContext = permissionsContext;
         }
+    }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
+    // Used for static graphql test; passes a permissionsContext directly
+    public PermissionContextAuthorizationHandler(PermissionsContext permissionsContext)
+    {
+        _permissionsContext = permissionsContext;
+    }
+
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
+    {
+        var permissions = (_permissionsContext.AuthorizedPermissions ?? Enumerable.Empty<Permission>()).ToList();
+
+        if (!_permissionsContext.UsePermissionsContext)
         {
-            var permissions = (_permissionsContext.AuthorizedPermissions ?? Enumerable.Empty<Permission>()).ToList();
-
-            if (!_permissionsContext.UsePermissionsContext)
-            {
-                context.Succeed(requirement);
-            }
-            else if (permissions.Contains(requirement.Permission))
-            {
-                context.Succeed(requirement);
-            }
-            else
-            {
-                context.Fail();
-            }
-
-            return Task.CompletedTask;
+            context.Succeed(requirement);
         }
+        else if (permissions.Contains(requirement.Permission))
+        {
+            context.Succeed(requirement);
+        }
+        else
+        {
+            context.Fail();
+        }
+
+        return Task.CompletedTask;
     }
+}
 
-    public class PermissionsContext
-    {
-        public IEnumerable<Permission> AuthorizedPermissions { get; set; } = Enumerable.Empty<Permission>();
+public class PermissionsContext
+{
+    public IEnumerable<Permission> AuthorizedPermissions { get; set; } = Enumerable.Empty<Permission>();
 
-        public bool UsePermissionsContext { get; set; } = false;
-    }
+    public bool UsePermissionsContext { get; set; } = false;
+}
 
-    internal class StubIdentity : IIdentity
-    {
-        public string AuthenticationType => "TEST TEST";
+internal class StubIdentity : IIdentity
+{
+    public string AuthenticationType => "TEST TEST";
 
-        public bool IsAuthenticated => true;
+    public bool IsAuthenticated => true;
 
-        public string Name => "Mr Robot";
-    }
+    public string Name => "Mr Robot";
 }

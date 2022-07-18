@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Shortcodes.Services
+namespace OrchardCore.Shortcodes.Services;
+
+public interface IShortcodeDescriptorManager
 {
-    public interface IShortcodeDescriptorManager
-    {
-        Task<IEnumerable<ShortcodeDescriptor>> GetShortcodeDescriptors();
-    }
+    Task<IEnumerable<ShortcodeDescriptor>> GetShortcodeDescriptors();
 }

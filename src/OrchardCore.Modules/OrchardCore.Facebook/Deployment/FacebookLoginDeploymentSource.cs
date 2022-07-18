@@ -3,32 +3,31 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Facebook.Services;
 
-namespace OrchardCore.Facebook.Deployment
+namespace OrchardCore.Facebook.Deployment;
+
+public class FacebookLoginDeploymentSource : IDeploymentSource
 {
-    public class FacebookLoginDeploymentSource : IDeploymentSource
+    private readonly IFacebookService _facebookService;
+
+    public FacebookLoginDeploymentSource(IFacebookService facebookService)
     {
-        private readonly IFacebookService _facebookService;
+        _facebookService = facebookService;
+    }
 
-        public FacebookLoginDeploymentSource(IFacebookService facebookService)
+    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    {
+        var facebookLoginStep = step as FacebookLoginDeploymentStep;
+
+        if (facebookLoginStep == null)
         {
-            _facebookService = facebookService;
+            return;
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-        {
-            var facebookLoginStep = step as FacebookLoginDeploymentStep;
+        var settings = await _facebookService.GetSettingsAsync();
 
-            if (facebookLoginStep == null)
-            {
-                return;
-            }
-
-            var settings = await _facebookService.GetSettingsAsync();
-
-            result.Steps.Add(new JObject(
-                new JProperty("name", "FacebookLogin"),
-                new JProperty("FacebookLogin", JObject.FromObject(settings))
-            ));
-        }
+        result.Steps.Add(new JObject(
+            new JProperty("name", "FacebookLogin"),
+            new JProperty("FacebookLogin", JObject.FromObject(settings))
+        ));
     }
 }

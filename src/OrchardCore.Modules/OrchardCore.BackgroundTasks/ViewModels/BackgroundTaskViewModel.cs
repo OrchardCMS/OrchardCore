@@ -1,7 +1,6 @@
-namespace OrchardCore.BackgroundTasks.ViewModels
+namespace OrchardCore.BackgroundTasks.ViewModels;
+
+public class BackgroundTaskViewModel : BackgroundTaskSettings
 {
-    public class BackgroundTaskViewModel : BackgroundTaskSettings
-    {
-        public string DefaultSchedule { get; set; } = "* * * * *";
-    }
+    public string DefaultSchedule { get; set; } = "* * * * *";
 }

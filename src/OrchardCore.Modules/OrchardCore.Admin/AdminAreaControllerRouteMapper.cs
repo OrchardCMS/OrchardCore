@@ -5,37 +5,36 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using OrchardCore.Mvc.Routing;
 
-namespace OrchardCore.Admin
+namespace OrchardCore.Admin;
+
+public class AdminAreaControllerRouteMapper : IAreaControllerRouteMapper
 {
-    public class AdminAreaControllerRouteMapper : IAreaControllerRouteMapper
+    private readonly string _defaultAreaPattern;
+
+    public int Order => -1000;
+
+    public AdminAreaControllerRouteMapper(IOptions<AdminOptions> adminOptions)
     {
-        private readonly string _defaultAreaPattern;
+        _defaultAreaPattern = adminOptions.Value.AdminUrlPrefix + "/{area}/{controller}/{action}/{id?}";
+    }
 
-        public int Order => -1000;
-
-        public AdminAreaControllerRouteMapper(IOptions<AdminOptions> adminOptions)
+    public bool TryMapAreaControllerRoute(IEndpointRouteBuilder routes, ControllerActionDescriptor descriptor)
+    {
+        if (descriptor.ControllerName == "Admin" ||
+            descriptor.ControllerTypeInfo.GetCustomAttribute<AdminAttribute>() != null ||
+            descriptor.MethodInfo.GetCustomAttribute<AdminAttribute>() != null
+            )
         {
-            _defaultAreaPattern = adminOptions.Value.AdminUrlPrefix + "/{area}/{controller}/{action}/{id?}";
+            routes.MapAreaControllerRoute(
+                name: descriptor.DisplayName,
+                areaName: descriptor.RouteValues["area"],
+                pattern: _defaultAreaPattern.Replace("{action}", descriptor.ActionName),
+                defaults: new { controller = descriptor.ControllerName, action = descriptor.ActionName }
+            );
+
+            return true;
         }
 
-        public bool TryMapAreaControllerRoute(IEndpointRouteBuilder routes, ControllerActionDescriptor descriptor)
-        {
-            if (descriptor.ControllerName == "Admin" ||
-                descriptor.ControllerTypeInfo.GetCustomAttribute<AdminAttribute>() != null ||
-                descriptor.MethodInfo.GetCustomAttribute<AdminAttribute>() != null
-                )
-            {
-                routes.MapAreaControllerRoute(
-                    name: descriptor.DisplayName,
-                    areaName: descriptor.RouteValues["area"],
-                    pattern: _defaultAreaPattern.Replace("{action}", descriptor.ActionName),
-                    defaults: new { controller = descriptor.ControllerName, action = descriptor.ActionName }
-                );
-
-                return true;
-            }
-
-            return false;
-        }
+        return false;
     }
 }

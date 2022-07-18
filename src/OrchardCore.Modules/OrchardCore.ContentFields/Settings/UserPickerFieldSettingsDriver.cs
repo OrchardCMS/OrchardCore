@@ -7,71 +7,70 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Security.Services;
 
-namespace OrchardCore.ContentFields.Settings
+namespace OrchardCore.ContentFields.Settings;
+
+public class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<UserPickerField>
 {
-    public class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<UserPickerField>
+    private readonly IRoleService _roleService;
+
+    public UserPickerFieldSettingsDriver(IRoleService roleService)
     {
-        private readonly IRoleService _roleService;
+        _roleService = roleService;
+    }
 
-        public UserPickerFieldSettingsDriver(IRoleService roleService)
+    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+    {
+        return Initialize<UserPickerFieldSettingsViewModel>("UserPickerFieldSettings_Edit", async model =>
         {
-            _roleService = roleService;
-        }
+            var settings = partFieldDefinition.GetSettings<UserPickerFieldSettings>();
+            model.Hint = settings.Hint;
+            model.Required = settings.Required;
+            model.Multiple = settings.Multiple;
+            var roles = (await _roleService.GetRoleNamesAsync())
+                .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase)
+                .Select(roleName => new RoleEntry
+                {
+                    Role = roleName,
+                    IsSelected = settings.DisplayedRoles.Contains(roleName, StringComparer.OrdinalIgnoreCase)
+                })
+                .ToArray();
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+            model.Roles = roles;
+            model.DisplayAllUsers = settings.DisplayAllUsers || !roles.Where(x => x.IsSelected).Any();
+
+        }).Location("Content");
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    {
+        var model = new UserPickerFieldSettingsViewModel();
+
+        if (await context.Updater.TryUpdateModelAsync(model, Prefix))
         {
-            return Initialize<UserPickerFieldSettingsViewModel>("UserPickerFieldSettings_Edit", async model =>
+            var settings = new UserPickerFieldSettings
             {
-                var settings = partFieldDefinition.GetSettings<UserPickerFieldSettings>();
-                model.Hint = settings.Hint;
-                model.Required = settings.Required;
-                model.Multiple = settings.Multiple;
-                var roles = (await _roleService.GetRoleNamesAsync())
-                    .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase)
-                    .Select(roleName => new RoleEntry
-                    {
-                        Role = roleName,
-                        IsSelected = settings.DisplayedRoles.Contains(roleName, StringComparer.OrdinalIgnoreCase)
-                    })
-                    .ToArray();
+                Hint = model.Hint,
+                Required = model.Required,
+                Multiple = model.Multiple
+            };
 
-                model.Roles = roles;
-                model.DisplayAllUsers = settings.DisplayAllUsers || !roles.Where(x => x.IsSelected).Any();
+            var selectedRoles = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
 
-            }).Location("Content");
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
-        {
-            var model = new UserPickerFieldSettingsViewModel();
-
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            if (model.DisplayAllUsers || selectedRoles.Length == 0)
             {
-                var settings = new UserPickerFieldSettings
-                {
-                    Hint = model.Hint,
-                    Required = model.Required,
-                    Multiple = model.Multiple
-                };
-
-                var selectedRoles = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
-
-                if (model.DisplayAllUsers || selectedRoles.Length == 0)
-                {
-                    // No selected role should have the same effect as display all users
-                    settings.DisplayedRoles = Array.Empty<string>();
-                    settings.DisplayAllUsers = true;
-                }
-                else
-                {
-                    settings.DisplayedRoles = selectedRoles;
-                    settings.DisplayAllUsers = false;
-                }
-
-                context.Builder.WithSettings(settings);
+                // No selected role should have the same effect as display all users
+                settings.DisplayedRoles = Array.Empty<string>();
+                settings.DisplayAllUsers = true;
+            }
+            else
+            {
+                settings.DisplayedRoles = selectedRoles;
+                settings.DisplayAllUsers = false;
             }
 
-            return Edit(partFieldDefinition, context.Updater);
+            context.Builder.WithSettings(settings);
         }
+
+        return Edit(partFieldDefinition, context.Updater);
     }
 }

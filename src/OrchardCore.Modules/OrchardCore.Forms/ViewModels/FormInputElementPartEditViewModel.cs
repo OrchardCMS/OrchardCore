@@ -1,7 +1,6 @@
-namespace OrchardCore.Forms.ViewModels
+namespace OrchardCore.Forms.ViewModels;
+
+public class FormInputElementPartEditViewModel
 {
-    public class FormInputElementPartEditViewModel
-    {
-        public string Name { get; set; }
-    }
+    public string Name { get; set; }
 }

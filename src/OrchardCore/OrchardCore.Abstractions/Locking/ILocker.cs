@@ -1,8 +1,7 @@
 using System;
 
-namespace OrchardCore.Locking
+namespace OrchardCore.Locking;
+
+public interface ILocker : IDisposable, IAsyncDisposable
 {
-    public interface ILocker : IDisposable, IAsyncDisposable
-    {
-    }
 }

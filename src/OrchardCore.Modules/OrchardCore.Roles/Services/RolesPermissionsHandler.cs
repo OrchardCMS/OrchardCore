@@ -6,68 +6,67 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Security;
 
-namespace OrchardCore.Roles
+namespace OrchardCore.Roles;
+
+/// <summary>
+/// This authorization handler ensures that Anonymous and Authenticated permissions are checked.
+/// </summary>
+public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequirement>
 {
-    /// <summary>
-    /// This authorization handler ensures that Anonymous and Authenticated permissions are checked.
-    /// </summary>
-    public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequirement>
+    private readonly RoleManager<IRole> _roleManager;
+    private readonly IPermissionGrantingService _permissionGrantingService;
+
+
+    private IEnumerable<RoleClaim> _anonymousClaims = null, _authenticatedClaims = null;
+
+    public RolesPermissionsHandler(
+        RoleManager<IRole> roleManager,
+        IPermissionGrantingService permissionGrantingService)
     {
-        private readonly RoleManager<IRole> _roleManager;
-        private readonly IPermissionGrantingService _permissionGrantingService;
+        _roleManager = roleManager;
+        _permissionGrantingService = permissionGrantingService;
+    }
 
-
-        private IEnumerable<RoleClaim> _anonymousClaims = null, _authenticatedClaims = null;
-
-        public RolesPermissionsHandler(
-            RoleManager<IRole> roleManager,
-            IPermissionGrantingService permissionGrantingService)
+    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
+    {
+        if (context.HasSucceeded)
         {
-            _roleManager = roleManager;
-            _permissionGrantingService = permissionGrantingService;
+            // This handler is not revoking any pre-existing grants.
+            return;
         }
 
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
+        var claims = new HashSet<Claim>();
+        foreach (var claim in _anonymousClaims ??= await GetRoleClaimsAsync("Anonymous"))
         {
-            if (context.HasSucceeded)
-            {
-                // This handler is not revoking any pre-existing grants.
-                return;
-            }
+            claims.Add(claim);
+        }
 
-            var claims = new HashSet<Claim>();
-            foreach (var claim in _anonymousClaims ??= await GetRoleClaimsAsync("Anonymous"))
+        if (context.User.Identity.IsAuthenticated)
+        {
+            foreach (var claim in _authenticatedClaims ??= await GetRoleClaimsAsync("Authenticated"))
             {
                 claims.Add(claim);
             }
-
-            if (context.User.Identity.IsAuthenticated)
-            {
-                foreach (var claim in _authenticatedClaims ??= await GetRoleClaimsAsync("Authenticated"))
-                {
-                    claims.Add(claim);
-                }
-            }
-
-            if (_permissionGrantingService.IsGranted(requirement, claims))
-            {
-                context.Succeed(requirement);
-                return;
-            }
         }
 
-        private async Task<IEnumerable<RoleClaim>> GetRoleClaimsAsync(string roleName)
+        if (_permissionGrantingService.IsGranted(requirement, claims))
         {
-            var role = await _roleManager.FindByNameAsync(roleName);
+            context.Succeed(requirement);
+            return;
+        }
+    }
 
-            if (role != null)
-            {
-                return ((Role)role).RoleClaims;
-            }
-            else
-            {
-                return Enumerable.Empty<RoleClaim>();
-            }
+    private async Task<IEnumerable<RoleClaim>> GetRoleClaimsAsync(string roleName)
+    {
+        var role = await _roleManager.FindByNameAsync(roleName);
+
+        if (role != null)
+        {
+            return ((Role)role).RoleClaims;
+        }
+        else
+        {
+            return Enumerable.Empty<RoleClaim>();
         }
     }
 }

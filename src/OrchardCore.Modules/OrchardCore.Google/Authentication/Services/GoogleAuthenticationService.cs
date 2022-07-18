@@ -7,58 +7,57 @@ using OrchardCore.Google.Authentication.Settings;
 using OrchardCore.Google.Authentication.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Google.Authentication.Services
+namespace OrchardCore.Google.Authentication.Services;
+
+public class GoogleAuthenticationService
 {
-    public class GoogleAuthenticationService
+    private readonly ISiteService _siteService;
+
+    public GoogleAuthenticationService(ISiteService siteService)
     {
-        private readonly ISiteService _siteService;
+        _siteService = siteService;
+    }
 
-        public GoogleAuthenticationService(ISiteService siteService)
+    public async Task<GoogleAuthenticationSettings> GetSettingsAsync()
+    {
+        var container = await _siteService.GetSiteSettingsAsync();
+        return container.As<GoogleAuthenticationSettings>();
+    }
+
+    public async Task<GoogleAuthenticationSettings> LoadSettingsAsync()
+    {
+        var container = await _siteService.LoadSiteSettingsAsync();
+        return container.As<GoogleAuthenticationSettings>();
+    }
+
+    public async Task UpdateSettingsAsync(GoogleAuthenticationSettings settings)
+    {
+        if (settings == null)
         {
-            _siteService = siteService;
+            throw new ArgumentNullException(nameof(settings));
         }
 
-        public async Task<GoogleAuthenticationSettings> GetSettingsAsync()
+        var container = await _siteService.LoadSiteSettingsAsync();
+        container.Alter<GoogleAuthenticationSettings>(nameof(GoogleAuthenticationSettings), aspect =>
         {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<GoogleAuthenticationSettings>();
-        }
+            aspect.ClientID = settings.ClientID;
+            aspect.ClientSecret = settings.ClientSecret;
+            aspect.CallbackPath = settings.CallbackPath;
+        });
 
-        public async Task<GoogleAuthenticationSettings> LoadSettingsAsync()
+        await _siteService.UpdateSiteSettingsAsync(container);
+    }
+
+    public bool CheckSettings(GoogleAuthenticationSettings settings)
+    {
+        var obj = new GoogleAuthenticationSettingsViewModel()
         {
-            var container = await _siteService.LoadSiteSettingsAsync();
-            return container.As<GoogleAuthenticationSettings>();
-        }
+            ClientID = settings.ClientID,
+            CallbackPath = settings.CallbackPath,
+            ClientSecret = settings.ClientSecret
+        };
 
-        public async Task UpdateSettingsAsync(GoogleAuthenticationSettings settings)
-        {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<GoogleAuthenticationSettings>(nameof(GoogleAuthenticationSettings), aspect =>
-            {
-                aspect.ClientID = settings.ClientID;
-                aspect.ClientSecret = settings.ClientSecret;
-                aspect.CallbackPath = settings.CallbackPath;
-            });
-
-            await _siteService.UpdateSiteSettingsAsync(container);
-        }
-
-        public bool CheckSettings(GoogleAuthenticationSettings settings)
-        {
-            var obj = new GoogleAuthenticationSettingsViewModel()
-            {
-                ClientID = settings.ClientID,
-                CallbackPath = settings.CallbackPath,
-                ClientSecret = settings.ClientSecret
-            };
-
-            var vc = new ValidationContext(obj);
-            return Validator.TryValidateObject(obj, vc, ImmutableArray.CreateBuilder<ValidationResult>());
-        }
+        var vc = new ValidationContext(obj);
+        return Validator.TryValidateObject(obj, vc, ImmutableArray.CreateBuilder<ValidationResult>());
     }
 }

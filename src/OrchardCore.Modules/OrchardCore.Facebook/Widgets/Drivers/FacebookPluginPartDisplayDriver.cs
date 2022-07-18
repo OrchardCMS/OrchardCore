@@ -11,86 +11,85 @@ using OrchardCore.Facebook.Widgets.Settings;
 using OrchardCore.Facebook.Widgets.ViewModels;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.Facebook.Widgets.Drivers
+namespace OrchardCore.Facebook.Widgets.Drivers;
+
+public class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<FacebookPluginPart>
 {
-    public class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<FacebookPluginPart>
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly ILiquidTemplateManager _liquidTemplatemanager;
+    private readonly IStringLocalizer S;
+
+    public FacebookPluginPartDisplayDriver(
+        IContentDefinitionManager contentDefinitionManager,
+        ILiquidTemplateManager liquidTemplatemanager,
+        IStringLocalizer<FacebookPluginPartDisplayDriver> localizer)
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ILiquidTemplateManager _liquidTemplatemanager;
-        private readonly IStringLocalizer S;
+        _contentDefinitionManager = contentDefinitionManager;
+        _liquidTemplatemanager = liquidTemplatemanager;
+        S = localizer;
+    }
 
-        public FacebookPluginPartDisplayDriver(
-            IContentDefinitionManager contentDefinitionManager,
-            ILiquidTemplateManager liquidTemplatemanager,
-            IStringLocalizer<FacebookPluginPartDisplayDriver> localizer)
+    public override IDisplayResult Display(FacebookPluginPart part)
+    {
+        return Combine(
+            Initialize<FacebookPluginPartViewModel>("FacebookPluginPart", m => BuildViewModel(m, part))
+                .Location("Detail", "Content:10"),
+            Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Summary", m => BuildViewModel(m, part))
+                .Location("Summary", "Content:10")
+        );
+    }
+
+    private void BuildViewModel(FacebookPluginPartViewModel model, FacebookPluginPart part)
+    {
+        if (model == null)
         {
-            _contentDefinitionManager = contentDefinitionManager;
-            _liquidTemplatemanager = liquidTemplatemanager;
-            S = localizer;
+            throw new ArgumentNullException(nameof(model));
         }
 
-        public override IDisplayResult Display(FacebookPluginPart part)
-        {
-            return Combine(
-                Initialize<FacebookPluginPartViewModel>("FacebookPluginPart", m => BuildViewModel(m, part))
-                    .Location("Detail", "Content:10"),
-                Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Summary", m => BuildViewModel(m, part))
-                    .Location("Summary", "Content:10")
-            );
-        }
+        model.FacebookPluginPart = part ?? throw new ArgumentNullException(nameof(part));
+        model.Settings = GetFacebookPluginPartSettings(part);
+        model.Liquid = part.Liquid;
+        model.ContentItem = part.ContentItem;
+    }
 
-        private void BuildViewModel(FacebookPluginPartViewModel model, FacebookPluginPart part)
+    public override IDisplayResult Edit(FacebookPluginPart part)
+    {
+        return Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Edit", model =>
         {
-            if (model == null)
-            {
-                throw new ArgumentNullException(nameof(model));
-            }
-
-            model.FacebookPluginPart = part ?? throw new ArgumentNullException(nameof(part));
             model.Settings = GetFacebookPluginPartSettings(part);
-            model.Liquid = part.Liquid;
-            model.ContentItem = part.ContentItem;
+            model.FacebookPluginPart = part;
+            model.Liquid = string.IsNullOrWhiteSpace(part.Liquid) ? model.Settings.Liquid : part.Liquid;
+        });
+    }
+
+    private FacebookPluginPartSettings GetFacebookPluginPartSettings(FacebookPluginPart part)
+    {
+        if (part == null)
+        {
+            throw new ArgumentNullException(nameof(part));
         }
 
-        public override IDisplayResult Edit(FacebookPluginPart part)
-        {
-            return Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Edit", model =>
-            {
-                model.Settings = GetFacebookPluginPartSettings(part);
-                model.FacebookPluginPart = part;
-                model.Liquid = string.IsNullOrWhiteSpace(part.Liquid) ? model.Settings.Liquid : part.Liquid;
-            });
-        }
+        var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
+        var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart)));
+        return contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
+    }
 
-        private FacebookPluginPartSettings GetFacebookPluginPartSettings(FacebookPluginPart part)
+    public override async Task<IDisplayResult> UpdateAsync(FacebookPluginPart model, IUpdateModel updater)
+    {
+        var viewModel = new FacebookPluginPartViewModel();
+
+        if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
         {
-            if (part == null)
+            if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
             {
-                throw new ArgumentNullException(nameof(part));
+                updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
             }
-
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart)));
-            return contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(FacebookPluginPart model, IUpdateModel updater)
-        {
-            var viewModel = new FacebookPluginPartViewModel();
-
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
+            else
             {
-                if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
-                {
-                    updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
-                }
-                else
-                {
-                    model.Liquid = viewModel.Liquid;
-                }
+                model.Liquid = viewModel.Liquid;
             }
-
-            return Edit(model);
         }
+
+        return Edit(model);
     }
 }

@@ -5,22 +5,21 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags
+namespace OrchardCore.DisplayManagement.Liquid.Tags;
+
+public class ShapePositionTag
 {
-    public class ShapePositionTag
+    public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
     {
-        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
+
+        if (objectValue is IShape shape)
         {
-            var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
-
-            if (objectValue is IShape shape)
-            {
-                var position = (await arguments.Item2.EvaluateAsync(context)).ToStringValue();
-                shape.Metadata.Position = position;
-            }
-
-            return Completion.Normal;
+            var position = (await arguments.Item2.EvaluateAsync(context)).ToStringValue();
+            shape.Metadata.Position = position;
         }
 
+        return Completion.Normal;
     }
+
 }

@@ -5,35 +5,34 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Templates.ViewModels;
 
-namespace OrchardCore.Templates.Settings
+namespace OrchardCore.Templates.Settings;
+
+public class TemplateContentPartDefinitionDriver : ContentPartDefinitionDisplayDriver
 {
-    public class TemplateContentPartDefinitionDriver : ContentPartDefinitionDisplayDriver
+    private readonly IStringLocalizer S;
+
+    public TemplateContentPartDefinitionDriver(IStringLocalizer<TemplateContentPartDefinitionDriver> localizer)
     {
-        private readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public TemplateContentPartDefinitionDriver(IStringLocalizer<TemplateContentPartDefinitionDriver> localizer)
+    public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition)
+    {
+        return Initialize<ContentSettingsViewModel>("TemplateSettings", model =>
         {
-            S = localizer;
-        }
+            model.ContentSettingsEntries.Add(
+                new ContentSettingsEntry
+                {
+                    Key = contentPartDefinition.Name,
+                    Description = S["Template for a {0} part in detail views", contentPartDefinition.DisplayName()]
+                });
 
-        public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition)
-        {
-            return Initialize<ContentSettingsViewModel>("TemplateSettings", model =>
-            {
-                model.ContentSettingsEntries.Add(
-                    new ContentSettingsEntry
-                    {
-                        Key = contentPartDefinition.Name,
-                        Description = S["Template for a {0} part in detail views", contentPartDefinition.DisplayName()]
-                    });
-
-                model.ContentSettingsEntries.Add(
-                    new ContentSettingsEntry
-                    {
-                        Key = $"{contentPartDefinition.Name}_Summary",
-                        Description = S["Template for a {0} part in summary views", contentPartDefinition.DisplayName()]
-                    });
-            }).Location("Shortcuts");
-        }
+            model.ContentSettingsEntries.Add(
+                new ContentSettingsEntry
+                {
+                    Key = $"{contentPartDefinition.Name}_Summary",
+                    Description = S["Template for a {0} part in summary views", contentPartDefinition.DisplayName()]
+                });
+        }).Location("Shortcuts");
     }
 }

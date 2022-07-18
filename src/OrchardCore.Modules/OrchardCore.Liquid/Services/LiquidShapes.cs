@@ -7,30 +7,29 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Liquid.ViewModels;
 
-namespace OrchardCore.Liquid.Services
+namespace OrchardCore.Liquid.Services;
+
+public class LiquidShapes : IShapeTableProvider
 {
-    public class LiquidShapes : IShapeTableProvider
+    private readonly HtmlEncoder _htmlEncoder;
+
+    public LiquidShapes(HtmlEncoder htmlEncoder)
     {
-        private readonly HtmlEncoder _htmlEncoder;
+        _htmlEncoder = htmlEncoder;
+    }
 
-        public LiquidShapes(HtmlEncoder htmlEncoder)
-        {
-            _htmlEncoder = htmlEncoder;
-        }
+    private async Task BuildViewModelAsync(ShapeDisplayContext shapeDisplayContext)
+    {
+        var model = shapeDisplayContext.Shape as LiquidPartViewModel;
+        var liquidTemplateManager = shapeDisplayContext.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
 
-        private async Task BuildViewModelAsync(ShapeDisplayContext shapeDisplayContext)
-        {
-            var model = shapeDisplayContext.Shape as LiquidPartViewModel;
-            var liquidTemplateManager = shapeDisplayContext.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
+        model.Html = await liquidTemplateManager.RenderStringAsync(model.LiquidPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext.Value,
+            new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+    }
 
-            model.Html = await liquidTemplateManager.RenderStringAsync(model.LiquidPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext.Value,
-                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
-        }
-
-        public void Discover(ShapeTableBuilder builder)
-        {
-            builder.Describe("LiquidPart").OnProcessing(BuildViewModelAsync);
-            builder.Describe("LiquidPart_Summary").OnProcessing(BuildViewModelAsync);
-        }
+    public void Discover(ShapeTableBuilder builder)
+    {
+        builder.Describe("LiquidPart").OnProcessing(BuildViewModelAsync);
+        builder.Describe("LiquidPart_Summary").OnProcessing(BuildViewModelAsync);
     }
 }

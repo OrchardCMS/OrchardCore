@@ -3,29 +3,28 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Deployment.Remote
+namespace OrchardCore.Deployment.Remote;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
+    public static readonly Permission ManageRemoteInstances = new Permission("ManageRemoteInstances", "Manage remote instances");
+    public static readonly Permission ManageRemoteClients = new Permission("ManageRemoteClients", "Manage remote clients");
+    public static readonly Permission Export = new Permission("ExportRemoteInstances", "Export to remote instances");
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        public static readonly Permission ManageRemoteInstances = new Permission("ManageRemoteInstances", "Manage remote instances");
-        public static readonly Permission ManageRemoteClients = new Permission("ManageRemoteClients", "Manage remote clients");
-        public static readonly Permission Export = new Permission("ExportRemoteInstances", "Export to remote instances");
+        return Task.FromResult(new[] { ManageRemoteInstances, ManageRemoteClients, Export }.AsEnumerable());
+    }
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return Task.FromResult(new[] { ManageRemoteInstances, ManageRemoteClients, Export }.AsEnumerable());
-        }
-
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
+            new PermissionStereotype
             {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[] { ManageRemoteInstances, ManageRemoteClients, Export }
-                }
-            };
-        }
+                Name = "Administrator",
+                Permissions = new[] { ManageRemoteInstances, ManageRemoteClients, Export }
+            }
+        };
     }
 }

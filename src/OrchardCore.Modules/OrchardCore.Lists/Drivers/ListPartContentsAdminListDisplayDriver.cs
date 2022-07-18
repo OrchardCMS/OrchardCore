@@ -6,37 +6,36 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.ViewModels;
 
-namespace OrchardCore.Lists.Drivers
+namespace OrchardCore.Lists.Drivers;
+
+public class ListPartContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
 {
-    public class ListPartContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
+    protected override void BuildPrefix(ContentOptionsViewModel model, string htmlFieldPrefix)
     {
-        protected override void BuildPrefix(ContentOptionsViewModel model, string htmlFieldPrefix)
-        {
-            Prefix = "ListPart";
-        }
+        Prefix = "ListPart";
+    }
 
-        public override IDisplayResult Edit(ContentOptionsViewModel model, IUpdateModel updater)
-        {
-            return Dynamic("ContentsAdminList__ListPartFilter").Location("Actions:20");
-        }
+    public override IDisplayResult Edit(ContentOptionsViewModel model, IUpdateModel updater)
+    {
+        return Dynamic("ContentsAdminList__ListPartFilter").Location("Actions:20");
+    }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
+    {
+        var viewModel = new ListPartContentsAdminFilterViewModel();
+        if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)))
         {
-            var viewModel = new ListPartContentsAdminFilterViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)))
+            if (viewModel.ShowListContentTypes)
             {
-                if (viewModel.ShowListContentTypes)
-                {
-                    model.RouteValues.TryAdd("ListPart.ShowListContentTypes", viewModel.ShowListContentTypes);
-                }
-
-                if (!string.IsNullOrEmpty(viewModel.ListContentItemId))
-                {
-                    model.RouteValues.TryAdd("ListPart.ListContentItemId", viewModel.ListContentItemId);
-                }
+                model.RouteValues.TryAdd("ListPart.ShowListContentTypes", viewModel.ShowListContentTypes);
             }
 
-            return Edit(model, updater);
+            if (!string.IsNullOrEmpty(viewModel.ListContentItemId))
+            {
+                model.RouteValues.TryAdd("ListPart.ListContentItemId", viewModel.ListContentItemId);
+            }
         }
+
+        return Edit(model, updater);
     }
 }

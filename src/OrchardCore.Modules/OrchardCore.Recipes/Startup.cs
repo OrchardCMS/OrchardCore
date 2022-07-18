@@ -12,49 +12,48 @@ using OrchardCore.Recipes.Controllers;
 using OrchardCore.Recipes.RecipeSteps;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Recipes
+namespace OrchardCore.Recipes;
+
+/// <summary>
+/// These services are registered on the tenant service collection
+/// </summary>
+public class Startup : StartupBase
 {
-    /// <summary>
-    /// These services are registered on the tenant service collection
-    /// </summary>
-    public class Startup : StartupBase
+    private readonly AdminOptions _adminOptions;
+
+    public Startup(IOptions<AdminOptions> adminOptions)
     {
-        private readonly AdminOptions _adminOptions;
+        _adminOptions = adminOptions.Value;
+    }
 
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRecipes();
 
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRecipes();
+        services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddRecipeExecutionStep<CommandStep>();
+        services.AddRecipeExecutionStep<RecipesStep>();
 
-            services.AddRecipeExecutionStep<CommandStep>();
-            services.AddRecipeExecutionStep<RecipesStep>();
+        services.AddDeploymentTargetHandler<RecipeDeploymentTargetHandler>();
+    }
 
-            services.AddDeploymentTargetHandler<RecipeDeploymentTargetHandler>();
-        }
+    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        var adminControllerName = typeof(AdminController).ControllerName();
 
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var adminControllerName = typeof(AdminController).ControllerName();
+        routes.MapAreaControllerRoute(
+            name: "Recipes",
+            areaName: "OrchardCore.Recipes",
+            pattern: _adminOptions.AdminUrlPrefix + "/Recipes",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
+        );
 
-            routes.MapAreaControllerRoute(
-                name: "Recipes",
-                areaName: "OrchardCore.Recipes",
-                pattern: _adminOptions.AdminUrlPrefix + "/Recipes",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "RecipesExecute",
-                areaName: "OrchardCore.Recipes",
-                pattern: _adminOptions.AdminUrlPrefix + "/Recipes/Execute",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Execute) }
-            );
-        }
+        routes.MapAreaControllerRoute(
+            name: "RecipesExecute",
+            areaName: "OrchardCore.Recipes",
+            pattern: _adminOptions.AdminUrlPrefix + "/Recipes/Execute",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Execute) }
+        );
     }
 }

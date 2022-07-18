@@ -9,23 +9,22 @@ using OrchardCore.Seo.Drivers;
 using OrchardCore.Seo.Models;
 using OrchardCore.SeoMeta.Settings;
 
-namespace OrchardCore.Seo
+namespace OrchardCore.Seo;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IDataMigration, Migrations>();
+        services.AddScoped<IDataMigration, Migrations>();
 
-            services.AddContentPart<SeoMetaPart>()
-                .UseDisplayDriver<SeoMetaPartDisplayDriver>()
-                .AddHandler<SeoMetaPartHandler>();
+        services.AddContentPart<SeoMetaPart>()
+            .UseDisplayDriver<SeoMetaPartDisplayDriver>()
+            .AddHandler<SeoMetaPartHandler>();
 
-            services.AddScoped<IContentDisplayDriver, SeoContentDriver>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, SeoMetaPartSettingsDisplayDriver>();
+        services.AddScoped<IContentDisplayDriver, SeoContentDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, SeoMetaPartSettingsDisplayDriver>();
 
-            // This must be last, and the module dependant on Contents so this runs after the part handlers.
-            services.AddScoped<IContentHandler, SeoMetaSettingsHandler>();
-        }
+        // This must be last, and the module dependant on Contents so this runs after the part handlers.
+        services.AddScoped<IContentHandler, SeoMetaSettingsHandler>();
     }
 }

@@ -30,141 +30,140 @@ using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Lucene
+namespace OrchardCore.Lucene;
+
+/// <summary>
+/// These services are registered on the tenant service collection
+/// </summary>
+public class Startup : StartupBase
 {
-    /// <summary>
-    /// These services are registered on the tenant service collection
-    /// </summary>
-    public class Startup : StartupBase
+    private readonly AdminOptions _adminOptions;
+
+    public Startup(IOptions<AdminOptions> adminOptions)
     {
-        private readonly AdminOptions _adminOptions;
-
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<SearchIndexViewModel>();
-                o.MemberAccessStrategy.Register<SearchFormViewModel>();
-                o.MemberAccessStrategy.Register<SearchResultsViewModel>();
-            });
-
-            services.AddSingleton<LuceneIndexingState>();
-            services.AddSingleton<LuceneIndexSettingsService>();
-            services.AddSingleton<LuceneIndexManager>();
-            services.AddSingleton<LuceneAnalyzerManager>();
-            services.AddScoped<LuceneIndexingService>();
-            services.AddScoped<IModularTenantEvents, LuceneIndexInitializerService>();
-            services.AddScoped<ISearchQueryService, SearchQueryService>();
-
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-
-            services.Configure<LuceneOptions>(o =>
-                o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
-                    new StandardAnalyzer(LuceneSettings.DefaultVersion))));
-
-            services.AddScoped<IDisplayDriver<ISite>, LuceneSettingsDisplayDriver>();
-            services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
-
-            services.AddScoped<IContentHandler, LuceneIndexingContentHandler>();
-            services.AddLuceneQueries();
-
-            // LuceneQuerySource is registered for both the Queries module and local usage
-            services.AddScoped<IQuerySource, LuceneQuerySource>();
-            services.AddScoped<LuceneQuerySource>();
-            services.AddRecipeExecutionStep<LuceneIndexStep>();
-
-            services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
-            services.AddShapeAttributes<SearchShapes>();
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "Lucene.Search",
-                areaName: "OrchardCore.Lucene",
-                pattern: "Search",
-                defaults: new { controller = "Search", action = "Search" }
-            );
-
-            var adminControllerName = typeof(AdminController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "Lucene.Index",
-                areaName: "OrchardCore.Lucene",
-                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Index",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Lucene.Delete",
-                areaName: "OrchardCore.Lucene",
-                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Delete/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Lucene.Query",
-                areaName: "OrchardCore.Lucene",
-                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Query",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Query) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Lucene.Rebuild",
-                areaName: "OrchardCore.Lucene",
-                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Rebuild/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Rebuild) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Lucene.Reset",
-                areaName: "OrchardCore.Lucene",
-                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Reset/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Reset) }
-            );
-        }
+        _adminOptions = adminOptions.Value;
     }
 
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        services.Configure<TemplateOptions>(o =>
         {
-            services.AddTransient<IDeploymentSource, LuceneIndexDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneIndexDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneIndexDeploymentStepDriver>();
+            o.MemberAccessStrategy.Register<SearchIndexViewModel>();
+            o.MemberAccessStrategy.Register<SearchFormViewModel>();
+            o.MemberAccessStrategy.Register<SearchResultsViewModel>();
+        });
 
-            services.AddTransient<IDeploymentSource, LuceneSettingsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneSettingsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneSettingsDeploymentStepDriver>();
-        }
+        services.AddSingleton<LuceneIndexingState>();
+        services.AddSingleton<LuceneIndexSettingsService>();
+        services.AddSingleton<LuceneIndexManager>();
+        services.AddSingleton<LuceneAnalyzerManager>();
+        services.AddScoped<LuceneIndexingService>();
+        services.AddScoped<IModularTenantEvents, LuceneIndexInitializerService>();
+        services.AddScoped<ISearchQueryService, SearchQueryService>();
+
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
+        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddScoped<IPermissionProvider, Permissions>();
+
+        services.Configure<LuceneOptions>(o =>
+            o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
+                new StandardAnalyzer(LuceneSettings.DefaultVersion))));
+
+        services.AddScoped<IDisplayDriver<ISite>, LuceneSettingsDisplayDriver>();
+        services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
+
+        services.AddScoped<IContentHandler, LuceneIndexingContentHandler>();
+        services.AddLuceneQueries();
+
+        // LuceneQuerySource is registered for both the Queries module and local usage
+        services.AddScoped<IQuerySource, LuceneQuerySource>();
+        services.AddScoped<LuceneQuerySource>();
+        services.AddRecipeExecutionStep<LuceneIndexStep>();
+
+        services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
+        services.AddShapeAttributes<SearchShapes>();
     }
 
-    [Feature("OrchardCore.Lucene.Worker")]
-    public class LuceneWorkerStartup : StartupBase
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
-        }
-    }
+        routes.MapAreaControllerRoute(
+            name: "Lucene.Search",
+            areaName: "OrchardCore.Lucene",
+            pattern: "Search",
+            defaults: new { controller = "Search", action = "Search" }
+        );
 
-    [Feature("OrchardCore.Lucene.ContentPicker")]
-    public class LuceneContentPickerStartup : StartupBase
+        var adminControllerName = typeof(AdminController).ControllerName();
+
+        routes.MapAreaControllerRoute(
+            name: "Lucene.Index",
+            areaName: "OrchardCore.Lucene",
+            pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Index",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "Lucene.Delete",
+            areaName: "OrchardCore.Lucene",
+            pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Delete/{id}",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "Lucene.Query",
+            areaName: "OrchardCore.Lucene",
+            pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Query",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Query) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "Lucene.Rebuild",
+            areaName: "OrchardCore.Lucene",
+            pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Rebuild/{id}",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Rebuild) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "Lucene.Reset",
+            areaName: "OrchardCore.Lucene",
+            pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Reset/{id}",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Reset) }
+        );
+    }
+}
+
+[RequireFeatures("OrchardCore.Deployment")]
+public class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IContentPickerResultProvider, LuceneContentPickerResultProvider>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldLuceneEditorSettingsDriver>();
-            services.AddShapeAttributes<LuceneContentPickerShapeProvider>();
-        }
+        services.AddTransient<IDeploymentSource, LuceneIndexDeploymentSource>();
+        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneIndexDeploymentStep>());
+        services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneIndexDeploymentStepDriver>();
+
+        services.AddTransient<IDeploymentSource, LuceneSettingsDeploymentSource>();
+        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneSettingsDeploymentStep>());
+        services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneSettingsDeploymentStepDriver>();
+    }
+}
+
+[Feature("OrchardCore.Lucene.Worker")]
+public class LuceneWorkerStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
+    }
+}
+
+[Feature("OrchardCore.Lucene.ContentPicker")]
+public class LuceneContentPickerStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IContentPickerResultProvider, LuceneContentPickerResultProvider>();
+        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldLuceneEditorSettingsDriver>();
+        services.AddShapeAttributes<LuceneContentPickerShapeProvider>();
     }
 }

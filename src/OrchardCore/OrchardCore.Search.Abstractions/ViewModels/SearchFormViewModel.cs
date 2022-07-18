@@ -1,15 +1,14 @@
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Search.Abstractions.ViewModels
+namespace OrchardCore.Search.Abstractions.ViewModels;
+
+public class SearchFormViewModel : ShapeViewModel
 {
-    public class SearchFormViewModel : ShapeViewModel
+    public SearchFormViewModel(string shapeType) : base(shapeType)
     {
-        public SearchFormViewModel(string shapeType) : base(shapeType)
-        {
-        }
-
-        public string Terms { get; set; }
-
-        public string Index { get; set; }
     }
+
+    public string Terms { get; set; }
+
+    public string Index { get; set; }
 }

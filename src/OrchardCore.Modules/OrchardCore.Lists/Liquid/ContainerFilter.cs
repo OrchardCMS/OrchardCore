@@ -6,39 +6,38 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
 using OrchardCore.Lists.Models;
 
-namespace OrchardCore.Lists.Liquid
+namespace OrchardCore.Lists.Liquid;
+
+public class ContainerFilter : ILiquidFilter
 {
-    public class ContainerFilter : ILiquidFilter
+    private readonly IContentManager _contentManager;
+
+    public ContainerFilter(IContentManager contentManager)
     {
-        private readonly IContentManager _contentManager;
+        _contentManager = contentManager;
+    }
 
-        public ContainerFilter(IContentManager contentManager)
+    public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+    {
+        var contentItem = input.ToObjectValue() as ContentItem;
+
+        if (contentItem == null)
         {
-            _contentManager = contentManager;
+            throw new ArgumentException("A Content Item was expected");
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+        var containerId = contentItem.As<ContainedPart>()?.ListContentItemId;
+
+        if (containerId != null)
         {
-            var contentItem = input.ToObjectValue() as ContentItem;
+            var container = await _contentManager.GetAsync(containerId);
 
-            if (contentItem == null)
+            if (container != null)
             {
-                throw new ArgumentException("A Content Item was expected");
+                return new ObjectValue(container);
             }
-
-            var containerId = contentItem.As<ContainedPart>()?.ListContentItemId;
-
-            if (containerId != null)
-            {
-                var container = await _contentManager.GetAsync(containerId);
-
-                if (container != null)
-                {
-                    return new ObjectValue(container);
-                }
-            }
-
-            return new ObjectValue(contentItem);
         }
+
+        return new ObjectValue(contentItem);
     }
 }

@@ -5,95 +5,94 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OrchardCore.Lucene.Model;
 
-namespace OrchardCore.Lucene.Controllers
+namespace OrchardCore.Lucene.Controllers;
+
+[Route("api/lucene")]
+[ApiController]
+[Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
+public class ApiController : Controller
 {
-    [Route("api/lucene")]
-    [ApiController]
-    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
-    public class ApiController : Controller
+    private readonly IAuthorizationService _authorizationService;
+    private readonly LuceneQuerySource _luceneQuerySource;
+
+    public ApiController(
+        IAuthorizationService authorizationService,
+        LuceneQuerySource luceneQuerySource)
     {
-        private readonly IAuthorizationService _authorizationService;
-        private readonly LuceneQuerySource _luceneQuerySource;
+        _authorizationService = authorizationService;
+        _luceneQuerySource = luceneQuerySource;
+    }
 
-        public ApiController(
-            IAuthorizationService authorizationService,
-            LuceneQuerySource luceneQuerySource)
+    [HttpGet]
+    [Route("content")]
+    public async Task<IActionResult> Content([FromQuery] LuceneQueryModel queryModel)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
         {
-            _authorizationService = authorizationService;
-            _luceneQuerySource = luceneQuerySource;
+            return this.ChallengeOrForbid("Api");
         }
 
-        [HttpGet]
-        [Route("content")]
-        public async Task<IActionResult> Content([FromQuery] LuceneQueryModel queryModel)
+        var result = await LuceneQueryApiAsync(queryModel, returnContentItems: true);
+
+        return new ObjectResult(result);
+    }
+
+    [HttpPost]
+    [Route("content")]
+    public async Task<IActionResult> ContentPost(LuceneQueryModel queryModel)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
-            {
-                return this.ChallengeOrForbid("Api");
-            }
-
-            var result = await LuceneQueryApiAsync(queryModel, returnContentItems: true);
-
-            return new ObjectResult(result);
+            return this.ChallengeOrForbid();
         }
 
-        [HttpPost]
-        [Route("content")]
-        public async Task<IActionResult> ContentPost(LuceneQueryModel queryModel)
+        var result = await LuceneQueryApiAsync(queryModel, returnContentItems: true);
+
+        return new ObjectResult(result);
+    }
+
+    [HttpGet]
+    [Route("documents")]
+    public async Task<IActionResult> Documents([FromQuery] LuceneQueryModel queryModel)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
-            {
-                return this.ChallengeOrForbid();
-            }
-
-            var result = await LuceneQueryApiAsync(queryModel, returnContentItems: true);
-
-            return new ObjectResult(result);
+            return this.ChallengeOrForbid();
         }
 
-        [HttpGet]
-        [Route("documents")]
-        public async Task<IActionResult> Documents([FromQuery] LuceneQueryModel queryModel)
+        var result = await LuceneQueryApiAsync(queryModel);
+
+        return new ObjectResult(result);
+    }
+
+    [HttpPost]
+    [Route("documents")]
+    public async Task<IActionResult> DocumentsPost(LuceneQueryModel queryModel)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
-            {
-                return this.ChallengeOrForbid();
-            }
-
-            var result = await LuceneQueryApiAsync(queryModel);
-
-            return new ObjectResult(result);
+            return this.ChallengeOrForbid("Api");
         }
 
-        [HttpPost]
-        [Route("documents")]
-        public async Task<IActionResult> DocumentsPost(LuceneQueryModel queryModel)
+        var result = await LuceneQueryApiAsync(queryModel);
+
+        return new ObjectResult(result);
+    }
+
+    private Task<Queries.IQueryResults> LuceneQueryApiAsync(LuceneQueryModel queryModel, bool returnContentItems = false)
+    {
+        var luceneQuery = new LuceneQuery
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
-            {
-                return this.ChallengeOrForbid("Api");
-            }
+            Index = queryModel.IndexName,
+            Template = queryModel.Query,
+            ReturnContentItems = returnContentItems
+        };
 
-            var result = await LuceneQueryApiAsync(queryModel);
+        var queryParameters = queryModel.Parameters != null ?
+            JsonConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
+            : new Dictionary<string, object>();
 
-            return new ObjectResult(result);
-        }
-
-        private Task<Queries.IQueryResults> LuceneQueryApiAsync(LuceneQueryModel queryModel, bool returnContentItems = false)
-        {
-            var luceneQuery = new LuceneQuery
-            {
-                Index = queryModel.IndexName,
-                Template = queryModel.Query,
-                ReturnContentItems = returnContentItems
-            };
-
-            var queryParameters = queryModel.Parameters != null ?
-                JsonConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
-                : new Dictionary<string, object>();
-
-            var result = _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
-            return result;
-        }
+        var result = _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
+        return result;
     }
 }

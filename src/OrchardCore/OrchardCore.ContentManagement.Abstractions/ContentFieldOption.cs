@@ -1,11 +1,10 @@
 using System;
 
-namespace OrchardCore.ContentManagement
+namespace OrchardCore.ContentManagement;
+
+public class ContentFieldOption : ContentFieldOptionBase
 {
-    public class ContentFieldOption : ContentFieldOptionBase
+    public ContentFieldOption(Type contentFieldType) : base(contentFieldType)
     {
-        public ContentFieldOption(Type contentFieldType) : base(contentFieldType)
-        {
-        }
     }
 }

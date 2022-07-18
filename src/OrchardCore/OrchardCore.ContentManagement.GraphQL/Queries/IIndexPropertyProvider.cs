@@ -1,8 +1,7 @@
-namespace OrchardCore.ContentManagement.GraphQL.Queries
+namespace OrchardCore.ContentManagement.GraphQL.Queries;
+
+public interface IIndexPropertyProvider
 {
-    public interface IIndexPropertyProvider
-    {
-        public string IndexName { get; }
-        public bool TryGetValue(string propertyName, out string indexPropertyName);
-    }
+    public string IndexName { get; }
+    public bool TryGetValue(string propertyName, out string indexPropertyName);
 }

@@ -1,9 +1,8 @@
-namespace OrchardCore.Workflows.Models
+namespace OrchardCore.Workflows.Models;
+
+public class WorkflowDeletedContext : WorkflowContext
 {
-    public class WorkflowDeletedContext : WorkflowContext
+    public WorkflowDeletedContext(Workflow workflow) : base(workflow)
     {
-        public WorkflowDeletedContext(Workflow workflow) : base(workflow)
-        {
-        }
     }
 }

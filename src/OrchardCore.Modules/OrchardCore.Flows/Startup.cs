@@ -20,54 +20,53 @@ using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 
-namespace OrchardCore.Flows
+namespace OrchardCore.Flows;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    private readonly AdminOptions _adminOptions;
+
+    public Startup(IOptions<AdminOptions> adminOptions)
     {
-        private readonly AdminOptions _adminOptions;
+        _adminOptions = adminOptions.Value;
+    }
 
-        public Startup(IOptions<AdminOptions> adminOptions)
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<TemplateOptions>(o =>
         {
-            _adminOptions = adminOptions.Value;
-        }
+            o.MemberAccessStrategy.Register<BagPartViewModel>();
+            o.MemberAccessStrategy.Register<FlowPartViewModel>();
+            o.MemberAccessStrategy.Register<FlowMetadata>();
+            o.MemberAccessStrategy.Register<FlowPart>();
+        });
 
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<BagPartViewModel>();
-                o.MemberAccessStrategy.Register<FlowPartViewModel>();
-                o.MemberAccessStrategy.Register<FlowMetadata>();
-                o.MemberAccessStrategy.Register<FlowPart>();
-            });
+        // Flow Part
+        services.AddContentPart<FlowPart>()
+            .UseDisplayDriver<FlowPartDisplayDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, FlowPartSettingsDisplayDriver>();
 
-            // Flow Part
-            services.AddContentPart<FlowPart>()
-                .UseDisplayDriver<FlowPartDisplayDriver>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, FlowPartSettingsDisplayDriver>();
+        services.AddScoped<IContentDisplayDriver, FlowMetadataDisplayDriver>();
 
-            services.AddScoped<IContentDisplayDriver, FlowMetadataDisplayDriver>();
+        // Bag Part
+        services.AddContentPart<BagPart>()
+            .UseDisplayDriver<BagPartDisplayDriver>()
+            .AddHandler<BagPartHandler>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, BagPartSettingsDisplayDriver>();
+        services.AddScoped<IContentPartIndexHandler, BagPartIndexHandler>();
 
-            // Bag Part
-            services.AddContentPart<BagPart>()
-                .UseDisplayDriver<BagPartDisplayDriver>()
-                .AddHandler<BagPartHandler>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, BagPartSettingsDisplayDriver>();
-            services.AddScoped<IContentPartIndexHandler, BagPartIndexHandler>();
+        services.AddContentPart<FlowMetadata>();
 
-            services.AddContentPart<FlowMetadata>();
+        services.AddScoped<IDataMigration, Migrations>();
+    }
 
-            services.AddScoped<IDataMigration, Migrations>();
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "Flows.BuildEditor",
-                areaName: "OrchardCore.Flows",
-                pattern: _adminOptions.AdminUrlPrefix + "/Flows/BuildEditor",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.BuildEditor) }
-            );
-        }
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.MapAreaControllerRoute(
+            name: "Flows.BuildEditor",
+            areaName: "OrchardCore.Flows",
+            pattern: _adminOptions.AdminUrlPrefix + "/Flows/BuildEditor",
+            defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.BuildEditor) }
+        );
     }
 }

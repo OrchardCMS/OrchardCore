@@ -2,52 +2,51 @@ using System;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 
-namespace OrchardCore.Localization.PortableObject
+namespace OrchardCore.Localization.PortableObject;
+
+/// <summary>
+/// Represents an <see cref="IHtmlLocalizerFactory"/> for portable objects.
+/// </summary>
+public class PortableObjectHtmlLocalizerFactory : IHtmlLocalizerFactory
 {
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
+
     /// <summary>
-    /// Represents an <see cref="IHtmlLocalizerFactory"/> for portable objects.
+    /// Creates a new instance of <see cref="PortableObjectHtmlLocalizerFactory"/>.
     /// </summary>
-    public class PortableObjectHtmlLocalizerFactory : IHtmlLocalizerFactory
+    /// <param name="stringLocalizerFactory">The <see cref="IStringLocalizerFactory"/>.</param>
+    public PortableObjectHtmlLocalizerFactory(IStringLocalizerFactory stringLocalizerFactory)
     {
-        private readonly IStringLocalizerFactory _stringLocalizerFactory;
+        _stringLocalizerFactory = stringLocalizerFactory;
+    }
 
-        /// <summary>
-        /// Creates a new instance of <see cref="PortableObjectHtmlLocalizerFactory"/>.
-        /// </summary>
-        /// <param name="stringLocalizerFactory">The <see cref="IStringLocalizerFactory"/>.</param>
-        public PortableObjectHtmlLocalizerFactory(IStringLocalizerFactory stringLocalizerFactory)
+    /// <inheritdocs />
+    public IHtmlLocalizer Create(Type resourceSource)
+    {
+        return new PortableObjectHtmlLocalizer(_stringLocalizerFactory.Create(resourceSource));
+    }
+
+    /// <inheritdocs />
+    public IHtmlLocalizer Create(string baseName, string location)
+    {
+        var index = 0;
+        if (baseName.StartsWith(location, StringComparison.OrdinalIgnoreCase))
         {
-            _stringLocalizerFactory = stringLocalizerFactory;
+            index = location.Length;
         }
 
-        /// <inheritdocs />
-        public IHtmlLocalizer Create(Type resourceSource)
+        if (baseName.Length > index && baseName[index] == '.')
         {
-            return new PortableObjectHtmlLocalizer(_stringLocalizerFactory.Create(resourceSource));
+            index += 1;
         }
 
-        /// <inheritdocs />
-        public IHtmlLocalizer Create(string baseName, string location)
+        if (baseName.Length > index && baseName.IndexOf("Areas.", index, StringComparison.Ordinal) == index)
         {
-            var index = 0;
-            if (baseName.StartsWith(location, StringComparison.OrdinalIgnoreCase))
-            {
-                index = location.Length;
-            }
-
-            if (baseName.Length > index && baseName[index] == '.')
-            {
-                index += 1;
-            }
-
-            if (baseName.Length > index && baseName.IndexOf("Areas.", index, StringComparison.Ordinal) == index)
-            {
-                index += "Areas.".Length;
-            }
-
-            var relativeName = baseName.Substring(index);
-
-            return new PortableObjectHtmlLocalizer(_stringLocalizerFactory.Create(baseName, location));
+            index += "Areas.".Length;
         }
+
+        var relativeName = baseName.Substring(index);
+
+        return new PortableObjectHtmlLocalizer(_stringLocalizerFactory.Create(baseName, location));
     }
 }

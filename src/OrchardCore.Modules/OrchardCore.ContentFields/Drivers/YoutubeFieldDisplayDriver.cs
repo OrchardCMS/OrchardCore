@@ -12,89 +12,88 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.ContentFields.Drivers
+namespace OrchardCore.ContentFields.Drivers;
+
+public class YoutubeFieldDisplayDriver : ContentFieldDisplayDriver<YoutubeField>
 {
-    public class YoutubeFieldDisplayDriver : ContentFieldDisplayDriver<YoutubeField>
+    private readonly IStringLocalizer S;
+
+    public YoutubeFieldDisplayDriver(IStringLocalizer<YoutubeFieldDisplayDriver> localizer)
     {
-        private readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public YoutubeFieldDisplayDriver(IStringLocalizer<YoutubeFieldDisplayDriver> localizer)
+    public override IDisplayResult Display(YoutubeField field, BuildFieldDisplayContext context)
+    {
+        return Initialize<YoutubeFieldDisplayViewModel>(GetDisplayShapeType(context), model =>
         {
-            S = localizer;
-        }
+            model.Field = field;
+            model.Part = context.ContentPart;
+            model.PartFieldDefinition = context.PartFieldDefinition;
+        })
+        .Location("Detail", "Content")
+        .Location("Summary", "Content");
+    }
 
-        public override IDisplayResult Display(YoutubeField field, BuildFieldDisplayContext context)
+    public override IDisplayResult Edit(YoutubeField field, BuildFieldEditorContext context)
+    {
+        return Initialize<EditYoutubeFieldViewModel>(GetEditorShapeType(context), model =>
+       {
+           model.RawAddress = field.RawAddress;
+           model.EmbeddedAddress = field.EmbeddedAddress;
+           model.Field = field;
+           model.Part = context.ContentPart;
+           model.PartFieldDefinition = context.PartFieldDefinition;
+       });
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(YoutubeField field, IUpdateModel updater, UpdateFieldEditorContext context)
+    {
+        EditYoutubeFieldViewModel model = new EditYoutubeFieldViewModel();
+
+        if (await updater.TryUpdateModelAsync(model, Prefix))
         {
-            return Initialize<YoutubeFieldDisplayViewModel>(GetDisplayShapeType(context), model =>
+            var settings = context.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
+            if (settings.Required && String.IsNullOrWhiteSpace(model.RawAddress))
             {
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
-        }
-
-        public override IDisplayResult Edit(YoutubeField field, BuildFieldEditorContext context)
-        {
-            return Initialize<EditYoutubeFieldViewModel>(GetEditorShapeType(context), model =>
-           {
-               model.RawAddress = field.RawAddress;
-               model.EmbeddedAddress = field.EmbeddedAddress;
-               model.Field = field;
-               model.Part = context.ContentPart;
-               model.PartFieldDefinition = context.PartFieldDefinition;
-           });
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(YoutubeField field, IUpdateModel updater, UpdateFieldEditorContext context)
-        {
-            EditYoutubeFieldViewModel model = new EditYoutubeFieldViewModel();
-
-            if (await updater.TryUpdateModelAsync(model, Prefix))
+                updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["A value is required for '{0}'.", context.PartFieldDefinition.DisplayName()]);
+            }
+            else
             {
-                var settings = context.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
-                if (settings.Required && String.IsNullOrWhiteSpace(model.RawAddress))
+                if (model.RawAddress != null)
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["A value is required for '{0}'.", context.PartFieldDefinition.DisplayName()]);
-                }
-                else
-                {
-                    if (model.RawAddress != null)
+                    var uri = new Uri(model.RawAddress);
+
+                    // if it is a url with QueryString
+                    if (!String.IsNullOrWhiteSpace(uri.Query))
                     {
-                        var uri = new Uri(model.RawAddress);
-
-                        // if it is a url with QueryString
-                        if (!String.IsNullOrWhiteSpace(uri.Query))
+                        var query = QueryHelpers.ParseQuery(uri.Query);
+                        if (query.ContainsKey("v"))
                         {
-                            var query = QueryHelpers.ParseQuery(uri.Query);
-                            if (query.ContainsKey("v"))
-                            {
-                                model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{query["v"]}";
-                            }
-                            else
-                            {
-                                updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["The format of the url is invalid"]);
-                            }
+                            model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{query["v"]}";
                         }
                         else
                         {
-                            var path = uri.AbsolutePath.Split('?')[0];
-                            model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{path}";
+                            updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["The format of the url is invalid"]);
                         }
-
-                        field.RawAddress = model.RawAddress;
-                        field.EmbeddedAddress = model.EmbeddedAddress;
                     }
                     else
                     {
-                        field.RawAddress = null;
-                        field.EmbeddedAddress = null;
+                        var path = uri.AbsolutePath.Split('?')[0];
+                        model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{path}";
                     }
+
+                    field.RawAddress = model.RawAddress;
+                    field.EmbeddedAddress = model.EmbeddedAddress;
+                }
+                else
+                {
+                    field.RawAddress = null;
+                    field.EmbeddedAddress = null;
                 }
             }
-
-            return Edit(field, context);
         }
+
+        return Edit(field, context);
     }
 }

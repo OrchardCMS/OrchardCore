@@ -1,13 +1,12 @@
 using Newtonsoft.Json.Linq;
 using OrchardCore.Data.Documents;
 
-namespace OrchardCore.Documents
+namespace OrchardCore.Documents;
+
+/// <summary>
+/// A <see cref="Document"/> being an <see cref="IDocumentEntity"/>.
+/// </summary>
+public class DocumentEntity : Document, IDocumentEntity
 {
-    /// <summary>
-    /// A <see cref="Document"/> being an <see cref="IDocumentEntity"/>.
-    /// </summary>
-    public class DocumentEntity : Document, IDocumentEntity
-    {
-        public JObject Properties { get; set; } = new JObject();
-    }
+    public JObject Properties { get; set; } = new JObject();
 }

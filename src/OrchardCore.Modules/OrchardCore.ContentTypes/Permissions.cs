@@ -2,35 +2,34 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.ContentTypes
+namespace OrchardCore.ContentTypes;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
+    public static readonly Permission ViewContentTypes = new Permission("ViewContentTypes", "View content types.");
+    public static readonly Permission EditContentTypes = new Permission("EditContentTypes", "Edit content types.", isSecurityCritical: true);
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        public static readonly Permission ViewContentTypes = new Permission("ViewContentTypes", "View content types.");
-        public static readonly Permission EditContentTypes = new Permission("EditContentTypes", "Edit content types.", isSecurityCritical: true);
+        return Task.FromResult(GetPermissions());
+    }
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(GetPermissions());
-        }
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[] {
+            new PermissionStereotype {
+                Name = "Administrator",
+                Permissions = GetPermissions()
+            }
+        };
+    }
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    private IEnumerable<Permission> GetPermissions()
+    {
+        return new[]
         {
-            return new[] {
-                new PermissionStereotype {
-                    Name = "Administrator",
-                    Permissions = GetPermissions()
-                }
-            };
-        }
-
-        private IEnumerable<Permission> GetPermissions()
-        {
-            return new[]
-            {
-                ViewContentTypes,
-                EditContentTypes
-            };
-        }
+            ViewContentTypes,
+            EditContentTypes
+        };
     }
 }

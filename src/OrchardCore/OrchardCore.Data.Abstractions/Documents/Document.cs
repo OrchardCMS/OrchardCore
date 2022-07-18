@@ -1,10 +1,9 @@
-namespace OrchardCore.Data.Documents
+namespace OrchardCore.Data.Documents;
+
+public class Document : IDocument
 {
-    public class Document : IDocument
-    {
-        /// <summary>
-        /// The <see cref="IDocument.Identifier"/>.
-        /// </summary>
-        public string Identifier { get; set; }
-    }
+    /// <summary>
+    /// The <see cref="IDocument.Identifier"/>.
+    /// </summary>
+    public string Identifier { get; set; }
 }

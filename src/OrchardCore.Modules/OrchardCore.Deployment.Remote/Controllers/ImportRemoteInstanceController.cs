@@ -12,75 +12,74 @@ using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.Deployment.Services;
 
-namespace OrchardCore.Deployment.Remote.Controllers
+namespace OrchardCore.Deployment.Remote.Controllers;
+
+public class ImportRemoteInstanceController : Controller
 {
-    public class ImportRemoteInstanceController : Controller
+    private readonly RemoteClientService _remoteClientService;
+    private readonly IDeploymentManager _deploymentManager;
+    private readonly IDataProtector _dataProtector;
+
+    public ImportRemoteInstanceController(
+        IDataProtectionProvider dataProtectionProvider,
+        RemoteClientService remoteClientService,
+        IDeploymentManager deploymentManager,
+        IHtmlLocalizer<ExportRemoteInstanceController> localizer)
     {
-        private readonly RemoteClientService _remoteClientService;
-        private readonly IDeploymentManager _deploymentManager;
-        private readonly IDataProtector _dataProtector;
+        _deploymentManager = deploymentManager;
+        _remoteClientService = remoteClientService;
+        _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
+    }
 
-        public ImportRemoteInstanceController(
-            IDataProtectionProvider dataProtectionProvider,
-            RemoteClientService remoteClientService,
-            IDeploymentManager deploymentManager,
-            IHtmlLocalizer<ExportRemoteInstanceController> localizer)
+    /// <remarks>
+    /// We ignore the AFT as the service is called from external applications (they can't have valid ones) and
+    /// we use a private API key to secure its calls.
+    /// </remarks>
+    [HttpPost]
+    [IgnoreAntiforgeryToken]
+    public async Task<IActionResult> Import(ImportViewModel model)
+    {
+        var remoteClientList = await _remoteClientService.GetRemoteClientListAsync();
+
+        var remoteClient = remoteClientList.RemoteClients.FirstOrDefault(x => x.ClientName == model.ClientName);
+
+        var apiKey = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey));
+
+        if (remoteClient == null || model.ApiKey != apiKey || model.ClientName != remoteClient.ClientName)
         {
-            _deploymentManager = deploymentManager;
-            _remoteClientService = remoteClientService;
-            _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
+            return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized");
         }
 
-        /// <remarks>
-        /// We ignore the AFT as the service is called from external applications (they can't have valid ones) and
-        /// we use a private API key to secure its calls.
-        /// </remarks>
-        [HttpPost]
-        [IgnoreAntiforgeryToken]
-        public async Task<IActionResult> Import(ImportViewModel model)
+        // Create a temporary filename to save the archive
+        var tempArchiveName = Path.GetTempFileName() + ".zip";
+
+        // Create a temporary folder to extract the archive to
+        var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+        try
         {
-            var remoteClientList = await _remoteClientService.GetRemoteClientListAsync();
-
-            var remoteClient = remoteClientList.RemoteClients.FirstOrDefault(x => x.ClientName == model.ClientName);
-
-            var apiKey = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey));
-
-            if (remoteClient == null || model.ApiKey != apiKey || model.ClientName != remoteClient.ClientName)
+            using (var fs = System.IO.File.Create(tempArchiveName))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized");
+                await model.Content.CopyToAsync(fs);
             }
 
-            // Create a temporary filename to save the archive
-            var tempArchiveName = Path.GetTempFileName() + ".zip";
+            ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
 
-            // Create a temporary folder to extract the archive to
-            var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-
-            try
-            {
-                using (var fs = System.IO.File.Create(tempArchiveName))
-                {
-                    await model.Content.CopyToAsync(fs);
-                }
-
-                ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
-
-                await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
-            }
-            finally
-            {
-                if (System.IO.File.Exists(tempArchiveName))
-                {
-                    System.IO.File.Delete(tempArchiveName);
-                }
-
-                if (Directory.Exists(tempArchiveFolder))
-                {
-                    Directory.Delete(tempArchiveFolder, true);
-                }
-            }
-
-            return Ok();
+            await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
         }
+        finally
+        {
+            if (System.IO.File.Exists(tempArchiveName))
+            {
+                System.IO.File.Delete(tempArchiveName);
+            }
+
+            if (Directory.Exists(tempArchiveFolder))
+            {
+                Directory.Delete(tempArchiveFolder, true);
+            }
+        }
+
+        return Ok();
     }
 }

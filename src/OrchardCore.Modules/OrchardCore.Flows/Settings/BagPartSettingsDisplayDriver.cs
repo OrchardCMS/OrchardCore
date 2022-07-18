@@ -9,57 +9,56 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
 
-namespace OrchardCore.Flows.Settings
+namespace OrchardCore.Flows.Settings;
+
+public class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<BagPart>
 {
-    public class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<BagPart>
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IStringLocalizer S;
+
+    public BagPartSettingsDisplayDriver(
+        IContentDefinitionManager contentDefinitionManager,
+        IStringLocalizer<BagPartSettingsDisplayDriver> localizer)
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IStringLocalizer S;
+        _contentDefinitionManager = contentDefinitionManager;
+        S = localizer;
+    }
 
-        public BagPartSettingsDisplayDriver(
-            IContentDefinitionManager contentDefinitionManager,
-            IStringLocalizer<BagPartSettingsDisplayDriver> localizer)
+    public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+    {
+        return Initialize<BagPartSettingsViewModel>("BagPartSettings_Edit", model =>
         {
-            _contentDefinitionManager = contentDefinitionManager;
-            S = localizer;
-        }
+            model.BagPartSettings = contentTypePartDefinition.GetSettings<BagPartSettings>();
+            model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
+            model.DisplayType = model.BagPartSettings.DisplayType;
+            model.ContentTypes = new NameValueCollection();
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
-        {
-            return Initialize<BagPartSettingsViewModel>("BagPartSettings_Edit", model =>
+            foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
             {
-                model.BagPartSettings = contentTypePartDefinition.GetSettings<BagPartSettings>();
-                model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
-                model.DisplayType = model.BagPartSettings.DisplayType;
-                model.ContentTypes = new NameValueCollection();
-
-                foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
-                {
-                    model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
-                }
-            }).Location("Content");
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
-        {
-            var model = new BagPartSettingsViewModel();
-
-            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.DisplayType);
-
-            if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
-            {
-                context.Updater.ModelState.AddModelError(nameof(model.ContainedContentTypes), S["At least one content type must be selected."]);
+                model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
             }
-            else
-            {
-                context.Builder.WithSettings(new BagPartSettings
-                {
-                    ContainedContentTypes = model.ContainedContentTypes,
-                    DisplayType = model.DisplayType
-                });
-            }
+        }).Location("Content");
+    }
 
-            return Edit(contentTypePartDefinition, context.Updater);
+    public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
+    {
+        var model = new BagPartSettingsViewModel();
+
+        await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.DisplayType);
+
+        if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
+        {
+            context.Updater.ModelState.AddModelError(nameof(model.ContainedContentTypes), S["At least one content type must be selected."]);
         }
+        else
+        {
+            context.Builder.WithSettings(new BagPartSettings
+            {
+                ContainedContentTypes = model.ContainedContentTypes,
+                DisplayType = model.DisplayType
+            });
+        }
+
+        return Edit(contentTypePartDefinition, context.Updater);
     }
 }

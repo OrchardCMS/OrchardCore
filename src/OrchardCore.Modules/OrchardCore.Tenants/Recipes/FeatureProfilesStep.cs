@@ -6,36 +6,35 @@ using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Tenants.Services;
 
-namespace OrchardCore.Tenants.Recipes
-{
-    /// <summary>
-    /// This recipe step creates a set of feature profiles.
-    /// </summary>
-    public class FeatureProfilesStep : IRecipeStepHandler
-    {
-        private readonly FeatureProfilesManager _featureProfilesManager;
+namespace OrchardCore.Tenants.Recipes;
 
-        public FeatureProfilesStep(FeatureProfilesManager featureProfilesManager)
+/// <summary>
+/// This recipe step creates a set of feature profiles.
+/// </summary>
+public class FeatureProfilesStep : IRecipeStepHandler
+{
+    private readonly FeatureProfilesManager _featureProfilesManager;
+
+    public FeatureProfilesStep(FeatureProfilesManager featureProfilesManager)
+    {
+        _featureProfilesManager = featureProfilesManager;
+    }
+
+    public async Task ExecuteAsync(RecipeExecutionContext context)
+    {
+        if (!String.Equals(context.Name, "FeatureProfiles", StringComparison.OrdinalIgnoreCase))
         {
-            _featureProfilesManager = featureProfilesManager;
+            return;
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        if (context.Step.Property("FeatureProfiles")?.Value is JObject featureProfiles)
         {
-            if (!String.Equals(context.Name, "FeatureProfiles", StringComparison.OrdinalIgnoreCase))
+            foreach (var property in featureProfiles.Properties())
             {
-                return;
-            }
+                var name = property.Name;
+                var value = property.Value.ToObject<FeatureProfile>();
 
-            if (context.Step.Property("FeatureProfiles")?.Value is JObject featureProfiles)
-            {
-                foreach (var property in featureProfiles.Properties())
-                {
-                    var name = property.Name;
-                    var value = property.Value.ToObject<FeatureProfile>();
-
-                    await _featureProfilesManager.UpdateFeatureProfileAsync(name, value);
-                }
+                await _featureProfilesManager.UpdateFeatureProfileAsync(name, value);
             }
         }
     }

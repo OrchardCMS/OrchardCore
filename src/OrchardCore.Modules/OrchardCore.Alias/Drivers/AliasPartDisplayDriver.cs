@@ -10,47 +10,46 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using YesSql;
 
-namespace OrchardCore.Alias.Drivers
+namespace OrchardCore.Alias.Drivers;
+
+public class AliasPartDisplayDriver : ContentPartDisplayDriver<AliasPart>
 {
-    public class AliasPartDisplayDriver : ContentPartDisplayDriver<AliasPart>
+
+    private readonly ISession _session;
+    private readonly IStringLocalizer S;
+
+    public AliasPartDisplayDriver(
+        ISession session,
+        IStringLocalizer<AliasPartDisplayDriver> localizer
+    )
     {
-
-        private readonly ISession _session;
-        private readonly IStringLocalizer S;
-
-        public AliasPartDisplayDriver(
-            ISession session,
-            IStringLocalizer<AliasPartDisplayDriver> localizer
-        )
-        {
-            _session = session;
-            S = localizer;
-        }
-
-        public override IDisplayResult Edit(AliasPart aliasPart, BuildPartEditorContext context)
-        {
-            return Initialize<AliasPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, aliasPart, context.TypePartDefinition.GetSettings<AliasPartSettings>()));
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(AliasPart model, IUpdateModel updater, UpdatePartEditorContext context)
-        {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Alias);
-
-            await foreach (var item in model.ValidateAsync(S, _session))
-            {
-                updater.ModelState.BindValidationResult(Prefix, item);
-            }
-
-            return Edit(model, context);
-        }
-
-        private void BuildViewModel(AliasPartViewModel model, AliasPart part, AliasPartSettings settings)
-        {
-            model.Alias = part.Alias;
-            model.AliasPart = part;
-            model.ContentItem = part.ContentItem;
-            model.Settings = settings;
-        }
-
+        _session = session;
+        S = localizer;
     }
+
+    public override IDisplayResult Edit(AliasPart aliasPart, BuildPartEditorContext context)
+    {
+        return Initialize<AliasPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, aliasPart, context.TypePartDefinition.GetSettings<AliasPartSettings>()));
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(AliasPart model, IUpdateModel updater, UpdatePartEditorContext context)
+    {
+        await updater.TryUpdateModelAsync(model, Prefix, t => t.Alias);
+
+        await foreach (var item in model.ValidateAsync(S, _session))
+        {
+            updater.ModelState.BindValidationResult(Prefix, item);
+        }
+
+        return Edit(model, context);
+    }
+
+    private void BuildViewModel(AliasPartViewModel model, AliasPart part, AliasPartSettings settings)
+    {
+        model.Alias = part.Alias;
+        model.AliasPart = part;
+        model.ContentItem = part.ContentItem;
+        model.Settings = settings;
+    }
+
 }

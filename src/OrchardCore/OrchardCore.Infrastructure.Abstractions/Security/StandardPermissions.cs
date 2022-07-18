@@ -1,9 +1,8 @@
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Security
+namespace OrchardCore.Security;
+
+public class StandardPermissions
 {
-    public class StandardPermissions
-    {
-        public static readonly Permission SiteOwner = new Permission("SiteOwner", "Site Owners Permission", isSecurityCritical: true);
-    }
+    public static readonly Permission SiteOwner = new Permission("SiteOwner", "Site Owners Permission", isSecurityCritical: true);
 }
