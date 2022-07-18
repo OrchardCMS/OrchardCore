@@ -64,13 +64,18 @@ namespace OrchardCore.Contents.Security
         /// </summary>
         public static Permission CreateDynamicPermission(Permission template, ContentTypeDefinition typeDefinition)
         {
+            if (template == null)
+            {
+                throw new ArgumentNullException(nameof(template));
+            }
+
             return new Permission(
                 String.Format(template.Name, typeDefinition.Name),
                 String.Format(template.Description, typeDefinition.DisplayName),
-                (template.ImpliedBy ?? Array.Empty<Permission>()).Select(t => CreateDynamicPermission(t, typeDefinition))
+                (template.ImpliedBy ?? Array.Empty<Permission>()).Where(t => t != null).Select(t => CreateDynamicPermission(t, typeDefinition))
             )
             {
-                Category = typeDefinition.DisplayName
+                Category = $"{typeDefinition.DisplayName} Content Type - {typeDefinition.Name}",
             };
         }
 
@@ -79,6 +84,11 @@ namespace OrchardCore.Contents.Security
         /// </summary>
         public static Permission CreateDynamicPermission(Permission template, string contentType)
         {
+            if (template == null)
+            {
+                throw new ArgumentNullException(nameof(template));
+            }
+
             var key = new ValueTuple<string, string>(template.Name, contentType);
 
             if (PermissionsByType.TryGetValue(key, out var permission))

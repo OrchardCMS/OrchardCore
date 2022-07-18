@@ -366,7 +366,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Creates a transient shell for the default tenant's setup.
         /// </summary>
-        private Task<ShellContext> CreateSetupContextAsync(ShellSettings defaultSettings)
+        private async Task<ShellContext> CreateSetupContextAsync(ShellSettings defaultSettings)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
@@ -380,9 +380,11 @@ namespace OrchardCore.Environment.Shell
                 shellSettings.Name = ShellHelper.DefaultShellName;
                 shellSettings.State = TenantState.Uninitialized;
                 defaultSettings = shellSettings;
+
+                await UpdateShellSettingsAsync(defaultSettings);
             }
 
-            return _shellContextFactory.CreateSetupContextAsync(defaultSettings);
+            return await _shellContextFactory.CreateSetupContextAsync(defaultSettings);
         }
 
         /// <summary>

@@ -11,8 +11,8 @@
             @foreach (var settings in Model.Tasks.Select(t => t.Settings))
             {
                 <li class="list-group-item">
-                    <div class="properties">
-                        <div class="related">
+                    <div class="w-100">
+                        <div class="float-end">
                         @if (@settings.Enable)
                         {
                             <a asp-action="Disable" asp-route-name="@settings.Name" class="btn btn-danger btn-sm" data-url-af="UnsafeUrl">@T["Disable"]</a>

@@ -310,32 +310,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices((services, serviceProvider) =>
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
-                var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
-
                 var cookieName = "__orchantiforgery_" + settings.VersionId;
-
-                // If uninitialized, we use the host services.
-                if (settings.State == TenantState.Uninitialized)
-                {
-                    // And delete a cookie that may have been created by another instance.
-                    var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
-
-                    // Use case when creating a container without ambient context.
-                    if (httpContextAccessor.HttpContext == null)
-                    {
-                        return;
-                    }
-
-                    // Use case when creating a container in a deferred task.
-                    if (httpContextAccessor.HttpContext.Response.HasStarted)
-                    {
-                        return;
-                    }
-
-                    httpContextAccessor.HttpContext.Response.Cookies.Delete(cookieName);
-
-                    return;
-                }
 
                 // Re-register the antiforgery services to be tenant-aware.
                 var collection = new ServiceCollection()
@@ -464,7 +439,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddDataProtection()
                     .PersistKeysToFileSystem(directory)
                     .SetApplicationName(settings.Name)
-                    .AddKeyManagementOptions(o => o.XmlEncryptor = o.XmlEncryptor ?? new NullXmlEncryptor())
+                    .AddKeyManagementOptions(o => o.XmlEncryptor ??= new NullXmlEncryptor())
                     .Services;
 
                 // Remove any previously registered options setups.
