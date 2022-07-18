@@ -35,276 +35,230 @@ using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    /// <summary>
+    /// Adds OrchardCore services to the host service collection.
+    /// </summary>
+    public static OrchardCoreBuilder AddOrchardCore(this IServiceCollection services)
     {
-        /// <summary>
-        /// Adds OrchardCore services to the host service collection.
-        /// </summary>
-        public static OrchardCoreBuilder AddOrchardCore(this IServiceCollection services)
+        if (services == null)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            // If an instance of OrchardCoreBuilder exists reuse it,
-            // so we can call AddOrchardCore several times.
-            var builder = services
-                .LastOrDefault(d => d.ServiceType == typeof(OrchardCoreBuilder))?
-                .ImplementationInstance as OrchardCoreBuilder;
-
-            if (builder == null)
-            {
-                builder = new OrchardCoreBuilder(services);
-                services.AddSingleton(builder);
-
-                AddDefaultServices(builder);
-                AddShellServices(builder);
-                AddExtensionServices(builder);
-                AddStaticFiles(builder);
-
-                AddRouting(builder);
-                AddEndpointsApiExplorer(builder);
-                AddAntiForgery(builder);
-                AddSameSiteCookieBackwardsCompatibility(builder);
-                AddAuthentication(builder);
-                AddDataProtection(builder);
-
-                // Register the list of services to be resolved later on
-                services.AddSingleton(services);
-            }
-
-            return builder;
+            throw new ArgumentNullException(nameof(services));
         }
-
-        /// <summary>
-        /// Adds OrchardCore services to the host service collection and let the app change
-        /// the default behavior and set of features through a configure action.
-        /// </summary>
-        public static IServiceCollection AddOrchardCore(this IServiceCollection services, Action<OrchardCoreBuilder> configure)
+        // If an instance of OrchardCoreBuilder exists reuse it,
+        // so we can call AddOrchardCore several times.
+        var builder = services
+            .LastOrDefault(d => d.ServiceType == typeof(OrchardCoreBuilder))?
+            .ImplementationInstance as OrchardCoreBuilder;
+        if (builder == null)
         {
-            var builder = services.AddOrchardCore();
-
-            configure?.Invoke(builder);
-
-            return services;
+            builder = new OrchardCoreBuilder(services);
+            services.AddSingleton(builder);
+            AddDefaultServices(builder);
+            AddShellServices(builder);
+            AddExtensionServices(builder);
+            AddStaticFiles(builder);
+            AddRouting(builder);
+            AddEndpointsApiExplorer(builder);
+            AddAntiForgery(builder);
+            AddSameSiteCookieBackwardsCompatibility(builder);
+            AddAuthentication(builder);
+            AddDataProtection(builder);
+            // Register the list of services to be resolved later on
+            services.AddSingleton(services);
         }
-
-        private static void AddDefaultServices(OrchardCoreBuilder builder)
+        return builder;
+    }
+    /// <summary>
+    /// Adds OrchardCore services to the host service collection and let the app change
+    /// the default behavior and set of features through a configure action.
+    /// </summary>
+    public static IServiceCollection AddOrchardCore(this IServiceCollection services, Action<OrchardCoreBuilder> configure)
+    {
+        var builder = services.AddOrchardCore();
+        configure?.Invoke(builder);
+        return services;
+    }
+    private static void AddDefaultServices(OrchardCoreBuilder builder)
+    {
+        var services = builder.ApplicationServices;
+        services.AddLogging();
+        services.AddOptions();
+        // These services might be moved at a higher level if no components from OrchardCore needs them.
+        services.AddLocalization();
+        // For performance, prevents the 'ResourceManagerStringLocalizer' from being used.
+        // Also support pluralization.
+        services.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
+        services.AddSingleton<IHtmlLocalizerFactory, NullHtmlLocalizerFactory>();
+        services.AddWebEncoders();
+        services.AddHttpContextAccessor();
+        services.AddSingleton<IClock, Clock>();
+        services.AddScoped<ILocalClock, LocalClock>();
+        services.AddScoped<ILocalizationService, DefaultLocalizationService>();
+        services.AddScoped<ICalendarManager, DefaultCalendarManager>();
+        services.AddScoped<ICalendarSelector, DefaultCalendarSelector>();
+        services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
+        services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
+        builder.ConfigureServices(s =>
         {
-            var services = builder.ApplicationServices;
-
-            services.AddLogging();
-            services.AddOptions();
-
-            // These services might be moved at a higher level if no components from OrchardCore needs them.
-            services.AddLocalization();
-
-            // For performance, prevents the 'ResourceManagerStringLocalizer' from being used.
-            // Also support pluralization.
-            services.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
-            services.AddSingleton<IHtmlLocalizerFactory, NullHtmlLocalizerFactory>();
-
-            services.AddWebEncoders();
-
-            services.AddHttpContextAccessor();
-            services.AddSingleton<IClock, Clock>();
-            services.AddScoped<ILocalClock, LocalClock>();
-
-            services.AddScoped<ILocalizationService, DefaultLocalizationService>();
-            services.AddScoped<ICalendarManager, DefaultCalendarManager>();
-            services.AddScoped<ICalendarSelector, DefaultCalendarSelector>();
-
-            services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
-
-            services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
-
-            builder.ConfigureServices(s =>
-            {
-                s.AddSingleton<LocalLock>();
-                s.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
-                s.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
-            });
-        }
-
-        private static void AddShellServices(OrchardCoreBuilder builder)
+            s.AddSingleton<LocalLock>();
+            s.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
+            s.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
+        });
+    }
+    private static void AddShellServices(OrchardCoreBuilder builder)
+    {
+        var services = builder.ApplicationServices;
+        // Use a single tenant and all features by default
+        services.AddHostingShellServices();
+        services.AddAllFeaturesDescriptor();
+        // Registers the application primary feature.
+        services.AddTransient(sp => new ShellFeature
+        (
+            sp.GetRequiredService<IHostEnvironment>().ApplicationName, alwaysEnabled: true)
+        );
+        // Registers the application default feature.
+        services.AddTransient(sp => new ShellFeature
+        (
+            Application.DefaultFeatureId, alwaysEnabled: true)
+        );
+        builder.ConfigureServices(shellServices =>
         {
-            var services = builder.ApplicationServices;
-
-            // Use a single tenant and all features by default
-            services.AddHostingShellServices();
-            services.AddAllFeaturesDescriptor();
-
-            // Registers the application primary feature.
-            services.AddTransient(sp => new ShellFeature
-            (
-                sp.GetRequiredService<IHostEnvironment>().ApplicationName, alwaysEnabled: true)
-            );
-
-            // Registers the application default feature.
-            services.AddTransient(sp => new ShellFeature
-            (
-                Application.DefaultFeatureId, alwaysEnabled: true)
-            );
-
-            builder.ConfigureServices(shellServices =>
-            {
-                shellServices.AddTransient<IConfigureOptions<ShellContextOptions>, ShellContextOptionsSetup>();
-                shellServices.AddNullFeatureProfilesService();
-                shellServices.AddFeatureValidation();
-                shellServices.ConfigureFeatureProfilesRuleOptions();
-            });
-        }
-
-        private static void AddExtensionServices(OrchardCoreBuilder builder)
+            shellServices.AddTransient<IConfigureOptions<ShellContextOptions>, ShellContextOptionsSetup>();
+            shellServices.AddNullFeatureProfilesService();
+            shellServices.AddFeatureValidation();
+            shellServices.ConfigureFeatureProfilesRuleOptions();
+        });
+    }
+    private static void AddExtensionServices(OrchardCoreBuilder builder)
+    {
+        builder.ApplicationServices.AddSingleton<IModuleNamesProvider, AssemblyAttributeModuleNamesProvider>();
+        builder.ApplicationServices.AddSingleton<IApplicationContext, ModularApplicationContext>();
+        builder.ApplicationServices.AddExtensionManagerHost();
+        builder.ConfigureServices(services =>
         {
-            builder.ApplicationServices.AddSingleton<IModuleNamesProvider, AssemblyAttributeModuleNamesProvider>();
-            builder.ApplicationServices.AddSingleton<IApplicationContext, ModularApplicationContext>();
-
-            builder.ApplicationServices.AddExtensionManagerHost();
-
-            builder.ConfigureServices(services =>
-            {
-                services.AddExtensionManager();
-                services.AddScoped<IShellFeaturesManager, ShellFeaturesManager>();
-                services.AddScoped<IShellDescriptorFeaturesManager, ShellDescriptorFeaturesManager>();
-            });
-        }
-
-        /// <summary>
-        /// Adds tenant level configuration to serve static files from modules
-        /// </summary>
-        private static void AddStaticFiles(OrchardCoreBuilder builder)
+            services.AddExtensionManager();
+            services.AddScoped<IShellFeaturesManager, ShellFeaturesManager>();
+            services.AddScoped<IShellDescriptorFeaturesManager, ShellDescriptorFeaturesManager>();
+        });
+    }
+    /// <summary>
+    /// Adds tenant level configuration to serve static files from modules
+    /// </summary>
+    private static void AddStaticFiles(OrchardCoreBuilder builder)
+    {
+        builder.ConfigureServices(services =>
         {
-            builder.ConfigureServices(services =>
+            services.AddSingleton<IModuleStaticFileProvider>(serviceProvider =>
             {
-                services.AddSingleton<IModuleStaticFileProvider>(serviceProvider =>
+                var env = serviceProvider.GetRequiredService<IHostEnvironment>();
+                var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
+                IModuleStaticFileProvider fileProvider;
+                if (env.IsDevelopment())
                 {
-                    var env = serviceProvider.GetRequiredService<IHostEnvironment>();
-                    var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
-
-                    IModuleStaticFileProvider fileProvider;
-                    if (env.IsDevelopment())
+                    var fileProviders = new List<IStaticFileProvider>
                     {
-                        var fileProviders = new List<IStaticFileProvider>
-                        {
-                            new ModuleProjectStaticFileProvider(appContext),
-                            new ModuleEmbeddedStaticFileProvider(appContext)
-                        };
-                        fileProvider = new ModuleCompositeStaticFileProvider(fileProviders);
-                    }
-                    else
-                    {
-                        fileProvider = new ModuleEmbeddedStaticFileProvider(appContext);
-                    }
-                    return fileProvider;
-                });
-
-                services.AddSingleton<IStaticFileProvider>(serviceProvider =>
-                {
-                    return serviceProvider.GetRequiredService<IModuleStaticFileProvider>();
-                });
-            });
-
-            builder.Configure((app, routes, serviceProvider) =>
-            {
-                var fileProvider = serviceProvider.GetRequiredService<IModuleStaticFileProvider>();
-
-                var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
-                // Cache static files for a year as they are coming from embedded resources and should not vary.
-                var cacheControl = shellConfiguration.GetValue("StaticFileOptions:CacheControl", $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-maxage={TimeSpan.FromDays(365.25).TotalSeconds}");
-
-                // Use the current options values but without mutating the resolved instance.
-                var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
-                options = new StaticFileOptions
-                {
-                    RequestPath = String.Empty,
-                    FileProvider = fileProvider,
-                    RedirectToAppendTrailingSlash = options.RedirectToAppendTrailingSlash,
-                    ContentTypeProvider = options.ContentTypeProvider,
-                    DefaultContentType = options.DefaultContentType,
-                    ServeUnknownFileTypes = options.ServeUnknownFileTypes,
-                    HttpsCompression = options.HttpsCompression,
-
-                    OnPrepareResponse = ctx =>
-                    {
-                        ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
-                    },
-                };
-
-                app.UseStaticFiles(options);
-            });
-        }
-
-        /// <summary>
-        /// Adds isolated tenant level routing services.
-        /// </summary>
-        private static void AddRouting(OrchardCoreBuilder builder)
-        {
-            // 'AddRouting()' is called by the host.
-
-            builder.ConfigureServices(collection =>
-            {
-                // The routing system is not tenant aware and uses a global list of endpoint data sources which is
-                // setup by the default configuration of 'RouteOptions' and mutated on each call of 'UseEndPoints()'.
-                // So, we need isolated routing singletons (and a default configuration) per tenant.
-
-                var implementationTypesToRemove = new ServiceCollection().AddRouting()
-                    .Where(sd => sd.Lifetime == ServiceLifetime.Singleton || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>))
-                    .Select(sd => sd.GetImplementationType())
-                    .ToArray();
-
-                var descriptorsToRemove = collection
-                    .Where(sd => (sd is ClonedSingletonDescriptor || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>)) &&
-                        implementationTypesToRemove.Contains(sd.GetImplementationType()))
-                    .ToArray();
-
-                foreach (var descriptor in descriptorsToRemove)
-                {
-                    collection.Remove(descriptor);
+                        new ModuleProjectStaticFileProvider(appContext),
+                        new ModuleEmbeddedStaticFileProvider(appContext)
+                    };
+                    fileProvider = new ModuleCompositeStaticFileProvider(fileProviders);
                 }
-
-                collection.AddRouting();
-            },
-            order: Int32.MinValue + 100);
-        }
-
-        /// <summary>
-        /// Configures ApiExplorer at the tenant level using <see cref="Endpoint.Metadata"/>.
-        /// </summary>
-        private static void AddEndpointsApiExplorer(OrchardCoreBuilder builder)
-        {
-            // 'AddEndpointsApiExplorer()' is called by the host.
-
-            builder.ConfigureServices(collection =>
-            {
-                // Remove the related host singletons as they are not tenant aware.
-                var descriptorsToRemove = collection
-                    .Where(sd => sd is ClonedSingletonDescriptor &&
-                        (sd.ServiceType == typeof(IActionDescriptorCollectionProvider) ||
-                        sd.ServiceType == typeof(IApiDescriptionGroupCollectionProvider)))
-                    .ToArray();
-
-                foreach (var descriptor in descriptorsToRemove)
+                else
                 {
-                    collection.Remove(descriptor);
+                    fileProvider = new ModuleEmbeddedStaticFileProvider(appContext);
                 }
-
+                return fileProvider;
+            });
+            services.AddSingleton<IStaticFileProvider>(serviceProvider =>
+            {
+                return serviceProvider.GetRequiredService<IModuleStaticFileProvider>();
+            });
+        });
+        builder.Configure((app, routes, serviceProvider) =>
+        {
+            var fileProvider = serviceProvider.GetRequiredService<IModuleStaticFileProvider>();
+            var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
+            // Cache static files for a year as they are coming from embedded resources and should not vary.
+            var cacheControl = shellConfiguration.GetValue("StaticFileOptions:CacheControl", $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-maxage={TimeSpan.FromDays(365.25).TotalSeconds}");
+            // Use the current options values but without mutating the resolved instance.
+            var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
+            options = new StaticFileOptions
+            {
+                RequestPath = String.Empty,
+                FileProvider = fileProvider,
+                RedirectToAppendTrailingSlash = options.RedirectToAppendTrailingSlash,
+                ContentTypeProvider = options.ContentTypeProvider,
+                DefaultContentType = options.DefaultContentType,
+                ServeUnknownFileTypes = options.ServeUnknownFileTypes,
+                HttpsCompression = options.HttpsCompression,
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
+                },
+            };
+            app.UseStaticFiles(options);
+        });
+    }
+    /// <summary>
+    /// Adds isolated tenant level routing services.
+    /// </summary>
+    private static void AddRouting(OrchardCoreBuilder builder)
+    {
+        // 'AddRouting()' is called by the host.
+        builder.ConfigureServices(collection =>
+        {
+            // The routing system is not tenant aware and uses a global list of endpoint data sources which is
+            // setup by the default configuration of 'RouteOptions' and mutated on each call of 'UseEndPoints()'.
+            // So, we need isolated routing singletons (and a default configuration) per tenant.
+            var implementationTypesToRemove = new ServiceCollection().AddRouting()
+                .Where(sd => sd.Lifetime == ServiceLifetime.Singleton || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>))
+                .Select(sd => sd.GetImplementationType())
+                .ToArray();
+            var descriptorsToRemove = collection
+                .Where(sd => (sd is ClonedSingletonDescriptor || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>)) &&
+                    implementationTypesToRemove.Contains(sd.GetImplementationType()))
+                .ToArray();
+            foreach (var descriptor in descriptorsToRemove)
+            {
+                collection.Remove(descriptor);
+            }
+            collection.AddRouting();
+        },
+        order: Int32.MinValue + 100);
+    }
+    /// <summary>
+    /// Configures ApiExplorer at the tenant level using <see cref="Endpoint.Metadata"/>.
+    /// </summary>
+    private static void AddEndpointsApiExplorer(OrchardCoreBuilder builder)
+    {
+        // 'AddEndpointsApiExplorer()' is called by the host.
+        builder.ConfigureServices(collection =>
+        {
+            // Remove the related host singletons as they are not tenant aware.
+            var descriptorsToRemove = collection
+                .Where(sd => sd is ClonedSingletonDescriptor &&
+                    (sd.ServiceType == typeof(IActionDescriptorCollectionProvider) ||
+                    sd.ServiceType == typeof(IApiDescriptionGroupCollectionProvider)))
+                .ToArray();
+            foreach (var descriptor in descriptorsToRemove)
+            {
+                collection.Remove(descriptor);
+            }
 #if NET6_0_OR_GREATER
-                // Configure ApiExplorer at the tenant level.
-                collection.AddEndpointsApiExplorer();
+            // Configure ApiExplorer at the tenant level.
+            collection.AddEndpointsApiExplorer();
 #endif
-            },
-            order: Int32.MinValue + 100);
-        }
-
-        /// <summary>
-        /// Adds host and tenant level antiforgery services.
-        /// </summary>
-        private static void AddAntiForgery(OrchardCoreBuilder builder)
-        {
+        },
+        order: Int32.MinValue + 100);
+    }
+    /// <summary>
+    /// Adds host and tenant level antiforgery services.
+    /// </summary>
+    private static void AddAntiForgery(OrchardCoreBuilder builder)
+    {
             builder.ApplicationServices.AddAntiforgery();
 
             builder.ConfigureServices((services, serviceProvider) =>
@@ -325,13 +279,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.Add(collection);
             });
-        }
-
-        /// <summary>
-        /// Adds backwards compatibility to the handling of SameSite cookies.
-        /// </summary>
-        private static void AddSameSiteCookieBackwardsCompatibility(OrchardCoreBuilder builder)
-        {
+    }
+    /// <summary>
+    /// Adds backwards compatibility to the handling of SameSite cookies.
+    /// </summary>
+    private static void AddSameSiteCookieBackwardsCompatibility(OrchardCoreBuilder builder)
+    {
             builder.ConfigureServices(services =>
                 {
                     services.Configure<CookiePolicyOptions>(options =>
@@ -345,10 +298,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     app.UseCookiePolicy();
                 });
-        }
-
-        private static void CheckSameSiteBackwardsCompatiblity(HttpContext httpContext, CookieOptions options)
-        {
+    }
+    private static void CheckSameSiteBackwardsCompatiblity(HttpContext httpContext, CookieOptions options)
+    {
             var userAgent = httpContext.Request.Headers["User-Agent"].ToString();
 
             if (options.SameSite == SameSiteMode.None)
@@ -390,13 +342,12 @@ namespace Microsoft.Extensions.DependencyInjection
                     options.SameSite = AspNetCore.Http.SameSiteMode.Unspecified;
                 }
             }
-        }
-
-        /// <summary>
-        /// Adds host and tenant level authentication services and configuration.
-        /// </summary>
-        private static void AddAuthentication(OrchardCoreBuilder builder)
-        {
+    }
+    /// <summary>
+    /// Adds host and tenant level authentication services and configuration.
+    /// </summary>
+    private static void AddAuthentication(OrchardCoreBuilder builder)
+    {
             builder.ApplicationServices.AddAuthentication();
 
             builder.ConfigureServices(services =>
@@ -413,41 +364,35 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 app.UseAuthentication();
             });
-        }
-
-        /// <summary>
-        /// Adds tenant level data protection services.
-        /// </summary>
-        private static void AddDataProtection(OrchardCoreBuilder builder)
+    }
+    /// <summary>
+    /// Adds tenant level data protection services.
+    /// </summary>
+    private static void AddDataProtection(OrchardCoreBuilder builder)
+    {
+        builder.ConfigureServices((services, serviceProvider) =>
         {
-            builder.ConfigureServices((services, serviceProvider) =>
-            {
-                var settings = serviceProvider.GetRequiredService<ShellSettings>();
-                var options = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
-
-                // The 'FileSystemXmlRepository' will create the directory, but only if it is not overridden.
-                var directory = new DirectoryInfo(Path.Combine(
-                    options.Value.ShellsApplicationDataPath,
-                    options.Value.ShellsContainerName,
-                    settings.Name, "DataProtection-Keys"));
-
-                // Re-register the data protection services to be tenant-aware so that modules that internally
-                // rely on IDataProtector/IDataProtectionProvider automatically get an isolated instance that
-                // manages its own key ring and doesn't allow decrypting payloads encrypted by another tenant.
-                // By default, the key ring is stored in the tenant directory of the configured App_Data path.
-                var collection = new ServiceCollection()
-                    .AddDataProtection()
-                    .PersistKeysToFileSystem(directory)
-                    .SetApplicationName(settings.Name)
-                    .AddKeyManagementOptions(o => o.XmlEncryptor ??= new NullXmlEncryptor())
-                    .Services;
-
-                // Remove any previously registered options setups.
-                services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();
-                services.RemoveAll<IConfigureOptions<DataProtectionOptions>>();
-
-                services.Add(collection);
-            });
-        }
+            var settings = serviceProvider.GetRequiredService<ShellSettings>();
+            var options = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+            // The 'FileSystemXmlRepository' will create the directory, but only if it is not overridden.
+            var directory = new DirectoryInfo(Path.Combine(
+                options.Value.ShellsApplicationDataPath,
+                options.Value.ShellsContainerName,
+                settings.Name, "DataProtection-Keys"));
+            // Re-register the data protection services to be tenant-aware so that modules that internally
+            // rely on IDataProtector/IDataProtectionProvider automatically get an isolated instance that
+            // manages its own key ring and doesn't allow decrypting payloads encrypted by another tenant.
+            // By default, the key ring is stored in the tenant directory of the configured App_Data path.
+            var collection = new ServiceCollection()
+                .AddDataProtection()
+                .PersistKeysToFileSystem(directory)
+                .SetApplicationName(settings.Name)
+                .AddKeyManagementOptions(o => o.XmlEncryptor ??= new NullXmlEncryptor())
+                .Services;
+            // Remove any previously registered options setups.
+            services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();
+            services.RemoveAll<IConfigureOptions<DataProtectionOptions>>();
+            services.Add(collection);
+        });
     }
 }
