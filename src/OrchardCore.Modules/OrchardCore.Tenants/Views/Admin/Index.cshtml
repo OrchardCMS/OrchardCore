@@ -146,25 +146,29 @@
                             </div>
                         </div>
                         <div class="col-lg-6 col-sm-12 float-end">
-                            <div class="float-end">
-                                <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm edit">@T["Edit"]</a>
-                                @if (entry.ShellSettings.State == TenantState.Running)
-                                {
-                                    <a class="btn btn-info btn-sm view" href="@GetEncodedUrl(entry, originalPathBase, appendQuery:false)" target="_blank">@T["View"]</a>
-                                }
-                                @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
-                                {
-                                    <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm disable" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Disable"]" data-message="@T["Are you sure you want to disable this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Disable"]</a>
-                                }
-                                @if (entry.ShellSettings.State == TenantState.Disabled)
-                                {
-                                    <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm enable" data-url-af="UnsafeUrl">@T["Enable"]</a>
-                                }
-                                @if (entry.ShellSettings.State == TenantState.Uninitialized)
-                                {
-                                    <a class="btn btn-info btn-sm setup" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)">@T["Setup"]</a>
-                                }
-                                <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm reload" data-url-af="UnsafeUrl">@T["Reload"]</a>
+                            <div class="dropdown float-end">
+                                <a id="tenantDropdownMenuButton" class="btn text-secondary" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
+                                <ul class="dropdown-menu" aria-labelledby="tenantDropdownMenuButton">
+                                    <li><a asp-action="Edit" asp-route-id="@entry.Name" class="dropdown-item edit">@T["Edit"]</a></li>
+                                    @if (entry.ShellSettings.State == TenantState.Running)
+                                    {
+                                        <li><a class="dropdown-item view" href="@GetEncodedUrl(entry, originalPathBase, appendQuery:false)" target="_blank">@T["View"]</a></li>
+                                    }
+                                    <li><hr class="dropdown-divider"></li>
+                                    @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
+                                    {
+                                        <li><a asp-action="Disable" asp-route-id="@entry.Name" class="dropdown-item text-danger disable" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Disable"]" data-message="@T["Are you sure you want to disable this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Disable"]</a></li>
+                                    }
+                                    @if (entry.ShellSettings.State == TenantState.Disabled)
+                                    {
+                                        <li><a asp-action="Enable" asp-route-id="@entry.Name" class="dropdown-item enable" data-url-af="UnsafeUrl">@T["Enable"]</a></li>
+                                    }
+                                    @if (entry.ShellSettings.State == TenantState.Uninitialized)
+                                    {
+                                        <li><a class="dropdown-item setup" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)">@T["Setup"]</a></li>
+                                    }
+                                    <li><a asp-action="Reload" asp-route-id="@entry.Name" class="dropdown-item reload" data-url-af="UnsafeUrl">@T["Reload"]</a></li>
+                                </ul>
                             </div>
                         </div>
                     </div>
