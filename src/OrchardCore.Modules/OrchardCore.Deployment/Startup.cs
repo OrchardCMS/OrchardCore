@@ -11,7 +11,6 @@ using OrchardCore.Deployment.Deployment;
 using OrchardCore.Deployment.Indexes;
 using OrchardCore.Deployment.Recipes;
 using OrchardCore.Deployment.Steps;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;

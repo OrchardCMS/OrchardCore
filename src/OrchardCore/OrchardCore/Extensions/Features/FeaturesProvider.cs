@@ -4,8 +4,6 @@ using System.Linq;
 
 namespace OrchardCore.Environment.Extensions.Features
 {
-    using Modules.Manifest;
-
     /// <inheritdoc/>
     public class FeaturesProvider : IFeaturesProvider
     {

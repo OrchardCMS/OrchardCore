@@ -109,7 +109,8 @@ namespace OrchardCore.Modules.Manifest
             var allAttributeCtorWithParameterTypes = allAttributeCtors.Select(ctor => new
             {
                 Callback = ctor
-                , Types = ctor.GetParameters().Select(_ => _.ParameterType).ToArray()
+                ,
+                Types = ctor.GetParameters().Select(_ => _.ParameterType).ToArray()
             }).ToArray();
 
             var attributeCtor = allAttributeCtorWithParameterTypes.SingleOrDefault(_ => _.Types.SequenceEqual(types))?.Callback;

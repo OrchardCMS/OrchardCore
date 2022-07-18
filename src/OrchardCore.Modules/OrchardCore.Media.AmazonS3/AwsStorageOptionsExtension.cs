@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Amazon;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
-using Amazon.Runtime.CredentialManagement;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Configuration;

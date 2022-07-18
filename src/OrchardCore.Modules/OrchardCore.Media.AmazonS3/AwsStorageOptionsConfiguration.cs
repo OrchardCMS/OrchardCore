@@ -15,7 +15,7 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
     private readonly ILogger _logger;
 
     // Local instance since it can be discarded once the startup is over
-    private readonly FluidParser _fluidParser = new ();
+    private readonly FluidParser _fluidParser = new();
 
     public AwsStorageOptionsConfiguration(
         IShellConfiguration shellConfiguration,
