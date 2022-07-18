@@ -7,49 +7,48 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Scripting;
 
-namespace OrchardCore.Recipes
+namespace OrchardCore.Recipes;
+
+public class VariablesMethodProvider : IGlobalMethodProvider
 {
-    public class VariablesMethodProvider : IGlobalMethodProvider
+    private readonly GlobalMethod _globalMethod;
+    private const string _globalMethodName = "variables";
+
+    public VariablesMethodProvider(JObject variables, List<IGlobalMethodProvider> scopedMethodProviders)
     {
-        private readonly GlobalMethod _globalMethod;
-        private const string _globalMethodName = "variables";
-
-        public VariablesMethodProvider(JObject variables, List<IGlobalMethodProvider> scopedMethodProviders)
+        _globalMethod = new GlobalMethod
         {
-            _globalMethod = new GlobalMethod
+            Name = _globalMethodName,
+            Method = serviceProvider => (Func<string, object>)(name =>
             {
-                Name = _globalMethodName,
-                Method = serviceProvider => (Func<string, object>)(name =>
+                var variable = variables[name];
+
+                if (variable == null)
                 {
-                    var variable = variables[name];
+                    var S = serviceProvider.GetService<IStringLocalizer<VariablesMethodProvider>>();
 
-                    if (variable == null)
-                    {
-                        var S = serviceProvider.GetService<IStringLocalizer<VariablesMethodProvider>>();
+                    throw new ValidationException(S["The variable '{0}' was used in the recipe but not defined. Make sure you add the '{0}' variable in the '{1}' section of the recipe.", name, _globalMethodName]);
+                }
 
-                        throw new ValidationException(S["The variable '{0}' was used in the recipe but not defined. Make sure you add the '{0}' variable in the '{1}' section of the recipe.", name, _globalMethodName]);
-                    }
-
-                    var value = variable.Value<string>();
+                var value = variable.Value<string>();
 
                     // Replace variable value while the result returns another script
                     while (value.StartsWith('[') && value.EndsWith(']'))
-                    {
-                        value = value.Trim('[', ']');
-                        value = (ScriptingManager.Evaluate(value, null, null, scopedMethodProviders) ?? "").ToString();
-                        variables[name] = new JValue(value);
-                    }
+                {
+                    value = value.Trim('[', ']');
+                    value = (ScriptingManager.Evaluate(value, null, null, scopedMethodProviders) ?? "").ToString();
+                    variables[name] = new JValue(value);
+                }
 
-                    return value;
-                })
-            };
-        }
+                return value;
+            })
+        };
+    }
 
-        public IScriptingManager ScriptingManager => ShellScope.Services.GetRequiredService<IScriptingManager>();
+    public IScriptingManager ScriptingManager => ShellScope.Services.GetRequiredService<IScriptingManager>();
 
-        public IEnumerable<GlobalMethod> GetMethods()
-        {
-            yield return _globalMethod;
-        }
+    public IEnumerable<GlobalMethod> GetMethods()
+    {
+        yield return _globalMethod;
     }
 }
