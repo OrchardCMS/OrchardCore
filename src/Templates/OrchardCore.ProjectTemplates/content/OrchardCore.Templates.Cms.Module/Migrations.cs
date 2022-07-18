@@ -2,24 +2,23 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 
-namespace OrchardCore.Templates.Cms.Module
+namespace OrchardCore.Templates.Cms.Module;
+
+public class Migrations : DataMigration
 {
-    public class Migrations : DataMigration
+    IContentDefinitionManager _contentDefinitionManager;
+
+    public Migrations(IContentDefinitionManager contentDefinitionManager)
     {
-        IContentDefinitionManager _contentDefinitionManager;
+        _contentDefinitionManager = contentDefinitionManager;
+    }
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
-        {
-            _contentDefinitionManager = contentDefinitionManager;
-        }
+    public int Create()
+    {
+        _contentDefinitionManager.AlterPartDefinition("MyTestPart", builder => builder
+            .Attachable()
+            .WithDescription("Provides a MyTest part for your content item."));
 
-        public int Create()
-        {
-            _contentDefinitionManager.AlterPartDefinition("MyTestPart", builder => builder
-                .Attachable()
-                .WithDescription("Provides a MyTest part for your content item."));
-
-            return 1;
-        }
+        return 1;
     }
 }

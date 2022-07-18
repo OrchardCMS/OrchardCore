@@ -9,31 +9,30 @@ using OrchardCore.Logging;
 using Serilog;
 #endif
 
-namespace OrchardCore.Templates.Cms.Web
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+namespace OrchardCore.Templates.Cms.Web;
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(logging => logging.ClearProviders())
-#if (UseSerilog)
-                .UseSerilog((hostingContext, configBuilder) =>
-                    {
-                        configBuilder.ReadFrom.Configuration(hostingContext.Configuration)
-                        .Enrich.FromLogContext();
-                    })
-#endif
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-#if (UseNLog)
-                    webBuilder.UseNLogWeb();
-#endif
-                    webBuilder.UseStartup<Startup>();
-                });
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        CreateHostBuilder(args).Build().Run();
     }
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureLogging(logging => logging.ClearProviders())
+#if (UseSerilog)
+            .UseSerilog((hostingContext, configBuilder) =>
+                {
+                    configBuilder.ReadFrom.Configuration(hostingContext.Configuration)
+                    .Enrich.FromLogContext();
+                })
+#endif
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+#if (UseNLog)
+                webBuilder.UseNLogWeb();
+#endif
+                webBuilder.UseStartup<Startup>();
+            });
 }

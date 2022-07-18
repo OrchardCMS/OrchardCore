@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace OrchardCore.Templates.Cms.Module.Settings
+namespace OrchardCore.Templates.Cms.Module.Settings;
+
+public class MyTestPartSettingsViewModel
 {
-    public class MyTestPartSettingsViewModel
-    {
-        public string MySetting { get; set; }
+    public string MySetting { get; set; }
 
-        [BindNever]
-        public MyTestPartSettings MyTestPartSettings { get; set; }
-    }
+    [BindNever]
+    public MyTestPartSettings MyTestPartSettings { get; set; }
 }

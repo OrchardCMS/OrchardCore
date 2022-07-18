@@ -1,7 +1,6 @@
-﻿namespace OrchardCore.Templates.Cms.Module.Settings
+namespace OrchardCore.Templates.Cms.Module.Settings;
+
+public class MyTestPartSettings
 {
-    public class MyTestPartSettings
-    {
-        public string MySetting { get; set; }
-    }
+    public string MySetting { get; set; }
 }

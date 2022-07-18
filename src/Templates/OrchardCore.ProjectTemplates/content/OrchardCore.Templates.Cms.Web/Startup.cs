@@ -5,28 +5,27 @@ using Microsoft.Extensions.Hosting;
 using OrchardCore.Logging;
 #endif
 
-namespace OrchardCore.Templates.Cms.Web
-{
-    public class Startup
-    {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddOrchardCms();
-        }
-        
-        public void Configure(IApplicationBuilder app, IHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+namespace OrchardCore.Templates.Cms.Web;
 
-            app.UseStaticFiles();
-#if (UseSerilog)
-            app.UseOrchardCore(c => c.UseSerilogTenantNameLogging());
-#else
-            app.UseOrchardCore();
-#endif
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddOrchardCms();
+    }
+    
+    public void Configure(IApplicationBuilder app, IHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
         }
+
+        app.UseStaticFiles();
+#if (UseSerilog)
+        app.UseOrchardCore(c => c.UseSerilogTenantNameLogging());
+#else
+        app.UseOrchardCore();
+#endif
     }
 }

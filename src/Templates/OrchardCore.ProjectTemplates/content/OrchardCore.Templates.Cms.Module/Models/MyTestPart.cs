@@ -1,9 +1,8 @@
-﻿using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Templates.Cms.Module.Models
+namespace OrchardCore.Templates.Cms.Module.Models;
+
+public class MyTestPart : ContentPart
 {
-    public class MyTestPart : ContentPart
-    {
-        public bool Show { get; set; }
-    }
+    public bool Show { get; set; }
 }
