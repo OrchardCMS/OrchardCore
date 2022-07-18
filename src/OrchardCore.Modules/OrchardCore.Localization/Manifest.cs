@@ -24,8 +24,8 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Localization.CulturePicker",
-    Name = "Culture Picker",
+    Id = "OrchardCore.Localization.CulturePicker.Admin",
+    Name = "Admin Culture Picker",
     Description = "Provides a culture picker shape for the backend.",
     Dependencies = new[] { "OrchardCore.Localization" },
     Category = "Internationalization"
