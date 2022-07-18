@@ -6,18 +6,17 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Sitemaps.Services;
 
-namespace OrchardCore.Sitemaps.Cache
-{
-    [BackgroundTask(Schedule = "*/5 * * * *", Description = "Cleanup sitemap cache files.")]
-    public class SitemapCacheBackgroundTask : IBackgroundTask
-    {
-        public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
-        {
-            var sitemapManager = serviceProvider.GetRequiredService<ISitemapManager>();
-            var sitemapCacheProvider = serviceProvider.GetRequiredService<ISitemapCacheProvider>();
+namespace OrchardCore.Sitemaps.Cache;
 
-            var sitemaps = await sitemapManager.GetSitemapsAsync();
-            await sitemapCacheProvider.CleanSitemapCacheAsync(sitemaps.Select(s => s.CacheFileName));
-        }
+[BackgroundTask(Schedule = "*/5 * * * *", Description = "Cleanup sitemap cache files.")]
+public class SitemapCacheBackgroundTask : IBackgroundTask
+{
+    public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
+    {
+        var sitemapManager = serviceProvider.GetRequiredService<ISitemapManager>();
+        var sitemapCacheProvider = serviceProvider.GetRequiredService<ISitemapCacheProvider>();
+
+        var sitemaps = await sitemapManager.GetSitemapsAsync();
+        await sitemapCacheProvider.CleanSitemapCacheAsync(sitemaps.Select(s => s.CacheFileName));
     }
 }

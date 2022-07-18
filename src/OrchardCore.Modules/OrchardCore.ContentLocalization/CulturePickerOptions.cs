@@ -1,7 +1,6 @@
-namespace OrchardCore.ContentLocalization
+namespace OrchardCore.ContentLocalization;
+
+public class CulturePickerOptions
 {
-    public class CulturePickerOptions
-    {
-        public int CookieLifeTime { get; set; } = 14;
-    }
+    public int CookieLifeTime { get; set; } = 14;
 }

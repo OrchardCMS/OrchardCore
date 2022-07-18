@@ -3,22 +3,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Tenants
+namespace OrchardCore.Tenants;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
+    public static readonly Permission ManageTenants = new Permission("ManageTenants", "Manage tenants");
+    public static readonly Permission ManageTenantFeatureProfiles = new Permission("ManageTenantFeatureProfiles", "Manage tenant feature profiles");
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        public static readonly Permission ManageTenants = new Permission("ManageTenants", "Manage tenants");
-        public static readonly Permission ManageTenantFeatureProfiles = new Permission("ManageTenantFeatureProfiles", "Manage tenant feature profiles");
+        return Task.FromResult(new[] { ManageTenants, ManageTenantFeatureProfiles }.AsEnumerable());
+    }
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return Task.FromResult(new[] { ManageTenants, ManageTenantFeatureProfiles }.AsEnumerable());
-        }
-
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
-            {
                 new PermissionStereotype
                 {
                     Name = "Administrator",
@@ -29,6 +29,5 @@ namespace OrchardCore.Tenants
                     }
                 }
             };
-        }
     }
 }

@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 
-namespace OrchardCore.ContentManagement.GraphQL.Queries
+namespace OrchardCore.ContentManagement.GraphQL.Queries;
+
+public interface IIndexAliasProvider
 {
-    public interface IIndexAliasProvider
-    {
-        IEnumerable<IndexAlias> GetAliases();
-    }
+    IEnumerable<IndexAlias> GetAliases();
 }

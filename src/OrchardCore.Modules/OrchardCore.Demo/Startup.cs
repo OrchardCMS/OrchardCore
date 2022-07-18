@@ -28,80 +28,80 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 
-namespace OrchardCore.Demo
+namespace OrchardCore.Demo;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    private readonly AdminOptions _adminOptions;
+
+    public Startup(IOptions<AdminOptions> adminOptions)
     {
-        private readonly AdminOptions _adminOptions;
+        _adminOptions = adminOptions.Value;
+    }
 
-        public Startup(IOptions<AdminOptions> adminOptions)
+    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.MapAreaControllerRoute(
+            name: "Demo.Home.Index",
+            areaName: "OrchardCore.Demo",
+            pattern: "Home/Index",
+            defaults: new { controller = "Home", action = "Index" }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "Demo.Home.Display",
+            areaName: "OrchardCore.Demo",
+            pattern: "Home/Display/{contentItemId}",
+            defaults: new { controller = "Home", action = "Display" }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "Demo.Home.Error",
+            areaName: "OrchardCore.Demo",
+            pattern: "Home/IndexError",
+            defaults: new { controller = "Home", action = "IndexError" }
+        );
+
+        var demoAdminControllerName = typeof(AdminController).ControllerName();
+
+        routes.MapAreaControllerRoute(
+            name: "Demo.Admin",
+            areaName: "OrchardCore.Demo",
+            pattern: _adminOptions.AdminUrlPrefix + "/Demo/Admin",
+            defaults: new { controller = demoAdminControllerName, action = nameof(AdminController.Index) }
+        );
+
+        var demoContentControllerName = typeof(ContentController).ControllerName();
+
+        routes.MapAreaControllerRoute(
+            name: "Demo.Content.Edit",
+            areaName: "OrchardCore.Demo",
+            pattern: _adminOptions.AdminUrlPrefix + "/Demo/Content/Edit",
+            defaults: new { controller = demoContentControllerName, action = nameof(ContentController.Edit) }
+        );
+
+        builder.UseMiddleware<NonBlockingMiddleware>();
+        builder.UseMiddleware<BlockingMiddleware>();
+    }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ITestDependency, ClassFoo>();
+        services.AddScoped<ICommandHandler, DemoCommands>();
+        services.AddSingleton<IBackgroundTask, TestBackgroundTask>();
+        services.AddScoped<IShapeTableProvider, DemoShapeProvider>();
+        services.AddShapeAttributes<DemoShapeProvider>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddScoped<IContentDisplayDriver, TestContentElementDisplayDriver>();
+        services.AddScoped<IDataMigration, Migrations>();
+        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddContentPart<TestContentPartA>();
+        services.AddScoped<IUserClaimsProvider, UserProfileClaimsProvider>();
+
+        services.AddScoped<IDisplayDriver<User>, UserProfileDisplayDriver>();
+
+        services.Configure<RazorPagesOptions>(options =>
         {
-            _adminOptions = adminOptions.Value;
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "Demo.Home.Index",
-                areaName: "OrchardCore.Demo",
-                pattern: "Home/Index",
-                defaults: new { controller = "Home", action = "Index" }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Demo.Home.Display",
-                areaName: "OrchardCore.Demo",
-                pattern: "Home/Display/{contentItemId}",
-                defaults: new { controller = "Home", action = "Display" }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Demo.Home.Error",
-                areaName: "OrchardCore.Demo",
-                pattern: "Home/IndexError",
-                defaults: new { controller = "Home", action = "IndexError" }
-            );
-
-            var demoAdminControllerName = typeof(AdminController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "Demo.Admin",
-                areaName: "OrchardCore.Demo",
-                pattern: _adminOptions.AdminUrlPrefix + "/Demo/Admin",
-                defaults: new { controller = demoAdminControllerName, action = nameof(AdminController.Index) }
-            );
-
-            var demoContentControllerName = typeof(ContentController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "Demo.Content.Edit",
-                areaName: "OrchardCore.Demo",
-                pattern: _adminOptions.AdminUrlPrefix + "/Demo/Content/Edit",
-                defaults: new { controller = demoContentControllerName, action = nameof(ContentController.Edit) }
-            );
-
-            builder.UseMiddleware<NonBlockingMiddleware>();
-            builder.UseMiddleware<BlockingMiddleware>();
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<ITestDependency, ClassFoo>();
-            services.AddScoped<ICommandHandler, DemoCommands>();
-            services.AddSingleton<IBackgroundTask, TestBackgroundTask>();
-            services.AddScoped<IShapeTableProvider, DemoShapeProvider>();
-            services.AddShapeAttributes<DemoShapeProvider>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IContentDisplayDriver, TestContentElementDisplayDriver>();
-            services.AddScoped<IDataMigration, Migrations>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddContentPart<TestContentPartA>();
-            services.AddScoped<IUserClaimsProvider, UserProfileClaimsProvider>();
-
-            services.AddScoped<IDisplayDriver<User>, UserProfileDisplayDriver>();
-
-            services.Configure<RazorPagesOptions>(options =>
-            {
                 // Add a custom page folder route (only applied to non admin pages)
                 options.Conventions.AddAreaFolderRoute("OrchardCore.Demo", "/", "Demo");
 
@@ -121,12 +121,11 @@ namespace OrchardCore.Demo
                 //options.Conventions.AddAreaPageRoute("OrchardCore.Demo", "/Hello", "");
             });
 
-            services.AddTagHelpers(typeof(BazTagHelper).Assembly);
+        services.AddTagHelpers(typeof(BazTagHelper).Assembly);
 
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<OrchardCore.Demo.ViewModels.TodoViewModel>();
-            });
-        }
+        services.Configure<TemplateOptions>(o =>
+        {
+            o.MemberAccessStrategy.Register<OrchardCore.Demo.ViewModels.TodoViewModel>();
+        });
     }
 }

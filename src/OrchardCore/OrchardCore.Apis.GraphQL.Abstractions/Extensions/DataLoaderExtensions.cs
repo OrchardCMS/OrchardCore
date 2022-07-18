@@ -3,25 +3,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.DataLoader;
 
-namespace OrchardCore.Apis.GraphQL
+namespace OrchardCore.Apis.GraphQL;
+
+public static class DataLoaderExtensions
 {
-    public static class DataLoaderExtensions
+    public static Task<T[]> LoadAsync<TKey, T>(this IDataLoader<TKey, T> dataLoader, IEnumerable<TKey> keys)
     {
-        public static Task<T[]> LoadAsync<TKey, T>(this IDataLoader<TKey, T> dataLoader, IEnumerable<TKey> keys)
+        var tasks = new List<Task<T>>();
+
+        foreach (var key in keys)
         {
-            var tasks = new List<Task<T>>();
-
-            foreach (var key in keys)
-            {
-                tasks.Add(dataLoader.LoadAsync(key));
-            }
-
-            return Task.WhenAll(tasks);
+            tasks.Add(dataLoader.LoadAsync(key));
         }
 
-        public static Task<T[]> LoadAsync<TKey, T>(this IDataLoader<TKey, T> dataLoader, params TKey[] keys)
-        {
-            return dataLoader.LoadAsync(keys.AsEnumerable());
-        }
+        return Task.WhenAll(tasks);
+    }
+
+    public static Task<T[]> LoadAsync<TKey, T>(this IDataLoader<TKey, T> dataLoader, params TKey[] keys)
+    {
+        return dataLoader.LoadAsync(keys.AsEnumerable());
     }
 }

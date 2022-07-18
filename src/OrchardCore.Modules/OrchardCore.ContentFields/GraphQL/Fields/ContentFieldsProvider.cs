@@ -8,11 +8,11 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.ContentFields.GraphQL.Fields
+namespace OrchardCore.ContentFields.GraphQL.Fields;
+
+public class ContentFieldsProvider : IContentFieldProvider
 {
-    public class ContentFieldsProvider : IContentFieldProvider
-    {
-        private static readonly Dictionary<string, FieldTypeDescriptor> ContentFieldTypeMappings = new Dictionary<string, FieldTypeDescriptor>
+    private static readonly Dictionary<string, FieldTypeDescriptor> ContentFieldTypeMappings = new Dictionary<string, FieldTypeDescriptor>
         {
             {
                 nameof(BooleanField),
@@ -86,44 +86,43 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             }
         };
 
-        public FieldType GetField(ContentPartFieldDefinition field)
-        {
-            if (!ContentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name)) return null;
+    public FieldType GetField(ContentPartFieldDefinition field)
+    {
+        if (!ContentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name)) return null;
 
-            var fieldDescriptor = ContentFieldTypeMappings[field.FieldDefinition.Name];
-            return new FieldType
+        var fieldDescriptor = ContentFieldTypeMappings[field.FieldDefinition.Name];
+        return new FieldType
+        {
+            Name = field.Name,
+            Description = fieldDescriptor.Description,
+            Type = fieldDescriptor.FieldType,
+            Resolver = new FuncFieldResolver<ContentElement, object>(context =>
             {
-                Name = field.Name,
-                Description = fieldDescriptor.Description,
-                Type = fieldDescriptor.FieldType,
-                Resolver = new FuncFieldResolver<ContentElement, object>(context =>
-                {
                     // Check if part has been collapsed by trying to get the parent part.
                     var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
-                    if (contentPart == null)
-                    {
+                if (contentPart == null)
+                {
                         // Part is not collapsed, access field directly.
                         contentPart = context.Source;
-                    }
+                }
 
-                    var contentField = contentPart?.Get(fieldDescriptor.UnderlyingType, field.Name);
+                var contentField = contentPart?.Get(fieldDescriptor.UnderlyingType, field.Name);
 
-                    if (contentField == null)
-                    {
-                        contentField = context.Source.Get(fieldDescriptor.UnderlyingType, field.Name);
-                    }
+                if (contentField == null)
+                {
+                    contentField = context.Source.Get(fieldDescriptor.UnderlyingType, field.Name);
+                }
 
-                    return contentField == null ? null : fieldDescriptor.FieldAccessor(contentField);
-                })
-            };
-        }
+                return contentField == null ? null : fieldDescriptor.FieldAccessor(contentField);
+            })
+        };
+    }
 
-        private class FieldTypeDescriptor
-        {
-            public string Description { get; set; }
-            public Type FieldType { get; set; }
-            public Type UnderlyingType { get; set; }
-            public Func<ContentElement, object> FieldAccessor { get; set; }
-        }
+    private class FieldTypeDescriptor
+    {
+        public string Description { get; set; }
+        public Type FieldType { get; set; }
+        public Type UnderlyingType { get; set; }
+        public Func<ContentElement, object> FieldAccessor { get; set; }
     }
 }

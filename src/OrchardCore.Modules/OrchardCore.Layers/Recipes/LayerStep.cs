@@ -10,147 +10,146 @@ using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Rules;
 
-namespace OrchardCore.Layers.Recipes
+namespace OrchardCore.Layers.Recipes;
+
+/// <summary>
+/// This recipe step creates or updates a layer.
+/// </summary>
+public class LayerStep : IRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step creates or updates a layer.
-    /// </summary>
-    public class LayerStep : IRecipeStepHandler
+    private readonly static JsonSerializer JsonSerializer = new JsonSerializer()
     {
-        private readonly static JsonSerializer JsonSerializer = new JsonSerializer()
-        {
-            TypeNameHandling = TypeNameHandling.Auto
-        };
+        TypeNameHandling = TypeNameHandling.Auto
+    };
 
-        private readonly ILayerService _layerService;
-        private readonly IRuleMigrator _ruleMigrator;
-        private readonly IConditionIdGenerator _conditionIdGenerator;
-        private readonly IEnumerable<IConditionFactory> _factories;
+    private readonly ILayerService _layerService;
+    private readonly IRuleMigrator _ruleMigrator;
+    private readonly IConditionIdGenerator _conditionIdGenerator;
+    private readonly IEnumerable<IConditionFactory> _factories;
 
-        public LayerStep(
-            ILayerService layerService,
-            IRuleMigrator ruleMigrator,
-            IConditionIdGenerator conditionIdGenerator,
-            IEnumerable<IConditionFactory> factories)
+    public LayerStep(
+        ILayerService layerService,
+        IRuleMigrator ruleMigrator,
+        IConditionIdGenerator conditionIdGenerator,
+        IEnumerable<IConditionFactory> factories)
+    {
+        _layerService = layerService;
+        _ruleMigrator = ruleMigrator;
+        _conditionIdGenerator = conditionIdGenerator;
+        _factories = factories;
+    }
+
+    public async Task ExecuteAsync(RecipeExecutionContext context)
+    {
+        if (!String.Equals(context.Name, "Layers", StringComparison.OrdinalIgnoreCase))
         {
-            _layerService = layerService;
-            _ruleMigrator = ruleMigrator;
-            _conditionIdGenerator = conditionIdGenerator;
-            _factories = factories;
+            return;
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        var model = context.Step.ToObject<LayersStepModel>();
+
+        var allLayers = await _layerService.LoadLayersAsync();
+
+        var unknownTypes = new List<string>();
+        var factories = _factories.ToDictionary(x => x.Name);
+
+        foreach (var layerStep in model.Layers)
         {
-            if (!String.Equals(context.Name, "Layers", StringComparison.OrdinalIgnoreCase))
+            var layer = allLayers.Layers.FirstOrDefault(x => String.Equals(x.Name, layerStep.Name, StringComparison.OrdinalIgnoreCase));
+
+            if (layer == null)
             {
-                return;
+                layer = new Layer();
+                allLayers.Layers.Add(layer);
             }
 
-            var model = context.Step.ToObject<LayersStepModel>();
-
-            var allLayers = await _layerService.LoadLayersAsync();
-
-            var unknownTypes = new List<string>();
-            var factories = _factories.ToDictionary(x => x.Name);
-
-            foreach (var layerStep in model.Layers)
+            // Backwards compatability check.
+            if (layer.LayerRule == null)
             {
-                var layer = allLayers.Layers.FirstOrDefault(x => String.Equals(x.Name, layerStep.Name, StringComparison.OrdinalIgnoreCase));
+                layer.LayerRule = new Rule();
+                _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);
+            }
 
-                if (layer == null)
+            // Replace any property that is set in the recipe step
+            if (!String.IsNullOrEmpty(layerStep.Name))
+            {
+                layer.Name = layerStep.Name;
+            }
+            else
+            {
+                throw new ArgumentNullException($"{nameof(layer.Name)} is required");
+            }
+
+            if (layerStep.LayerRule != null)
+            {
+                if (!String.IsNullOrEmpty(layerStep.LayerRule.ConditionId))
                 {
-                    layer = new Layer();
-                    allLayers.Layers.Add(layer);
+                    layer.LayerRule.ConditionId = layerStep.LayerRule.ConditionId;
                 }
 
-                // Backwards compatability check.
-                if (layer.LayerRule == null)
+                // The conditions list is cleared, because we cannot logically merge conditions.
+                layer.LayerRule.Conditions.Clear();
+                foreach (var jCondition in layerStep.LayerRule.Conditions)
                 {
-                    layer.LayerRule = new Rule();
-                    _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);
-                }
-
-                // Replace any property that is set in the recipe step
-                if (!String.IsNullOrEmpty(layerStep.Name))
-                {
-                    layer.Name = layerStep.Name;
-                }
-                else
-                {
-                    throw new ArgumentNullException($"{nameof(layer.Name)} is required");
-                }
-
-                if (layerStep.LayerRule != null)
-                {
-                    if (!String.IsNullOrEmpty(layerStep.LayerRule.ConditionId))
+                    var name = jCondition["Name"].ToString();
+                    if (factories.TryGetValue(name, out var factory))
                     {
-                        layer.LayerRule.ConditionId = layerStep.LayerRule.ConditionId;
+                        var factoryCondition = (Condition)jCondition.ToObject(factory.Create().GetType(), JsonSerializer);
+
+                        layer.LayerRule.Conditions.Add(factoryCondition);
                     }
-
-                    // The conditions list is cleared, because we cannot logically merge conditions.
-                    layer.LayerRule.Conditions.Clear();
-                    foreach (var jCondition in layerStep.LayerRule.Conditions)
+                    else
                     {
-                        var name = jCondition["Name"].ToString();
-                        if (factories.TryGetValue(name, out var factory))
-                        {
-                            var factoryCondition = (Condition)jCondition.ToObject(factory.Create().GetType(), JsonSerializer);
-
-                            layer.LayerRule.Conditions.Add(factoryCondition);
-                        }
-                        else
-                        {
-                            unknownTypes.Add(name);
-                        }
+                        unknownTypes.Add(name);
                     }
                 }
+            }
 
 #pragma warning disable 0618
-                // Migrate any old rule in a recipe to the new rule format.
-                // Do not import the old rule.
-                if (!String.IsNullOrEmpty(layerStep.Rule))
-                {
-                    _ruleMigrator.Migrate(layerStep.Rule, layer.LayerRule);
-                }
+            // Migrate any old rule in a recipe to the new rule format.
+            // Do not import the old rule.
+            if (!String.IsNullOrEmpty(layerStep.Rule))
+            {
+                _ruleMigrator.Migrate(layerStep.Rule, layer.LayerRule);
+            }
 #pragma warning restore 0618
 
-                if (!String.IsNullOrEmpty(layerStep.Description))
-                {
-                    layer.Description = layerStep.Description;
-                }
-            }
-
-            if (unknownTypes.Count != 0)
+            if (!String.IsNullOrEmpty(layerStep.Description))
             {
-                var prefix = "No changes have been made. The following types of conditions cannot be added:";
-                var suffix = "Please ensure that the related features are enabled to add these types of conditions.";
-
-                throw new InvalidOperationException($"{prefix} {String.Join(", ", unknownTypes)}. {suffix}");
+                layer.Description = layerStep.Description;
             }
-
-            await _layerService.UpdateAsync(allLayers);
         }
+
+        if (unknownTypes.Count != 0)
+        {
+            var prefix = "No changes have been made. The following types of conditions cannot be added:";
+            var suffix = "Please ensure that the related features are enabled to add these types of conditions.";
+
+            throw new InvalidOperationException($"{prefix} {String.Join(", ", unknownTypes)}. {suffix}");
+        }
+
+        await _layerService.UpdateAsync(allLayers);
     }
+}
 
-    public class LayersStepModel
-    {
-        public LayerStepModel[] Layers { get; set; }
-    }
+public class LayersStepModel
+{
+    public LayerStepModel[] Layers { get; set; }
+}
 
-    public class LayerStepModel
-    {
-        public string Name { get; set; }
+public class LayerStepModel
+{
+    public string Name { get; set; }
 
-        public string Rule { get; set; }
-        public string Description { get; set; }
+    public string Rule { get; set; }
+    public string Description { get; set; }
 
-        public RuleStepModel LayerRule { get; set; }
-    }
+    public RuleStepModel LayerRule { get; set; }
+}
 
-    public class RuleStepModel
-    {
-        public string Name { get; set; }
-        public string ConditionId { get; set; }
-        public JArray Conditions { get; set; }
-    }
+public class RuleStepModel
+{
+    public string Name { get; set; }
+    public string ConditionId { get; set; }
+    public JArray Conditions { get; set; }
 }

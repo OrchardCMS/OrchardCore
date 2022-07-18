@@ -1,7 +1,6 @@
-namespace OrchardCore.Rules
+namespace OrchardCore.Rules;
+
+public interface IConditionIdGenerator
 {
-    public interface IConditionIdGenerator
-    {
-        void GenerateUniqueId(Condition condition);
-    }
+    void GenerateUniqueId(Condition condition);
 }

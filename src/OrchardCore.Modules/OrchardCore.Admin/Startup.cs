@@ -21,75 +21,74 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
-namespace OrchardCore.Admin
+namespace OrchardCore.Admin;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    private readonly AdminOptions _adminOptions;
+    private readonly IShellConfiguration _configuration;
+
+    public Startup(IOptions<AdminOptions> adminOptions, IShellConfiguration configuration)
     {
-        private readonly AdminOptions _adminOptions;
-        private readonly IShellConfiguration _configuration;
+        _adminOptions = adminOptions.Value;
+        _configuration = configuration;
+    }
 
-        public Startup(IOptions<AdminOptions> adminOptions, IShellConfiguration configuration)
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddNavigation();
+
+        services.Configure<MvcOptions>((options) =>
         {
-            _adminOptions = adminOptions.Value;
-            _configuration = configuration;
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddNavigation();
-
-            services.Configure<MvcOptions>((options) =>
-            {
-                options.Filters.Add(typeof(AdminFilter));
-                options.Filters.Add(typeof(AdminMenuFilter));
+            options.Filters.Add(typeof(AdminFilter));
+            options.Filters.Add(typeof(AdminMenuFilter));
 
                 // Ordered to be called before any global filter.
                 options.Filters.Add(typeof(AdminZoneFilter), -1000);
-            });
+        });
 
-            services.AddTransient<IAreaControllerRouteMapper, AdminAreaControllerRouteMapper>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<IThemeSelector, AdminThemeSelector>();
-            services.AddScoped<IAdminThemeService, AdminThemeService>();
-            services.AddScoped<IDisplayDriver<ISite>, AdminSiteSettingsDisplayDriver>();
-            services.AddScoped<IPermissionProvider, PermissionsAdminSettings>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
+        services.AddTransient<IAreaControllerRouteMapper, AdminAreaControllerRouteMapper>();
+        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddScoped<IThemeSelector, AdminThemeSelector>();
+        services.AddScoped<IAdminThemeService, AdminThemeService>();
+        services.AddScoped<IDisplayDriver<ISite>, AdminSiteSettingsDisplayDriver>();
+        services.AddScoped<IPermissionProvider, PermissionsAdminSettings>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
 
-            services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore_Admin"));
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "Admin",
-                areaName: "OrchardCore.Admin",
-                pattern: _adminOptions.AdminUrlPrefix,
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
-            );
-        }
+        services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore_Admin"));
     }
 
-    public class AdminPagesStartup : StartupBase
+    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        public override int Order => 1000;
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.Configure<RazorPagesOptions>((options) =>
-            {
-                var adminOptions = ShellScope.Services.GetRequiredService<IOptions<AdminOptions>>().Value;
-                options.Conventions.Add(new AdminPageRouteModelConvention(adminOptions.AdminUrlPrefix));
-            });
-        }
+        routes.MapAreaControllerRoute(
+            name: "Admin",
+            areaName: "OrchardCore.Admin",
+            pattern: _adminOptions.AdminUrlPrefix,
+            defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
+        );
     }
+}
 
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+public class AdminPagesStartup : StartupBase
+{
+    public override int Order => 1000;
+
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        services.Configure<RazorPagesOptions>((options) =>
         {
-            services.AddSiteSettingsPropertyDeploymentStep<AdminSettings, DeploymentStartup>(S => S["Admin settings"], S => S["Exports the admin settings."]);
-        }
+            var adminOptions = ShellScope.Services.GetRequiredService<IOptions<AdminOptions>>().Value;
+            options.Conventions.Add(new AdminPageRouteModelConvention(adminOptions.AdminUrlPrefix));
+        });
+    }
+}
+
+[RequireFeatures("OrchardCore.Deployment")]
+public class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSiteSettingsPropertyDeploymentStep<AdminSettings, DeploymentStartup>(S => S["Admin settings"], S => S["Exports the admin settings."]);
     }
 }

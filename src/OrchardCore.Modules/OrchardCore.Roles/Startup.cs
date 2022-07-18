@@ -22,70 +22,69 @@ using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 
-namespace OrchardCore.Roles
+namespace OrchardCore.Roles;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    private readonly AdminOptions _adminOptions;
+
+    public Startup(IOptions<AdminOptions> adminOptions)
     {
-        private readonly AdminOptions _adminOptions;
-
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.TryAddScoped<RoleManager<IRole>>();
-            services.TryAddScoped<IRoleStore<IRole>, RoleStore>();
-            services.TryAddScoped<IRoleService, RoleService>();
-            services.TryAddScoped<IRoleClaimStore<IRole>, RoleStore>();
-            services.AddRecipeExecutionStep<RolesStep>();
-
-            services.AddScoped<IFeatureEventHandler, RoleUpdater>();
-            services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var adminControllerName = typeof(AdminController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "RolesIndex",
-                areaName: "OrchardCore.Roles",
-                pattern: _adminOptions.AdminUrlPrefix + "/Roles/Index",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "RolesCreate",
-                areaName: "OrchardCore.Roles",
-                pattern: _adminOptions.AdminUrlPrefix + "/Roles/Create",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "RolesDelete",
-                areaName: "OrchardCore.Roles",
-                pattern: _adminOptions.AdminUrlPrefix + "/Roles/Delete/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "RolesEdit",
-                areaName: "OrchardCore.Roles",
-                pattern: _adminOptions.AdminUrlPrefix + "/Roles/Edit/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
-            );
-        }
+        _adminOptions = adminOptions.Value;
     }
 
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<IDeploymentSource, AllRolesDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllRolesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllRolesDeploymentStepDriver>();
-        }
+        services.TryAddScoped<RoleManager<IRole>>();
+        services.TryAddScoped<IRoleStore<IRole>, RoleStore>();
+        services.TryAddScoped<IRoleService, RoleService>();
+        services.TryAddScoped<IRoleClaimStore<IRole>, RoleStore>();
+        services.AddRecipeExecutionStep<RolesStep>();
+
+        services.AddScoped<IFeatureEventHandler, RoleUpdater>();
+        services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddScoped<IPermissionProvider, Permissions>();
+    }
+
+    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        var adminControllerName = typeof(AdminController).ControllerName();
+
+        routes.MapAreaControllerRoute(
+            name: "RolesIndex",
+            areaName: "OrchardCore.Roles",
+            pattern: _adminOptions.AdminUrlPrefix + "/Roles/Index",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
+        );
+        routes.MapAreaControllerRoute(
+            name: "RolesCreate",
+            areaName: "OrchardCore.Roles",
+            pattern: _adminOptions.AdminUrlPrefix + "/Roles/Create",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
+        );
+        routes.MapAreaControllerRoute(
+            name: "RolesDelete",
+            areaName: "OrchardCore.Roles",
+            pattern: _adminOptions.AdminUrlPrefix + "/Roles/Delete/{id}",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
+        );
+        routes.MapAreaControllerRoute(
+            name: "RolesEdit",
+            areaName: "OrchardCore.Roles",
+            pattern: _adminOptions.AdminUrlPrefix + "/Roles/Edit/{id}",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
+        );
+    }
+}
+
+[RequireFeatures("OrchardCore.Deployment")]
+public class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddTransient<IDeploymentSource, AllRolesDeploymentSource>();
+        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllRolesDeploymentStep>());
+        services.AddScoped<IDisplayDriver<DeploymentStep>, AllRolesDeploymentStepDriver>();
     }
 }

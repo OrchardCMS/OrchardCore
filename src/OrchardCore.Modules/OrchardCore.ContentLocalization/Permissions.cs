@@ -3,29 +3,29 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.ContentLocalization
-{
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission LocalizeContent = new Permission("LocalizeContent", "Localize content for others");
-        public static readonly Permission LocalizeOwnContent = new Permission("LocalizeOwnContent", "Localize own content", new[] { LocalizeContent });
-        public static readonly Permission ManageContentCulturePicker = new Permission("ManageContentCulturePicker", "Manage ContentCulturePicker settings");
+namespace OrchardCore.ContentLocalization;
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+public class Permissions : IPermissionProvider
+{
+    public static readonly Permission LocalizeContent = new Permission("LocalizeContent", "Localize content for others");
+    public static readonly Permission LocalizeOwnContent = new Permission("LocalizeOwnContent", "Localize own content", new[] { LocalizeContent });
+    public static readonly Permission ManageContentCulturePicker = new Permission("ManageContentCulturePicker", "Manage ContentCulturePicker settings");
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    {
+        return Task.FromResult(new[]
         {
-            return Task.FromResult(new[]
-            {
                 LocalizeContent,
                 LocalizeOwnContent,
                 ManageContentCulturePicker
             }
-            .AsEnumerable());
-        }
+        .AsEnumerable());
+    }
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return new[]
-            {
                 new PermissionStereotype
                 {
                     Name = "Administrator",
@@ -59,6 +59,5 @@ namespace OrchardCore.ContentLocalization
                     Name = "Anonymous"
                 },
             };
-        }
     }
 }

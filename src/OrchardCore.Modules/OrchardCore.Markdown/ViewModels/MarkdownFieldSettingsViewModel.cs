@@ -1,8 +1,7 @@
-namespace OrchardCore.Markdown.ViewModels
+namespace OrchardCore.Markdown.ViewModels;
+
+public class MarkdownFieldSettingsViewModel
 {
-    public class MarkdownFieldSettingsViewModel
-    {
-        public bool SanitizeHtml { get; set; }
-        public string Hint { get; set; }
-    }
+    public bool SanitizeHtml { get; set; }
+    public string Hint { get; set; }
 }

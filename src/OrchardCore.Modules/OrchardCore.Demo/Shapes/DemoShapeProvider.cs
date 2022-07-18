@@ -1,28 +1,27 @@
 using System.Text;
 using Microsoft.AspNetCore.Html;
 
-namespace OrchardCore.DisplayManagement.Descriptors
+namespace OrchardCore.DisplayManagement.Descriptors;
+
+public class DemoShapeProvider : IShapeTableProvider, IShapeAttributeProvider
 {
-    public class DemoShapeProvider : IShapeTableProvider, IShapeAttributeProvider
+    public void Discover(ShapeTableBuilder builder)
     {
-        public void Discover(ShapeTableBuilder builder)
+        builder.Describe("Foo")
+            .OnDisplaying(displaying =>
+                displaying.ChildContent = new HtmlString("<h1>Hi</h1>")
+            );
+    }
+
+    [Shape]
+    public IHtmlContent Baz(string text, int count)
+    {
+        var sb = new StringBuilder();
+        for (int i = 0; i < count; i++)
         {
-            builder.Describe("Foo")
-                .OnDisplaying(displaying =>
-                    displaying.ChildContent = new HtmlString("<h1>Hi</h1>")
-                );
+            sb.Append(text);
         }
 
-        [Shape]
-        public IHtmlContent Baz(string text, int count)
-        {
-            var sb = new StringBuilder();
-            for (int i = 0; i < count; i++)
-            {
-                sb.Append(text);
-            }
-
-            return new HtmlString(sb.ToString());
-        }
+        return new HtmlString(sb.ToString());
     }
 }

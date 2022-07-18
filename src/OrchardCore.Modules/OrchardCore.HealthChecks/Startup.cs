@@ -6,28 +6,27 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 
-namespace OrchardCore.HealthChecks
+namespace OrchardCore.HealthChecks;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    private readonly IShellConfiguration _shellConfiguration;
+
+    public Startup(IShellConfiguration shellConfiguration)
     {
-        private readonly IShellConfiguration _shellConfiguration;
+        _shellConfiguration = shellConfiguration;
+    }
 
-        public Startup(IShellConfiguration shellConfiguration)
-        {
-            _shellConfiguration = shellConfiguration;
-        }
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        var healthCheckOptions = serviceProvider.GetService<IOptions<HealthChecksOptions>>().Value;
 
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var healthCheckOptions = serviceProvider.GetService<IOptions<HealthChecksOptions>>().Value;
+        app.UseHealthChecks(healthCheckOptions.Url);
+    }
 
-            app.UseHealthChecks(healthCheckOptions.Url);
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddHealthChecks();
-            services.Configure<HealthChecksOptions>(_shellConfiguration.GetSection("OrchardCore_HealthChecks"));
-        }
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddHealthChecks();
+        services.Configure<HealthChecksOptions>(_shellConfiguration.GetSection("OrchardCore_HealthChecks"));
     }
 }

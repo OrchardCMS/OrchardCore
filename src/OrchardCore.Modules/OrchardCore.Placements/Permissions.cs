@@ -3,21 +3,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Placements
+namespace OrchardCore.Placements;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
+    public static readonly Permission ManagePlacements = new Permission("ManagePlacements", "Manage placements");
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        public static readonly Permission ManagePlacements = new Permission("ManagePlacements", "Manage placements");
+        return Task.FromResult(new[] { ManagePlacements }.AsEnumerable());
+    }
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return Task.FromResult(new[] { ManagePlacements }.AsEnumerable());
-        }
-
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
-            {
                 new PermissionStereotype
                 {
                     Name = "Administrator",
@@ -29,6 +29,5 @@ namespace OrchardCore.Placements
                     Permissions = new[] { ManagePlacements }
                 }
             };
-        }
     }
 }

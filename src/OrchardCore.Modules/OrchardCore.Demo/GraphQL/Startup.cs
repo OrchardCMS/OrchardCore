@@ -4,15 +4,15 @@ using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.Demo.Models;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Demo.GraphQL
+namespace OrchardCore.Demo.GraphQL;
+
+[RequireFeatures("OrchardCore.Apis.GraphQL")]
+public class Startup : StartupBase
 {
-    [RequireFeatures("OrchardCore.Apis.GraphQL")]
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        services.Configure<GraphQLContentOptions>(options =>
         {
-            services.Configure<GraphQLContentOptions>(options =>
-            {
                 // Top Level Content Type options
                 options.ContentTypeOptions = options.ContentTypeOptions.Union(new[] {
                         new GraphQLContentTypeOption("Blog")
@@ -33,36 +33,36 @@ namespace OrchardCore.Demo.GraphQL
                                 }
                             }
                         }
-                    }
-                );
+                }
+            );
 
-                options.ConfigureContentType("Blog", (typeConfig) =>
-                {
-                    typeConfig.Collapse = false;
-                    typeConfig.Hidden = false;
+            options.ConfigureContentType("Blog", (typeConfig) =>
+            {
+                typeConfig.Collapse = false;
+                typeConfig.Hidden = false;
 
-                    typeConfig
-                        .ConfigurePart("TestContentPartA", (partConfig) =>
-                        {
-                            partConfig.Collapse = false;
-                            partConfig.Hidden = false;
-                        })
-                        .ConfigurePart<TestContentPartA>((partConfig) =>
-                        {
-                            partConfig.Collapse = false;
-                            partConfig.Hidden = false;
-                        });
-                });
+                typeConfig
+                    .ConfigurePart("TestContentPartA", (partConfig) =>
+                    {
+                        partConfig.Collapse = false;
+                        partConfig.Hidden = false;
+                    })
+                    .ConfigurePart<TestContentPartA>((partConfig) =>
+                    {
+                        partConfig.Collapse = false;
+                        partConfig.Hidden = false;
+                    });
+            });
 
                 // Ignore Fields on GraphQL Objects
                 options.HiddenFields = options.HiddenFields.Union(new[] {
                     new GraphQLField(typeof(TestQueryObjectType), "lineIgnored"),
                     new GraphQLField<TestQueryObjectType>("lineOtherIgnored")
-                });
+            });
 
-                options
-                    .IgnoreField(typeof(TestQueryObjectType), "lineIgnored")
-                    .IgnoreField<TestQueryObjectType>("lineIgnored");
+            options
+                .IgnoreField(typeof(TestQueryObjectType), "lineIgnored")
+                .IgnoreField<TestQueryObjectType>("lineIgnored");
 
                 // Top level Part Options
                 options.PartOptions = options.PartOptions.Union(new[] {
@@ -76,20 +76,19 @@ namespace OrchardCore.Demo.GraphQL
                         Collapse = false,
                         Hidden = false
                     }
-                });
-
-                options
-                    .ConfigurePart("TestContentPartA", (partConfig) =>
-                    {
-                        partConfig.Collapse = false;
-                        partConfig.Hidden = false;
-                    })
-                    .ConfigurePart<TestContentPartA>((partConfig) =>
-                    {
-                        partConfig.Collapse = false;
-                        partConfig.Hidden = false;
-                    });
             });
-        }
+
+            options
+                .ConfigurePart("TestContentPartA", (partConfig) =>
+                {
+                    partConfig.Collapse = false;
+                    partConfig.Hidden = false;
+                })
+                .ConfigurePart<TestContentPartA>((partConfig) =>
+                {
+                    partConfig.Collapse = false;
+                    partConfig.Hidden = false;
+                });
+        });
     }
 }

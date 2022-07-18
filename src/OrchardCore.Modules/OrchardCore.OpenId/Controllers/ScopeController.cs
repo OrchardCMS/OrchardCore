@@ -18,262 +18,261 @@ using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.OpenId.Controllers
+namespace OrchardCore.OpenId.Controllers;
+
+[Admin, Feature(OpenIdConstants.Features.Management)]
+public class ScopeController : Controller
 {
-    [Admin, Feature(OpenIdConstants.Features.Management)]
-    public class ScopeController : Controller
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IStringLocalizer S;
+    private readonly IOpenIdScopeManager _scopeManager;
+    private readonly ISiteService _siteService;
+    private readonly INotifier _notifier;
+    private readonly ShellDescriptor _shellDescriptor;
+    private readonly ShellSettings _shellSettings;
+    private readonly IShellHost _shellHost;
+    private readonly dynamic New;
+
+    public ScopeController(
+        IOpenIdScopeManager scopeManager,
+        IShapeFactory shapeFactory,
+        ISiteService siteService,
+        IStringLocalizer<ScopeController> stringLocalizer,
+        IAuthorizationService authorizationService,
+        IHtmlLocalizer<ScopeController> htmlLocalizer,
+        INotifier notifier,
+        ShellDescriptor shellDescriptor,
+        ShellSettings shellSettings,
+        IShellHost shellHost)
     {
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer S;
-        private readonly IOpenIdScopeManager _scopeManager;
-        private readonly ISiteService _siteService;
-        private readonly INotifier _notifier;
-        private readonly ShellDescriptor _shellDescriptor;
-        private readonly ShellSettings _shellSettings;
-        private readonly IShellHost _shellHost;
-        private readonly dynamic New;
+        _scopeManager = scopeManager;
+        New = shapeFactory;
+        _siteService = siteService;
+        S = stringLocalizer;
+        _authorizationService = authorizationService;
+        _notifier = notifier;
+        _shellDescriptor = shellDescriptor;
+        _shellSettings = shellSettings;
+        _shellHost = shellHost;
+    }
 
-        public ScopeController(
-            IOpenIdScopeManager scopeManager,
-            IShapeFactory shapeFactory,
-            ISiteService siteService,
-            IStringLocalizer<ScopeController> stringLocalizer,
-            IAuthorizationService authorizationService,
-            IHtmlLocalizer<ScopeController> htmlLocalizer,
-            INotifier notifier,
-            ShellDescriptor shellDescriptor,
-            ShellSettings shellSettings,
-            IShellHost shellHost)
+    public async Task<ActionResult> Index(PagerParameters pagerParameters)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
         {
-            _scopeManager = scopeManager;
-            New = shapeFactory;
-            _siteService = siteService;
-            S = stringLocalizer;
-            _authorizationService = authorizationService;
-            _notifier = notifier;
-            _shellDescriptor = shellDescriptor;
-            _shellSettings = shellSettings;
-            _shellHost = shellHost;
+            return Forbid();
         }
 
-        public async Task<ActionResult> Index(PagerParameters pagerParameters)
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
+        var pager = new Pager(pagerParameters, siteSettings.PageSize);
+        var count = await _scopeManager.CountAsync();
+
+        var model = new OpenIdScopeIndexViewModel
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
-            {
-                return Forbid();
-            }
+            Pager = (await New.Pager(pager)).TotalItemCount(count)
+        };
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
-            var count = await _scopeManager.CountAsync();
-
-            var model = new OpenIdScopeIndexViewModel
-            {
-                Pager = (await New.Pager(pager)).TotalItemCount(count)
-            };
-
-            await foreach (var scope in _scopeManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
-            {
-                model.Scopes.Add(new OpenIdScopeEntry
-                {
-                    Description = await _scopeManager.GetDescriptionAsync(scope),
-                    DisplayName = await _scopeManager.GetDisplayNameAsync(scope),
-                    Id = await _scopeManager.GetPhysicalIdAsync(scope),
-                    Name = await _scopeManager.GetNameAsync(scope)
-                });
-            }
-
-            return View(model);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Create(string returnUrl = null)
+        await foreach (var scope in _scopeManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
-            {
-                return Forbid();
-            }
-
-            var model = new CreateOpenIdScopeViewModel();
-
-            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.State == TenantState.Running))
-            {
-                model.Tenants.Add(new CreateOpenIdScopeViewModel.TenantEntry
-                {
-                    Current = string.Equals(tenant.Name, _shellSettings.Name),
-                    Name = tenant.Name
-                });
-            }
-
-            ViewData["ReturnUrl"] = returnUrl;
-            return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create(CreateOpenIdScopeViewModel model, string returnUrl = null)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
-            {
-                return Forbid();
-            }
-
-            if (await _scopeManager.FindByNameAsync(model.Name) != null)
-            {
-                ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
-            }
-
-            if (!ModelState.IsValid)
-            {
-                ViewData["ReturnUrl"] = returnUrl;
-                return View(model);
-            }
-
-            var descriptor = new OpenIdScopeDescriptor
-            {
-                Description = model.Description,
-                DisplayName = model.DisplayName,
-                Name = model.Name
-            };
-
-            if (!string.IsNullOrEmpty(model.Resources))
-            {
-                descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
-            }
-
-            descriptor.Resources.UnionWith(model.Tenants
-                .Where(tenant => tenant.Selected)
-                .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name))
-                .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
-
-            await _scopeManager.CreateAsync(descriptor);
-
-            if (string.IsNullOrEmpty(returnUrl))
-            {
-                return RedirectToAction("Index");
-            }
-
-            return this.LocalRedirect(returnUrl, true);
-        }
-
-        public async Task<IActionResult> Edit(string id, string returnUrl = null)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
-            {
-                return Forbid();
-            }
-
-            var scope = await _scopeManager.FindByPhysicalIdAsync(id);
-            if (scope == null)
-            {
-                return NotFound();
-            }
-
-            var model = new EditOpenIdScopeViewModel
+            model.Scopes.Add(new OpenIdScopeEntry
             {
                 Description = await _scopeManager.GetDescriptionAsync(scope),
                 DisplayName = await _scopeManager.GetDisplayNameAsync(scope),
                 Id = await _scopeManager.GetPhysicalIdAsync(scope),
                 Name = await _scopeManager.GetNameAsync(scope)
-            };
+            });
+        }
 
-            var resources = await _scopeManager.GetResourcesAsync(scope);
+        return View(model);
+    }
 
-            model.Resources = string.Join(" ",
-                from resource in resources
-                where !string.IsNullOrEmpty(resource) && !resource.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.Ordinal)
-                select resource);
+    [HttpGet]
+    public async Task<IActionResult> Create(string returnUrl = null)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        {
+            return Forbid();
+        }
 
-            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.State == TenantState.Running))
+        var model = new CreateOpenIdScopeViewModel();
+
+        foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.State == TenantState.Running))
+        {
+            model.Tenants.Add(new CreateOpenIdScopeViewModel.TenantEntry
             {
-                model.Tenants.Add(new EditOpenIdScopeViewModel.TenantEntry
-                {
-                    Current = string.Equals(tenant.Name, _shellSettings.Name),
-                    Name = tenant.Name,
-                    Selected = resources.Contains(OpenIdConstants.Prefixes.Tenant + tenant.Name)
-                });
-            }
+                Current = string.Equals(tenant.Name, _shellSettings.Name),
+                Name = tenant.Name
+            });
+        }
 
+        ViewData["ReturnUrl"] = returnUrl;
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateOpenIdScopeViewModel model, string returnUrl = null)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        {
+            return Forbid();
+        }
+
+        if (await _scopeManager.FindByNameAsync(model.Name) != null)
+        {
+            ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
+        }
+
+        if (!ModelState.IsValid)
+        {
             ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Edit(EditOpenIdScopeViewModel model, string returnUrl = null)
+        var descriptor = new OpenIdScopeDescriptor
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
-            {
-                return Forbid();
-            }
+            Description = model.Description,
+            DisplayName = model.DisplayName,
+            Name = model.Name
+        };
 
-            var scope = await _scopeManager.FindByPhysicalIdAsync(model.Id);
-            if (scope == null)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                var other = await _scopeManager.FindByNameAsync(model.Name);
-                if (other != null && !string.Equals(
-                    await _scopeManager.GetIdAsync(other),
-                    await _scopeManager.GetIdAsync(scope)))
-                {
-                    ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
-                }
-            }
-
-            if (!ModelState.IsValid)
-            {
-                ViewData["ReturnUrl"] = returnUrl;
-                return View(model);
-            }
-
-            var descriptor = new OpenIdScopeDescriptor();
-            await _scopeManager.PopulateAsync(descriptor, scope);
-
-            descriptor.Description = model.Description;
-            descriptor.DisplayName = model.DisplayName;
-            descriptor.Name = model.Name;
-
-            descriptor.Resources.Clear();
-
-            if (!string.IsNullOrEmpty(model.Resources))
-            {
-                descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
-            }
-
-            descriptor.Resources.UnionWith(model.Tenants
-                .Where(tenant => tenant.Selected)
-                .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name))
-                .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
-
-            await _scopeManager.UpdateAsync(scope, descriptor);
-
-            if (string.IsNullOrEmpty(returnUrl))
-            {
-                return RedirectToAction("Index");
-            }
-
-            return this.LocalRedirect(returnUrl, true);
+        if (!string.IsNullOrEmpty(model.Resources))
+        {
+            descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(string id)
+        descriptor.Resources.UnionWith(model.Tenants
+            .Where(tenant => tenant.Selected)
+            .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name))
+            .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
+
+        await _scopeManager.CreateAsync(descriptor);
+
+        if (string.IsNullOrEmpty(returnUrl))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
-            {
-                return Forbid();
-            }
-
-            var scope = await _scopeManager.FindByPhysicalIdAsync(id);
-            if (scope == null)
-            {
-                return NotFound();
-            }
-
-            await _scopeManager.DeleteAsync(scope);
-
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index");
         }
+
+        return this.LocalRedirect(returnUrl, true);
+    }
+
+    public async Task<IActionResult> Edit(string id, string returnUrl = null)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        {
+            return Forbid();
+        }
+
+        var scope = await _scopeManager.FindByPhysicalIdAsync(id);
+        if (scope == null)
+        {
+            return NotFound();
+        }
+
+        var model = new EditOpenIdScopeViewModel
+        {
+            Description = await _scopeManager.GetDescriptionAsync(scope),
+            DisplayName = await _scopeManager.GetDisplayNameAsync(scope),
+            Id = await _scopeManager.GetPhysicalIdAsync(scope),
+            Name = await _scopeManager.GetNameAsync(scope)
+        };
+
+        var resources = await _scopeManager.GetResourcesAsync(scope);
+
+        model.Resources = string.Join(" ",
+            from resource in resources
+            where !string.IsNullOrEmpty(resource) && !resource.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.Ordinal)
+            select resource);
+
+        foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.State == TenantState.Running))
+        {
+            model.Tenants.Add(new EditOpenIdScopeViewModel.TenantEntry
+            {
+                Current = string.Equals(tenant.Name, _shellSettings.Name),
+                Name = tenant.Name,
+                Selected = resources.Contains(OpenIdConstants.Prefixes.Tenant + tenant.Name)
+            });
+        }
+
+        ViewData["ReturnUrl"] = returnUrl;
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Edit(EditOpenIdScopeViewModel model, string returnUrl = null)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        {
+            return Forbid();
+        }
+
+        var scope = await _scopeManager.FindByPhysicalIdAsync(model.Id);
+        if (scope == null)
+        {
+            return NotFound();
+        }
+
+        if (ModelState.IsValid)
+        {
+            var other = await _scopeManager.FindByNameAsync(model.Name);
+            if (other != null && !string.Equals(
+                await _scopeManager.GetIdAsync(other),
+                await _scopeManager.GetIdAsync(scope)))
+            {
+                ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
+            }
+        }
+
+        if (!ModelState.IsValid)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View(model);
+        }
+
+        var descriptor = new OpenIdScopeDescriptor();
+        await _scopeManager.PopulateAsync(descriptor, scope);
+
+        descriptor.Description = model.Description;
+        descriptor.DisplayName = model.DisplayName;
+        descriptor.Name = model.Name;
+
+        descriptor.Resources.Clear();
+
+        if (!string.IsNullOrEmpty(model.Resources))
+        {
+            descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+        }
+
+        descriptor.Resources.UnionWith(model.Tenants
+            .Where(tenant => tenant.Selected)
+            .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name))
+            .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
+
+        await _scopeManager.UpdateAsync(scope, descriptor);
+
+        if (string.IsNullOrEmpty(returnUrl))
+        {
+            return RedirectToAction("Index");
+        }
+
+        return this.LocalRedirect(returnUrl, true);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(string id)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        {
+            return Forbid();
+        }
+
+        var scope = await _scopeManager.FindByPhysicalIdAsync(id);
+        if (scope == null)
+        {
+            return NotFound();
+        }
+
+        await _scopeManager.DeleteAsync(scope);
+
+        return RedirectToAction(nameof(Index));
     }
 }

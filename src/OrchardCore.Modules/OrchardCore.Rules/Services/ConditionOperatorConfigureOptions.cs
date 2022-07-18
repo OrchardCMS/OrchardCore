@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Options;
 using OrchardCore.Rules.Models;
 
-namespace OrchardCore.Rules.Services
+namespace OrchardCore.Rules.Services;
+
+public class ConditionOperatorConfigureOptions : IConfigureOptions<ConditionOperatorOptions>
 {
-    public class ConditionOperatorConfigureOptions : IConfigureOptions<ConditionOperatorOptions>
+    public void Configure(ConditionOperatorOptions options)
     {
-        public void Configure(ConditionOperatorOptions options)
-        {
-            options.Operators.AddRange(new List<ConditionOperatorOption>
+        options.Operators.AddRange(new List<ConditionOperatorOption>
             {
                 new ConditionOperatorOption<ConditionOperatorConfigureOptions>(
                     (S) => S["Equals"],
@@ -59,6 +59,5 @@ namespace OrchardCore.Rules.Services
                     new ConditionOperatorFactory<StringNotContainsOperator>()
                 )
             });
-        }
     }
 }

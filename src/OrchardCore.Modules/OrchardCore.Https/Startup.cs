@@ -14,60 +14,59 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
-namespace OrchardCore.Https
-{
-    public class Startup : StartupBase
-    {
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var service = serviceProvider.GetRequiredService<IHttpsService>();
-            var settings = service.GetSettingsAsync().GetAwaiter().GetResult();
-            if (settings.RequireHttps)
-            {
-                app.UseHttpsRedirection();
-            }
+namespace OrchardCore.Https;
 
-            if (settings.EnableStrictTransportSecurity)
-            {
-                app.UseHsts();
-            }
+public class Startup : StartupBase
+{
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        var service = serviceProvider.GetRequiredService<IHttpsService>();
+        var settings = service.GetSettingsAsync().GetAwaiter().GetResult();
+        if (settings.RequireHttps)
+        {
+            app.UseHttpsRedirection();
         }
 
-        public override void ConfigureServices(IServiceCollection services)
+        if (settings.EnableStrictTransportSecurity)
         {
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, HttpsSettingsDisplayDriver>();
-            services.AddSingleton<IHttpsService, HttpsService>();
-
-            services.AddScoped<IPermissionProvider, Permissions>();
-
-            services.AddOptions<HttpsRedirectionOptions>()
-                .Configure<IHttpsService>((options, service) =>
-                {
-                    var settings = service.GetSettingsAsync().GetAwaiter().GetResult();
-                    if (settings.RequireHttpsPermanent)
-                    {
-                        options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
-                    }
-
-                    options.HttpsPort = settings.SslPort;
-                });
-
-            services.AddHsts(options =>
-            {
-                options.Preload = false;
-                options.IncludeSubDomains = true;
-                options.MaxAge = TimeSpan.FromDays(365);
-            });
+            app.UseHsts();
         }
     }
 
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddScoped<IDisplayDriver<ISite>, HttpsSettingsDisplayDriver>();
+        services.AddSingleton<IHttpsService, HttpsService>();
+
+        services.AddScoped<IPermissionProvider, Permissions>();
+
+        services.AddOptions<HttpsRedirectionOptions>()
+            .Configure<IHttpsService>((options, service) =>
+            {
+                var settings = service.GetSettingsAsync().GetAwaiter().GetResult();
+                if (settings.RequireHttpsPermanent)
+                {
+                    options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+                }
+
+                options.HttpsPort = settings.SslPort;
+            });
+
+        services.AddHsts(options =>
         {
-            services.AddSiteSettingsPropertyDeploymentStep<HttpsSettings, DeploymentStartup>(S => S["Https settings"], S => S["Exports the Https settings."]);
-        }
+            options.Preload = false;
+            options.IncludeSubDomains = true;
+            options.MaxAge = TimeSpan.FromDays(365);
+        });
+    }
+}
+
+[RequireFeatures("OrchardCore.Deployment")]
+public class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSiteSettingsPropertyDeploymentStep<HttpsSettings, DeploymentStartup>(S => S["Https settings"], S => S["Exports the Https settings."]);
     }
 }

@@ -5,134 +5,133 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Liquid;
 using Xunit;
 
-namespace OrchardCore.Tests.DisplayManagement
+namespace OrchardCore.Tests.DisplayManagement;
+
+public class ViewBufferTextWriterContentTests
 {
-    public class ViewBufferTextWriterContentTests
+    private string Serialize(ViewBufferTextWriterContent buffer)
     {
-        private string Serialize(ViewBufferTextWriterContent buffer)
+        using (var sw = new StringWriter())
         {
-            using (var sw = new StringWriter())
-            {
-                buffer.WriteTo(sw, HtmlEncoder.Default);
-                return sw.ToString();
-            }
+            buffer.WriteTo(sw, HtmlEncoder.Default);
+            return sw.ToString();
         }
+    }
 
-        [Fact]
-        public void ShouldWriteString()
-        {
-            var buffer = new ViewBufferTextWriterContent();
+    [Fact]
+    public void ShouldWriteString()
+    {
+        var buffer = new ViewBufferTextWriterContent();
 
-            buffer.Write("<div>");
+        buffer.Write("<div>");
 
-            var result = Serialize(buffer);
+        var result = Serialize(buffer);
 
-            Assert.Equal("<div>", result);
-        }
+        Assert.Equal("<div>", result);
+    }
 
-        [Fact]
-        public void ShouldWriteChar()
-        {
-            var buffer = new ViewBufferTextWriterContent();
+    [Fact]
+    public void ShouldWriteChar()
+    {
+        var buffer = new ViewBufferTextWriterContent();
 
-            buffer.Write('a');
+        buffer.Write('a');
 
-            var result = Serialize(buffer);
+        var result = Serialize(buffer);
 
-            Assert.Equal("a", result);
-        }
+        Assert.Equal("a", result);
+    }
 
-        [Fact]
-        public void ShouldWriteBufferFragment()
-        {
-            var buffer = new ViewBufferTextWriterContent();
+    [Fact]
+    public void ShouldWriteBufferFragment()
+    {
+        var buffer = new ViewBufferTextWriterContent();
 
-            buffer.Write("abcd".ToCharArray(), 1, 2);
+        buffer.Write("abcd".ToCharArray(), 1, 2);
 
-            var result = Serialize(buffer);
+        var result = Serialize(buffer);
 
-            Assert.Equal("bc", result);
-        }
+        Assert.Equal("bc", result);
+    }
 
-        [Fact]
-        public void ShouldWriteBuffer()
-        {
-            var buffer = new ViewBufferTextWriterContent();
+    [Fact]
+    public void ShouldWriteBuffer()
+    {
+        var buffer = new ViewBufferTextWriterContent();
 
-            buffer.Write("abcd".ToCharArray());
+        buffer.Write("abcd".ToCharArray());
 
-            var result = Serialize(buffer);
+        var result = Serialize(buffer);
 
-            Assert.Equal("abcd", result);
-        }
+        Assert.Equal("abcd", result);
+    }
 
-        [Fact]
-        public void ShouldWriteObject()
-        {
-            var buffer = new ViewBufferTextWriterContent();
+    [Fact]
+    public void ShouldWriteObject()
+    {
+        var buffer = new ViewBufferTextWriterContent();
 
-            buffer.Write((object)"abcd");
+        buffer.Write((object)"abcd");
 
-            var result = Serialize(buffer);
+        var result = Serialize(buffer);
 
-            Assert.Equal("abcd", result);
-        }
+        Assert.Equal("abcd", result);
+    }
 
-        [Fact]
-        public void ShouldWriteMultipleFragments()
-        {
-            var buffer = new ViewBufferTextWriterContent();
+    [Fact]
+    public void ShouldWriteMultipleFragments()
+    {
+        var buffer = new ViewBufferTextWriterContent();
 
-            buffer.Write("ab");
-            buffer.Write("cd");
+        buffer.Write("ab");
+        buffer.Write("cd");
 
-            var result = Serialize(buffer);
+        var result = Serialize(buffer);
 
-            Assert.Equal("abcd", result);
-        }
+        Assert.Equal("abcd", result);
+    }
 
-        [Fact]
-        public void ShouldWriteMultipleStringPages()
-        {
-            var buffer = new ViewBufferTextWriterContent();
+    [Fact]
+    public void ShouldWriteMultipleStringPages()
+    {
+        var buffer = new ViewBufferTextWriterContent();
 
-            var capacity = StringBuilderPool.GetInstance().Builder.Capacity;
-            var page = new String('x', capacity);
+        var capacity = StringBuilderPool.GetInstance().Builder.Capacity;
+        var page = new String('x', capacity);
 
-            buffer.Write(page);
-            buffer.Write(page);
-            var result = Serialize(buffer);
+        buffer.Write(page);
+        buffer.Write(page);
+        var result = Serialize(buffer);
 
-            Assert.Equal(page + page, result);
-        }
+        Assert.Equal(page + page, result);
+    }
 
-        [Fact]
-        public void ShouldWriteMultipleCharPages()
-        {
-            var buffer = new ViewBufferTextWriterContent();
+    [Fact]
+    public void ShouldWriteMultipleCharPages()
+    {
+        var buffer = new ViewBufferTextWriterContent();
 
-            var capacity = StringBuilderPool.GetInstance().Builder.Capacity;
+        var capacity = StringBuilderPool.GetInstance().Builder.Capacity;
 
-            buffer.Write(new String('x', capacity - 1));
-            buffer.Write('x');
-            buffer.Write('x');
-            var result = Serialize(buffer);
+        buffer.Write(new String('x', capacity - 1));
+        buffer.Write('x');
+        buffer.Write('x');
+        var result = Serialize(buffer);
 
-            Assert.Equal(capacity + 1, result.Length);
-        }
+        Assert.Equal(capacity + 1, result.Length);
+    }
 
-        [Fact]
-        public void ShouldWriteMultipleBufferFragmentPages()
-        {
-            var buffer = new ViewBufferTextWriterContent();
+    [Fact]
+    public void ShouldWriteMultipleBufferFragmentPages()
+    {
+        var buffer = new ViewBufferTextWriterContent();
 
-            var capacity = StringBuilderPool.GetInstance().Builder.Capacity;
+        var capacity = StringBuilderPool.GetInstance().Builder.Capacity;
 
-            buffer.Write(new String('x', capacity - 1).ToCharArray());
-            buffer.Write(new String('x', 11).ToCharArray(), 1, 3);
-            var result = Serialize(buffer);
+        buffer.Write(new String('x', capacity - 1).ToCharArray());
+        buffer.Write(new String('x', 11).ToCharArray(), 1, 3);
+        var result = Serialize(buffer);
 
-            Assert.Equal(capacity + 2, result.Length);
-        }
+        Assert.Equal(capacity + 2, result.Length);
     }
 }

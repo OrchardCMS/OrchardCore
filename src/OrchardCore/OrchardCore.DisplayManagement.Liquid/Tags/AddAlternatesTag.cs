@@ -6,37 +6,36 @@ using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags
+namespace OrchardCore.DisplayManagement.Liquid.Tags;
+
+public class AddAlternatesTag
 {
-    public class AddAlternatesTag
+    public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
     {
-        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
+
+        if (objectValue is IShape shape)
         {
-            var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
+            var alternates = await arguments.Item2.EvaluateAsync(context);
 
-            if (objectValue is IShape shape)
+            if (alternates.Type == FluidValues.String)
             {
-                var alternates = await arguments.Item2.EvaluateAsync(context);
+                var values = alternates.ToStringValue().Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-                if (alternates.Type == FluidValues.String)
+                foreach (var value in values)
                 {
-                    var values = alternates.ToStringValue().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-                    foreach (var value in values)
-                    {
-                        shape.Metadata.Alternates.Add(value);
-                    }
-                }
-                else if (alternates.Type == FluidValues.Array)
-                {
-                    foreach (var value in alternates.Enumerate(context))
-                    {
-                        shape.Metadata.Alternates.Add(value.ToStringValue());
-                    }
+                    shape.Metadata.Alternates.Add(value);
                 }
             }
-
-            return Completion.Normal;
+            else if (alternates.Type == FluidValues.Array)
+            {
+                foreach (var value in alternates.Enumerate(context))
+                {
+                    shape.Metadata.Alternates.Add(value.ToStringValue());
+                }
+            }
         }
+
+        return Completion.Normal;
     }
 }

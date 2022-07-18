@@ -3,49 +3,48 @@ using System.Globalization;
 using GraphQL.Language.AST;
 using GraphQL.Types;
 
-namespace OrchardCore.ContentFields.GraphQL.Types
+namespace OrchardCore.ContentFields.GraphQL.Types;
+
+public class TimeSpanGraphType : ScalarGraphType
 {
-    public class TimeSpanGraphType : ScalarGraphType
+    public TimeSpanGraphType()
     {
-        public TimeSpanGraphType()
-        {
-            Name = "TimeSpan";
-            Description = "Represents a time interval.";
-        }
-
-        public override object Serialize(object value)
-        {
-            return value?.ToString();
-        }
-
-        public override object ParseValue(object value)
-        {
-            var timespan = value?.ToString().StripQuotes();
-            return string.IsNullOrWhiteSpace(timespan)
-                ? null
-                : (TimeSpan?)TimeSpan.Parse(timespan, CultureInfo.CurrentCulture);
-        }
-
-        public override object ParseLiteral(IValue value)
-        {
-            var str = value as StringValue;
-            if (str != null)
-            {
-                return ParseValue(str.Value);
-            }
-            return null;
-        }
+        Name = "TimeSpan";
+        Description = "Represents a time interval.";
     }
 
-    public static class ScalarGraphTypeExtensions
+    public override object Serialize(object value)
     {
-        public static string StripQuotes(this string value)
+        return value?.ToString();
+    }
+
+    public override object ParseValue(object value)
+    {
+        var timespan = value?.ToString().StripQuotes();
+        return string.IsNullOrWhiteSpace(timespan)
+            ? null
+            : (TimeSpan?)TimeSpan.Parse(timespan, CultureInfo.CurrentCulture);
+    }
+
+    public override object ParseLiteral(IValue value)
+    {
+        var str = value as StringValue;
+        if (str != null)
         {
-            if (!string.IsNullOrEmpty(value) && value.Length > 2 && value.StartsWith('\"') && value.EndsWith('\"'))
-            {
-                return value.Substring(1, value.Length - 2);
-            }
-            return value;
+            return ParseValue(str.Value);
         }
+        return null;
+    }
+}
+
+public static class ScalarGraphTypeExtensions
+{
+    public static string StripQuotes(this string value)
+    {
+        if (!string.IsNullOrEmpty(value) && value.Length > 2 && value.StartsWith('\"') && value.EndsWith('\"'))
+        {
+            return value.Substring(1, value.Length - 2);
+        }
+        return value;
     }
 }

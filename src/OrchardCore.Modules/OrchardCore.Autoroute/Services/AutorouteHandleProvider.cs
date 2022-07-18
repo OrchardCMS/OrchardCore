@@ -2,41 +2,40 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Routing;
 
-namespace OrchardCore.Autoroute.Services
+namespace OrchardCore.Autoroute.Services;
+
+public class AutorouteHandleProvider : IContentHandleProvider
 {
-    public class AutorouteHandleProvider : IContentHandleProvider
+    private readonly IAutorouteEntries _autorouteEntries;
+
+    public AutorouteHandleProvider(IAutorouteEntries autorouteEntries)
     {
-        private readonly IAutorouteEntries _autorouteEntries;
+        _autorouteEntries = autorouteEntries;
+    }
 
-        public AutorouteHandleProvider(IAutorouteEntries autorouteEntries)
+    public int Order => 10;
+
+    public async Task<string> GetContentItemIdAsync(string handle)
+    {
+        if (handle.StartsWith("slug:", System.StringComparison.OrdinalIgnoreCase))
         {
-            _autorouteEntries = autorouteEntries;
-        }
+            handle = handle.Substring(5);
 
-        public int Order => 10;
-
-        public async Task<string> GetContentItemIdAsync(string handle)
-        {
-            if (handle.StartsWith("slug:", System.StringComparison.OrdinalIgnoreCase))
+            if (!handle.StartsWith('/'))
             {
-                handle = handle.Substring(5);
-
-                if (!handle.StartsWith('/'))
-                {
-                    handle = "/" + handle;
-                }
-
-                (var found, var entry) = await _autorouteEntries.TryGetEntryByPathAsync(handle);
-
-                if (found)
-                {
-                    // TODO this requires more work, and interface changes to support contained content items.
-                    // as it will require returning the id and jsonPath.
-                    return entry.ContentItemId;
-                }
+                handle = "/" + handle;
             }
 
-            return null;
+            (var found, var entry) = await _autorouteEntries.TryGetEntryByPathAsync(handle);
+
+            if (found)
+            {
+                // TODO this requires more work, and interface changes to support contained content items.
+                // as it will require returning the id and jsonPath.
+                return entry.ContentItemId;
+            }
         }
+
+        return null;
     }
 }

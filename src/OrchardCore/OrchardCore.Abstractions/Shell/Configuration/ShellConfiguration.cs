@@ -7,162 +7,161 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Shell.Configuration.Internal;
 
-namespace OrchardCore.Environment.Shell.Configuration
+namespace OrchardCore.Environment.Shell.Configuration;
+
+/// <summary>
+/// Holds the tenant <see cref="IConfiguration"/> which is lazily built
+/// from the application configuration 'appsettings.json', the 'App_Data/appsettings.json'
+/// file and then the 'App_Data/Sites/{tenant}/appsettings.json' file.
+/// </summary>
+public class ShellConfiguration : IShellConfiguration
 {
-    /// <summary>
-    /// Holds the tenant <see cref="IConfiguration"/> which is lazily built
-    /// from the application configuration 'appsettings.json', the 'App_Data/appsettings.json'
-    /// file and then the 'App_Data/Sites/{tenant}/appsettings.json' file.
-    /// </summary>
-    public class ShellConfiguration : IShellConfiguration
+    private IConfigurationRoot _configuration;
+    private UpdatableDataProvider _updatableData;
+    private readonly IEnumerable<KeyValuePair<string, string>> _initialData;
+
+    private readonly string _name;
+    private Func<string, Task<IConfigurationBuilder>> _configBuilderFactory;
+    private readonly IEnumerable<IConfigurationProvider> _configurationProviders;
+    private SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+
+    public ShellConfiguration()
     {
-        private IConfigurationRoot _configuration;
-        private UpdatableDataProvider _updatableData;
-        private readonly IEnumerable<KeyValuePair<string, string>> _initialData;
+    }
 
-        private readonly string _name;
-        private Func<string, Task<IConfigurationBuilder>> _configBuilderFactory;
-        private readonly IEnumerable<IConfigurationProvider> _configurationProviders;
-        private SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+    public ShellConfiguration(IConfiguration configuration)
+    {
+        _configurationProviders = new ConfigurationBuilder()
+            .AddConfiguration(configuration)
+            .Build().Providers;
+    }
 
-        public ShellConfiguration()
+    public ShellConfiguration(string name, Func<string, Task<IConfigurationBuilder>> factory)
+    {
+        _name = name;
+        _configBuilderFactory = factory;
+    }
+
+    public ShellConfiguration(ShellConfiguration configuration) : this(null, configuration)
+    {
+    }
+
+    public ShellConfiguration(string name, ShellConfiguration configuration)
+    {
+        _name = name;
+
+        if (configuration._configuration != null)
         {
+            _configurationProviders = configuration._configuration.Providers
+                .Where(p => !(p is UpdatableDataProvider)).ToArray();
+
+            _initialData = configuration._updatableData.ToArray();
+
+            return;
         }
 
-        public ShellConfiguration(IConfiguration configuration)
+        if (name == null)
         {
-            _configurationProviders = new ConfigurationBuilder()
-                .AddConfiguration(configuration)
-                .Build().Providers;
+            _configurationProviders = configuration._configurationProviders;
+            _initialData = configuration._initialData;
+            return;
         }
 
-        public ShellConfiguration(string name, Func<string, Task<IConfigurationBuilder>> factory)
+        _configBuilderFactory = configuration._configBuilderFactory;
+    }
+
+    private void EnsureConfiguration()
+    {
+        if (_configuration != null)
         {
-            _name = name;
-            _configBuilderFactory = factory;
+            return;
         }
 
-        public ShellConfiguration(ShellConfiguration configuration) : this(null, configuration)
+        EnsureConfigurationAsync().GetAwaiter().GetResult();
+    }
+
+    internal async Task EnsureConfigurationAsync()
+    {
+        if (_configuration != null)
         {
+            return;
         }
 
-        public ShellConfiguration(string name, ShellConfiguration configuration)
-        {
-            _name = name;
-
-            if (configuration._configuration != null)
-            {
-                _configurationProviders = configuration._configuration.Providers
-                    .Where(p => !(p is UpdatableDataProvider)).ToArray();
-
-                _initialData = configuration._updatableData.ToArray();
-
-                return;
-            }
-
-            if (name == null)
-            {
-                _configurationProviders = configuration._configurationProviders;
-                _initialData = configuration._initialData;
-                return;
-            }
-
-            _configBuilderFactory = configuration._configBuilderFactory;
-        }
-
-        private void EnsureConfiguration()
-        {
-            if (_configuration != null)
-            {
-                return;
-            }
-
-            EnsureConfigurationAsync().GetAwaiter().GetResult();
-        }
-
-        internal async Task EnsureConfigurationAsync()
+        await _semaphore.WaitAsync();
+        try
         {
             if (_configuration != null)
             {
                 return;
             }
 
-            await _semaphore.WaitAsync();
-            try
+            var providers = new List<IConfigurationProvider>();
+
+            if (_configBuilderFactory != null)
             {
-                if (_configuration != null)
-                {
-                    return;
-                }
-
-                var providers = new List<IConfigurationProvider>();
-
-                if (_configBuilderFactory != null)
-                {
-                    providers.AddRange(new ConfigurationBuilder()
-                        .AddConfiguration((await _configBuilderFactory.Invoke(_name)).Build())
-                        .Build().Providers);
-                }
-
-                if (_configurationProviders != null)
-                {
-                    providers.AddRange(_configurationProviders);
-                }
-
-                _updatableData = new UpdatableDataProvider(_initialData ?? Enumerable.Empty<KeyValuePair<string, string>>());
-
-                providers.Add(_updatableData);
-
-                _configuration = new ConfigurationRoot(providers);
+                providers.AddRange(new ConfigurationBuilder()
+                    .AddConfiguration((await _configBuilderFactory.Invoke(_name)).Build())
+                    .Build().Providers);
             }
-            finally
+
+            if (_configurationProviders != null)
             {
-                _semaphore.Release();
+                providers.AddRange(_configurationProviders);
             }
-        }
 
-        /// <summary>
-        /// The tenant lazily built <see cref="IConfiguration"/>.
-        /// </summary>
-        private IConfiguration Configuration
+            _updatableData = new UpdatableDataProvider(_initialData ?? Enumerable.Empty<KeyValuePair<string, string>>());
+
+            providers.Add(_updatableData);
+
+            _configuration = new ConfigurationRoot(providers);
+        }
+        finally
         {
-            get
-            {
-                EnsureConfiguration();
-                return _configuration;
-            }
+            _semaphore.Release();
         }
+    }
 
-        public string this[string key]
+    /// <summary>
+    /// The tenant lazily built <see cref="IConfiguration"/>.
+    /// </summary>
+    private IConfiguration Configuration
+    {
+        get
         {
-            get
-            {
-                var value = Configuration[key];
-
-                return value ?? (key.Contains('_')
-                    ? Configuration[key.Replace('_', '.')]
-                    : null);
-            }
-            set
-            {
-                EnsureConfiguration();
-                _updatableData.Set(key, value);
-            }
+            EnsureConfiguration();
+            return _configuration;
         }
+    }
 
-        public IConfigurationSection GetSection(string key)
+    public string this[string key]
+    {
+        get
         {
-            return Configuration.GetSectionCompat(key);
-        }
+            var value = Configuration[key];
 
-        public IEnumerable<IConfigurationSection> GetChildren()
-        {
-            return Configuration.GetChildren();
+            return value ?? (key.Contains('_')
+                ? Configuration[key.Replace('_', '.')]
+                : null);
         }
+        set
+        {
+            EnsureConfiguration();
+            _updatableData.Set(key, value);
+        }
+    }
 
-        public IChangeToken GetReloadToken()
-        {
-            return Configuration.GetReloadToken();
-        }
+    public IConfigurationSection GetSection(string key)
+    {
+        return Configuration.GetSectionCompat(key);
+    }
+
+    public IEnumerable<IConfigurationSection> GetChildren()
+    {
+        return Configuration.GetChildren();
+    }
+
+    public IChangeToken GetReloadToken()
+    {
+        return Configuration.GetReloadToken();
     }
 }

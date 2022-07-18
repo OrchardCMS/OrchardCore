@@ -1,6 +1,5 @@
-namespace OrchardCore.Rules.Models
+namespace OrchardCore.Rules.Models;
+
+public class IsAnonymousCondition : Condition
 {
-    public class IsAnonymousCondition : Condition
-    {
-    }
 }

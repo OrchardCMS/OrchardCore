@@ -9,46 +9,45 @@ using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Contents.Workflows.Activities
+namespace OrchardCore.Contents.Workflows.Activities;
+
+public class RetrieveContentTask : ContentTask
 {
-    public class RetrieveContentTask : ContentTask
+    public RetrieveContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<RetrieveContentTask> localizer) : base(contentManager, scriptEvaluator, localizer)
     {
-        public RetrieveContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<RetrieveContentTask> localizer) : base(contentManager, scriptEvaluator, localizer)
+    }
+
+    public override string Name => nameof(RetrieveContentTask);
+
+    public override LocalizedString DisplayText => S["Retrieve Content Task"];
+
+    public override LocalizedString Category => S["Content"];
+
+    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        return Outcomes(S["Retrieved"]);
+    }
+
+    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        var contentItemId = await GetContentItemIdAsync(workflowContext);
+
+        if (contentItemId == null)
         {
+            throw new InvalidOperationException($"The '{nameof(RetrieveContentTask)}' failed to evaluate the 'ContentItemId'.");
         }
 
-        public override string Name => nameof(RetrieveContentTask);
+        var contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-        public override LocalizedString DisplayText => S["Retrieve Content Task"];
-
-        public override LocalizedString Category => S["Content"];
-
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        if (contentItem == null)
         {
-            return Outcomes(S["Retrieved"]);
+            throw new InvalidOperationException($"The '{nameof(RetrieveContentTask)}' failed to retrieve the content item.");
         }
 
-        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            var contentItemId = await GetContentItemIdAsync(workflowContext);
+        workflowContext.CorrelationId = contentItem.ContentItemId;
+        workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
+        workflowContext.LastResult = contentItem;
 
-            if (contentItemId == null)
-            {
-                throw new InvalidOperationException($"The '{nameof(RetrieveContentTask)}' failed to evaluate the 'ContentItemId'.");
-            }
-
-            var contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
-
-            if (contentItem == null)
-            {
-                throw new InvalidOperationException($"The '{nameof(RetrieveContentTask)}' failed to retrieve the content item.");
-            }
-
-            workflowContext.CorrelationId = contentItem.ContentItemId;
-            workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
-            workflowContext.LastResult = contentItem;
-
-            return Outcomes("Retrieved");
-        }
+        return Outcomes("Retrieved");
     }
 }

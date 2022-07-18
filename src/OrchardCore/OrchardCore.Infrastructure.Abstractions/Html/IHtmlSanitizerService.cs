@@ -1,7 +1,6 @@
-namespace OrchardCore.Infrastructure.Html
+namespace OrchardCore.Infrastructure.Html;
+
+public interface IHtmlSanitizerService
 {
-    public interface IHtmlSanitizerService
-    {
-        string Sanitize(string html);
-    }
+    string Sanitize(string html);
 }

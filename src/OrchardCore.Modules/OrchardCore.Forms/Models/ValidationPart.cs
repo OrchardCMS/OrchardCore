@@ -1,9 +1,8 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Forms.Models
+namespace OrchardCore.Forms.Models;
+
+public class ValidationPart : ContentPart
 {
-    public class ValidationPart : ContentPart
-    {
-        public string For { get; set; }
-    }
+    public string For { get; set; }
 }

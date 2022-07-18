@@ -1,7 +1,6 @@
-﻿namespace OrchardCore.Users.Services
+namespace OrchardCore.Users.Services;
+
+public interface IUserIdGenerator
 {
-    public interface IUserIdGenerator
-    {
-        string GenerateUniqueId(IUser user);
-    }
+    string GenerateUniqueId(IUser user);
 }

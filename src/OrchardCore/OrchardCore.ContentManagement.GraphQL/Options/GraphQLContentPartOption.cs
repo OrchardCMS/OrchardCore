@@ -1,29 +1,28 @@
 using System;
 
-namespace OrchardCore.ContentManagement.GraphQL.Options
+namespace OrchardCore.ContentManagement.GraphQL.Options;
+
+public class GraphQLContentPartOption<TContentPart> : GraphQLContentPartOption where TContentPart : ContentPart
 {
-    public class GraphQLContentPartOption<TContentPart> : GraphQLContentPartOption where TContentPart : ContentPart
+    public GraphQLContentPartOption() : base(typeof(TContentPart).Name)
     {
-        public GraphQLContentPartOption() : base(typeof(TContentPart).Name)
-        {
-        }
     }
+}
 
-    public class GraphQLContentPartOption
+public class GraphQLContentPartOption
+{
+    public GraphQLContentPartOption(string contentPartName)
     {
-        public GraphQLContentPartOption(string contentPartName)
+        if (string.IsNullOrEmpty(contentPartName))
         {
-            if (string.IsNullOrEmpty(contentPartName))
-            {
-                throw new ArgumentNullException(nameof(contentPartName));
-            }
-
-            Name = contentPartName;
+            throw new ArgumentNullException(nameof(contentPartName));
         }
 
-        public string Name { get; }
-
-        public bool Collapse { get; set; }
-        public bool Hidden { get; set; }
+        Name = contentPartName;
     }
+
+    public string Name { get; }
+
+    public bool Collapse { get; set; }
+    public bool Hidden { get; set; }
 }

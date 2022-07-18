@@ -1,9 +1,8 @@
-namespace OrchardCore.Users.Models
+namespace OrchardCore.Users.Models;
+
+public class UserToken
 {
-    public class UserToken
-    {
-        public string LoginProvider { get; set; }
-        public string Name { get; set; }
-        public string Value { get; set; }
-    }
+    public string LoginProvider { get; set; }
+    public string Name { get; set; }
+    public string Value { get; set; }
 }

@@ -16,38 +16,37 @@ using OrchardCore.Widgets.Drivers;
 using OrchardCore.Widgets.Models;
 using OrchardCore.Widgets.Settings;
 
-namespace OrchardCore.Widgets
+namespace OrchardCore.Widgets;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    private readonly AdminOptions _adminOptions;
+
+    public Startup(IOptions<AdminOptions> adminOptions)
     {
-        private readonly AdminOptions _adminOptions;
+        _adminOptions = adminOptions.Value;
+    }
 
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        //Add Widget Card Shapes
+        services.AddScoped<IShapeTableProvider, ContentCardShapes>();
+        // Widgets List Part
+        services.AddContentPart<WidgetsListPart>()
+            .UseDisplayDriver<WidgetsListPartDisplayDriver>();
 
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            //Add Widget Card Shapes
-            services.AddScoped<IShapeTableProvider, ContentCardShapes>();
-            // Widgets List Part
-            services.AddContentPart<WidgetsListPart>()
-                .UseDisplayDriver<WidgetsListPartDisplayDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, WidgetsListPartSettingsDisplayDriver>();
+        services.AddContentPart<WidgetMetadata>();
+        services.AddScoped<IDataMigration, Migrations>();
+    }
 
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, WidgetsListPartSettingsDisplayDriver>();
-            services.AddContentPart<WidgetMetadata>();
-            services.AddScoped<IDataMigration, Migrations>();
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "Widgets.BuildEditor",
-                areaName: "OrchardCore.Widgets",
-                pattern: _adminOptions.AdminUrlPrefix + "/Widgets/BuildEditor",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.BuildEditor) }
-            );
-        }
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.MapAreaControllerRoute(
+            name: "Widgets.BuildEditor",
+            areaName: "OrchardCore.Widgets",
+            pattern: _adminOptions.AdminUrlPrefix + "/Widgets/BuildEditor",
+            defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.BuildEditor) }
+        );
     }
 }

@@ -11,55 +11,54 @@ using OrchardCore.Liquid;
 using OrchardCore.Title.Models;
 using OrchardCore.Title.ViewModels;
 
-namespace OrchardCore.Title.Handlers
+namespace OrchardCore.Title.Handlers;
+
+public class TitlePartHandler : ContentPartHandler<TitlePart>
 {
-    public class TitlePartHandler : ContentPartHandler<TitlePart>
+    private readonly ILiquidTemplateManager _liquidTemplateManager;
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+
+    public TitlePartHandler(
+        ILiquidTemplateManager liquidTemplateManager,
+        IContentDefinitionManager contentDefinitionManager)
     {
-        private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        _liquidTemplateManager = liquidTemplateManager;
+        _contentDefinitionManager = contentDefinitionManager;
+    }
 
-        public TitlePartHandler(
-            ILiquidTemplateManager liquidTemplateManager,
-            IContentDefinitionManager contentDefinitionManager)
+    public override async Task UpdatedAsync(UpdateContentContext context, TitlePart part)
+    {
+        var settings = GetSettings(part);
+        // Do not compute the title if the user can modify it and the text is already set.
+        if (settings.Options == TitlePartOptions.Editable && !String.IsNullOrWhiteSpace(part.ContentItem.DisplayText))
         {
-            _liquidTemplateManager = liquidTemplateManager;
-            _contentDefinitionManager = contentDefinitionManager;
+            return;
         }
 
-        public override async Task UpdatedAsync(UpdateContentContext context, TitlePart part)
+        if (!String.IsNullOrEmpty(settings.Pattern))
         {
-            var settings = GetSettings(part);
-            // Do not compute the title if the user can modify it and the text is already set.
-            if (settings.Options == TitlePartOptions.Editable && !String.IsNullOrWhiteSpace(part.ContentItem.DisplayText))
+            var model = new TitlePartViewModel()
             {
-                return;
-            }
+                Title = part.Title,
+                TitlePart = part,
+                ContentItem = part.ContentItem
+            };
 
-            if (!String.IsNullOrEmpty(settings.Pattern))
-            {
-                var model = new TitlePartViewModel()
-                {
-                    Title = part.Title,
-                    TitlePart = part,
-                    ContentItem = part.ContentItem
-                };
+            var title = await _liquidTemplateManager.RenderStringAsync(settings.Pattern, NullEncoder.Default, model,
+                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
 
-                var title = await _liquidTemplateManager.RenderStringAsync(settings.Pattern, NullEncoder.Default, model,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+            title = title.Replace("\r", String.Empty).Replace("\n", String.Empty);
 
-                title = title.Replace("\r", String.Empty).Replace("\n", String.Empty);
-
-                part.Title = title;
-                part.ContentItem.DisplayText = title;
-                part.Apply();
-            }
+            part.Title = title;
+            part.ContentItem.DisplayText = title;
+            part.Apply();
         }
+    }
 
-        private TitlePartSettings GetSettings(TitlePart part)
-        {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(TitlePart)));
-            return contentTypePartDefinition.GetSettings<TitlePartSettings>();
-        }
+    private TitlePartSettings GetSettings(TitlePart part)
+    {
+        var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
+        var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(TitlePart)));
+        return contentTypePartDefinition.GetSettings<TitlePartSettings>();
     }
 }

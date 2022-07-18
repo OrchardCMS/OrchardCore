@@ -22,53 +22,52 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Contents.AuditTrail
+namespace OrchardCore.Contents.AuditTrail;
+
+[RequireFeatures("OrchardCore.AuditTrail")]
+public class Startup : StartupBase
 {
-    [RequireFeatures("OrchardCore.AuditTrail")]
-    public class Startup : StartupBase
+    private readonly AdminOptions _adminOptions;
+
+    public Startup(IOptions<AdminOptions> adminOptions)
     {
-        private readonly AdminOptions _adminOptions;
+        _adminOptions = adminOptions.Value;
+    }
 
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IDataMigration, Migrations>();
+        services.AddContentPart<AuditTrailPart>()
+            .UseDisplayDriver<AuditTrailPartDisplayDriver>();
 
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IDataMigration, Migrations>();
-            services.AddContentPart<AuditTrailPart>()
-                .UseDisplayDriver<AuditTrailPartDisplayDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, AuditTrailPartSettingsDisplayDriver>();
+        services.AddScoped<IContentDisplayDriver, AuditTrailContentsDriver>();
 
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, AuditTrailPartSettingsDisplayDriver>();
-            services.AddScoped<IContentDisplayDriver, AuditTrailContentsDriver>();
+        services.AddTransient<IConfigureOptions<AuditTrailOptions>, ContentAuditTrailEventConfiguration>();
+        services.AddScoped<IAuditTrailEventHandler, ContentAuditTrailEventHandler>();
+        services.AddScoped<IDisplayDriver<ISite>, ContentAuditTrailSettingsDisplayDriver>();
 
-            services.AddTransient<IConfigureOptions<AuditTrailOptions>, ContentAuditTrailEventConfiguration>();
-            services.AddScoped<IAuditTrailEventHandler, ContentAuditTrailEventHandler>();
-            services.AddScoped<IDisplayDriver<ISite>, ContentAuditTrailSettingsDisplayDriver>();
+        services.AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailContentEventDisplayDriver>();
 
-            services.AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailContentEventDisplayDriver>();
+        services.AddScoped<IContentHandler, AuditTrailContentHandler>();
+    }
 
-            services.AddScoped<IContentHandler, AuditTrailContentHandler>();
-        }
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        var contentControllerName = typeof(AuditTrailContentController).ControllerName();
 
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var contentControllerName = typeof(AuditTrailContentController).ControllerName();
+        routes.MapAreaControllerRoute(
+           name: "DisplayAuditTrailContent",
+           areaName: "OrchardCore.Contents",
+           pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Content/Display/{auditTrailEventId}",
+           defaults: new { controller = contentControllerName, action = nameof(AuditTrailContentController.Display) }
+       );
 
-            routes.MapAreaControllerRoute(
-               name: "DisplayAuditTrailContent",
-               areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Content/Display/{auditTrailEventId}",
-               defaults: new { controller = contentControllerName, action = nameof(AuditTrailContentController.Display) }
-           );
-
-            routes.MapAreaControllerRoute(
-               name: "RestoreAuditTrailContent",
-               areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Content/Restore/{auditTrailEventId}",
-               defaults: new { controller = contentControllerName, action = nameof(AuditTrailContentController.Restore) }
-           );
-        }
+        routes.MapAreaControllerRoute(
+           name: "RestoreAuditTrailContent",
+           areaName: "OrchardCore.Contents",
+           pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Content/Restore/{auditTrailEventId}",
+           defaults: new { controller = contentControllerName, action = nameof(AuditTrailContentController.Restore) }
+       );
     }
 }

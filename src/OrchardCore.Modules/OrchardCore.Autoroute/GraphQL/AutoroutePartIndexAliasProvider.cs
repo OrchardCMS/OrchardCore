@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.Records;
 
-namespace OrchardCore.Autoroute.GraphQL
+namespace OrchardCore.Autoroute.GraphQL;
+
+public class AutoroutePartIndexAliasProvider : IIndexAliasProvider
 {
-    public class AutoroutePartIndexAliasProvider : IIndexAliasProvider
+    private static readonly IndexAlias[] _aliases = new[]
     {
-        private static readonly IndexAlias[] _aliases = new[]
-        {
             new IndexAlias
             {
                 Alias = "autoroutePart",
@@ -16,9 +16,8 @@ namespace OrchardCore.Autoroute.GraphQL
             }
         };
 
-        public IEnumerable<IndexAlias> GetAliases()
-        {
-            return _aliases;
-        }
+    public IEnumerable<IndexAlias> GetAliases()
+    {
+        return _aliases;
     }
 }

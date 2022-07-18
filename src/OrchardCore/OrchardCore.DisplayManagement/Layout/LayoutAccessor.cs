@@ -2,33 +2,32 @@ using System;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Zones;
 
-namespace OrchardCore.DisplayManagement.Layout
+namespace OrchardCore.DisplayManagement.Layout;
+
+public class LayoutAccessor : ILayoutAccessor
 {
-    public class LayoutAccessor : ILayoutAccessor
+    private IZoneHolding _layout;
+    private readonly IShapeFactory _shapeFactory;
+
+    public LayoutAccessor(IShapeFactory shapeFactory)
     {
-        private IZoneHolding _layout;
-        private readonly IShapeFactory _shapeFactory;
+        _shapeFactory = shapeFactory;
+    }
 
-        public LayoutAccessor(IShapeFactory shapeFactory)
+    public async Task<IZoneHolding> GetLayoutAsync()
+    {
+        if (_layout == null)
         {
-            _shapeFactory = shapeFactory;
+            // Create a shape whose properties are dynamically created as Zone shapes
+            _layout = await _shapeFactory.CreateAsync("Layout", () => new ValueTask<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("Zone")))) as IZoneHolding;
         }
 
-        public async Task<IZoneHolding> GetLayoutAsync()
+        if (_layout == null)
         {
-            if (_layout == null)
-            {
-                // Create a shape whose properties are dynamically created as Zone shapes
-                _layout = await _shapeFactory.CreateAsync("Layout", () => new ValueTask<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("Zone")))) as IZoneHolding;
-            }
-
-            if (_layout == null)
-            {
-                // At this point a Layout shape should always exist
-                throw new ApplicationException("Fatal error, a Layout couldn't be created.");
-            }
-
-            return _layout;
+            // At this point a Layout shape should always exist
+            throw new ApplicationException("Fatal error, a Layout couldn't be created.");
         }
+
+        return _layout;
     }
 }

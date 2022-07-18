@@ -3,31 +3,31 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.AdminDashboard
+namespace OrchardCore.AdminDashboard;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
+    public static readonly Permission ManageAdminDashboard = new Permission("ManageAdminDashboard", "Manage the Admin Dashboard");
+    public static readonly Permission AccessAdminDashboard = new Permission("AccessAdminDashboard", "Access the Admin Dashboard", new[] { ManageAdminDashboard });
+
+    public Permissions()
     {
-        public static readonly Permission ManageAdminDashboard = new Permission("ManageAdminDashboard", "Manage the Admin Dashboard");
-        public static readonly Permission AccessAdminDashboard = new Permission("AccessAdminDashboard", "Access the Admin Dashboard", new[] { ManageAdminDashboard });
+    }
 
-        public Permissions()
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    {
+        return Task.FromResult(new[]
         {
-        }
-
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(new[]
-            {
                 AccessAdminDashboard,
                 ManageAdminDashboard
             }
-            .AsEnumerable());
-        }
+        .AsEnumerable());
+    }
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return new[]
-            {
                 new PermissionStereotype
                 {
                     Name = "Administrator",
@@ -50,6 +50,5 @@ namespace OrchardCore.AdminDashboard
                     Permissions = new[] { AccessAdminDashboard }
                 }
             };
-        }
     }
 }

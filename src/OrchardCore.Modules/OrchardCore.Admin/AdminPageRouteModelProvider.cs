@@ -9,104 +9,103 @@ using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Mvc;
 
-namespace OrchardCore.Admin
+namespace OrchardCore.Admin;
+
+internal class AdminPageRouteModelProvider : IPageRouteModelProvider
 {
-    internal class AdminPageRouteModelProvider : IPageRouteModelProvider
+    private static readonly string RazorPageDocumentKind = "mvc.1.0.razor-page";
+
+    private readonly IHostEnvironment _hostingEnvironment;
+    private readonly ApplicationPartManager _applicationManager;
+
+    public AdminPageRouteModelProvider(IHostEnvironment hostingEnvironment, ApplicationPartManager applicationManager)
     {
-        private static readonly string RazorPageDocumentKind = "mvc.1.0.razor-page";
+        _hostingEnvironment = hostingEnvironment;
+        _applicationManager = applicationManager;
+    }
 
-        private readonly IHostEnvironment _hostingEnvironment;
-        private readonly ApplicationPartManager _applicationManager;
+    public int Order => 1000;
 
-        public AdminPageRouteModelProvider(IHostEnvironment hostingEnvironment, ApplicationPartManager applicationManager)
+    public void OnProvidersExecuting(PageRouteModelProviderContext context)
+    {
+        if (context == null)
         {
-            _hostingEnvironment = hostingEnvironment;
-            _applicationManager = applicationManager;
+            throw new ArgumentNullException(nameof(context));
         }
 
-        public int Order => 1000;
+        IEnumerable<CompiledViewDescriptor> descriptors;
 
-        public void OnProvidersExecuting(PageRouteModelProviderContext context)
+        var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
+
+        if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
         {
-            if (context == null)
+            descriptors = GetPageDescriptors<DevelopmentViewsFeature>(_applicationManager);
+        }
+        else
+        {
+            descriptors = GetPageDescriptors<ViewsFeature>(_applicationManager);
+        }
+
+        var adminPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var descriptor in descriptors)
+        {
+            foreach (var type in descriptor.Type.GetNestedTypes())
             {
-                throw new ArgumentNullException(nameof(context));
-            }
+                var attribute = type.GetCustomAttribute<AdminAttribute>();
 
-            IEnumerable<CompiledViewDescriptor> descriptors;
-
-            var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
-
-            if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
-            {
-                descriptors = GetPageDescriptors<DevelopmentViewsFeature>(_applicationManager);
-            }
-            else
-            {
-                descriptors = GetPageDescriptors<ViewsFeature>(_applicationManager);
-            }
-
-            var adminPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var descriptor in descriptors)
-            {
-                foreach (var type in descriptor.Type.GetNestedTypes())
+                if (attribute != null)
                 {
-                    var attribute = type.GetCustomAttribute<AdminAttribute>();
-
-                    if (attribute != null)
-                    {
-                        adminPaths.Add(descriptor.RelativePath);
-                        break;
-                    }
-                }
-            }
-
-            foreach (var model in context.RouteModels.ToArray())
-            {
-                if (adminPaths.Contains(model.RelativePath))
-                {
-                    model.Properties["Admin"] = null;
+                    adminPaths.Add(descriptor.RelativePath);
+                    break;
                 }
             }
         }
 
-        public void OnProvidersExecuted(PageRouteModelProviderContext context)
+        foreach (var model in context.RouteModels.ToArray())
         {
-        }
-
-        private IEnumerable<CompiledViewDescriptor> GetPageDescriptors<T>(ApplicationPartManager applicationManager) where T : ViewsFeature, new()
-        {
-            if (applicationManager == null)
+            if (adminPaths.Contains(model.RelativePath))
             {
-                throw new ArgumentNullException(nameof(applicationManager));
-            }
-
-            var viewsFeature = GetViewFeature<T>(applicationManager);
-
-            var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var viewDescriptor in viewsFeature.ViewDescriptors)
-            {
-                if (!visited.Add(viewDescriptor.RelativePath))
-                {
-                    continue;
-                }
-
-                if (IsRazorPage(viewDescriptor))
-                {
-                    yield return viewDescriptor;
-                }
+                model.Properties["Admin"] = null;
             }
         }
+    }
 
-        private static bool IsRazorPage(CompiledViewDescriptor viewDescriptor) => viewDescriptor.Item?.Kind == RazorPageDocumentKind;
+    public void OnProvidersExecuted(PageRouteModelProviderContext context)
+    {
+    }
 
-        private static T GetViewFeature<T>(ApplicationPartManager applicationManager) where T : ViewsFeature, new()
+    private IEnumerable<CompiledViewDescriptor> GetPageDescriptors<T>(ApplicationPartManager applicationManager) where T : ViewsFeature, new()
+    {
+        if (applicationManager == null)
         {
-            var viewsFeature = new T();
-            applicationManager.PopulateFeature(viewsFeature);
-            return viewsFeature;
+            throw new ArgumentNullException(nameof(applicationManager));
         }
+
+        var viewsFeature = GetViewFeature<T>(applicationManager);
+
+        var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var viewDescriptor in viewsFeature.ViewDescriptors)
+        {
+            if (!visited.Add(viewDescriptor.RelativePath))
+            {
+                continue;
+            }
+
+            if (IsRazorPage(viewDescriptor))
+            {
+                yield return viewDescriptor;
+            }
+        }
+    }
+
+    private static bool IsRazorPage(CompiledViewDescriptor viewDescriptor) => viewDescriptor.Item?.Kind == RazorPageDocumentKind;
+
+    private static T GetViewFeature<T>(ApplicationPartManager applicationManager) where T : ViewsFeature, new()
+    {
+        var viewsFeature = new T();
+        applicationManager.PopulateFeature(viewsFeature);
+        return viewsFeature;
     }
 }

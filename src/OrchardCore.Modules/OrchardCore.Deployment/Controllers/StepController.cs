@@ -13,254 +13,253 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Settings;
 using YesSql;
 
-namespace OrchardCore.Deployment.Controllers
+namespace OrchardCore.Deployment.Controllers;
+
+[Admin]
+public class StepController : Controller
 {
-    [Admin]
-    public class StepController : Controller
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IDisplayManager<DeploymentStep> _displayManager;
+    private readonly IEnumerable<IDeploymentStepFactory> _factories;
+    private readonly ISession _session;
+    private readonly ISiteService _siteService;
+    private readonly INotifier _notifier;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IHtmlLocalizer H;
+    private readonly dynamic New;
+
+    public StepController(
+        IAuthorizationService authorizationService,
+        IDisplayManager<DeploymentStep> displayManager,
+        IEnumerable<IDeploymentStepFactory> factories,
+        ISession session,
+        ISiteService siteService,
+        IShapeFactory shapeFactory,
+        IHtmlLocalizer<StepController> htmlLocalizer,
+        INotifier notifier,
+        IUpdateModelAccessor updateModelAccessor)
     {
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IDisplayManager<DeploymentStep> _displayManager;
-        private readonly IEnumerable<IDeploymentStepFactory> _factories;
-        private readonly ISession _session;
-        private readonly ISiteService _siteService;
-        private readonly INotifier _notifier;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        _displayManager = displayManager;
+        _factories = factories;
+        _authorizationService = authorizationService;
+        _session = session;
+        _siteService = siteService;
+        _notifier = notifier;
+        _updateModelAccessor = updateModelAccessor;
+        New = shapeFactory;
+        H = htmlLocalizer;
+    }
 
-        public StepController(
-            IAuthorizationService authorizationService,
-            IDisplayManager<DeploymentStep> displayManager,
-            IEnumerable<IDeploymentStepFactory> factories,
-            ISession session,
-            ISiteService siteService,
-            IShapeFactory shapeFactory,
-            IHtmlLocalizer<StepController> htmlLocalizer,
-            INotifier notifier,
-            IUpdateModelAccessor updateModelAccessor)
+    public async Task<IActionResult> Create(int id, string type)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
         {
-            _displayManager = displayManager;
-            _factories = factories;
-            _authorizationService = authorizationService;
-            _session = session;
-            _siteService = siteService;
-            _notifier = notifier;
-            _updateModelAccessor = updateModelAccessor;
-            New = shapeFactory;
-            H = htmlLocalizer;
+            return Forbid();
         }
 
-        public async Task<IActionResult> Create(int id, string type)
+        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
+
+        if (deploymentPlan == null)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
-            {
-                return Forbid();
-            }
-
-            var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
-
-            if (deploymentPlan == null)
-            {
-                return NotFound();
-            }
-
-            var step = _factories.FirstOrDefault(x => x.Name == type)?.Create();
-
-            if (step == null)
-            {
-                return NotFound();
-            }
-
-            step.Id = Guid.NewGuid().ToString("n");
-
-            var model = new EditDeploymentPlanStepViewModel
-            {
-                DeploymentPlanId = id,
-                DeploymentStep = step,
-                DeploymentStepId = step.Id,
-                DeploymentStepType = type,
-                Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true)
-            };
-
-            model.Editor.DeploymentStep = step;
-
-            return View(model);
+            return NotFound();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(EditDeploymentPlanStepViewModel model)
+        var step = _factories.FirstOrDefault(x => x.Name == type)?.Create();
+
+        if (step == null)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
-            {
-                return Forbid();
-            }
-
-            var deploymentPlan = await _session.GetAsync<DeploymentPlan>(model.DeploymentPlanId);
-
-            if (deploymentPlan == null)
-            {
-                return NotFound();
-            }
-
-            var step = _factories.FirstOrDefault(x => x.Name == model.DeploymentStepType)?.Create();
-
-            if (step == null)
-            {
-                return NotFound();
-            }
-
-            dynamic editor = await _displayManager.UpdateEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true);
-            editor.DeploymentStep = step;
-
-            if (ModelState.IsValid)
-            {
-                step.Id = model.DeploymentStepId;
-                deploymentPlan.DeploymentSteps.Add(step);
-                _session.Save(deploymentPlan);
-
-                await _notifier.SuccessAsync(H["Deployment plan step added successfully."]);
-                return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
-            }
-
-            model.Editor = editor;
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
+            return NotFound();
         }
 
-        public async Task<IActionResult> Edit(int id, string stepId)
+        step.Id = Guid.NewGuid().ToString("n");
+
+        var model = new EditDeploymentPlanStepViewModel
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
-            {
-                return Forbid();
-            }
+            DeploymentPlanId = id,
+            DeploymentStep = step,
+            DeploymentStepId = step.Id,
+            DeploymentStepType = type,
+            Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true)
+        };
 
-            var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
+        model.Editor.DeploymentStep = step;
 
-            if (deploymentPlan == null)
-            {
-                return NotFound();
-            }
+        return View(model);
+    }
 
-            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
-
-            if (step == null)
-            {
-                return NotFound();
-            }
-
-            var model = new EditDeploymentPlanStepViewModel
-            {
-                DeploymentPlanId = id,
-                DeploymentStep = step,
-                DeploymentStepId = step.Id,
-                DeploymentStepType = step.GetType().Name,
-                Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: false)
-            };
-
-            model.Editor.DeploymentStep = step;
-
-            return View(model);
+    [HttpPost]
+    public async Task<IActionResult> Create(EditDeploymentPlanStepViewModel model)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+        {
+            return Forbid();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Edit(EditDeploymentPlanStepViewModel model)
+        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(model.DeploymentPlanId);
+
+        if (deploymentPlan == null)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
-            {
-                return Forbid();
-            }
-
-            var deploymentPlan = await _session.GetAsync<DeploymentPlan>(model.DeploymentPlanId);
-
-            if (deploymentPlan == null)
-            {
-                return NotFound();
-            }
-
-            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, model.DeploymentStepId, StringComparison.OrdinalIgnoreCase));
-
-            if (step == null)
-            {
-                return NotFound();
-            }
-
-            var editor = await _displayManager.UpdateEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: false);
-
-            if (ModelState.IsValid)
-            {
-                _session.Save(deploymentPlan);
-
-                await _notifier.SuccessAsync(H["Deployment plan step updated successfully."]);
-                return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
-            }
-
-            await _notifier.ErrorAsync(H["The deployment plan step has validation errors."]);
-            model.Editor = editor;
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
+            return NotFound();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(int id, string stepId)
+        var step = _factories.FirstOrDefault(x => x.Name == model.DeploymentStepType)?.Create();
+
+        if (step == null)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
-            {
-                return Forbid();
-            }
+            return NotFound();
+        }
 
-            var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
+        dynamic editor = await _displayManager.UpdateEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true);
+        editor.DeploymentStep = step;
 
-            if (deploymentPlan == null)
-            {
-                return NotFound();
-            }
-
-            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
-
-            if (step == null)
-            {
-                return NotFound();
-            }
-
-            deploymentPlan.DeploymentSteps.Remove(step);
+        if (ModelState.IsValid)
+        {
+            step.Id = model.DeploymentStepId;
+            deploymentPlan.DeploymentSteps.Add(step);
             _session.Save(deploymentPlan);
 
-            await _notifier.SuccessAsync(H["Deployment step deleted successfully."]);
-
-            return RedirectToAction("Display", "DeploymentPlan", new { id });
+            await _notifier.SuccessAsync(H["Deployment plan step added successfully."]);
+            return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
         }
 
-        [HttpPost]
-        public async Task<IActionResult> UpdateOrder(int id, int oldIndex, int newIndex)
+        model.Editor = editor;
+
+        // If we got this far, something failed, redisplay form
+        return View(model);
+    }
+
+    public async Task<IActionResult> Edit(int id, string stepId)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
-            {
-                return Forbid();
-            }
+            return Forbid();
+        }
 
-            var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
+        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
 
-            if (deploymentPlan == null)
-            {
-                return NotFound();
-            }
+        if (deploymentPlan == null)
+        {
+            return NotFound();
+        }
 
-            var step = deploymentPlan.DeploymentSteps.ElementAtOrDefault(oldIndex);
+        var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
 
-            if (step == null)
-            {
-                return NotFound();
-            }
+        if (step == null)
+        {
+            return NotFound();
+        }
 
-            deploymentPlan.DeploymentSteps.RemoveAt(oldIndex);
+        var model = new EditDeploymentPlanStepViewModel
+        {
+            DeploymentPlanId = id,
+            DeploymentStep = step,
+            DeploymentStepId = step.Id,
+            DeploymentStepType = step.GetType().Name,
+            Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: false)
+        };
 
-            deploymentPlan.DeploymentSteps.Insert(newIndex, step);
+        model.Editor.DeploymentStep = step;
 
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Edit(EditDeploymentPlanStepViewModel model)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+        {
+            return Forbid();
+        }
+
+        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(model.DeploymentPlanId);
+
+        if (deploymentPlan == null)
+        {
+            return NotFound();
+        }
+
+        var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, model.DeploymentStepId, StringComparison.OrdinalIgnoreCase));
+
+        if (step == null)
+        {
+            return NotFound();
+        }
+
+        var editor = await _displayManager.UpdateEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+
+        if (ModelState.IsValid)
+        {
             _session.Save(deploymentPlan);
 
-            return Ok();
+            await _notifier.SuccessAsync(H["Deployment plan step updated successfully."]);
+            return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
         }
+
+        await _notifier.ErrorAsync(H["The deployment plan step has validation errors."]);
+        model.Editor = editor;
+
+        // If we got this far, something failed, redisplay form
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(int id, string stepId)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+        {
+            return Forbid();
+        }
+
+        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
+
+        if (deploymentPlan == null)
+        {
+            return NotFound();
+        }
+
+        var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
+
+        if (step == null)
+        {
+            return NotFound();
+        }
+
+        deploymentPlan.DeploymentSteps.Remove(step);
+        _session.Save(deploymentPlan);
+
+        await _notifier.SuccessAsync(H["Deployment step deleted successfully."]);
+
+        return RedirectToAction("Display", "DeploymentPlan", new { id });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateOrder(int id, int oldIndex, int newIndex)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+        {
+            return Forbid();
+        }
+
+        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
+
+        if (deploymentPlan == null)
+        {
+            return NotFound();
+        }
+
+        var step = deploymentPlan.DeploymentSteps.ElementAtOrDefault(oldIndex);
+
+        if (step == null)
+        {
+            return NotFound();
+        }
+
+        deploymentPlan.DeploymentSteps.RemoveAt(oldIndex);
+
+        deploymentPlan.DeploymentSteps.Insert(newIndex, step);
+
+        _session.Save(deploymentPlan);
+
+        return Ok();
     }
 }

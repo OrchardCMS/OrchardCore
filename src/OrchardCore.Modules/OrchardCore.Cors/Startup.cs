@@ -14,41 +14,40 @@ using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using CorsService = OrchardCore.Cors.Services.CorsService;
 
-namespace OrchardCore.Cors
+namespace OrchardCore.Cors;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    private readonly AdminOptions _adminOptions;
+
+    public Startup(IOptions<AdminOptions> adminOptions)
     {
-        private readonly AdminOptions _adminOptions;
+        _adminOptions = adminOptions.Value;
+    }
 
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
+    public override int Order => -1;
 
-        public override int Order => -1;
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        app.UseCors();
 
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            app.UseCors();
+        var adminControllerName = typeof(AdminController).ControllerName();
 
-            var adminControllerName = typeof(AdminController).ControllerName();
+        routes.MapAreaControllerRoute(
+            name: "CorsIndex",
+            areaName: "OrchardCore.Cors",
+            pattern: _adminOptions.AdminUrlPrefix + "/Cors",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
+        );
+    }
 
-            routes.MapAreaControllerRoute(
-                name: "CorsIndex",
-                areaName: "OrchardCore.Cors",
-                pattern: _adminOptions.AdminUrlPrefix + "/Cors",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
-            );
-        }
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddSingleton<CorsService>();
 
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddSingleton<CorsService>();
-
-            services.TryAddEnumerable(ServiceDescriptor
-                .Transient<IConfigureOptions<CorsOptions>, CorsOptionsConfiguration>());
-        }
+        services.TryAddEnumerable(ServiceDescriptor
+            .Transient<IConfigureOptions<CorsOptions>, CorsOptionsConfiguration>());
     }
 }

@@ -9,69 +9,68 @@ using OrchardCore.Sitemaps.Services;
 using YesSql;
 using YesSql.Services;
 
-namespace OrchardCore.Contents.Sitemaps
+namespace OrchardCore.Contents.Sitemaps;
+
+public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
 {
-    public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
+    private readonly ISession _session;
+    private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
+
+    public DefaultContentItemsQueryProvider(
+        ISession session,
+        IRouteableContentTypeCoordinator routeableContentTypeCoordinator
+        )
     {
-        private readonly ISession _session;
-        private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
+        _session = session;
+        _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
+    }
 
-        public DefaultContentItemsQueryProvider(
-            ISession session,
-            IRouteableContentTypeCoordinator routeableContentTypeCoordinator
-            )
+    public async Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context)
+    {
+        var routeableContentTypeDefinitions = _routeableContentTypeCoordinator.ListRoutableTypeDefinitions();
+
+        if (source.IndexAll)
         {
-            _session = session;
-            _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
+            var rctdNames = routeableContentTypeDefinitions.Select(rctd => rctd.Name);
+
+            var queryResults = await _session.Query<ContentItem>()
+                .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(rctdNames))
+                .OrderBy(x => x.CreatedUtc)
+                .ListAsync();
+
+            context.ContentItems = queryResults;
         }
-
-        public async Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context)
+        else if (source.LimitItems)
         {
-            var routeableContentTypeDefinitions = _routeableContentTypeCoordinator.ListRoutableTypeDefinitions();
+            // Test that content type is still valid to include in sitemap.
+            var typeIsValid = routeableContentTypeDefinitions
+                .Any(ctd => String.Equals(source.LimitedContentType.ContentTypeName, ctd.Name));
 
-            if (source.IndexAll)
+            if (typeIsValid)
             {
-                var rctdNames = routeableContentTypeDefinitions.Select(rctd => rctd.Name);
-
                 var queryResults = await _session.Query<ContentItem>()
-                    .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(rctdNames))
+                    .With<ContentItemIndex>(x => x.ContentType == source.LimitedContentType.ContentTypeName && x.Published)
                     .OrderBy(x => x.CreatedUtc)
+                    .Skip(source.LimitedContentType.Skip)
+                    .Take(source.LimitedContentType.Take)
                     .ListAsync();
 
                 context.ContentItems = queryResults;
             }
-            else if (source.LimitItems)
-            {
-                // Test that content type is still valid to include in sitemap.
-                var typeIsValid = routeableContentTypeDefinitions
-                    .Any(ctd => String.Equals(source.LimitedContentType.ContentTypeName, ctd.Name));
+        }
+        else
+        {
+            // Test that content types are still valid to include in sitemap.
+            var typesToIndex = routeableContentTypeDefinitions
+                .Where(ctd => source.ContentTypes.Any(s => String.Equals(ctd.Name, s.ContentTypeName)))
+                .Select(x => x.Name);
 
-                if (typeIsValid)
-                {
-                    var queryResults = await _session.Query<ContentItem>()
-                        .With<ContentItemIndex>(x => x.ContentType == source.LimitedContentType.ContentTypeName && x.Published)
-                        .OrderBy(x => x.CreatedUtc)
-                        .Skip(source.LimitedContentType.Skip)
-                        .Take(source.LimitedContentType.Take)
-                        .ListAsync();
+            var queryResults = await _session.Query<ContentItem>()
+                .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
+                .OrderBy(x => x.CreatedUtc)
+                .ListAsync();
 
-                    context.ContentItems = queryResults;
-                }
-            }
-            else
-            {
-                // Test that content types are still valid to include in sitemap.
-                var typesToIndex = routeableContentTypeDefinitions
-                    .Where(ctd => source.ContentTypes.Any(s => String.Equals(ctd.Name, s.ContentTypeName)))
-                    .Select(x => x.Name);
-
-                var queryResults = await _session.Query<ContentItem>()
-                    .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
-                    .OrderBy(x => x.CreatedUtc)
-                    .ListAsync();
-
-                context.ContentItems = queryResults;
-            }
+            context.ContentItems = queryResults;
         }
     }
 }

@@ -3,27 +3,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Sitemaps
+namespace OrchardCore.Sitemaps;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
+    public static readonly Permission ManageSitemaps = new Permission("ManageSitemaps", "Manage sitemaps");
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        public static readonly Permission ManageSitemaps = new Permission("ManageSitemaps", "Manage sitemaps");
+        return Task.FromResult(new[] { ManageSitemaps }.AsEnumerable());
+    }
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return Task.FromResult(new[] { ManageSitemaps }.AsEnumerable());
-        }
-
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
-            {
                 new PermissionStereotype
                 {
                     Name = "Administrator",
                     Permissions = new[] { ManageSitemaps }
                 }
             };
-        }
     }
 }

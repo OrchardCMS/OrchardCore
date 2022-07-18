@@ -13,88 +13,87 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
 
-namespace OrchardCore.Flows.Drivers
+namespace OrchardCore.Flows.Drivers;
+
+public class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
 {
-    public class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IContentManager _contentManager;
+    private readonly IServiceProvider _serviceProvider;
+
+    public BagPartDisplayDriver(
+        IContentManager contentManager,
+        IContentDefinitionManager contentDefinitionManager,
+        IServiceProvider serviceProvider
+        )
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IContentManager _contentManager;
-        private readonly IServiceProvider _serviceProvider;
+        _contentDefinitionManager = contentDefinitionManager;
+        _contentManager = contentManager;
+        _serviceProvider = serviceProvider;
+    }
 
-        public BagPartDisplayDriver(
-            IContentManager contentManager,
-            IContentDefinitionManager contentDefinitionManager,
-            IServiceProvider serviceProvider
-            )
+    public override IDisplayResult Display(BagPart bagPart, BuildPartDisplayContext context)
+    {
+        var hasItems = bagPart.ContentItems.Any();
+
+        return Initialize<BagPartViewModel>(hasItems ? "BagPart" : "BagPart_Empty", m =>
         {
-            _contentDefinitionManager = contentDefinitionManager;
-            _contentManager = contentManager;
-            _serviceProvider = serviceProvider;
-        }
+            m.BagPart = bagPart;
+            m.BuildPartDisplayContext = context;
+            m.Settings = context.TypePartDefinition.GetSettings<BagPartSettings>();
+        })
+        .Location("Detail", "Content:5")
+        .Location("Summary", "Content:5");
+    }
 
-        public override IDisplayResult Display(BagPart bagPart, BuildPartDisplayContext context)
+    public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)
+    {
+        return Initialize<BagPartEditViewModel>(GetEditorShapeType(context), m =>
         {
-            var hasItems = bagPart.ContentItems.Any();
+            m.BagPart = bagPart;
+            m.Updater = context.Updater;
+            m.ContainedContentTypeDefinitions = GetContainedContentTypes(context.TypePartDefinition);
+        });
+    }
 
-            return Initialize<BagPartViewModel>(hasItems ? "BagPart" : "BagPart_Empty", m =>
+    public override async Task<IDisplayResult> UpdateAsync(BagPart part, UpdatePartEditorContext context)
+    {
+        var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
+        var model = new BagPartEditViewModel { BagPart = part };
+
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        var contentItems = new List<ContentItem>();
+
+        for (var i = 0; i < model.Prefixes.Length; i++)
+        {
+            var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
+            var existingContentItem = part.ContentItems.FirstOrDefault(x => String.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
+            // When the content item already exists merge its elements to preserve nested content item ids.
+            // All of the data for these merged items is then replaced by the model values on update, while a nested content item id is maintained.
+            // This prevents nested items which rely on the content item id, i.e. the media attached field, losing their reference point.
+            if (existingContentItem != null)
             {
-                m.BagPart = bagPart;
-                m.BuildPartDisplayContext = context;
-                m.Settings = context.TypePartDefinition.GetSettings<BagPartSettings>();
-            })
-            .Location("Detail", "Content:5")
-            .Location("Summary", "Content:5");
-        }
-
-        public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)
-        {
-            return Initialize<BagPartEditViewModel>(GetEditorShapeType(context), m =>
-            {
-                m.BagPart = bagPart;
-                m.Updater = context.Updater;
-                m.ContainedContentTypeDefinitions = GetContainedContentTypes(context.TypePartDefinition);
-            });
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(BagPart part, UpdatePartEditorContext context)
-        {
-            var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
-            var model = new BagPartEditViewModel { BagPart = part };
-
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-            var contentItems = new List<ContentItem>();
-
-            for (var i = 0; i < model.Prefixes.Length; i++)
-            {
-                var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
-                var existingContentItem = part.ContentItems.FirstOrDefault(x => String.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
-                // When the content item already exists merge its elements to preserve nested content item ids.
-                // All of the data for these merged items is then replaced by the model values on update, while a nested content item id is maintained.
-                // This prevents nested items which rely on the content item id, i.e. the media attached field, losing their reference point.
-                if (existingContentItem != null)
-                {
-                    contentItem.ContentItemId = model.ContentItems[i];
-                    contentItem.Merge(existingContentItem);
-                }
-
-                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
-
-                contentItems.Add(contentItem);
+                contentItem.ContentItemId = model.ContentItems[i];
+                contentItem.Merge(existingContentItem);
             }
 
-            part.ContentItems = contentItems;
+            var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
 
-            return Edit(part, context);
+            contentItems.Add(contentItem);
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ContentTypePartDefinition typePartDefinition)
-        {
-            var settings = typePartDefinition.GetSettings<BagPartSettings>();
+        part.ContentItems = contentItems;
 
-            return settings.ContainedContentTypes
-                .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                .Where(contentType => contentType != null);
-        }
+        return Edit(part, context);
+    }
+
+    private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ContentTypePartDefinition typePartDefinition)
+    {
+        var settings = typePartDefinition.GetSettings<BagPartSettings>();
+
+        return settings.ContainedContentTypes
+            .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
+            .Where(contentType => contentType != null);
     }
 }

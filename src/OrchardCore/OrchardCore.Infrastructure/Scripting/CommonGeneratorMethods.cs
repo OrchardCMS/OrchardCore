@@ -5,56 +5,55 @@ using System.IO.Compression;
 using System.Net;
 using System.Text;
 
-namespace OrchardCore.Scripting
+namespace OrchardCore.Scripting;
+
+public class CommonGeneratorMethods : IGlobalMethodProvider
 {
-    public class CommonGeneratorMethods : IGlobalMethodProvider
+    private static GlobalMethod Base64 = new GlobalMethod
     {
-        private static GlobalMethod Base64 = new GlobalMethod
+        Name = "base64",
+        Method = serviceProvider => (Func<string, string>)(encoded =>
         {
-            Name = "base64",
-            Method = serviceProvider => (Func<string, string>)(encoded =>
-            {
-                return Encoding.UTF8.GetString(Convert.FromBase64String(encoded));
-            })
-        };
+            return Encoding.UTF8.GetString(Convert.FromBase64String(encoded));
+        })
+    };
 
-        private static GlobalMethod Html = new GlobalMethod
+    private static GlobalMethod Html = new GlobalMethod
+    {
+        Name = "html",
+        Method = serviceProvider => (Func<string, string>)(encoded =>
         {
-            Name = "html",
-            Method = serviceProvider => (Func<string, string>)(encoded =>
-            {
-                return WebUtility.HtmlDecode(encoded);
-            })
-        };
+            return WebUtility.HtmlDecode(encoded);
+        })
+    };
 
-        /// <summary>
-        /// Converts a Base64 encoded gzip stream to an uncompressed Base64 string.
-        /// See http://www.txtwizard.net/compression
-        /// </summary>
-        private static GlobalMethod GZip = new GlobalMethod
+    /// <summary>
+    /// Converts a Base64 encoded gzip stream to an uncompressed Base64 string.
+    /// See http://www.txtwizard.net/compression
+    /// </summary>
+    private static GlobalMethod GZip = new GlobalMethod
+    {
+        Name = "gzip",
+        Method = serviceProvider => (Func<string, string>)(encoded =>
         {
-            Name = "gzip",
-            Method = serviceProvider => (Func<string, string>)(encoded =>
+            var bytes = Convert.FromBase64String(encoded);
+            using (var gzip = new GZipStream(new MemoryStream(bytes), CompressionMode.Decompress))
             {
-                var bytes = Convert.FromBase64String(encoded);
-                using (var gzip = new GZipStream(new MemoryStream(bytes), CompressionMode.Decompress))
+                var decompressed = new MemoryStream();
+                var buffer = new byte[1024];
+                int nRead;
+                while ((nRead = gzip.Read(buffer, 0, buffer.Length)) > 0)
                 {
-                    var decompressed = new MemoryStream();
-                    var buffer = new byte[1024];
-                    int nRead;
-                    while ((nRead = gzip.Read(buffer, 0, buffer.Length)) > 0)
-                    {
-                        decompressed.Write(buffer, 0, nRead);
-                    }
-
-                    return Convert.ToBase64String(decompressed.ToArray());
+                    decompressed.Write(buffer, 0, nRead);
                 }
-            })
-        };
 
-        public IEnumerable<GlobalMethod> GetMethods()
-        {
-            return new[] { Base64, Html, GZip };
-        }
+                return Convert.ToBase64String(decompressed.ToArray());
+            }
+        })
+    };
+
+    public IEnumerable<GlobalMethod> GetMethods()
+    {
+        return new[] { Base64, Html, GZip };
     }
 }

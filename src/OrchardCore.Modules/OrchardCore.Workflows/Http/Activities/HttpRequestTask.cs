@@ -12,11 +12,11 @@ using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Workflows.Http.Activities
+namespace OrchardCore.Workflows.Http.Activities;
+
+public class HttpRequestTask : TaskActivity
 {
-    public class HttpRequestTask : TaskActivity
-    {
-        private static readonly Dictionary<int, string> HttpStatusCodeDictionary = new Dictionary<int, string>
+    private static readonly Dictionary<int, string> HttpStatusCodeDictionary = new Dictionary<int, string>
         {
             { 100, "Continue" },
             { 101, " Switching Protocols" },
@@ -83,137 +83,136 @@ namespace OrchardCore.Workflows.Http.Activities
             { 599 , "Network Connect Timeout Error" }
         };
 
-        private static readonly HttpClient _httpClient = new HttpClient();
-        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer S;
-        private readonly UrlEncoder _urlEncoder;
+    private static readonly HttpClient _httpClient = new HttpClient();
+    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IStringLocalizer S;
+    private readonly UrlEncoder _urlEncoder;
 
-        public HttpRequestTask(
-            IStringLocalizer<HttpRequestTask> localizer,
-            IWorkflowExpressionEvaluator expressionEvaluator,
-            UrlEncoder urlEncoder
-        )
-        {
-            S = localizer;
-            _expressionEvaluator = expressionEvaluator;
-            _urlEncoder = urlEncoder;
-        }
+    public HttpRequestTask(
+        IStringLocalizer<HttpRequestTask> localizer,
+        IWorkflowExpressionEvaluator expressionEvaluator,
+        UrlEncoder urlEncoder
+    )
+    {
+        S = localizer;
+        _expressionEvaluator = expressionEvaluator;
+        _urlEncoder = urlEncoder;
+    }
 
-        public override string Name => nameof(HttpRequestTask);
+    public override string Name => nameof(HttpRequestTask);
 
-        public override LocalizedString DisplayText => S["Http Request Task"];
+    public override LocalizedString DisplayText => S["Http Request Task"];
 
-        public override LocalizedString Category => S["HTTP"];
+    public override LocalizedString Category => S["HTTP"];
 
-        public WorkflowExpression<string> Url
-        {
-            get => GetProperty(() => new WorkflowExpression<string>());
-            set => SetProperty(value);
-        }
+    public WorkflowExpression<string> Url
+    {
+        get => GetProperty(() => new WorkflowExpression<string>());
+        set => SetProperty(value);
+    }
 
-        public string HttpMethod
-        {
-            get => GetProperty(() => HttpMethods.Get);
-            set => SetProperty(value);
-        }
+    public string HttpMethod
+    {
+        get => GetProperty(() => HttpMethods.Get);
+        set => SetProperty(value);
+    }
 
-        public WorkflowExpression<string> Headers
-        {
-            get => GetProperty(() => new WorkflowExpression<string>());
-            set => SetProperty(value);
-        }
+    public WorkflowExpression<string> Headers
+    {
+        get => GetProperty(() => new WorkflowExpression<string>());
+        set => SetProperty(value);
+    }
 
-        public WorkflowExpression<string> Body
-        {
-            get => GetProperty(() => new WorkflowExpression<string>());
-            set => SetProperty(value);
-        }
+    public WorkflowExpression<string> Body
+    {
+        get => GetProperty(() => new WorkflowExpression<string>());
+        set => SetProperty(value);
+    }
 
-        public WorkflowExpression<string> ContentType
-        {
-            get => GetProperty(() => new WorkflowExpression<string>("application/json"));
-            set => SetProperty(value);
-        }
+    public WorkflowExpression<string> ContentType
+    {
+        get => GetProperty(() => new WorkflowExpression<string>("application/json"));
+        set => SetProperty(value);
+    }
 
-        public string HttpResponseCodes
-        {
-            get => GetProperty(() => "200");
-            set => SetProperty(value);
-        }
+    public string HttpResponseCodes
+    {
+        get => GetProperty(() => "200");
+        set => SetProperty(value);
+    }
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            var outcomes = !string.IsNullOrWhiteSpace(HttpResponseCodes)
-                ? HttpResponseCodes.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x =>
-                {
-                    var status = int.Parse(x.Trim());
-
-                    var description = HttpStatusCodeDictionary.TryGetValue(status, out var text)
-                        ? $"{status} {text}"
-                        : status.ToString()
-                        ;
-
-                    return new Outcome(status.ToString(), new LocalizedString(description, description));
-                }).ToList()
-                : new List<Outcome>();
-            outcomes.Add(new Outcome("UnhandledHttpStatus", S["Unhandled Http Status"]));
-
-            return outcomes;
-        }
-
-        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            var headersText = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext, _urlEncoder);
-            var headers = ParseHeaders(headersText);
-
-            var httpMethod = HttpMethod;
-            var url = await _expressionEvaluator.EvaluateAsync(Url, workflowContext, _urlEncoder);
-            var request = new HttpRequestMessage(new HttpMethod(httpMethod), url);
-            foreach (var header in headers)
+    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        var outcomes = !string.IsNullOrWhiteSpace(HttpResponseCodes)
+            ? HttpResponseCodes.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x =>
             {
-                request.Headers.TryAddWithoutValidation(header.Key, header.Value);
-            }
+                var status = int.Parse(x.Trim());
 
-            if (HttpMethods.IsPatch(httpMethod) || HttpMethods.IsPost(httpMethod) || HttpMethods.IsPut(httpMethod))
-            {
-                var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, null);
-                var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext, _urlEncoder);
-                request.Content = new StringContent(body, Encoding.UTF8, contentType);
-            }
+                var description = HttpStatusCodeDictionary.TryGetValue(status, out var text)
+                    ? $"{status} {text}"
+                    : status.ToString()
+                    ;
 
-            var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
-            var responseCodes = ParseResponseCodes(HttpResponseCodes);
-            var outcome = responseCodes.FirstOrDefault(x => x == (int)response.StatusCode);
+                return new Outcome(status.ToString(), new LocalizedString(description, description));
+            }).ToList()
+            : new List<Outcome>();
+        outcomes.Add(new Outcome("UnhandledHttpStatus", S["Unhandled Http Status"]));
 
-            workflowContext.LastResult = new
-            {
-                Body = await response.Content.ReadAsStringAsync(),
-                Headers = response.Headers.ToDictionary(x => x.Key),
-                StatusCode = response.StatusCode,
-                ReasonPhrase = response.ReasonPhrase,
-                IsSuccessStatusCode = response.IsSuccessStatusCode
-            };
+        return outcomes;
+    }
 
-            return Outcomes(outcome != 0 ? outcome.ToString() : "UnhandledHttpStatus");
-        }
+    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        var headersText = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext, _urlEncoder);
+        var headers = ParseHeaders(headersText);
 
-        private IEnumerable<KeyValuePair<string, string>> ParseHeaders(string text)
+        var httpMethod = HttpMethod;
+        var url = await _expressionEvaluator.EvaluateAsync(Url, workflowContext, _urlEncoder);
+        var request = new HttpRequestMessage(new HttpMethod(httpMethod), url);
+        foreach (var header in headers)
         {
-            if (string.IsNullOrWhiteSpace(text))
-                return Enumerable.Empty<KeyValuePair<string, string>>();
-
-            return
-                from header in text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
-                let pair = header.Split(':', 2)
-                where pair.Length == 2
-                select new KeyValuePair<string, string>(pair[0], pair[1]);
+            request.Headers.TryAddWithoutValidation(header.Key, header.Value);
         }
 
-        private IEnumerable<int> ParseResponseCodes(string text)
+        if (HttpMethods.IsPatch(httpMethod) || HttpMethods.IsPost(httpMethod) || HttpMethods.IsPut(httpMethod))
         {
-            return
-                from code in text.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                select int.Parse(code);
+            var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, null);
+            var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext, _urlEncoder);
+            request.Content = new StringContent(body, Encoding.UTF8, contentType);
         }
+
+        var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
+        var responseCodes = ParseResponseCodes(HttpResponseCodes);
+        var outcome = responseCodes.FirstOrDefault(x => x == (int)response.StatusCode);
+
+        workflowContext.LastResult = new
+        {
+            Body = await response.Content.ReadAsStringAsync(),
+            Headers = response.Headers.ToDictionary(x => x.Key),
+            StatusCode = response.StatusCode,
+            ReasonPhrase = response.ReasonPhrase,
+            IsSuccessStatusCode = response.IsSuccessStatusCode
+        };
+
+        return Outcomes(outcome != 0 ? outcome.ToString() : "UnhandledHttpStatus");
+    }
+
+    private IEnumerable<KeyValuePair<string, string>> ParseHeaders(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return Enumerable.Empty<KeyValuePair<string, string>>();
+
+        return
+            from header in text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
+            let pair = header.Split(':', 2)
+            where pair.Length == 2
+            select new KeyValuePair<string, string>(pair[0], pair[1]);
+    }
+
+    private IEnumerable<int> ParseResponseCodes(string text)
+    {
+        return
+            from code in text.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            select int.Parse(code);
     }
 }

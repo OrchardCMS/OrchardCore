@@ -4,32 +4,31 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Controllers;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.AuditTrail.Navigation
+namespace OrchardCore.AuditTrail.Navigation;
+
+public class AuditTrailAdminMenu : INavigationProvider
 {
-    public class AuditTrailAdminMenu : INavigationProvider
+    private readonly IStringLocalizer S;
+
+    public AuditTrailAdminMenu(IStringLocalizer<AuditTrailAdminMenu> stringLocalizer)
     {
-        private readonly IStringLocalizer S;
+        S = stringLocalizer;
+    }
 
-        public AuditTrailAdminMenu(IStringLocalizer<AuditTrailAdminMenu> stringLocalizer)
+    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    {
+        if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
         {
-            S = stringLocalizer;
-        }
-
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
-
-            builder
-                .Add(S["Audit Trail"], NavigationConstants.AdminMenuAuditTrailPosition, configuration => configuration
-                    .AddClass("audittrail").Id("audittrail")
-                    .Action(nameof(AdminController.Index), "Admin", new { area = "OrchardCore.AuditTrail", correlationId = "" })
-                    .Permission(AuditTrailPermissions.ViewAuditTrail)
-                    .LocalNav());
-
             return Task.CompletedTask;
         }
+
+        builder
+            .Add(S["Audit Trail"], NavigationConstants.AdminMenuAuditTrailPosition, configuration => configuration
+                .AddClass("audittrail").Id("audittrail")
+                .Action(nameof(AdminController.Index), "Admin", new { area = "OrchardCore.AuditTrail", correlationId = "" })
+                .Permission(AuditTrailPermissions.ViewAuditTrail)
+                .LocalNav());
+
+        return Task.CompletedTask;
     }
 }

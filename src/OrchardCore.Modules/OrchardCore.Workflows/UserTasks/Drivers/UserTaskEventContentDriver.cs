@@ -16,37 +16,37 @@ using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.UserTasks.Activities;
 using OrchardCore.Workflows.UserTasks.ViewModels;
 
-namespace OrchardCore.Workflows.UserTasks.Drivers
+namespace OrchardCore.Workflows.UserTasks.Drivers;
+
+public class UserTaskEventContentDriver : ContentDisplayDriver
 {
-    public class UserTaskEventContentDriver : ContentDisplayDriver
+    private readonly IWorkflowStore _workflowStore;
+    private readonly IActivityLibrary _activityLibrary;
+    private readonly IWorkflowManager _workflowManager;
+    private readonly INotifier _notifier;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IHtmlLocalizer H;
+
+    public UserTaskEventContentDriver(
+        IWorkflowStore workflowStore,
+        IActivityLibrary activityLibrary,
+        IWorkflowManager workflowManager,
+        INotifier notifier,
+        IHtmlLocalizer<UserTaskEventContentDriver> localizer,
+        IHttpContextAccessor httpContextAccessor)
     {
-        private readonly IWorkflowStore _workflowStore;
-        private readonly IActivityLibrary _activityLibrary;
-        private readonly IWorkflowManager _workflowManager;
-        private readonly INotifier _notifier;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IHtmlLocalizer H;
+        _workflowStore = workflowStore;
+        _activityLibrary = activityLibrary;
+        _workflowManager = workflowManager;
+        _notifier = notifier;
+        _httpContextAccessor = httpContextAccessor;
 
-        public UserTaskEventContentDriver(
-            IWorkflowStore workflowStore,
-            IActivityLibrary activityLibrary,
-            IWorkflowManager workflowManager,
-            INotifier notifier,
-            IHtmlLocalizer<UserTaskEventContentDriver> localizer,
-            IHttpContextAccessor httpContextAccessor)
-        {
-            _workflowStore = workflowStore;
-            _activityLibrary = activityLibrary;
-            _workflowManager = workflowManager;
-            _notifier = notifier;
-            _httpContextAccessor = httpContextAccessor;
+        H = localizer;
+    }
 
-            H = localizer;
-        }
-
-        public override IDisplayResult Edit(ContentItem contentItem)
-        {
-            var results = new List<IDisplayResult>
+    public override IDisplayResult Edit(ContentItem contentItem)
+    {
+        var results = new List<IDisplayResult>
             {
                 Initialize<UserTaskEventContentViewModel>("Content_UserTaskButton", async model => {
                     var actions = await GetUserTaskActionsAsync(contentItem.ContentItemId);
@@ -54,75 +54,74 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                 }).Location("Actions:30"),
             };
 
-            return Combine(results.ToArray());
-        }
+        return Combine(results.ToArray());
+    }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentItem model, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(ContentItem model, IUpdateModel updater)
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        var action = (string)httpContext.Request.Form["submit.Save"] ?? httpContext.Request.Form["submit.Publish"];
+        if (action?.StartsWith("user-task.", StringComparison.Ordinal) == true)
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-            var action = (string)httpContext.Request.Form["submit.Save"] ?? httpContext.Request.Form["submit.Publish"];
-            if (action?.StartsWith("user-task.", StringComparison.Ordinal) == true)
+            action = action.Substring("user-task.".Length);
+
+            var availableActions = await GetUserTaskActionsAsync(model.ContentItemId);
+
+            if (!availableActions.Contains(action))
             {
-                action = action.Substring("user-task.".Length);
-
-                var availableActions = await GetUserTaskActionsAsync(model.ContentItemId);
-
-                if (!availableActions.Contains(action))
+                await _notifier.ErrorAsync(H["Not authorized to trigger '{0}'.", action]);
+            }
+            else
+            {
+                var contentEvent = new ContentEventContext()
                 {
-                    await _notifier.ErrorAsync(H["Not authorized to trigger '{0}'.", action]);
-                }
-                else
-                {
-                    var contentEvent = new ContentEventContext()
-                    {
-                        Name = nameof(UserTaskEvent),
-                        ContentType = model.ContentType,
-                        ContentItemId = model.ContentItemId
-                    };
+                    Name = nameof(UserTaskEvent),
+                    ContentType = model.ContentType,
+                    ContentItemId = model.ContentItemId
+                };
 
-                    var input = new Dictionary<string, object>
+                var input = new Dictionary<string, object>
                     {
                         { ContentEventConstants.UserActionInputKey, action },
                         { ContentEventConstants.ContentItemInputKey, model },
                         { ContentEventConstants.ContentEventInputKey, contentEvent }
                     };
 
-                    await _workflowManager.TriggerEventAsync(nameof(UserTaskEvent), input, correlationId: model.ContentItemId);
-                }
+                await _workflowManager.TriggerEventAsync(nameof(UserTaskEvent), input, correlationId: model.ContentItemId);
             }
-
-            return Edit(model);
         }
 
-        private async Task<IList<string>> GetUserTaskActionsAsync(string contentItemId)
-        {
-            var workflows = await _workflowStore.ListByActivityNameAsync(nameof(UserTaskEvent), contentItemId);
-            var user = _httpContextAccessor.HttpContext.User;
-            var userRoles = user.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
-            var actionsQuery =
-                from workflow in workflows
-                let workflowState = workflow.State.ToObject<WorkflowState>()
-                from blockingActivity in workflow.BlockingActivities
-                where blockingActivity.Name == nameof(UserTaskEvent)
-                from action in GetUserTaskActions(workflowState, blockingActivity.ActivityId, userRoles)
-                select action;
+        return Edit(model);
+    }
 
-            return actionsQuery.Distinct().ToList();
-        }
+    private async Task<IList<string>> GetUserTaskActionsAsync(string contentItemId)
+    {
+        var workflows = await _workflowStore.ListByActivityNameAsync(nameof(UserTaskEvent), contentItemId);
+        var user = _httpContextAccessor.HttpContext.User;
+        var userRoles = user.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
+        var actionsQuery =
+            from workflow in workflows
+            let workflowState = workflow.State.ToObject<WorkflowState>()
+            from blockingActivity in workflow.BlockingActivities
+            where blockingActivity.Name == nameof(UserTaskEvent)
+            from action in GetUserTaskActions(workflowState, blockingActivity.ActivityId, userRoles)
+            select action;
 
-        private IEnumerable<string> GetUserTaskActions(WorkflowState workflowState, string activityId, IEnumerable<string> userRoles)
+        return actionsQuery.Distinct().ToList();
+    }
+
+    private IEnumerable<string> GetUserTaskActions(WorkflowState workflowState, string activityId, IEnumerable<string> userRoles)
+    {
+        if (workflowState.ActivityStates.TryGetValue(activityId, out var activityState))
         {
-            if (workflowState.ActivityStates.TryGetValue(activityId, out var activityState))
+            var activity = _activityLibrary.InstantiateActivity<UserTaskEvent>(nameof(UserTaskEvent), activityState);
+
+            if (activity.Roles.Any() && !userRoles.Any(x => activity.Roles.Contains(x)))
+                yield break;
+
+            foreach (var action in activity.Actions)
             {
-                var activity = _activityLibrary.InstantiateActivity<UserTaskEvent>(nameof(UserTaskEvent), activityState);
-
-                if (activity.Roles.Any() && !userRoles.Any(x => activity.Roles.Contains(x)))
-                    yield break;
-
-                foreach (var action in activity.Actions)
-                {
-                    yield return action;
-                }
+                yield return action;
             }
         }
     }

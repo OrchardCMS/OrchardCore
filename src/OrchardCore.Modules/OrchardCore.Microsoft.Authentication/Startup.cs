@@ -18,46 +18,46 @@ using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Microsoft.Authentication
-{
-    [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
-    public class MicrosoftAccountStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
+namespace OrchardCore.Microsoft.Authentication;
 
-            services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
-            services.AddScoped<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenuMicrosoftAccount>();
-            services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>();
-            // Register the options initializers required by the Microsoft Account Handler.
-            services.TryAddEnumerable(new[]
-            {
+[Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
+public class MicrosoftAccountStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
+
+        services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
+        services.AddScoped<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
+        services.AddScoped<INavigationProvider, AdminMenuMicrosoftAccount>();
+        services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>();
+        // Register the options initializers required by the Microsoft Account Handler.
+        services.TryAddEnumerable(new[]
+        {
                 // Orchard-specific initializers:
                 ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, MicrosoftAccountOptionsConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<MicrosoftAccountOptions>, MicrosoftAccountOptionsConfiguration>(),
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<MicrosoftAccountOptions>, OAuthPostConfigureOptions<MicrosoftAccountOptions,MicrosoftAccountHandler>>()
             });
-        }
     }
+}
 
-    [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
-    public class AzureADStartup : StartupBase
+[Feature(MicrosoftAuthenticationConstants.Features.AAD)]
+public class AzureADStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
+
+        services.AddSingleton<IAzureADService, AzureADService>();
+        services.AddRecipeExecutionStep<AzureADSettingsStep>();
+
+        services.AddScoped<IDisplayDriver<ISite>, AzureADSettingsDisplayDriver>();
+        services.AddScoped<INavigationProvider, AdminMenuAAD>();
+        // Register the options initializers required by the Policy Scheme, Cookie and OpenId Connect Handler.
+        services.TryAddEnumerable(new[]
         {
-            services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
-
-            services.AddSingleton<IAzureADService, AzureADService>();
-            services.AddRecipeExecutionStep<AzureADSettingsStep>();
-
-            services.AddScoped<IDisplayDriver<ISite>, AzureADSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenuAAD>();
-            // Register the options initializers required by the Policy Scheme, Cookie and OpenId Connect Handler.
-            services.TryAddEnumerable(new[]
-            {
                 // Orchard-specific initializers:
 
                 #pragma warning disable CS0618
@@ -75,17 +75,16 @@ namespace OrchardCore.Microsoft.Authentication
                 // Built-in initializers:
                 ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>(),
             });
-        }
     }
+}
 
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+[RequireFeatures("OrchardCore.Deployment")]
+public class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AzureADDeploymentStepDriver>();
-            services.AddTransient<IDeploymentSource, AzureADDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<AzureADDeploymentStep>>();
-        }
+        services.AddScoped<IDisplayDriver<DeploymentStep>, AzureADDeploymentStepDriver>();
+        services.AddTransient<IDeploymentSource, AzureADDeploymentSource>();
+        services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<AzureADDeploymentStep>>();
     }
 }

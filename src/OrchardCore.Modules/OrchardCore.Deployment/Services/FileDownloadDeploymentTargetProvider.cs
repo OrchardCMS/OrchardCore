@@ -3,21 +3,21 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 
-namespace OrchardCore.Deployment
+namespace OrchardCore.Deployment;
+
+public class FileDownloadDeploymentTargetProvider : IDeploymentTargetProvider
 {
-    public class FileDownloadDeploymentTargetProvider : IDeploymentTargetProvider
+    private readonly IStringLocalizer S;
+
+    public FileDownloadDeploymentTargetProvider(IStringLocalizer<FileDownloadDeploymentTargetProvider> stringLocalizer)
     {
-        private readonly IStringLocalizer S;
+        S = stringLocalizer;
+    }
 
-        public FileDownloadDeploymentTargetProvider(IStringLocalizer<FileDownloadDeploymentTargetProvider> stringLocalizer)
-        {
-            S = stringLocalizer;
-        }
-
-        public Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync()
-        {
-            return Task.FromResult<IEnumerable<DeploymentTarget>>(
-                new[] {
+    public Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync()
+    {
+        return Task.FromResult<IEnumerable<DeploymentTarget>>(
+            new[] {
                     new DeploymentTarget(
                         name: S["File Download"],
                         description: S["Download a deployment plan locally."],
@@ -28,8 +28,7 @@ namespace OrchardCore.Deployment
                             action = "Execute"
                         })
                     )
-                }
-            );
-        }
+            }
+        );
     }
 }

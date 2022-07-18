@@ -4,69 +4,68 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
+namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
+
+public class PathPlacementNodeFilterProvider : IPlacementNodeFilterProvider
 {
-    public class PathPlacementNodeFilterProvider : IPlacementNodeFilterProvider
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public PathPlacementNodeFilterProvider(IHttpContextAccessor httpContextAccessor)
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        _httpContextAccessor = httpContextAccessor;
+    }
 
-        public PathPlacementNodeFilterProvider(IHttpContextAccessor httpContextAccessor)
+    public string Key { get { return "path"; } }
+
+    public bool IsMatch(ShapePlacementContext context, JToken expression)
+    {
+        IEnumerable<string> paths;
+
+        if (expression is JArray)
         {
-            _httpContextAccessor = httpContextAccessor;
+            paths = expression.Values<string>();
+        }
+        else
+        {
+            paths = new string[] { expression.Value<string>() };
         }
 
-        public string Key { get { return "path"; } }
+        var requestPath = _httpContextAccessor.HttpContext.Request.Path.Value;
 
-        public bool IsMatch(ShapePlacementContext context, JToken expression)
+        return paths.Any(p =>
         {
-            IEnumerable<string> paths;
+            var normalizedPath = NormalizePath(p);
 
-            if (expression is JArray)
+            if (normalizedPath.EndsWith('*'))
             {
-                paths = expression.Values<string>();
-            }
-            else
-            {
-                paths = new string[] { expression.Value<string>() };
+                var prefix = normalizedPath.Substring(0, normalizedPath.Length - 1);
+                return requestPath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
             }
 
-            var requestPath = _httpContextAccessor.HttpContext.Request.Path.Value;
+            normalizedPath = AppendTrailingSlash(normalizedPath);
+            requestPath = AppendTrailingSlash(requestPath);
+            return requestPath.Equals(normalizedPath, StringComparison.OrdinalIgnoreCase);
+        });
+    }
 
-            return paths.Any(p =>
-            {
-                var normalizedPath = NormalizePath(p);
-
-                if (normalizedPath.EndsWith('*'))
-                {
-                    var prefix = normalizedPath.Substring(0, normalizedPath.Length - 1);
-                    return requestPath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
-                }
-
-                normalizedPath = AppendTrailingSlash(normalizedPath);
-                requestPath = AppendTrailingSlash(requestPath);
-                return requestPath.Equals(normalizedPath, StringComparison.OrdinalIgnoreCase);
-            });
-        }
-
-        private string NormalizePath(string path)
+    private string NormalizePath(string path)
+    {
+        if (path.StartsWith("~/", StringComparison.Ordinal))
         {
-            if (path.StartsWith("~/", StringComparison.Ordinal))
-            {
-                return path.Substring(1);
-            }
-            else if (!path.StartsWith('/'))
-            {
-                return "/" + path;
-            }
-            else
-            {
-                return path;
-            }
+            return path.Substring(1);
         }
-
-        private string AppendTrailingSlash(string path)
+        else if (!path.StartsWith('/'))
         {
-            return path.EndsWith('/') ? path : path + "/";
+            return "/" + path;
         }
+        else
+        {
+            return path;
+        }
+    }
+
+    private string AppendTrailingSlash(string path)
+    {
+        return path.EndsWith('/') ? path : path + "/";
     }
 }

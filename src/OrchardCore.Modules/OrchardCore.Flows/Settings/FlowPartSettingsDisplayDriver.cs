@@ -11,48 +11,47 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
 
-namespace OrchardCore.Flows.Settings
+namespace OrchardCore.Flows.Settings;
+
+public class FlowPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<FlowPart>
 {
-    public class FlowPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<FlowPart>
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IStringLocalizer S;
+
+    public FlowPartSettingsDisplayDriver(
+        IContentDefinitionManager contentDefinitionManager,
+        IStringLocalizer<FlowPartSettingsDisplayDriver> localizer)
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IStringLocalizer S;
+        _contentDefinitionManager = contentDefinitionManager;
+        S = localizer;
+    }
 
-        public FlowPartSettingsDisplayDriver(
-            IContentDefinitionManager contentDefinitionManager,
-            IStringLocalizer<FlowPartSettingsDisplayDriver> localizer)
+    public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+    {
+        return Initialize<FlowPartSettingsViewModel>("FlowPartSettings_Edit", model =>
         {
-            _contentDefinitionManager = contentDefinitionManager;
-            S = localizer;
-        }
+            model.FlowPartSettings = contentTypePartDefinition.GetSettings<FlowPartSettings>();
+            model.ContainedContentTypes = model.FlowPartSettings.ContainedContentTypes;
+            model.ContentTypes = new NameValueCollection();
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
-        {
-            return Initialize<FlowPartSettingsViewModel>("FlowPartSettings_Edit", model =>
+            foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget"))
             {
-                model.FlowPartSettings = contentTypePartDefinition.GetSettings<FlowPartSettings>();
-                model.ContainedContentTypes = model.FlowPartSettings.ContainedContentTypes;
-                model.ContentTypes = new NameValueCollection();
+                model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
+            }
+        }).Location("Content");
+    }
 
-                foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget"))
-                {
-                    model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
-                }
-            }).Location("Content");
-        }
+    public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
+    {
+        var model = new FlowPartSettingsViewModel();
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
+        await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes);
+
+        context.Builder.WithSettings(new FlowPartSettings
         {
-            var model = new FlowPartSettingsViewModel();
+            ContainedContentTypes = model.ContainedContentTypes
+        });
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes);
-
-            context.Builder.WithSettings(new FlowPartSettings
-            {
-                ContainedContentTypes = model.ContainedContentTypes
-            });
-
-            return Edit(contentTypePartDefinition, context.Updater);
-        }
+        return Edit(contentTypePartDefinition, context.Updater);
     }
 }

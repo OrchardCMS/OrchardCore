@@ -3,22 +3,21 @@ using OrchardCore.Entities;
 using OrchardCore.Security.Settings;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Security.Services
+namespace OrchardCore.Security.Services;
+
+public class SecurityService : ISecurityService
 {
-    public class SecurityService : ISecurityService
+    private readonly ISiteService _siteService;
+
+    public SecurityService(ISiteService siteService)
     {
-        private readonly ISiteService _siteService;
+        _siteService = siteService;
+    }
 
-        public SecurityService(ISiteService siteService)
-        {
-            _siteService = siteService;
-        }
+    public async Task<SecuritySettings> GetSettingsAsync()
+    {
+        var securityHeadersSettings = await _siteService.GetSiteSettingsAsync();
 
-        public async Task<SecuritySettings> GetSettingsAsync()
-        {
-            var securityHeadersSettings = await _siteService.GetSiteSettingsAsync();
-
-            return securityHeadersSettings.As<SecuritySettings>();
-        }
+        return securityHeadersSettings.As<SecuritySettings>();
     }
 }

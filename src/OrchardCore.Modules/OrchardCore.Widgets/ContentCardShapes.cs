@@ -1,32 +1,32 @@
 using System;
 using OrchardCore.DisplayManagement.Descriptors;
 
-namespace OrchardCore.Widgets
+namespace OrchardCore.Widgets;
+
+public class ContentCardShapes : IShapeTableProvider
 {
-    public class ContentCardShapes : IShapeTableProvider
+    //Card Shape
+    private const string ContentCardEdit = "ContentCard_Edit";
+
+    //Frame shape
+    private const string ContentCardFrame = "ContentCard_Frame";
+
+    //Card Editor Fields
+    private const string ContentCardFieldsEdit = "ContentCard_Fields_Edit";
+
+    public void Discover(ShapeTableBuilder builder)
     {
-        //Card Shape
-        private const string ContentCardEdit = "ContentCard_Edit";
-
-        //Frame shape
-        private const string ContentCardFrame = "ContentCard_Frame";
-
-        //Card Editor Fields
-        private const string ContentCardFieldsEdit = "ContentCard_Fields_Edit";
-
-        public void Discover(ShapeTableBuilder builder)
-        {
-            builder.Describe(ContentCardEdit)
-                .OnDisplaying(context =>
-                {
+        builder.Describe(ContentCardEdit)
+            .OnDisplaying(context =>
+            {
                     //Defines Edit Alternates for the Content Item being edited.
                     dynamic contentCardEditor = context.Shape;
-                    string collectionType = contentCardEditor.CollectionShapeType;
-                    string contentType = contentCardEditor.ContentTypeValue;
-                    string parentContentType = contentCardEditor.ParentContentType;
-                    string namedPart = contentCardEditor.CollectionPartName;
-                    if (contentCardEditor.BuildEditor == true)
-                    {
+                string collectionType = contentCardEditor.CollectionShapeType;
+                string contentType = contentCardEditor.ContentTypeValue;
+                string parentContentType = contentCardEditor.ParentContentType;
+                string namedPart = contentCardEditor.CollectionPartName;
+                if (contentCardEditor.BuildEditor == true)
+                {
                         //Define edit card shape per collection type
                         //ContentCard_Edit__[CollectionType]
                         //e.g. ContentCard_Edit__FlowPart, ContentCard_Edit__BagPart, ContentCard_Edit__WidgetsListPart
@@ -43,7 +43,7 @@ namespace OrchardCore.Widgets
 
                         //If we have Parent Content Type,
                         if (!string.IsNullOrWhiteSpace(parentContentType))
-                        {
+                    {
                             //Define edit card shape for all child  in collection per parent content type
                             //ContentCard_Edit__[ParentContentType]__[CollectionType]
                             //e.g. ContentCard_Edit__Page__FlowPart, ContentCard_Edit__Form__FlowPart, ContentCard_Edit__Services__BagPart
@@ -59,8 +59,8 @@ namespace OrchardCore.Widgets
                             //ContentCard_Edit__LandingPage__BagPart__Service, ContentCard_Edit__Form__FlowPart__Label
                             contentCardEditor.Metadata.Alternates.Add($"{ContentCardEdit}__{parentContentType}__{collectionType}__{contentType}");
 
-                            if (!string.IsNullOrWhiteSpace(namedPart) && !(namedPart.Equals(collectionType)))
-                            {
+                        if (!string.IsNullOrWhiteSpace(namedPart) && !(namedPart.Equals(collectionType)))
+                        {
                                 //Define edit card shape for selected child  with specific type and partname per parent content type
                                 //ContentCard_Edit__[ParentContentType]__[PartName]
                                 //e.g. ContentCard_Edit__Grid__LeftColumn, ContentCard_Edit__LandingPage__Services
@@ -70,20 +70,20 @@ namespace OrchardCore.Widgets
                                 //ContentCard_Edit__[ContentType]__[ContentType]
                                 //e.g. ContentCard_Edit__Grid__LeftColumn__Client, ContentCard_Edit__LandingPage__Services__Service
                                 contentCardEditor.Metadata.Alternates.Add($"{ContentCardEdit}__{parentContentType}__{namedPart}__{contentType}");
-                            }
                         }
                     }
-                });
+                }
+            });
 
-            builder.Describe(ContentCardFrame)
-                .OnDisplaying(context =>
-                {
+        builder.Describe(ContentCardFrame)
+            .OnDisplaying(context =>
+            {
                     // Alternates for Outer Frame of ContentCard
                     dynamic contentCardFrame = context.Shape;
-                    string collectionType = contentCardFrame.ChildContent.CollectionShapeType;
-                    string contentType = contentCardFrame.ChildContent.ContentTypeValue as string;
-                    string parentContentType = contentCardFrame.ChildContent.ParentContentType;
-                    string namedPart = contentCardFrame.ChildContent.CollectionPartName;
+                string collectionType = contentCardFrame.ChildContent.CollectionShapeType;
+                string contentType = contentCardFrame.ChildContent.ContentTypeValue as string;
+                string parentContentType = contentCardFrame.ChildContent.ParentContentType;
+                string namedPart = contentCardFrame.ChildContent.CollectionPartName;
 
                     //Define Frame card shape per collection type
                     //ContentCard_Frame__[CollectionType]
@@ -100,8 +100,8 @@ namespace OrchardCore.Widgets
                     //e.g. ContentCard_Frame__FlowPart__Paragraph, ContentCard_Frame__BagPart__Form, ContentCard_Frame__FlowPart__Input
                     contentCardFrame.Metadata.Alternates.Add($"{ContentCardFrame}__{collectionType}__{contentType}");
 
-                    if (!String.IsNullOrWhiteSpace(parentContentType))
-                    {
+                if (!String.IsNullOrWhiteSpace(parentContentType))
+                {
                         //Define frame card shape for children per parent content type for given collection
                         //ContentCard_Frame__[ParentContentType]__[CollectionType]
                         //e.g. ContentCard_Frame__Page__FlowPart, ContentCard_Frame__LandingPage__BagPart, ContentCard_Frame__Form__FlowPart
@@ -117,8 +117,8 @@ namespace OrchardCore.Widgets
                         //e.g. ContentCard_Frame__Page__FlowPart__Container, ContentCard_Frame__LandingPage__BagPart__Service, ContentCard_Frame__Form__FlowPart__Label
                         contentCardFrame.Metadata.Alternates.Add($"{ContentCardFrame}__{parentContentType}__{collectionType}__{contentType}");
 
-                        if (!String.IsNullOrWhiteSpace(namedPart) && !namedPart.Equals(collectionType))
-                        {
+                    if (!String.IsNullOrWhiteSpace(namedPart) && !namedPart.Equals(collectionType))
+                    {
                             //Define frame card shape for child  with specific partname and parent content type
                             //ContentCard_Frame__[ParentContentType]__[PartName]
                             //e.g. ContentCard_Frame__Grid__LeftColumn, ContentCard_Frame__LandingPage__Services
@@ -128,17 +128,16 @@ namespace OrchardCore.Widgets
                             //ContentCard_Frame__[ParentContentType]__[NamedPart]__[ContentType]
                             //e.g. ContentCard_Frame__Grid__LeftColumn__Client, ContentCard_Frame__LandingPage__Clients__Client
                             contentCardFrame.Metadata.Alternates.Add($"{ContentCardFrame}__{parentContentType}__{namedPart}__{contentType}");
-                        }
                     }
-                });
+                }
+            });
 
-            builder.Describe(ContentCardFieldsEdit)
-               .OnDisplaying(context =>
-               {
-                   dynamic contentCardEditorFields = context.Shape;
-                   string collectionType = contentCardEditorFields.CardShape.CollectionShapeType as string;
-                   contentCardEditorFields.Metadata.Alternates.Add($"{collectionType}_Fields_Edit");
-               });
-        }
+        builder.Describe(ContentCardFieldsEdit)
+           .OnDisplaying(context =>
+           {
+               dynamic contentCardEditorFields = context.Shape;
+               string collectionType = contentCardEditorFields.CardShape.CollectionShapeType as string;
+               contentCardEditorFields.Metadata.Alternates.Add($"{collectionType}_Fields_Edit");
+           });
     }
 }

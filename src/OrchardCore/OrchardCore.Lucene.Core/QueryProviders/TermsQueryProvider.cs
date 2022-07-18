@@ -4,43 +4,42 @@ using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.Lucene.QueryProviders
+namespace OrchardCore.Lucene.QueryProviders;
+
+public class TermsQueryProvider : ILuceneQueryProvider
 {
-    public class TermsQueryProvider : ILuceneQueryProvider
+    public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject query)
     {
-        public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject query)
+        if (type != "terms")
         {
-            if (type != "terms")
-            {
-                return null;
-            }
+            return null;
+        }
 
-            var first = query.Properties().First();
+        var first = query.Properties().First();
 
-            var field = first.Name;
-            var boolQuery = new BooleanQuery();
+        var field = first.Name;
+        var boolQuery = new BooleanQuery();
 
-            switch (first.Value.Type)
-            {
-                case JTokenType.Array:
+        switch (first.Value.Type)
+        {
+            case JTokenType.Array:
 
-                    foreach (var item in ((JArray)first.Value))
+                foreach (var item in ((JArray)first.Value))
+                {
+                    if (item.Type != JTokenType.String)
                     {
-                        if (item.Type != JTokenType.String)
-                        {
-                            throw new ArgumentException($"Invalid term in terms query");
-                        }
-
-                        boolQuery.Add(new TermQuery(new Term(field, item.Value<string>())), Occur.SHOULD);
+                        throw new ArgumentException($"Invalid term in terms query");
                     }
 
-                    break;
-                case JTokenType.Object:
-                    throw new ArgumentException("The terms lookup query is not supported");
-                default: throw new ArgumentException("Invalid terms query");
-            }
+                    boolQuery.Add(new TermQuery(new Term(field, item.Value<string>())), Occur.SHOULD);
+                }
 
-            return boolQuery;
+                break;
+            case JTokenType.Object:
+                throw new ArgumentException("The terms lookup query is not supported");
+            default: throw new ArgumentException("Invalid terms query");
         }
+
+        return boolQuery;
     }
 }

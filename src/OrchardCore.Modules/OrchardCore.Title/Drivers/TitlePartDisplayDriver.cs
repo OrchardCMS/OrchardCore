@@ -8,64 +8,63 @@ using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Title.Models;
 using OrchardCore.Title.ViewModels;
 
-namespace OrchardCore.Title.Drivers
-{
-    public class TitlePartDisplayDriver : ContentPartDisplayDriver<TitlePart>
-    {
-        private readonly IStringLocalizer S;
+namespace OrchardCore.Title.Drivers;
 
-        public TitlePartDisplayDriver(IStringLocalizer<TitlePartDisplayDriver> localizer)
+public class TitlePartDisplayDriver : ContentPartDisplayDriver<TitlePart>
+{
+    private readonly IStringLocalizer S;
+
+    public TitlePartDisplayDriver(IStringLocalizer<TitlePartDisplayDriver> localizer)
+    {
+        S = localizer;
+    }
+
+    public override IDisplayResult Display(TitlePart titlePart, BuildPartDisplayContext context)
+    {
+        var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
+
+        if (!settings.RenderTitle || string.IsNullOrWhiteSpace(titlePart.Title))
         {
-            S = localizer;
+            return null;
         }
 
-        public override IDisplayResult Display(TitlePart titlePart, BuildPartDisplayContext context)
+        return Initialize<TitlePartViewModel>(GetDisplayShapeType(context), model =>
+        {
+            model.Title = titlePart.ContentItem.DisplayText;
+            model.TitlePart = titlePart;
+            model.ContentItem = titlePart.ContentItem;
+        })
+        .Location("Detail", "Header:5")
+        .Location("Summary", "Header:5");
+
+    }
+
+    public override IDisplayResult Edit(TitlePart titlePart, BuildPartEditorContext context)
+    {
+        return Initialize<TitlePartViewModel>(GetEditorShapeType(context), model =>
+        {
+            model.Title = titlePart.ContentItem.DisplayText;
+            model.TitlePart = titlePart;
+            model.ContentItem = titlePart.ContentItem;
+            model.Settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
+        });
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater, UpdatePartEditorContext context)
+    {
+        if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Title))
         {
             var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
-
-            if (!settings.RenderTitle || string.IsNullOrWhiteSpace(titlePart.Title))
+            if (settings.Options == TitlePartOptions.EditableRequired && string.IsNullOrWhiteSpace(model.Title))
             {
-                return null;
+                updater.ModelState.AddModelError(Prefix, nameof(model.Title), S["A value is required for Title."]);
             }
-
-            return Initialize<TitlePartViewModel>(GetDisplayShapeType(context), model =>
+            else
             {
-                model.Title = titlePart.ContentItem.DisplayText;
-                model.TitlePart = titlePart;
-                model.ContentItem = titlePart.ContentItem;
-            })
-            .Location("Detail", "Header:5")
-            .Location("Summary", "Header:5");
-
-        }
-
-        public override IDisplayResult Edit(TitlePart titlePart, BuildPartEditorContext context)
-        {
-            return Initialize<TitlePartViewModel>(GetEditorShapeType(context), model =>
-            {
-                model.Title = titlePart.ContentItem.DisplayText;
-                model.TitlePart = titlePart;
-                model.ContentItem = titlePart.ContentItem;
-                model.Settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
-            });
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater, UpdatePartEditorContext context)
-        {
-            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Title))
-            {
-                var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
-                if (settings.Options == TitlePartOptions.EditableRequired && string.IsNullOrWhiteSpace(model.Title))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(model.Title), S["A value is required for Title."]);
-                }
-                else
-                {
-                    model.ContentItem.DisplayText = model.Title;
-                }
+                model.ContentItem.DisplayText = model.Title;
             }
-
-            return Edit(model, context);
         }
+
+        return Edit(model, context);
     }
 }

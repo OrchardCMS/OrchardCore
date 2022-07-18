@@ -4,22 +4,22 @@ using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users;
 
-namespace OrchardCore.Demo
+namespace OrchardCore.Demo;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
+    public static readonly Permission DemoAPIAccess = new Permission("DemoAPIAccess", "Access to Demo API ");
+    public static readonly Permission ManageOwnUserProfile = new Permission("ManageOwnUserProfile", "Manage own user profile", new Permission[] { CommonPermissions.ManageUsers });
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        public static readonly Permission DemoAPIAccess = new Permission("DemoAPIAccess", "Access to Demo API ");
-        public static readonly Permission ManageOwnUserProfile = new Permission("ManageOwnUserProfile", "Manage own user profile", new Permission[] { CommonPermissions.ManageUsers });
+        return Task.FromResult(new[] { DemoAPIAccess, ManageOwnUserProfile }.AsEnumerable());
+    }
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return Task.FromResult(new[] { DemoAPIAccess, ManageOwnUserProfile }.AsEnumerable());
-        }
-
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
-            {
                 new PermissionStereotype {
                     Name = "Authenticated",
                     Permissions = new[] { DemoAPIAccess }
@@ -41,6 +41,5 @@ namespace OrchardCore.Demo
                     Permissions = new[] { ManageOwnUserProfile }
                 }
             };
-        }
     }
 }

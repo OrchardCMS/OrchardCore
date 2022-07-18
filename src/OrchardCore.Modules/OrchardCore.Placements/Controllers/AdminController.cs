@@ -20,307 +20,306 @@ using OrchardCore.Placements.ViewModels;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Placements.Controllers
+namespace OrchardCore.Placements.Controllers;
+
+public class AdminController : Controller
 {
-    public class AdminController : Controller
+    private readonly ILogger _logger;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly PlacementsManager _placementsManager;
+    private readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
+    private readonly INotifier _notifier;
+    private readonly ISiteService _siteService;
+    private readonly dynamic New;
+
+    public AdminController(
+        ILogger<AdminController> logger,
+        IAuthorizationService authorizationService,
+        PlacementsManager placementsManager,
+        IHtmlLocalizer<AdminController> htmlLocalizer,
+        IStringLocalizer<AdminController> stringLocalizer,
+        INotifier notifier,
+        ISiteService siteService,
+        IShapeFactory shapeFactory)
     {
-        private readonly ILogger _logger;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly PlacementsManager _placementsManager;
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
-        private readonly INotifier _notifier;
-        private readonly ISiteService _siteService;
-        private readonly dynamic New;
+        _logger = logger;
+        _authorizationService = authorizationService;
+        _placementsManager = placementsManager;
+        _notifier = notifier;
+        _siteService = siteService;
 
-        public AdminController(
-            ILogger<AdminController> logger,
-            IAuthorizationService authorizationService,
-            PlacementsManager placementsManager,
-            IHtmlLocalizer<AdminController> htmlLocalizer,
-            IStringLocalizer<AdminController> stringLocalizer,
-            INotifier notifier,
-            ISiteService siteService,
-            IShapeFactory shapeFactory)
+        New = shapeFactory;
+        H = htmlLocalizer;
+        S = stringLocalizer;
+    }
+
+    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
         {
-            _logger = logger;
-            _authorizationService = authorizationService;
-            _placementsManager = placementsManager;
-            _notifier = notifier;
-            _siteService = siteService;
-
-            New = shapeFactory;
-            H = htmlLocalizer;
-            S = stringLocalizer;
+            return Forbid();
         }
 
-        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
+        var pager = new Pager(pagerParameters, siteSettings.PageSize);
+
+        var shapeTypes = await _placementsManager.ListShapePlacementsAsync();
+
+        var shapeList = shapeTypes.Select(entry => new ShapePlacementViewModel
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
-            {
-                return Forbid();
-            }
+            ShapeType = entry.Key
+        }).ToList();
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+        if (!string.IsNullOrWhiteSpace(options.Search))
+        {
+            shapeList = shapeList.Where(x => x.ShapeType.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
 
-            var shapeTypes = await _placementsManager.ListShapePlacementsAsync();
+        var count = shapeList.Count();
 
-            var shapeList = shapeTypes.Select(entry => new ShapePlacementViewModel
-            {
-                ShapeType = entry.Key
-            }).ToList();
+        shapeList = shapeList.OrderBy(x => x.ShapeType)
+            .Skip(pager.GetStartIndex())
+            .Take(pager.PageSize).ToList();
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
-            {
-                shapeList = shapeList.Where(x => x.ShapeType.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
+        var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
 
-            var count = shapeList.Count();
+        var model = new ListShapePlacementsViewModel
+        {
+            ShapePlacements = shapeList,
+            Pager = pagerShape,
+            Options = options,
+        };
 
-            shapeList = shapeList.OrderBy(x => x.ShapeType)
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize).ToList();
-
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
-
-            var model = new ListShapePlacementsViewModel
-            {
-                ShapePlacements = shapeList,
-                Pager = pagerShape,
-                Options = options,
-            };
-
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
+        model.Options.ContentsBulkAction = new List<SelectListItem>() {
                 new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
-            return View("Index", model);
-        }
+        return View("Index", model);
+    }
 
-        [HttpPost, ActionName("Index")]
-        [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(ListShapePlacementsViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
+    [HttpPost, ActionName("Index")]
+    [FormValueRequired("submit.Filter")]
+    public ActionResult IndexFilterPOST(ListShapePlacementsViewModel model)
+    {
+        return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
+    }
+
+    public async Task<IActionResult> Create(string suggestion, string returnUrl = null)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
+        {
+            return Forbid();
         }
 
-        public async Task<IActionResult> Create(string suggestion, string returnUrl = null)
+        var template = new PlacementNode[] { new PlacementNode() };
+
+        var viewModel = new EditShapePlacementViewModel
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
-            {
-                return Forbid();
-            }
+            Creating = true,
+            ShapeType = suggestion,
+            Nodes = JsonConvert.SerializeObject(template, Formatting.Indented)
+        };
 
-            var template = new PlacementNode[] { new PlacementNode() };
+        ViewData["ReturnUrl"] = returnUrl;
+        return View("Edit", viewModel);
+    }
 
-            var viewModel = new EditShapePlacementViewModel
-            {
-                Creating = true,
-                ShapeType = suggestion,
-                Nodes = JsonConvert.SerializeObject(template, Formatting.Indented)
-            };
-
-            ViewData["ReturnUrl"] = returnUrl;
-            return View("Edit", viewModel);
+    public async Task<IActionResult> Edit(string shapeType, string displayType = null, string contentType = null, string contentPart = null, string differentiator = null, string returnUrl = null)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
+        {
+            return Forbid();
         }
 
-        public async Task<IActionResult> Edit(string shapeType, string displayType = null, string contentType = null, string contentPart = null, string differentiator = null, string returnUrl = null)
+        var placementNodes = (await _placementsManager.GetShapePlacementsAsync(shapeType))?.ToList() ?? new List<PlacementNode>();
+
+        if (!placementNodes.Any() || ShouldCreateNode(placementNodes, displayType, contentType, contentPart, differentiator))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
+            var generatedNode = new PlacementNode
             {
-                return Forbid();
-            }
-
-            var placementNodes = (await _placementsManager.GetShapePlacementsAsync(shapeType))?.ToList() ?? new List<PlacementNode>();
-
-            if (!placementNodes.Any() || ShouldCreateNode(placementNodes, displayType, contentType, contentPart, differentiator))
-            {
-                var generatedNode = new PlacementNode
-                {
-                    DisplayType = displayType,
-                    Differentiator = differentiator
-                };
-                if (!string.IsNullOrEmpty(contentType))
-                {
-                    generatedNode.Filters.Add("contentType", new JArray(contentType));
-                }
-                if (!string.IsNullOrEmpty(contentPart))
-                {
-                    generatedNode.Filters.Add("contentPart", new JArray(contentPart));
-                }
-
-                placementNodes.Add(generatedNode);
-            }
-
-            var viewModel = new EditShapePlacementViewModel
-            {
-                ShapeType = shapeType,
-                Nodes = JsonConvert.SerializeObject(placementNodes, Formatting.Indented)
+                DisplayType = displayType,
+                Differentiator = differentiator
             };
+            if (!string.IsNullOrEmpty(contentType))
+            {
+                generatedNode.Filters.Add("contentType", new JArray(contentType));
+            }
+            if (!string.IsNullOrEmpty(contentPart))
+            {
+                generatedNode.Filters.Add("contentPart", new JArray(contentPart));
+            }
 
-            ViewData["ReturnUrl"] = returnUrl;
+            placementNodes.Add(generatedNode);
+        }
+
+        var viewModel = new EditShapePlacementViewModel
+        {
+            ShapeType = shapeType,
+            Nodes = JsonConvert.SerializeObject(placementNodes, Formatting.Indented)
+        };
+
+        ViewData["ReturnUrl"] = returnUrl;
+        return View(viewModel);
+    }
+
+    [HttpPost, ActionName("Edit")]
+    public async Task<IActionResult> Edit(EditShapePlacementViewModel viewModel, string submit, string returnUrl = null)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
+        {
+            return Forbid();
+        }
+
+        ViewData["ReturnUrl"] = returnUrl;
+
+        if (viewModel.Creating && await _placementsManager.GetShapePlacementsAsync(viewModel.ShapeType) != null)
+        {
+            // Prevent overriding existing rules on creation
+            await _notifier.WarningAsync(H["Placement rules for \"{0}\" already exists. Please edit existing rule.", viewModel.ShapeType]);
             return View(viewModel);
         }
 
-        [HttpPost, ActionName("Edit")]
-        public async Task<IActionResult> Edit(EditShapePlacementViewModel viewModel, string submit, string returnUrl = null)
+        try
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
+            IEnumerable<PlacementNode> placementNodes = JsonConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes) ?? new PlacementNode[0];
+
+            // Remove empty nodes
+            placementNodes = placementNodes.Where(node => !IsEmpty(node));
+
+            if (placementNodes.Any())
             {
-                return Forbid();
+                // Save
+                await _placementsManager.UpdateShapePlacementsAsync(viewModel.ShapeType, placementNodes);
+                viewModel.Creating = false;
+
+                await _notifier.SuccessAsync(H["The \"{0}\" placement have been saved.", viewModel.ShapeType]);
             }
-
-            ViewData["ReturnUrl"] = returnUrl;
-
-            if (viewModel.Creating && await _placementsManager.GetShapePlacementsAsync(viewModel.ShapeType) != null)
+            else if (viewModel.Creating)
             {
-                // Prevent overriding existing rules on creation
-                await _notifier.WarningAsync(H["Placement rules for \"{0}\" already exists. Please edit existing rule.", viewModel.ShapeType]);
+                await _notifier.WarningAsync(H["The \"{0}\" placement is empty.", viewModel.ShapeType]);
                 return View(viewModel);
             }
-
-            try
+            else
             {
-                IEnumerable<PlacementNode> placementNodes = JsonConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes) ?? new PlacementNode[0];
-
-                // Remove empty nodes
-                placementNodes = placementNodes.Where(node => !IsEmpty(node));
-
-                if (placementNodes.Any())
-                {
-                    // Save
-                    await _placementsManager.UpdateShapePlacementsAsync(viewModel.ShapeType, placementNodes);
-                    viewModel.Creating = false;
-
-                    await _notifier.SuccessAsync(H["The \"{0}\" placement have been saved.", viewModel.ShapeType]);
-                }
-                else if (viewModel.Creating)
-                {
-                    await _notifier.WarningAsync(H["The \"{0}\" placement is empty.", viewModel.ShapeType]);
-                    return View(viewModel);
-                }
-                else
-                {
-                    // Remove if empty
-                    await _placementsManager.RemoveShapePlacementsAsync(viewModel.ShapeType);
-                    await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", viewModel.ShapeType]);
-                }
+                // Remove if empty
+                await _placementsManager.RemoveShapePlacementsAsync(viewModel.ShapeType);
+                await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", viewModel.ShapeType]);
             }
-            catch (JsonReaderException jsonException)
-            {
-                await _notifier.ErrorAsync(H["An error occurred while parsing the placement<br/>{0}", jsonException.Message]);
-                return View(viewModel);
-            }
-            catch (Exception e)
-            {
-                await _notifier.ErrorAsync(H["An error occurred while saving the placement."]);
-                _logger.LogError(e, "An error occurred while saving the placement.");
-                return View(viewModel);
-            }
-
-            if (submit != "SaveAndContinue")
-            {
-                return RedirectToReturnUrlOrIndex(returnUrl);
-            }
-
+        }
+        catch (JsonReaderException jsonException)
+        {
+            await _notifier.ErrorAsync(H["An error occurred while parsing the placement<br/>{0}", jsonException.Message]);
+            return View(viewModel);
+        }
+        catch (Exception e)
+        {
+            await _notifier.ErrorAsync(H["An error occurred while saving the placement."]);
+            _logger.LogError(e, "An error occurred while saving the placement.");
             return View(viewModel);
         }
 
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> Delete(string shapeType, string returnUrl = null)
+        if (submit != "SaveAndContinue")
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
-            {
-                return Forbid();
-            }
-
-            await _placementsManager.RemoveShapePlacementsAsync(shapeType);
-            await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", shapeType]);
-
             return RedirectToReturnUrlOrIndex(returnUrl);
         }
 
-        [HttpPost, ActionName("Index")]
-        [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        return View(viewModel);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    public async Task<IActionResult> Delete(string shapeType, string returnUrl = null)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
-            {
-                return Forbid();
-            }
+            return Forbid();
+        }
 
-            if (itemIds?.Count() > 0)
-            {
-                switch (options.BulkAction)
-                {
-                    case ContentsBulkAction.None:
-                        break;
-                    case ContentsBulkAction.Remove:
-                        foreach (var item in itemIds)
-                        {
-                            await _placementsManager.RemoveShapePlacementsAsync(item);
-                        }
-                        await _notifier.SuccessAsync(H["Placements successfully removed."]);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
+        await _placementsManager.RemoveShapePlacementsAsync(shapeType);
+        await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", shapeType]);
 
+        return RedirectToReturnUrlOrIndex(returnUrl);
+    }
+
+    [HttpPost, ActionName("Index")]
+    [FormValueRequired("submit.BulkAction")]
+    public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
+        {
+            return Forbid();
+        }
+
+        if (itemIds?.Count() > 0)
+        {
+            switch (options.BulkAction)
+            {
+                case ContentsBulkAction.None:
+                    break;
+                case ContentsBulkAction.Remove:
+                    foreach (var item in itemIds)
+                    {
+                        await _placementsManager.RemoveShapePlacementsAsync(item);
+                    }
+                    await _notifier.SuccessAsync(H["Placements successfully removed."]);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)
+    {
+        if ((String.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
+        {
+            return this.Redirect(returnUrl, true);
+        }
+        else
+        {
             return RedirectToAction(nameof(Index));
         }
+    }
 
-        private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)
+    private static bool ShouldCreateNode(IEnumerable<PlacementNode> nodes, string displayType, string contentType, string contentPart, string differentiator)
+    {
+        if (string.IsNullOrEmpty(displayType) && string.IsNullOrEmpty(differentiator))
         {
-            if ((String.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
-            {
-                return this.Redirect(returnUrl, true);
-            }
-            else
-            {
-                return RedirectToAction(nameof(Index));
-            }
+            return false;
         }
-
-        private static bool ShouldCreateNode(IEnumerable<PlacementNode> nodes, string displayType, string contentType, string contentPart, string differentiator)
+        else
         {
-            if (string.IsNullOrEmpty(displayType) && string.IsNullOrEmpty(differentiator))
-            {
-                return false;
-            }
-            else
-            {
-                return !nodes.Any(node =>
-                    (string.IsNullOrEmpty(displayType) || node.DisplayType == displayType) &&
-                    (string.IsNullOrEmpty(contentType) || (node.Filters.ContainsKey("contentType") && FilterEquals(node.Filters["contentType"], contentType))) &&
-                    (string.IsNullOrEmpty(contentPart) || (node.Filters.ContainsKey("contentPart") && FilterEquals(node.Filters["contentPart"], contentPart))) &&
-                    (string.IsNullOrEmpty(differentiator) || node.Differentiator == differentiator));
-            }
+            return !nodes.Any(node =>
+                (string.IsNullOrEmpty(displayType) || node.DisplayType == displayType) &&
+                (string.IsNullOrEmpty(contentType) || (node.Filters.ContainsKey("contentType") && FilterEquals(node.Filters["contentType"], contentType))) &&
+                (string.IsNullOrEmpty(contentPart) || (node.Filters.ContainsKey("contentPart") && FilterEquals(node.Filters["contentPart"], contentPart))) &&
+                (string.IsNullOrEmpty(differentiator) || node.Differentiator == differentiator));
         }
+    }
 
-        private static bool IsEmpty(PlacementNode node)
+    private static bool IsEmpty(PlacementNode node)
+    {
+        return string.IsNullOrEmpty(node.Location)
+            && string.IsNullOrEmpty(node.ShapeType)
+            && (node.Alternates == null || node.Alternates.Length == 0)
+            && (node.Wrappers == null || node.Wrappers.Length == 0);
+    }
+
+
+    private static bool FilterEquals(JToken token, string value)
+    {
+        if (token is JArray)
         {
-            return string.IsNullOrEmpty(node.Location)
-                && string.IsNullOrEmpty(node.ShapeType)
-                && (node.Alternates == null || node.Alternates.Length == 0)
-                && (node.Wrappers == null || node.Wrappers.Length == 0);
+            var tokenValues = token.Values<string>();
+            return tokenValues.Count() == 1 && tokenValues.First() == value;
         }
-
-
-        private static bool FilterEquals(JToken token, string value)
+        else
         {
-            if (token is JArray)
-            {
-                var tokenValues = token.Values<string>();
-                return tokenValues.Count() == 1 && tokenValues.First() == value;
-            }
-            else
-            {
-                return token.Value<string>() == value;
-            }
+            return token.Value<string>() == value;
         }
     }
 }

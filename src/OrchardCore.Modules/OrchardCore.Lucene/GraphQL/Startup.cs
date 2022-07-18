@@ -3,17 +3,16 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.Modules;
 using OrchardCore.Queries.Lucene.GraphQL.Queries;
 
-namespace OrchardCore.Lucene.GraphQL
+namespace OrchardCore.Lucene.GraphQL;
+
+/// <summary>
+/// These services are registered on the tenant service collection
+/// </summary>
+[RequireFeatures("OrchardCore.Apis.GraphQL")]
+public class Startup : StartupBase
 {
-    /// <summary>
-    /// These services are registered on the tenant service collection
-    /// </summary>
-    [RequireFeatures("OrchardCore.Apis.GraphQL")]
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSingleton<ISchemaBuilder, LuceneQueryFieldTypeProvider>();
-        }
+        services.AddSingleton<ISchemaBuilder, LuceneQueryFieldTypeProvider>();
     }
 }

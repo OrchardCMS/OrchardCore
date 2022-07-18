@@ -5,53 +5,52 @@ using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
 using YesSql.Sql;
 
-namespace OrchardCore.Lists
+namespace OrchardCore.Lists;
+
+public class Migrations : DataMigration
 {
-    public class Migrations : DataMigration
+    private IContentDefinitionManager _contentDefinitionManager;
+
+    public Migrations(IContentDefinitionManager contentDefinitionManager)
     {
-        private IContentDefinitionManager _contentDefinitionManager;
+        _contentDefinitionManager = contentDefinitionManager;
+    }
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
-        {
-            _contentDefinitionManager = contentDefinitionManager;
-        }
+    public int Create()
+    {
+        _contentDefinitionManager.AlterPartDefinition("ListPart", builder => builder
+            .Attachable()
+            .WithDescription("Add a list behavior."));
 
-        public int Create()
-        {
-            _contentDefinitionManager.AlterPartDefinition("ListPart", builder => builder
-                .Attachable()
-                .WithDescription("Add a list behavior."));
+        SchemaBuilder.CreateMapIndexTable<ContainedPartIndex>(table => table
+            .Column<string>("ListContentItemId", c => c.WithLength(26))
+            .Column<int>("Order")
+        );
 
-            SchemaBuilder.CreateMapIndexTable<ContainedPartIndex>(table => table
-                .Column<string>("ListContentItemId", c => c.WithLength(26))
-                .Column<int>("Order")
-            );
+        SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+            .CreateIndex("IDX_ContainedPartIndex_DocumentId", "DocumentId", "ListContentItemId", "Order")
+        );
 
-            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
-                .CreateIndex("IDX_ContainedPartIndex_DocumentId", "DocumentId", "ListContentItemId", "Order")
-            );
+        // Shortcut other migration steps on new content definition schemas.
+        return 3;
+    }
 
-            // Shortcut other migration steps on new content definition schemas.
-            return 3;
-        }
+    // Migrate PartSettings. This only needs to run on old content definition schemas.
+    // This code can be removed in a later version.
+    public int UpdateFrom1()
+    {
+        _contentDefinitionManager.MigratePartSettings<ListPart, ListPartSettings>();
 
-        // Migrate PartSettings. This only needs to run on old content definition schemas.
-        // This code can be removed in a later version.
-        public int UpdateFrom1()
-        {
-            _contentDefinitionManager.MigratePartSettings<ListPart, ListPartSettings>();
+        return 2;
+    }
 
-            return 2;
-        }
+    // This code can be removed in a later version.
+    public int UpdateFrom2()
+    {
+        SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+            .CreateIndex("IDX_ContainedPartIndex_DocumentId", "DocumentId", "ListContentItemId", "Order")
+        );
 
-        // This code can be removed in a later version.
-        public int UpdateFrom2()
-        {
-            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
-                .CreateIndex("IDX_ContainedPartIndex_DocumentId", "DocumentId", "ListContentItemId", "Order")
-            );
-
-            return 3;
-        }
+        return 3;
     }
 }

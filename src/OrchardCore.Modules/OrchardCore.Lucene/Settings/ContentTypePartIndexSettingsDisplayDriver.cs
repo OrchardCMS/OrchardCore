@@ -7,46 +7,45 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Indexing;
 
-namespace OrchardCore.Lucene.Settings
+namespace OrchardCore.Lucene.Settings;
+
+public class ContentTypePartIndexSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
 {
-    public class ContentTypePartIndexSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+
+    public ContentTypePartIndexSettingsDisplayDriver(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+    }
 
-        public ContentTypePartIndexSettingsDisplayDriver(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
+    public override async Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+    {
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageIndexes))
         {
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
+            return null;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        return Initialize<ContentIndexSettingsViewModel>("ContentIndexSettings_Edit", model =>
         {
-            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageIndexes))
-            {
-                return null;
-            }
+            model.ContentIndexSettings = contentTypePartDefinition.GetSettings<ContentIndexSettings>();
+        }).Location("Content:10");
+    }
 
-            return Initialize<ContentIndexSettingsViewModel>("ContentIndexSettings_Edit", model =>
-            {
-                model.ContentIndexSettings = contentTypePartDefinition.GetSettings<ContentIndexSettings>();
-            }).Location("Content:10");
+    public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
+    {
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageIndexes))
+        {
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
-        {
-            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageIndexes))
-            {
-                return null;
-            }
+        var model = new ContentIndexSettingsViewModel();
 
-            var model = new ContentIndexSettingsViewModel();
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+        context.Builder.WithSettings(model.ContentIndexSettings);
 
-            context.Builder.WithSettings(model.ContentIndexSettings);
-
-            return await EditAsync(contentTypePartDefinition, context.Updater);
-        }
+        return await EditAsync(contentTypePartDefinition, context.Updater);
     }
 }

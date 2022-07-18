@@ -1,24 +1,23 @@
 using System;
 using System.Collections.Generic;
 
-namespace OrchardCore.Sitemaps
+namespace OrchardCore.Sitemaps;
+
+public class SitemapsRazorPagesOptions
 {
-    public class SitemapsRazorPagesOptions
+
+    private readonly List<SitemapsRazorPagesContentTypeOption> _contentTypeOptions = new List<SitemapsRazorPagesContentTypeOption>();
+
+    public SitemapsRazorPagesOptions ConfigureContentType(string contentType, Action<SitemapsRazorPagesContentTypeOption> action)
     {
+        var option = new SitemapsRazorPagesContentTypeOption(contentType);
 
-        private readonly List<SitemapsRazorPagesContentTypeOption> _contentTypeOptions = new List<SitemapsRazorPagesContentTypeOption>();
+        action(option);
 
-        public SitemapsRazorPagesOptions ConfigureContentType(string contentType, Action<SitemapsRazorPagesContentTypeOption> action)
-        {
-            var option = new SitemapsRazorPagesContentTypeOption(contentType);
+        _contentTypeOptions.Add(option);
 
-            action(option);
-
-            _contentTypeOptions.Add(option);
-
-            return this;
-        }
-
-        public IReadOnlyList<SitemapsRazorPagesContentTypeOption> ContentTypeOptions => _contentTypeOptions;
+        return this;
     }
+
+    public IReadOnlyList<SitemapsRazorPagesContentTypeOption> ContentTypeOptions => _contentTypeOptions;
 }

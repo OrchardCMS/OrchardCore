@@ -9,47 +9,46 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Sitemaps.Builders;
 
-namespace OrchardCore.Sitemaps.Services
+namespace OrchardCore.Sitemaps.Services;
+
+public class RazorPagesContentTypeProvider : IRouteableContentTypeProvider
 {
-    public class RazorPagesContentTypeProvider : IRouteableContentTypeProvider
+    private readonly SitemapsRazorPagesOptions _options;
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+
+    public RazorPagesContentTypeProvider(
+        IOptions<SitemapsRazorPagesOptions> options,
+        IContentDefinitionManager contentDefinitionManager
+        )
     {
-        private readonly SitemapsRazorPagesOptions _options;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        _options = options.Value;
+        _contentDefinitionManager = contentDefinitionManager;
+    }
 
-        public RazorPagesContentTypeProvider(
-            IOptions<SitemapsRazorPagesOptions> options,
-            IContentDefinitionManager contentDefinitionManager
-            )
+    public Task<string> GetRouteAsync(SitemapBuilderContext context, ContentItem contentItem)
+    {
+        var option = _options.ContentTypeOptions.FirstOrDefault(o => o.ContentType == contentItem.ContentType);
+        if (option != null && option.RouteValues != null)
         {
-            _options = options.Value;
-            _contentDefinitionManager = contentDefinitionManager;
-        }
+            var pageName = String.IsNullOrEmpty(option.PageName) ? option.ContentType : option.PageName;
 
-        public Task<string> GetRouteAsync(SitemapBuilderContext context, ContentItem contentItem)
-        {
-            var option = _options.ContentTypeOptions.FirstOrDefault(o => o.ContentType == contentItem.ContentType);
-            if (option != null && option.RouteValues != null)
+            // When used from outside a razor page name must start with a /
+            if (!pageName.StartsWith('/'))
             {
-                var pageName = String.IsNullOrEmpty(option.PageName) ? option.ContentType : option.PageName;
-
-                // When used from outside a razor page name must start with a /
-                if (!pageName.StartsWith('/'))
-                {
-                    pageName = '/' + pageName;
-                }
-
-                var url = context.HostPrefix + context.UrlHelper.Page(pageName, option.RouteValues.Invoke(contentItem));
-                return Task.FromResult(url);
+                pageName = '/' + pageName;
             }
 
-            return Task.FromResult<string>(null);
+            var url = context.HostPrefix + context.UrlHelper.Page(pageName, option.RouteValues.Invoke(contentItem));
+            return Task.FromResult(url);
         }
 
-        public IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions()
-        {
-            var ctds = _contentDefinitionManager.ListTypeDefinitions();
-            var rctds = ctds.Where(ctd => _options.ContentTypeOptions.Any(o => o.ContentType == ctd.Name));
-            return rctds;
-        }
+        return Task.FromResult<string>(null);
+    }
+
+    public IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions()
+    {
+        var ctds = _contentDefinitionManager.ListTypeDefinitions();
+        var rctds = ctds.Where(ctd => _options.ContentTypeOptions.Any(o => o.ContentType == ctd.Name));
+        return rctds;
     }
 }

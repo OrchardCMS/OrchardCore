@@ -1,6 +1,5 @@
-namespace OrchardCore.Workflows.Activities
+namespace OrchardCore.Workflows.Activities;
+
+public abstract class TaskActivity : Activity, ITask
 {
-    public abstract class TaskActivity : Activity, ITask
-    {
-    }
 }

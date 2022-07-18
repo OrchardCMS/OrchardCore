@@ -5,28 +5,27 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email;
 
-namespace OrchardCore.Users.ViewModels
+namespace OrchardCore.Users.ViewModels;
+
+public class EditUserInformationViewModel : IValidatableObject
 {
-    public class EditUserInformationViewModel : IValidatableObject
+    [Required]
+    public string UserName { get; set; }
+
+    [Required]
+    public string Email { get; set; }
+
+    [BindNever]
+    public bool IsEditingDisabled { get; set; }
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        [Required]
-        public string UserName { get; set; }
+        var emailAddressValidator = validationContext.GetService<IEmailAddressValidator>();
+        var S = validationContext.GetService<IStringLocalizer<EditUserInformationViewModel>>();
 
-        [Required]
-        public string Email { get; set; }
-
-        [BindNever]
-        public bool IsEditingDisabled { get; set; }
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        if (!string.IsNullOrEmpty(Email) && !emailAddressValidator.Validate(Email))
         {
-            var emailAddressValidator = validationContext.GetService<IEmailAddressValidator>();
-            var S = validationContext.GetService<IStringLocalizer<EditUserInformationViewModel>>();
-
-            if (!string.IsNullOrEmpty(Email) && !emailAddressValidator.Validate(Email))
-            {
-                yield return new ValidationResult(S["Invalid Email."], new[] { "Email" });
-            }
+            yield return new ValidationResult(S["Invalid Email."], new[] { "Email" });
         }
     }
 }

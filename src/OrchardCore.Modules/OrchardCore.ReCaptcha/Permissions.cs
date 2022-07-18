@@ -3,36 +3,35 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.ReCaptcha
-{
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission ManageReCaptchaSettings =
-            new Permission
-            (
-                "ManageReCaptchaSettings",
-                "Manage ReCaptcha Settings"
-            );
+namespace OrchardCore.ReCaptcha;
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+public class Permissions : IPermissionProvider
+{
+    public static readonly Permission ManageReCaptchaSettings =
+        new Permission
+        (
+            "ManageReCaptchaSettings",
+            "Manage ReCaptcha Settings"
+        );
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    {
+        return Task.FromResult(new[]
         {
-            return Task.FromResult(new[]
-            {
                 ManageReCaptchaSettings
             }
-            .AsEnumerable());
-        }
+        .AsEnumerable());
+    }
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return new[]
-            {
                 new PermissionStereotype
                 {
                     Name = "Administrator",
                     Permissions = new[] { ManageReCaptchaSettings }
                 }
             };
-        }
     }
 }

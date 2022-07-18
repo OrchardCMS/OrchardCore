@@ -7,78 +7,77 @@ using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Settings;
 
-namespace OrchardCore.Twitter.Services
+namespace OrchardCore.Twitter.Services;
+
+public class TwitterSettingsService : ITwitterSettingsService
 {
-    public class TwitterSettingsService : ITwitterSettingsService
+    private readonly ISiteService _siteService;
+    private readonly IStringLocalizer S;
+
+    public TwitterSettingsService(
+        ISiteService siteService,
+        IStringLocalizer<TwitterSettingsService> stringLocalizer)
     {
-        private readonly ISiteService _siteService;
-        private readonly IStringLocalizer S;
+        _siteService = siteService;
+        S = stringLocalizer;
+    }
 
-        public TwitterSettingsService(
-            ISiteService siteService,
-            IStringLocalizer<TwitterSettingsService> stringLocalizer)
+    public async Task<TwitterSettings> GetSettingsAsync()
+    {
+        var container = await _siteService.GetSiteSettingsAsync();
+        return container.As<TwitterSettings>();
+    }
+
+    public async Task<TwitterSettings> LoadSettingsAsync()
+    {
+        var container = await _siteService.LoadSiteSettingsAsync();
+        return container.As<TwitterSettings>();
+    }
+
+    public async Task UpdateSettingsAsync(TwitterSettings settings)
+    {
+        if (settings == null)
         {
-            _siteService = siteService;
-            S = stringLocalizer;
+            throw new ArgumentNullException(nameof(settings));
         }
 
-        public async Task<TwitterSettings> GetSettingsAsync()
+        var container = await _siteService.LoadSiteSettingsAsync();
+        container.Alter<TwitterSettings>(nameof(TwitterSettings), aspect =>
         {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<TwitterSettings>();
+            aspect.ConsumerKey = settings.ConsumerKey;
+            aspect.ConsumerSecret = settings.ConsumerSecret;
+            aspect.AccessToken = settings.AccessToken;
+            aspect.AccessTokenSecret = settings.AccessTokenSecret;
+        });
+
+        await _siteService.UpdateSiteSettingsAsync(container);
+    }
+
+    public IEnumerable<ValidationResult> ValidateSettings(TwitterSettings settings)
+    {
+        if (settings == null)
+        {
+            throw new ArgumentNullException(nameof(settings));
         }
 
-        public async Task<TwitterSettings> LoadSettingsAsync()
+        if (String.IsNullOrWhiteSpace(settings.ConsumerKey))
         {
-            var container = await _siteService.LoadSiteSettingsAsync();
-            return container.As<TwitterSettings>();
+            yield return new ValidationResult(S["ConsumerKey is required"], new string[] { nameof(settings.ConsumerKey) });
         }
 
-        public async Task UpdateSettingsAsync(TwitterSettings settings)
+        if (String.IsNullOrWhiteSpace(settings.ConsumerSecret))
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<TwitterSettings>(nameof(TwitterSettings), aspect =>
-            {
-                aspect.ConsumerKey = settings.ConsumerKey;
-                aspect.ConsumerSecret = settings.ConsumerSecret;
-                aspect.AccessToken = settings.AccessToken;
-                aspect.AccessTokenSecret = settings.AccessTokenSecret;
-            });
-
-            await _siteService.UpdateSiteSettingsAsync(container);
+            yield return new ValidationResult(S["ConsumerSecret is required"], new string[] { nameof(settings.ConsumerSecret) });
         }
 
-        public IEnumerable<ValidationResult> ValidateSettings(TwitterSettings settings)
+        if (String.IsNullOrWhiteSpace(settings.AccessToken))
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            yield return new ValidationResult(S["Access Token is required"], new string[] { nameof(settings.AccessToken) });
+        }
 
-            if (String.IsNullOrWhiteSpace(settings.ConsumerKey))
-            {
-                yield return new ValidationResult(S["ConsumerKey is required"], new string[] { nameof(settings.ConsumerKey) });
-            }
-
-            if (String.IsNullOrWhiteSpace(settings.ConsumerSecret))
-            {
-                yield return new ValidationResult(S["ConsumerSecret is required"], new string[] { nameof(settings.ConsumerSecret) });
-            }
-
-            if (String.IsNullOrWhiteSpace(settings.AccessToken))
-            {
-                yield return new ValidationResult(S["Access Token is required"], new string[] { nameof(settings.AccessToken) });
-            }
-
-            if (String.IsNullOrWhiteSpace(settings.AccessTokenSecret))
-            {
-                yield return new ValidationResult(S["Access Token Secret is required"], new string[] { nameof(settings.AccessTokenSecret) });
-            }
+        if (String.IsNullOrWhiteSpace(settings.AccessTokenSecret))
+        {
+            yield return new ValidationResult(S["Access Token Secret is required"], new string[] { nameof(settings.AccessTokenSecret) });
         }
     }
 }

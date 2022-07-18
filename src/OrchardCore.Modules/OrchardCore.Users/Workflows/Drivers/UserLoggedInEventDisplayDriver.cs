@@ -4,33 +4,32 @@ using OrchardCore.Users.Workflows.Activities;
 using OrchardCore.Users.Workflows.ViewModels;
 using OrchardCore.Workflows.Display;
 
-namespace OrchardCore.Users.Workflows.Drivers
+namespace OrchardCore.Users.Workflows.Drivers;
+
+public class UserLoggedInEventDisplayDriver : ActivityDisplayDriver<UserLoggedInEvent, UserLoggedInEventViewModel>
 {
-    public class UserLoggedInEventDisplayDriver : ActivityDisplayDriver<UserLoggedInEvent, UserLoggedInEventViewModel>
+    public UserLoggedInEventDisplayDriver(IUserService userService)
     {
-        public UserLoggedInEventDisplayDriver(IUserService userService)
-        {
-            UserService = userService;
-        }
+        UserService = userService;
+    }
 
-        protected IUserService UserService { get; }
+    protected IUserService UserService { get; }
 
-        protected override void EditActivity(UserLoggedInEvent source, UserLoggedInEventViewModel target)
-        {
-        }
+    protected override void EditActivity(UserLoggedInEvent source, UserLoggedInEventViewModel target)
+    {
+    }
 
-        public override IDisplayResult Display(UserLoggedInEvent activity)
-        {
-            return Combine(
-                Shape("UserLoggedInEvent_Fields_Thumbnail", new UserLoggedInEventViewModel(activity)).Location("Thumbnail", "Content"),
-                Factory("UserLoggedInEvent_Fields_Design", ctx =>
-                {
-                    var shape = new UserLoggedInEventViewModel();
-                    shape.Activity = activity;
+    public override IDisplayResult Display(UserLoggedInEvent activity)
+    {
+        return Combine(
+            Shape("UserLoggedInEvent_Fields_Thumbnail", new UserLoggedInEventViewModel(activity)).Location("Thumbnail", "Content"),
+            Factory("UserLoggedInEvent_Fields_Design", ctx =>
+            {
+                var shape = new UserLoggedInEventViewModel();
+                shape.Activity = activity;
 
-                    return shape;
-                }).Location("Design", "Content")
-            );
-        }
+                return shape;
+            }).Location("Design", "Content")
+        );
     }
 }

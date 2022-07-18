@@ -7,55 +7,54 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
-namespace OrchardCore.Users.Drivers
+namespace OrchardCore.Users.Drivers;
+
+public class LoginSettingsDisplayDriver : SectionDisplayDriver<ISite, LoginSettings>
 {
-    public class LoginSettingsDisplayDriver : SectionDisplayDriver<ISite, LoginSettings>
+    public const string GroupId = "userLogin";
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+
+    public LoginSettingsDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService)
     {
-        public const string GroupId = "userLogin";
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+    }
+    public override async Task<IDisplayResult> EditAsync(LoginSettings settings, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
 
-        public LoginSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
         {
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
-        }
-        public override async Task<IDisplayResult> EditAsync(LoginSettings settings, BuildEditorContext context)
-        {
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
-            {
-                return null;
-            }
-
-            return Initialize<LoginSettings>("LoginSettings_Edit", model =>
-            {
-                model.UseSiteTheme = settings.UseSiteTheme;
-                model.UseExternalProviderIfOnlyOneDefined = settings.UseExternalProviderIfOnlyOneDefined;
-                model.DisableLocalLogin = settings.DisableLocalLogin;
-                model.UseScriptToSyncRoles = settings.UseScriptToSyncRoles;
-                model.SyncRolesScript = settings.SyncRolesScript;
-            }).Location("Content:5").OnGroup(GroupId);
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LoginSettings section, BuildEditorContext context)
+        return Initialize<LoginSettings>("LoginSettings_Edit", model =>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
+            model.UseSiteTheme = settings.UseSiteTheme;
+            model.UseExternalProviderIfOnlyOneDefined = settings.UseExternalProviderIfOnlyOneDefined;
+            model.DisableLocalLogin = settings.DisableLocalLogin;
+            model.UseScriptToSyncRoles = settings.UseScriptToSyncRoles;
+            model.SyncRolesScript = settings.SyncRolesScript;
+        }).Location("Content:5").OnGroup(GroupId);
+    }
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
-            {
-                return null;
-            }
+    public override async Task<IDisplayResult> UpdateAsync(LoginSettings section, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
 
-            if (context.GroupId == GroupId)
-            {
-                await context.Updater.TryUpdateModelAsync(section, Prefix);
-            }
-
-            return await EditAsync(section, context);
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+        {
+            return null;
         }
+
+        if (context.GroupId == GroupId)
+        {
+            await context.Updater.TryUpdateModelAsync(section, Prefix);
+        }
+
+        return await EditAsync(section, context);
     }
 }

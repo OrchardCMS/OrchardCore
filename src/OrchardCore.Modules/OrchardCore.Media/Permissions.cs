@@ -3,21 +3,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Media
+namespace OrchardCore.Media;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
+    public static readonly Permission ManageMediaFolder = new Permission("ManageMediaFolder", "Manage All Media Folders");
+    public static readonly Permission ManageOthersMedia = new Permission("ManageOthersMediaContent", "Manage Media For Others", new[] { ManageMediaFolder });
+    public static readonly Permission ManageOwnMedia = new Permission("ManageOwnMediaContent", "Manage Own Media", new[] { ManageOthersMedia });
+    public static readonly Permission ManageMedia = new Permission("ManageMediaContent", "Manage Media", new[] { ManageOwnMedia });
+    public static readonly Permission ManageAttachedMediaFieldsFolder = new Permission("ManageAttachedMediaFieldsFolder", "Manage Attached Media Fields Folder", new[] { ManageMediaFolder });
+    public static readonly Permission ManageMediaProfiles = new Permission("ManageMediaProfiles", "Manage Media Profiles");
+    public static readonly Permission ViewMediaOptions = new Permission("ViewMediaOptions", "View Media Options");
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        public static readonly Permission ManageMediaFolder = new Permission("ManageMediaFolder", "Manage All Media Folders");
-        public static readonly Permission ManageOthersMedia = new Permission("ManageOthersMediaContent", "Manage Media For Others", new[] { ManageMediaFolder });
-        public static readonly Permission ManageOwnMedia = new Permission("ManageOwnMediaContent", "Manage Own Media", new[] { ManageOthersMedia });
-        public static readonly Permission ManageMedia = new Permission("ManageMediaContent", "Manage Media", new[] { ManageOwnMedia });
-        public static readonly Permission ManageAttachedMediaFieldsFolder = new Permission("ManageAttachedMediaFieldsFolder", "Manage Attached Media Fields Folder", new[] { ManageMediaFolder });
-        public static readonly Permission ManageMediaProfiles = new Permission("ManageMediaProfiles", "Manage Media Profiles");
-        public static readonly Permission ViewMediaOptions = new Permission("ViewMediaOptions", "View Media Options");
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        return Task.FromResult(new[]
         {
-            return Task.FromResult(new[]
-            {
                 ManageMedia,
                 ManageMediaFolder,
                 ManageOthersMedia,
@@ -26,13 +26,13 @@ namespace OrchardCore.Media
                 ManageMediaProfiles,
                 ViewMediaOptions
             }
-            .AsEnumerable());
-        }
+        .AsEnumerable());
+    }
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return new[]
-            {
                 new PermissionStereotype
                 {
                     Name = "Administrator",
@@ -61,28 +61,27 @@ namespace OrchardCore.Media
                     Permissions = new[] { ManageOwnMedia }
                 },
             };
-        }
+    }
+}
+
+public class MediaCachePermissions : IPermissionProvider
+{
+    public static readonly Permission ManageAssetCache = new Permission("ManageAssetCache", "Manage Asset Cache Folder");
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    {
+        return Task.FromResult(new[] { ManageAssetCache }.AsEnumerable());
     }
 
-    public class MediaCachePermissions : IPermissionProvider
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
     {
-        public static readonly Permission ManageAssetCache = new Permission("ManageAssetCache", "Manage Asset Cache Folder");
-
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        return new[]
         {
-            return Task.FromResult(new[] { ManageAssetCache }.AsEnumerable());
-        }
-
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
-            {
                 new PermissionStereotype
                 {
                     Name = "Administrator",
                     Permissions = new[] { ManageAssetCache }
                 }
             };
-        }
     }
 }

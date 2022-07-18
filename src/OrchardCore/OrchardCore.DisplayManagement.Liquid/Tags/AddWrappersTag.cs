@@ -6,37 +6,36 @@ using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags
+namespace OrchardCore.DisplayManagement.Liquid.Tags;
+
+public class AddWrappersTag
 {
-    public class AddWrappersTag
+    public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
     {
-        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
+
+        if (objectValue is IShape shape)
         {
-            var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
+            var wrappers = (await arguments.Item2.EvaluateAsync(context));
 
-            if (objectValue is IShape shape)
+            if (wrappers.Type == FluidValues.String)
             {
-                var wrappers = (await arguments.Item2.EvaluateAsync(context));
+                var values = wrappers.ToStringValue().Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-                if (wrappers.Type == FluidValues.String)
+                foreach (var value in values)
                 {
-                    var values = wrappers.ToStringValue().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-                    foreach (var value in values)
-                    {
-                        shape.Metadata.Wrappers.Add(value);
-                    }
-                }
-                else if (wrappers.Type == FluidValues.Array)
-                {
-                    foreach (var value in wrappers.Enumerate(context))
-                    {
-                        shape.Metadata.Wrappers.Add(value.ToStringValue());
-                    }
+                    shape.Metadata.Wrappers.Add(value);
                 }
             }
-
-            return Completion.Normal;
+            else if (wrappers.Type == FluidValues.Array)
+            {
+                foreach (var value in wrappers.Enumerate(context))
+                {
+                    shape.Metadata.Wrappers.Add(value.ToStringValue());
+                }
+            }
         }
+
+        return Completion.Normal;
     }
 }

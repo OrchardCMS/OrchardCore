@@ -3,70 +3,69 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 
-namespace OrchardCore.Lucene
+namespace OrchardCore.Lucene;
+
+/// <summary>
+/// This class persists the indexing state, a cursor, on the filesystem alongside the index itself.
+/// This state has to be on the filesystem as each node has its own local storage for the index.
+/// </summary>
+public class LuceneIndexingState
 {
-    /// <summary>
-    /// This class persists the indexing state, a cursor, on the filesystem alongside the index itself.
-    /// This state has to be on the filesystem as each node has its own local storage for the index.
-    /// </summary>
-    public class LuceneIndexingState
+    private readonly string _indexSettingsFilename;
+    private readonly JObject _content;
+
+    public LuceneIndexingState(
+        IOptions<ShellOptions> shellOptions,
+        ShellSettings shellSettings
+        )
     {
-        private readonly string _indexSettingsFilename;
-        private readonly JObject _content;
+        _indexSettingsFilename = PathExtensions.Combine(
+            shellOptions.Value.ShellsApplicationDataPath,
+            shellOptions.Value.ShellsContainerName,
+            shellSettings.Name,
+            "lucene.status.json");
 
-        public LuceneIndexingState(
-            IOptions<ShellOptions> shellOptions,
-            ShellSettings shellSettings
-            )
+        if (!File.Exists(_indexSettingsFilename))
         {
-            _indexSettingsFilename = PathExtensions.Combine(
-                shellOptions.Value.ShellsApplicationDataPath,
-                shellOptions.Value.ShellsContainerName,
-                shellSettings.Name,
-                "lucene.status.json");
+            Directory.CreateDirectory(Path.GetDirectoryName(_indexSettingsFilename));
 
-            if (!File.Exists(_indexSettingsFilename))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(_indexSettingsFilename));
-
-                File.WriteAllText(_indexSettingsFilename, new JObject().ToString(Newtonsoft.Json.Formatting.Indented));
-            }
-
-            _content = JObject.Parse(File.ReadAllText(_indexSettingsFilename));
+            File.WriteAllText(_indexSettingsFilename, new JObject().ToString(Newtonsoft.Json.Formatting.Indented));
         }
 
-        public int GetLastTaskId(string indexName)
+        _content = JObject.Parse(File.ReadAllText(_indexSettingsFilename));
+    }
+
+    public int GetLastTaskId(string indexName)
+    {
+        JToken value;
+        if (_content.TryGetValue(indexName, out value))
         {
-            JToken value;
-            if (_content.TryGetValue(indexName, out value))
-            {
-                return value.Value<int>();
-            }
-            else
-            {
-                lock (this)
-                {
-                    _content.Add(new JProperty(indexName, 0));
-                }
-
-                return 0;
-            }
+            return value.Value<int>();
         }
-
-        public void SetLastTaskId(string indexName, int taskId)
+        else
         {
             lock (this)
             {
-                _content[indexName] = taskId;
+                _content.Add(new JProperty(indexName, 0));
             }
-        }
 
-        public void Update()
+            return 0;
+        }
+    }
+
+    public void SetLastTaskId(string indexName, int taskId)
+    {
+        lock (this)
         {
-            lock (this)
-            {
-                File.WriteAllText(_indexSettingsFilename, _content.ToString(Newtonsoft.Json.Formatting.Indented));
-            }
+            _content[indexName] = taskId;
+        }
+    }
+
+    public void Update()
+    {
+        lock (this)
+        {
+            File.WriteAllText(_indexSettingsFilename, _content.ToString(Newtonsoft.Json.Formatting.Indented));
         }
     }
 }

@@ -1,9 +1,8 @@
 using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.Entities
+namespace OrchardCore.Entities;
+
+public interface IEntity
 {
-    public interface IEntity
-    {
-        JObject Properties { get; }
-    }
+    JObject Properties { get; }
 }

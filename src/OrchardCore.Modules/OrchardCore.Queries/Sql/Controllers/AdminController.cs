@@ -16,101 +16,100 @@ using OrchardCore.Modules;
 using OrchardCore.Queries.Sql.ViewModels;
 using YesSql;
 
-namespace OrchardCore.Queries.Sql.Controllers
+namespace OrchardCore.Queries.Sql.Controllers;
+
+[Feature("OrchardCore.Queries.Sql")]
+public class AdminController : Controller
 {
-    [Feature("OrchardCore.Queries.Sql")]
-    public class AdminController : Controller
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IStore _store;
+    private readonly ILiquidTemplateManager _liquidTemplateManager;
+    private readonly IStringLocalizer S;
+    private readonly TemplateOptions _templateOptions;
+
+    public AdminController(
+        IAuthorizationService authorizationService,
+        IStore store,
+        ILiquidTemplateManager liquidTemplateManager,
+        IStringLocalizer<AdminController> stringLocalizer,
+        IOptions<TemplateOptions> templateOptions)
+
     {
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IStore _store;
-        private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly IStringLocalizer S;
-        private readonly TemplateOptions _templateOptions;
+        _authorizationService = authorizationService;
+        _store = store;
+        _liquidTemplateManager = liquidTemplateManager;
+        S = stringLocalizer;
+        _templateOptions = templateOptions.Value;
+    }
 
-        public AdminController(
-            IAuthorizationService authorizationService,
-            IStore store,
-            ILiquidTemplateManager liquidTemplateManager,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IOptions<TemplateOptions> templateOptions)
-
+    public Task<IActionResult> Query(string query)
+    {
+        query = String.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
+        return Query(new AdminQueryViewModel
         {
-            _authorizationService = authorizationService;
-            _store = store;
-            _liquidTemplateManager = liquidTemplateManager;
-            S = stringLocalizer;
-            _templateOptions = templateOptions.Value;
+            DecodedQuery = query,
+            FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName
+        });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Query(AdminQueryViewModel model)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSqlQueries))
+        {
+            return Forbid();
         }
 
-        public Task<IActionResult> Query(string query)
+        if (String.IsNullOrWhiteSpace(model.DecodedQuery))
         {
-            query = String.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
-            return Query(new AdminQueryViewModel
-            {
-                DecodedQuery = query,
-                FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName
-            });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Query(AdminQueryViewModel model)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSqlQueries))
-            {
-                return Forbid();
-            }
-
-            if (String.IsNullOrWhiteSpace(model.DecodedQuery))
-            {
-                return View(model);
-            }
-
-            if (String.IsNullOrEmpty(model.Parameters))
-            {
-                model.Parameters = "{ }";
-            }
-
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            var connection = _store.Configuration.ConnectionFactory.CreateConnection();
-            var dialect = _store.Configuration.SqlDialect;
-
-            var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
-
-            var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, NullEncoder.Default, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
-
-            model.FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName;
-
-            if (SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
-            {
-                model.RawSql = rawQuery;
-                model.Parameters = JsonConvert.SerializeObject(parameters, Formatting.Indented);
-
-                try
-                {
-                    using (connection)
-                    {
-                        await connection.OpenAsync();
-                        model.Documents = await connection.QueryAsync(rawQuery, parameters);
-                    }
-                }
-                catch (Exception e)
-                {
-                    ModelState.AddModelError("", S["An error occurred while executing the SQL query: {0}", e.Message]);
-                }
-            }
-            else
-            {
-                foreach (var message in messages)
-                {
-                    ModelState.AddModelError("", message);
-                }
-            }
-
-            model.Elapsed = stopwatch.Elapsed;
-
             return View(model);
         }
+
+        if (String.IsNullOrEmpty(model.Parameters))
+        {
+            model.Parameters = "{ }";
+        }
+
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        var connection = _store.Configuration.ConnectionFactory.CreateConnection();
+        var dialect = _store.Configuration.SqlDialect;
+
+        var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
+
+        var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, NullEncoder.Default, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+
+        model.FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName;
+
+        if (SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
+        {
+            model.RawSql = rawQuery;
+            model.Parameters = JsonConvert.SerializeObject(parameters, Formatting.Indented);
+
+            try
+            {
+                using (connection)
+                {
+                    await connection.OpenAsync();
+                    model.Documents = await connection.QueryAsync(rawQuery, parameters);
+                }
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError("", S["An error occurred while executing the SQL query: {0}", e.Message]);
+            }
+        }
+        else
+        {
+            foreach (var message in messages)
+            {
+                ModelState.AddModelError("", message);
+            }
+        }
+
+        model.Elapsed = stopwatch.Elapsed;
+
+        return View(model);
     }
 }

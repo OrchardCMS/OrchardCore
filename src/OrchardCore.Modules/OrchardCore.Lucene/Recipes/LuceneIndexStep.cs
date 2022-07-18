@@ -7,51 +7,50 @@ using OrchardCore.Lucene.Model;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Lucene.Recipes
-{
-    /// <summary>
-    /// This recipe step creates a lucene index.
-    /// </summary>
-    public class LuceneIndexStep : IRecipeStepHandler
-    {
-        private readonly LuceneIndexingService _luceneIndexingService;
-        private readonly LuceneIndexManager _luceneIndexManager;
+namespace OrchardCore.Lucene.Recipes;
 
-        public LuceneIndexStep(
-            LuceneIndexingService luceneIndexingService,
-            LuceneIndexManager luceneIndexManager
-            )
+/// <summary>
+/// This recipe step creates a lucene index.
+/// </summary>
+public class LuceneIndexStep : IRecipeStepHandler
+{
+    private readonly LuceneIndexingService _luceneIndexingService;
+    private readonly LuceneIndexManager _luceneIndexManager;
+
+    public LuceneIndexStep(
+        LuceneIndexingService luceneIndexingService,
+        LuceneIndexManager luceneIndexManager
+        )
+    {
+        _luceneIndexManager = luceneIndexManager;
+        _luceneIndexingService = luceneIndexingService;
+    }
+
+    public async Task ExecuteAsync(RecipeExecutionContext context)
+    {
+        if (!String.Equals(context.Name, "lucene-index", StringComparison.OrdinalIgnoreCase))
         {
-            _luceneIndexManager = luceneIndexManager;
-            _luceneIndexingService = luceneIndexingService;
+            return;
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        var indices = context.Step["Indices"];
+        if (indices != null)
         {
-            if (!String.Equals(context.Name, "lucene-index", StringComparison.OrdinalIgnoreCase))
+            foreach (var index in indices)
             {
-                return;
-            }
+                var luceneIndexSettings = index.ToObject<Dictionary<string, LuceneIndexSettings>>().FirstOrDefault();
 
-            var indices = context.Step["Indices"];
-            if (indices != null)
-            {
-                foreach (var index in indices)
+                if (!_luceneIndexManager.Exists(luceneIndexSettings.Key))
                 {
-                    var luceneIndexSettings = index.ToObject<Dictionary<string, LuceneIndexSettings>>().FirstOrDefault();
-
-                    if (!_luceneIndexManager.Exists(luceneIndexSettings.Key))
-                    {
-                        luceneIndexSettings.Value.IndexName = luceneIndexSettings.Key;
-                        await _luceneIndexingService.CreateIndexAsync(luceneIndexSettings.Value);
-                    }
+                    luceneIndexSettings.Value.IndexName = luceneIndexSettings.Key;
+                    await _luceneIndexingService.CreateIndexAsync(luceneIndexSettings.Value);
                 }
             }
         }
     }
+}
 
-    public class ContentStepModel
-    {
-        public JObject Data { get; set; }
-    }
+public class ContentStepModel
+{
+    public JObject Data { get; set; }
 }

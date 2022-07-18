@@ -1,12 +1,11 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Workflows.Deployment
+namespace OrchardCore.Workflows.Deployment;
+
+public class AllWorkflowTypeDeploymentStep : DeploymentStep
 {
-    public class AllWorkflowTypeDeploymentStep : DeploymentStep
+    public AllWorkflowTypeDeploymentStep()
     {
-        public AllWorkflowTypeDeploymentStep()
-        {
-            Name = "AllWorkflowType";
-        }
+        Name = "AllWorkflowType";
     }
 }

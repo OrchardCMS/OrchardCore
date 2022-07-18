@@ -3,24 +3,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.ContentManagement.GraphQL
-{
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission ApiViewContent = new Permission("ApiViewContent", "Access view content endpoints");
+namespace OrchardCore.ContentManagement.GraphQL;
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+public class Permissions : IPermissionProvider
+{
+    public static readonly Permission ApiViewContent = new Permission("ApiViewContent", "Access view content endpoints");
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    {
+        return Task.FromResult(new[]
         {
-            return Task.FromResult(new[]
-            {
                 ApiViewContent
             }
-            .AsEnumerable());
-        }
+        .AsEnumerable());
+    }
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[] {
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
                     Permissions = new[] { ApiViewContent }
@@ -44,6 +44,5 @@ namespace OrchardCore.ContentManagement.GraphQL
                     Name = "Anonymous"
                 }
             };
-        }
     }
 }

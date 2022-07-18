@@ -10,51 +10,50 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 
-namespace OrchardCore.AdminDashboard.Drivers
+namespace OrchardCore.AdminDashboard.Drivers;
+
+public class DashboardPartDisplayDriver : ContentPartDisplayDriver<DashboardPart>
 {
-    public class DashboardPartDisplayDriver : ContentPartDisplayDriver<DashboardPart>
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IContentManager _contentManager;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ISiteService _siteService;
+
+    public DashboardPartDisplayDriver(
+        IContentManager contentManager,
+        IContentDefinitionManager contentDefinitionManager,
+        IServiceProvider serviceProvider,
+        ISiteService siteService
+        )
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IContentManager _contentManager;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ISiteService _siteService;
+        _contentDefinitionManager = contentDefinitionManager;
+        _contentManager = contentManager;
+        _serviceProvider = serviceProvider;
+        _siteService = siteService;
+    }
 
-        public DashboardPartDisplayDriver(
-            IContentManager contentManager,
-            IContentDefinitionManager contentDefinitionManager,
-            IServiceProvider serviceProvider,
-            ISiteService siteService
-            )
-        {
-            _contentDefinitionManager = contentDefinitionManager;
-            _contentManager = contentManager;
-            _serviceProvider = serviceProvider;
-            _siteService = siteService;
-        }
+    public override Task<IDisplayResult> DisplayAsync(DashboardPart part, BuildPartDisplayContext context)
+    {
+        return Task.FromResult<IDisplayResult>(null);
+    }
 
-        public override Task<IDisplayResult> DisplayAsync(DashboardPart part, BuildPartDisplayContext context)
-        {
-            return Task.FromResult<IDisplayResult>(null);
-        }
+    public override IDisplayResult Edit(DashboardPart dashboardPart, BuildPartEditorContext context)
+    {
+        return Initialize<DashboardPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, dashboardPart));
+    }
 
-        public override IDisplayResult Edit(DashboardPart dashboardPart, BuildPartEditorContext context)
-        {
-            return Initialize<DashboardPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, dashboardPart));
-        }
+    public override async Task<IDisplayResult> UpdateAsync(DashboardPart model, IUpdateModel updater, UpdatePartEditorContext context)
+    {
+        await updater.TryUpdateModelAsync(model, Prefix, t => t.Position, t => t.Width, t => t.Height);
+        return Edit(model, context);
+    }
 
-        public override async Task<IDisplayResult> UpdateAsync(DashboardPart model, IUpdateModel updater, UpdatePartEditorContext context)
-        {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Position, t => t.Width, t => t.Height);
-            return Edit(model, context);
-        }
-
-        private void BuildViewModel(DashboardPartViewModel model, DashboardPart part)
-        {
-            model.Position = part.Position;
-            model.Width = part.Width;
-            model.Height = part.Height;
-            model.DashboardPart = part;
-            model.ContentItem = part.ContentItem;
-        }
+    private void BuildViewModel(DashboardPartViewModel model, DashboardPart part)
+    {
+        model.Position = part.Position;
+        model.Width = part.Width;
+        model.Height = part.Height;
+        model.DashboardPart = part;
+        model.ContentItem = part.ContentItem;
     }
 }

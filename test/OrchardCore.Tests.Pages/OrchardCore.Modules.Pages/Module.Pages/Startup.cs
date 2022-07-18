@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
 
-namespace Module.Pages
+namespace Module.Pages;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        services.Configure<RazorPagesOptions>(options =>
         {
-            services.Configure<RazorPagesOptions>(options =>
-            {
                 // Add a custom folder route
                 options.Conventions.AddAreaFolderRoute("Module.Pages", "/", "");
 
@@ -20,6 +20,5 @@ namespace Module.Pages
                 // This declaration would define an home page
                 //options.Conventions.AddAreaPageRoute("Module.Pages", "/Foo", "");
             });
-        }
     }
 }

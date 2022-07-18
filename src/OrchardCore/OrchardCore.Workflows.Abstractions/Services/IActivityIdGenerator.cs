@@ -1,9 +1,8 @@
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Workflows.Services
+namespace OrchardCore.Workflows.Services;
+
+public interface IActivityIdGenerator
 {
-    public interface IActivityIdGenerator
-    {
-        string GenerateUniqueId(ActivityRecord activityRecord);
-    }
+    string GenerateUniqueId(ActivityRecord activityRecord);
 }

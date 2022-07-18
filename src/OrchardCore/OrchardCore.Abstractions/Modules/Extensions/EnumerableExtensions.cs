@@ -4,26 +4,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Modules
-{
-    public static class EnumerableExtensions
-    {
-        public static Task ForEachAsync<T>(this IEnumerable<T> source, Func<T, Task> body)
-        {
-            var partitionCount = System.Environment.ProcessorCount;
+namespace OrchardCore.Modules;
 
-            return Task.WhenAll(
-                from partition in Partitioner.Create(source).GetPartitions(partitionCount)
-                select Task.Run(async delegate
+public static class EnumerableExtensions
+{
+    public static Task ForEachAsync<T>(this IEnumerable<T> source, Func<T, Task> body)
+    {
+        var partitionCount = System.Environment.ProcessorCount;
+
+        return Task.WhenAll(
+            from partition in Partitioner.Create(source).GetPartitions(partitionCount)
+            select Task.Run(async delegate
+            {
+                using (partition)
                 {
-                    using (partition)
+                    while (partition.MoveNext())
                     {
-                        while (partition.MoveNext())
-                        {
-                            await body(partition.Current);
-                        }
+                        await body(partition.Current);
                     }
-                }));
-        }
+                }
+            }));
     }
 }

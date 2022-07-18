@@ -24,106 +24,106 @@ using OrchardCore.Shortcodes.ViewModels;
 using Shortcodes;
 using Sc = Shortcodes;
 
-namespace OrchardCore.Shortcodes
+namespace OrchardCore.Shortcodes;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        services.Configure<TemplateOptions>(o =>
         {
-            services.Configure<TemplateOptions>(o =>
+            o.MemberAccessStrategy.Register<ShortcodeViewModel>();
+
+            o.MemberAccessStrategy.Register<Context, object>((obj, name) => obj[name]);
+
+            o.ValueConverters.Add(x =>
             {
-                o.MemberAccessStrategy.Register<ShortcodeViewModel>();
-
-                o.MemberAccessStrategy.Register<Context, object>((obj, name) => obj[name]);
-
-                o.ValueConverters.Add(x =>
+                return x switch
                 {
-                    return x switch
-                    {
                         // Prevent Context from being converted to an ArrayValue as it implements IEnumerable
                         Context c => new ObjectValue(c),
                         // Prevent Arguments from being converted to an ArrayValue as it implements IEnumerable
                         Sc.Arguments a => new ObjectValue(a),
-                        _ => null
-                    };
-                });
-
-                o.MemberAccessStrategy.Register<Sc.Arguments, object>((obj, name) => obj.Named(name));
+                    _ => null
+                };
             });
 
-            services.AddScoped<IShortcodeService, ShortcodeService>();
-            services.AddScoped<IShortcodeDescriptorManager, ShortcodeDescriptorManager>();
-            services.AddScoped<IShortcodeDescriptorProvider, ShortcodeOptionsDescriptorProvider>();
-            services.AddScoped<IShortcodeContextProvider, DefaultShortcodeContextProvider>();
+            o.MemberAccessStrategy.Register<Sc.Arguments, object>((obj, name) => obj.Named(name));
+        });
 
-            services.AddOptions<ShortcodeOptions>();
-            services.AddScoped<IShortcodeProvider, OptionsShortcodeProvider>();
-            services.AddScoped<IDisplayDriver<ShortcodeDescriptor>, ShortcodeDescriptorDisplayDriver>();
-        }
+        services.AddScoped<IShortcodeService, ShortcodeService>();
+        services.AddScoped<IShortcodeDescriptorManager, ShortcodeDescriptorManager>();
+        services.AddScoped<IShortcodeDescriptorProvider, ShortcodeOptionsDescriptorProvider>();
+        services.AddScoped<IShortcodeContextProvider, DefaultShortcodeContextProvider>();
+
+        services.AddOptions<ShortcodeOptions>();
+        services.AddScoped<IShortcodeProvider, OptionsShortcodeProvider>();
+        services.AddScoped<IDisplayDriver<ShortcodeDescriptor>, ShortcodeDescriptorDisplayDriver>();
+    }
+}
+
+[Feature("OrchardCore.Shortcodes.Templates")]
+public class ShortcodeTemplatesStartup : StartupBase
+{
+    private readonly AdminOptions _adminOptions;
+
+    public ShortcodeTemplatesStartup(IOptions<AdminOptions> adminOptions)
+    {
+        _adminOptions = adminOptions.Value;
     }
 
-    [Feature("OrchardCore.Shortcodes.Templates")]
-    public class ShortcodeTemplatesStartup : StartupBase
+    // Register this first so the templates provide overrides for any code driven shortcodes.
+    public override int Order => -10;
+
+    public override void ConfigureServices(IServiceCollection services)
     {
-        private readonly AdminOptions _adminOptions;
+        services.AddScoped<ShortcodeTemplatesManager>();
+        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
 
-        public ShortcodeTemplatesStartup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
+        services.AddRecipeExecutionStep<ShortcodeTemplateStep>();
 
-        // Register this first so the templates provide overrides for any code driven shortcodes.
-        public override int Order => -10;
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<ShortcodeTemplatesManager>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-
-            services.AddRecipeExecutionStep<ShortcodeTemplateStep>();
-
-            services.AddScoped<IShortcodeProvider, TemplateShortcodeProvider>();
-            services.AddScoped<IShortcodeDescriptorProvider, ShortcodeTemplatesDescriptorProvider>();
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var templateControllerName = typeof(AdminController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "Shortcodes.Index",
-                areaName: "OrchardCore.Shortcodes",
-                pattern: _adminOptions.AdminUrlPrefix + "/Shortcodes",
-                defaults: new { controller = templateControllerName, action = nameof(AdminController.Index) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Shortcodes.Create",
-                areaName: "OrchardCore.Shortcodes",
-                pattern: _adminOptions.AdminUrlPrefix + "/Shortcodes/Create",
-                defaults: new { controller = templateControllerName, action = nameof(AdminController.Create) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Shortcodes.Edit",
-                areaName: "OrchardCore.Shortcodes",
-                pattern: _adminOptions.AdminUrlPrefix + "/Shortcodes/Edit/{name}",
-                defaults: new { controller = templateControllerName, action = nameof(AdminController.Edit) }
-            );
-        }
+        services.AddScoped<IShortcodeProvider, TemplateShortcodeProvider>();
+        services.AddScoped<IShortcodeDescriptorProvider, ShortcodeTemplatesDescriptorProvider>();
     }
 
-    [RequireFeatures("OrchardCore.Localization")]
-    public class LocaleShortcodeProviderStartup : StartupBase
+    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        var templateControllerName = typeof(AdminController).ControllerName();
+
+        routes.MapAreaControllerRoute(
+            name: "Shortcodes.Index",
+            areaName: "OrchardCore.Shortcodes",
+            pattern: _adminOptions.AdminUrlPrefix + "/Shortcodes",
+            defaults: new { controller = templateControllerName, action = nameof(AdminController.Index) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "Shortcodes.Create",
+            areaName: "OrchardCore.Shortcodes",
+            pattern: _adminOptions.AdminUrlPrefix + "/Shortcodes/Create",
+            defaults: new { controller = templateControllerName, action = nameof(AdminController.Create) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "Shortcodes.Edit",
+            areaName: "OrchardCore.Shortcodes",
+            pattern: _adminOptions.AdminUrlPrefix + "/Shortcodes/Edit/{name}",
+            defaults: new { controller = templateControllerName, action = nameof(AdminController.Edit) }
+        );
+    }
+}
+
+[RequireFeatures("OrchardCore.Localization")]
+public class LocaleShortcodeProviderStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddShortcode<LocaleShortcodeProvider>("locale", d =>
         {
-            services.AddShortcode<LocaleShortcodeProvider>("locale", d =>
-            {
-                d.DefaultValue = "[locale {language_code}] [/locale]";
-                d.Hint = "Conditionally render content in the specified language";
-                d.Usage =
+            d.DefaultValue = "[locale {language_code}] [/locale]";
+            d.Hint = "Conditionally render content in the specified language";
+            d.Usage =
 @"[locale en]English Text[/locale][locale fr false]French Text[/locale]<br>
 <table>
   <tr>
@@ -131,19 +131,18 @@ namespace OrchardCore.Shortcodes
     <td>lang, fallback</td>
   </tr>
 </table>";
-                d.Categories = new string[] { "Localization" };
-            });
-        }
+            d.Categories = new string[] { "Localization" };
+        });
     }
+}
 
-    [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Shortcodes.Templates")]
-    public class ShortcodeTemplatesDeployementStartup : StartupBase
+[RequireFeatures("OrchardCore.Deployment", "OrchardCore.Shortcodes.Templates")]
+public class ShortcodeTemplatesDeployementStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<IDeploymentSource, AllShortcodeTemplatesDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllShortcodeTemplatesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllShortcodeTemplatesDeploymentStepDriver>();
-        }
+        services.AddTransient<IDeploymentSource, AllShortcodeTemplatesDeploymentSource>();
+        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllShortcodeTemplatesDeploymentStep>());
+        services.AddScoped<IDisplayDriver<DeploymentStep>, AllShortcodeTemplatesDeploymentStepDriver>();
     }
 }

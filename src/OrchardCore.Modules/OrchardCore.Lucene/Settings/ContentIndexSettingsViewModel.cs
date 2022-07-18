@@ -1,9 +1,8 @@
 ﻿using OrchardCore.Indexing;
 
-namespace OrchardCore.Lucene.Settings
+namespace OrchardCore.Lucene.Settings;
+
+public class ContentIndexSettingsViewModel
 {
-    public class ContentIndexSettingsViewModel
-    {
-        public ContentIndexSettings ContentIndexSettings { get; set; }
-    }
+    public ContentIndexSettings ContentIndexSettings { get; set; }
 }

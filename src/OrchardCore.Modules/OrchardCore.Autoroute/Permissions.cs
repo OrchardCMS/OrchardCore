@@ -2,32 +2,31 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Autoroute
-{
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission SetHomepage = new Permission("SetHomepage", "Set homepage.");
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(GetPermissions());
-        }
+namespace OrchardCore.Autoroute;
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[] {
+public class Permissions : IPermissionProvider
+{
+    public static readonly Permission SetHomepage = new Permission("SetHomepage", "Set homepage.");
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    {
+        return Task.FromResult(GetPermissions());
+    }
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
                     Permissions = GetPermissions()
                 }
             };
-        }
+    }
 
-        private IEnumerable<Permission> GetPermissions()
+    private IEnumerable<Permission> GetPermissions()
+    {
+        return new[]
         {
-            return new[]
-            {
                 SetHomepage
             };
-        }
     }
 }

@@ -2,18 +2,17 @@ using System;
 using Microsoft.AspNetCore.Hosting;
 using Serilog;
 
-namespace OrchardCore.Logging
+namespace OrchardCore.Logging;
+
+public static class WebHostBuilderExtensions
 {
-    public static class WebHostBuilderExtensions
+    [Obsolete]
+    public static IWebHostBuilder UseSerilogWeb(this IWebHostBuilder builder)
     {
-        [Obsolete]
-        public static IWebHostBuilder UseSerilogWeb(this IWebHostBuilder builder)
+        return builder.UseSerilog((hostingContext, configBuilder) =>
         {
-            return builder.UseSerilog((hostingContext, configBuilder) =>
-            {
-                configBuilder.ReadFrom.Configuration(hostingContext.Configuration)
-                .Enrich.FromLogContext();
-            });
-        }
+            configBuilder.ReadFrom.Configuration(hostingContext.Configuration)
+            .Enrich.FromLogContext();
+        });
     }
 }

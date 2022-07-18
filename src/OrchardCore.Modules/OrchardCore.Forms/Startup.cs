@@ -9,64 +9,63 @@ using OrchardCore.Forms.Filters;
 using OrchardCore.Forms.Models;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Forms
+namespace OrchardCore.Forms;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        services.Configure<TemplateOptions>(o =>
         {
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<FormPart>();
-                o.MemberAccessStrategy.Register<FormElementPart>();
-                o.MemberAccessStrategy.Register<FormInputElementPart>();
-                o.MemberAccessStrategy.Register<LabelPart>();
-                o.MemberAccessStrategy.Register<InputPart>();
-                o.MemberAccessStrategy.Register<SelectPart>();
-                o.MemberAccessStrategy.Register<TextAreaPart>();
-                o.MemberAccessStrategy.Register<ButtonPart>();
-            });
+            o.MemberAccessStrategy.Register<FormPart>();
+            o.MemberAccessStrategy.Register<FormElementPart>();
+            o.MemberAccessStrategy.Register<FormInputElementPart>();
+            o.MemberAccessStrategy.Register<LabelPart>();
+            o.MemberAccessStrategy.Register<InputPart>();
+            o.MemberAccessStrategy.Register<SelectPart>();
+            o.MemberAccessStrategy.Register<TextAreaPart>();
+            o.MemberAccessStrategy.Register<ButtonPart>();
+        });
 
-            services.Configure<MvcOptions>(options =>
-            {
-                options.Filters.Add<ExportModelStateAttribute>();
-                options.Filters.Add<ImportModelStateAttribute>();
-                options.Filters.Add<ImportModelStatePageFilter>();
-            });
+        services.Configure<MvcOptions>(options =>
+        {
+            options.Filters.Add<ExportModelStateAttribute>();
+            options.Filters.Add<ImportModelStateAttribute>();
+            options.Filters.Add<ImportModelStatePageFilter>();
+        });
 
-            services.AddScoped<IContentDisplayDriver, FormContentDisplayDriver>();
+        services.AddScoped<IContentDisplayDriver, FormContentDisplayDriver>();
 
-            services.AddContentPart<FormPart>()
-                    .UseDisplayDriver<FormPartDisplayDriver>();
+        services.AddContentPart<FormPart>()
+                .UseDisplayDriver<FormPartDisplayDriver>();
 
-            services.AddContentPart<FormElementPart>()
-                    .UseDisplayDriver<FormElementPartDisplayDriver>();
+        services.AddContentPart<FormElementPart>()
+                .UseDisplayDriver<FormElementPartDisplayDriver>();
 
-            services.AddContentPart<FormInputElementPart>()
-                    .UseDisplayDriver<FormInputElementPartDisplayDriver>();
+        services.AddContentPart<FormInputElementPart>()
+                .UseDisplayDriver<FormInputElementPartDisplayDriver>();
 
-            services.AddContentPart<LabelPart>()
-                    .UseDisplayDriver<LabelPartDisplayDriver>();
+        services.AddContentPart<LabelPart>()
+                .UseDisplayDriver<LabelPartDisplayDriver>();
 
-            services.AddContentPart<ButtonPart>()
-                    .UseDisplayDriver<ButtonPartDisplayDriver>();
+        services.AddContentPart<ButtonPart>()
+                .UseDisplayDriver<ButtonPartDisplayDriver>();
 
-            services.AddContentPart<InputPart>()
-                    .UseDisplayDriver<InputPartDisplayDriver>();
+        services.AddContentPart<InputPart>()
+                .UseDisplayDriver<InputPartDisplayDriver>();
 
-            services.AddContentPart<SelectPart>()
-                .UseDisplayDriver<SelectPartDisplayDriver>();
+        services.AddContentPart<SelectPart>()
+            .UseDisplayDriver<SelectPartDisplayDriver>();
 
-            services.AddContentPart<TextAreaPart>()
-                    .UseDisplayDriver<TextAreaPartDisplayDriver>();
+        services.AddContentPart<TextAreaPart>()
+                .UseDisplayDriver<TextAreaPartDisplayDriver>();
 
-            services.AddContentPart<ValidationSummaryPart>()
-                    .UseDisplayDriver<ValidationSummaryPartDisplayDriver>();
+        services.AddContentPart<ValidationSummaryPart>()
+                .UseDisplayDriver<ValidationSummaryPartDisplayDriver>();
 
-            services.AddContentPart<ValidationPart>()
-                    .UseDisplayDriver<ValidationPartDisplayDriver>();
+        services.AddContentPart<ValidationPart>()
+                .UseDisplayDriver<ValidationPartDisplayDriver>();
 
-            services.AddScoped<IDataMigration, Migrations>();
-        }
+        services.AddScoped<IDataMigration, Migrations>();
     }
 }

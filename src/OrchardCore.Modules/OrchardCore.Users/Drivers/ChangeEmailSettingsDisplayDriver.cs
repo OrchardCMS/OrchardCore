@@ -8,52 +8,51 @@ using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
-namespace OrchardCore.Users.Drivers
+namespace OrchardCore.Users.Drivers;
+
+[Feature("OrchardCore.Users.ChangeEmail")]
+public class ChangeEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, ChangeEmailSettings>
 {
-    [Feature("OrchardCore.Users.ChangeEmail")]
-    public class ChangeEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, ChangeEmailSettings>
+    public const string GroupId = "userChangeEmail";
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+
+    public ChangeEmailSettingsDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService)
     {
-        public const string GroupId = "userChangeEmail";
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+    }
+    public override async Task<IDisplayResult> EditAsync(ChangeEmailSettings settings, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
 
-        public ChangeEmailSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
         {
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
-        }
-        public override async Task<IDisplayResult> EditAsync(ChangeEmailSettings settings, BuildEditorContext context)
-        {
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
-            {
-                return null;
-            }
-
-            return Initialize<ChangeEmailSettings>("ChangeEmailSettings_Edit", model =>
-            {
-                model.AllowChangeEmail = settings.AllowChangeEmail;
-            }).Location("Content:5").OnGroup(GroupId);
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ChangeEmailSettings section, BuildEditorContext context)
+        return Initialize<ChangeEmailSettings>("ChangeEmailSettings_Edit", model =>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
+            model.AllowChangeEmail = settings.AllowChangeEmail;
+        }).Location("Content:5").OnGroup(GroupId);
+    }
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
-            {
-                return null;
-            }
+    public override async Task<IDisplayResult> UpdateAsync(ChangeEmailSettings section, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
 
-            if (context.GroupId == GroupId)
-            {
-                await context.Updater.TryUpdateModelAsync(section, Prefix);
-            }
-
-            return await EditAsync(section, context);
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+        {
+            return null;
         }
+
+        if (context.GroupId == GroupId)
+        {
+            await context.Updater.TryUpdateModelAsync(section, Prefix);
+        }
+
+        return await EditAsync(section, context);
     }
 }

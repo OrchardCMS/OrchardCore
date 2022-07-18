@@ -11,52 +11,51 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.ContentFields.Drivers
+namespace OrchardCore.ContentFields.Drivers;
+
+public class TextFieldDisplayDriver : ContentFieldDisplayDriver<TextField>
 {
-    public class TextFieldDisplayDriver : ContentFieldDisplayDriver<TextField>
+    private readonly IStringLocalizer S;
+
+    public TextFieldDisplayDriver(IStringLocalizer<TextFieldDisplayDriver> localizer)
     {
-        private readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public TextFieldDisplayDriver(IStringLocalizer<TextFieldDisplayDriver> localizer)
+    public override IDisplayResult Display(TextField field, BuildFieldDisplayContext context)
+    {
+        return Initialize<DisplayTextFieldViewModel>(GetDisplayShapeType(context), model =>
         {
-            S = localizer;
-        }
+            model.Field = field;
+            model.Part = context.ContentPart;
+            model.PartFieldDefinition = context.PartFieldDefinition;
+        })
+        .Location("Detail", "Content")
+        .Location("Summary", "Content");
+    }
 
-        public override IDisplayResult Display(TextField field, BuildFieldDisplayContext context)
+    public override IDisplayResult Edit(TextField field, BuildFieldEditorContext context)
+    {
+        return Initialize<EditTextFieldViewModel>(GetEditorShapeType(context), model =>
         {
-            return Initialize<DisplayTextFieldViewModel>(GetDisplayShapeType(context), model =>
+            model.Text = field.Text;
+            model.Field = field;
+            model.Part = context.ContentPart;
+            model.PartFieldDefinition = context.PartFieldDefinition;
+        });
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(TextField field, IUpdateModel updater, UpdateFieldEditorContext context)
+    {
+        if (await updater.TryUpdateModelAsync(field, Prefix, f => f.Text))
+        {
+            var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
+            if (settings.Required && String.IsNullOrWhiteSpace(field.Text))
             {
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
-        }
-
-        public override IDisplayResult Edit(TextField field, BuildFieldEditorContext context)
-        {
-            return Initialize<EditTextFieldViewModel>(GetEditorShapeType(context), model =>
-            {
-                model.Text = field.Text;
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            });
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(TextField field, IUpdateModel updater, UpdateFieldEditorContext context)
-        {
-            if (await updater.TryUpdateModelAsync(field, Prefix, f => f.Text))
-            {
-                var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
-                if (settings.Required && String.IsNullOrWhiteSpace(field.Text))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
-                }
+                updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
-
-            return Edit(field, context);
         }
+
+        return Edit(field, context);
     }
 }

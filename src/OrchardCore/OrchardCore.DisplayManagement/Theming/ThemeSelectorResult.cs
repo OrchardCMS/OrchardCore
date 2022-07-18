@@ -1,8 +1,7 @@
-namespace OrchardCore.DisplayManagement.Theming
+namespace OrchardCore.DisplayManagement.Theming;
+
+public class ThemeSelectorResult
 {
-    public class ThemeSelectorResult
-    {
-        public int Priority { get; set; }
-        public string ThemeName { get; set; }
-    }
+    public int Priority { get; set; }
+    public string ThemeName { get; set; }
 }

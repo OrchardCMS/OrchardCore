@@ -14,63 +14,62 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
-namespace OrchardCore.Localization
+namespace OrchardCore.Localization;
+
+/// <summary>
+/// Represents a localization module entry point.
+/// </summary>
+public class Startup : StartupBase
 {
-    /// <summary>
-    /// Represents a localization module entry point.
-    /// </summary>
-    public class Startup : StartupBase
+    public override int ConfigureOrder => -100;
+
+    /// <inheritdocs />
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override int ConfigureOrder => -100;
+        services.AddScoped<IDisplayDriver<ISite>, LocalizationSettingsDisplayDriver>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddScoped<ILocalizationService, LocalizationService>();
 
-        /// <inheritdocs />
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IDisplayDriver<ISite>, LocalizationSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<ILocalizationService, LocalizationService>();
+        services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
+            AddDataAnnotationsPortableObjectLocalization();
 
-            services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
-                AddDataAnnotationsPortableObjectLocalization();
-
-            services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
-        }
-
-        /// <inheritdocs />
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var localizationService = serviceProvider.GetService<ILocalizationService>();
-
-            var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
-            var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
-
-            var options = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-            options.SetDefaultCulture(defaultCulture);
-            options
-                .AddSupportedCultures(supportedCultures)
-                .AddSupportedUICultures(supportedCultures)
-                ;
-
-            app.UseRequestLocalization(options);
-        }
+        services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
     }
 
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class LocalizationDeploymentStartup : StartupBase
+    /// <inheritdocs />
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSiteSettingsPropertyDeploymentStep<LocalizationSettings, LocalizationDeploymentStartup>(S => S["Culture settings"], S => S["Exports the culture settings."]);
-        }
-    }
+        var localizationService = serviceProvider.GetService<ILocalizationService>();
 
-    [Feature("OrchardCore.Localization.ContentLanguageHeader")]
-    public class ContentLanguageHeaderStartup : StartupBase
+        var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
+        var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
+
+        var options = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
+        options.SetDefaultCulture(defaultCulture);
+        options
+            .AddSupportedCultures(supportedCultures)
+            .AddSupportedUICultures(supportedCultures)
+            ;
+
+        app.UseRequestLocalization(options);
+    }
+}
+
+[RequireFeatures("OrchardCore.Deployment")]
+public class LocalizationDeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.Configure<RequestLocalizationOptions>(options => options.ApplyCurrentCultureToResponseHeaders = true);
-        }
+        services.AddSiteSettingsPropertyDeploymentStep<LocalizationSettings, LocalizationDeploymentStartup>(S => S["Culture settings"], S => S["Exports the culture settings."]);
+    }
+}
+
+[Feature("OrchardCore.Localization.ContentLanguageHeader")]
+public class ContentLanguageHeaderStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<RequestLocalizationOptions>(options => options.ApplyCurrentCultureToResponseHeaders = true);
     }
 }

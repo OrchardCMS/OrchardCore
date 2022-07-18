@@ -5,24 +5,23 @@ using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Resources.Liquid;
 
-namespace OrchardCore.Resources
-{
-    public class Startup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection serviceCollection)
-        {
-            serviceCollection.Configure<LiquidViewOptions>(o =>
-            {
-                o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("meta", parser.ArgumentsListParser, MetaTag.WriteToAsync));
-                o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("link", parser.ArgumentsListParser, LinkTag.WriteToAsync));
-                o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("script", parser.ArgumentsListParser, ScriptTag.WriteToAsync));
-                o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("style", parser.ArgumentsListParser, StyleTag.WriteToAsync));
-                o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("resources", parser.ArgumentsListParser, ResourcesTag.WriteToAsync));
-                o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserBlock("scriptblock", parser.ArgumentsListParser, ScriptBlock.WriteToAsync));
-                o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserBlock("styleblock", parser.ArgumentsListParser, StyleBlock.WriteToAsync));
-            });
+namespace OrchardCore.Resources;
 
-            serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
-        }
+public class Startup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection serviceCollection)
+    {
+        serviceCollection.Configure<LiquidViewOptions>(o =>
+        {
+            o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("meta", parser.ArgumentsListParser, MetaTag.WriteToAsync));
+            o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("link", parser.ArgumentsListParser, LinkTag.WriteToAsync));
+            o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("script", parser.ArgumentsListParser, ScriptTag.WriteToAsync));
+            o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("style", parser.ArgumentsListParser, StyleTag.WriteToAsync));
+            o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("resources", parser.ArgumentsListParser, ResourcesTag.WriteToAsync));
+            o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserBlock("scriptblock", parser.ArgumentsListParser, ScriptBlock.WriteToAsync));
+            o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserBlock("styleblock", parser.ArgumentsListParser, StyleBlock.WriteToAsync));
+        });
+
+        serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
     }
 }

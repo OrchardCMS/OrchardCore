@@ -3,27 +3,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Templates
+namespace OrchardCore.Templates;
+
+public class AdminTemplatesPermissions : IPermissionProvider
 {
-    public class AdminTemplatesPermissions : IPermissionProvider
+    public static readonly Permission ManageAdminTemplates = new Permission("ManageAdminTemplates", "Manage admin templates", isSecurityCritical: true);
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        public static readonly Permission ManageAdminTemplates = new Permission("ManageAdminTemplates", "Manage admin templates", isSecurityCritical: true);
+        return Task.FromResult(new[] { ManageAdminTemplates }.AsEnumerable());
+    }
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return Task.FromResult(new[] { ManageAdminTemplates }.AsEnumerable());
-        }
-
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
-            {
                 new PermissionStereotype
                 {
                     Name = "Administrator",
                     Permissions = new[] { ManageAdminTemplates }
                 }
             };
-        }
     }
 }

@@ -3,153 +3,152 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 
-namespace OrchardCore.Forms
+namespace OrchardCore.Forms;
+
+public class Migrations : DataMigration
 {
-    public class Migrations : DataMigration
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+
+    public Migrations(IContentDefinitionManager contentDefinitionManager)
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        _contentDefinitionManager = contentDefinitionManager;
+    }
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
-        {
-            _contentDefinitionManager = contentDefinitionManager;
-        }
+    public int Create()
+    {
+        // Form
+        _contentDefinitionManager.AlterPartDefinition("FormPart", part => part
+            .Attachable()
+            .WithDescription("Turns your content item into a form."));
 
-        public int Create()
-        {
-            // Form
-            _contentDefinitionManager.AlterPartDefinition("FormPart", part => part
-                .Attachable()
-                .WithDescription("Turns your content item into a form."));
+        _contentDefinitionManager.AlterTypeDefinition("Form", type => type
+            .WithPart("TitlePart", part => part
+                .WithSettings(new TitlePartSettings { RenderTitle = false })
+                .WithPosition("0")
+            )
+            .WithPart("FormElementPart", part =>
+               part.WithPosition("1")
+            )
+            .WithPart("FormPart")
+            .WithPart("FlowPart")
+            .Stereotype("Widget"));
 
-            _contentDefinitionManager.AlterTypeDefinition("Form", type => type
-                .WithPart("TitlePart", part => part
-                    .WithSettings(new TitlePartSettings { RenderTitle = false })
-                    .WithPosition("0")
-                )
-                .WithPart("FormElementPart", part =>
-                   part.WithPosition("1")
-                )
-                .WithPart("FormPart")
-                .WithPart("FlowPart")
-                .Stereotype("Widget"));
+        // FormElement
+        _contentDefinitionManager.AlterPartDefinition("FormElementPart", part => part
+            .WithDescription("Provides attributes common to all form elements."));
 
-            // FormElement
-            _contentDefinitionManager.AlterPartDefinition("FormElementPart", part => part
-                .WithDescription("Provides attributes common to all form elements."));
+        // FormInputElement
+        _contentDefinitionManager.AlterPartDefinition("FormInputElementPart", part => part
+            .WithDescription("Provides attributes common to all input form elements."));
 
-            // FormInputElement
-            _contentDefinitionManager.AlterPartDefinition("FormInputElementPart", part => part
-                .WithDescription("Provides attributes common to all input form elements."));
+        // Label
+        _contentDefinitionManager.AlterPartDefinition("LabelPart", part => part
+            .WithDescription("Provides label properties."));
 
-            // Label
-            _contentDefinitionManager.AlterPartDefinition("LabelPart", part => part
-                .WithDescription("Provides label properties."));
+        _contentDefinitionManager.AlterTypeDefinition("Label", type => type
+            .WithPart("TitlePart", part => part
+                .WithSettings(new TitlePartSettings { RenderTitle = false })
+            )
+            .WithPart("FormElementPart")
+            .WithPart("LabelPart")
+            .Stereotype("Widget"));
 
-            _contentDefinitionManager.AlterTypeDefinition("Label", type => type
-                .WithPart("TitlePart", part => part
-                    .WithSettings(new TitlePartSettings { RenderTitle = false })
-                )
-                .WithPart("FormElementPart")
-                .WithPart("LabelPart")
-                .Stereotype("Widget"));
+        // Input
+        _contentDefinitionManager.AlterPartDefinition("InputPart", part => part
+            .WithDescription("Provides input field properties."));
 
-            // Input
-            _contentDefinitionManager.AlterPartDefinition("InputPart", part => part
-                .WithDescription("Provides input field properties."));
+        _contentDefinitionManager.AlterTypeDefinition("Input", type => type
+            .WithPart("FormInputElementPart")
+            .WithPart("FormElementPart")
+            .WithPart("InputPart")
+            .Stereotype("Widget"));
 
-            _contentDefinitionManager.AlterTypeDefinition("Input", type => type
-                .WithPart("FormInputElementPart")
-                .WithPart("FormElementPart")
-                .WithPart("InputPart")
-                .Stereotype("Widget"));
+        // TextArea
+        _contentDefinitionManager.AlterPartDefinition("TextAreaPart", part => part
+            .WithDescription("Provides text area properties."));
 
-            // TextArea
-            _contentDefinitionManager.AlterPartDefinition("TextAreaPart", part => part
-                .WithDescription("Provides text area properties."));
+        _contentDefinitionManager.AlterTypeDefinition("TextArea", type => type
+            .WithPart("FormInputElementPart")
+            .WithPart("FormElementPart")
+            .WithPart("TextAreaPart")
+            .Stereotype("Widget"));
 
-            _contentDefinitionManager.AlterTypeDefinition("TextArea", type => type
-                .WithPart("FormInputElementPart")
-                .WithPart("FormElementPart")
-                .WithPart("TextAreaPart")
-                .Stereotype("Widget"));
+        // Select
+        _contentDefinitionManager.AlterPartDefinition("SelectPart", part => part
+            .WithDescription("Provides select field properties."));
 
-            // Select
-            _contentDefinitionManager.AlterPartDefinition("SelectPart", part => part
-                .WithDescription("Provides select field properties."));
+        _contentDefinitionManager.AlterTypeDefinition("Select", type => type
+            .WithPart("FormInputElementPart")
+            .WithPart("FormElementPart")
+            .WithPart("SelectPart")
+            .Stereotype("Widget"));
 
-            _contentDefinitionManager.AlterTypeDefinition("Select", type => type
-                .WithPart("FormInputElementPart")
-                .WithPart("FormElementPart")
-                .WithPart("SelectPart")
-                .Stereotype("Widget"));
+        // Button
+        _contentDefinitionManager.AlterPartDefinition("ButtonPart", part => part
+            .WithDescription("Provides button properties."));
 
-            // Button
-            _contentDefinitionManager.AlterPartDefinition("ButtonPart", part => part
-                .WithDescription("Provides button properties."));
+        _contentDefinitionManager.AlterTypeDefinition("Button", type => type
+            .WithPart("FormInputElementPart")
+            .WithPart("FormElementPart")
+            .WithPart("ButtonPart")
+            .Stereotype("Widget"));
 
-            _contentDefinitionManager.AlterTypeDefinition("Button", type => type
-                .WithPart("FormInputElementPart")
-                .WithPart("FormElementPart")
-                .WithPart("ButtonPart")
-                .Stereotype("Widget"));
+        // Validation Summary
+        _contentDefinitionManager.AlterPartDefinition("ValidationSummaryPart", part => part
+            .WithDescription("Displays a validation summary."));
 
-            // Validation Summary
-            _contentDefinitionManager.AlterPartDefinition("ValidationSummaryPart", part => part
-                .WithDescription("Displays a validation summary."));
+        _contentDefinitionManager.AlterTypeDefinition("ValidationSummary", type => type
+            .WithPart("ValidationSummaryPart")
+            .Stereotype("Widget"));
 
-            _contentDefinitionManager.AlterTypeDefinition("ValidationSummary", type => type
-                .WithPart("ValidationSummaryPart")
-                .Stereotype("Widget"));
+        // Validation
+        _contentDefinitionManager.AlterPartDefinition("ValidationPart", part => part
+            .WithDescription("Displays a field validation error."));
 
-            // Validation
-            _contentDefinitionManager.AlterPartDefinition("ValidationPart", part => part
-                .WithDescription("Displays a field validation error."));
+        _contentDefinitionManager.AlterTypeDefinition("Validation", type => type
+            .WithPart("ValidationPart")
+            .Stereotype("Widget"));
 
-            _contentDefinitionManager.AlterTypeDefinition("Validation", type => type
-                .WithPart("ValidationPart")
-                .Stereotype("Widget"));
+        // Shortcut other migration steps on new content definition schemas.
+        return 3;
+    }
 
-            // Shortcut other migration steps on new content definition schemas.
-            return 3;
-        }
+    // This code can be removed in a later version.
+    public int UpdateFrom1()
+    {
+        _contentDefinitionManager.AlterTypeDefinition("Form", type => type
+            .WithPart("TitlePart", part => part.MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false))
+        );
 
-        // This code can be removed in a later version.
-        public int UpdateFrom1()
-        {
-            _contentDefinitionManager.AlterTypeDefinition("Form", type => type
-                .WithPart("TitlePart", part => part.MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false))
-            );
+        _contentDefinitionManager.AlterTypeDefinition("Label", type => type
+            .WithPart("TitlePart", part => part.MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false))
+        );
 
-            _contentDefinitionManager.AlterTypeDefinition("Label", type => type
-                .WithPart("TitlePart", part => part.MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false))
-            );
+        return 2;
+    }
 
-            return 2;
-        }
+    // This code can be removed in a later version.
+    public int UpdateFrom2()
+    {
+        _contentDefinitionManager.AlterTypeDefinition("Form", type => type
+            .WithPart("TitlePart", part => part
+                .WithPosition("0")
+            )
+            .WithPart("FormElementPart", part =>
+               part.WithPosition("1")
+            )
+        );
 
-        // This code can be removed in a later version.
-        public int UpdateFrom2()
-        {
-            _contentDefinitionManager.AlterTypeDefinition("Form", type => type
-                .WithPart("TitlePart", part => part
-                    .WithPosition("0")
-                )
-                .WithPart("FormElementPart", part =>
-                   part.WithPosition("1")
-                )
-            );
+        return 3;
+    }
 
-            return 3;
-        }
+    internal class TitlePartSettings
+    {
+        public int Options { get; set; }
 
-        internal class TitlePartSettings
-        {
-            public int Options { get; set; }
+        public string Pattern { get; set; }
 
-            public string Pattern { get; set; }
-
-            [DefaultValue(true)]
-            public bool RenderTitle { get; set; }
-        }
+        [DefaultValue(true)]
+        public bool RenderTitle { get; set; }
     }
 }

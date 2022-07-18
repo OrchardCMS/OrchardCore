@@ -17,53 +17,52 @@ using OrchardCore.Workflows.Http.Services;
 using OrchardCore.Workflows.Http.WorkflowContextProviders;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Workflows.Http
+namespace OrchardCore.Workflows.Http;
+
+[Feature("OrchardCore.Workflows.Http")]
+public class Startup : StartupBase
 {
-    [Feature("OrchardCore.Workflows.Http")]
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        services.Configure<MvcOptions>(o =>
         {
-            services.Configure<MvcOptions>(o =>
-            {
-                o.Filters.Add(typeof(WorkflowActionFilter));
-            });
+            o.Filters.Add(typeof(WorkflowActionFilter));
+        });
 
-            services.AddLiquidFilter<SignalUrlFilter>("signal_url");
+        services.AddLiquidFilter<SignalUrlFilter>("signal_url");
 
-            services.AddScoped<IWorkflowTypeEventHandler, WorkflowTypeRoutesHandler>();
-            services.AddScoped<IWorkflowHandler, WorkflowRoutesHandler>();
+        services.AddScoped<IWorkflowTypeEventHandler, WorkflowTypeRoutesHandler>();
+        services.AddScoped<IWorkflowHandler, WorkflowRoutesHandler>();
 
-            services.AddSingleton<IWorkflowTypeRouteEntries, WorkflowTypeRouteEntries>();
-            services.AddSingleton<IWorkflowInstanceRouteEntries, WorkflowInstanceRouteEntries>();
-            services.AddSingleton<IGlobalMethodProvider, HttpMethodsProvider>();
-            services.AddScoped<IWorkflowExecutionContextHandler, SignalWorkflowExecutionContextHandler>();
+        services.AddSingleton<IWorkflowTypeRouteEntries, WorkflowTypeRouteEntries>();
+        services.AddSingleton<IWorkflowInstanceRouteEntries, WorkflowInstanceRouteEntries>();
+        services.AddSingleton<IGlobalMethodProvider, HttpMethodsProvider>();
+        services.AddScoped<IWorkflowExecutionContextHandler, SignalWorkflowExecutionContextHandler>();
 
-            services.AddActivity<HttpRequestEvent, HttpRequestEventDisplayDriver>();
-            services.AddActivity<HttpRequestFilterEvent, HttpRequestFilterEventDisplayDriver>();
-            services.AddActivity<HttpRedirectTask, HttpRedirectTaskDisplayDriver>();
-            services.AddActivity<HttpRequestTask, HttpRequestTaskDisplayDriver>();
-            services.AddActivity<HttpResponseTask, HttpResponseTaskDisplayDriver>();
-            services.AddActivity<SignalEvent, SignalEventDisplayDriver>();
+        services.AddActivity<HttpRequestEvent, HttpRequestEventDisplayDriver>();
+        services.AddActivity<HttpRequestFilterEvent, HttpRequestFilterEventDisplayDriver>();
+        services.AddActivity<HttpRedirectTask, HttpRedirectTaskDisplayDriver>();
+        services.AddActivity<HttpRequestTask, HttpRequestTaskDisplayDriver>();
+        services.AddActivity<HttpResponseTask, HttpResponseTaskDisplayDriver>();
+        services.AddActivity<SignalEvent, SignalEventDisplayDriver>();
 
-            services.AddSingleton<IGlobalMethodProvider, TokenMethodProvider>();
-        }
+        services.AddSingleton<IGlobalMethodProvider, TokenMethodProvider>();
+    }
 
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "HttpWorkflow",
-                areaName: "OrchardCore.Workflows",
-                pattern: "workflows/{action}",
-                defaults: new { controller = "HttpWorkflow" }
-            );
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.MapAreaControllerRoute(
+            name: "HttpWorkflow",
+            areaName: "OrchardCore.Workflows",
+            pattern: "workflows/{action}",
+            defaults: new { controller = "HttpWorkflow" }
+        );
 
-            routes.MapAreaControllerRoute(
-                name: "InvokeWorkflow",
-                areaName: "OrchardCore.Workflows",
-                pattern: "workflows/invoke/{token}",
-                defaults: new { controller = "HttpWorkflow", action = "Invoke" }
-            );
-        }
+        routes.MapAreaControllerRoute(
+            name: "InvokeWorkflow",
+            areaName: "OrchardCore.Workflows",
+            pattern: "workflows/invoke/{token}",
+            defaults: new { controller = "HttpWorkflow", action = "Invoke" }
+        );
     }
 }

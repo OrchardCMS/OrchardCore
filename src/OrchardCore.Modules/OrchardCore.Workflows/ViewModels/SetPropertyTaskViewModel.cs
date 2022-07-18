@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Workflows.ViewModels
-{
-    public class SetPropertyTaskViewModel
-    {
-        [Required]
-        public string PropertyName { get; set; }
+namespace OrchardCore.Workflows.ViewModels;
 
-        public string Value { get; set; }
-    }
+public class SetPropertyTaskViewModel
+{
+    [Required]
+    public string PropertyName { get; set; }
+
+    public string Value { get; set; }
 }

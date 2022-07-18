@@ -6,91 +6,90 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using OrchardCore.Data.Documents;
 
-namespace OrchardCore.Documents
+namespace OrchardCore.Documents;
+
+/// <summary>
+/// Serializes and deserializes an <see cref="IDocument"/> into and from a sequence of bytes.
+/// </summary>
+public class DefaultDocumentSerializer : IDocumentSerialiser
 {
-    /// <summary>
-    /// Serializes and deserializes an <see cref="IDocument"/> into and from a sequence of bytes.
-    /// </summary>
-    public class DefaultDocumentSerializer : IDocumentSerialiser
+    public static DefaultDocumentSerializer Instance = new DefaultDocumentSerializer();
+
+    private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
     {
-        public static DefaultDocumentSerializer Instance = new DefaultDocumentSerializer();
+        TypeNameHandling = TypeNameHandling.Auto,
+        DateTimeZoneHandling = DateTimeZoneHandling.Utc
+    };
 
-        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            DateTimeZoneHandling = DateTimeZoneHandling.Utc
-        };
+    public DefaultDocumentSerializer()
+    {
+    }
 
-        public DefaultDocumentSerializer()
+    public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = Int32.MaxValue) where TDocument : class, IDocument, new()
+    {
+        var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document, _jsonSettings));
+
+        if (data.Length >= compressThreshold)
         {
+            data = Compress(data);
         }
 
-        public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = Int32.MaxValue) where TDocument : class, IDocument, new()
+        return Task.FromResult(data);
+    }
+
+    public Task<TDocument> DeserializeAsync<TDocument>(byte[] data) where TDocument : class, IDocument, new()
+    {
+        if (IsCompressed(data))
         {
-            var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document, _jsonSettings));
-
-            if (data.Length >= compressThreshold)
-            {
-                data = Compress(data);
-            }
-
-            return Task.FromResult(data);
+            data = Decompress(data);
         }
 
-        public Task<TDocument> DeserializeAsync<TDocument>(byte[] data) where TDocument : class, IDocument, new()
+        var document = JsonConvert.DeserializeObject<TDocument>(Encoding.UTF8.GetString(data), _jsonSettings);
+
+        return Task.FromResult(document);
+    }
+
+    private static readonly byte[] GZipHeaderBytes = { 0x1f, 0x8b };
+
+    internal static bool IsCompressed(byte[] data)
+    {
+        if (data.Length < GZipHeaderBytes.Length)
         {
-            if (IsCompressed(data))
-            {
-                data = Decompress(data);
-            }
-
-            var document = JsonConvert.DeserializeObject<TDocument>(Encoding.UTF8.GetString(data), _jsonSettings);
-
-            return Task.FromResult(document);
+            return false;
         }
 
-        private static readonly byte[] GZipHeaderBytes = { 0x1f, 0x8b };
-
-        internal static bool IsCompressed(byte[] data)
+        for (var i = 0; i < GZipHeaderBytes.Length; i++)
         {
-            if (data.Length < GZipHeaderBytes.Length)
+            if (data[i] != GZipHeaderBytes[i])
             {
                 return false;
             }
-
-            for (var i = 0; i < GZipHeaderBytes.Length; i++)
-            {
-                if (data[i] != GZipHeaderBytes[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
-        internal static byte[] Compress(byte[] data)
+        return true;
+    }
+
+    internal static byte[] Compress(byte[] data)
+    {
+        using var input = new MemoryStream(data);
+        using var output = new MemoryStream();
+        using (var gzip = new GZipStream(output, CompressionMode.Compress))
         {
-            using var input = new MemoryStream(data);
-            using var output = new MemoryStream();
-            using (var gzip = new GZipStream(output, CompressionMode.Compress))
-            {
-                input.CopyTo(gzip);
-            }
-
-            return output.ToArray();
+            input.CopyTo(gzip);
         }
 
-        internal static byte[] Decompress(byte[] data)
+        return output.ToArray();
+    }
+
+    internal static byte[] Decompress(byte[] data)
+    {
+        using var input = new MemoryStream(data);
+        using var output = new MemoryStream();
+        using (var gzip = new GZipStream(input, CompressionMode.Decompress))
         {
-            using var input = new MemoryStream(data);
-            using var output = new MemoryStream();
-            using (var gzip = new GZipStream(input, CompressionMode.Decompress))
-            {
-                gzip.CopyTo(output);
-            }
-
-            return output.ToArray();
+            gzip.CopyTo(output);
         }
+
+        return output.ToArray();
     }
 }

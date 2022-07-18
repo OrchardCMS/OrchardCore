@@ -13,69 +13,68 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 
 
-namespace OrchardCore.ContentFields.Drivers
+namespace OrchardCore.ContentFields.Drivers;
+
+public class DateTimeFieldDisplayDriver : ContentFieldDisplayDriver<DateTimeField>
 {
-    public class DateTimeFieldDisplayDriver : ContentFieldDisplayDriver<DateTimeField>
+    private readonly IStringLocalizer S;
+    private readonly ILocalClock _localClock;
+
+    public DateTimeFieldDisplayDriver(ILocalClock localClock,
+    IStringLocalizer<DateTimeFieldDisplayDriver> localizer)
     {
-        private readonly IStringLocalizer S;
-        private readonly ILocalClock _localClock;
+        _localClock = localClock;
+        S = localizer;
+    }
 
-        public DateTimeFieldDisplayDriver(ILocalClock localClock,
-        IStringLocalizer<DateTimeFieldDisplayDriver> localizer)
+    public override IDisplayResult Display(DateTimeField field, BuildFieldDisplayContext context)
+    {
+        return Initialize<DisplayDateTimeFieldViewModel>(GetDisplayShapeType(context), async model =>
         {
-            _localClock = localClock;
-            S = localizer;
-        }
+            model.LocalDateTime = field.Value == null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
+            model.Field = field;
+            model.Part = context.ContentPart;
+            model.PartFieldDefinition = context.PartFieldDefinition;
+        })
+        .Location("Detail", "Content")
+        .Location("Summary", "Content");
+    }
 
-        public override IDisplayResult Display(DateTimeField field, BuildFieldDisplayContext context)
+    public override IDisplayResult Edit(DateTimeField field, BuildFieldEditorContext context)
+    {
+        return Initialize<EditDateTimeFieldViewModel>(GetEditorShapeType(context), async model =>
         {
-            return Initialize<DisplayDateTimeFieldViewModel>(GetDisplayShapeType(context), async model =>
+            model.LocalDateTime = field.Value == null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
+            model.Field = field;
+            model.Part = context.ContentPart;
+            model.PartFieldDefinition = context.PartFieldDefinition;
+        });
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(DateTimeField field, IUpdateModel updater, UpdateFieldEditorContext context)
+    {
+        var model = new EditDateTimeFieldViewModel();
+
+        if (await updater.TryUpdateModelAsync(model, Prefix, f => f.LocalDateTime))
+        {
+            var settings = context.PartFieldDefinition.GetSettings<DateTimeFieldSettings>();
+            if (settings.Required && model.LocalDateTime == null)
             {
-                model.LocalDateTime = field.Value == null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
-        }
-
-        public override IDisplayResult Edit(DateTimeField field, BuildFieldEditorContext context)
-        {
-            return Initialize<EditDateTimeFieldViewModel>(GetEditorShapeType(context), async model =>
+                updater.ModelState.AddModelError(Prefix, nameof(model.LocalDateTime), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+            }
+            else
             {
-                model.LocalDateTime = field.Value == null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            });
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(DateTimeField field, IUpdateModel updater, UpdateFieldEditorContext context)
-        {
-            var model = new EditDateTimeFieldViewModel();
-
-            if (await updater.TryUpdateModelAsync(model, Prefix, f => f.LocalDateTime))
-            {
-                var settings = context.PartFieldDefinition.GetSettings<DateTimeFieldSettings>();
-                if (settings.Required && model.LocalDateTime == null)
+                if (model.LocalDateTime == null)
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(model.LocalDateTime), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    field.Value = null;
                 }
                 else
                 {
-                    if (model.LocalDateTime == null)
-                    {
-                        field.Value = null;
-                    }
-                    else
-                    {
-                        field.Value = await _localClock.ConvertToUtcAsync(model.LocalDateTime.Value);
-                    }
+                    field.Value = await _localClock.ConvertToUtcAsync(model.LocalDateTime.Value);
                 }
             }
-
-            return Edit(field, context);
         }
+
+        return Edit(field, context);
     }
 }

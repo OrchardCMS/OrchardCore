@@ -7,53 +7,52 @@ using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.ReCaptcha.Workflows
+namespace OrchardCore.ReCaptcha.Workflows;
+
+public class ValidateReCaptchaTask : TaskActivity
 {
-    public class ValidateReCaptchaTask : TaskActivity
+    private readonly ReCaptchaService _reCaptchaService;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IStringLocalizer S;
+
+    public ValidateReCaptchaTask(
+        ReCaptchaService reCaptchaService,
+        IUpdateModelAccessor updateModelAccessor,
+        IStringLocalizer<ValidateReCaptchaTask> localizer
+    )
     {
-        private readonly ReCaptchaService _reCaptchaService;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer S;
+        _reCaptchaService = reCaptchaService;
+        _updateModelAccessor = updateModelAccessor;
+        S = localizer;
+    }
 
-        public ValidateReCaptchaTask(
-            ReCaptchaService reCaptchaService,
-            IUpdateModelAccessor updateModelAccessor,
-            IStringLocalizer<ValidateReCaptchaTask> localizer
-        )
+    public override string Name => nameof(ValidateReCaptchaTask);
+
+    public override LocalizedString DisplayText => S["Validate ReCaptcha Task"];
+
+    public override LocalizedString Category => S["Validation"];
+
+    public override bool HasEditor => false;
+
+    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        return Outcomes(S["Done"], S["Valid"], S["Invalid"]);
+    }
+
+    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        var outcome = "Valid";
+
+        await _reCaptchaService.ValidateCaptchaAsync((key, error) =>
         {
-            _reCaptchaService = reCaptchaService;
-            _updateModelAccessor = updateModelAccessor;
-            S = localizer;
-        }
-
-        public override string Name => nameof(ValidateReCaptchaTask);
-
-        public override LocalizedString DisplayText => S["Validate ReCaptcha Task"];
-
-        public override LocalizedString Category => S["Validation"];
-
-        public override bool HasEditor => false;
-
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            return Outcomes(S["Done"], S["Valid"], S["Invalid"]);
-        }
-
-        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            var outcome = "Valid";
-
-            await _reCaptchaService.ValidateCaptchaAsync((key, error) =>
+            var updater = _updateModelAccessor.ModelUpdater;
+            outcome = "Invalid";
+            if (updater != null)
             {
-                var updater = _updateModelAccessor.ModelUpdater;
-                outcome = "Invalid";
-                if (updater != null)
-                {
-                    updater.ModelState.TryAddModelError(Constants.ReCaptchaServerResponseHeaderName, S["Captcha validation failed. Try again."]);
-                }
-            });
+                updater.ModelState.TryAddModelError(Constants.ReCaptchaServerResponseHeaderName, S["Captcha validation failed. Try again."]);
+            }
+        });
 
-            return Outcomes("Done", outcome);
-        }
+        return Outcomes("Done", outcome);
     }
 }

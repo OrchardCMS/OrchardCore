@@ -4,32 +4,31 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.GitHub
+namespace OrchardCore.GitHub;
+
+[Feature(GitHubConstants.Features.GitHubAuthentication)]
+public class AdminMenuGitHubLogin : INavigationProvider
 {
-    [Feature(GitHubConstants.Features.GitHubAuthentication)]
-    public class AdminMenuGitHubLogin : INavigationProvider
+    private readonly IStringLocalizer S;
+
+    public AdminMenuGitHubLogin(IStringLocalizer<AdminMenuGitHubLogin> localizer)
     {
-        private readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public AdminMenuGitHubLogin(IStringLocalizer<AdminMenuGitHubLogin> localizer)
+    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    {
+        if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
         {
-            S = localizer;
+            builder.Add(S["Security"], security => security
+                    .Add(S["Authentication"], authentication => authentication
+                    .Add(S["GitHub"], S["GitHub"].PrefixPosition(), settings => settings
+                    .AddClass("github").Id("github")
+                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GitHubConstants.Features.GitHubAuthentication })
+                        .Permission(Permissions.ManageGitHubAuthentication)
+                        .LocalNav())
+                ));
         }
-
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                builder.Add(S["Security"], security => security
-                        .Add(S["Authentication"], authentication => authentication
-                        .Add(S["GitHub"], S["GitHub"].PrefixPosition(), settings => settings
-                        .AddClass("github").Id("github")
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GitHubConstants.Features.GitHubAuthentication })
-                            .Permission(Permissions.ManageGitHubAuthentication)
-                            .LocalNav())
-                    ));
-            }
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

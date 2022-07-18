@@ -6,25 +6,24 @@ using Fluid;
 using Fluid.Ast;
 using OrchardCore.Mvc.Utilities;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags
+namespace OrchardCore.DisplayManagement.Liquid.Tags;
+
+public class ShapeRemovePropertyTag
 {
-    public class ShapeRemovePropertyTag
+    public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
     {
-        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
+
+        if (objectValue is IShape shape)
         {
-            var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
+            var propName = (await arguments.Item2.EvaluateAsync(context)).ToStringValue();
 
-            if (objectValue is IShape shape)
+            if (!string.IsNullOrEmpty(propName))
             {
-                var propName = (await arguments.Item2.EvaluateAsync(context)).ToStringValue();
-
-                if (!string.IsNullOrEmpty(propName))
-                {
-                    shape.Properties.Remove(propName.ToPascalCaseUnderscore());
-                }
+                shape.Properties.Remove(propName.ToPascalCaseUnderscore());
             }
-
-            return Completion.Normal;
         }
+
+        return Completion.Normal;
     }
 }

@@ -3,20 +3,19 @@ using Fluid;
 using Fluid.Values;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Contents.Liquid
+namespace OrchardCore.Contents.Liquid;
+
+public static class DisplayTextFilter
 {
-    public static class DisplayTextFilter
+    public static ValueTask<FluidValue> DisplayText(FluidValue input, FilterArguments arguments, TemplateContext ctx)
     {
-        public static ValueTask<FluidValue> DisplayText(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        var contentItem = input.ToObjectValue() as ContentItem;
+
+        if (contentItem == null)
         {
-            var contentItem = input.ToObjectValue() as ContentItem;
-
-            if (contentItem == null)
-            {
-                return new ValueTask<FluidValue>(NilValue.Instance);
-            }
-
-            return new ValueTask<FluidValue>(new StringValue(contentItem.DisplayText ?? ""));
+            return new ValueTask<FluidValue>(NilValue.Instance);
         }
+
+        return new ValueTask<FluidValue>(new StringValue(contentItem.DisplayText ?? ""));
     }
 }

@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using OrchardCore.Queries;
 
-namespace OrchardCore.Data
+namespace OrchardCore.Data;
+
+public class SQLQueryResults : IQueryResults
 {
-    public class SQLQueryResults : IQueryResults
-    {
-        public IEnumerable<object> Items { get; set; }
-    }
+    public IEnumerable<object> Items { get; set; }
 }

@@ -5,39 +5,38 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Scripting;
 
-namespace OrchardCore.Recipes
-{
-    public class VariablesMethodProvider : IGlobalMethodProvider
-    {
-        private readonly GlobalMethod _globalMethod;
+namespace OrchardCore.Recipes;
 
-        public VariablesMethodProvider(JObject variables, List<IGlobalMethodProvider> scopedMethodProviders)
+public class VariablesMethodProvider : IGlobalMethodProvider
+{
+    private readonly GlobalMethod _globalMethod;
+
+    public VariablesMethodProvider(JObject variables, List<IGlobalMethodProvider> scopedMethodProviders)
+    {
+        _globalMethod = new GlobalMethod
         {
-            _globalMethod = new GlobalMethod
+            Name = "variables",
+            Method = serviceprovider => (Func<string, object>)(name =>
             {
-                Name = "variables",
-                Method = serviceprovider => (Func<string, object>)(name =>
-                {
-                    var value = variables[name].Value<string>();
+                var value = variables[name].Value<string>();
 
                     // Replace variable value while the result returns another script
                     while (value.StartsWith('[') && value.EndsWith(']'))
-                    {
-                        value = value.Trim('[', ']');
-                        value = (ScriptingManager.Evaluate(value, null, null, scopedMethodProviders) ?? "").ToString();
-                        variables[name] = new JValue(value);
-                    }
+                {
+                    value = value.Trim('[', ']');
+                    value = (ScriptingManager.Evaluate(value, null, null, scopedMethodProviders) ?? "").ToString();
+                    variables[name] = new JValue(value);
+                }
 
-                    return value;
-                })
-            };
-        }
+                return value;
+            })
+        };
+    }
 
-        public IScriptingManager ScriptingManager => ShellScope.Services.GetRequiredService<IScriptingManager>();
+    public IScriptingManager ScriptingManager => ShellScope.Services.GetRequiredService<IScriptingManager>();
 
-        public IEnumerable<GlobalMethod> GetMethods()
-        {
-            yield return _globalMethod;
-        }
+    public IEnumerable<GlobalMethod> GetMethods()
+    {
+        yield return _globalMethod;
     }
 }

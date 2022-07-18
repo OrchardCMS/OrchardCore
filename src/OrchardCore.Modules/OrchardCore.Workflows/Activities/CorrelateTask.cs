@@ -5,42 +5,41 @@ using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Workflows.Activities
+namespace OrchardCore.Workflows.Activities;
+
+public class CorrelateTask : TaskActivity
 {
-    public class CorrelateTask : TaskActivity
+    private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+    private readonly IStringLocalizer S;
+
+    public CorrelateTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<CorrelateTask> localizer)
     {
-        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer S;
+        _scriptEvaluator = scriptEvaluator;
+        S = localizer;
+    }
 
-        public CorrelateTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<CorrelateTask> localizer)
-        {
-            _scriptEvaluator = scriptEvaluator;
-            S = localizer;
-        }
+    public override string Name => nameof(CorrelateTask);
 
-        public override string Name => nameof(CorrelateTask);
+    public override LocalizedString DisplayText => S["Correlate Task"];
 
-        public override LocalizedString DisplayText => S["Correlate Task"];
+    public override LocalizedString Category => S["Primitives"];
 
-        public override LocalizedString Category => S["Primitives"];
+    public WorkflowExpression<string> Value
+    {
+        get => GetProperty(() => new WorkflowExpression<string>());
+        set => SetProperty(value);
+    }
 
-        public WorkflowExpression<string> Value
-        {
-            get => GetProperty(() => new WorkflowExpression<string>());
-            set => SetProperty(value);
-        }
+    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        return Outcomes(S["Done"]);
+    }
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            return Outcomes(S["Done"]);
-        }
+    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        var value = (await _scriptEvaluator.EvaluateAsync(Value, workflowContext))?.Trim();
+        workflowContext.CorrelationId = value;
 
-        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            var value = (await _scriptEvaluator.EvaluateAsync(Value, workflowContext))?.Trim();
-            workflowContext.CorrelationId = value;
-
-            return Outcomes("Done");
-        }
+        return Outcomes("Done");
     }
 }

@@ -3,25 +3,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Queries.Sql
-{
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission ManageSqlQueries = new Permission("ManageSqlQueries", "Manage SQL Queries");
+namespace OrchardCore.Queries.Sql;
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+public class Permissions : IPermissionProvider
+{
+    public static readonly Permission ManageSqlQueries = new Permission("ManageSqlQueries", "Manage SQL Queries");
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    {
+        return Task.FromResult(new[]
         {
-            return Task.FromResult(new[]
-            {
                 ManageSqlQueries
             }
-            .AsEnumerable());
-        }
+        .AsEnumerable());
+    }
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return new[]
-            {
                 new PermissionStereotype
                 {
                     Name = "Administrator",
@@ -33,6 +33,5 @@ namespace OrchardCore.Queries.Sql
                     Permissions = new[] { ManageSqlQueries }
                 }
             };
-        }
     }
 }

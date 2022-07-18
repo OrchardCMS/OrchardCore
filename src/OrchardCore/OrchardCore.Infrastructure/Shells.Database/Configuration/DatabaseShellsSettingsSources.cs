@@ -14,117 +14,116 @@ using OrchardCore.Shells.Database.Extensions;
 using OrchardCore.Shells.Database.Models;
 using YesSql;
 
-namespace OrchardCore.Shells.Database.Configuration
+namespace OrchardCore.Shells.Database.Configuration;
+
+public class DatabaseShellsSettingsSources : IShellsSettingsSources
 {
-    public class DatabaseShellsSettingsSources : IShellsSettingsSources
+    private readonly DatabaseShellsStorageOptions _options;
+    private readonly IShellContextFactory _shellContextFactory;
+    private readonly string _tenants;
+
+    public DatabaseShellsSettingsSources(
+        Microsoft.Extensions.Configuration.IConfiguration configuration,
+        IShellContextFactory shellContextFactory,
+        IOptions<ShellOptions> shellOptions)
+
     {
-        private readonly DatabaseShellsStorageOptions _options;
-        private readonly IShellContextFactory _shellContextFactory;
-        private readonly string _tenants;
+        _options = configuration
+            .GetSection("OrchardCore")
+            .GetSectionCompat("OrchardCore_Shells_Database")
+            .Get<DatabaseShellsStorageOptions>()
+            ?? new DatabaseShellsStorageOptions();
 
-        public DatabaseShellsSettingsSources(
-            Microsoft.Extensions.Configuration.IConfiguration configuration,
-            IShellContextFactory shellContextFactory,
-            IOptions<ShellOptions> shellOptions)
+        _shellContextFactory = shellContextFactory;
 
+        _tenants = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, "tenants.json");
+    }
+
+    public async Task AddSourcesAsync(IConfigurationBuilder builder)
+    {
+        DatabaseShellsSettings document = null;
+
+        using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
+        await context.CreateScope().UsingServiceScopeAsync(async scope =>
         {
-            _options = configuration
-                .GetSection("OrchardCore")
-                .GetSectionCompat("OrchardCore_Shells_Database")
-                .Get<DatabaseShellsStorageOptions>()
-                ?? new DatabaseShellsStorageOptions();
+            var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
-            _shellContextFactory = shellContextFactory;
+            document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync();
 
-            _tenants = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, "tenants.json");
-        }
-
-        public async Task AddSourcesAsync(IConfigurationBuilder builder)
-        {
-            DatabaseShellsSettings document = null;
-
-            using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingServiceScopeAsync(async scope =>
+            if (document == null)
             {
-                var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                document = new DatabaseShellsSettings();
 
-                document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync();
-
-                if (document == null)
+                if (!_options.MigrateFromFiles || !await TryMigrateFromFileAsync(document))
                 {
-                    document = new DatabaseShellsSettings();
-
-                    if (!_options.MigrateFromFiles || !await TryMigrateFromFileAsync(document))
-                    {
-                        return;
-                    }
-
-                    session.Save(document, checkConcurrency: true);
+                    return;
                 }
-            });
 
-            if (document.ShellsSettings != null)
-            {
-                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(document.ShellsSettings.ToString(Formatting.None))));
+                session.Save(document, checkConcurrency: true);
             }
-        }
+        });
 
-        public async Task SaveAsync(string tenant, IDictionary<string, string> data)
+        if (document.ShellsSettings != null)
         {
-            using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingServiceScopeAsync(async scope =>
+            builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(document.ShellsSettings.ToString(Formatting.None))));
+        }
+    }
+
+    public async Task SaveAsync(string tenant, IDictionary<string, string> data)
+    {
+        using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
+        await context.CreateScope().UsingServiceScopeAsync(async scope =>
+        {
+            var session = scope.ServiceProvider.GetRequiredService<ISession>();
+
+            var document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync();
+
+            JObject tenantsSettings;
+            if (document != null)
             {
-                var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                tenantsSettings = document.ShellsSettings;
+            }
+            else
+            {
+                document = new DatabaseShellsSettings();
+                tenantsSettings = new JObject();
+            }
 
-                var document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync();
+            var settings = tenantsSettings.GetValue(tenant) as JObject ?? new JObject();
 
-                JObject tenantsSettings;
-                if (document != null)
+            foreach (var key in data.Keys)
+            {
+                if (data[key] != null)
                 {
-                    tenantsSettings = document.ShellsSettings;
+                    settings[key] = data[key];
                 }
                 else
                 {
-                    document = new DatabaseShellsSettings();
-                    tenantsSettings = new JObject();
+                    settings.Remove(key);
                 }
+            }
 
-                var settings = tenantsSettings.GetValue(tenant) as JObject ?? new JObject();
+            tenantsSettings[tenant] = settings;
 
-                foreach (var key in data.Keys)
-                {
-                    if (data[key] != null)
-                    {
-                        settings[key] = data[key];
-                    }
-                    else
-                    {
-                        settings.Remove(key);
-                    }
-                }
+            document.ShellsSettings = tenantsSettings;
 
-                tenantsSettings[tenant] = settings;
+            session.Save(document, checkConcurrency: true);
+        });
+    }
 
-                document.ShellsSettings = tenantsSettings;
-
-                session.Save(document, checkConcurrency: true);
-            });
-        }
-
-        private async Task<bool> TryMigrateFromFileAsync(DatabaseShellsSettings document)
+    private async Task<bool> TryMigrateFromFileAsync(DatabaseShellsSettings document)
+    {
+        if (!File.Exists(_tenants))
         {
-            if (!File.Exists(_tenants))
-            {
-                return false;
-            }
-
-            using (var file = File.OpenText(_tenants))
-            {
-                var settings = await file.ReadToEndAsync();
-                document.ShellsSettings = JObject.Parse(settings);
-            }
-
-            return true;
+            return false;
         }
+
+        using (var file = File.OpenText(_tenants))
+        {
+            var settings = await file.ReadToEndAsync();
+            document.ShellsSettings = JObject.Parse(settings);
+        }
+
+        return true;
     }
 }

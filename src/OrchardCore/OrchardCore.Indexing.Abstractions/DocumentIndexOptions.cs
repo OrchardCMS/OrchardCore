@@ -1,13 +1,12 @@
 ﻿using System;
 
-namespace OrchardCore.Indexing
+namespace OrchardCore.Indexing;
+
+[Flags]
+public enum DocumentIndexOptions
 {
-    [Flags]
-    public enum DocumentIndexOptions
-    {
-        None = 0,
-        Store = 1,
-        Analyze = 2,
-        Sanitize = 4
-    }
+    None = 0,
+    Store = 1,
+    Analyze = 2,
+    Sanitize = 4
 }

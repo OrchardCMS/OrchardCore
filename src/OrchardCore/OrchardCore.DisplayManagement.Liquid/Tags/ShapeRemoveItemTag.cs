@@ -6,21 +6,20 @@ using Fluid;
 using Fluid.Ast;
 using OrchardCore.DisplayManagement.Shapes;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags
+namespace OrchardCore.DisplayManagement.Liquid.Tags;
+
+public class ShapeRemoveItemTag
 {
-    public class ShapeRemoveItemTag
+    public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
     {
-        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
+
+        if (objectValue is Shape shape && shape.Items != null)
         {
-            var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
-
-            if (objectValue is Shape shape && shape.Items != null)
-            {
-                var shapeName = (await arguments.Item2.EvaluateAsync(context)).ToStringValue();
-                shape.Remove(shapeName);
-            }
-
-            return Completion.Normal;
+            var shapeName = (await arguments.Item2.EvaluateAsync(context)).ToStringValue();
+            shape.Remove(shapeName);
         }
+
+        return Completion.Normal;
     }
 }

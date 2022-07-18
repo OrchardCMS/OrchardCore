@@ -7,26 +7,25 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.DynamicCache.Liquid
+namespace OrchardCore.DynamicCache.Liquid;
+
+public class CacheDependencyTag
 {
-    public class CacheDependencyTag
+    public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter writer, TextEncoder encoder, TemplateContext context)
     {
-        public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        var services = ((LiquidTemplateContext)context).Services;
+
+        var cacheScopeManager = services.GetService<ICacheScopeManager>();
+
+        if (cacheScopeManager == null)
         {
-            var services = ((LiquidTemplateContext)context).Services;
-
-            var cacheScopeManager = services.GetService<ICacheScopeManager>();
-
-            if (cacheScopeManager == null)
-            {
-                return Completion.Normal;
-            }
-
-            var dependency = (await argument.EvaluateAsync(context)).ToStringValue();
-
-            cacheScopeManager.AddDependencies(dependency);
-
             return Completion.Normal;
         }
+
+        var dependency = (await argument.EvaluateAsync(context)).ToStringValue();
+
+        cacheScopeManager.AddDependencies(dependency);
+
+        return Completion.Normal;
     }
 }

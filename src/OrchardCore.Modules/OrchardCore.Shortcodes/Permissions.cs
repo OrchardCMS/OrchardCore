@@ -3,21 +3,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Shortcodes
+namespace OrchardCore.Shortcodes;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
+    public static readonly Permission ManageShortcodeTemplates = new Permission("ManageShortcodeTemplates", "Manage shortcode templates", isSecurityCritical: true);
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        public static readonly Permission ManageShortcodeTemplates = new Permission("ManageShortcodeTemplates", "Manage shortcode templates", isSecurityCritical: true);
+        return Task.FromResult(new[] { ManageShortcodeTemplates }.AsEnumerable());
+    }
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return Task.FromResult(new[] { ManageShortcodeTemplates }.AsEnumerable());
-        }
-
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
-            {
                 new PermissionStereotype
                 {
                     Name = "Administrator",
@@ -29,6 +29,5 @@ namespace OrchardCore.Shortcodes
                     Permissions = new[] { ManageShortcodeTemplates }
                 }
             };
-        }
     }
 }

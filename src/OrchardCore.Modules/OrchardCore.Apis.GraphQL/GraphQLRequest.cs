@@ -1,12 +1,11 @@
 using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.Apis.GraphQL
+namespace OrchardCore.Apis.GraphQL;
+
+public class GraphQLRequest
 {
-    public class GraphQLRequest
-    {
-        public string OperationName { get; set; }
-        public string NamedQuery { get; set; }
-        public string Query { get; set; }
-        public JObject Variables { get; set; }
-    }
+    public string OperationName { get; set; }
+    public string NamedQuery { get; set; }
+    public string Query { get; set; }
+    public JObject Variables { get; set; }
 }

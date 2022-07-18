@@ -1,10 +1,9 @@
-namespace OrchardCore.Shells.Database.Configuration
+namespace OrchardCore.Shells.Database.Configuration;
+
+public class DatabaseShellsStorageOptions
 {
-    public class DatabaseShellsStorageOptions
-    {
-        public bool MigrateFromFiles { get; set; }
-        public string DatabaseProvider { get; set; }
-        public string ConnectionString { get; set; }
-        public string TablePrefix { get; set; }
-    }
+    public bool MigrateFromFiles { get; set; }
+    public string DatabaseProvider { get; set; }
+    public string ConnectionString { get; set; }
+    public string TablePrefix { get; set; }
 }

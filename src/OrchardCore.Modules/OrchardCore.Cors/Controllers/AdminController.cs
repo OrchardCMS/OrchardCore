@@ -12,116 +12,115 @@ using OrchardCore.Cors.Settings;
 using OrchardCore.Cors.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
 
-namespace OrchardCore.Cors.Controllers
+namespace OrchardCore.Cors.Controllers;
+
+[Admin]
+public class AdminController : Controller
 {
-    [Admin]
-    public class AdminController : Controller
+    private readonly IAuthorizationService _authorizationService;
+    private readonly CorsService _corsService;
+    private readonly INotifier _notifier;
+
+    private readonly IStringLocalizer T;
+    private readonly IHtmlLocalizer<AdminController> TH;
+
+    public AdminController(
+        IAuthorizationService authorizationService,
+        IStringLocalizer<AdminController> stringLocalizer,
+        IHtmlLocalizer<AdminController> htmlLocalizer,
+        CorsService corsService,
+        INotifier notifier
+        )
     {
-        private readonly IAuthorizationService _authorizationService;
-        private readonly CorsService _corsService;
-        private readonly INotifier _notifier;
+        TH = htmlLocalizer;
+        _notifier = notifier;
+        _corsService = corsService;
+        T = stringLocalizer;
+        _authorizationService = authorizationService;
+    }
 
-        private readonly IStringLocalizer T;
-        private readonly IHtmlLocalizer<AdminController> TH;
-
-        public AdminController(
-            IAuthorizationService authorizationService,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer,
-            CorsService corsService,
-            INotifier notifier
-            )
+    [HttpGet]
+    public async Task<ActionResult> Index()
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageCorsSettings))
         {
-            TH = htmlLocalizer;
-            _notifier = notifier;
-            _corsService = corsService;
-            T = stringLocalizer;
-            _authorizationService = authorizationService;
+            return Unauthorized();
         }
 
-        [HttpGet]
-        public async Task<ActionResult> Index()
+        var settings = await _corsService.GetSettingsAsync();
+
+        var list = new List<CorsPolicyViewModel>();
+
+        if (settings?.Policies != null)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageCorsSettings))
+            foreach (var policySetting in settings.Policies)
             {
-                return Unauthorized();
-            }
-
-            var settings = await _corsService.GetSettingsAsync();
-
-            var list = new List<CorsPolicyViewModel>();
-
-            if (settings?.Policies != null)
-            {
-                foreach (var policySetting in settings.Policies)
+                var policyViewModel = new CorsPolicyViewModel()
                 {
-                    var policyViewModel = new CorsPolicyViewModel()
-                    {
-                        Name = policySetting.Name,
-                        AllowAnyHeader = policySetting.AllowAnyHeader,
-                        AllowedHeaders = policySetting.AllowedHeaders,
-                        AllowAnyMethod = policySetting.AllowAnyMethod,
-                        AllowedMethods = policySetting.AllowedMethods,
-                        AllowAnyOrigin = policySetting.AllowAnyOrigin,
-                        AllowedOrigins = policySetting.AllowedOrigins,
-                        AllowCredentials = policySetting.AllowCredentials,
-                        IsDefaultPolicy = policySetting.IsDefaultPolicy
-                    };
+                    Name = policySetting.Name,
+                    AllowAnyHeader = policySetting.AllowAnyHeader,
+                    AllowedHeaders = policySetting.AllowedHeaders,
+                    AllowAnyMethod = policySetting.AllowAnyMethod,
+                    AllowedMethods = policySetting.AllowedMethods,
+                    AllowAnyOrigin = policySetting.AllowAnyOrigin,
+                    AllowedOrigins = policySetting.AllowedOrigins,
+                    AllowCredentials = policySetting.AllowCredentials,
+                    IsDefaultPolicy = policySetting.IsDefaultPolicy
+                };
 
-                    list.Add(policyViewModel);
-                }
+                list.Add(policyViewModel);
             }
-
-            var viewModel = new CorsSettingsViewModel
-            {
-                Policies = list.ToArray()
-            };
-
-            return View(viewModel);
         }
 
-        [HttpPost]
-        [ActionName(nameof(Index))]
-        public async Task<ActionResult> IndexPOST()
+        var viewModel = new CorsSettingsViewModel
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageCorsSettings))
-            {
-                return Unauthorized();
-            }
+            Policies = list.ToArray()
+        };
 
-            var model = new CorsSettingsViewModel();
-            var configJson = Request.Form["CorsSettings"].First();
-            model.Policies = JsonConvert.DeserializeObject<CorsPolicyViewModel[]>(configJson);
+        return View(viewModel);
+    }
 
-            var corsPolicies = new List<CorsPolicySetting>();
-
-            foreach (var settingViewModel in model.Policies)
-            {
-                corsPolicies.Add(new CorsPolicySetting
-                {
-                    Name = settingViewModel.Name,
-                    AllowAnyHeader = settingViewModel.AllowAnyHeader,
-                    AllowAnyMethod = settingViewModel.AllowAnyMethod,
-                    AllowAnyOrigin = settingViewModel.AllowAnyOrigin,
-                    AllowCredentials = settingViewModel.AllowCredentials,
-                    AllowedHeaders = settingViewModel.AllowedHeaders,
-                    AllowedMethods = settingViewModel.AllowedMethods,
-                    AllowedOrigins = settingViewModel.AllowedOrigins,
-                    IsDefaultPolicy = settingViewModel.IsDefaultPolicy
-
-                });
-            }
-
-            var corsSettings = new CorsSettings()
-            {
-                Policies = corsPolicies
-            };
-
-            await _corsService.UpdateSettingsAsync(corsSettings);
-
-            await _notifier.SuccessAsync(TH["The CORS settings have updated successfully."]);
-
-            return View(model);
+    [HttpPost]
+    [ActionName(nameof(Index))]
+    public async Task<ActionResult> IndexPOST()
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageCorsSettings))
+        {
+            return Unauthorized();
         }
+
+        var model = new CorsSettingsViewModel();
+        var configJson = Request.Form["CorsSettings"].First();
+        model.Policies = JsonConvert.DeserializeObject<CorsPolicyViewModel[]>(configJson);
+
+        var corsPolicies = new List<CorsPolicySetting>();
+
+        foreach (var settingViewModel in model.Policies)
+        {
+            corsPolicies.Add(new CorsPolicySetting
+            {
+                Name = settingViewModel.Name,
+                AllowAnyHeader = settingViewModel.AllowAnyHeader,
+                AllowAnyMethod = settingViewModel.AllowAnyMethod,
+                AllowAnyOrigin = settingViewModel.AllowAnyOrigin,
+                AllowCredentials = settingViewModel.AllowCredentials,
+                AllowedHeaders = settingViewModel.AllowedHeaders,
+                AllowedMethods = settingViewModel.AllowedMethods,
+                AllowedOrigins = settingViewModel.AllowedOrigins,
+                IsDefaultPolicy = settingViewModel.IsDefaultPolicy
+
+            });
+        }
+
+        var corsSettings = new CorsSettings()
+        {
+            Policies = corsPolicies
+        };
+
+        await _corsService.UpdateSettingsAsync(corsSettings);
+
+        await _notifier.SuccessAsync(TH["The CORS settings have updated successfully."]);
+
+        return View(model);
     }
 }

@@ -10,49 +10,48 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Contents.AuditTrail.Drivers
+namespace OrchardCore.Contents.AuditTrail.Drivers;
+
+public class ContentAuditTrailSettingsDisplayDriver : SectionDisplayDriver<ISite, ContentAuditTrailSettings>
 {
-    public class ContentAuditTrailSettingsDisplayDriver : SectionDisplayDriver<ISite, ContentAuditTrailSettings>
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+
+    public ContentAuditTrailSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+    }
 
-        public ContentAuditTrailSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
+    public override async Task<IDisplayResult> EditAsync(ContentAuditTrailSettings section, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
         {
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
+            return null;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ContentAuditTrailSettings section, BuildEditorContext context)
+        return Initialize<ContentAuditTrailSettingsViewModel>("ContentAuditTrailSettings_Edit", model =>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
-            {
-                return null;
-            }
+            model.AllowedContentTypes = section.AllowedContentTypes;
+        }).Location("Content:10#Content;5").OnGroup(AuditTrailSettingsGroup.Id);
+    }
 
-            return Initialize<ContentAuditTrailSettingsViewModel>("ContentAuditTrailSettings_Edit", model =>
-            {
-                model.AllowedContentTypes = section.AllowedContentTypes;
-            }).Location("Content:10#Content;5").OnGroup(AuditTrailSettingsGroup.Id);
+    public override async Task<IDisplayResult> UpdateAsync(ContentAuditTrailSettings section, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
+        {
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentAuditTrailSettings section, BuildEditorContext context)
+        if (context.GroupId == AuditTrailSettingsGroup.Id)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
-            {
-                return null;
-            }
-
-            if (context.GroupId == AuditTrailSettingsGroup.Id)
-            {
-                var model = new ContentAuditTrailSettings();
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-                section.AllowedContentTypes = model.AllowedContentTypes;
-            }
-
-            return await EditAsync(section, context);
+            var model = new ContentAuditTrailSettings();
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            section.AllowedContentTypes = model.AllowedContentTypes;
         }
+
+        return await EditAsync(section, context);
     }
 }

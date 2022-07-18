@@ -1,7 +1,6 @@
-namespace OrchardCore.Rules.Models
+namespace OrchardCore.Rules.Models;
+
+public class BooleanCondition : Condition
 {
-    public class BooleanCondition : Condition
-    {
-        public bool Value { get; set; } = true;
-    }
+    public bool Value { get; set; } = true;
 }
