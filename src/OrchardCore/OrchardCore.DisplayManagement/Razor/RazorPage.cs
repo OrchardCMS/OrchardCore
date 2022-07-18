@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Title;
 using OrchardCore.DisplayManagement.Zones;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor
@@ -22,6 +24,7 @@ namespace OrchardCore.DisplayManagement.Razor
         private IDisplayHelper _displayHelper;
         private IShapeFactory _shapeFactory;
         private IOrchardDisplayHelper _orchardHelper;
+        private IShellFeaturesManager _shellFeaturesManager;
         private ISite _site;
 
         public override ViewContext ViewContext
@@ -48,6 +51,14 @@ namespace OrchardCore.DisplayManagement.Razor
             if (_shapeFactory == null)
             {
                 _shapeFactory = Context.RequestServices.GetService<IShapeFactory>();
+            }
+        }
+
+        private void EnsureShellFeaturesManager()
+        {
+            if (_shellFeaturesManager == null)
+            {
+                _shellFeaturesManager = Context.RequestServices.GetService<IShellFeaturesManager>();
             }
         }
 
@@ -102,6 +113,14 @@ namespace OrchardCore.DisplayManagement.Razor
         }
 
         /// <summary>
+        /// Renders a shape when a specified feature is enabled.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <param name="featureId">The feature Id in which <paramref name="shape"/> will be rendered when its enabled.</param>
+        public async Task<IHtmlContent> DisplayAsync(dynamic shape, string featureId)
+            => await DisplayAsync(shape as IShape, featureId);
+
+        /// <summary>
         /// Renders a shape.
         /// </summary>
         /// <param name="shape">The shape.</param>
@@ -109,6 +128,29 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             EnsureDisplayHelper();
             return _displayHelper.ShapeExecuteAsync(shape);
+        }
+
+
+        /// <summary>
+        /// Renders a shape when a specified feature is enabled.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <param name="featureId">The feature Id in which <paramref name="shape"/> will be rendered when its enabled.</param>
+        public async Task<IHtmlContent> DisplayAsync(IShape shape, string featureId)
+        {
+            if (shape is null)
+            {
+                throw new ArgumentNullException(nameof(shape));
+            }
+
+            if (String.IsNullOrEmpty(featureId))
+            {
+                throw new ArgumentException($"'{nameof(featureId)}' cannot be null or empty.", nameof(featureId));
+            }
+
+            return await IsFeatureEnabledAsync(featureId)
+                ? new HtmlContentString(String.Empty)
+                : await DisplayAsync(shape);
         }
 
         public IOrchardDisplayHelper Orchard
@@ -403,6 +445,16 @@ namespace OrchardCore.DisplayManagement.Razor
 
                 return _site;
             }
+        }
+
+        private async Task<bool> IsFeatureEnabledAsync(string featureId)
+        {
+            EnsureShellFeaturesManager();
+
+            var feature = (await _shellFeaturesManager.GetEnabledFeaturesAsync())
+                .FirstOrDefault(f => f.Id == featureId);
+
+            return feature != null;
         }
     }
 
