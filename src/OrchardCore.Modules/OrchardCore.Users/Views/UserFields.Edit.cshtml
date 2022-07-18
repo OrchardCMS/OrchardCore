@@ -74,8 +74,8 @@
 
                 element.type = 'password';
             }
-            @* The generated password should be at least 12 characters in length. But, it should meet the minimum requirements *@
-            const strongPasswordLength = @(Math.Max(12, Math.Max(IdentityOptions.Value.Password.RequiredLength, IdentityOptions.Value.Password.RequiredUniqueChars)));
+            @* The generated password should meet the minimum length requirements *@
+            const requiredPasswordLength = @(Math.Max(IdentityOptions.Value.Password.RequiredLength, IdentityOptions.Value.Password.RequiredUniqueChars));
             const allowed = {
                 uppers: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
                 lowers: 'abcdefghijklmnopqrstuvwxyz',
@@ -83,11 +83,14 @@
                 symbols: '!@@#$%^&*'
             };
 
-            const getRandomChar = (str) => str.charAt(Math.floor(Math.random() * str.length));
-            const shuffle = (str) => str.sort(function() { return 0.5 - Math.random() });
-            const meetUniqueRule = (str) => {
+            function getRandomChar(str) {
+                return str.charAt(Math.floor(Math.random() * str.length));
+            }
+            function shuffle(str) {
+                return str.sort(function() { return 0.5 - Math.random() });
+            }
+            function meetUniqueRule(str) => {
                 let uniqueCharacters = str.filter((item, i, ar) => ar.indexOf(item) === i);
-
                 return uniqueCharacters.length >= @(IdentityOptions.Value.Password.RequiredUniqueChars);
             };
 
@@ -108,16 +111,17 @@
 
                 let passwordLength = password.length;
 
-                if (passwordLength < strongPasswordLength) {
+                if (passwordLength < requiredPasswordLength) {
                     @* At this point we need lengthier password. Fill the rest of the password with random characters *@
                     let combineAllowed = shuffle(Object.values(allowed)).join('');
-                    for (let i = passwordLength; i < strongPasswordLength; i++) {
+                    for (let i = passwordLength; i < requiredPasswordLength; i++) {
                         password.push(getRandomChar(combineAllowed));
                     }
                 }
-                @* The generated password does not meet the required-unique-chars requirment, create another one *@
-                @if (IdentityOptions.Value.Password.RequiredUniqueChars+5 > 1)
+
+                @if (IdentityOptions.Value.Password.RequiredUniqueChars > 1)
                 {
+                    // The generated password does not meet the required-unique-chars requirment, create another one
                     <text>
                     if (!meetUniqueRule(password)) {
                         return generatePassword();
@@ -149,4 +153,3 @@
         });
     </script>
 }
-
