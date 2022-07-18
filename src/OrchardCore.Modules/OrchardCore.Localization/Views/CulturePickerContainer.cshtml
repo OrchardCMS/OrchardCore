@@ -14,7 +14,7 @@
     function changeCulture() {
         var culture = document.getElementById('culture');
         if (culture != '@selectedCultureName') {
-            var cookieValue = '@CulturePickerStartup.AdminSiteCookieName=c=' + culture.options[culture.selectedIndex].value + '|ui=' + culture.options[culture.selectedIndex].value;
+            var cookieValue = '@CulturePickerStartup.AdminSiteCookieName=c=' + culture.options[culture.selectedIndex].value + '|uic=' + culture.options[culture.selectedIndex].value;
             document.cookie = cookieValue;
             window.location = window.location.href.split('?')[0];
         }
