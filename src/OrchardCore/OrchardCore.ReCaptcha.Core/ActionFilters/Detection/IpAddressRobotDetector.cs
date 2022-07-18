@@ -3,57 +3,58 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.ReCaptcha.Configuration;
 
-namespace OrchardCore.ReCaptcha.ActionFilters.Detection;
-
-public class IpAddressRobotDetector : IDetectRobots
+namespace OrchardCore.ReCaptcha.ActionFilters.Detection
 {
-    private const string IpAddressAbuseDetectorCacheKey = "IpAddressRobotDetector";
-
-    private readonly IMemoryCache _memoryCache;
-    private readonly HttpContext _httpContext;
-    private readonly ReCaptchaSettings _settings;
-
-    public IpAddressRobotDetector(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache, IOptions<ReCaptchaSettings> settingsAccessor)
+    public class IpAddressRobotDetector : IDetectRobots
     {
-        _httpContext = httpContextAccessor.HttpContext;
-        _memoryCache = memoryCache;
-        _settings = settingsAccessor.Value;
-    }
+        private const string IpAddressAbuseDetectorCacheKey = "IpAddressRobotDetector";
 
-    public void IsNotARobot()
-    {
-        var ipAddressKey = GetIpAddressCacheKey();
-        _memoryCache.Remove(ipAddressKey);
-    }
+        private readonly IMemoryCache _memoryCache;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ReCaptchaSettings _settings;
 
-    private string GetIpAddressCacheKey()
-    {
-        return $"{IpAddressAbuseDetectorCacheKey}:{GetIpAddress()}";
-    }
-
-    private string GetIpAddress()
-    {
-        return _httpContext.Connection.RemoteIpAddress.ToString();
-    }
-
-    public RobotDetectionResult DetectRobot()
-    {
-        var ipAddressKey = GetIpAddressCacheKey();
-        var faultyRequestCount = _memoryCache.GetOrCreate(ipAddressKey, fact => 0);
-
-        return new RobotDetectionResult()
+        public IpAddressRobotDetector(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache, IOptions<ReCaptchaSettings> settingsAccessor)
         {
-            IsRobot = faultyRequestCount > _settings.DetectionThreshold
-        };
-    }
+            _httpContextAccessor = httpContextAccessor;
+            _memoryCache = memoryCache;
+            _settings = settingsAccessor.Value;
+        }
 
-    public void FlagAsRobot()
-    {
-        var ipAddressKey = GetIpAddressCacheKey();
+        public void IsNotARobot()
+        {
+            var ipAddressKey = GetIpAddressCacheKey();
+            _memoryCache.Remove(ipAddressKey);
+        }
 
-        // this has race conditions, but it's ok
-        var faultyRequestCount = _memoryCache.GetOrCreate(ipAddressKey, fact => 0);
-        faultyRequestCount++;
-        _memoryCache.Set(ipAddressKey, faultyRequestCount);
+        private string GetIpAddressCacheKey()
+        {
+            return $"{IpAddressAbuseDetectorCacheKey}:{GetIpAddress()}";
+        }
+
+        private string GetIpAddress()
+        {
+            return _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+        }
+
+        public RobotDetectionResult DetectRobot()
+        {
+            var ipAddressKey = GetIpAddressCacheKey();
+            var faultyRequestCount = _memoryCache.GetOrCreate(ipAddressKey, fact => 0);
+
+            return new RobotDetectionResult()
+            {
+                IsRobot = faultyRequestCount > _settings.DetectionThreshold
+            };
+        }
+
+        public void FlagAsRobot()
+        {
+            var ipAddressKey = GetIpAddressCacheKey();
+
+            // this has race conditions, but it's ok
+            var faultyRequestCount = _memoryCache.GetOrCreate(ipAddressKey, fact => 0);
+            faultyRequestCount++;
+            _memoryCache.Set(ipAddressKey, faultyRequestCount);
+        }
     }
 }

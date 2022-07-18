@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -7,66 +8,72 @@ using OrchardCore.Contents;
 using OrchardCore.Contents.Security;
 using OrchardCore.Security.Permissions;
 
-namespace Microsoft.AspNetCore.Authorization;
-
-public static class AuthorizationServiceExtensions
+namespace Microsoft.AspNetCore.Authorization
 {
-    /// <summary>
-    /// Evaluate if we have a specific owner variation permission to at least one content type
-    /// </summary>
-    public static async Task<bool> AuthorizeContentTypeDefinitionsAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, IEnumerable<ContentTypeDefinition> contentTypeDefinitions, IContentManager contentManager)
+    public static class AuthorizationServiceExtensions
     {
-        var permission = GetOwnerVariation(requiredPermission);
-        var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission);
-
-        foreach (var contentTypeDefinition in contentTypeDefinitions)
+        /// <summary>
+        /// Evaluate if we have a specific owner variation permission to at least one content type
+        /// </summary>
+        public static async Task<bool> AuthorizeContentTypeDefinitionsAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, IEnumerable<ContentTypeDefinition> contentTypeDefinitions, IContentManager contentManager)
         {
-            var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
+            ArgumentNullException.ThrowIfNull(user);
+            ArgumentNullException.ThrowIfNull(requiredPermission);
+            ArgumentNullException.ThrowIfNull(contentManager);
 
-            var contentItem = await contentManager.NewAsync(contentTypeDefinition.Name);
-            contentItem.Owner = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            var permission = GetOwnerVariation(requiredPermission);
 
-            if (await service.AuthorizeAsync(user, dynamicPermission, contentItem))
+            var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission);
+
+            foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
-                return true;
+                var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
+
+                var contentItem = await contentManager.NewAsync(contentTypeDefinition.Name);
+                contentItem.Owner = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (await service.AuthorizeAsync(user, dynamicPermission, contentItem))
+                {
+                    return true;
+                }
             }
+
+            return await service.AuthorizeAsync(user, permission);
         }
 
-        return await service.AuthorizeAsync(user, permission);
-    }
-
-    private static Permission GetOwnerVariation(Permission permission)
-    {
-        if (permission.Name == CommonPermissions.PublishContent.Name)
+        private static Permission GetOwnerVariation(Permission permission)
         {
-            return CommonPermissions.PublishOwnContent;
-        }
+            if (permission.Name == CommonPermissions.PublishContent.Name)
+            {
+                return CommonPermissions.PublishOwnContent;
+            }
 
-        if (permission.Name == CommonPermissions.EditContent.Name)
-        {
-            return CommonPermissions.EditOwnContent;
-        }
+            if (permission.Name == CommonPermissions.EditContent.Name)
+            {
+                return CommonPermissions.EditOwnContent;
+            }
 
-        if (permission.Name == CommonPermissions.DeleteContent.Name)
-        {
-            return CommonPermissions.DeleteOwnContent;
-        }
+            if (permission.Name == CommonPermissions.DeleteContent.Name)
+            {
+                return CommonPermissions.DeleteOwnContent;
+            }
 
-        if (permission.Name == CommonPermissions.ViewContent.Name)
-        {
-            return CommonPermissions.ViewOwnContent;
-        }
+            if (permission.Name == CommonPermissions.ViewContent.Name)
+            {
+                return CommonPermissions.ViewOwnContent;
+            }
 
-        if (permission.Name == CommonPermissions.PreviewContent.Name)
-        {
-            return CommonPermissions.PreviewOwnContent;
-        }
+            if (permission.Name == CommonPermissions.PreviewContent.Name)
+            {
+                return CommonPermissions.PreviewOwnContent;
+            }
 
-        if (permission.Name == CommonPermissions.CloneContent.Name)
-        {
-            return CommonPermissions.CloneOwnContent;
-        }
+            if (permission.Name == CommonPermissions.CloneContent.Name)
+            {
+                return CommonPermissions.CloneOwnContent;
+            }
 
-        return null;
+            return null;
+        }
     }
 }

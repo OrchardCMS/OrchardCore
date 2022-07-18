@@ -16,90 +16,91 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Contents;
-
-public class AdminMenu : INavigationProvider
+namespace OrchardCore.Contents
 {
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IContentManager _contentManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly LinkGenerator _linkGenerator;
-    private readonly IAuthorizationService _authorizationService;
-    private readonly ISiteService _siteService;
-    private readonly IStringLocalizer S;
-
-    public AdminMenu(
-        IContentDefinitionManager contentDefinitionManager,
-        IContentManager contentManager,
-        IHttpContextAccessor httpContextAccessor,
-        LinkGenerator linkGenerator,
-        IAuthorizationService authorizationService,
-        ISiteService siteService,
-        IStringLocalizer<AdminMenu> localizer)
+    public class AdminMenu : INavigationProvider
     {
-        _contentDefinitionManager = contentDefinitionManager;
-        _contentManager = contentManager;
-        _httpContextAccessor = httpContextAccessor;
-        _linkGenerator = linkGenerator;
-        _authorizationService = authorizationService;
-        _siteService = siteService;
-        S = localizer;
-    }
+        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentManager _contentManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly LinkGenerator _linkGenerator;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly ISiteService _siteService;
+        private readonly IStringLocalizer S;
 
-    public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
-    {
-        var context = _httpContextAccessor.HttpContext;
-
-        if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+        public AdminMenu(
+            IContentDefinitionManager contentDefinitionManager,
+            IContentManager contentManager,
+            IHttpContextAccessor httpContextAccessor,
+            LinkGenerator linkGenerator,
+            IAuthorizationService authorizationService,
+            ISiteService siteService,
+            IStringLocalizer<AdminMenu> localizer)
         {
-            return;
+            _contentDefinitionManager = contentDefinitionManager;
+            _contentManager = contentManager;
+            _httpContextAccessor = httpContextAccessor;
+            _linkGenerator = linkGenerator;
+            _authorizationService = authorizationService;
+            _siteService = siteService;
+            S = localizer;
         }
 
-        var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
-        var contentTypes = contentTypeDefinitions.Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
-        await builder.AddAsync(S["Content"], NavigationConstants.AdminMenuContentPosition, async content =>
+        public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            content.AddClass("content").Id("content");
-            await content.AddAsync(S["Content Items"], S["Content Items"].PrefixPosition(), async contentItems =>
+            var context = _httpContextAccessor.HttpContext;
+
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(context.User, CommonPermissions.EditContent, contentTypes, _contentManager))
-                {
-                    contentItems.Permission(Permissions.EditContent);
-                }
+                return;
+            }
 
-                contentItems.Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), new { area = "OrchardCore.Contents", contentTypeId = "" });
-                contentItems.LocalNav();
-            });
-        });
-
-        var adminSettings = (await _siteService.GetSiteSettingsAsync()).As<AdminSettings>();
-
-        if (adminSettings.DisplayNewMenu && contentTypes.Any())
-        {
-            await builder.AddAsync(S["New"], "-1", async newMenu =>
+            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
+            var contentTypes = contentTypeDefinitions.Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
+            await builder.AddAsync(S["Content"], NavigationConstants.AdminMenuContentPosition, async content =>
             {
-                newMenu.LinkToFirstChild(false).AddClass("new").Id("new");
-                foreach (var contentTypeDefinition in contentTypes)
+                content.AddClass("content").Id("content");
+                await content.AddAsync(S["Content Items"], S["Content Items"].PrefixPosition(), async contentItems =>
                 {
-                    var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
-                    var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
-                    var createRouteValues = cim.CreateRouteValues;
-                    createRouteValues.Add("returnUrl", _linkGenerator.GetPathByRouteValues(context, "", new
+                    if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(context.User, CommonPermissions.ViewContent, contentTypes, _contentManager))
                     {
-                        area = "OrchardCore.Contents",
-                        controller = "Admin",
-                        action = "List"
-                    }));
-
-                    if (createRouteValues.Any())
-                    {
-                        newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item
-                            .Action(cim.CreateRouteValues["Action"] as string, cim.CreateRouteValues["Controller"] as string, cim.CreateRouteValues)
-                            .Permission(ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditOwnContent.Name], contentTypeDefinition))
-                            );
+                        contentItems.Permission(Permissions.ViewContent);
                     }
-                }
+
+                    contentItems.Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), new { area = "OrchardCore.Contents", contentTypeId = "" });
+                    contentItems.LocalNav();
+                });
             });
+
+            var adminSettings = (await _siteService.GetSiteSettingsAsync()).As<AdminSettings>();
+
+            if (adminSettings.DisplayNewMenu && contentTypes.Any())
+            {
+                await builder.AddAsync(S["New"], "-1", async newMenu =>
+                {
+                    newMenu.LinkToFirstChild(false).AddClass("new").Id("new");
+                    foreach (var contentTypeDefinition in contentTypes)
+                    {
+                        var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
+                        var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
+                        var createRouteValues = cim.CreateRouteValues;
+                        createRouteValues.Add("returnUrl", _linkGenerator.GetPathByRouteValues(context, "", new
+                        {
+                            area = "OrchardCore.Contents",
+                            controller = "Admin",
+                            action = "List"
+                        }));
+
+                        if (createRouteValues.Any())
+                        {
+                            newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item
+                                .Action(cim.CreateRouteValues["Action"] as string, cim.CreateRouteValues["Controller"] as string, cim.CreateRouteValues)
+                                .Permission(ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditOwnContent.Name], contentTypeDefinition))
+                                );
+                        }
+                    }
+                });
+            }
         }
     }
 }
