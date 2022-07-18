@@ -54,15 +54,14 @@ The Azure Shells Configuration is configured via the `appsettings.json` section 
 In the web host `Startup.cs` it is enabled via an extension method on the Orchard Core Builder.
 
 ``` csharp
-namespace OrchardCore.Cms.Web
+namespace OrchardCore.Cms.Web;
+
+public class Startup
 {
-    public class Startup
+    public void ConfigureServices(IServiceCollection services)
     {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddOrchardCms()
-                .AddAzureShellsConfiguration();
-        }
+        services.AddOrchardCms()
+            .AddAzureShellsConfiguration();
     }
 }
 ```
@@ -98,15 +97,14 @@ The Database Shells Configuration is configured via the `appsettings.json` secti
 In the web host `Startup.cs` it is enabled via an extension method on the Orchard Core Builder.
 
 ``` csharp
-namespace OrchardCore.Cms.Web
+namespace OrchardCore.Cms.Web;
+
+public class Startup
 {
-    public class Startup
+    public void ConfigureServices(IServiceCollection services)
     {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddOrchardCms()
-                .AddDatabaseShellsConfiguration();
-        }
+        services.AddOrchardCms()
+            .AddDatabaseShellsConfiguration();
     }
 }
 ```
@@ -131,24 +129,21 @@ and migrate it to the storage platform of choice.
 To disable a provider in Development, or different environments, inject the `IHostEnvironment` 
 
 ``` csharp
-namespace OrchardCore.Cms.Web
+namespace OrchardCore.Cms.Web;
+
+public class Startup
 {
-    public class Startup
+    private readonly IHostEnvironment _env;
+    public Startup(IHostEnvironment env)
     {
-        private readonly IHostEnvironment _env;
-
-        public Startup(IHostEnvironment env)
+        _env = env;
+    }
+    public void ConfigureServices(IServiceCollection services)
+    {
+        var builder = services.AddOrchardCms();
+        if (!_env.IsDevelopment())
         {
-            _env = env;
-        }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            var builder = services.AddOrchardCms();
-            if (!_env.IsDevelopment())
-            {
-                builder.AddDatabaseShellsConfiguration();
-            }
+            builder.AddDatabaseShellsConfiguration();
         }
     }
 }

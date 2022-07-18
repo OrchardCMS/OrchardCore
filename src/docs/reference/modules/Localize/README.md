@@ -100,21 +100,18 @@ The context string must match the full name of the type the localizer is injecti
 #### Source
 
 ```csharp
-namespace MyNamespace
+namespace MyNamespace;
+
+public class MyService : IMyService
 {
-    public class MyService : IMyService
+    private readonly IStringLocalizer S;
+    public MyService(IStringLocalizer<MyService> localizer)
     {
-        private readonly IStringLocalizer S;
-
-        public MyService(IStringLocalizer<MyService> localizer)
-        {
-            S = localizer;
-        }
-
-        public void DoSomething()
-        {
-            Console.WriteLine(S["Hello"]);
-        }
+        S = localizer;
+    }
+    public void DoSomething()
+    {
+        Console.WriteLine(S["Hello"]);
     }
 }
 ```
