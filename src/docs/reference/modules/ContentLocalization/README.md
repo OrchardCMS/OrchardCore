@@ -68,7 +68,7 @@ You should always render this shape in your theme:
 
 #### `ContentCulturePickerContainer`
 
-The `ContentCulturePickerContainer` shape is used to render the CulturePicker.
+The `ContentCulturePickerContainer` shape is used to render the `ContentCulturePicker`.
 You should override this shape in your theme.
 
 | Property                  | Description                                                 |
