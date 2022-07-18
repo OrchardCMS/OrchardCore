@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Localization.Models;
@@ -83,11 +84,18 @@ namespace OrchardCore.Localization
 
         private static readonly Task<ProviderCultureResult> NullProviderCultureResult = Task.FromResult(default(ProviderCultureResult));
 
+        private readonly AdminOptions _adminOptions;
+
+        public CulturePickerStartup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new CustomRequestCultureProvider(context =>
             {
-                if (context.Request.Path.Value.Contains("/Admin", StringComparison.OrdinalIgnoreCase))
+                if (context.Request.Path.Value[1..].StartsWith(_adminOptions.AdminUrlPrefix, StringComparison.OrdinalIgnoreCase))
                 {
                     var cookie = context.Request.Cookies[AdminSiteCookieName];
 
