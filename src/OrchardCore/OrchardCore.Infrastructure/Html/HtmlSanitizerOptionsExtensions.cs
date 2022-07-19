@@ -1,6 +1,6 @@
 using System;
 using Ganss.XSS;
-using OrchardCore.Infrastructure.Html;
+using HtmlSanitizerOptions = OrchardCore.Infrastructure.Html.HtmlSanitizerOptions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
