@@ -10,7 +10,7 @@ namespace OrchardCore.Search.Lucene
     /// This background task will index content items using.
     /// </summary>
     /// <remarks>
-    /// This services is only registered from OrchardCore.Lucene.Worker feature.
+    /// This services is only registered from OrchardCore.Search.Lucene.Worker feature.
     /// </remarks>
     [BackgroundTask(Schedule = "* * * * *", Description = "Update lucene indexes.")]
     public class IndexingBackgroundTask : IBackgroundTask

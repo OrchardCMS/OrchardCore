@@ -1,4 +1,4 @@
-# Lucene (`OrchardCore.Lucene`)
+# Lucene (`OrchardCore.Search.Lucene`)
 
 The Lucene module allows you to manage Lucene indices.
 
@@ -66,7 +66,7 @@ Verbs: `POST` and `GET`
 | `query` | `{ "query": { "match_all": {} } }` | A JSON object representing the query. |
 | `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
 
-## Lucene Worker (`OrchardCore.Lucene.Worker`)
+## Lucene Worker (`OrchardCore.Search.Lucene.Worker`)
 
 This feature creates a background task that will keep the local file system index synchronized with
 other instances that could have their own local index.  

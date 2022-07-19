@@ -91,7 +91,7 @@ namespace OrchardCore.Search.Lucene
         {
             routes.MapAreaControllerRoute(
                 name: "Lucene.Search",
-                areaName: "OrchardCore.Lucene",
+                areaName: "OrchardCore.Search.Lucene",
                 pattern: "Search",
                 defaults: new { controller = "Search", action = "Search" }
             );
@@ -100,35 +100,35 @@ namespace OrchardCore.Search.Lucene
 
             routes.MapAreaControllerRoute(
                 name: "Lucene.Index",
-                areaName: "OrchardCore.Lucene",
+                areaName: "OrchardCore.Search.Lucene",
                 pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Index",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Lucene.Delete",
-                areaName: "OrchardCore.Lucene",
+                areaName: "OrchardCore.Search.Lucene",
                 pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Delete/{id}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Lucene.Query",
-                areaName: "OrchardCore.Lucene",
+                areaName: "OrchardCore.Search.Lucene",
                 pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Query",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Query) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Lucene.Rebuild",
-                areaName: "OrchardCore.Lucene",
+                areaName: "OrchardCore.Search.Lucene",
                 pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Rebuild/{id}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Rebuild) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Lucene.Reset",
-                areaName: "OrchardCore.Lucene",
+                areaName: "OrchardCore.Search.Lucene",
                 pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Reset/{id}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Reset) }
             );
@@ -150,7 +150,7 @@ namespace OrchardCore.Search.Lucene
         }
     }
 
-    [Feature("OrchardCore.Lucene.Worker")]
+    [Feature("OrchardCore.Search.Lucene.Worker")]
     public class LuceneWorkerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
@@ -159,7 +159,7 @@ namespace OrchardCore.Search.Lucene
         }
     }
 
-    [Feature("OrchardCore.Lucene.ContentPicker")]
+    [Feature("OrchardCore.Search.Lucene.ContentPicker")]
     public class LuceneContentPickerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)

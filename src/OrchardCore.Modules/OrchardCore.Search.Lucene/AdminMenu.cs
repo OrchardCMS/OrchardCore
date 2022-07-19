@@ -27,11 +27,11 @@ namespace OrchardCore.Search.Lucene
                     .AddClass("search").Id("search")
                     .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
                         .Add(S["Lucene Indices"], S["Lucene Indices"].PrefixPosition(), indexes => indexes
-                            .Action("Index", "Admin", new { area = "OrchardCore.Lucene" })
+                            .Action("Index", "Admin", new { area = "OrchardCore.Search.Lucene" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav())
                         .Add(S["Run Lucene Query"], S["Run Lucene Query"].PrefixPosition(), queries => queries
-                            .Action("Query", "Admin", new { area = "OrchardCore.Lucene" })
+                            .Action("Query", "Admin", new { area = "OrchardCore.Search.Lucene" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav()))
                     .Add(S["Settings"], settings => settings

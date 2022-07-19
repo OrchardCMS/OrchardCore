@@ -7,7 +7,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Search.Lucene
 {
-    [Feature("OrchardCore.Lucene.ContentPicker")]
+    [Feature("OrchardCore.Search.Lucene.ContentPicker")]
     public class LuceneContentPickerShapeProvider : IShapeAttributeProvider
     {
         private readonly IStringLocalizer S;

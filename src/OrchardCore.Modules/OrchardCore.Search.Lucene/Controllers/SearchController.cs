@@ -69,7 +69,7 @@ namespace OrchardCore.Search.Lucene.Controllers
         [HttpGet]
         public async Task<IActionResult> Search(SearchIndexViewModel viewModel, PagerSlimParameters pagerParameters)
         {
-            var permissionsProvider = _permissionProviders.FirstOrDefault(x => x.GetType().FullName == "OrchardCore.Lucene.Permissions");
+            var permissionsProvider = _permissionProviders.FirstOrDefault(x => x.GetType().FullName == "OrchardCore.Search.Lucene.Permissions");
             var permissions = await permissionsProvider.GetPermissionsAsync();
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
