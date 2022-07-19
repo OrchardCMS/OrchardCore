@@ -56,6 +56,68 @@
             let passwordConfirmationToggle = document.getElementById('passwordConfirmationToggle');
             let generate = document.getElementById('generatePassword');
             let copy = document.getElementById('copyPassword');
+            const requiredPasswordLength = @(Math.Max(IdentityOptions.Value.Password.RequiredLength, IdentityOptions.Value.Password.RequiredUniqueChars));
+            const allowed = {
+                uppers: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                lowers: 'abcdefghijklmnopqrstuvwxyz',
+                digits: '0123456789',
+                symbols: '!@@#$%^&*'
+            };
+
+            function getRandomChar(str) {
+                return str.charAt(Math.floor(Math.random() * str.length));
+            }
+            function shuffle(str) {
+                return str.sort(function() { return 0.5 - Math.random() });
+            }
+            function meetUniqueRule(str) {
+                let uniqueCharacters = str.filter((item, i, ar) => ar.indexOf(item) === i);
+                return uniqueCharacters.length >= @(IdentityOptions.Value.Password.RequiredUniqueChars);
+            };
+            function generatePassword() {
+                let password = [];
+
+                @if (IdentityOptions.Value.Password.RequireUppercase)
+                {
+                    // At least one uppercase 
+                    <text>password.push(getRandomChar(allowed.uppers));</text>
+                }
+                @if (IdentityOptions.Value.Password.RequireLowercase)
+                {
+                    // At least one lowercase
+                    <text>password.push(getRandomChar(allowed.lowers));</text>
+                }
+                @if (IdentityOptions.Value.Password.RequireDigit)
+                {
+                    // At least one digit
+                    <text>password.push(getRandomChar(allowed.digits));</text>
+                }
+
+                @if (IdentityOptions.Value.Password.RequireNonAlphanumeric)
+                {
+                    // At least one special character
+                    <text>password.push(getRandomChar(allowed.symbols));</text>
+                }
+                let passwordLength = password.length;
+                if (passwordLength < requiredPasswordLength) {
+                    @* At this point we need lengthier password. Fill the rest of the password with random characters *@
+                    let combineAllowed = shuffle(Object.values(allowed)).join('');
+                    for (let i = passwordLength; i < requiredPasswordLength; i++) {
+                        password.push(getRandomChar(combineAllowed));
+                    }
+                }
+
+                @if (IdentityOptions.Value.Password.RequiredUniqueChars > 1)
+                {
+                    // The generated password does not meet the required-unique-chars requirment, create another one
+                    <text>if (!meetUniqueRule(password)) return generatePassword();</text>
+                }
+
+                return shuffle(password).join('');
+            }
+            function copyPassword(text) {
+                navigator.clipboard.writeText(text);
+            }
             function toggetIcons(element) {
                 if (element.classList.contains('fa-eye')) {
                     element.classList.remove('fa-eye');
@@ -73,66 +135,6 @@
                 }
 
                 element.type = 'password';
-            }
-            @* The generated password should meet the minimum length requirements *@
-            const requiredPasswordLength = @(Math.Max(IdentityOptions.Value.Password.RequiredLength, IdentityOptions.Value.Password.RequiredUniqueChars));
-            const allowed = {
-                uppers: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-                lowers: 'abcdefghijklmnopqrstuvwxyz',
-                digits: '0123456789',
-                symbols: '!@@#$%^&*'
-            };
-
-            function getRandomChar(str) {
-                return str.charAt(Math.floor(Math.random() * str.length));
-            }
-            function shuffle(str) {
-                return str.sort(function() { return 0.5 - Math.random() });
-            }
-            function meetUniqueRule(str) => {
-                let uniqueCharacters = str.filter((item, i, ar) => ar.indexOf(item) === i);
-                return uniqueCharacters.length >= @(IdentityOptions.Value.Password.RequiredUniqueChars);
-            };
-
-            function generatePassword() {
-                let password = [];
-
-                @* At least one uppercase *@
-                password.push(getRandomChar(allowed.uppers));
-
-                @* At least one lowercase *@
-                password.push(getRandomChar(allowed.lowers));
-
-                @* At least one digit *@
-                password.push(getRandomChar(allowed.digits));
-
-                @* At least one special character *@
-                password.push(getRandomChar(allowed.symbols));
-
-                let passwordLength = password.length;
-
-                if (passwordLength < requiredPasswordLength) {
-                    @* At this point we need lengthier password. Fill the rest of the password with random characters *@
-                    let combineAllowed = shuffle(Object.values(allowed)).join('');
-                    for (let i = passwordLength; i < requiredPasswordLength; i++) {
-                        password.push(getRandomChar(combineAllowed));
-                    }
-                }
-
-                @if (IdentityOptions.Value.Password.RequiredUniqueChars > 1)
-                {
-                    // The generated password does not meet the required-unique-chars requirment, create another one
-                    <text>
-                    if (!meetUniqueRule(password)) {
-                        return generatePassword();
-                    }
-                    </text>
-                }
-
-                return shuffle(password).join('');
-            }
-            function copyPassword(text) {
-                navigator.clipboard.writeText(text);
             }
             function togglePasswordFieldState() {
                 toggleFieldType(password);
