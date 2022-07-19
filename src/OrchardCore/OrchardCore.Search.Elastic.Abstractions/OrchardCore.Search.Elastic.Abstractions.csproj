@@ -6,7 +6,7 @@
     <Title>OrchardCore Elastic Search Abstractions</Title>
     <Description>$(OCCMSDescription)
 
-    Abstractions for Lucene.</Description>
+    Abstractions for Elastic Search.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
   </PropertyGroup>
 
