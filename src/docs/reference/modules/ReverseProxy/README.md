@@ -4,7 +4,7 @@ Enables configuration of hosting scenarios with a reverse proxy, like which HTTP
 
 ## Reverse Proxy Settings Configuration
 
-The `OrchardCore.ReverseProxy` module allows the user to use configuration values to override the `AdminSettings` by calling `ConfigureReverseProxySettings()` extension method.
+The `OrchardCore.ReverseProxy` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureReverseProxySettings()` extension method on `OrchardCoreBuilder` when initializing the app.
 
 The following configuration values can be customized:
 

@@ -25,7 +25,7 @@ If no value is provided, setup Authorization callback URL in GitHub app to use t
 
 ## GitHub Settings Configuration
 
-The `OrchardCore.GitHub` module allows the user to use configuration values to override the `AdminSettings` by calling `ConfigureGitHubSettings()` extension method.
+The `OrchardCore.GitHub` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureGitHubSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
 
 The following configuration values can be customized:
 

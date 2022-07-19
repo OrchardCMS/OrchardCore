@@ -59,7 +59,7 @@ If no value is provided, setup Callback URL in Google API to use the default pat
 
 ## Google Settings Configuration
 
-The `OrchardCore.Google` module allows the user to use configuration values to override the `AdminSettings` by calling `ConfigureGoogleSettings()` extension method.
+The `OrchardCore.Google` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureGoogleSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
 
 The following configuration values can be customized:
 

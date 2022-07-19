@@ -62,7 +62,7 @@ It defines the following widgets:
 
 ## Facebook Settings Configuration
 
-The `OrchardCore.Facebook` module allows the user to use configuration values to override the `AdminSettings` by calling `ConfigureFacebookSettings()` extension method.
+The `OrchardCore.Facebook` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureFacebookSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
 
 The following configuration values can be customized:
 

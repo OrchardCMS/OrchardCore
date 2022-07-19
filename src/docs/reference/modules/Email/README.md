@@ -27,7 +27,7 @@ Enabling the `OrchardCore.Email` module will allow the user to set the following
 
 ## Email Settings Configuration
 
-The `OrchardCore.Email` module allows the user to use configuration values to override the `AdminSettings` by calling `ConfigureEmailSettings()` extension method.
+The `OrchardCore.Email` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureEmailSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
 
 The following configuration values can be customized:
 
