@@ -46,9 +46,9 @@ else
 
     <div class="mb-3" asp-validation-class-for="IndexLatest">
         <label asp-for="IndexLatest">@T["Index options"]</label>
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" asp-for="IndexLatest" class="custom-control-input">
-            <label class="custom-control-label" asp-for="IndexLatest">@T["Index latest version"]</label>
+        <div class="form-check">
+            <input type="checkbox" asp-for="IndexLatest" class="form-check-input">
+            <label class="form-check-label" asp-for="IndexLatest">@T["Index latest version"]</label>
             <span class="hint dashed">@T["Check to index draft if it exists, otherwise only the published version is indexed."]</span>
         </div>
         <span asp-validation-for="IndexLatest" class="text-danger"></span>
