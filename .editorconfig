@@ -26,6 +26,11 @@ csharp_new_line_before_members_in_anonymous_types     = true
 # Sort using and Import directives with System.* appearing first
 dotnet_sort_system_directives_first                        = true
 
+# Code-block preferences
+csharp_prefer_braces = true
+csharp_prefer_simple_using_statement = true
+csharp_style_namespace_declarations = file_scoped
+
 # Avoid "this." if not necessary
 dotnet_style_qualification_for_field                       = false : suggestion
 dotnet_style_qualification_for_property                    = false : suggestion
