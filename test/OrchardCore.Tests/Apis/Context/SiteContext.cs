@@ -8,8 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Lucene;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Search.Lucene;
 
 namespace OrchardCore.Tests.Apis.Context
 {

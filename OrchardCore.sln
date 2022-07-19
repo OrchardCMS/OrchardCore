@@ -128,7 +128,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Layers", "src\O
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Lists", "src\OrchardCore.Modules\OrchardCore.Lists\OrchardCore.Lists.csproj", "{ED165AA1-D202-405A-8EC6-5DD0E0B77636}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Lucene", "src\OrchardCore.Modules\OrchardCore.Lucene\OrchardCore.Lucene.csproj", "{245E865F-AC80-4963-8595-F380C458F99E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.Lucene", "src\OrchardCore.Modules\OrchardCore.Search.Lucene\OrchardCore.Search.Lucene.csproj", "{245E865F-AC80-4963-8595-F380C458F99E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Markdown", "src\OrchardCore.Modules\OrchardCore.Markdown\OrchardCore.Markdown.csproj", "{DA02314F-7BF6-47C5-B11E-196F13BDDB77}"
 EndProject
@@ -176,11 +176,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Queries", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Liquid.Abstractions", "src\OrchardCore\OrchardCore.Liquid.Abstractions\OrchardCore.Liquid.Abstractions.csproj", "{2DF44392-8882-46B1-8061-61DDBCA358BD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Lucene.Abstractions", "src\OrchardCore\OrchardCore.Lucene.Abstractions\OrchardCore.Lucene.Abstractions.csproj", "{78F13261-B843-4590-8DD5-E9491874D0CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.Lucene.Abstractions", "src\OrchardCore\OrchardCore.Search.Lucene.Abstractions\OrchardCore.Search.Lucene.Abstractions.csproj", "{78F13261-B843-4590-8DD5-E9491874D0CD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Liquid", "src\OrchardCore.Modules\OrchardCore.Liquid\OrchardCore.Liquid.csproj", "{F8973BF9-4F56-4A59-9153-72BEDB6AB269}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Lucene.Core", "src\OrchardCore\OrchardCore.Lucene.Core\OrchardCore.Lucene.Core.csproj", "{F621B369-15FD-4923-98AD-17740C24CD5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.Lucene.Core", "src\OrchardCore\OrchardCore.Search.Lucene.Core\OrchardCore.Search.Lucene.Core.csproj", "{F621B369-15FD-4923-98AD-17740C24CD5C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Queries.Abstractions", "src\OrchardCore\OrchardCore.Queries.Abstractions\OrchardCore.Queries.Abstractions.csproj", "{AEB44D2A-1493-4550-8B13-EB611B1FB12C}"
 EndProject

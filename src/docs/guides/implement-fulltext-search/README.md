@@ -43,13 +43,13 @@ You can register for example a custom analyzer with the DI using this example fr
 
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Lucene.Model;
-using OrchardCore.Lucene.Services;
+using OrchardCore.Search.Lucene.Model;
+using OrchardCore.Search.Lucene.Services;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Lucene.FrenchAnalyzer
+namespace OrchardCore.Search.Lucene.FrenchAnalyzer
 {
-    [Feature("OrchardCore.Lucene.FrenchAnalyzer")]
+    [Feature("OrchardCore.Search.Lucene.FrenchAnalyzer")]
     public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
