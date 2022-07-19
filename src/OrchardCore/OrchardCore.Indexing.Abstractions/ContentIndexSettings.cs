@@ -1,11 +1,12 @@
-using OrchardCore.Indexing;
+using System;
 
-namespace OrchardCore.Lucene.Model
+namespace OrchardCore.Indexing
 {
     /// <summary>
     /// Represents the indexing settings for a content part or a field.
     /// </summary>
-    public class LuceneContentIndexSettings : IContentIndexSettings
+    [Obsolete("This class has been deprecated and we will be removed in the next major release, please use IContentIndexSettings instead.", false)]
+    public class ContentIndexSettings
     {
         public bool Included { get; set; }
         public bool Stored { get; set; }
@@ -29,4 +30,3 @@ namespace OrchardCore.Lucene.Model
         }
     }
 }
-
