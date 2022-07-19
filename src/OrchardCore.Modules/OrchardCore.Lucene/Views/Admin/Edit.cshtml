@@ -1,11 +1,11 @@
 @model LuceneIndexSettingsViewModel
 @if (Model.IsCreate)
 {
-    <zone Name="Title"><h1>@RenderTitleSegments(T["Create Index"])</h1></zone>
+    <zone Name="Title"><h1>@RenderTitleSegments(T["Create Lucene Index"])</h1></zone>
 }
 else
 {
-    <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Index"])</h1></zone>
+    <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Lucene Index"])</h1></zone>
 }
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
