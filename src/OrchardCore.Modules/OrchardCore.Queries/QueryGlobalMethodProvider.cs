@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Scripting;
 
@@ -28,7 +29,8 @@ namespace OrchardCore.Queries
                     }
 
                     var result = queryManager.ExecuteQueryAsync(query, (IDictionary<string, object>)parameters).GetAwaiter().GetResult();
-                    return result.Items;
+                    //use ToArray to Fix JSON.Stringify, array.Map()
+                    return result.Items.ToArray();
                 })
             };
         }
