@@ -25,12 +25,12 @@ else
     @if (culture.IsRightToLeft())
     {
         <div style="text-align:right">
-            <textarea asp-for="Html" rows="5" class="form-control"></textarea>
+            <textarea asp-for="Html"></textarea>
         </div>
     }
     else
     {
-        <textarea asp-for="Html" rows="5" class="form-control"></textarea>
+        <textarea asp-for="Html"></textarea>
     }
     <span class="hint">@T["The body of the content item."]</span>
 </div>
@@ -57,13 +57,25 @@ else
             <text>
             var settings = @Html.Raw(trumbowygSettings.Options);
             settings['lang'] = '@culture.TwoLetterISOLanguageName';
+            settings['semantic'] = {
+                'b': 'strong',
+                'i': 'em',
+                's': 'del',
+                'strike': 'del'
+            };
             </text>
         }
         else
         {   
             <text>
             var settings = { 
-                lang: '@culture.TwoLetterISOLanguageName'
+                lang: '@culture.TwoLetterISOLanguageName',
+                semantic: {
+                    'b': 'strong',
+                    'i': 'em',
+                    's': 'del',
+                    'strike': 'del'
+                }
             }
             </text>
         }
