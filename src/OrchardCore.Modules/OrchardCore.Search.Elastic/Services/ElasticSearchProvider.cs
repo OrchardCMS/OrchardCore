@@ -4,6 +4,6 @@ namespace OrchardCore.Search.Elastic.Services
 {
     internal class ElasticSearchProvider : ISearchProvider
     {
-        public string Name { get; } = "Elastic Search";
+        public string Name { get; } = "Elastic";
     }
 }

@@ -5,7 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Entities;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Routing;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Configuration;
 using OrchardCore.Search.Drivers;
@@ -23,6 +25,7 @@ namespace OrchardCore.Search
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IConfigureOptions<SearchSettings>, SearchSettingsConfiguration>();
+            services.AddScoped<IAreaControllerRouteMapper, SearchAreaControllerRouteMapper>();
 
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -33,12 +36,12 @@ namespace OrchardCore.Search
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaControllerRoute(
-                name: "Search.Elastic",
-                areaName: "OrchardCore.Search.Elastic",
-                pattern: "Search",
-                defaults: new { controller = "Search", action = "Search" }
-            );
+            //routes.MapAreaControllerRoute(
+            //    name: "Search",
+            //    areaName: "OrchardCore.Search.Elastic",
+            //    pattern: "Search",
+            //    defaults: new { controller = "Search", action = "Search" }
+            //);
         }
     }
 }
