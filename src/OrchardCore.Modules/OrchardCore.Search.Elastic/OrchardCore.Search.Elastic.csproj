@@ -41,4 +41,10 @@
     <PackageReference Include="NEST" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Update="Views\Search-Results.cshtml">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

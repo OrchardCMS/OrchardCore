@@ -7,7 +7,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
 
-namespace OrchardCore.Search.Lucene
+namespace OrchardCore.Search
 {
     public class SearchShapesTableProvider : IShapeTableProvider
     {

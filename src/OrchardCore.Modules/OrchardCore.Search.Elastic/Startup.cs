@@ -31,6 +31,7 @@ using OrchardCore.Search.Elastic.Configurations;
 using Nest;
 using OrchardCore.Elastic.Search;
 using Microsoft.Extensions.Configuration;
+using OrchardCore.Search.Abstractions;
 
 namespace OrchardCore.Search.Elastic
 {
@@ -94,25 +95,18 @@ namespace OrchardCore.Search.Elastic
                 services.AddScoped<ElasticQuerySource>();
                 services.AddRecipeExecutionStep<ElasticIndexStep>();
 
-                services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
-                services.AddShapeAttributes<SearchShapes>();
+                services.AddScoped<ISearchProvider, ElasticSearchProvider>();
             }
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var options = serviceProvider.GetRequiredService<IOptions<ElasticConnectionOptions>>().Value;
+
             if (!options.ConfigurationExists)
             {
                 return;
             }
-
-            routes.MapAreaControllerRoute(
-                name: "Elastic.Search",
-                areaName: "OrchardCore.Search.Elastic",
-                pattern: "Search",
-                defaults: new { controller = "Search", action = "Search" }
-            );
 
             var adminControllerName = typeof(AdminController).ControllerName();
 

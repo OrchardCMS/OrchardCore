@@ -30,6 +30,7 @@ using OrchardCore.Recipes;
 using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Search.Abstractions;
 
 namespace OrchardCore.Search.Lucene
 {
@@ -83,19 +84,11 @@ namespace OrchardCore.Search.Lucene
             services.AddScoped<LuceneQuerySource>();
             services.AddRecipeExecutionStep<LuceneIndexStep>();
 
-            services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
-            services.AddShapeAttributes<SearchShapes>();
+            services.AddScoped<ISearchProvider, LuceneSearchProvider>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaControllerRoute(
-                name: "Lucene.Search",
-                areaName: "OrchardCore.Search.Lucene",
-                pattern: "Search",
-                defaults: new { controller = "Search", action = "Search" }
-            );
-
             var adminControllerName = typeof(AdminController).ControllerName();
 
             routes.MapAreaControllerRoute(

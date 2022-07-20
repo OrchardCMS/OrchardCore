@@ -1,0 +1,21 @@
+@model SearchSettingsViewModel
+
+@if (Model.SearchProviders.Any())
+{
+<div class="mb-3" asp-validation-class-for="SearchProvider">
+    <label asp-for="SearchProvider">@T["Default search provider"]</label>
+    <select asp-for="SearchProvider" class="form-select">
+        @foreach (var index in Model.SearchProviders)
+        {
+            <option value="@index" selected="@(Model.SearchProvider == index)">@index</option>
+        }
+    </select>
+    <span asp-validation-for="SearchProvider"></span>
+    <span class="hint">@T["The default search provider to use for the search page."]</span>
+</div>
+}
+else
+{
+    <div class="alert alert-warning">@T["You need to enable at least one search provider (Lucene, Elastic Search)."]</div>
+}
+

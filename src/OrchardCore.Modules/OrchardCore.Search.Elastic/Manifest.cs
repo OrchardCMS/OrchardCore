@@ -16,7 +16,7 @@ using OrchardCore.Modules.Manifest;
         "OrchardCore.Indexing",
         "OrchardCore.ContentTypes"
     },
-    Category = "Content Management"
+    Category = "Search"
 )]
 
 [assembly: Feature(
@@ -24,5 +24,5 @@ using OrchardCore.Modules.Manifest;
     Name = "Elastic Content Picker",
     Description = "Provides a Elastic content picker field editor.",
     Dependencies = new[] { "OrchardCore.Search.Elastic", "OrchardCore.ContentFields" },
-    Category = "Content Management"
+    Category = "Search"
 )]
