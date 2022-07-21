@@ -3,11 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using Microsoft.Extensions.Logging;
-
 using Nest;
-
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
@@ -22,8 +19,6 @@ namespace OrchardCore.Search.Elastic
     public class ElasticIndexManager : IDisposable
     {
         private readonly IElasticClient _elasticClient;
-
-       
         private readonly IClock _clock;
         private readonly ILogger _logger;
         private bool _disposing;
@@ -130,7 +125,8 @@ namespace OrchardCore.Search.Elastic
 
         public async Task<ElasticTopDocs> SearchAsync(string indexName, string query)
         {
-            ElasticTopDocs elasticTopDocs = new ElasticTopDocs();
+            var elasticTopDocs = new ElasticTopDocs();
+
             if (await Exists(indexName))
             {
                 var searchResponse = await _elasticClient.SearchAsync<Dictionary<string,object>>(s => s
@@ -146,6 +142,7 @@ namespace OrchardCore.Search.Elastic
 
                 _timestamps[indexName] = _clock.UtcNow;
             }
+
             return elasticTopDocs;
         }
 

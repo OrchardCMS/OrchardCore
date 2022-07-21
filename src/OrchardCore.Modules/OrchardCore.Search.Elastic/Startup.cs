@@ -32,6 +32,7 @@ using Nest;
 using OrchardCore.Elastic.Search;
 using Microsoft.Extensions.Configuration;
 using OrchardCore.Search.Abstractions;
+using Elasticsearch.Net;
 
 namespace OrchardCore.Search.Elastic
 {
@@ -68,7 +69,9 @@ namespace OrchardCore.Search.Elastic
                 services.AddScoped<INavigationProvider, AdminMenu>();
                 services.AddScoped<IPermissionProvider, Permissions>();
 
-                var settings = new ConnectionSettings(new Uri(url));
+                var pool = new SingleNodeConnectionPool(new Uri(url));
+
+                var settings = new ConnectionSettings(pool);
                 var client = new ElasticClient(settings);
                 services.AddSingleton<IElasticClient>(client);
                 services.AddSingleton<ElasticIndexingState>();
@@ -95,7 +98,7 @@ namespace OrchardCore.Search.Elastic
                 services.AddScoped<ElasticQuerySource>();
                 services.AddRecipeExecutionStep<ElasticIndexStep>();
 
-                services.AddScoped<ISearchProvider, ElasticSearchProvider>();
+                services.AddScoped<SearchProvider, ElasticSearchProvider>();
             }
         }
 

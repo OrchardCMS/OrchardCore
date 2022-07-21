@@ -50,7 +50,7 @@ namespace OrchardCore.Search.Drivers
 
             return Initialize<SearchSettingsViewModel>("SearchSettings_Edit", model =>
             {
-                var searchProviders = _serviceProvider.GetServices<ISearchProvider>();
+                var searchProviders = _serviceProvider.GetServices<SearchProvider>();
 
                 if(searchProviders.Any())
                 {

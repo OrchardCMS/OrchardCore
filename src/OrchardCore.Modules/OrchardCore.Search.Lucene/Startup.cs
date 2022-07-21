@@ -84,7 +84,7 @@ namespace OrchardCore.Search.Lucene
             services.AddScoped<LuceneQuerySource>();
             services.AddRecipeExecutionStep<LuceneIndexStep>();
 
-            services.AddScoped<ISearchProvider, LuceneSearchProvider>();
+            services.AddScoped<SearchProvider, LuceneSearchProvider>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
