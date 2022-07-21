@@ -77,7 +77,7 @@ namespace OrchardCore.Localization
         }
     }
 
-    [Feature("OrchardCore.Localization.CulturePicker")]
+    [Feature("OrchardCore.Localization.CulturePicker.Admin")]
     public class CulturePickerStartup : StartupBase
     {
         internal static readonly string AdminSiteCookieName = ".OrchardCore.AdminSiteCulture";
