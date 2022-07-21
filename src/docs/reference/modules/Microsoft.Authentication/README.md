@@ -57,3 +57,30 @@ The Azure Active Directory can be set during recipes using the settings step. He
 
 - If you want to enable new users to register to the site through their Microsoft Account and/or Microsoft Azure AD login, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
 - An existing user can link his account to his Microsoft Account and/or Microsoft Azure AD login through the External Logins link from User menu
+
+## Microsoft Account & Azure Active Directory Settings Configuration
+
+The `OrchardCore.Microsoft.Authentication` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureMicrosoftAccountSettings()` or `ConfigureAzureADSettings()` extension methods on `OrchardCoreBuilder` when initializing the app.
+
+The following configuration values can be customized:
+
+```json
+    "OrchardCore_MicrosoftAuthentication": {
+      "AppId": "",
+      "AppSecret": "",
+      "CallbackPath": "/",
+      "SaveTokens": false
+    }
+```
+
+```json
+    "OrchardCore_MicrosoftAuthentication_AzureAD": {
+      "DisplayName": "",
+      "AppId": "",
+      "TenantId": "",
+      "CallbackPath": "/",
+      "SaveTokens": false
+    }
+```
+
+For more information please refer to [Configuration](../../core/Configuration/README.md).
