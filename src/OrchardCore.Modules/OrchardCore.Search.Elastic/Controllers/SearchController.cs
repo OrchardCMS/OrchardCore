@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Lucene.Net.QueryParsers.Classic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Nest;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement;
@@ -120,7 +122,8 @@ namespace OrchardCore.Search.Elastic.Controllers
             var pager = new PagerSlim(pagerParameters, siteSettings.PageSize);
 
             // We Query Elastic index
-            var analyzer = _elasticAnalyzerManager.CreateAnalyzer(await _elasticIndexSettingsService.GetIndexAnalyzerAsync(elasticIndexSettings.IndexName));
+            //var analyzer = _elasticAnalyzerManager.CreateAnalyzer(await _elasticIndexSettingsService.GetIndexAnalyzerAsync(elasticIndexSettings.IndexName));
+            //var queryParser = new MultiFieldQueryParser(elasticIndexSettings.DefaultVersion, searchSettings.DefaultSearchFields, analyzer);
 
             // Fetch one more result than PageSize to generate "More" links
             var start = 0;
@@ -148,7 +151,10 @@ namespace OrchardCore.Search.Elastic.Controllers
             try
             {
                 //var query = queryParser.Parse(terms);
-                contentItemIds = (await _searchQueryService.ExecuteQueryAsync(viewModel.Terms, searchSettings.SearchIndex, start, end))
+                //var query = "" + viewModel.Terms;
+                var query = new MatchAllQuery();
+
+                contentItemIds = (await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end))
                     .ToList();
             }
             catch (Exception e)

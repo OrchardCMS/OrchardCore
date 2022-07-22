@@ -146,6 +146,33 @@ namespace OrchardCore.Search.Elastic
             return elasticTopDocs;
         }
 
+        public async Task<ElasticTopDocs> SearchAsync(string indexName, QueryContainer query, int from, int size)
+        {
+            var elasticTopDocs = new ElasticTopDocs();
+
+            if (await Exists(indexName))
+            {
+                var searchRequest = new SearchRequest(indexName)
+                {
+                    Query = query,
+                    From = from,
+                    Size = size
+                };
+
+                var searchResponse = await _elasticClient.SearchAsync<Dictionary<string, object>>(searchRequest);
+
+                if (searchResponse.IsValid)
+                {
+                    elasticTopDocs.Count = searchResponse.Documents.Count;
+                    elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
+                }
+
+                _timestamps[indexName] = _clock.UtcNow;
+            }
+
+            return elasticTopDocs;
+        }
+
         private Dictionary<string,object> CreateElasticDocument(DocumentIndex documentIndex)
         {
             Dictionary<string, object> entries = new Dictionary<string, object>();
@@ -224,12 +251,14 @@ namespace OrchardCore.Search.Elastic
             }
             return entries;
         }
+
         private Dictionary<string,object> CreateElasticDocument(string contentItemId)
         {
             Dictionary<string, object> entries = new Dictionary<string, object>();
             entries.Add("Id", contentItemId);
             return entries;
         }
+
         public void Dispose()
         {
             if (_disposing)
@@ -239,6 +268,7 @@ namespace OrchardCore.Search.Elastic
 
             _disposing = true;
         }
+
         ~ElasticIndexManager()
         {
             Dispose();
