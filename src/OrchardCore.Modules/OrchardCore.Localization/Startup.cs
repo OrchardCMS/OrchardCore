@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -101,7 +100,7 @@ namespace OrchardCore.Localization
             {
                 if (context.Request.Path.Value[1..].StartsWith(_adminOptions.AdminUrlPrefix, StringComparison.OrdinalIgnoreCase))
                 {
-                    var cookie = context.Request.Cookies[AdminSiteCookieName];
+                    var cookie = context.Request.Cookies[LocalizationCookieName.AdminSite];
 
                     if (!String.IsNullOrEmpty(cookie))
                     {

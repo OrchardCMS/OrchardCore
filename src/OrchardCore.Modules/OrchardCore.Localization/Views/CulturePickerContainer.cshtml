@@ -16,7 +16,7 @@
             var culture = $(this).val();
             var selectedCulture = $(this).data('selected-culture');
             if (culture != selectedCulture) {
-                var cookieValue = `@CulturePickerStartup.AdminSiteCookieName=c=${culture}|uic=${culture}`;
+                var cookieValue = `@LocalizationCookieName.AdminSite=c=${culture}|uic=${culture}`;
                 document.cookie = cookieValue;
                 window.location = window.location.href.split('?')[0];
             }
