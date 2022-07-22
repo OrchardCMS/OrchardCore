@@ -110,7 +110,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                 return BadRequest($"Search index ({searchSettings.SearchIndex}) is not configured.");
             }
 
-            if (string.IsNullOrWhiteSpace(viewModel.Terms))
+            if (String.IsNullOrWhiteSpace(viewModel.Terms))
             {
                 return View(new SearchIndexViewModel
                 {
@@ -119,10 +119,6 @@ namespace OrchardCore.Search.Elastic.Controllers
             }
 
             var pager = new PagerSlim(pagerParameters, siteSettings.PageSize);
-
-            // We Query Elastic index
-            var analyzer = _elasticAnalyzerManager.CreateAnalyzer(await _elasticIndexSettingsService.GetIndexAnalyzerAsync(elasticIndexSettings.IndexName));
-            //var queryParser = new MultiFieldQueryParser(elasticIndexSettings.DefaultVersion, searchSettings.DefaultSearchFields, analyzer);
 
             // Fetch one more result than PageSize to generate "More" links
             var start = 0;
@@ -141,6 +137,7 @@ namespace OrchardCore.Search.Elastic.Controllers
 
             var terms = viewModel.Terms;
             IList<string> contentItemIds;
+            var analyzer = _elasticAnalyzerManager.CreateAnalyzer(await _elasticIndexSettingsService.GetIndexAnalyzerAsync(elasticIndexSettings.IndexName));
 
             try
             {
