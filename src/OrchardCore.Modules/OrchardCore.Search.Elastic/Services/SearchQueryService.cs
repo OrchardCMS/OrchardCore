@@ -8,8 +8,6 @@ namespace OrchardCore.Search.Elastic
     {
         private readonly ElasticIndexManager _elasticIndexManager;
 
-        private static HashSet<string> IdSet = new HashSet<string>(new string[] { "ContentItemId" });
-
         public SearchQueryService(ElasticIndexManager elasticIndexManager)
         {
             _elasticIndexManager = elasticIndexManager;

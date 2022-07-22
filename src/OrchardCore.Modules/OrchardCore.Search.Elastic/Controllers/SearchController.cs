@@ -140,21 +140,30 @@ namespace OrchardCore.Search.Elastic.Controllers
             }
 
             var terms = viewModel.Terms;
-            if (!searchSettings.AllowElasticQueryStringQueryInSearch)
-            {
-                //Need to revisit this
-                //terms = QueryParser.Escape(terms);
-            }
-
             IList<string> contentItemIds;
+
             try
-            {               
-                var query = new MultiMatchQuery
+            {
+                var query = new QueryContainer();
+
+                if (searchSettings.AllowElasticQueryStringQueryInSearch)
                 {
-                    Fields = searchSettings.DefaultSearchFields,
-                    Analyzer = analyzer.Type,
-                    Query = terms
-                };
+                    query = new QueryStringQuery
+                    {
+                        Fields = searchSettings.DefaultSearchFields,
+                        Analyzer = analyzer.Type,
+                        Query = terms
+                    };
+                }
+                else
+                {
+                    query = new MultiMatchQuery
+                    {
+                        Fields = searchSettings.DefaultSearchFields,
+                        Analyzer = analyzer.Type,
+                        Query = terms
+                    };
+                }
 
                 contentItemIds = (await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end))
                     .ToList();
