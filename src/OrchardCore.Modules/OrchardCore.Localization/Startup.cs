@@ -1,12 +1,14 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Localization.Models;
@@ -93,25 +95,23 @@ namespace OrchardCore.Localization
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IShapeTableProvider, AdminCulturePickerShapes>();
+
             services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new CustomRequestCultureProvider(context =>
             {
                 if (context.Request.Path.Value[1..].StartsWith(_adminOptions.AdminUrlPrefix, StringComparison.OrdinalIgnoreCase))
                 {
                     var cookie = context.Request.Cookies[AdminSiteCookieName];
 
-                    if (String.IsNullOrEmpty(cookie))
+                    if (!String.IsNullOrEmpty(cookie))
                     {
-                        return NullProviderCultureResult;
+                        var providerResultCulture = CookieRequestCultureProvider.ParseCookieValue(cookie);
+
+                        return Task.FromResult(providerResultCulture);
                     }
-
-                    var providerResultCulture = CookieRequestCultureProvider.ParseCookieValue(cookie);
-
-                    return Task.FromResult(providerResultCulture);
                 }
-                else
-                {
-                    return NullProviderCultureResult;
-                }
+
+                return NullProviderCultureResult;
             })));
         }
     }

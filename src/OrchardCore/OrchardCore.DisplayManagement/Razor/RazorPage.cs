@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Title;
 using OrchardCore.DisplayManagement.Zones;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor
@@ -24,7 +22,6 @@ namespace OrchardCore.DisplayManagement.Razor
         private IDisplayHelper _displayHelper;
         private IShapeFactory _shapeFactory;
         private IOrchardDisplayHelper _orchardHelper;
-        private IShellFeaturesManager _shellFeaturesManager;
         private ISite _site;
 
         public override ViewContext ViewContext
@@ -51,14 +48,6 @@ namespace OrchardCore.DisplayManagement.Razor
             if (_shapeFactory == null)
             {
                 _shapeFactory = Context.RequestServices.GetService<IShapeFactory>();
-            }
-        }
-
-        private void EnsureShellFeaturesManager()
-        {
-            if (_shellFeaturesManager == null)
-            {
-                _shellFeaturesManager = Context.RequestServices.GetService<IShellFeaturesManager>();
             }
         }
 
@@ -110,23 +99,6 @@ namespace OrchardCore.DisplayManagement.Razor
             }
 
             throw new ArgumentException("DisplayAsync requires an instance of IShape");
-        }
-
-        /// <summary>
-        /// Renders a shape when a specified feature is enabled.
-        /// </summary>
-        /// <param name="shape">The shape.</param>
-        /// <param name="featureId">The feature Id in which <paramref name="shape"/> will be rendered when its enabled.</param>
-        public async Task<IHtmlContent> DisplayAsync(dynamic shape, string featureId)
-        {
-            EnsureShellFeaturesManager();
-
-            var feature = (await _shellFeaturesManager.GetEnabledFeaturesAsync())
-                .FirstOrDefault(f => f.Id == featureId);
-
-            return feature == null
-                ? new HtmlContentString(String.Empty)
-                : await DisplayAsync(shape); 
         }
 
         /// <summary>
