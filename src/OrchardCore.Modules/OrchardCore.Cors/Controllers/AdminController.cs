@@ -20,11 +20,9 @@ namespace OrchardCore.Cors.Controllers
     {
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-
         private readonly IAuthorizationService _authorizationService;
         private readonly CorsService _corsService;
         private readonly INotifier _notifier;
-
         private readonly IStringLocalizer T;
         private readonly IHtmlLocalizer<AdminController> TH;
 
