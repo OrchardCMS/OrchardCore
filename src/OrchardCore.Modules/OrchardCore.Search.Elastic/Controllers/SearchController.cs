@@ -121,18 +121,18 @@ namespace OrchardCore.Search.Elastic.Controllers
             var pager = new PagerSlim(pagerParameters, siteSettings.PageSize);
 
             // Fetch one more result than PageSize to generate "More" links
-            var start = 0;
-            var end = pager.PageSize + 1;
+            var from = 0;
+            var size = pager.PageSize + 1;
 
             if (pagerParameters.Before != null)
             {
-                start = Convert.ToInt32(pagerParameters.Before) - pager.PageSize - 1;
-                end = Convert.ToInt32(pagerParameters.Before);
+                from = Convert.ToInt32(pagerParameters.Before) - pager.PageSize - 1;
+                size = Convert.ToInt32(pagerParameters.Before);
             }
             else if (pagerParameters.After != null)
             {
-                start = Convert.ToInt32(pagerParameters.After);
-                end = Convert.ToInt32(pagerParameters.After) + pager.PageSize + 1;
+                from = Convert.ToInt32(pagerParameters.After);
+                size = Convert.ToInt32(pagerParameters.After) + pager.PageSize + 1;
             }
 
             var terms = viewModel.Terms;
@@ -141,7 +141,7 @@ namespace OrchardCore.Search.Elastic.Controllers
 
             try
             {
-                var query = new QueryContainer();
+                QueryContainer query = null;
 
                 if (searchSettings.AllowElasticQueryStringQueryInSearch)
                 {
@@ -162,7 +162,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                     };
                 }
 
-                contentItemIds = (await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end))
+                contentItemIds = (await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, from, size))
                     .ToList();
             }
             catch (Exception e)
@@ -200,9 +200,9 @@ namespace OrchardCore.Search.Elastic.Controllers
             // We set the PagerSlim before and after links
             if (pagerParameters.After != null || pagerParameters.Before != null)
             {
-                if (start + 1 > 1)
+                if (from + 1 > 1)
                 {
-                    pager.Before = (start + 1).ToString();
+                    pager.Before = (from + 1).ToString();
                 }
                 else
                 {
@@ -212,7 +212,7 @@ namespace OrchardCore.Search.Elastic.Controllers
 
             if (containedItems.Count() == pager.PageSize + 1)
             {
-                pager.After = (end - 1).ToString();
+                pager.After = (size - 1).ToString();
             }
             else
             {
