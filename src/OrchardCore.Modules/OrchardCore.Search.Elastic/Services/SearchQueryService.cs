@@ -19,7 +19,12 @@ namespace OrchardCore.Search.Elastic
         {
             var contentItemIds = new List<string>();
 
-            var result = await _elasticIndexManager.SearchAsync(indexName, query);
+            var results = await _elasticIndexManager.SearchAsync(indexName, query);
+
+            foreach (var item in results.TopDocs)
+            {
+                contentItemIds.Add(item.GetValueOrDefault("ContentItemId").ToString());
+            }
 
             //Here return the contentItemIds
             return contentItemIds;
