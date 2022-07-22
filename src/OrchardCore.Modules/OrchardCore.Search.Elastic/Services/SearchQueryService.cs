@@ -13,7 +13,7 @@ namespace OrchardCore.Search.Elastic
             _elasticIndexManager = elasticIndexManager;
         }
 
-        public async Task<IList<string>> ExecuteQueryAsync(string query, string indexName, int start, int end)
+        public async Task<IList<string>> ExecuteQueryAsync(string query, string indexName, int from, int size)
         {
             var contentItemIds = new List<string>();
 
