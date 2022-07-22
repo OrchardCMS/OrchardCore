@@ -3,20 +3,23 @@
 @{
     var selectedCultureName = Model.CurrentCulture.Name;
 }
-<select id="culture" name="culture" class="form-select me-3" onchange="changeCulture()">
+<select id="culture-picker" class="form-select me-3" data-selected-culture="@selectedCultureName">
   @foreach (var culture in Model.SupportedCultures)
   {
     <option selected="@(culture.Name == selectedCultureName ? "selected" : null)" value="@culture.Name">@culture.DisplayName</option>
   }
 </select>
 
-<script at="Foot">
-    function changeCulture() {
-        var culture = document.getElementById('culture');
-        if (culture != '@selectedCultureName') {
-            var cookieValue = '@CulturePickerStartup.AdminSiteCookieName=c=' + culture.options[culture.selectedIndex].value + '|uic=' + culture.options[culture.selectedIndex].value;
-            document.cookie = cookieValue;
-            window.location = window.location.href.split('?')[0];
-        }
-    }
+<script at="Foot" depends-on="jquery">
+    $(function (){
+        $('#culture-picker').change(function(){
+            var culture = $(this).val();
+            var selectedCulture = $(this).data('selected-culture');
+            if (culture != selectedCulture) {
+                var cookieValue = `@CulturePickerStartup.AdminSiteCookieName=c=${culture}|uic=${culture}`;
+                document.cookie = cookieValue;
+                window.location = window.location.href.split('?')[0];
+            }
+        });
+    });
 </script>
