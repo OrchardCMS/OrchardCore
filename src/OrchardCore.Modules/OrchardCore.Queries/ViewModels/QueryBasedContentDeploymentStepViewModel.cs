@@ -1,4 +1,4 @@
-namespace OrchardCore.Queries.Sql.ViewModels
+namespace OrchardCore.Queries.ViewModels
 {
     public class QueryBasedContentDeploymentStepViewModel
     {

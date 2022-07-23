@@ -4,8 +4,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
+using OrchardCore.Queries.Sql;
 
-namespace OrchardCore.Queries.Sql.Deployment
+namespace OrchardCore.Queries.Deployment
 {
     public class QueryBasedContentDeploymentSource : IDeploymentSource
     {
@@ -27,14 +28,14 @@ namespace OrchardCore.Queries.Sql.Deployment
 
             var data = new JArray();
 
-            var query = await _queryManager.GetQueryAsync(contentStep.QueryName) as SqlQuery;
+            var query = await _queryManager.GetQueryAsync(contentStep.QueryName);
 
             if (query == null)
             {
                 return;
             }
 
-            if (!query.ReturnDocuments)
+            if (query is SqlQuery sqlQuery && !sqlQuery.ReturnDocuments)
             {
                 return;
             }

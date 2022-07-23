@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
-using OrchardCore.Queries.Sql.ViewModels;
+using OrchardCore.Queries.ViewModels;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Queries.Sql.Deployment
+namespace OrchardCore.Queries.Deployment
 {
     public class QueryBasedContentDeploymentStepDriver : DisplayDriver<DeploymentStep, QueryBasedContentDeploymentStep>
     {

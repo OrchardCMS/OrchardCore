@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Queries.Sql.Deployment
+namespace OrchardCore.Queries.Deployment
 {
     /// <summary>
     /// Adds all content items based on SQL query results to a <see cref="DeploymentPlanResult"/>.

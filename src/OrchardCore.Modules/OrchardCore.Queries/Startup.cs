@@ -49,6 +49,9 @@ namespace OrchardCore.Queries
             services.AddTransient<IDeploymentSource, AllQueriesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllQueriesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllQueriesDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, QueryBasedContentDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<QueryBasedContentDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, QueryBasedContentDeploymentStepDriver>();
             services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
 
             services.Configure<TemplateOptions>(o =>
