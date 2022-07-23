@@ -165,6 +165,9 @@ The Content step allows you to create content items.
     }
 ```
 
+!!! note
+    There is also `QueryBasedContentDeploymentStep` which produces exacty the same output as content step, but based on provided query.
+
 ### Media Step
 
 The Media step allows you to import media files to the tenant Media folder.
