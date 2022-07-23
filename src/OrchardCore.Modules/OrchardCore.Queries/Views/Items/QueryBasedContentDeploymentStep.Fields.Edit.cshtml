@@ -20,22 +20,25 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="QueryName">
-    <label asp-for="QueryName">@T["Query"]</label>
-    <select class="form-select form-select-sm" asp-for="QueryName">
-        @foreach (var query in (await QueryManager.ListQueriesAsync()))
-        {
-            var name = query.Name;
-            <option value="@name">@name</option>
-        }
-    </select>
-    <span asp-validation-for="QueryName" class="text-danger"></span>
-    <div class="hint">@T["The name of the Query which will be used to fetch content items. NOTE: The Query must be configured to return Documents."]</div>
+    <div>
+        <label asp-for="QueryName">@T["Query"]</label>
+        <select class="form-select form-select-sm" asp-for="QueryName">
+            @foreach (var query in (await QueryManager.ListQueriesAsync()))
+            {
+                var name = query.Name;
+                <option value="@name">@name</option>
+            }
+        </select>
+        <span asp-validation-for="QueryName" class="text-danger font-weight-bold"></span>
+        <div class="hint">@T["The name of the Query which will be used to fetch content items."]</div>
+    </div>
+    <div class="alert alert-warning">@T["NOTE: The Query must be configured to return Documents."]</div>
 </div>
 
 <div class="mb-3" asp-validation-class-for="QueryParameters">
     <label asp-for="QueryParameters">@T["Parameters"]</label>
     <textarea asp-for="QueryParameters" class="form-control"></textarea>
-    <span asp-validation-for="QueryParameters" class="text-danger"></span>
+    <span asp-validation-for="QueryParameters" class="text-danger font-weight-bold"></span>
     <div class="hint">@T["An optional JSON object containing the parameter values for this query."]</div>
 </div>
 
