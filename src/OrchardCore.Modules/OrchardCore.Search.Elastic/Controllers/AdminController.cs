@@ -196,27 +196,27 @@ namespace OrchardCore.Search.Elastic.Controllers
 
             bool nameWasSplit = false;
             //This was needed to work-around the name validation
-            if(!String.IsNullOrEmpty(model.IndexName))
+            if (!String.IsNullOrEmpty(model.IndexName))
             {
                 //Just before validation we remove shellName
                 string[] indexNameParts = model.IndexName.Split("_");
-                if(indexNameParts.Length >= 1)
+                if (indexNameParts.Length >= 1)
                 {
-                    if(indexNameParts[0].ToLower() == _shellSettings.Name.ToLower())
+                    if (indexNameParts[0].ToLower() == _shellSettings.Name.ToLower())
                     {
                         model.IndexName = indexNameParts[1];
                         nameWasSplit = true;
                     }
                 }
             }
-            
+
             ValidateModel(model);
 
             if (model.IsCreate)
             {
                 //We will need to add ShellName here to keep the indexes unique/Scoped
                 model.IndexName = $"{_shellSettings.Name}_{model.IndexName}".ToLower();
-                
+
                 if (await _elasticIndexManager.Exists(model.IndexName))
                 {
                     ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["An index named {0} already exists.", model.IndexName]);
@@ -224,11 +224,11 @@ namespace OrchardCore.Search.Elastic.Controllers
             }
             else
             {
-                if(nameWasSplit)
+                if (nameWasSplit)
                 {
                     model.IndexName = $"{_shellSettings.Name}_{model.IndexName}".ToLower();
                 }
-                if (! await _elasticIndexManager.Exists(model.IndexName))
+                if (!await _elasticIndexManager.Exists(model.IndexName))
                 {
                     ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exist.", model.IndexName]);
                 }
@@ -312,7 +312,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                 return Forbid();
             }
 
-            if (! await _elasticIndexManager.Exists(id))
+            if (!await _elasticIndexManager.Exists(id))
             {
                 return NotFound();
             }
@@ -331,11 +331,6 @@ namespace OrchardCore.Search.Elastic.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
                 return Forbid();
-            }
-
-            if (! await _elasticIndexManager.Exists(model.IndexName))
-            {
-                return NotFound();
             }
 
             try
@@ -380,7 +375,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                 model.IndexName = model.Indices[0];
             }
 
-            if (! await _elasticIndexManager.Exists(model.IndexName))
+            if (!await _elasticIndexManager.Exists(model.IndexName))
             {
                 return NotFound();
             }
@@ -450,7 +445,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                     case ContentsBulkAction.Reset:
                         foreach (var item in checkedContentItems)
                         {
-                            if (! await _elasticIndexManager.Exists(item.IndexName))
+                            if (!await _elasticIndexManager.Exists(item.IndexName))
                             {
                                 return NotFound();
                             }

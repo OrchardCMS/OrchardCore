@@ -1,8 +1,12 @@
 using System;
+using Elasticsearch.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Nest;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -10,29 +14,25 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Search.Elastic.Controllers;
-using OrchardCore.Search.Elastic.Deployment;
-using OrchardCore.Search.Elastic.Drivers;
-using OrchardCore.Search.Elastic.Handlers;
-using OrchardCore.Search.Elastic.Recipes;
-using OrchardCore.Search.Elastic.Services;
-using OrchardCore.Search.Elastic.Settings;
+using OrchardCore.Elastic.Search;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
 using OrchardCore.Recipes;
+using OrchardCore.Search.Abstractions;
+using OrchardCore.Search.Elastic.Configurations;
+using OrchardCore.Search.Elastic.Controllers;
+using OrchardCore.Search.Elastic.Deployment;
+using OrchardCore.Search.Elastic.Drivers;
+using OrchardCore.Search.Elastic.Handlers;
+using OrchardCore.Search.Elastic.Model;
+using OrchardCore.Search.Elastic.Recipes;
+using OrchardCore.Search.Elastic.Services;
+using OrchardCore.Search.Elastic.Settings;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using OrchardCore.Environment.Shell.Configuration;
-using Microsoft.Extensions.Logging;
-using OrchardCore.Search.Elastic.Model;
-using OrchardCore.Search.Elastic.Configurations;
-using Nest;
-using OrchardCore.Elastic.Search;
-using Microsoft.Extensions.Configuration;
-using OrchardCore.Search.Abstractions;
-using Elasticsearch.Net;
 
 namespace OrchardCore.Search.Elastic
 {
@@ -59,6 +59,7 @@ namespace OrchardCore.Search.Elastic
         {
             var configuration = _shellConfiguration.GetSection(ConfigSectionName);
             services.Configure<ElasticConnectionOptions>(configuration);
+
             var url = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.Url)}"];
 
             if (configuration.Exists() && CheckOptions(url, _logger))
@@ -72,10 +73,31 @@ namespace OrchardCore.Search.Elastic
                 var pool = new SingleNodeConnectionPool(new Uri(url));
 
                 var settings = new ConnectionSettings(pool);
+
+                var username = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.Username)}"];
+                var password = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.Password)}"];
+                var certificateFingerprint = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.CertificateFingerprint)}"];
+                var enableApiVersioningHeader = _shellConfiguration.GetValue(ConfigSectionName + $":{nameof(ElasticConnectionOptions.EnableApiVersioningHeader)}", false);
+
+                if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
+                {
+                    settings.BasicAuthentication(username, password);
+                }               
+
+                if (!String.IsNullOrWhiteSpace(certificateFingerprint))
+                {
+                    settings.CertificateFingerprint(certificateFingerprint);
+                }
+
+                if (enableApiVersioningHeader)
+                {
+                    settings.EnableApiVersioningHeader();
+                }
+
                 var client = new ElasticClient(settings);
                 services.AddSingleton<IElasticClient>(client);
                 services.AddSingleton<ElasticIndexingState>();
-                
+
                 services.AddSingleton<ElasticIndexManager>();
                 services.AddSingleton<ElasticAnalyzerManager>();
                 services.AddScoped<ElasticIndexingService>();
