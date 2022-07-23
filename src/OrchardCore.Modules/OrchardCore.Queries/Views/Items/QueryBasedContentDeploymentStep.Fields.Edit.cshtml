@@ -31,7 +31,7 @@
     <div class="hint">@T["The name of the Query which will be used to fetch content items. NOTE: The Query must be configured to return Documents."]</div>
 </div>
 
-<div class="mb-3">
+<div class="mb-3" asp-validation-class-for="QueryParameters">
     <label asp-for="QueryParameters">@T["Parameters"]</label>
     <textarea asp-for="QueryParameters" class="form-control"></textarea>
     <span asp-validation-for="QueryParameters" class="text-danger"></span>
