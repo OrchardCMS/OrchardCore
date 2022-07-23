@@ -81,8 +81,6 @@ namespace OrchardCore.Localization
     [Feature("OrchardCore.Localization.CulturePicker.Admin")]
     public class CulturePickerStartup : StartupBase
     {
-        internal static readonly string AdminSiteCookieName = ".OrchardCore.AdminSiteCulture";
-
         private static readonly Task<ProviderCultureResult> NullProviderCultureResult = Task.FromResult(default(ProviderCultureResult));
 
         private readonly AdminOptions _adminOptions;
@@ -98,7 +96,9 @@ namespace OrchardCore.Localization
 
             services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new CustomRequestCultureProvider(context =>
             {
-                if (context.Request.Path.Value[1..].StartsWith(_adminOptions.AdminUrlPrefix, StringComparison.OrdinalIgnoreCase))
+                var path = context.Request.Path.Value[1..];
+                if (path.Equals(_adminOptions.AdminUrlPrefix, StringComparison.OrdinalIgnoreCase) ||
+                    path.StartsWith(_adminOptions.AdminUrlPrefix + "/", StringComparison.OrdinalIgnoreCase))
                 {
                     var cookie = context.Request.Cookies[LocalizationCookieName.AdminSite];
 
