@@ -43,11 +43,10 @@
         </div>
 
         <div class="mt-2">
-            <div class="btn btn-warning btn-sm" id="generatePassword">@T["Generate password"]</div>
+            <div class="btn btn-warning btn-sm" id="generatePassword" data-password-length="@Math.Max(IdentityOptions.Value.Password.RequiredLength, IdentityOptions.Value.Password.RequiredUniqueChars)">@T["Generate password"]</div>
             <div class="btn btn-info btn-sm" id="copyPassword">@T["Copy password"]</div>
         </div>
     </div>
-
     <script at="Foot" asp-name="userFieldsPassword">
         document.addEventListener('DOMContentLoaded', function() {
             let password = document.getElementById('@Html.IdFor(p => p.Password)');
@@ -56,12 +55,12 @@
             let passwordConfirmationToggle = document.getElementById('passwordConfirmationToggle');
             let generate = document.getElementById('generatePassword');
             let copy = document.getElementById('copyPassword');
-            const requiredPasswordLength = @(Math.Max(IdentityOptions.Value.Password.RequiredLength, IdentityOptions.Value.Password.RequiredUniqueChars));
+            const requiredPasswordLength = parseInt(generate.getAttribute('data-password-length'));
             const allowed = {
                 uppers: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
                 lowers: 'abcdefghijklmnopqrstuvwxyz',
                 digits: '0123456789',
-                symbols: '!@@#$%^&*'
+                symbols: '!#$%&\()*+,-./:;<=>\'?@@[\]^_`{|}~'
             };
 
             function getRandomChar(str) {
@@ -79,25 +78,26 @@
 
                 @if (IdentityOptions.Value.Password.RequireUppercase)
                 {
-                    // At least one uppercase 
-                    <text>password.push(getRandomChar(allowed.uppers));</text>
+                    // At least one uppercase
+                    <text>password.push(getRandomChar(allowed.uppers)); </text>
                 }
                 @if (IdentityOptions.Value.Password.RequireLowercase)
                 {
                     // At least one lowercase
-                    <text>password.push(getRandomChar(allowed.lowers));</text>
+                    <text>password.push(getRandomChar(allowed.lowers)); </text>
                 }
                 @if (IdentityOptions.Value.Password.RequireDigit)
                 {
                     // At least one digit
-                    <text>password.push(getRandomChar(allowed.digits));</text>
+                    <text>password.push(getRandomChar(allowed.digits)); </text>
                 }
 
                 @if (IdentityOptions.Value.Password.RequireNonAlphanumeric)
                 {
                     // At least one special character
-                    <text>password.push(getRandomChar(allowed.symbols));</text>
+                    <text>password.push(getRandomChar(allowed.symbols)); </text>
                 }
+                
                 let passwordLength = password.length;
                 if (passwordLength < requiredPasswordLength) {
                     @* At this point we need lengthier password. Fill the rest of the password with random characters *@
@@ -109,8 +109,8 @@
 
                 @if (IdentityOptions.Value.Password.RequiredUniqueChars > 1)
                 {
-                    // The generated password does not meet the required-unique-chars requirment, create another one
-                    <text>if (!meetUniqueRule(password)) return generatePassword();</text>
+                // The generated password does not meet the required-unique-chars requirment, create another one
+                    <text>if (!meetUniqueRule(password)) return generatePassword(); </text>
                 }
 
                 return shuffle(password).join('');
