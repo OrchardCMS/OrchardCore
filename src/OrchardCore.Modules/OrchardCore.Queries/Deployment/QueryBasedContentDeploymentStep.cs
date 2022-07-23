@@ -4,7 +4,7 @@ using OrchardCore.Deployment;
 namespace OrchardCore.Queries.Deployment
 {
     /// <summary>
-    /// Adds all content items based on SQL query results to a <see cref="DeploymentPlanResult"/>.
+    /// Adds all content items from the result of a Query to a <see cref="DeploymentPlanResult"/>.
     /// </summary>
     public class QueryBasedContentDeploymentStep : DeploymentStep
     {
