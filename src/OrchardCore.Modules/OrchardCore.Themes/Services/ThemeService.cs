@@ -50,7 +50,7 @@ namespace OrchardCore.Themes.Services
                     : null;
             }
 
-            var currentTheme = await _siteThemeService.GetCurrentThemeNameAsync();
+            var currentTheme = await _siteThemeService.GetSiteThemeNameAsync();
 
             while (themes.Count > 0)
             {
