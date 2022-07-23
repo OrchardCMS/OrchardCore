@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
-using OrchardCore.Queries.Sql;
 
 namespace OrchardCore.Queries.Deployment
 {
@@ -19,28 +18,33 @@ namespace OrchardCore.Queries.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var contentStep = step as QueryBasedContentDeploymentStep;
+            var queryDeploymentStep = step as QueryBasedContentDeploymentStep;
 
-            if (contentStep == null)
+            if (queryDeploymentStep == null)
             {
                 return;
             }
 
             var data = new JArray();
 
-            var query = await _queryManager.GetQueryAsync(contentStep.QueryName);
+            dynamic query = await _queryManager.GetQueryAsync(queryDeploymentStep.QueryName);
 
             if (query == null)
             {
                 return;
             }
 
-            if (query is SqlQuery sqlQuery && !sqlQuery.ReturnDocuments)
+            if (query.Source == "Lucene" && !query.ReturnContentItems)
             {
                 return;
             }
 
-            if (!TryDeserializeParameters(contentStep.QueryParameters ?? "{ }", out var parameters))
+            if (query.Source == "Sql" && !query.ReturnDocuments)
+            {
+                return;
+            }
+
+            if (!TryDeserializeParameters(queryDeploymentStep.QueryParameters ?? "{ }", out var parameters))
             {
                 return;
             }
@@ -54,7 +58,7 @@ namespace OrchardCore.Queries.Deployment
                 // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql.
                 objectData.Remove(nameof(ContentItem.Id));
 
-                if (contentStep.ExportAsSetupRecipe)
+                if (queryDeploymentStep.ExportAsSetupRecipe)
                 {
                     objectData[nameof(ContentItem.Owner)] = "[js: parameters('AdminUserId')]";
                     objectData[nameof(ContentItem.Author)] = "[js: parameters('AdminUsername')]";

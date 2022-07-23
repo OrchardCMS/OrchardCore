@@ -1,15 +1,29 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.Queries.ViewModels;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Queries.Sql;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace OrchardCore.Queries.Deployment
 {
     public class QueryBasedContentDeploymentStepDriver : DisplayDriver<DeploymentStep, QueryBasedContentDeploymentStep>
     {
+        private readonly IQueryManager _queryManager;
+        private readonly IStringLocalizer S;
+
+        public QueryBasedContentDeploymentStepDriver(IQueryManager queryManager,
+            IStringLocalizer<QueryBasedContentDeploymentStepDriver> stringLocalizer)
+        {
+            _queryManager = queryManager;
+            S = stringLocalizer;
+        }
+
         public override IDisplayResult Display(QueryBasedContentDeploymentStep step)
         {
             return
@@ -31,7 +45,35 @@ namespace OrchardCore.Queries.Deployment
 
         public override async Task<IDisplayResult> UpdateAsync(QueryBasedContentDeploymentStep step, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(step, Prefix, x => x.QueryName, x => x.QueryParameters, x => x.ExportAsSetupRecipe);
+            var model = new QueryBasedContentDeploymentStepViewModel();
+
+            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.QueryName, x => x.QueryParameters, x => x.ExportAsSetupRecipe)) {
+                dynamic query = await _queryManager.LoadQueryAsync(model.QueryName);
+                if (query.Source == "Lucene" && !query.ReturnContentItems)
+                {
+                    updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Lucene query is not returning ContentItems"]);
+                }
+                else if (query.Source == "Sql" && !query.ReturnDocuments)
+                {
+                    updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your SQL query is not returning documents"]);
+                }
+                else
+                {
+                    step.QueryName = model.QueryName;
+                }
+
+                try
+                {
+                    JsonConvert.DeserializeObject<Dictionary<string, object>>(model.QueryParameters);
+                    step.QueryParameters = model.QueryParameters;
+                }
+                catch (JsonSerializationException)
+                {
+                    updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Something is wrong with your JSON."]);
+                }
+
+                step.ExportAsSetupRecipe = model.ExportAsSetupRecipe;
+            }
 
             return Edit(step);
         }
