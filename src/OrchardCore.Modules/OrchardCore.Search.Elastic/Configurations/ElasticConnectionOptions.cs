@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace OrchardCore.Search.Elastic.Configurations
 {
     public class ElasticConnectionOptions
@@ -29,7 +23,7 @@ namespace OrchardCore.Search.Elastic.Configurations
         public string CertificateFingerprint { get; set; }
 
         /// <summary>
-        /// 
+        /// Enables compatibility mode for Elastic Search 8.x
         /// </summary>
         public bool EnableApiVersioningHeader { get; set; } = false;
 
