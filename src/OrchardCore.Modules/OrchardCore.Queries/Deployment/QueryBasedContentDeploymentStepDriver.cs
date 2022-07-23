@@ -57,23 +57,23 @@ namespace OrchardCore.Queries.Deployment
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your SQL query is not returning documents"]);
                 }
-                else
+
+                if (model.QueryParameters != null)
                 {
-                    step.QueryName = model.QueryName;
+                    try
+                    {
+                        JsonConvert.DeserializeObject<Dictionary<string, object>>(model.QueryParameters);
+                    }
+                    catch
+                    {
+                        updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Something is wrong with your JSON."]);
+                    }
                 }
 
-                try
-                {
-                    JsonConvert.DeserializeObject<Dictionary<string, object>>(model.QueryParameters);
-                    step.QueryParameters = model.QueryParameters;
-                }
-                catch (JsonSerializationException)
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Something is wrong with your JSON."]);
-                }
-
+                step.QueryName = model.QueryName;
                 step.ExportAsSetupRecipe = model.ExportAsSetupRecipe;
-            }
+                step.QueryParameters = model.QueryParameters;
+            }           
 
             return Edit(step);
         }
