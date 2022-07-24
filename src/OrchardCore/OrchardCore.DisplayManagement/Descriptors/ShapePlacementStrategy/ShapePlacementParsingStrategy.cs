@@ -70,6 +70,8 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         private void ProcessPlacementFile(ShapeTableBuilder builder, IFeatureInfo featureDescriptor, PlacementFile placementFile)
         {
+            if (placementFile == null) return;
+
             foreach (var entry in placementFile)
             {
                 var shapeType = entry.Key;
