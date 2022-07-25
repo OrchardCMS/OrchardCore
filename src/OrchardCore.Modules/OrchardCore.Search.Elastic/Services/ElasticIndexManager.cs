@@ -178,8 +178,8 @@ namespace OrchardCore.Search.Elastic
         private Dictionary<string, object> CreateElasticDocument(DocumentIndex documentIndex)
         {
             Dictionary<string, object> entries = new Dictionary<string, object>();
-            entries.Add("ContentItemId", documentIndex.ContentItemId);
             entries.Add("Id", documentIndex.ContentItemId);
+            entries.Add("ContentItemId", documentIndex.ContentItemId);
 
             foreach (var entry in documentIndex.Entries)
             {
