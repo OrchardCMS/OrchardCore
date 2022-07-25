@@ -45,11 +45,11 @@ namespace OrchardCore.Queries.Deployment
 
         public override async Task<IDisplayResult> UpdateAsync(QueryBasedContentDeploymentStep step, IUpdateModel updater)
         {
-            var model = new QueryBasedContentDeploymentStepViewModel();
+            var queryBasedContentModel = new QueryBasedContentDeploymentStepViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.QueryName, x => x.QueryParameters, x => x.ExportAsSetupRecipe))
+            if (await updater.TryUpdateModelAsync(queryBasedContentModel, Prefix, x => x.QueryName, x => x.QueryParameters, x => x.ExportAsSetupRecipe))
             {
-                dynamic query = await _queryManager.LoadQueryAsync(model.QueryName);
+                dynamic query = await _queryManager.LoadQueryAsync(queryBasedContentModel.QueryName);
                 if (query.Source == "Lucene" && !query.ReturnContentItems)
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Lucene query is not returning content items."]);
@@ -59,11 +59,11 @@ namespace OrchardCore.Queries.Deployment
                     updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your SQL query is not returning documents."]);
                 }
 
-                if (model.QueryParameters != null)
+                if (queryBasedContentModel.QueryParameters != null)
                 {
                     try
                     {
-                        var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.QueryParameters);
+                        var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(queryBasedContentModel.QueryParameters);
                         if (parameters == null)
                         {
                             updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Make sure it is a valid JSON object. Example: { key : 'value' }"]);
@@ -75,9 +75,9 @@ namespace OrchardCore.Queries.Deployment
                     }
                 }
 
-                step.QueryName = model.QueryName;
-                step.ExportAsSetupRecipe = model.ExportAsSetupRecipe;
-                step.QueryParameters = model.QueryParameters;
+                step.QueryName = queryBasedContentModel.QueryName;
+                step.ExportAsSetupRecipe = queryBasedContentModel.ExportAsSetupRecipe;
+                step.QueryParameters = queryBasedContentModel.QueryParameters;
             }
 
             return Edit(step);
