@@ -6,7 +6,6 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Mvc.ModelBinding;
-using OrchardCore.Queries.Sql;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
@@ -66,7 +65,7 @@ namespace OrchardCore.Queries.Deployment
                     {
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(model.QueryParameters);
                     }
-                    catch
+                    catch (JsonException)
                     {
                         updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Something is wrong with your JSON."]);
                     }
@@ -75,7 +74,7 @@ namespace OrchardCore.Queries.Deployment
                 step.QueryName = model.QueryName;
                 step.ExportAsSetupRecipe = model.ExportAsSetupRecipe;
                 step.QueryParameters = model.QueryParameters;
-            }           
+            }
 
             return Edit(step);
         }

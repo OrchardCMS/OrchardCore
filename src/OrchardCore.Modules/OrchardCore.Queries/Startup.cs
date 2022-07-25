@@ -49,9 +49,6 @@ namespace OrchardCore.Queries
             services.AddTransient<IDeploymentSource, AllQueriesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllQueriesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllQueriesDeploymentStepDriver>();
-            services.AddTransient<IDeploymentSource, QueryBasedContentDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<QueryBasedContentDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, QueryBasedContentDeploymentStepDriver>();
             services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
 
             services.Configure<TemplateOptions>(o =>
@@ -106,6 +103,17 @@ namespace OrchardCore.Queries
                 pattern: _adminOptions.AdminUrlPrefix + "/Queries/Sql/Query",
                 defaults: new { controller = typeof(Sql.Controllers.AdminController).ControllerName(), action = nameof(Sql.Controllers.AdminController.Query) }
             );
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Contents")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, QueryBasedContentDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<QueryBasedContentDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, QueryBasedContentDeploymentStepDriver>();
         }
     }
 }
