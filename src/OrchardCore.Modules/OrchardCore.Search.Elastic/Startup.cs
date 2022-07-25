@@ -103,9 +103,6 @@ namespace OrchardCore.Search.Elastic
                 services.AddScoped<ElasticIndexingService>();
                 services.AddScoped<ISearchQueryService, SearchQueryService>();
 
-                services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
-                services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
-
                 services.Configure<ElasticOptions>(o =>
                     o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.StandardAnalyzer, new StandardAnalyzer())));
 

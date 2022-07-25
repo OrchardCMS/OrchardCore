@@ -107,7 +107,7 @@ namespace OrchardCore.Search.Lucene.Handlers
                         }
                         else
                         {
-                            var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId), contentItem, new string[] { contentItem.ContentType }, new LuceneContentIndexSettings());
+                            var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId), contentItem, new string[] { contentItem.ContentType }, new ContentIndexSettings());
                             await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
 
                             await luceneIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { contentItem.ContentItemId });

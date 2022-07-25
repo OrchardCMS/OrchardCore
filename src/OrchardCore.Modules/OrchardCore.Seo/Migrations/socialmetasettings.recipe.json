@@ -47,7 +47,7 @@
                   "DisplayName": "Default social image",
                   "Position": "1"
                 },
-                "LuceneContentIndexSettings": {},
+                "ContentIndexSettings": {},
                 "MediaFieldSettings": {
                   "Multiple": false
                 }
@@ -61,7 +61,7 @@
                   "DisplayName": "Open graph image",
                   "Position": "2"
                 },
-                "LuceneContentIndexSettings": {},
+                "ContentIndexSettings": {},
                 "MediaFieldSettings": {
                   "Multiple": false
                 }
@@ -75,7 +75,7 @@
                   "DisplayName": "Twitter Image",
                   "Position": "3"
                 },
-                "LuceneContentIndexSettings": {},
+                "ContentIndexSettings": {},
                 "MediaFieldSettings": {
                   "Multiple": false
                 }
@@ -131,7 +131,7 @@
                   "Position": "12"
                 },
                 "TextFieldSettings": {},
-                "LuceneContentIndexSettings": {}
+                "ContentIndexSettings": {}
               }
             },
             {
@@ -164,7 +164,7 @@
                   "Position": "0"
                 },
                 "TextFieldSettings": {},
-                "LuceneContentIndexSettings": {}
+                "ContentIndexSettings": {}
               }
             },
             {
@@ -177,7 +177,7 @@
                   "Position": "9"
                 },
                 "TextFieldSettings": {},
-                "LuceneContentIndexSettings": {}
+                "ContentIndexSettings": {}
               }
             },
             {
@@ -190,7 +190,7 @@
                   "Position": "5"
                 },
                 "TextFieldSettings": {},
-                "LuceneContentIndexSettings": {}
+                "ContentIndexSettings": {}
               }
             }
           ]

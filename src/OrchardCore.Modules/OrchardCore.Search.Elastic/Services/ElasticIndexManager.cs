@@ -40,7 +40,7 @@ namespace OrchardCore.Search.Elastic
             IElasticClient elasticClient
             )
         {
-            
+
             _clock = clock;
             _logger = logger;
             _elasticAnalyzerManager = elasticAnalyzerManager;
@@ -65,12 +65,12 @@ namespace OrchardCore.Search.Elastic
         public async Task<bool> DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
         {
             bool success = true;
-            List<Dictionary<string,object>> documents = new List<Dictionary<string,object>>();
+            List<Dictionary<string, object>> documents = new List<Dictionary<string, object>>();
             foreach (var contentItemId in contentItemIds)
             {
                 documents.Add(CreateElasticDocument(contentItemId));
             }
-            if(documents.Any())
+            if (documents.Any())
             {
                 var result = await _elasticClient.DeleteManyAsync(documents, indexName);
                 if (result.Errors)
@@ -108,12 +108,14 @@ namespace OrchardCore.Search.Elastic
         public async Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
             //Convert Document to a structure suitable for Elastic
-            List<Dictionary<string,object>> documents = new List<Dictionary<string,object>>();
+            List<Dictionary<string, object>> documents = new List<Dictionary<string, object>>();
+
             foreach (var indexDocument in indexDocuments)
             {
                 documents.Add(CreateElasticDocument(indexDocument));
             }
-            if(documents.Any())
+
+            if (documents.Any())
             {
                 var result = await _elasticClient.IndexManyAsync(documents, indexName);
                 if (result.Errors)
@@ -129,7 +131,7 @@ namespace OrchardCore.Search.Elastic
 
             if (await Exists(indexName))
             {
-                var searchResponse = await _elasticClient.SearchAsync<Dictionary<string,object>>(s => s
+                var searchResponse = await _elasticClient.SearchAsync<Dictionary<string, object>>(s => s
                     .Index(indexName)
                     .Query(q => new RawQuery(query))
                     );
@@ -173,7 +175,7 @@ namespace OrchardCore.Search.Elastic
             return elasticTopDocs;
         }
 
-        private Dictionary<string,object> CreateElasticDocument(DocumentIndex documentIndex)
+        private Dictionary<string, object> CreateElasticDocument(DocumentIndex documentIndex)
         {
             Dictionary<string, object> entries = new Dictionary<string, object>();
             entries.Add("ContentItemId", documentIndex.ContentItemId);
@@ -185,7 +187,7 @@ namespace OrchardCore.Search.Elastic
                     || entry.Name.Contains(IndexingConstants.FullTextKey)
                     || Array.Exists(IgnoredFields, x => entry.Name.Contains(x)))
                 {
-                        continue;
+                    continue;
                 }
 
                 switch (entry.Type)
@@ -252,7 +254,7 @@ namespace OrchardCore.Search.Elastic
             return entries;
         }
 
-        private Dictionary<string,object> CreateElasticDocument(string contentItemId)
+        private Dictionary<string, object> CreateElasticDocument(string contentItemId)
         {
             Dictionary<string, object> entries = new Dictionary<string, object>();
             entries.Add("Id", contentItemId);

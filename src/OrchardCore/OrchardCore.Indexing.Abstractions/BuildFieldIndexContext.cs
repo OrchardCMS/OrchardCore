@@ -13,7 +13,7 @@ namespace OrchardCore.Indexing
             ContentPart contentPart,
             ContentTypePartDefinition typePartDefinition,
             ContentPartFieldDefinition partFieldDefinition,
-            IContentIndexSettings settings)
+            ContentIndexSettings settings)
             : base(documentIndex, contentItem, keys, typePartDefinition, settings)
         {
             ContentPartFieldDefinition = partFieldDefinition;

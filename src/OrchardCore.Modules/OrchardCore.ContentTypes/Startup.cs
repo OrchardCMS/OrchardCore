@@ -48,8 +48,6 @@ namespace OrchardCore.ContentTypes
             services.AddRecipeExecutionStep<ContentDefinitionStep>();
             services.AddRecipeExecutionStep<ReplaceContentDefinitionStep>();
             services.AddRecipeExecutionStep<DeleteContentDefinitionStep>();
-
-            services.AddTransient<IRecipeEventHandler, LuceneRecipeEventHandler>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

@@ -10,10 +10,16 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Navigation;
+using OrchardCore.Queries;
+using OrchardCore.Recipes;
+using OrchardCore.Search.Abstractions;
+using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Search.Lucene.Controllers;
 using OrchardCore.Search.Lucene.Deployment;
 using OrchardCore.Search.Lucene.Drivers;
@@ -22,15 +28,8 @@ using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Recipes;
 using OrchardCore.Search.Lucene.Services;
 using OrchardCore.Search.Lucene.Settings;
-using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
-using OrchardCore.Navigation;
-using OrchardCore.Queries;
-using OrchardCore.Recipes;
-using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using OrchardCore.Search.Abstractions;
 
 namespace OrchardCore.Search.Lucene
 {
@@ -55,7 +54,6 @@ namespace OrchardCore.Search.Lucene
                 o.MemberAccessStrategy.Register<SearchResultsViewModel>();
             });
 
-            services.AddScoped<IDataMigration, Migrations>();
             services.AddSingleton<LuceneIndexingState>();
             services.AddSingleton<LuceneIndexSettingsService>();
             services.AddSingleton<LuceneIndexManager>();
@@ -63,9 +61,6 @@ namespace OrchardCore.Search.Lucene
             services.AddScoped<LuceneIndexingService>();
             services.AddScoped<IModularTenantEvents, LuceneIndexInitializerService>();
             services.AddScoped<ISearchQueryService, SearchQueryService>();
-
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
 

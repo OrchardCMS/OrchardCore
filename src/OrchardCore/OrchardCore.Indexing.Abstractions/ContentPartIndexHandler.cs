@@ -11,7 +11,7 @@ namespace OrchardCore.Indexing
     /// </summary>
     public abstract class ContentPartIndexHandler<TPart> : IContentPartIndexHandler where TPart : ContentPart
     {
-        Task IContentPartIndexHandler.BuildIndexAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildIndexContext context, IContentIndexSettings settings)
+        Task IContentPartIndexHandler.BuildIndexAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildIndexContext context, ContentIndexSettings settings)
         {
             var part = contentPart as TPart;
 

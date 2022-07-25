@@ -5,7 +5,6 @@ namespace OrchardCore.Indexing
     /// <summary>
     /// Represents the indexing settings for a content part or a field.
     /// </summary>
-    [Obsolete("This class has been deprecated and we will be removed in the next major release, please use IContentIndexSettings instead.", false)]
     public class ContentIndexSettings
     {
         public bool Included { get; set; }

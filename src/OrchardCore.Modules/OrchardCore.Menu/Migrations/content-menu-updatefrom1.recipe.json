@@ -58,7 +58,7 @@
                   "DisplayAllContentTypes": true,
                   "DisplayedContentTypes": []
                 },
-                "LuceneContentIndexSettings": {}
+                "ContentIndexSettings": {}
               }
             }
           ]
