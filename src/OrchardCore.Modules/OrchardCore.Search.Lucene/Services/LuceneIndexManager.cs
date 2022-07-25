@@ -257,7 +257,9 @@ namespace OrchardCore.Search.Lucene
                             // Here just like ElasticSearch we always store the text value even if the field is tokenized.
                             doc.Add(new TextField(entry.Name, stringValue, Field.Store.YES));
 
-                            //Keyword Ignore above 256 chars by default
+                            // This is for ElasticSearch Queries compatibility since a keyword field is always stored
+                            // by default when indexing without explicit mapping in ElasticSearch.
+                            // Keyword Ignore above 256 chars by default.
                             if (stringValue.Length <= 256)
                             {
                                 doc.Add(new StringField($"{entry.Name}.keyword", Convert.ToString(entry.Value), Field.Store.YES));
