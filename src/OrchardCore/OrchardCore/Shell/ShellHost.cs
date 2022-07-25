@@ -505,7 +505,7 @@ namespace OrchardCore.Environment.Shell
                 _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
             {
                 throw new InvalidOperationException(
-                    $"The tenant '{settings.Name}' can't be removed as it is not disabled or still in use.");
+                    $"The tenant '{settings.Name}' can't be removed as it is not uninitialized or disabled or still in use.");
             }
         }
 

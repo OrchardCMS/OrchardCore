@@ -58,10 +58,10 @@ public class ShellRemovingManager : IShellRemovingManager
             if (!locked)
             {
                 _logger.LogError(
-                    "Failed to acquire a lock before executing the tenant level removing handlers while removing the tenant '{TenantName}'.",
+                    "Failed to acquire a lock before executing the tenant handlers while removing the tenant '{TenantName}'.",
                     shellSettings.Name);
 
-                context.ErrorMessage = $"Failed to acquire a lock before executing the tenant level removing handlers.";
+                context.ErrorMessage = $"Failed to acquire a lock before executing the tenant handlers.";
                 return context;
             }
 
@@ -87,11 +87,11 @@ public class ShellRemovingManager : IShellRemovingManager
 
                         _logger.LogError(
                             ex,
-                            "Failed to execute the tenant level removing handler '{TenantHandler}' while removing the tenant '{TenantName}'.",
+                            "Failed to execute the tenant handler '{TenantHandler}' while removing the tenant '{TenantName}'.",
                             type,
                             shellSettings.Name);
 
-                        context.ErrorMessage = $"Failed to execute the tenant level removing handler '{type}'.";
+                        context.ErrorMessage = $"Failed to execute the tenant handler '{type}'.";
                         context.Error = ex;
 
                         break;
@@ -108,14 +108,15 @@ public class ShellRemovingManager : IShellRemovingManager
             if (!locked)
             {
                 _logger.LogError(
-                    "Failed to acquire a lock before executing the host level removing handlers while removing the tenant '{TenantName}'.",
+                    "Failed to acquire a lock before executing the host handlers while removing the tenant '{TenantName}'.",
                     shellSettings.Name);
 
-                context.ErrorMessage = $"Failed to acquire a lock before executing the host level removing handlers.";
+                context.ErrorMessage = $"Failed to acquire a lock before executing the host handlers.";
 
                 // If only local resources should be removed while syncing tenants.
                 if (context.LocalResourcesOnly)
                 {
+                    // Indicates that we can retry in a next loop.
                     context.FailedOnLockTimeout = true;
                 }
 
@@ -141,11 +142,11 @@ public class ShellRemovingManager : IShellRemovingManager
 
                     _logger.LogError(
                         ex,
-                        "Failed to execute the host level removing handler '{HostHandler}' while removing the tenant '{TenantName}'.",
+                        "Failed to execute the host handler '{HostHandler}' while removing the tenant '{TenantName}'.",
                         type,
                         shellSettings.Name);
 
-                    context.ErrorMessage = $"Failed to execute the host level removing handler '{type}'.";
+                    context.ErrorMessage = $"Failed to execute the host handler '{type}'.";
                     context.Error = ex;
 
                     break;

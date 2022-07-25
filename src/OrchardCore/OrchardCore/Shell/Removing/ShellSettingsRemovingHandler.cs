@@ -27,12 +27,10 @@ public class ShellSettingsRemovingHandler : IShellRemovingHandler
         {
             if (context.LocalResourcesOnly)
             {
-                await _shellHost.RemoveShellContextAsync(context.ShellSettings);
+                return;
             }
-            else
-            {
-                await _shellHost.RemoveShellSettingsAsync(context.ShellSettings);
-            }
+
+            await _shellHost.RemoveShellSettingsAsync(context.ShellSettings);
         }
         catch (Exception ex)
         {

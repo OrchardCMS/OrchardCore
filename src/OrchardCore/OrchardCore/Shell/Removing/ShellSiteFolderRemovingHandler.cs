@@ -43,11 +43,11 @@ public class ShellSiteFolderRemovingHandler : IShellRemovingHandler
         {
             _logger.LogError(
                 ex,
-                "Failed to remove the app data folder '{TenantFolder}' of tenant '{TenantName}'.",
+                "Failed to remove the site folder '{TenantFolder}' of tenant '{TenantName}'.",
                 shellAppDataFolder,
                 context.ShellSettings.Name);
 
-            context.ErrorMessage = $"Failed to remove the app data folder '{shellAppDataFolder}'.";
+            context.ErrorMessage = $"Failed to remove the site folder '{shellAppDataFolder}'.";
             context.Error = ex;
         }
 
