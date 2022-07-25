@@ -201,15 +201,11 @@ namespace OrchardCore.Search.Lucene
 
             foreach (var entry in documentIndex.Entries)
             {
-                var store = entry.Options.HasFlag(DocumentIndexOptions.Store)
-                            ? Field.Store.YES
-                            : Field.Store.NO;
-
                 switch (entry.Type)
                 {
                     case DocumentIndex.Types.Boolean:
                         // Store "true"/"false" for booleans
-                        doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), store));
+                        doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), Field.Store.YES));
                         break;
 
                     case DocumentIndex.Types.DateTime:
@@ -217,27 +213,27 @@ namespace OrchardCore.Search.Lucene
                         {
                             if (entry.Value is DateTimeOffset)
                             {
-                                doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateResolution.SECOND), store));
+                                doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateResolution.SECOND), Field.Store.YES));
                             }
                             else
                             {
-                                doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateResolution.SECOND), store));
+                                doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateResolution.SECOND), Field.Store.YES));
                             }
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, "NULL", store));
+                            doc.Add(new StringField(entry.Name, "NULL", Field.Store.YES));
                         }
                         break;
 
                     case DocumentIndex.Types.Integer:
                         if (entry.Value != null && Int64.TryParse(entry.Value.ToString(), out var value))
                         {
-                            doc.Add(new Int64Field(entry.Name, value, store));
+                            doc.Add(new Int64Field(entry.Name, value, Field.Store.YES));
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, "NULL", store));
+                            doc.Add(new StringField(entry.Name, "NULL", Field.Store.YES));
                         }
 
                         break;
@@ -245,36 +241,31 @@ namespace OrchardCore.Search.Lucene
                     case DocumentIndex.Types.Number:
                         if (entry.Value != null)
                         {
-                            doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), store));
+                            doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), Field.Store.YES));
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, "NULL", store));
+                            doc.Add(new StringField(entry.Name, "NULL", Field.Store.YES));
                         }
                         break;
 
                     case DocumentIndex.Types.Text:
                         if (entry.Value != null && !String.IsNullOrEmpty(Convert.ToString(entry.Value)))
                         {
-                            if (entry.Options.HasFlag(DocumentIndexOptions.Analyze))
+                            var stringValue = Convert.ToString(entry.Value);
+
+                            // Here just like ElasticSearch we always store the text value even if the field is tokenized.
+                            doc.Add(new TextField(entry.Name, stringValue, Field.Store.YES));
+
+                            //Keyword Ignore above 256 chars by default
+                            if (stringValue.Length <= 256)
                             {
-                                doc.Add(new TextField(entry.Name, Convert.ToString(entry.Value), store));
-                            }
-                            else
-                            {
-                                doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value), store));
+                                doc.Add(new StringField($"{entry.Name}.keyword", Convert.ToString(entry.Value), Field.Store.YES));
                             }
                         }
                         else
                         {
-                            if (entry.Options.HasFlag(DocumentIndexOptions.Analyze))
-                            {
-                                doc.Add(new TextField(entry.Name, "NULL", store));
-                            }
-                            else
-                            {
-                                doc.Add(new StringField(entry.Name, "NULL", store));
-                            }
+                            doc.Add(new StringField(entry.Name, "NULL", Field.Store.YES));
                         }
                         break;
 
@@ -295,7 +286,7 @@ namespace OrchardCore.Search.Lucene
                         }
                         else
                         {
-                            doc.Add(new StringField(strategy.FieldName, "NULL", store));
+                            doc.Add(new StringField(strategy.FieldName, "NULL", Field.Store.YES));
                         }
                         break;
                 }

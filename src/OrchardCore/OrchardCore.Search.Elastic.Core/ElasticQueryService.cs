@@ -60,30 +60,5 @@ namespace OrchardCore.Search.Elastic
             }
             return elasticTopDocs;
         }
-
-        /// <summary>
-        /// May not be needed
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="queryObj"></param>
-        /// <returns></returns>
-        public IQuery CreateQueryFragment(ElasticQueryContext context, JObject queryObj)
-        {
-            var first = queryObj.Properties().First();
-
-            IQuery query = null;
-
-            foreach (var queryProvider in _queryProviders)
-            {
-                query = queryProvider.CreateQuery(this, context, first.Name, (JObject)first.Value);
-
-                if (query != null)
-                {
-                    break;
-                }
-            }
-
-            return query;
-        }
     }
 }

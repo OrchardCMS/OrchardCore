@@ -8,22 +8,10 @@ namespace OrchardCore.Indexing
     public class ContentIndexSettings
     {
         public bool Included { get; set; }
-        public bool Stored { get; set; }
-        public bool Analyzed { get; set; }
 
         public DocumentIndexOptions ToOptions()
         {
             var options = DocumentIndexOptions.None;
-
-            if (Stored)
-            {
-                options |= DocumentIndexOptions.Store;
-            }
-
-            if (Analyzed)
-            {
-                options |= DocumentIndexOptions.Analyze;
-            }
 
             return options;
         }

@@ -1,6 +1,6 @@
 {
   "query": {
-    "term": { "Content.ContentItem.ContentType": "BlogPost" }
+    "term": { "Content.ContentItem.ContentType.keyword": "BlogPost" }
   },
   "sort": {
     "Content.ContentItem.CreatedUtc": {

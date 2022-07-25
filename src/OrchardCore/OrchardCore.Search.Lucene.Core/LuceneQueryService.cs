@@ -38,11 +38,13 @@ namespace OrchardCore.Search.Lucene
 
             string sortField = null;
             string sortOrder = null;
-            string sortType = null;
+            
             var sortFields = new List<SortField>();
 
             if (sortProperty != null)
             {
+                string sortType;
+
                 if (sortProperty.Type == JTokenType.String)
                 {
                     sortField = sortProperty.ToString();
@@ -80,11 +82,10 @@ namespace OrchardCore.Search.Lucene
             }
 
             LuceneTopDocs result = null;
-            TopDocs topDocs = null;
 
             if (size > 0)
             {
-                topDocs = context.IndexSearcher.Search(
+                TopDocs topDocs = context.IndexSearcher.Search(
                     query,
                     size + from,
                     sortField == null ? Sort.RELEVANCE : new Sort(sortFields.ToArray())
@@ -125,7 +126,7 @@ namespace OrchardCore.Search.Lucene
 
         public static List<string> Tokenize(string fieldName, string text, Analyzer analyzer)
         {
-            if (string.IsNullOrEmpty(text))
+            if (String.IsNullOrEmpty(text))
             {
                 return new List<string>();
             }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,12 +25,12 @@ namespace OrchardCore.Search.Elastic
             var indexName = "Search";
 
             var fieldSettings = searchContext.PartFieldDefinition?.GetSettings<ContentPickerFieldElasticEditorSettings>();
-            if (!string.IsNullOrWhiteSpace(fieldSettings?.Index))
+            if (!String.IsNullOrWhiteSpace(fieldSettings?.Index))
             {
                 indexName = fieldSettings.Index;
             }
 
-            if (! await _elasticIndexProvider.Exists(indexName))
+            if (!await _elasticIndexProvider.Exists(indexName))
             {
                 return new List<ContentPickerResult>();
             }
@@ -46,7 +47,7 @@ namespace OrchardCore.Search.Elastic
             //    }
             //    else
             //    {
-            //        query = new WildcardQuery(new Term("Content.ContentItem.DisplayText.Analyzed", searchContext.Query.ToLowerInvariant() + "*"));
+            //        query = new WildcardQuery(new Term("Content.ContentItem.DisplayText", searchContext.Query.ToLowerInvariant() + "*"));
             //    }
 
             //    var filter = new FieldCacheTermsFilter("Content.ContentItem.ContentType", searchContext.ContentTypes.ToArray());

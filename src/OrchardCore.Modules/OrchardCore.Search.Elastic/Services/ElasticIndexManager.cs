@@ -8,7 +8,6 @@ using Nest;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
-using OrchardCore.Search.Elastic.Services;
 
 namespace OrchardCore.Search.Elastic
 {
@@ -23,8 +22,7 @@ namespace OrchardCore.Search.Elastic
         private readonly ILogger _logger;
         private bool _disposing;
         private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
-        private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
-        private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+
         private readonly string[] IgnoredFields = {
             "Analyzed",
             "Sanitize",
@@ -35,16 +33,12 @@ namespace OrchardCore.Search.Elastic
         public ElasticIndexManager(
             IClock clock,
             ILogger<ElasticIndexManager> logger,
-            ElasticAnalyzerManager elasticAnalyzerManager,
-            ElasticIndexSettingsService elasticIndexSettingsService,
             IElasticClient elasticClient
             )
         {
 
             _clock = clock;
             _logger = logger;
-            _elasticAnalyzerManager = elasticAnalyzerManager;
-            _elasticIndexSettingsService = elasticIndexSettingsService;
             _elasticClient = elasticClient;
         }
 
@@ -64,12 +58,14 @@ namespace OrchardCore.Search.Elastic
 
         public async Task<bool> DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
         {
-            bool success = true;
-            List<Dictionary<string, object>> documents = new List<Dictionary<string, object>>();
+            var success = true;
+            var documents = new List<Dictionary<string, object>>();
+
             foreach (var contentItemId in contentItemIds)
             {
                 documents.Add(CreateElasticDocument(contentItemId));
             }
+
             if (documents.Any())
             {
                 var result = await _elasticClient.DeleteManyAsync(documents, indexName);
@@ -79,6 +75,7 @@ namespace OrchardCore.Search.Elastic
                 }
                 success = result.IsValid;
             }
+
             return success;
         }
 
@@ -97,7 +94,7 @@ namespace OrchardCore.Search.Elastic
 
         public async Task<bool> Exists(string indexName)
         {
-            if (string.IsNullOrWhiteSpace(indexName))
+            if (String.IsNullOrWhiteSpace(indexName))
             {
                 return false;
             }
@@ -108,7 +105,7 @@ namespace OrchardCore.Search.Elastic
         public async Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
             //Convert Document to a structure suitable for Elastic
-            List<Dictionary<string, object>> documents = new List<Dictionary<string, object>>();
+            var documents = new List<Dictionary<string, object>>();
 
             foreach (var indexDocument in indexDocuments)
             {
@@ -177,14 +174,14 @@ namespace OrchardCore.Search.Elastic
 
         private Dictionary<string, object> CreateElasticDocument(DocumentIndex documentIndex)
         {
-            Dictionary<string, object> entries = new Dictionary<string, object>();
-            entries.Add("Id", documentIndex.ContentItemId);
-            entries.Add("ContentItemId", documentIndex.ContentItemId);
+            var entries = new Dictionary<string, object>
+            {
+                { "ContentItemId", documentIndex.ContentItemId }
+            };
 
             foreach (var entry in documentIndex.Entries)
             {
                 if (entries.ContainsKey(entry.Name)
-                    || entry.Name.Contains(IndexingConstants.FullTextKey)
                     || Array.Exists(IgnoredFields, x => entry.Name.Contains(x)))
                 {
                     continue;
@@ -209,10 +206,6 @@ namespace OrchardCore.Search.Elastic
                                 entries.Add(entry.Name, ((DateTime)(entry.Value)).ToUniversalTime());
                             }
                         }
-                        //else
-                        //{
-                        //    elasticDocument.Set(entry.Name, null);
-                        //}
                         break;
 
                     case DocumentIndex.Types.Integer:
@@ -220,10 +213,6 @@ namespace OrchardCore.Search.Elastic
                         {
                             entries.Add(entry.Name, value);
                         }
-                        //else
-                        //{
-                        //    elasticDocument.Set(entry.Name, null);
-                        //}
 
                         break;
 
@@ -232,10 +221,6 @@ namespace OrchardCore.Search.Elastic
                         {
                             entries.Add(entry.Name, Convert.ToDouble(entry.Value));
                         }
-                        //else
-                        //{
-                        //    elasticDocument.Set(entry.Name, null);
-                        //}
                         break;
 
                     case DocumentIndex.Types.Text:
@@ -243,10 +228,6 @@ namespace OrchardCore.Search.Elastic
                         {
                             entries.Add(entry.Name, Convert.ToString(entry.Value));
                         }
-                        //else
-                        //{
-                        //    elasticDocument.Set(entry.Name, null);
-                        //}
                         break;
                 }
 
@@ -254,10 +235,13 @@ namespace OrchardCore.Search.Elastic
             return entries;
         }
 
-        private Dictionary<string, object> CreateElasticDocument(string contentItemId)
+        private static Dictionary<string, object> CreateElasticDocument(string contentItemId)
         {
-            Dictionary<string, object> entries = new Dictionary<string, object>();
-            entries.Add("Id", contentItemId);
+            var entries = new Dictionary<string, object>
+            {
+                { "Id", contentItemId }
+            };
+
             return entries;
         }
 

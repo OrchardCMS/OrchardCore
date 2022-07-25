@@ -1,4 +1,4 @@
-@model AdminQueryViewModel
+@model OrchardCore.Search.Elastic.ViewModels.AdminQueryViewModel
 @using OrchardCore.ContentManagement;
 @inject IContentManager ContentManager
 
@@ -86,6 +86,9 @@
                 }
             </tbody>
         </table>
+    </div>
+    <div class="mt-3">
+        <p><span class="text-muted">@T["The results displayed are coming from the _source data stored in ElasticSearch."]</span></p>
     </div>
 }
 <script at="Foot">

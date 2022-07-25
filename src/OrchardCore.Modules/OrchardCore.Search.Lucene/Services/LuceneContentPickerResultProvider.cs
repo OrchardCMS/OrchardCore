@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +25,8 @@ namespace OrchardCore.Search.Lucene.Services
             var indexName = "Search";
 
             var fieldSettings = searchContext.PartFieldDefinition?.GetSettings<ContentPickerFieldLuceneEditorSettings>();
-            if (!string.IsNullOrWhiteSpace(fieldSettings?.Index))
+
+            if (!String.IsNullOrWhiteSpace(fieldSettings?.Index))
             {
                 indexName = fieldSettings.Index;
             }
@@ -46,7 +48,7 @@ namespace OrchardCore.Search.Lucene.Services
                 }
                 else
                 {
-                    query = new WildcardQuery(new Term("Content.ContentItem.DisplayText.Analyzed", searchContext.Query.ToLowerInvariant() + "*"));
+                    query = new WildcardQuery(new Term("Content.ContentItem.DisplayText", searchContext.Query.ToLowerInvariant() + "*"));
                 }
 
                 var filter = new FieldCacheTermsFilter("Content.ContentItem.ContentType", searchContext.ContentTypes.ToArray());
