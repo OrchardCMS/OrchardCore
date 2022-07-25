@@ -166,7 +166,7 @@ The Content step allows you to create content items.
 ```
 
 !!! note
-    There is also `QueryBasedContentDeploymentStep` which produces exacty the same output as content step, but based on provided query.
+    There is also `QueryBasedContentDeploymentStep` which produces exactly the same output as the Content Step, but based on a provided Query.
 
 ### Media Step
 

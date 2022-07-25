@@ -17,7 +17,8 @@ namespace OrchardCore.Queries.Deployment
         private readonly IQueryManager _queryManager;
         private readonly IStringLocalizer S;
 
-        public QueryBasedContentDeploymentStepDriver(IQueryManager queryManager,
+        public QueryBasedContentDeploymentStepDriver(
+            IQueryManager queryManager,
             IStringLocalizer<QueryBasedContentDeploymentStepDriver> stringLocalizer)
         {
             _queryManager = queryManager;
@@ -47,15 +48,16 @@ namespace OrchardCore.Queries.Deployment
         {
             var model = new QueryBasedContentDeploymentStepViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.QueryName, x => x.QueryParameters, x => x.ExportAsSetupRecipe)) {
+            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.QueryName, x => x.QueryParameters, x => x.ExportAsSetupRecipe))
+            {
                 dynamic query = await _queryManager.LoadQueryAsync(model.QueryName);
                 if (query.Source == "Lucene" && !query.ReturnContentItems)
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Lucene query is not returning ContentItems"]);
+                    updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Lucene query is not returning content items."]);
                 }
                 else if (query.Source == "Sql" && !query.ReturnDocuments)
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your SQL query is not returning documents"]);
+                    updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your SQL query is not returning documents."]);
                 }
 
                 if (model.QueryParameters != null)
