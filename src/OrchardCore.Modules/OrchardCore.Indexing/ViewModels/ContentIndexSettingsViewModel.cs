@@ -8,6 +8,6 @@ namespace OrchardCore.Indexing.ViewModels
         public ContentIndexSettings ContentIndexSettings { get; set; }
 
         [BindNever]
-        public bool IsStorable { get; set; }
+        public bool IsStorable { get; set; } = true;
     }
 }
