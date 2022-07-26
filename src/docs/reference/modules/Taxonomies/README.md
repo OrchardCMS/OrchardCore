@@ -31,13 +31,13 @@ You might invoke the `TermShape` from a content template to render a sidebar of 
 === "Liquid"
 
     ``` liquid
-    {% shape "term", alias: "alias:categories" %}
+    {% shape "term", alias: "alias:Categories" %}
     ```
 
 === "Razor"
 
     ``` html
-    <shape type="Term" alias="Categories" />
+    <shape type="Term" alias="alias:Categories" />
     ```
 
 You can also specify a `TermContentItemId` to render a part of the term hierarchy.
@@ -100,7 +100,6 @@ You can also specify a `TermContentItemId` to render a part of the term hierarch
     {
         <p class="alert alert-warning">@T["The list is empty"]</p>
     }
-    @tag
     ```
 
 ### TermItem
