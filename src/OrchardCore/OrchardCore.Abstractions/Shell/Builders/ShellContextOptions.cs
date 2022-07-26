@@ -16,8 +16,8 @@ namespace OrchardCore.Environment.Shell.Builders
 
         /// <summary>
         /// The timeout in milliseconds to acquire a distributed lock before removing a given shell.
-        /// Should be a low value e.g. 1s as only one instance is intended to remove a given tenant,
-        /// and to not block too much the syncing loops on other instances but let them retry again.
+        /// A low value is recommended because only one instance is intended to drop a given tenant.
+        /// This also prevents other instances from waiting too long in their tenant syncing loop.
         /// Note: Only used if the current distributed lock implementation is not a local lock.
         /// </summary>
         public int ShellRemovingLockTimeout { get; set; }
