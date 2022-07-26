@@ -8,41 +8,47 @@ using OrchardCore.Twitter.Settings;
 namespace OrchardCore.Twitter.Recipes
 {
     /// <summary>
-    /// This recipe step sets Microsoft Account settings.
+    /// This recipe step sets Twitter Account settings.
     /// </summary>
-    public class TwitterSettingsStep : IRecipeStepHandler
+    public class TwitterAuthenticationSettingsStep : IRecipeStepHandler
     {
-        private readonly ITwitterSettingsService _twitterService;
+        private readonly ITwitterAuthenticationService _twitterService;
 
-        public TwitterSettingsStep(ITwitterSettingsService twitterService)
+        public TwitterAuthenticationSettingsStep(ITwitterAuthenticationService twitterService)
         {
             _twitterService = twitterService;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, nameof(TwitterSettings), StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, nameof(TwitterAuthenticationSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
-            var model = context.Step.ToObject<TwitterSettingsStepModel>();
+            var model = context.Step.ToObject<TwitterAuthenticationSettingsStepModel>();
             var settings = await _twitterService.LoadSettingsAsync();
 
             settings.ConsumerKey = model.ConsumerKey;
             settings.ConsumerSecret = model.ConsumerSecret;
             settings.AccessToken = model.AccessToken;
             settings.AccessTokenSecret = model.AccessTokenSecret;
+            settings.CallbackPath = model.CallbackPath;
 
             await _twitterService.UpdateSettingsAsync(settings);
         }
     }
 
-    public class TwitterSettingsStepModel
+    public class TwitterAuthenticationSettingsStepModel
     {
         public string ConsumerKey { get; set; }
+
         public string ConsumerSecret { get; set; }
+
         public string AccessToken { get; set; }
+
         public string AccessTokenSecret { get; set; }
+
+        public string CallbackPath { get; set; }
     }
 }

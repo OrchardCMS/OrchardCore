@@ -1,0 +1,65 @@
+@using OrchardCore.Twitter.ViewModels;
+@model TwitterAuthenticationSettingsViewModel
+
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]
+<a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Twitter/#twitter-integration" target="_blank">@T["See documentation"]</a></p>
+
+@if (Model.HasDecryptionError)
+{
+    <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
+}
+
+<h3>@T["Twitter Integration Settings"]</h3>
+
+<div class="mb-3 row" asp-validation-class-for="ConsumerKey">
+    <div class="col-large">
+        <label asp-for="ConsumerKey">@T["Consumer key"]</label>
+        <input asp-for="ConsumerKey" class="form-control" autocomplete="off" />
+        <span asp-validation-for="ConsumerKey"></span>
+        <span class="hint">@T["The consumer key defined in the Keys and tokens tab of twitter app dashboard."]</span>
+    </div>
+</div>
+
+<div class="mb-3 row" asp-validation-class-for="ConsumerSecret">
+    <div class="col-large">
+        <label asp-for="ConsumerSecret">@T["Consumer secret"]</label>
+        <input asp-for="ConsumerSecret" class="form-control" type="password" value="@Model.ConsumerSecret" autocomplete="off" />
+        <span asp-validation-for="ConsumerSecret"></span>
+        <span class="hint">@T["The consumer secret defined in the Keys and tokens tab of twitter app dashboard."]</span>
+    </div>
+</div>
+
+<div class="mb-3 row" asp-validation-class-for="AccessToken">
+    <div class="col-large">
+        <label asp-for="AccessToken">@T["Access Token"]</label>
+        <input asp-for="AccessToken" class="form-control" autocomplete="off" />
+        <span asp-validation-for="AccessToken"></span>
+        <span class="hint">@T["The Access Token defined in the Keys and tokens tab of twitter app dashboard."]</span>
+    </div>
+</div>
+
+<div class="mb-3 row" asp-validation-class-for="AccessTokenSecret">
+    <div class="col-large">
+        <label asp-for="AccessTokenSecret">@T["Access Token Secret"]</label>
+        <input asp-for="AccessTokenSecret" class="form-control" type="password" value="@Model.AccessTokenSecret" autocomplete="off" />
+        <span asp-validation-for="AccessTokenSecret"></span>
+        <span class="hint">@T["The Access Token Secret in the Keys and tokens tab of twitter app dashboard."]</span>
+    </div>
+</div>
+
+<div class="mb-3 row" asp-validation-class-for="CallbackPath">
+    <div class="col-large">
+        <label asp-for="CallbackPath">@T["CallbackPath"]</label>
+        <input asp-for="CallbackPath" class="form-control" placeholder="/signin-twitter" />
+        <span asp-validation-for="CallbackPath"></span>
+        <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
+    </div>
+</div>
+
+<div class="mb-3" asp-validation-class-for="SaveTokens">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="SaveTokens">
+        <label class="form-check-label" asp-for="SaveTokens">@T["Store tokens"]</label>
+        <span class="hint dashed">@T["Store external authentication tokens for reuse"]</span>
+    </div>
+</div>
