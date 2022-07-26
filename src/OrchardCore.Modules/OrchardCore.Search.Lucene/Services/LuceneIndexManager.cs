@@ -250,6 +250,8 @@ namespace OrchardCore.Search.Lucene
                         break;
 
                     case DocumentIndex.Types.Text:
+                        // Only Text store option should be overridable
+                        // All the other CLR types should be handled naturally.
                         var store = entry.Options.HasFlag(DocumentIndexOptions.Store)
                                     ? Field.Store.YES
                                     : Field.Store.NO;
