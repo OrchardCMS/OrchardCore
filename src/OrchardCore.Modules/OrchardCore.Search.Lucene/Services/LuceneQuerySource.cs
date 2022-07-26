@@ -19,7 +19,7 @@ namespace OrchardCore.Search.Lucene
 {
     public class LuceneQuerySource : IQuerySource
     {
-        private readonly LuceneIndexManager _luceneIndexProvider;
+        private readonly LuceneIndexManager _luceneIndexManager;
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly ILuceneQueryService _queryService;
@@ -29,7 +29,7 @@ namespace OrchardCore.Search.Lucene
         private readonly TemplateOptions _templateOptions;
 
         public LuceneQuerySource(
-            LuceneIndexManager luceneIndexProvider,
+            LuceneIndexManager luceneIndexManager,
             LuceneIndexSettingsService luceneIndexSettingsService,
             LuceneAnalyzerManager luceneAnalyzerManager,
             ILuceneQueryService queryService,
@@ -38,7 +38,7 @@ namespace OrchardCore.Search.Lucene
             JavaScriptEncoder javaScriptEncoder,
             IOptions<TemplateOptions> templateOptions)
         {
-            _luceneIndexProvider = luceneIndexProvider;
+            _luceneIndexManager = luceneIndexManager;
             _luceneIndexSettingsService = luceneIndexSettingsService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _queryService = queryService;
@@ -60,7 +60,7 @@ namespace OrchardCore.Search.Lucene
             var luceneQuery = query as LuceneQuery;
             var luceneQueryResults = new LuceneQueryResults();
 
-            await _luceneIndexProvider.SearchAsync(luceneQuery.Index, async searcher =>
+            await _luceneIndexManager.SearchAsync(luceneQuery.Index, async searcher =>
             {
                 var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(luceneQuery.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 

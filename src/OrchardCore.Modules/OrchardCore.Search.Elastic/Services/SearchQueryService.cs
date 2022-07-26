@@ -24,7 +24,6 @@ namespace OrchardCore.Search.Elastic
                 contentItemIds.Add(item.GetValueOrDefault("ContentItemId").ToString());
             }
 
-            //Here return the contentItemIds
             return contentItemIds;
         }
 
@@ -39,7 +38,6 @@ namespace OrchardCore.Search.Elastic
                contentItemIds.Add(item.GetValueOrDefault("ContentItemId").ToString());
             }
 
-            //Here return the contentItemIds
             return contentItemIds;
         }
     }

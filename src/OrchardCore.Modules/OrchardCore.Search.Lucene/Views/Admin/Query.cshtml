@@ -66,7 +66,7 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    @foreach (var name in fieldNames)
+                    @foreach (var name in fieldNames.Where(x => !x.Contains(".keyword")))
                     {
                         <th>@name</th>
                     }
@@ -78,7 +78,7 @@
                 {
                     <tr>
                         <th scope="row">@(row++)</th>
-                        @foreach (var name in fieldNames)
+                        @foreach (var name in fieldNames.Where(x => !x.Contains(".keyword")))
                         {
                             <td>@(document.GetField(name)?.GetStringValue() ?? String.Empty)</td>
                         }

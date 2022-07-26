@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nest;
-using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 
@@ -71,7 +70,7 @@ namespace OrchardCore.Search.Elastic
                 var result = await _elasticClient.DeleteManyAsync(documents, indexName);
                 if (result.Errors)
                 {
-                    _logger.LogWarning($"There were issues deleting documents from Elastic search. {result.OriginalException}");
+                    _logger.LogWarning("There were issues deleting documents from Elastic search. {result.OriginalException}", result.OriginalException);
                 }
                 success = result.IsValid;
             }
@@ -117,7 +116,7 @@ namespace OrchardCore.Search.Elastic
                 var result = await _elasticClient.IndexManyAsync(documents, indexName);
                 if (result.Errors)
                 {
-                    _logger.LogWarning($"There were issues reported indexing the documents. {result.ServerError}");
+                    _logger.LogWarning("There were issues reported indexing the documents. {result.ServerError}", result.ServerError);
                 }
             }
         }
@@ -170,6 +169,16 @@ namespace OrchardCore.Search.Elastic
             }
 
             return elasticTopDocs;
+        }
+
+        public async Task SearchAsync(string indexName, Func<IElasticClient, Task> elasticClient)
+        {
+            if (await Exists(indexName))
+            {
+                await elasticClient(_elasticClient);
+
+                _timestamps[indexName] = _clock.UtcNow;
+            }
         }
 
         private Dictionary<string, object> CreateElasticDocument(DocumentIndex documentIndex)

@@ -258,7 +258,7 @@ namespace OrchardCore.Search.Elastic
         public async Task<bool> DeleteIndexAsync(string indexName)
         {
             //Delete the Elastic Index first
-            bool result = await _indexManager.DeleteIndex(indexName);
+            var result = await _indexManager.DeleteIndex(indexName);
 
             if (result)
             {

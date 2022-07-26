@@ -11,11 +11,11 @@ namespace OrchardCore.Search.Lucene.Services
 {
     public class LuceneContentPickerResultProvider : IContentPickerResultProvider
     {
-        private readonly LuceneIndexManager _luceneIndexProvider;
+        private readonly LuceneIndexManager _luceneIndexManager;
 
-        public LuceneContentPickerResultProvider(LuceneIndexManager luceneIndexProvider)
+        public LuceneContentPickerResultProvider(LuceneIndexManager luceneIndexManager)
         {
-            _luceneIndexProvider = luceneIndexProvider;
+            _luceneIndexManager = luceneIndexManager;
         }
 
         public string Name => "Lucene";
@@ -31,18 +31,18 @@ namespace OrchardCore.Search.Lucene.Services
                 indexName = fieldSettings.Index;
             }
 
-            if (!_luceneIndexProvider.Exists(indexName))
+            if (!_luceneIndexManager.Exists(indexName))
             {
                 return new List<ContentPickerResult>();
             }
 
             var results = new List<ContentPickerResult>();
 
-            await _luceneIndexProvider.SearchAsync(indexName, searcher =>
+            await _luceneIndexManager.SearchAsync(indexName, searcher =>
             {
                 Query query = null;
 
-                if (string.IsNullOrWhiteSpace(searchContext.Query))
+                if (String.IsNullOrWhiteSpace(searchContext.Query))
                 {
                     query = new MatchAllDocsQuery();
                 }
@@ -51,7 +51,7 @@ namespace OrchardCore.Search.Lucene.Services
                     query = new WildcardQuery(new Term("Content.ContentItem.DisplayText", searchContext.Query.ToLowerInvariant() + "*"));
                 }
 
-                var filter = new FieldCacheTermsFilter("Content.ContentItem.ContentType", searchContext.ContentTypes.ToArray());
+                var filter = new FieldCacheTermsFilter("Content.ContentItem.ContentType.keyword", searchContext.ContentTypes.ToArray());
 
                 var docs = searcher.Search(query, filter, 50, Sort.RELEVANCE);
 
@@ -63,7 +63,7 @@ namespace OrchardCore.Search.Lucene.Services
                     {
                         ContentItemId = doc.GetField("ContentItemId").GetStringValue(),
                         DisplayText = doc.GetField("Content.ContentItem.DisplayText").GetStringValue(),
-                        HasPublished = doc.GetField("Content.ContentItem.Published").GetStringValue() == "true" ? true : false
+                        HasPublished = doc.GetField("Content.ContentItem.Published").GetStringValue().ToLower() == "true"
                     });
                 }
 

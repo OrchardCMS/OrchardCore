@@ -26,7 +26,7 @@ namespace OrchardCore.Search.Elastic.Controllers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-        private readonly ElasticIndexManager _elasticIndexProvider;
+        private readonly ElasticIndexManager _elasticIndexManager;
         private readonly ElasticIndexingService _elasticIndexingService;
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
         private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
@@ -40,7 +40,7 @@ namespace OrchardCore.Search.Elastic.Controllers
         public SearchController(
             IAuthorizationService authorizationService,
             ISiteService siteService,
-            ElasticIndexManager elasticIndexProvider,
+            ElasticIndexManager elasticIndexManager,
             ElasticIndexingService elasticIndexingService,
             ElasticIndexSettingsService elasticIndexSettingsService,
             ElasticAnalyzerManager elasticAnalyzerManager,
@@ -54,7 +54,7 @@ namespace OrchardCore.Search.Elastic.Controllers
         {
             _authorizationService = authorizationService;
             _siteService = siteService;
-            _elasticIndexProvider = elasticIndexProvider;
+            _elasticIndexManager = elasticIndexManager;
             _elasticIndexingService = elasticIndexingService;
             _elasticIndexSettingsService = elasticIndexSettingsService;
             _elasticAnalyzerManager = elasticAnalyzerManager;
@@ -88,7 +88,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                 return BadRequest("Elastic Search is not configured.");
             }
 
-            if (searchSettings.SearchIndex != null && ! await _elasticIndexProvider.Exists(searchSettings.SearchIndex))
+            if (searchSettings.SearchIndex != null && ! await _elasticIndexManager.Exists(searchSettings.SearchIndex))
             {
                 _logger.LogInformation("Couldn't execute Elastic search. The Elastic search index doesn't exist.");
                 return BadRequest("Elastic Search is not configured.");

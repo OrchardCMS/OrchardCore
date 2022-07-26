@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Nest;
 using OrchardCore.ContentManagement;
 using OrchardCore.Search.Elastic.Settings;
 
@@ -9,65 +10,93 @@ namespace OrchardCore.Search.Elastic
 {
     public class ElasticContentPickerResultProvider : IContentPickerResultProvider
     {
-        private readonly ElasticIndexManager _elasticIndexProvider;
+        private readonly ElasticIndexManager _elasticIndexManager;
 
-        public ElasticContentPickerResultProvider(ElasticIndexManager elasticIndexProvider)
+        public ElasticContentPickerResultProvider(ElasticIndexManager elasticIndexManager)
         {
-            _elasticIndexProvider = elasticIndexProvider;
+            _elasticIndexManager = elasticIndexManager;
         }
 
-        public string Name => "ElasticSearch";
+        public string Name => "Elastic";
 
         public async Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext)
         {
             //Todo: this needs to be implemented in a different way for Elastic Search
-            //Must implement tenantscoped
-            var indexName = "Search";
+            string indexName = null;
 
             var fieldSettings = searchContext.PartFieldDefinition?.GetSettings<ContentPickerFieldElasticEditorSettings>();
+
             if (!String.IsNullOrWhiteSpace(fieldSettings?.Index))
             {
                 indexName = fieldSettings.Index;
             }
 
-            if (!await _elasticIndexProvider.Exists(indexName))
+            if (indexName != null && !await _elasticIndexManager.Exists(indexName))
             {
                 return new List<ContentPickerResult>();
             }
 
             var results = new List<ContentPickerResult>();
 
-            //await _elasticIndexProvider.SearchAsync(indexName, searcher =>
-            //{
-            //    Query query = null;
+            await _elasticIndexManager.SearchAsync(indexName, async elasticClient =>
+            {
+                ISearchResponse<Dictionary<string, object>> searchResponse = null;
+                var elasticTopDocs = new ElasticTopDocs();
 
-            //    if (string.IsNullOrWhiteSpace(searchContext.Query))
-            //    {
-            //        query = new MatchAllDocsQuery();
-            //    }
-            //    else
-            //    {
-            //        query = new WildcardQuery(new Term("Content.ContentItem.DisplayText", searchContext.Query.ToLowerInvariant() + "*"));
-            //    }
+                if (String.IsNullOrWhiteSpace(searchContext.Query))
+                {
+                    searchResponse = await elasticClient.SearchAsync<Dictionary<string, object>>(s => s
+                        .Index(indexName)
+                        .Query(q => q
+                            .Bool(b => b
+                                .Filter(f => f
+                                    .Terms(t => t
+                                        .Field("Content.ContentItem.ContentType.keyword")
+                                        .Terms(searchContext.ContentTypes.ToArray())
+                                    )
+                                )
+                            )
+                        )
+                    );
+                }
+                else
+                {
+                    searchResponse = await elasticClient.SearchAsync<Dictionary<string, object>>(s => s
+                        .Index(indexName)
+                        .Query(q => q
+                            .Bool(b => b
+                                .Filter(f => f
+                                    .Terms(t => t
+                                        .Field("Content.ContentItem.ContentType.keyword")
+                                        .Terms(searchContext.ContentTypes.ToArray())
+                                    )
+                                )
+                                .Should(s => s
+                                    .Wildcard(w => w
+                                        .Field("Content.ContentItem.DisplayText")
+                                        .Wildcard(searchContext.Query.ToLowerInvariant() + "*")
+                                    )
+                                )
+                            )
+                        )
+                    );
+                }
 
-            //    var filter = new FieldCacheTermsFilter("Content.ContentItem.ContentType", searchContext.ContentTypes.ToArray());
+                if (searchResponse.IsValid)
+                {
+                    elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
+                }
 
-            //    var docs = searcher.Search(query, filter, 50, Sort.RELEVANCE);
-
-            //    foreach (var hit in docs.ScoreDocs)
-            //    {
-            //        var doc = searcher.Doc(hit.Doc);
-
-            //        results.Add(new ContentPickerResult
-            //        {
-            //            ContentItemId = doc.GetField("ContentItemId").GetStringValue(),
-            //            DisplayText = doc.GetField("Content.ContentItem.DisplayText").GetStringValue(),
-            //            HasPublished = doc.GetField("Content.ContentItem.Published").GetStringValue() == "true" ? true : false
-            //        });
-            //    }
-
-            //    return Task.CompletedTask;
-            //});
+                foreach (var doc in elasticTopDocs.TopDocs)
+                {
+                    results.Add(new ContentPickerResult
+                    {
+                        ContentItemId = doc["ContentItemId"].ToString(),
+                        DisplayText = doc["Content.ContentItem.DisplayText"].ToString(),
+                        HasPublished = doc["Content.ContentItem.Published"].ToString().ToLower() == "true"
+                    });
+                }
+            });
 
             return results.OrderBy(x => x.DisplayText);
         }

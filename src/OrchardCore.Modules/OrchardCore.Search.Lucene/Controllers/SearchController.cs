@@ -26,7 +26,7 @@ namespace OrchardCore.Search.Lucene.Controllers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-        private readonly LuceneIndexManager _luceneIndexProvider;
+        private readonly LuceneIndexManager _luceneIndexManager;
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
@@ -40,7 +40,7 @@ namespace OrchardCore.Search.Lucene.Controllers
         public SearchController(
             IAuthorizationService authorizationService,
             ISiteService siteService,
-            LuceneIndexManager luceneIndexProvider,
+            LuceneIndexManager luceneIndexManager,
             LuceneIndexingService luceneIndexingService,
             LuceneIndexSettingsService luceneIndexSettingsService,
             LuceneAnalyzerManager luceneAnalyzerManager,
@@ -54,7 +54,7 @@ namespace OrchardCore.Search.Lucene.Controllers
         {
             _authorizationService = authorizationService;
             _siteService = siteService;
-            _luceneIndexProvider = luceneIndexProvider;
+            _luceneIndexManager = luceneIndexManager;
             _luceneIndexingService = luceneIndexingService;
             _luceneIndexSettingsService = luceneIndexSettingsService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
@@ -89,7 +89,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                 return BadRequest("Search is not configured.");
             }
 
-            if (searchIndex != null && !_luceneIndexProvider.Exists(searchIndex))
+            if (searchIndex != null && !_luceneIndexManager.Exists(searchIndex))
             {
                 _logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
                 return BadRequest("Search is not configured.");

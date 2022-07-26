@@ -17,7 +17,7 @@ namespace OrchardCore.Search.Elastic
 {
     public class ElasticQuerySource : IQuerySource
     {
-        private readonly ElasticIndexManager _elasticIndexProvider;
+        private readonly ElasticIndexManager _elasticIndexManager;
         //private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
         //private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
         //private readonly IElasticQueryService _queryService;
@@ -27,7 +27,7 @@ namespace OrchardCore.Search.Elastic
         private readonly TemplateOptions _templateOptions;
 
         public ElasticQuerySource(
-            ElasticIndexManager elasticIndexProvider,
+            ElasticIndexManager elasticIndexManager,
             //ElasticIndexSettingsService elasticIndexSettingsService,
             //ElasticAnalyzerManager elasticAnalyzerManager,
             //IElasticQueryService queryService,
@@ -36,7 +36,7 @@ namespace OrchardCore.Search.Elastic
             JavaScriptEncoder javaScriptEncoder,
             IOptions<TemplateOptions> templateOptions)
         {
-            _elasticIndexProvider = elasticIndexProvider;
+            _elasticIndexManager = elasticIndexManager;
             //_elasticIndexSettingsService = elasticIndexSettingsService;
             //_elasticAnalyzerManager = elasticAnalyzerManager;
             //_queryService = queryService;
@@ -64,7 +64,7 @@ namespace OrchardCore.Search.Elastic
             var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(elasticQuery.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
             var parameterizedQuery = JObject.Parse(tokenizedContent);
 
-            var elasticSearchResult = await _elasticIndexProvider.SearchAsync(elasticQuery.Index, elasticQuery.Template);
+            var elasticSearchResult = await _elasticIndexManager.SearchAsync(elasticQuery.Index, elasticQuery.Template);
 
 
             if (elasticQuery.ReturnContentItems)

@@ -21,6 +21,7 @@ namespace OrchardCore.Search.Elastic.Services
         }
 
         public string Name { get; }
+
         public IAnalyzer CreateAnalyzer()
         {
             return _factory();
