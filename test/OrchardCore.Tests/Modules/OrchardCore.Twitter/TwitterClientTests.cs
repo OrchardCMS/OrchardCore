@@ -9,7 +9,6 @@ using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Settings;
-using OrchardCore.Twitter.Signin.Settings;
 using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Twitter
@@ -28,25 +27,21 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Twitter
             mockFakeHttpMessageHandler = new Mock<FakeHttpMessageHandler>() { CallBase = true };
 
             var fakeDataProtector = new FakeDataProtector();
-            var settings = new TwitterSettings
+            var settings = new TwitterAuthenticationSettings
             {
                 AccessToken = "370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb",
                 AccessTokenSecret = "LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE",
                 ConsumerKey = "xvz1evFS4wEEPTGEFPHBog",
-                ConsumerSecret = "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw"
+                ConsumerSecret = "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw",
+                CallbackPath = null
             };
 
             settings.AccessTokenSecret = fakeDataProtector.Protect(settings.AccessTokenSecret);
             settings.ConsumerSecret = fakeDataProtector.Protect(settings.ConsumerSecret);
 
-            var signinSettings = new TwitterSigninSettings
-            {
-                CallbackPath = null
-            };
-
             mockSiteService = Mock.Of<ISiteService>(ss =>
                 ss.GetSiteSettingsAsync() == Task.FromResult(
-                    Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { TwitterSettings = settings, TwitterSignInSettings = signinSettings }))
+                    Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { TwitterAuthenticationSettings = settings }))
                 )
             );
 
