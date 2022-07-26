@@ -8,7 +8,7 @@
         <label class="form-check-label" asp-for="ContentIndexSettings.Included">@T["Include this element in the index"]</label>
         <span class="hint dashed">@T["Check to include the value of this element in the index. Will analyze or store the field based on CLR Type of the data."]</span>
     </div>
-    @if (Model.DefinitionName == "TextField")
+    @if (Model.IsStorable)
     {
         <div id="index-settings" class="collapse@(Model.ContentIndexSettings.Included ? " show": "")">
             <div class="form-check">
