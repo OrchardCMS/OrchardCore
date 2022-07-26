@@ -65,7 +65,7 @@ The `OrchardCore.Microsoft.Authentication` module allows the user to use configu
 The following configuration values can be customized:
 
 ```json
-    "OrchardCore_MicrosoftAuthentication": {
+    "OrchardCore_Microsoft_Authentication_MicrosoftAccount": {
       "AppId": "",
       "AppSecret": "",
       "CallbackPath": "/",
@@ -74,7 +74,7 @@ The following configuration values can be customized:
 ```
 
 ```json
-    "OrchardCore_MicrosoftAuthentication_AzureAD": {
+    "OrchardCore_Microsoft_Authentication_AzureAD": {
       "DisplayName": "",
       "AppId": "",
       "TenantId": "",

@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices((tenantServices, serviceProvider) =>
             {
-                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_MicrosoftAuthentication");
+                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Microsoft_Authentication_MicrosoftAccount");
 
                 tenantServices.PostConfigure<MicrosoftAccountSettings>(settings => configurationSection.Bind(settings));
             });
@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices((tenantServices, serviceProvider) =>
             {
-                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_MicrosoftAuthentication_AzureAD");
+                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Microsoft_Authentication_AzureAD");
 
                 tenantServices.PostConfigure<AzureADSettings>(settings => configurationSection.Bind(settings));
             });
