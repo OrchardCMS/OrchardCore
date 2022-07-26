@@ -250,17 +250,20 @@ namespace OrchardCore.Search.Lucene
                         break;
 
                     case DocumentIndex.Types.Text:
+                        var store = entry.Options.HasFlag(DocumentIndexOptions.Store)
+                                    ? Field.Store.YES
+                                    : Field.Store.NO;
+
                         if (entry.Value != null && !String.IsNullOrEmpty(Convert.ToString(entry.Value)))
                         {
                             var stringValue = Convert.ToString(entry.Value);
 
-                            // Here just like ElasticSearch we always store the text value even if the field is tokenized.
-                            doc.Add(new TextField(entry.Name, stringValue, Field.Store.YES));
+                            doc.Add(new TextField(entry.Name, stringValue, store));
 
                             // This is for ElasticSearch Queries compatibility since a keyword field is always stored
                             // by default when indexing without explicit mapping in ElasticSearch.
                             // Keyword Ignore above 256 chars by default.
-                            if (stringValue.Length <= 256)
+                            if (store == Field.Store.NO && stringValue.Length <= 256)
                             {
                                 doc.Add(new StringField($"{entry.Name}.keyword", Convert.ToString(entry.Value), Field.Store.YES));
                             }

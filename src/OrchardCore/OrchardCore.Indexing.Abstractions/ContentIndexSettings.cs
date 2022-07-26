@@ -8,9 +8,9 @@ namespace OrchardCore.Indexing
     public class ContentIndexSettings
     {
         /// <summary>
-        /// Set the content to be tokenized in the index document
+        /// Set the content to be added in the index document. Will be tokenized or stored based on CLR Type.
         /// </summary>
-        public bool Analyzed { get; set; }
+        public bool Included { get; set; }
 
         /// <summary>
         /// Set the content to be stored in the index document
@@ -20,11 +20,6 @@ namespace OrchardCore.Indexing
         public DocumentIndexOptions ToOptions()
         {
             var options = DocumentIndexOptions.None;
-
-            if (Analyzed)
-            {
-                options |= DocumentIndexOptions.Analyze;
-            }
 
             if (Stored)
             {

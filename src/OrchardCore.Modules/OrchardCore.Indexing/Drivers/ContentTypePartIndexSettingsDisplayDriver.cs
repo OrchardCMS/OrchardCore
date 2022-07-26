@@ -30,6 +30,7 @@ namespace OrchardCore.Indexing.Drivers
             return Initialize<ContentIndexSettingsViewModel>("ContentIndexSettings_Edit", model =>
             {
                 model.ContentIndexSettings = contentTypePartDefinition.GetSettings<ContentIndexSettings>();
+                model.DefinitionName = contentTypePartDefinition.PartDefinition.Name;
             }).Location("Content:10");
         }
 
