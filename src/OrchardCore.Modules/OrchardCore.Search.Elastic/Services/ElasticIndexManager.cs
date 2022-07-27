@@ -101,7 +101,7 @@ namespace OrchardCore.Search.Elastic
             return existResponse.Exists;
         }
 
-        public async Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
+        public Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
             //Convert Document to a structure suitable for Elastic
             var documents = new List<Dictionary<string, object>>();
@@ -113,12 +113,25 @@ namespace OrchardCore.Search.Elastic
 
             if (documents.Any())
             {
-                var result = await _elasticClient.IndexManyAsync(documents, indexName);
+                var descriptor = new BulkDescriptor();
+
+                foreach (var document in documents)
+                {
+                    descriptor.Index<Dictionary<string, object>>(op => op
+                        .Id(document.GetValueOrDefault("ContentItemId").ToString())
+                        .Document(document)
+                        .Index(indexName)
+                    );
+                }
+                var result = _elasticClient.Bulk(d => descriptor);
+
                 if (result.Errors)
                 {
                     _logger.LogWarning("There were issues reported indexing the documents. {result.ServerError}", result.ServerError);
                 }
             }
+
+            return Task.CompletedTask;
         }
 
         public async Task<ElasticTopDocs> SearchAsync(string indexName, string query)
