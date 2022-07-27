@@ -202,13 +202,17 @@ namespace OrchardCore.Search.Elastic
                         }
                     }
 
-                    // Delete all the existing documents
-                    foreach (var index in updatedDocumentsByIndex)
-                    {
-                        var deletedDocuments = updatedDocumentsByIndex[index.Key].Select(x => x.ContentItemId);
+                    // Commented because we can't delete a document that is not already stored.
+                    // We can delete only after the document is committed once.
+                    // We let the ElasticIndexingContentHandler do it.
 
-                        await _indexManager.DeleteDocumentsAsync(index.Key, deletedDocuments);
-                    }
+                    // Delete all the existing documents
+                    //foreach (var index in updatedDocumentsByIndex)
+                    //{
+                    //    var deletedDocuments = updatedDocumentsByIndex[index.Key].Select(x => x.ContentItemId);
+
+                    //    await _indexManager.DeleteDocumentsAsync(index.Key, deletedDocuments);
+                    //}
 
                     // Submits all the new documents to the index
                     foreach (var index in updatedDocumentsByIndex)
