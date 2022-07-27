@@ -1,4 +1,6 @@
 @using OrchardCore.Localization
+@using OrchardCore.Environment.Shell
+@inject ShellSettings ShellSettings
 
 @{
     var selectedCultureName = Model.CurrentCulture.Name;
@@ -16,7 +18,7 @@
             var culture = $(this).val();
             var selectedCulture = $(this).data('selected-culture');
             if (culture != selectedCulture) {
-                var cookieValue = `@LocalizationCookieName.AdminSite=c=${culture}|uic=${culture}`;
+                var cookieValue = `@LocalizationCookieName.AdminSite=c=${culture}|uic=${culture};path=/@ShellSettings.Name.ToLower()`;
                 document.cookie = cookieValue;
                 window.location = window.location.href.split('?')[0];
             }
