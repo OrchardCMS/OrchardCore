@@ -17,6 +17,8 @@ using OrchardCore.Media.Core;
 using OrchardCore.Media.Core.Events;
 using OrchardCore.Media.Events;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media.AmazonS3;
 
@@ -32,6 +34,8 @@ public class Startup : Modules.StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddTransient<IConfigureOptions<AwsStorageOptions>, AwsStorageOptionsConfiguration>();
 
         var storeOptions = new AwsStorageOptions().BindConfiguration(_configuration, _logger);

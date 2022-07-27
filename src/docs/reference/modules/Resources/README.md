@@ -60,9 +60,9 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | bootstrap-select      | Style  | 1.14.0-beta2  | -              |
 | codemirror            | Script | 5.65.5        | -              |
 | codemirror            | Style  | 5.65.5        | -              |
-| font-awesome          | Style  | 6.0.0         | -              |
-| font-awesome          | Script | 6.0.0         | -              |
-| font-awesome-v4-shims | Script | 6.0.0         | -              |
+| font-awesome          | Style  | 6.1.2         | -              |
+| font-awesome          | Script | 6.1.2         | -              |
+| font-awesome-v4-shims | Script | 6.1.2         | -              |
 | Sortable              | Script | 1.10.2        | -              |
 | trumbowyg             | Script | 2.25.1        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
