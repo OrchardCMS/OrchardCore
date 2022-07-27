@@ -58,30 +58,20 @@ namespace OrchardCore.Search.Elastic
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            var configuration = _shellConfiguration.GetSection(ConfigSectionName);
-            services.Configure<ElasticConnectionOptions>(configuration);
+            var elasticConfiguration = _shellConfiguration.GetSection(ConfigSectionName).Get<ElasticConnectionOptions>();
 
-            var url = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.Url)}"];
-            var connectionType = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.ConnectionType)}"];
-
-            if (configuration.Exists() && CheckOptions(url, _logger))
+            if (CheckOptions(elasticConfiguration.Url, elasticConfiguration.Ports, _logger))
             {
                 services.Configure<ElasticConnectionOptions>(o => o.ConfigurationExists = true);
 
                 services.AddSingleton<ElasticIndexSettingsService>();
                 services.AddScoped<INavigationProvider, AdminMenu>();
-                services.AddScoped<IPermissionProvider, Permissions>();
-
-                var username = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.Username)}"];
-                var password = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.Password)}"];
-                var ports = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.Ports)}"].Split(",").Select(Int32.Parse).ToArray();
-                var certificateFingerprint = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.CertificateFingerprint)}"];
-                var enableApiVersioningHeader = _shellConfiguration.GetValue(ConfigSectionName + $":{nameof(ElasticConnectionOptions.EnableApiVersioningHeader)}", false);
+                services.AddScoped<IPermissionProvider, Permissions>();              
 
                 IConnectionPool pool = null;
-                var uris = ports.Select(port => new Uri($"{url}:{port}"));
+                var uris = elasticConfiguration.Ports.Select(port => new Uri($"{elasticConfiguration.Url}:{port}")).Distinct();
 
-                switch (connectionType)
+                switch (elasticConfiguration.ConnectionType)
                 {
                     case "SingleNodeConnectionPool":
                         pool = new SingleNodeConnectionPool(uris.First());
@@ -89,12 +79,11 @@ namespace OrchardCore.Search.Elastic
 
                     case "CloudConnectionPool":
                         BasicAuthenticationCredentials credentials = null;
-                        var cloudId = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.CloudId)}"];
 
-                        if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password) && !String.IsNullOrWhiteSpace(cloudId))
+                        if (!String.IsNullOrWhiteSpace(elasticConfiguration.Username) && !String.IsNullOrWhiteSpace(elasticConfiguration.Password) && !String.IsNullOrWhiteSpace(elasticConfiguration.CloudId))
                         {
-                            credentials = new BasicAuthenticationCredentials(username, password);
-                            pool = new CloudConnectionPool(cloudId, credentials);
+                            credentials = new BasicAuthenticationCredentials(elasticConfiguration.Username, elasticConfiguration.Password);
+                            pool = new CloudConnectionPool(elasticConfiguration.CloudId, credentials);
                         }
                         break;
 
@@ -117,17 +106,17 @@ namespace OrchardCore.Search.Elastic
 
                 var settings = new ConnectionSettings(pool).ThrowExceptions();
 
-                if (connectionType != "CloudConnectionPool" && !String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
+                if (elasticConfiguration.ConnectionType != "CloudConnectionPool" && !String.IsNullOrWhiteSpace(elasticConfiguration.Username) && !String.IsNullOrWhiteSpace(elasticConfiguration.Password))
                 {
-                    settings.BasicAuthentication(username, password);
+                    settings.BasicAuthentication(elasticConfiguration.Username, elasticConfiguration.Password);
                 }
 
-                if (!String.IsNullOrWhiteSpace(certificateFingerprint))
+                if (!String.IsNullOrWhiteSpace(elasticConfiguration.CertificateFingerprint))
                 {
-                    settings.CertificateFingerprint(certificateFingerprint);
+                    settings.CertificateFingerprint(elasticConfiguration.CertificateFingerprint);
                 }
 
-                if (enableApiVersioningHeader)
+                if (elasticConfiguration.EnableApiVersioningHeader)
                 {
                     settings.EnableApiVersioningHeader();
                 }
@@ -206,13 +195,19 @@ namespace OrchardCore.Search.Elastic
             );
         }
 
-        private static bool CheckOptions(string url, ILogger logger)
+        private static bool CheckOptions(string url, int[] ports, ILogger logger)
         {
             var optionsAreValid = true;
 
             if (String.IsNullOrWhiteSpace(url))
             {
                 logger.LogError("Elastic Search is enabled but not active because the 'Url' is missing or empty in application configuration.");
+                optionsAreValid = false;
+            }
+
+            if (ports.Length == 0)
+            {
+                logger.LogError("Elastic Search is enabled but not active because a port is missing in application configuration.");
                 optionsAreValid = false;
             }
 
