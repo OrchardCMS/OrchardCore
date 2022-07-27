@@ -8,6 +8,21 @@ namespace OrchardCore.Search.Elastic.Configurations
         public string Url { get; set; }
 
         /// <summary>
+        /// The server connection type
+        /// </summary>
+        public int[] Ports { get; set; }
+
+        /// <summary>
+        /// The server connection type
+        /// </summary>
+        public string ConnectionType { get; set; }
+
+        /// <summary>
+        /// The Elasticsearch cloud service CloudId
+        /// </summary>
+        public string CloudId { get; set; }
+
+        /// <summary>
         /// The server Username.
         /// </summary>
         public string Username { get; set; }

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Elasticsearch.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -61,6 +62,7 @@ namespace OrchardCore.Search.Elastic
             services.Configure<ElasticConnectionOptions>(configuration);
 
             var url = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.Url)}"];
+            var connectionType = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.ConnectionType)}"];
 
             if (configuration.Exists() && CheckOptions(url, _logger))
             {
@@ -70,19 +72,55 @@ namespace OrchardCore.Search.Elastic
                 services.AddScoped<INavigationProvider, AdminMenu>();
                 services.AddScoped<IPermissionProvider, Permissions>();
 
-                var pool = new SingleNodeConnectionPool(new Uri(url));
-
-                var settings = new ConnectionSettings(pool);
-
                 var username = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.Username)}"];
                 var password = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.Password)}"];
+                var ports = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.Ports)}"].Split(",").Select(Int32.Parse).ToArray();
                 var certificateFingerprint = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.CertificateFingerprint)}"];
                 var enableApiVersioningHeader = _shellConfiguration.GetValue(ConfigSectionName + $":{nameof(ElasticConnectionOptions.EnableApiVersioningHeader)}", false);
 
-                if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
+                IConnectionPool pool = null;
+                var uris = ports.Select(port => new Uri($"{url}:{port}"));
+
+                switch (connectionType)
+                {
+                    case "SingleNodeConnectionPool":
+                        pool = new SingleNodeConnectionPool(uris.First());
+                        break;
+
+                    case "CloudConnectionPool":
+                        BasicAuthenticationCredentials credentials = null;
+                        var cloudId = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.CloudId)}"];
+
+                        if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password) && !String.IsNullOrWhiteSpace(cloudId))
+                        {
+                            credentials = new BasicAuthenticationCredentials(username, password);
+                            pool = new CloudConnectionPool(cloudId, credentials);
+                        }
+                        break;
+
+                    case "StaticConnectionPool":
+                        pool = new StaticConnectionPool(uris);
+                        break;
+
+                    case "SniffingConnectionPool":
+                        pool = new SniffingConnectionPool(uris);
+                        break;
+
+                    case "StickyConnectionPool":
+                        pool = new StickyConnectionPool(uris);
+                        break;
+
+                    default:
+                        pool = new SingleNodeConnectionPool(uris.First());
+                        break;
+                }
+
+                var settings = new ConnectionSettings(pool);
+
+                if (connectionType != "CloudConnectionPool" && !String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
                 {
                     settings.BasicAuthentication(username, password);
-                }               
+                }
 
                 if (!String.IsNullOrWhiteSpace(certificateFingerprint))
                 {
