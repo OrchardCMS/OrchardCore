@@ -115,7 +115,7 @@ namespace OrchardCore.Search.Elastic
                         break;
                 }
 
-                var settings = new ConnectionSettings(pool);
+                var settings = new ConnectionSettings(pool).ThrowExceptions();
 
                 if (connectionType != "CloudConnectionPool" && !String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
                 {
