@@ -73,7 +73,7 @@ namespace OrchardCore.Search.Elastic
                 elasticQueryResults.Items = new List<ContentItem>();
 
                 // Load corresponding content item versions
-                var indexedContentItemVersionIds = elasticSearchResult.TopDocs.Select(x => x.GetValueOrDefault("Content.ContentItem.ContentItemVersionId").ToString()).ToArray();
+                var indexedContentItemVersionIds = elasticSearchResult.TopDocs.Select(x => x.GetValueOrDefault("ContentItemVersionId").ToString()).ToArray();
                 var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
 
                 // Reorder the result to preserve the one from the Elastic query

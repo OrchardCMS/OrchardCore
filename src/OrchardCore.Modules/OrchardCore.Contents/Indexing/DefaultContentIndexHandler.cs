@@ -7,20 +7,11 @@ namespace OrchardCore.Contents.Indexing
     {
         public Task BuildIndexAsync(BuildIndexContext context)
         {
-            context.DocumentIndex.Set(
-                IndexingConstants.ContentItemIdKey,
-                context.ContentItem.ContentItemId,
-                DocumentIndexOptions.Store);
-
-            context.DocumentIndex.Set(
-                IndexingConstants.ContentItemVersionIdKey,
-                context.ContentItem.ContentItemVersionId,
-                DocumentIndexOptions.Store);
-
+            // Text values are analyzed but stored in field.keyword naturally
             context.DocumentIndex.Set(
                 IndexingConstants.ContentTypeKey,
                 context.ContentItem.ContentType,
-                DocumentIndexOptions.Store);
+                DocumentIndexOptions.Analyze);
 
             context.DocumentIndex.Set(
                 IndexingConstants.CreatedUtcKey,

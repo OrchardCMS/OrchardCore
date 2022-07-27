@@ -155,7 +155,7 @@ namespace OrchardCore.Search.Lucene
                                 var contentItem = await contentManager.GetAsync(task.ContentItemId);
                                 if (contentItem != null)
                                 {
-                                    publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, new string[] { contentItem.ContentType }, new ContentIndexSettings());
+                                    publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new ContentIndexSettings());
                                     await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), _logger);
                                 }
                             }
@@ -165,7 +165,7 @@ namespace OrchardCore.Search.Lucene
                                 var contentItem = await contentManager.GetAsync(task.ContentItemId, VersionOptions.Latest);
                                 if (contentItem != null)
                                 {
-                                    latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, new string[] { contentItem.ContentType }, new ContentIndexSettings());
+                                    latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new ContentIndexSettings());
                                     await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), _logger);
                                 }
                             }

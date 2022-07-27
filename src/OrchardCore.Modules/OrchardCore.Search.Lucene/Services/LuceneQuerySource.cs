@@ -9,9 +9,9 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Liquid;
+using OrchardCore.Queries;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Services;
-using OrchardCore.Queries;
 using YesSql;
 using YesSql.Services;
 
@@ -77,7 +77,7 @@ namespace OrchardCore.Search.Lucene
                     luceneQueryResults.Items = new List<ContentItem>();
 
                     // Load corresponding content item versions
-                    var indexedContentItemVersionIds = docs.TopDocs.ScoreDocs.Select(x => searcher.Doc(x.Doc).Get("Content.ContentItem.ContentItemVersionId")).ToArray();
+                    var indexedContentItemVersionIds = docs.TopDocs.ScoreDocs.Select(x => searcher.Doc(x.Doc).Get("ContentItemVersionId")).ToArray();
                     var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
 
                     // Reorder the result to preserve the one from the lucene query

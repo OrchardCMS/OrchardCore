@@ -20,7 +20,7 @@ namespace OrchardCore.Search.Elastic
         private readonly IClock _clock;
         private readonly ILogger _logger;
         private bool _disposing;
-        private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
 
         private readonly string[] IgnoredFields = {
             "Analyzed",
@@ -185,7 +185,8 @@ namespace OrchardCore.Search.Elastic
         {
             var entries = new Dictionary<string, object>
             {
-                { "ContentItemId", documentIndex.ContentItemId }
+                { "ContentItemId", documentIndex.ContentItemId },
+                { "ContentItemVersionId", documentIndex.ContentItemVersionId }
             };
 
             foreach (var entry in documentIndex.Entries)

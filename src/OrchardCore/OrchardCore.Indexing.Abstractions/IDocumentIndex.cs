@@ -7,9 +7,10 @@ namespace OrchardCore.Indexing
 {
     public class DocumentIndex
     {
-        public DocumentIndex(string contentItemId)
+        public DocumentIndex(string contentItemId, string contentItemVersionId)
         {
             ContentItemId = contentItemId;
+            ContentItemVersionId = contentItemVersionId;
         }
 
         public List<DocumentIndexEntry> Entries { get; } = new List<DocumentIndexEntry>();
@@ -55,6 +56,8 @@ namespace OrchardCore.Indexing
         }
 
         public string ContentItemId { get; }
+
+        public string ContentItemVersionId { get; }
 
         public enum Types
         {

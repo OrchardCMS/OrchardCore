@@ -105,7 +105,7 @@ With a must query in the bool Query. "finding specific content type(s)"
   "query": {
     "bool": {
       "must" : {
-          "term" : { "Content.ContentItem.ContentType" : "Menu" }
+          "term" : { "Content.ContentItem.ContentType.keyword" : "Menu" }
       },
       "filter": [
         { "term": { "Content.ContentItem.Published" : "true" }},

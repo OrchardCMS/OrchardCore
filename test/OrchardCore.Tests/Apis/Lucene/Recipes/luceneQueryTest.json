@@ -56,8 +56,7 @@
                 },
                 "ContentIndexSettings": {
                   "Included": true,
-                  "Stored": true,
-                  "Analyzed": true
+                  "Stored": false
                 }
               }
             },
