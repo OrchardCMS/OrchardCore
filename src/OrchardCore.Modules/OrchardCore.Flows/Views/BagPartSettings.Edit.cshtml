@@ -1,16 +1,16 @@
 @model OrchardCore.Flows.ViewModels.BagPartSettingsViewModel
-
+@using OrchardCore.Flows.Settings
 <div class="mb-3">
     <label asp-for="Source">@T["Contained Content Types"]</label>
     <div class="w-sm-50" id="@Html.IdFor(x => x.Source)">
         <div class="form-check">
-            <input class="form-check-input" type="radio" asp-for="Source" id="SourceContentTypes" value="ContentTypes" checked="@("ContentTypes".Equals(Model.Source, StringComparison.OrdinalIgnoreCase))">
+            <input class="form-check-input" type="radio" asp-for="Source" id="SourceContentTypes" value="@(BagPartSettingsDisplayDriver.ContentTypes)" checked="@(BagPartSettingsDisplayDriver.ContentTypes.Equals(Model.Source, StringComparison.OrdinalIgnoreCase))">
             <label for="SourceContentTypes">
                 @T["Content Types"]
             </label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="radio" asp-for="Source" id="SourceStereotype" value="Stereotypes" checked="@("Stereotypes".Equals(Model.Source, StringComparison.OrdinalIgnoreCase))">
+            <input class="form-check-input" type="radio" asp-for="Source" id="SourceStereotype" value="@(BagPartSettingsDisplayDriver.Stereotypes)" checked="@(BagPartSettingsDisplayDriver.Stereotypes.Equals(Model.Source, StringComparison.OrdinalIgnoreCase))">
             <label for="SourceStereotype">
                 @T["Stereotype"]
             </label>
@@ -48,10 +48,11 @@
 
         for (var i = 0; i < sources.length; i++) {
             var source = sources[i];
-
-            source.addEventListener('change', function() {
-
-                if (source.checked && source.value == 'Stereotypes') {
+            source.addEventListener('change', function(src) {
+                if (!src.target.checked) {
+                    return;
+                }
+                if (src.target.value == '@(BagPartSettingsDisplayDriver.Stereotypes)') {
                     contentTypesContainer.classList.add('d-none');
                     stereotypeContainer.classList.remove('d-none');
                 } else {
@@ -59,9 +60,7 @@
                     stereotypeContainer.classList.add('d-none');
                 }
             });
-
             source.dispatchEvent(new Event('change'));
         }
-
     });
 </script>

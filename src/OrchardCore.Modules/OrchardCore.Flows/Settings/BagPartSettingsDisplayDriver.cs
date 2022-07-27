@@ -15,6 +15,9 @@ namespace OrchardCore.Flows.Settings
 {
     public class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<BagPart>
     {
+        public const string ContentTypes = "ContentTypes";
+        public const string Stereotypes = "Stereotypes";
+
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IStringLocalizer S;
 
@@ -36,8 +39,8 @@ namespace OrchardCore.Flows.Settings
                 model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
                 model.DisplayType = model.BagPartSettings.DisplayType;
                 model.ContentTypes = new NameValueCollection();
-                model.Source = settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0 ? "Stereotypes" : "ContentTypes";
-                model.Stereotypes = String.Join(',', settings.ContainedStereotypes);
+                model.Source = settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0 ? Stereotypes : ContentTypes;
+                model.Stereotypes = String.Join(',', settings.ContainedStereotypes ?? Array.Empty<string>());
                 foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
                 {
                     model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
@@ -51,7 +54,7 @@ namespace OrchardCore.Flows.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.DisplayType, m => m.Source, m => m.Stereotypes);
 
-            if ("ContentTypes".Equals(model.Source, StringComparison.OrdinalIgnoreCase))
+            if (ContentTypes.Equals(model.Source, StringComparison.OrdinalIgnoreCase))
             {
                 if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
                 {
@@ -67,7 +70,7 @@ namespace OrchardCore.Flows.Settings
                     });
                 }
             }
-            else if ("Stereotypes".Equals(model.Source, StringComparison.OrdinalIgnoreCase))
+            else if (Stereotypes.Equals(model.Source, StringComparison.OrdinalIgnoreCase))
             {
                 if (String.IsNullOrEmpty(model.Stereotypes))
                 {
