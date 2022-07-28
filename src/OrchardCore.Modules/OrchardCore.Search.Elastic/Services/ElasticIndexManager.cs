@@ -22,12 +22,7 @@ namespace OrchardCore.Search.Elastic
         private bool _disposing;
         private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
 
-        private readonly string[] IgnoredFields = {
-            "Analyzed",
-            "Sanitize",
-            "Normalized",
-            "Inherited"
-        };
+        private readonly string[] IgnoredFields = Array.Empty<string>();
 
         public ElasticIndexManager(
             IClock clock,

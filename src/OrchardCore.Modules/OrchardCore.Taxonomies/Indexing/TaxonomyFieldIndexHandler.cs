@@ -48,7 +48,7 @@ namespace OrchardCore.Taxonomies.Indexing
             {
                 foreach (var contentItem in inheritedContentItems)
                 {
-                    context.DocumentIndex.Set(key + ".Inherited", contentItem.ContentItemId, options);
+                    context.DocumentIndex.Set(key + "_Inherited", contentItem.ContentItemId, options);
                 }
             }
         }

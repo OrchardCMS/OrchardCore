@@ -48,7 +48,7 @@ namespace OrchardCore.Search.Lucene.Services
                 }
                 else
                 {
-                    query = new WildcardQuery(new Term("Content.ContentItem.DisplayText", searchContext.Query.ToLowerInvariant() + "*"));
+                    query = new WildcardQuery(new Term("Content.ContentItem.DisplayText_Normalized", searchContext.Query.ToLowerInvariant() + "*"));
                 }
 
                 var filter = new FieldCacheTermsFilter("Content.ContentItem.ContentType.keyword", searchContext.ContentTypes.ToArray());
@@ -62,7 +62,7 @@ namespace OrchardCore.Search.Lucene.Services
                     results.Add(new ContentPickerResult
                     {
                         ContentItemId = doc.GetField("ContentItemId").GetStringValue(),
-                        DisplayText = doc.GetField("Content.ContentItem.DisplayText").GetStringValue(),
+                        DisplayText = doc.GetField("Content.ContentItem.DisplayText.keyword").GetStringValue(),
                         HasPublished = doc.GetField("Content.ContentItem.Published").GetStringValue().ToLower() == "true"
                     });
                 }
