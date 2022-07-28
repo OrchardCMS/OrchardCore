@@ -141,7 +141,6 @@ namespace OrchardCore.Search.Elastic
 
                     var needLatest = indexSettingsList.FirstOrDefault(x => x.IndexLatest) != null;
                     var needPublished = indexSettingsList.FirstOrDefault(x => !x.IndexLatest) != null;
-
                     var settingsByIndex = indexSettingsList.ToDictionary(x => x.IndexName, x => x);
 
                     foreach (var task in batch)
@@ -269,6 +268,7 @@ namespace OrchardCore.Search.Elastic
                 //Now delete it's setting
                 await _elasticIndexSettingsService.DeleteIndexAsync(indexName);
             }
+
             return result;
         }
 

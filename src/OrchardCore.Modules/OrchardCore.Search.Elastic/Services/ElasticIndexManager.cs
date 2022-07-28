@@ -47,6 +47,7 @@ namespace OrchardCore.Search.Elastic
             if (!await Exists(indexName))
             {
                 var response = await _elasticClient.Indices.CreateAsync(indexName);
+
                 return response.Acknowledged;
             }
             else
@@ -58,21 +59,25 @@ namespace OrchardCore.Search.Elastic
         public async Task<bool> DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
         {
             var success = true;
-            var documents = new List<Dictionary<string, object>>();
 
-            foreach (var contentItemId in contentItemIds)
+            if (contentItemIds.Any())
             {
-                documents.Add(CreateElasticDocument(contentItemId));
-            }
+                var descriptor = new BulkDescriptor();
 
-            if (documents.Any())
-            {
-                var result = await _elasticClient.DeleteManyAsync(documents, indexName);
-                if (result.Errors)
+                foreach (var id in contentItemIds)
+                    descriptor.Delete<Dictionary<string,object>>(d => d
+                        .Index(indexName)
+                        .Id(id)
+                    );
+
+                var response = await _elasticClient.BulkAsync(descriptor);
+
+                if (response.Errors)
                 {
-                    _logger.LogWarning("There were issues deleting documents from Elastic search. {result.OriginalException}", result.OriginalException);
+                    _logger.LogWarning("There were issues deleting documents from Elastic search. {result.OriginalException}", response.OriginalException);
                 }
-                success = result.IsValid;
+
+                success = response.IsValid;
             }
 
             return success;
@@ -97,7 +102,9 @@ namespace OrchardCore.Search.Elastic
             {
                 return false;
             }
+
             var existResponse = await _elasticClient.Indices.ExistsAsync(indexName);
+
             return existResponse.Exists;
         }
 
@@ -123,6 +130,7 @@ namespace OrchardCore.Search.Elastic
                         .Index(indexName)
                     );
                 }
+
                 var result = await _elasticClient.BulkAsync(d => descriptor);
 
                 if (result.Errors)
