@@ -333,6 +333,35 @@ namespace OrchardCore.Search.Elastic.Controllers
                 return Forbid();
             }
 
+            if (!await _elasticIndexManager.Exists(model.IndexName))
+            {
+                await _notifier.SuccessAsync(H["Index not found on Elasticsearch server.", model.IndexName]);
+                return RedirectToAction("Index");
+            }
+
+            try
+            {
+                await _elasticIndexingService.DeleteIndexAsync(model.IndexName);
+
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
+            }
+            catch (Exception e)
+            {
+                await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
+                _logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> ForceDelete(ElasticIndexSettingsViewModel model)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            {
+                return Forbid();
+            }
+
             try
             {
                 await _elasticIndexingService.DeleteIndexAsync(model.IndexName);
