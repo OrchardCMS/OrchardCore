@@ -142,7 +142,7 @@ namespace OrchardCore.OpenId.Controllers
 
             descriptor.Resources.UnionWith(model.Tenants
                 .Where(tenant => tenant.Selected)
-                .Where(tenant => !String.Equals(tenant.Name, _shellSettings.Name))
+                .Where(tenant => !String.Equals(tenant.Name, _shellSettings.Name, StringComparison.OrdinalIgnoreCase))
                 .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
 
             await _scopeManager.CreateAsync(descriptor);
