@@ -103,7 +103,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     string shellChangedId;
                     try
                     {
-                        shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey, stoppingToken);
+                        shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey);
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
@@ -125,7 +125,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     string shellCreatedId;
                     try
                     {
-                        shellCreatedId = await distributedCache.GetStringAsync(ShellCreatedIdKey, stoppingToken);
+                        shellCreatedId = await distributedCache.GetStringAsync(ShellCreatedIdKey);
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
@@ -141,7 +141,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     {
                         // Retrieve all new created tenants that are not already loaded.
                         var names = (await _shellSettingsManager.LoadSettingsNamesAsync())
-                            .Except(allSettings.Select(s => s.Name), StringComparer.OrdinalIgnoreCase)
+                            .Except(allSettings.Select(s => s.Name))
                             .ToArray();
 
                         // Load and enlist the settings of all new created tenant.
@@ -165,11 +165,11 @@ namespace OrchardCore.Environment.Shell.Distributed
                         }
 
                         var semaphore = _semaphores.GetOrAdd(settings.Name, name => new SemaphoreSlim(1));
-                        await semaphore.WaitAsync(stoppingToken);
+                        await semaphore.WaitAsync();
                         try
                         {
                             // Try to retrieve the release identifier of this tenant from the distributed cache.
-                            var releaseId = await distributedCache.GetStringAsync(ReleaseIdKey(settings.Name), stoppingToken);
+                            var releaseId = await distributedCache.GetStringAsync(ReleaseIdKey(settings.Name));
                             if (releaseId != null)
                             {
                                 // Check if the release identifier of this tenant has changed.
@@ -185,7 +185,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                             }
 
                             // Try to retrieve the reload identifier of this tenant from the distributed cache.
-                            var reloadId = await distributedCache.GetStringAsync(ReloadIdKey(settings.Name), stoppingToken);
+                            var reloadId = await distributedCache.GetStringAsync(ReloadIdKey(settings.Name));
                             if (reloadId != null)
                             {
                                 // Check if the reload identifier of this tenant has changed.
