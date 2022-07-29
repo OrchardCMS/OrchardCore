@@ -154,7 +154,7 @@ namespace OrchardCore.Tenants.Controllers
                     entries = entries.OrderByDescending(t => t.Name).ToList();
                     break;
             }
-            var count = entries.Count();
+            var count = entries.Count;
 
             var results = entries
                 .Skip(pager.GetStartIndex())
@@ -235,15 +235,9 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var allSettings = _shellHost.GetAllSettings();
-
             foreach (var tenantName in model.TenantNames ?? Enumerable.Empty<string>())
             {
-                var shellSettings = allSettings
-                    .Where(x => String.Equals(x.Name, tenantName, StringComparison.OrdinalIgnoreCase))
-                    .FirstOrDefault();
-
-                if (shellSettings == null)
+                if (!_shellHost.TryGetSettings(tenantName, out var shellSettings))
                 {
                     break;
                 }
@@ -251,7 +245,7 @@ namespace OrchardCore.Tenants.Controllers
                 switch (model.BulkAction.ToString())
                 {
                     case "Disable":
-                        if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
+                        if (shellSettings.IsDefaultShell())
                         {
                             await _notifier.WarningAsync(H["You cannot disable the default tenant."]);
                         }
@@ -299,7 +293,6 @@ namespace OrchardCore.Tenants.Controllers
             {
                 return Forbid();
             }
-
 
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
@@ -518,7 +511,7 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
+            if (shellSettings.IsDefaultShell())
             {
                 await _notifier.ErrorAsync(H["You cannot disable the default tenant."]);
                 return RedirectToAction(nameof(Index));
@@ -600,7 +593,7 @@ namespace OrchardCore.Tenants.Controllers
             var configurationShellConnectionString = shellSettings["ConnectionString"];
             var configurationDatabaseProvider = shellSettings["DatabaseProvider"];
 
-            model.DatabaseConfigurationPreset = !string.IsNullOrEmpty(configurationShellConnectionString) || !string.IsNullOrEmpty(configurationDatabaseProvider);
+            model.DatabaseConfigurationPreset = !String.IsNullOrEmpty(configurationShellConnectionString) || !String.IsNullOrEmpty(configurationDatabaseProvider);
 
             if (!String.IsNullOrEmpty(configurationShellConnectionString))
             {
