@@ -25,6 +25,6 @@ namespace OrchardCore.Search.Elastic.ViewModels
         public IEnumerable<Dictionary<string,object>> Documents { get; set; } = Enumerable.Empty<Dictionary<string,object>>();
 
         [BindNever]
-        public IEnumerable<Dictionary<string, object>> Hits { get; set; } = Enumerable.Empty<Dictionary<string, object>>();
+        public IEnumerable<Dictionary<string, object>> Fields { get; set; } = Enumerable.Empty<Dictionary<string, object>>();
     }
 }

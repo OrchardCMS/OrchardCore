@@ -90,7 +90,7 @@ namespace OrchardCore.Search.Elastic
                 {
                     elasticTopDocs.Count = searchResponse.Total;
                     elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
-                    elasticTopDocs.Hits = hits;
+                    elasticTopDocs.Fields = hits;
                 }
                 else
                 {

@@ -441,7 +441,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                 if (elasticTopDocs != null)
                 {
                     model.Documents = elasticTopDocs.TopDocs.Where(x => x != null);
-                    model.Hits = elasticTopDocs.Hits;
+                    model.Fields = elasticTopDocs.Fields;
                     model.Count = elasticTopDocs.Count;
                 }
             }
