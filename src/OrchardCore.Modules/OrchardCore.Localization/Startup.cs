@@ -81,7 +81,7 @@ namespace OrchardCore.Localization
         }
     }
 
-    [Feature("OrchardCore.Localization.CulturePicker.Admin")]
+    [Feature("OrchardCore.Localization.AdminCulturePicker")]
     public class CulturePickerStartup : StartupBase
     {
         private static readonly Task<ProviderCultureResult> NullProviderCultureResult = Task.FromResult(default(ProviderCultureResult));
@@ -91,7 +91,7 @@ namespace OrchardCore.Localization
 
         public CulturePickerStartup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
         {
-            _adminPath = new PathString("/" + adminOptions.Value.AdminUrlPrefix);
+            _adminPath = new PathString("/" + adminOptions.Value.AdminUrlPrefix.Trim('/'));
             _adminCultureCookieName = LocalizationCookieName.AdminCulturePrefix + shellSettings.VersionId;
         }
 
