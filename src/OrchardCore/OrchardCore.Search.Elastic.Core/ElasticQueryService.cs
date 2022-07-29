@@ -61,7 +61,7 @@ namespace OrchardCore.Search.Elastic
                 var sortDescriptor = new SortDescriptor<Dictionary<string, object>>();
 
                 var searchDescriptor = new SearchDescriptor<Dictionary<string, object>>(context.IndexName)
-                    .Source(sourceProp != null ? ((bool)sourceProp) : true)
+                    .Source(sourceProp == null || ((bool)sourceProp))
                     .From(((int?)fromProp))
                     .Size((int?)sizeProp)
                     .Fields(fieldNames.ToArray())
