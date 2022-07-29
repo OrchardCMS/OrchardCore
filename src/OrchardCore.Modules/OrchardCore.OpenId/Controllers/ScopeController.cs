@@ -187,7 +187,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 model.Tenants.Add(new EditOpenIdScopeViewModel.TenantEntry
                 {
-                    Current = String.Equals(tenant.Name, _shellSettings.Name, StringComparison.OrdinalIgnoreCase),
+                    Current = String.Equals(tenant.Name, _shellSettings.Name),
                     Name = tenant.Name,
                     Selected = resources.Contains(OpenIdConstants.Prefixes.Tenant + tenant.Name)
                 });
@@ -244,7 +244,7 @@ namespace OrchardCore.OpenId.Controllers
 
             descriptor.Resources.UnionWith(model.Tenants
                 .Where(tenant => tenant.Selected)
-                .Where(tenant => !String.Equals(tenant.Name, _shellSettings.Name, StringComparison.OrdinalIgnoreCase))
+                .Where(tenant => !String.Equals(tenant.Name, _shellSettings.Name))
                 .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
 
             await _scopeManager.UpdateAsync(scope, descriptor);
