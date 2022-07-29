@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Nest;
 
 namespace OrchardCore.Search.Elastic.ViewModels
 {
@@ -22,5 +23,8 @@ namespace OrchardCore.Search.Elastic.ViewModels
 
         [BindNever]
         public IEnumerable<Dictionary<string,object>> Documents { get; set; } = Enumerable.Empty<Dictionary<string,object>>();
+
+        [BindNever]
+        public IEnumerable<Dictionary<string, object>> Hits { get; set; } = Enumerable.Empty<Dictionary<string, object>>();
     }
 }
