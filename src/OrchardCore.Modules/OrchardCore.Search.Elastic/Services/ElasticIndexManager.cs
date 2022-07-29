@@ -158,6 +158,14 @@ namespace OrchardCore.Search.Elastic
             return elasticTopDocs;
         }
 
+        /// <summary>
+        /// TODO : Refactor with "_source" consideration or deprecate in favor of other method.
+        /// </summary>
+        /// <param name="indexName"></param>
+        /// <param name="query"></param>
+        /// <param name="from"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
         public async Task<ElasticTopDocs> SearchAsync(string indexName, QueryContainer query, int from, int size)
         {
             var elasticTopDocs = new ElasticTopDocs();
