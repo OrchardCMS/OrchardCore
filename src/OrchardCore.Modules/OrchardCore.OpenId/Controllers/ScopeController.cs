@@ -96,11 +96,11 @@ namespace OrchardCore.OpenId.Controllers
 
             var model = new CreateOpenIdScopeViewModel();
 
-            foreach (var tenant in _shellHost.GetAllSettings(TenantState.Running))
+            foreach (var tenant in _shellHost.GetSettingsByState(TenantState.Running))
             {
                 model.Tenants.Add(new CreateOpenIdScopeViewModel.TenantEntry
                 {
-                    Current = String.Equals(tenant.Name, _shellSettings.Name, StringComparison.OrdinalIgnoreCase),
+                    Current = String.Equals(tenant.Name, _shellSettings.Name),
                     Name = tenant.Name
                 });
             }
@@ -142,7 +142,7 @@ namespace OrchardCore.OpenId.Controllers
 
             descriptor.Resources.UnionWith(model.Tenants
                 .Where(tenant => tenant.Selected)
-                .Where(tenant => !String.Equals(tenant.Name, _shellSettings.Name, StringComparison.OrdinalIgnoreCase))
+                .Where(tenant => !String.Equals(tenant.Name, _shellSettings.Name))
                 .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
 
             await _scopeManager.CreateAsync(descriptor);
@@ -183,7 +183,7 @@ namespace OrchardCore.OpenId.Controllers
                 where !String.IsNullOrEmpty(resource) && !resource.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.Ordinal)
                 select resource);
 
-            foreach (var tenant in _shellHost.GetAllSettings(TenantState.Running))
+            foreach (var tenant in _shellHost.GetSettingsByState(TenantState.Running))
             {
                 model.Tenants.Add(new EditOpenIdScopeViewModel.TenantEntry
                 {

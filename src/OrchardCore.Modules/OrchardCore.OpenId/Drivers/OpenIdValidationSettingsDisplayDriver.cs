@@ -30,7 +30,7 @@ namespace OrchardCore.OpenId.Drivers
 
                 var availableTenants = new List<string>();
 
-                foreach (var shellSettings in _shellHost.GetAllSettings(TenantState.Running))
+                foreach (var shellSettings in _shellHost.GetSettingsByState(TenantState.Running))
                 {
                     var shellScope = await _shellHost.GetScopeAsync(shellSettings);
 

@@ -55,11 +55,11 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Retrieves all shell settings with the given state
+        /// Retrieves the shell settings being in the specified state.
         /// </summary>
-        public static IEnumerable<ShellSettings> GetAllSettings(this IShellHost shellHost, TenantState tenantState)
+        public static IEnumerable<ShellSettings> GetSettingsByState(this IShellHost shellHost, TenantState tenantState)
         {
-            return shellHost.GetAllSettings().Where(x => x.State == tenantState);
+            return shellHost.GetAllSettings().Where(settings => settings.State == tenantState);
         }
     }
 }
