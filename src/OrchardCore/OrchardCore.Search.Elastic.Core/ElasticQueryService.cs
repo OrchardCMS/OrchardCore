@@ -54,7 +54,7 @@ namespace OrchardCore.Search.Elastic
                     .Source(sourceProp != null ? ((bool)sourceProp) : true)
                     .From(((int?)fromProp))
                     .Size((int?)sizeProp)
-                    .Sort(s => new SortDescriptor(s => s.))
+                    //.Sort(s => new SortDescriptor(s => s.))
                     .Query(q => new RawQuery(queryProp.ToString()));
 
                 var searchResponse = await _elasticClient.SearchAsync<Dictionary<string, object>>(searchDescriptor);

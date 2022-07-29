@@ -18,6 +18,8 @@ namespace OrchardCore.Search.Elastic.ViewModels
 
         public bool IsCreate { get; set; }
 
+        public bool StoreSourceData { get; set; }
+
         #region List to populate
 
         [BindNever]

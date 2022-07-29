@@ -66,9 +66,9 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    @foreach (var name in fieldNames.Where(x => !x.Contains(".keyword")))
+                    @foreach (var name in fieldNames.Where(x => x.Contains("_source.")))
                     {
-                        <th>@name</th>
+                        <th>@name.Replace("_source.", "")</th>
                     }
                 </tr>
             </thead>
@@ -78,7 +78,7 @@
                 {
                     <tr>
                         <th scope="row">@(row++)</th>
-                        @foreach (var name in fieldNames.Where(x => !x.Contains(".keyword")))
+                        @foreach (var name in fieldNames.Where(x => x.Contains("_source.")))
                         {
                             <td>@(document.GetField(name)?.GetStringValue() ?? String.Empty)</td>
                         }
@@ -88,7 +88,7 @@
         </table>
     </div>
     <div class="mt-3">
-        <p><span class="text-muted">@T["The results displayed are coming from the stored fields in Lucene."]</span></p>
+        <p><span class="text-muted">@T["The results displayed are coming from the _source fields in Lucene."]</span></p>
     </div>
 }
 <script at="Foot">

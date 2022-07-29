@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Nest;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
+using OrchardCore.Search.Elastic.Model;
 
 namespace OrchardCore.Search.Elastic
 {
@@ -17,6 +18,7 @@ namespace OrchardCore.Search.Elastic
     public class ElasticIndexManager : IDisposable
     {
         private readonly IElasticClient _elasticClient;
+        private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
         private readonly IClock _clock;
         private readonly ILogger _logger;
         private bool _disposing;
@@ -25,23 +27,27 @@ namespace OrchardCore.Search.Elastic
         private readonly string[] IgnoredFields = Array.Empty<string>();
 
         public ElasticIndexManager(
+            IElasticClient elasticClient,
+            ElasticIndexSettingsService elasticIndexSettingsService,
             IClock clock,
-            ILogger<ElasticIndexManager> logger,
-            IElasticClient elasticClient
+            ILogger<ElasticIndexManager> logger
             )
         {
-
+            _elasticClient = elasticClient;
+            _elasticIndexSettingsService = elasticIndexSettingsService;
             _clock = clock;
             _logger = logger;
-            _elasticClient = elasticClient;
         }
 
-        public async Task<bool> CreateIndexAsync(string indexName)
+        public async Task<bool> CreateIndexAsync(string indexName, ElasticIndexSettings elasticIndexSettings)
         {
             //Get Index name scoped by ShellName
             if (!await Exists(indexName))
             {
-                var response = await _elasticClient.Indices.CreateAsync(indexName);
+                CreateIndexDescriptor createIndexDescriptor = new CreateIndexDescriptor(indexName)
+                    .Map(m => m.SourceField(s => s.Enabled(elasticIndexSettings.StoreSourceData)));
+
+                var response = await _elasticClient.Indices.CreateAsync(createIndexDescriptor);
 
                 return response.Acknowledged;
             }
@@ -264,16 +270,6 @@ namespace OrchardCore.Search.Elastic
                 }
 
             }
-            return entries;
-        }
-
-        private static Dictionary<string, object> CreateElasticDocument(string contentItemId)
-        {
-            var entries = new Dictionary<string, object>
-            {
-                { "Id", contentItemId }
-            };
-
             return entries;
         }
 

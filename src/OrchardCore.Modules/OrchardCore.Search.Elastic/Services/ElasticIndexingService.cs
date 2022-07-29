@@ -239,19 +239,19 @@ namespace OrchardCore.Search.Elastic
         /// Creates a new index
         /// </summary>
         /// <returns></returns>
-        public async Task CreateIndexAsync(ElasticIndexSettings indexSettings)
+        public async Task CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
-            await _elasticIndexSettingsService.UpdateIndexAsync(indexSettings);
-            await RebuildIndexAsync(indexSettings.IndexName);
+            await _elasticIndexSettingsService.UpdateIndexAsync(elasticIndexSettings);
+            await RebuildIndexAsync(elasticIndexSettings);
         }
 
         /// <summary>
         /// Update an existing index
         /// </summary>
         /// <returns></returns>
-        public Task UpdateIndexAsync(ElasticIndexSettings indexSettings)
+        public Task UpdateIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
-            return _elasticIndexSettingsService.UpdateIndexAsync(indexSettings);
+            return _elasticIndexSettingsService.UpdateIndexAsync(elasticIndexSettings);
         }
 
         /// <summary>
@@ -285,11 +285,11 @@ namespace OrchardCore.Search.Elastic
         /// <summary>
         /// Deletes and recreates the full index content.
         /// </summary>
-        public async Task RebuildIndexAsync(string indexName)
+        public async Task RebuildIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
-            await _indexManager.DeleteIndex(indexName);
-            await _indexManager.CreateIndexAsync(indexName);
-            ResetIndex(indexName);
+            await _indexManager.DeleteIndex(elasticIndexSettings.IndexName);
+            await _indexManager.CreateIndexAsync(elasticIndexSettings.IndexName, elasticIndexSettings);
+            ResetIndex(elasticIndexSettings.IndexName);
         }
 
         public async Task<ElasticSettings> GetElasticSettingsAsync()
