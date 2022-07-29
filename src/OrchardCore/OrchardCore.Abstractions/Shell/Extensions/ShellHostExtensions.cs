@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell
@@ -49,6 +52,14 @@ namespace OrchardCore.Environment.Shell
             }
 
             return settings;
+        }
+
+        /// <summary>
+        /// Retrieves all shell settings with the given state
+        /// </summary>
+        public static IEnumerable<ShellSettings> GetAllSettings(this IShellHost shellHost, TenantState tenantState)
+        {
+            return shellHost.GetAllSettings().Where(x => x.State == tenantState);
         }
     }
 }

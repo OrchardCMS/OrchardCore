@@ -392,11 +392,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
             {
                 return NotFound();
             }
@@ -453,11 +449,7 @@ namespace OrchardCore.Tenants.Controllers
                 await ValidateViewModelAsync(model, false);
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))
             {
                 return NotFound();
             }
@@ -521,11 +513,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(s => String.Equals(s.Name, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
             {
                 return NotFound();
             }
@@ -561,11 +549,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
             {
                 return NotFound();
             }
@@ -594,11 +578,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
             {
                 return NotFound();
             }
@@ -622,12 +602,12 @@ namespace OrchardCore.Tenants.Controllers
 
             model.DatabaseConfigurationPreset = !string.IsNullOrEmpty(configurationShellConnectionString) || !string.IsNullOrEmpty(configurationDatabaseProvider);
 
-            if (!string.IsNullOrEmpty(configurationShellConnectionString))
+            if (!String.IsNullOrEmpty(configurationShellConnectionString))
             {
                 model.ConnectionString = configurationShellConnectionString;
             }
 
-            if (!string.IsNullOrEmpty(configurationDatabaseProvider))
+            if (!String.IsNullOrEmpty(configurationDatabaseProvider))
             {
                 model.DatabaseProvider = configurationDatabaseProvider;
             }

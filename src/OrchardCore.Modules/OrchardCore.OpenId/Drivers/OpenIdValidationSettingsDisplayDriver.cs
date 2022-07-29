@@ -30,8 +30,7 @@ namespace OrchardCore.OpenId.Drivers
 
                 var availableTenants = new List<string>();
 
-                foreach (var shellSettings in _shellHost.GetAllSettings()
-                    .Where(s => s.State == TenantState.Running))
+                foreach (var shellSettings in _shellHost.GetAllSettings(TenantState.Running))
                 {
                     var shellScope = await _shellHost.GetScopeAsync(shellSettings);
 
@@ -55,7 +54,7 @@ namespace OrchardCore.OpenId.Drivers
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
+            settings.Authority = !String.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
             settings.Audience = model.Audience?.Trim();
             settings.DisableTokenTypeValidation = model.DisableTokenTypeValidation;
             settings.Tenant = model.Tenant;

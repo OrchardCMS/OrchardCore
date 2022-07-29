@@ -30,10 +30,10 @@ namespace OrchardCore.Environment.Shell
         private readonly ILogger _logger;
 
         private bool _initialized;
-        private readonly ConcurrentDictionary<string, ShellContext> _shellContexts = new ConcurrentDictionary<string, ShellContext>();
-        private readonly ConcurrentDictionary<string, ShellSettings> _shellSettings = new ConcurrentDictionary<string, ShellSettings>();
-        private readonly ConcurrentDictionary<string, SemaphoreSlim> _shellSemaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
-        private SemaphoreSlim _initializingSemaphore = new SemaphoreSlim(1);
+        private readonly ConcurrentDictionary<string, ShellContext> _shellContexts = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, ShellSettings> _shellSettings = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, SemaphoreSlim> _shellSemaphores = new();
+        private readonly SemaphoreSlim _initializingSemaphore = new(1);
 
         public ShellHost(
             IShellSettingsManager shellSettingsManager,
