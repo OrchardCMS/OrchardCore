@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Elasticsearch.Net;
 using Microsoft.Extensions.Logging;
 using Nest;
 using OrchardCore.Indexing;
@@ -39,12 +40,12 @@ namespace OrchardCore.Search.Elastic
             _logger = logger;
         }
 
-        public async Task<bool> CreateIndexAsync(string indexName, ElasticIndexSettings elasticIndexSettings)
+        public async Task<bool> CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
             //Get Index name scoped by ShellName
-            if (!await Exists(indexName))
+            if (!await Exists(elasticIndexSettings.IndexName))
             {
-                CreateIndexDescriptor createIndexDescriptor = new CreateIndexDescriptor(indexName)
+                CreateIndexDescriptor createIndexDescriptor = new CreateIndexDescriptor(elasticIndexSettings.IndexName)
                     .Map(m => m.SourceField(s => s.Enabled(elasticIndexSettings.StoreSourceData)));
 
                 var response = await _elasticClient.Indices.CreateAsync(createIndexDescriptor);
@@ -55,6 +56,12 @@ namespace OrchardCore.Search.Elastic
             {
                 return true;
             }
+        }
+
+        public async Task<string> GetIndexMappings(string indexName)
+        {
+            var response = await _elasticClient.LowLevel.Indices.GetMappingAsync<StringResponse>(indexName);
+            return response.Body;
         }
 
         public async Task<bool> DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)

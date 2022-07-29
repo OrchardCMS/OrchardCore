@@ -20,16 +20,16 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
-using OrchardCore.Search.Elastic.Model;
-using OrchardCore.Search.Elastic.ViewModels;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
+using OrchardCore.Search.Elastic.Model;
 using OrchardCore.Search.Elastic.Services;
+using OrchardCore.Search.Elastic.ViewModels;
 using OrchardCore.Settings;
 using YesSql;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Search.Elastic.Controllers
 {
@@ -376,6 +376,13 @@ namespace OrchardCore.Search.Elastic.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Mappings(string indexName)
+        {
+            var mappings = await _elasticIndexManager.GetIndexMappings(indexName);
+            var formattedJson = JValue.Parse(mappings).ToString(Formatting.Indented);
+            return View(new MappingsViewModel { IndexName = indexName, Mappings = formattedJson });
         }
 
         public Task<IActionResult> Query(string indexName, string query)

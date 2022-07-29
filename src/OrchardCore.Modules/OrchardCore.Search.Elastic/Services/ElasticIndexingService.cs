@@ -288,7 +288,7 @@ namespace OrchardCore.Search.Elastic
         public async Task RebuildIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
             await _indexManager.DeleteIndex(elasticIndexSettings.IndexName);
-            await _indexManager.CreateIndexAsync(elasticIndexSettings.IndexName, elasticIndexSettings);
+            await _indexManager.CreateIndexAsync(elasticIndexSettings);
             ResetIndex(elasticIndexSettings.IndexName);
         }
 
