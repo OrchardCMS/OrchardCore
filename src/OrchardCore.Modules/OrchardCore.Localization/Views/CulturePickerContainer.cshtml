@@ -5,7 +5,10 @@
 @{
     var selectedCultureName = Model.CurrentCulture.Name;
 }
-<select id="culture-picker" class="form-select me-3" data-selected-culture="@selectedCultureName">
+<select id="oc-admin-culture-picker" class="form-select me-3"
+    data-cookie-name="@(LocalizationCookieName.AdminCulturePrefix + ShellSettings.VersionId)"
+    data-cookie-path="@(Context.Request.PathBase.HasValue ? Context.Request.PathBase : "/")"
+    data-selected-culture="@selectedCultureName">
   @foreach (var culture in Model.SupportedCultures)
   {
     <option selected="@(culture.Name == selectedCultureName ? "selected" : null)" value="@culture.Name">@culture.DisplayName</option>
@@ -14,13 +17,16 @@
 
 <script at="Foot" depends-on="jquery">
     $(function (){
-        $('#culture-picker').change(function(){
-            var culture = $(this).val();
-            var selectedCulture = $(this).data('selected-culture');
+        $('#oc-admin-culture-picker').change(function(){
+            var $this = $(this);
+            var culture = $this.val();
+            var selectedCulture = $this.data('selected-culture');
             if (culture != selectedCulture) {
-                var cookieValue = `@LocalizationCookieName.AdminSite=c=${culture}|uic=${culture};path=/@ShellSettings.Name.ToLower()`;
+                var cookieName = $this.data('cookie-name');
+                var cookiePath = $this.data('cookie-path');
+                var cookieValue = `${cookieName}=c=${culture}|uic=${culture};path=${cookiePath}`;
                 document.cookie = cookieValue;
-                window.location = window.location.href.split('?')[0];
+                window.location = window.location.href;
             }
         });
     });

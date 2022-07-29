@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,11 +10,13 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
@@ -83,11 +86,13 @@ namespace OrchardCore.Localization
     {
         private static readonly Task<ProviderCultureResult> NullProviderCultureResult = Task.FromResult(default(ProviderCultureResult));
 
-        private readonly AdminOptions _adminOptions;
+        private readonly PathString _adminPath;
+        private readonly string _adminCultureCookieName;
 
-        public CulturePickerStartup(IOptions<AdminOptions> adminOptions)
+        public CulturePickerStartup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
         {
-            _adminOptions = adminOptions.Value;
+            _adminPath = new PathString("/" + adminOptions.Value.AdminUrlPrefix);
+            _adminCultureCookieName = LocalizationCookieName.AdminCulturePrefix + shellSettings.VersionId;
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -96,12 +101,9 @@ namespace OrchardCore.Localization
 
             services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new CustomRequestCultureProvider(context =>
             {
-                var path = context.Request.Path.Value[1..];
-                if (path.Equals(_adminOptions.AdminUrlPrefix, StringComparison.OrdinalIgnoreCase) ||
-                    path.StartsWith(_adminOptions.AdminUrlPrefix + "/", StringComparison.OrdinalIgnoreCase))
+                if (context.Request.Path.StartsWithNormalizedSegments(_adminPath))
                 {
-                    var cookie = context.Request.Cookies[LocalizationCookieName.AdminSite];
-
+                    var cookie = context.Request.Cookies[_adminCultureCookieName];
                     if (!String.IsNullOrEmpty(cookie))
                     {
                         var providerResultCulture = CookieRequestCultureProvider.ParseCookieValue(cookie);

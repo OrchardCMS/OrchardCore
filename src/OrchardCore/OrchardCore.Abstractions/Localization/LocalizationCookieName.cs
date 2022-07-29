@@ -1,19 +1,15 @@
-using Microsoft.AspNetCore.Localization;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Localization;
 
 /// <summary>
-/// Contains a localization cookie names.
+/// Localization cookie name constants.
 /// </summary>
-public class LocalizationCookieName
+public static class LocalizationCookieName
 {
     /// <summary>
-    /// Gets the cookie name that used for the admin site.
+    /// The prefix of the admin culture cookie name, at runtime the final
+    /// name will be suffixed by the <see cref="ShellSettings.VersionId"/>.
     /// </summary>
-    public static readonly string AdminSite = ".OrchardCore.AdminSiteCulture";
-
-    /// <summary>
-    /// Gets the cookie name that used for the site.
-    /// </summary>
-    public static readonly string Site = CookieRequestCultureProvider.DefaultCookieName;
+    public const string AdminCulturePrefix = "admin_culture_";
 }
