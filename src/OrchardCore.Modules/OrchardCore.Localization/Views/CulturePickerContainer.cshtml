@@ -4,8 +4,13 @@
 
 @{
     var selectedCultureName = Model.CurrentCulture.Name;
+    var cookiePath = ShellSettings.IsDefaultShell()
+        ? String.Empty
+        : "/" + ShellSettings.Name.ToLower(); 
+
+    cookiePath += "/Admin";
 }
-<select id="culture-picker" class="form-select me-3" data-selected-culture="@selectedCultureName">
+<select id="culture-picker" class="form-select me-3" data-cookie-name="@LocalizationCookieName.AdminSite" data-selected-culture="@selectedCultureName" data-cookie-path="@cookiePath">
   @foreach (var culture in Model.SupportedCultures)
   {
     <option selected="@(culture.Name == selectedCultureName ? "selected" : null)" value="@culture.Name">@culture.DisplayName</option>
@@ -16,11 +21,13 @@
     $(function (){
         $('#culture-picker').change(function(){
             var culture = $(this).val();
+            var cookieName = $(this).data('cookie-name');
             var selectedCulture = $(this).data('selected-culture');
+            var cookiePath = $(this).data('cookie-path');
             if (culture != selectedCulture) {
-                var cookieValue = `@LocalizationCookieName.AdminSite=c=${culture}|uic=${culture};path=/@ShellSettings.Name.ToLower()`;
+                var cookieValue = `${cookieName}=c=${culture}|uic=${culture};path=${cookiePath}`;
                 document.cookie = cookieValue;
-                window.location = window.location.href.split('?')[0];
+                window.location = window.location.href;
             }
         });
     });
