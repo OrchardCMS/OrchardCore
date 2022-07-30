@@ -43,7 +43,7 @@
         </div>
 
         <div class="mt-2">
-            <div class="btn btn-warning btn-sm" id="generatePassword" data-password-length="@Math.Max(IdentityOptions.Value.Password.RequiredLength, IdentityOptions.Value.Password.RequiredUniqueChars)">@T["Generate password"]</div>
+            <div class="btn btn-warning btn-sm" id="generatePassword" data-password-length="@IdentityOptions.Value.Password.RequiredLength">@T["Generate password"]</div>
             <div class="btn btn-info btn-sm" id="copyPassword">@T["Copy password"]</div>
         </div>
     </div>
@@ -62,42 +62,39 @@
                 digits: '0123456789',
                 symbols: '!#$%&\()*+,-./:;<=>\'?@@[\]^_`{|}~'
             };
-
-            function getRandomChar(str) {
-                return str.charAt(Math.floor(Math.random() * str.length));
-            }
-            function shuffle(str) {
-                return str.sort(function() { return 0.5 - Math.random() });
-            }
-            function meetUniqueRule(str) {
+            const getRandomChar = (str) => str.charAt(Math.floor(Math.random() * str.length));
+            const shuffle = (str) => str.sort(function() { return 0.5 - Math.random() });
+            const copyPassword = (str) => navigator.clipboard.writeText(str);
+            const meetUniqueRule = (str) => {
                 let uniqueCharacters = str.filter((item, i, ar) => ar.indexOf(item) === i);
+
                 return uniqueCharacters.length >= @(IdentityOptions.Value.Password.RequiredUniqueChars);
             };
-            function generatePassword() {
+            const generatePassword = () => {
                 let password = [];
 
                 @if (IdentityOptions.Value.Password.RequireUppercase)
                 {
                     // At least one uppercase
-                    <text>password.push(getRandomChar(allowed.uppers)); </text>
+                    <text>password.push(getRandomChar(allowed.uppers));</text>
                 }
                 @if (IdentityOptions.Value.Password.RequireLowercase)
                 {
                     // At least one lowercase
-                    <text>password.push(getRandomChar(allowed.lowers)); </text>
+                    <text>password.push(getRandomChar(allowed.lowers));</text>
                 }
                 @if (IdentityOptions.Value.Password.RequireDigit)
                 {
                     // At least one digit
-                    <text>password.push(getRandomChar(allowed.digits)); </text>
+                    <text>password.push(getRandomChar(allowed.digits));</text>
                 }
 
                 @if (IdentityOptions.Value.Password.RequireNonAlphanumeric)
                 {
                     // At least one special character
-                    <text>password.push(getRandomChar(allowed.symbols)); </text>
+                    <text>password.push(getRandomChar(allowed.symbols));</text>
                 }
-                
+
                 let passwordLength = password.length;
                 if (passwordLength < requiredPasswordLength) {
                     @* At this point we need lengthier password. Fill the rest of the password with random characters *@
@@ -109,25 +106,24 @@
 
                 @if (IdentityOptions.Value.Password.RequiredUniqueChars > 1)
                 {
-                // The generated password does not meet the required-unique-chars requirment, create another one
-                    <text>if (!meetUniqueRule(password)) return generatePassword(); </text>
+                    // The generated password does not meet the required-unique-chars requirment, create another one
+                    <text>if (!meetUniqueRule(password)) return generatePassword();</text>
                 }
 
                 return shuffle(password).join('');
             }
-            function copyPassword(text) {
-                navigator.clipboard.writeText(text);
-            }
-            function toggetIcons(element) {
+            const toggetIcons = (element) => {
                 if (element.classList.contains('fa-eye')) {
                     element.classList.remove('fa-eye');
                     element.classList.add('fa-eye-slash');
+
                     return;
                 }
+
                 element.classList.remove('fa-eye-slash');
                 element.classList.add('fa-eye');
             }
-            function toggleFieldType(element) {
+            const toggleFieldType = (element) => {
                 if (element.type == 'password') {
                     element.type = 'text';
 
@@ -136,20 +132,23 @@
 
                 element.type = 'password';
             }
-            function togglePasswordFieldState() {
+            const togglePasswordFieldState = () => {
                 toggleFieldType(password);
                 toggleFieldType(passwordConfirmation);
                 toggetIcons(passwordToggle.querySelector('.toggle-icon'));
                 toggetIcons(passwordConfirmationToggle.querySelector('.toggle-icon'));
             }
+
             generate.addEventListener('click', function() {
                 var newPassword = generatePassword();
                 password.value = newPassword;
                 passwordConfirmation.value = newPassword;
             });
+
             copy.addEventListener('click', function() {
                 copyPassword(password.value);
             });
+
             passwordToggle.addEventListener('click', togglePasswordFieldState);
             passwordConfirmationToggle.addEventListener('click', togglePasswordFieldState);
         });
