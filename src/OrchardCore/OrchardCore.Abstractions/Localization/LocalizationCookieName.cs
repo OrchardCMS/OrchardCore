@@ -10,7 +10,7 @@ public class LocalizationCookieName
     /// <summary>
     /// Gets the cookie name that used for the admin site.
     /// </summary>
-    public static readonly string AdminSite = ".OrchardCore.AdminSiteCulture";
+    public static readonly string Admin = ".OrchardCore.AdminCulture";
 
     /// <summary>
     /// Gets the cookie name that used for the site.

@@ -3,7 +3,7 @@
     var selectedCultureName = Model.CurrentCulture.Name;
 }
 
-<select id="oc-admin-culture-picker" class="form-select me-3" data-cookie-name="@LocalizationCookieName.AdminSite" data-selected-culture="@selectedCultureName" data-cookie-path="@(Context.Request.PathBase)/Admin">
+<select id="oc-admin-culture-picker" class="form-select me-3" data-cookie-name="@LocalizationCookieName.Admin" data-selected-culture="@selectedCultureName" data-cookie-path="@(Context.Request.PathBase)/Admin">
   @foreach (var culture in Model.SupportedCultures)
   {
     <option selected="@(culture.Name == selectedCultureName ? "selected" : null)" value="@culture.Name">@culture.DisplayName</option>

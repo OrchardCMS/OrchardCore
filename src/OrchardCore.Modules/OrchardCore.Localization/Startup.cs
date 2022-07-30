@@ -100,7 +100,7 @@ public class AdminCulturePickerStartup : StartupBase
         {
             if (context.Request.Path.StartsWithNormalizedSegments(_adminPath))
             {
-                var cookie = context.Request.Cookies[LocalizationCookieName.AdminSite];
+                var cookie = context.Request.Cookies[LocalizationCookieName.Admin];
 
                 if (!String.IsNullOrEmpty(cookie))
                 {
