@@ -9,7 +9,7 @@
 
 @if (supportedCultures.Count() > 1)
 {
-    @await DisplayAsync(await New.CulturePickerContainer(
+    @await DisplayAsync(await New.AdminCulturePickerContainer(
         CurrentCulture: currentCulture,
         SupportedCultures: supportedCultures
     ));

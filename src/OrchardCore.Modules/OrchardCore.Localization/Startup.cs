@@ -80,14 +80,14 @@ public class ContentLanguageHeaderStartup : StartupBase
     }
 }
 
-[Feature("OrchardCore.Localization.CulturePicker.Admin")]
-public class CulturePickerStartup : StartupBase
+[Feature("OrchardCore.Localization.AdminCulturePicker")]
+public class AdminCulturePickerStartup : StartupBase
 {
     private static readonly Task<ProviderCultureResult> NullProviderCultureResult = Task.FromResult(default(ProviderCultureResult));
 
     private readonly PathString _adminPath;
 
-    public CulturePickerStartup(IOptions<AdminOptions> adminOptions)
+    public AdminCulturePickerStartup(IOptions<AdminOptions> adminOptions)
     {
         _adminPath = new PathString("/" + adminOptions.Value.AdminUrlPrefix.Trim('/'));
     }

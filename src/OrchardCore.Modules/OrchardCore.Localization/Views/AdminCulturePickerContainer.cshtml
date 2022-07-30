@@ -10,7 +10,7 @@
 
     cookiePath += "/Admin";
 }
-<select id="culture-picker" class="form-select me-3" data-cookie-name="@LocalizationCookieName.AdminSite" data-selected-culture="@selectedCultureName" data-cookie-path="@cookiePath">
+<select id="oc-admin-culture-picker" class="form-select me-3" data-cookie-name="@LocalizationCookieName.AdminSite" data-selected-culture="@selectedCultureName" data-cookie-path="@cookiePath">
   @foreach (var culture in Model.SupportedCultures)
   {
     <option selected="@(culture.Name == selectedCultureName ? "selected" : null)" value="@culture.Name">@culture.DisplayName</option>
@@ -19,7 +19,7 @@
 
 <script at="Foot" depends-on="jquery">
     $(function (){
-        $('#culture-picker').change(function(){
+        $('#oc-admin-culture-picker').change(function(){
             var culture = $(this).val();
             var cookieName = $(this).data('cookie-name');
             var selectedCulture = $(this).data('selected-culture');
