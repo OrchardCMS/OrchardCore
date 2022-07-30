@@ -1,16 +1,9 @@
 @using OrchardCore.Localization
-@using OrchardCore.Environment.Shell
-@inject ShellSettings ShellSettings
-
 @{
     var selectedCultureName = Model.CurrentCulture.Name;
-    var cookiePath = ShellSettings.IsDefaultShell()
-        ? String.Empty
-        : "/" + ShellSettings.Name.ToLower(); 
-
-    cookiePath += "/Admin";
 }
-<select id="oc-admin-culture-picker" class="form-select me-3" data-cookie-name="@LocalizationCookieName.AdminSite" data-selected-culture="@selectedCultureName" data-cookie-path="@cookiePath">
+
+<select id="oc-admin-culture-picker" class="form-select me-3" data-cookie-name="@LocalizationCookieName.AdminSite" data-selected-culture="@selectedCultureName" data-cookie-path="@(Context.Request.PathBase)/Admin">
   @foreach (var culture in Model.SupportedCultures)
   {
     <option selected="@(culture.Name == selectedCultureName ? "selected" : null)" value="@culture.Name">@culture.DisplayName</option>
