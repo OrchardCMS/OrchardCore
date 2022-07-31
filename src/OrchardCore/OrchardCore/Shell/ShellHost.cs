@@ -64,11 +64,14 @@ namespace OrchardCore.Environment.Shell
             await _initializingSemaphore.WaitAsync();
             try
             {
-                await PreCreateAndRegisterShellsAsync();
-                _initialized = true;
+                if (!_initialized)
+                {
+                    await PreCreateAndRegisterShellsAsync();
+                }
             }
             finally
             {
+                _initialized = true;
                 _initializingSemaphore.Release();
             }
         }
@@ -470,8 +473,6 @@ namespace OrchardCore.Environment.Shell
             {
                 shell.Dispose();
             }
-
-            GC.SuppressFinalize(this);
         }
     }
 }

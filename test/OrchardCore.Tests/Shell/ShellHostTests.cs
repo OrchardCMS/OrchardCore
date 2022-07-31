@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
 
@@ -22,27 +23,18 @@ public class ShellHostTests : SiteContext
         var testSettings = new ShellSettings()
         {
             Name = exactName,
+            State = TenantState.Uninitialized,
         };
 
         await ShellHost.GetOrCreateShellContextAsync(testSettings);
 
         ShellHost.TryGetSettings(exactName, out var foundExactShellSettings);
-        ShellHost.TryGetSettings(exactName, out var foundExactShellShellContext);
-
         ShellHost.TryGetSettings("test", out var foundMixedShellSettings);
-        ShellHost.TryGetSettings("test", out var foundMixedShellShellContext);
-
         ShellHost.TryGetSettings("missing", out var missingShellSettings);
-        ShellHost.TryGetSettings("missing", out var missingShellShellContext);
 
         Assert.NotNull(foundExactShellSettings);
-        Assert.NotNull(foundExactShellShellContext);
-
         Assert.NotNull(foundMixedShellSettings);
-        Assert.NotNull(foundMixedShellShellContext);
-
         Assert.Null(missingShellSettings);
-        Assert.Null(missingShellShellContext);
     }
 
     [Fact]
@@ -51,6 +43,7 @@ public class ShellHostTests : SiteContext
         var defaultSettings = new ShellSettings()
         {
             Name = ShellHelper.DefaultShellName,
+            State = TenantState.Uninitialized,
         };
 
         await ShellHost.GetOrCreateShellContextAsync(defaultSettings);
@@ -58,6 +51,45 @@ public class ShellHostTests : SiteContext
         ShellHost.TryGetSettings("dEFaUlT", out var defaultTenant);
 
         Assert.NotNull(defaultTenant);
-        Assert.True(defaultTenant.IsDefaultShell());
+    }
+
+
+
+    [Fact]
+    public static async Task FindCaseInsensitiveShellContext()
+    {
+        const string exactName = "Test";
+
+        var testSettings = new ShellSettings()
+        {
+            Name = exactName,
+            State = TenantState.Uninitialized,
+        };
+
+        await ShellHost.GetOrCreateShellContextAsync(testSettings);
+
+        ShellHost.TryGetShellContext(exactName, out var foundExactShellShellContext);
+        ShellHost.TryGetShellContext("test", out var foundMixedShellShellContext);
+        ShellHost.TryGetShellContext("missing", out var missingShellShellContext);
+
+        Assert.NotNull(foundExactShellShellContext);
+        Assert.NotNull(foundMixedShellShellContext);
+        Assert.Null(missingShellShellContext);
+    }
+
+    [Fact]
+    public static async Task FindCaseInsensitiveDefaultShellContext()
+    {
+        var defaultSettings = new ShellSettings()
+        {
+            Name = ShellHelper.DefaultShellName,
+            State = TenantState.Uninitialized,
+        };
+
+        await ShellHost.GetOrCreateShellContextAsync(defaultSettings);
+
+        ShellHost.TryGetShellContext("dEFaUlT", out var defaultTenant);
+
+        Assert.NotNull(defaultTenant);
     }
 }
