@@ -36,7 +36,7 @@ public class ShellHostTests : SiteContext
     [Theory]
     [InlineData("Test", "test")]
     [InlineData("OrchardCore", "orchardcore")]
-    [InlineData(ShellHelper.DefaultShellName, "dEfAut")]
+    [InlineData(ShellHelper.DefaultShellName, "dEfAult")]
     public async Task FindCaseInsensitiveShellContext(string shellName, string anotherVariantOfShellName)
     {
         await GetOrCreateShellContextAsync(shellName);
