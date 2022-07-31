@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
@@ -19,15 +18,12 @@ public class ShellHostTests : SiteContext
     }
 
     [Theory]
-    [InlineData("Test")]
-    [InlineData("orchardcore")]
-    [InlineData(ShellHelper.DefaultShellName)]
-
-    public async Task FindCaseInsensitiveShellSettings(string shellName)
+    [InlineData("Test", "test")]
+    [InlineData("OrchardCore", "orchardcore")]
+    [InlineData(ShellHelper.DefaultShellName, "DeFauLt")]
+    public async Task FindCaseInsensitiveShellSettings(string shellName, string anotherVariantOfShellName)
     {
         await GetOrCreateShellContextAsync(shellName);
-        var anotherVariantOfShellName = GetDifferentVariant(shellName);
-
         _shellHost.TryGetSettings(shellName, out var shellSettings);
         _shellHost.TryGetSettings(anotherVariantOfShellName, out var anotherVariantOfShellSettings);
 
@@ -38,13 +34,12 @@ public class ShellHostTests : SiteContext
     }
 
     [Theory]
-    [InlineData("Test")]
-    [InlineData("orchardcore")]
-    [InlineData(ShellHelper.DefaultShellName)]
-    public async Task FindCaseInsensitiveShellContext(string shellName)
+    [InlineData("Test", "test")]
+    [InlineData("OrchardCore", "orchardcore")]
+    [InlineData(ShellHelper.DefaultShellName, "dEfAut")]
+    public async Task FindCaseInsensitiveShellContext(string shellName, string anotherVariantOfShellName)
     {
         await GetOrCreateShellContextAsync(shellName);
-        var anotherVariantOfShellName = GetDifferentVariant(shellName);
 
         _shellHost.TryGetShellContext(shellName, out var shellContext);
         _shellHost.TryGetShellContext(anotherVariantOfShellName, out var anotherVariantOfShellContext);
@@ -64,17 +59,5 @@ public class ShellHostTests : SiteContext
         };
 
         return await _shellHost.GetOrCreateShellContextAsync(shellSettings);
-    }
-
-    private static string GetDifferentVariant(string name)
-    {
-        var caps = name.ToUpper(CultureInfo.InvariantCulture);
-
-        if (caps == name)
-        {
-            return name.ToLower(CultureInfo.InvariantCulture);
-        }
-
-        return caps;
     }
 }
