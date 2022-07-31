@@ -33,8 +33,8 @@ public class ShellHostTests : SiteContext
 
         Assert.NotNull(shellContext);
         Assert.NotEqual(name, searchName);
-        Assert.Same(foundShellSettings, shellContext.Settings);
-        Assert.Same(foundShellContext.Settings, shellContext.Settings);
-        Assert.Same(foundShellContext, shellContext);
+        Assert.Equal(foundShellSettings, shellContext.Settings);
+        Assert.Equal(foundShellContext.Settings, shellContext.Settings);
+        Assert.Equal(foundShellContext, shellContext);
     }
 }
