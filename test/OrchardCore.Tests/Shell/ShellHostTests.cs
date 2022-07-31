@@ -1,95 +1,80 @@
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
 
 namespace OrchardCore.Tests.Shell;
+
 public class ShellHostTests : SiteContext
 {
-    public static IShellHost ShellHost { get; }
+    private readonly IShellHost _shellHost;
 
-    static ShellHostTests()
+    public ShellHostTests()
     {
-        ShellHost = Site.Services.GetRequiredService<IShellHost>();
+        _shellHost = Site.Services.GetRequiredService<IShellHost>();
     }
 
-    [Fact]
-    public static async Task FindCaseInsensitiveShellSettings()
-    {
-        const string exactName = "Test";
+    [Theory]
+    [InlineData("Test")]
+    [InlineData("orchardcore")]
+    [InlineData(ShellHelper.DefaultShellName)]
 
-        var testSettings = new ShellSettings()
+    public async Task FindCaseInsensitiveShellSettings(string shellName)
+    {
+        await GetOrCreateShellContextAsync(shellName);
+        var anotherVariantOfShellName = GetDifferentVariant(shellName);
+
+        _shellHost.TryGetSettings(shellName, out var shellSettings);
+        _shellHost.TryGetSettings(anotherVariantOfShellName, out var anotherVariantOfShellSettings);
+
+        Assert.NotEqual(shellName, anotherVariantOfShellName);
+        Assert.NotNull(shellSettings);
+        Assert.NotNull(anotherVariantOfShellSettings);
+        Assert.Same(shellSettings, anotherVariantOfShellSettings);
+    }
+
+    [Theory]
+    [InlineData("Test")]
+    [InlineData("orchardcore")]
+    [InlineData(ShellHelper.DefaultShellName)]
+    public async Task FindCaseInsensitiveShellContext(string shellName)
+    {
+        await GetOrCreateShellContextAsync(shellName);
+        var anotherVariantOfShellName = GetDifferentVariant(shellName);
+
+        _shellHost.TryGetShellContext(shellName, out var shellContext);
+        _shellHost.TryGetShellContext(anotherVariantOfShellName, out var anotherVariantOfShellContext);
+
+        Assert.NotEqual(shellName, anotherVariantOfShellName);
+        Assert.NotNull(shellContext);
+        Assert.NotNull(anotherVariantOfShellContext);
+        Assert.Same(shellContext, anotherVariantOfShellContext);
+    }
+
+    private async Task<ShellContext> GetOrCreateShellContextAsync(string name)
+    {
+        var shellSettings = new ShellSettings()
         {
-            Name = exactName,
+            Name = name,
             State = TenantState.Uninitialized,
         };
 
-        await ShellHost.GetOrCreateShellContextAsync(testSettings);
-
-        ShellHost.TryGetSettings(exactName, out var foundExactShellSettings);
-        ShellHost.TryGetSettings("test", out var foundMixedShellSettings);
-        ShellHost.TryGetSettings("missing", out var missingShellSettings);
-
-        Assert.NotNull(foundExactShellSettings);
-        Assert.NotNull(foundMixedShellSettings);
-        Assert.Null(missingShellSettings);
+        return await _shellHost.GetOrCreateShellContextAsync(shellSettings);
     }
 
-    [Fact]
-    public static async Task FindCaseInsensitiveDefaultShellSettings()
+    private static string GetDifferentVariant(string name)
     {
-        var defaultSettings = new ShellSettings()
+        var caps = name.ToUpper(CultureInfo.InvariantCulture);
+
+        if (caps == name)
         {
-            Name = ShellHelper.DefaultShellName,
-            State = TenantState.Uninitialized,
-        };
+            return name.ToLower(CultureInfo.InvariantCulture);
+        }
 
-        await ShellHost.GetOrCreateShellContextAsync(defaultSettings);
-
-        ShellHost.TryGetSettings("dEFaUlT", out var defaultTenant);
-
-        Assert.NotNull(defaultTenant);
-    }
-
-
-
-    [Fact]
-    public static async Task FindCaseInsensitiveShellContext()
-    {
-        const string exactName = "Test";
-
-        var testSettings = new ShellSettings()
-        {
-            Name = exactName,
-            State = TenantState.Uninitialized,
-        };
-
-        await ShellHost.GetOrCreateShellContextAsync(testSettings);
-
-        ShellHost.TryGetShellContext(exactName, out var foundExactShellShellContext);
-        ShellHost.TryGetShellContext("test", out var foundMixedShellShellContext);
-        ShellHost.TryGetShellContext("missing", out var missingShellShellContext);
-
-        Assert.NotNull(foundExactShellShellContext);
-        Assert.NotNull(foundMixedShellShellContext);
-        Assert.Null(missingShellShellContext);
-    }
-
-    [Fact]
-    public static async Task FindCaseInsensitiveDefaultShellContext()
-    {
-        var defaultSettings = new ShellSettings()
-        {
-            Name = ShellHelper.DefaultShellName,
-            State = TenantState.Uninitialized,
-        };
-
-        await ShellHost.GetOrCreateShellContextAsync(defaultSettings);
-
-        ShellHost.TryGetShellContext("dEFaUlT", out var defaultTenant);
-
-        Assert.NotNull(defaultTenant);
+        return caps;
     }
 }
