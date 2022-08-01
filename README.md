@@ -10,11 +10,11 @@ Orchard Core consists of two distinct projects:
 [![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://docs.orchardcore.net/)
 [![Crowdin](https://badges.crowdin.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
 
-#### Local communities
+## Local communities
 
 中文资源
 
-[![Orchard Core CN 中文讨论组](https://pub.idqqimg.com/wpa/images/group.png)](//shang.qq.com/wpa/qunwpa?idkey=48721591a71ee7586316604a7a4ee99d26fd977c6120370a06585085a5936f62)
+[![Orchard Core CN 中文讨论组](https://docs.orchardcore.net/en/latest/docs/assets/images/orchard-core-cn-community-logo.png)](https://shang.qq.com/wpa/qunwpa?idkey=48721591a71ee7586316604a7a4ee99d26fd977c6120370a06585085a5936f62)
 
 ## Build Status
 

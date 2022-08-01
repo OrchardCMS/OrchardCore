@@ -9,12 +9,12 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [AWSSDK SecurityToken](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.1.159 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
 | [Azure Identity](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/identity/Azure.Identity/README.md) | Azure Active Directory token authentication support. | 1.6.0 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Configuration Secrets](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Extensions.AspNetCore.Configuration.Secrets_1.2.2/sdk/extensions/Azure.Extensions.AspNetCore.Configuration.Secrets/README.md) | Azure Key Vault configuration provider implementation for Microsoft.Extensions.Configuration. | 1.2.2 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
-| [Azure Storage Blobs](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/storage/Azure.Storage.Blobs/README.md) | Azure Storage Blobs client library for .NET. | 12.12.0 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
+| [Azure Storage Blobs](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/storage/Azure.Storage.Blobs/README.md) | Azure Storage Blobs client library for .NET. | 12.13.0 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Storage Blobs for DataProtection](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Extensions.AspNetCore.DataProtection.Blobs_1.2.1/sdk/extensions/Azure.Extensions.AspNetCore.DataProtection.Blobs/README.md) | Allows storing ASP.NET Core DataProtection keys in Azure Blob Storage. | 1.2.1 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Castle.Core](https://github.com/castleproject/Core) | Castle DynamicProxy. | 5.0.0 |[Apache-2.0](https://github.com/castleproject/Core/blob/master/LICENSE) |
 | [Fluid.Core](https://github.com/sebastienros/fluid) | .NET Liquid template engine. | 2.2.15 | [MIT](https://github.com/sebastienros/fluid/blob/dev/LICENSE) |
 | [GraphQL](https://github.com/graphql/graphiql) | GraphiQL & GraphQL. | 2.4.0 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
-| [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 7.1.512 | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
+| [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 7.1.542 | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
 | [Image Sharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 2.0.2 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
 | [Irony.Core](https://github.com/daxnet/irony) | A modified version of the Irony project with .NET Core support | 1.0.7 | [MIT](https://github.com/daxnet/irony/blob/master/LICENSE) |
 | [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.0.0-beta-2037 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
@@ -28,13 +28,13 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [MiniProfiler](https://github.com/MiniProfiler/dotnet) | A simple but effective mini-profiler for ASP.NET (and Core) websites | 4.2.22 | [MIT](https://github.com/MiniProfiler/dotnet/blob/main/LICENSE.txt) |
 | [Moq](https://github.com/moq/moq) | The most popular and friendly mocking framework for .NET. | 4.18.1 | [MIT](https://github.com/moq/moq/blob/main/LICENSE) |
 | [NCrontab](https://github.com/atifaziz/NCrontab) | Crontab for .NET | 3.3.1 | [Apache-2.0](https://github.com/atifaziz/NCrontab/blob/master/COPYING.txt) |
-| [NLog.Web.AspNetCore](https://github.com/NLog/NLog.Web/tree/master/src/NLog.Web.AspNetCore) | NLog integration for ASP.NET. | 5.0.0 | [BSD-3-Clause](https://github.com/NLog/NLog.Web/blob/master/LICENSE) |
+| [NLog.Web.AspNetCore](https://github.com/NLog/NLog.Web/tree/master/src/NLog.Web.AspNetCore) | NLog integration for ASP.NET. | 5.1.0 | [BSD-3-Clause](https://github.com/NLog/NLog.Web/blob/master/LICENSE) |
 | [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) | Json.NET is a popular high-performance JSON framework for .NET | 13.0.1 | [MIT](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md) |
 | [NJsonSchema](https://github.com/RicoSuter/NJsonSchema) | JSON Schema reader, generator and validator for .NET | 10.7.2 | [MIT](https://github.com/RicoSuter/NJsonSchema/blob/master/LICENSE.md) |
 | [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 3.1.0 | [Apache-2.0](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
 | [OpenIddict](https://github.com/openiddict/openiddict-core) | Versatile OpenID Connect stack for ASP.NET Core. | 3.1.1 | [Apache-2.0](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
 | [PdfPig](https://github.com/UglyToad/PdfPig/) | Library to read and extract text and other content from PDF files. | 0.1.6 | [Apache-2.0](https://github.com/UglyToad/PdfPig/blob/master/LICENSE) |
-| [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore) | Serilog integration for ASP.NET Core. | 5.0.0 | [Apache-2.0](https://github.com/serilog/serilog-aspnetcore/blob/dev/LICENSE) |
+| [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore) | Serilog integration for ASP.NET Core. | 6.0.1 | [Apache-2.0](https://github.com/serilog/serilog-aspnetcore/blob/dev/LICENSE) |
 | [Shortcodes](https://github.com/sebastienros/shortcodes) | Shortcodes processor for .NET. | 1.3.3 | [MIT](https://github.com/sebastienros/shortcodes/blob/dev/LICENSE) |
 | [YesSql](https://github.com/sebastienros/yessql) | .NET document database working on any RDBMS. | 3.0.12 | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE) |
 | [ZString](https://github.com/Cysharp/ZString) | Zero Allocation StringBuilder for .NET Core and Unity. | 2.4.4 | [MIT](https://github.com/Cysharp/ZString/blob/master/LICENSE) |
@@ -46,8 +46,8 @@ The below table lists the different libraries used as Resources:
 | [Bootstrap](https://github.com/twbs/bootstrap) | HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web. | 5.1.3 | [MIT](https://github.com/twbs/bootstrap/blob/main/LICENSE) |
 | [bootstrap-select](https://github.com/snapappointments/bootstrap-select) | jQuery plugin for select elements. | 1.14.0-beta2 | [MIT](https://github.com/snapappointments/bootstrap-select/blob/v1.14-dev/LICENSE) |
 | [noUiSlider](https://github.com/leongersen/noUiSlider) | noUiSlider is a lightweight JavaScript range slider. | 15.6.0 | [MIT](https://github.com/leongersen/noUiSlider/blob/master/LICENSE.md) |
-| [Code Mirror](https://github.com/codemirror/CodeMirror) | In-browser code editor. | 5.65.5 | [MIT](https://github.com/codemirror/CodeMirror/blob/master/LICENSE) |
-| [Font Awesome](https://github.com/FortAwesome/Font-Awesome) | The iconic SVG, font, and CSS toolkit. | 6.1.1 | [Font Awesome Free License](https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt) |
+| [Code Mirror](https://github.com/codemirror/CodeMirror) | In-browser code editor. | 5.65.7 | [MIT](https://github.com/codemirror/CodeMirror/blob/master/LICENSE) |
+| [Font Awesome](https://github.com/FortAwesome/Font-Awesome) | The iconic SVG, font, and CSS toolkit. | 6.1.2 | [Font Awesome Free License](https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt) |
 | [jQuery](https://github.com/jquery/jquery) | jQuery JavaScript Library. | 3.6.0 | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt) |
 | [jQuery UI](https://github.com/jquery/jquery-ui) | jQuery user interface library. | 1.12.1 | [MIT](https://github.com/jquery/jquery-ui/blob/master/LICENSE.txt) |
 | [jQuery UI i18n](https://github.com/jquery/jquery-ui/tree/master/ui/i18n) | jQuery UI internationalization. | 1.7.2 | [MIT](https://github.com/jquery/jquery-ui/blob/master/LICENSE.txt) |
