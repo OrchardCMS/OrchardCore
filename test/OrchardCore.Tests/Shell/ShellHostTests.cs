@@ -19,7 +19,7 @@ public class ShellHostTests : SiteContext
     [Theory]
     [InlineData("Tenant1", "tEnAnT1")]
     [InlineData(ShellHelper.DefaultShellName, "dEfAuLt")]
-    public static async Task CanSearchShellByCaseInsensitiveName(string name, string searchName)
+    public static async Task CanGetShellByCaseInsensitiveName(string name, string searchName)
     {
         await ShellHost.InitializeAsync();
 
