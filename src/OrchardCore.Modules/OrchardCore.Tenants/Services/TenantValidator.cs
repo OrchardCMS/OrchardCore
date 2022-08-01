@@ -64,26 +64,21 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]));
             }
 
-            if (!String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            if (!String.IsNullOrWhiteSpace(model.RequestUrlPrefix) && model.RequestUrlPrefix.Contains('/'))
             {
-                if (model.RequestUrlPrefix.Contains('/'))
-                {
-                    errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]));
-                }
+                errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]));
             }
 
-            var allSettings = _shellHost.GetAllSettings();
+            var allOtherSettings = _shellHost.GetAllSettings().Where(settings => !String.Equals(settings.Name, model.Name, StringComparison.OrdinalIgnoreCase));
 
-            var allOtherShells = allSettings.Where(t => !String.Equals(t.Name, model.Name, StringComparison.OrdinalIgnoreCase));
-
-            if (allOtherShells.Any(tenant => String.Equals(tenant.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && DoesUrlHostExist(tenant.RequestUrlHost, model.RequestUrlHost)))
+            if (allOtherSettings.Any(settings => String.Equals(settings.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && DoesUrlHostExist(settings.RequestUrlHost, model.RequestUrlHost)))
             {
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
 
             if (model.IsNewTenant)
             {
-                if (allSettings.Any(tenant => String.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
+                if (_shellHost.TryGetSettings(model.Name, out _))
                 {
                     errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
                 }
@@ -93,10 +88,7 @@ namespace OrchardCore.Tenants.Services
             else
             {
                 // At this point, we know we are validating existing tenant
-                var shellSetting = allSettings.Where(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase))
-                                              .FirstOrDefault();
-
-                if (shellSetting == null || shellSetting.State == TenantState.Uninitialized)
+                if (!_shellHost.TryGetSettings(model.Name, out var existingSettings) || existingSettings.State == TenantState.Uninitialized)
                 {
                     // while the tenant is Uninitialized, we are still able to change the database settings
                     // let's validate the database for assurance
