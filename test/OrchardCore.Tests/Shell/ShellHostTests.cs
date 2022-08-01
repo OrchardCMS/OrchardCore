@@ -19,7 +19,7 @@ public class ShellHostTests : SiteContext
     [Theory]
     [InlineData("Tenant1", "tEnAnT1")]
     [InlineData(ShellHelper.DefaultShellName, "dEfAuLt")]
-    public static async Task ShellCanBeFoundByCaseInsensitiveName(string name, string searchName)
+    public static async Task CanSearchShellByCaseInsensitiveName(string name, string searchName)
     {
         await ShellHost.InitializeAsync();
 
@@ -30,13 +30,13 @@ public class ShellHostTests : SiteContext
                 State = TenantState.Uninitialized,
             });
 
-        var foundShellSettings = ShellHost.GetSettings(searchName);
+        ShellHost.TryGetSettings(searchName, out var foundShellSettings);
         ShellHost.TryGetShellContext(searchName, out var foundShellContext);
 
         Assert.NotNull(shellContext);
         Assert.NotEqual(name, searchName);
+
         Assert.Same(foundShellSettings, shellContext.Settings);
-        Assert.Same(foundShellContext.Settings, shellContext.Settings);
         Assert.Same(foundShellContext, shellContext);
     }
 }
