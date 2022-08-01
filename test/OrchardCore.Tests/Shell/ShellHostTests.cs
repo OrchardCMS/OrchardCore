@@ -21,6 +21,8 @@ public class ShellHostTests : SiteContext
     [InlineData(ShellHelper.DefaultShellName, "dEfAuLt")]
     public static async Task ShellCanBeFoundByCaseInsensitiveName(string name, string searchName)
     {
+        await ShellHost.InitializeAsync();
+
         var shellContext = await ShellHost.GetOrCreateShellContextAsync(
             new ShellSettings()
             {
@@ -33,8 +35,8 @@ public class ShellHostTests : SiteContext
 
         Assert.NotNull(shellContext);
         Assert.NotEqual(name, searchName);
-        Assert.Equal(foundShellSettings, shellContext.Settings);
-        Assert.Equal(foundShellContext.Settings, shellContext.Settings);
-        Assert.Equal(foundShellContext, shellContext);
+        Assert.Same(foundShellSettings, shellContext.Settings);
+        Assert.Same(foundShellContext.Settings, shellContext.Settings);
+        Assert.Same(foundShellContext, shellContext);
     }
 }
