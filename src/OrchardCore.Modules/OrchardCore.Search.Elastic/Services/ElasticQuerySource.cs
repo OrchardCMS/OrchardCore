@@ -46,7 +46,7 @@ namespace OrchardCore.Search.Elastic
             _templateOptions = templateOptions.Value;
         }
 
-        public string Name => "ElasticSearch";
+        public string Name => "Elastic";
 
         public Query Create()
         {

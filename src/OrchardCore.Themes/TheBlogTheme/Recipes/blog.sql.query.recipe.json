@@ -1,13 +1,13 @@
 {
-  "name": "Blog.Elastic.Query",
-  "displayName": "Blog - Elastic Query",
-  "description": "Runs the Elastic Search recipe and replaces the RecentBlogPosts Query with an Elastic Query.",
+  "name": "Blog.SQL.Query",
+  "displayName": "Blog - SQL Query",
+  "description": "Runs the SQL Search recipe and replaces the RecentBlogPosts Query with a SQL Query.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",
   "issetuprecipe": false,
   "categories": [ "default" ],
-  "tags": [ "blog", "elastic" ],
+  "tags": [ "blog", "sql" ],
 
   "steps": [
     {
@@ -15,7 +15,7 @@
       "Values": [
         {
           "executionid": "Blog",
-          "name": "Blog.Elastic.Search"
+          "name": "Blog.SQL.Search"
         }
       ]
     },
@@ -23,10 +23,9 @@
       "name": "queries",
       "Queries": [
         {
-          "Source": "Elastic",
+          "Source": "Sql",
           "Name": "RecentBlogPosts",
-          "Index": "search",
-          "Template": "[file:text('Snippets/recentBlogPosts.json')]",
+          "Template": "SELECT * FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC LIMIT 3",
           "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
           "ReturnContentItems": true
         }

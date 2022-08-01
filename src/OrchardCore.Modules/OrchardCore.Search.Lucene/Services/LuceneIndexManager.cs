@@ -199,7 +199,7 @@ namespace OrchardCore.Search.Lucene
             var doc = new Document
             {
                 new StringField("ContentItemId", documentIndex.ContentItemId.ToString(), Field.Store.YES),
-                new StringField("ContentItemVersionId", documentIndex.ContentItemVersionId.ToString(), Field.Store.YES),
+                new StringField("ContentItemVersionId", documentIndex.ContentItemVersionId.ToString(), Field.Store.YES)
             };
 
             if (luceneIndexSettings.StoreSourceData)

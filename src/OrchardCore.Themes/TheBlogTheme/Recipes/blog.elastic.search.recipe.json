@@ -54,7 +54,7 @@
       // Create the search settings.
       "name": "Settings",
       "ElasticSettings": {
-        "SearchIndex": "default_search",
+        "SearchIndex": "search",
         "DefaultSearchFields": [
           "Content.ContentItem.FullText"
         ]

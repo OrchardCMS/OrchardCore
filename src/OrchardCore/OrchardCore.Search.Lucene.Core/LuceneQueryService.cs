@@ -33,7 +33,7 @@ namespace OrchardCore.Search.Lucene
             var fromProperty = queryObj["from"];
             var sizeProperty = queryObj["size"];
 
-            var size = sizeProperty?.Value<int>() ?? 50;
+            var size = sizeProperty?.Value<int>() ?? 10;
             var from = fromProperty?.Value<int>() ?? 0;
 
             string sortField = null;
