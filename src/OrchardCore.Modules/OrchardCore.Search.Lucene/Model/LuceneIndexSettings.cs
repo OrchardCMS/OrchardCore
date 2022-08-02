@@ -16,8 +16,6 @@ namespace OrchardCore.Search.Lucene.Model
         public string[] IndexedContentTypes { get; set; }
 
         public string Culture { get; set; }
-
-        public bool StoreSourceData { get; set; } = true;
     }
 
     public class LuceneIndexSettingsDocument : Document

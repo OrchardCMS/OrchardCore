@@ -175,8 +175,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                 Analyzers = _luceneAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
                 IndexedContentTypes = IsCreate ? _contentDefinitionManager.ListTypeDefinitions()
-                    .Select(x => x.Name).ToArray() : settings.IndexedContentTypes,
-                StoreSourceData = settings.StoreSourceData
+                    .Select(x => x.Name).ToArray() : settings.IndexedContentTypes
             };
 
             return View(model);
@@ -220,7 +219,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             {
                 try
                 {
-                    var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes, Culture = model.Culture ?? "", StoreSourceData = model.StoreSourceData };
+                    var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes, Culture = model.Culture ?? "" };
 
                     // We call Rebuild in order to reset the index state cursor too in case the same index
                     // name was also used previously.
@@ -239,7 +238,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             {
                 try
                 {
-                    var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes, Culture = model.Culture ?? "", StoreSourceData = model.StoreSourceData };
+                    var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes, Culture = model.Culture ?? "" };
 
                     await _luceneIndexingService.UpdateIndexAsync(settings);
                 }
