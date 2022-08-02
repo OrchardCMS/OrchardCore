@@ -70,7 +70,6 @@ namespace OrchardCore.ContentManagement.Handlers
             if (contentTypeDefinition == null)
                 return;
             await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.ActivatedAsync(context, part));
-
         }
 
         public override async Task CreatingAsync(CreateContentContext context)
