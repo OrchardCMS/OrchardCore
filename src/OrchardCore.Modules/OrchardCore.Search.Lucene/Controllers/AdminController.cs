@@ -21,12 +21,12 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
-using OrchardCore.Search.Lucene.Model;
-using OrchardCore.Search.Lucene.Services;
-using OrchardCore.Search.Lucene.ViewModels;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
+using OrchardCore.Search.Lucene.Model;
+using OrchardCore.Search.Lucene.Services;
+using OrchardCore.Search.Lucene.ViewModels;
 using OrchardCore.Settings;
 using YesSql;
 

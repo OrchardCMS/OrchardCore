@@ -24,7 +24,7 @@ using Spatial4n.Context;
 using Directory = System.IO.Directory;
 using LDirectory = Lucene.Net.Store.Directory;
 
-namespace OrchardCore.Lucene
+namespace OrchardCore.Search.Lucene
 {
     /// <summary>
     /// Provides methods to manage physical Lucene indices.
