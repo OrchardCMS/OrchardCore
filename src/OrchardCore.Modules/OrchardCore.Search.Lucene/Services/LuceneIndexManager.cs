@@ -17,7 +17,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
-using OrchardCore.Search.Lucene;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Services;
 using Spatial4n.Context;
@@ -196,7 +195,7 @@ namespace OrchardCore.Search.Lucene
         {
             var doc = new Document
             {
-                // Always store the content item id
+                // Always store the content item id and version id
                 new StringField("ContentItemId", documentIndex.ContentItemId.ToString(), Field.Store.YES),
                 new StringField("ContentItemVersionId", documentIndex.ContentItemVersionId.ToString(), Field.Store.YES)
             };
