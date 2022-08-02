@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +15,6 @@ using OrchardCore.Localization.Models;
 using OrchardCore.Localization.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
@@ -86,34 +84,22 @@ namespace OrchardCore.Localization
     {
         private static readonly Task<ProviderCultureResult> NullProviderCultureResult = Task.FromResult(default(ProviderCultureResult));
 
-        private readonly PathString _adminPath;
-        private readonly string _adminCultureCookieName;
+        private readonly ShellSettings _shellSettings;
+        private readonly AdminOptions _adminOptions;
 
         public CulturePickerStartup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
         {
-            _adminPath = new PathString("/" + adminOptions.Value.AdminUrlPrefix.Trim('/'));
-            _adminCultureCookieName = LocalizationCookieName.AdminCulturePrefix + shellSettings.VersionId;
+            _shellSettings = shellSettings;
+            _adminOptions = adminOptions.Value;
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IShapeTableProvider, AdminCulturePickerShapes>();
 
-            services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new CustomRequestCultureProvider(context =>
-            {
-                if (context.Request.Path.StartsWithNormalizedSegments(_adminPath))
-                {
-                    var cookie = context.Request.Cookies[_adminCultureCookieName];
-                    if (!String.IsNullOrEmpty(cookie))
-                    {
-                        var providerResultCulture = CookieRequestCultureProvider.ParseCookieValue(cookie);
-
-                        return Task.FromResult(providerResultCulture);
-                    }
-                }
-
-                return NullProviderCultureResult;
-            })));
+            services.Configure<RequestLocalizationOptions>(options =>
+                options.AddInitialRequestCultureProvider(
+                    new AdminCookieCultureProvider(_shellSettings, _adminOptions)));
         }
     }
 }
