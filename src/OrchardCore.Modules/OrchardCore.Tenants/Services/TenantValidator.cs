@@ -18,20 +18,17 @@ namespace OrchardCore.Tenants.Services
 
         private readonly IShellHost _shellHost;
         private readonly IFeatureProfilesService _featureProfilesService;
-        private readonly ShellSettings _shellSettings;
         private readonly IStringLocalizer<TenantValidator> S;
         private readonly IDbConnectionValidator _dbConnectionValidator;
 
         public TenantValidator(
             IShellHost shellHost,
             IFeatureProfilesService featureProfilesService,
-            ShellSettings shellSettings,
             IStringLocalizer<TenantValidator> stringLocalizer,
             IDbConnectionValidator dbConnectionValidator)
         {
             _shellHost = shellHost;
             _featureProfilesService = featureProfilesService;
-            _shellSettings = shellSettings;
             S = stringLocalizer;
             _dbConnectionValidator = dbConnectionValidator;
         }
@@ -59,7 +56,7 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.Name), S["Invalid tenant name. Must contain characters only and no spaces."]));
             }
 
-            if (!_shellSettings.IsDefaultShell() && String.IsNullOrWhiteSpace(model.RequestUrlHost) && String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            if (!ShellHelper.DefaultShellName.Equals(model.Name, StringComparison.OrdinalIgnoreCase) && String.IsNullOrWhiteSpace(model.RequestUrlHost) && String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
             {
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]));
             }

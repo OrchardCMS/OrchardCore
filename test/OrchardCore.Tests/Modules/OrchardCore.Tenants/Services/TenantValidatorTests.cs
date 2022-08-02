@@ -125,7 +125,6 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
             return new TenantValidator(
                 ShellHost,
                 featureProfilesServiceMock.Object,
-                shellSettings,
                 stringLocalizerMock.Object,
                 connectionFactory.Object);
         }
