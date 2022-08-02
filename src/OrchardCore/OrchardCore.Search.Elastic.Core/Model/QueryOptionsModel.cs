@@ -15,17 +15,5 @@ namespace OrchardCore.Search.Elastic.Model
 
         [JsonPropertyName("fields")]
         public string[] Fields { get; set; }
-
-        [JsonPropertyName("sort")]
-        public string Sort { get; set; }
-    }
-
-    public class SortOptions
-    {
-        [JsonPropertyName("order")]
-        public string Order { get; set; }
-
-        [JsonPropertyName("mode")]
-        public string Mode { get; set; }
     }
 }

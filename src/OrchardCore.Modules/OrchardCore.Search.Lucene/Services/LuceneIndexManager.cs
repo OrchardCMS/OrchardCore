@@ -210,11 +210,15 @@ namespace OrchardCore.Search.Lucene
 
             foreach (var entry in documentIndex.Entries)
             {
+                var store = entry.Options.HasFlag(DocumentIndexOptions.Store)
+                            ? Field.Store.YES
+                            : Field.Store.NO;
+
                 switch (entry.Type)
                 {
                     case DocumentIndex.Types.Boolean:
                         // Store "true"/"false" for booleans
-                        doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), Field.Store.YES));
+                        doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), store));
 
                         if (luceneIndexSettings.StoreSourceData)
                         {
@@ -227,7 +231,7 @@ namespace OrchardCore.Search.Lucene
                         {
                             if (entry.Value is DateTimeOffset)
                             {
-                                doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateResolution.SECOND), Field.Store.YES));
+                                doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateResolution.SECOND), store));
 
                                 if (luceneIndexSettings.StoreSourceData)
                                 {
@@ -236,7 +240,7 @@ namespace OrchardCore.Search.Lucene
                             }
                             else
                             {
-                                doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateResolution.SECOND), Field.Store.YES));
+                                doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateResolution.SECOND), store));
 
                                 if (luceneIndexSettings.StoreSourceData)
                                 {
@@ -253,7 +257,7 @@ namespace OrchardCore.Search.Lucene
                     case DocumentIndex.Types.Integer:
                         if (entry.Value != null && Int64.TryParse(entry.Value.ToString(), out var value))
                         {
-                            doc.Add(new Int64Field(entry.Name, value, Field.Store.YES));
+                            doc.Add(new Int64Field(entry.Name, value, store));
 
                             if (luceneIndexSettings.StoreSourceData)
                             {
@@ -270,7 +274,7 @@ namespace OrchardCore.Search.Lucene
                     case DocumentIndex.Types.Number:
                         if (entry.Value != null)
                         {
-                            doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), Field.Store.YES));
+                            doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), store));
 
                             if (luceneIndexSettings.StoreSourceData)
                             {
@@ -284,12 +288,6 @@ namespace OrchardCore.Search.Lucene
                         break;
 
                     case DocumentIndex.Types.Text:
-                        // Only Text store option should be overridable
-                        // All the other CLR types should be handled naturally.
-                        var store = entry.Options.HasFlag(DocumentIndexOptions.Store)
-                                    ? Field.Store.YES
-                                    : Field.Store.NO;
-
                         if (entry.Value != null && !String.IsNullOrEmpty(Convert.ToString(entry.Value)))
                         {
                             var stringValue = Convert.ToString(entry.Value);

@@ -17,6 +17,11 @@ namespace OrchardCore.Indexing
         /// </summary>
         public bool Stored { get; set; }
 
+        /// <summary>
+        /// Set the content to be analyzed/tokenized in the index document
+        /// </summary>
+        public bool Analyzed { get; set; }
+
         public DocumentIndexOptions ToOptions()
         {
             var options = DocumentIndexOptions.None;
@@ -26,7 +31,13 @@ namespace OrchardCore.Indexing
                 options |= DocumentIndexOptions.Store;
             }
 
+            if (Analyzed)
+            {
+                options |= DocumentIndexOptions.Analyze;
+            }
+
             return options;
         }
     }
 }
+
