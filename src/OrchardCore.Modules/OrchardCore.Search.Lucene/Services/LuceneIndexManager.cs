@@ -16,14 +16,15 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
+using OrchardCore.Modules;
+using OrchardCore.Search.Lucene;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Services;
-using OrchardCore.Modules;
 using Spatial4n.Context;
 using Directory = System.IO.Directory;
 using LDirectory = Lucene.Net.Store.Directory;
 
-namespace OrchardCore.Search.Lucene
+namespace OrchardCore.Lucene
 {
     /// <summary>
     /// Provides methods to manage physical Lucene indices.
@@ -139,13 +140,11 @@ namespace OrchardCore.Search.Lucene
 
         public async Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
-            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
-
             await WriteAsync(indexName, writer =>
             {
                 foreach (var indexDocument in indexDocuments)
                 {
-                    writer.AddDocument(CreateLuceneDocument(indexDocument, luceneIndexSettings));
+                    writer.AddDocument(CreateLuceneDocument(indexDocument));
                 }
 
                 writer.Commit();
@@ -193,20 +192,13 @@ namespace OrchardCore.Search.Lucene
             return new ReadOnlyDictionary<string, DateTime>(_timestamps);
         }
 
-        private Document CreateLuceneDocument(DocumentIndex documentIndex, LuceneIndexSettings luceneIndexSettings)
+        private Document CreateLuceneDocument(DocumentIndex documentIndex)
         {
-            // Always store the content item id
             var doc = new Document
             {
-                new StringField("ContentItemId", documentIndex.ContentItemId.ToString(), Field.Store.YES),
-                new StringField("ContentItemVersionId", documentIndex.ContentItemVersionId.ToString(), Field.Store.YES)
+                // Always store the content item id
+                new StringField("ContentItemId", documentIndex.ContentItemId.ToString(), Field.Store.YES)
             };
-
-            if (luceneIndexSettings.StoreSourceData)
-            {
-                doc.Add(new StringField("_source.ContentItemId", documentIndex.ContentItemId.ToString(), Field.Store.YES));
-                doc.Add(new StringField("_source.ContentItemVersionId", documentIndex.ContentItemVersionId.ToString(), Field.Store.YES));
-            }
 
             foreach (var entry in documentIndex.Entries)
             {
@@ -219,11 +211,6 @@ namespace OrchardCore.Search.Lucene
                     case DocumentIndex.Types.Boolean:
                         // Store "true"/"false" for booleans
                         doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), store));
-
-                        if (luceneIndexSettings.StoreSourceData)
-                        {
-                            doc.Add(new StringField($"_source.{entry.Name}", Convert.ToString(entry.Value).ToLowerInvariant(), Field.Store.YES));
-                        }
                         break;
 
                     case DocumentIndex.Types.DateTime:
@@ -232,25 +219,15 @@ namespace OrchardCore.Search.Lucene
                             if (entry.Value is DateTimeOffset)
                             {
                                 doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateResolution.SECOND), store));
-
-                                if (luceneIndexSettings.StoreSourceData)
-                                {
-                                    doc.Add(new StringField($"_source.{entry.Name}", DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateResolution.SECOND), Field.Store.YES));
-                                }
                             }
                             else
                             {
                                 doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateResolution.SECOND), store));
-
-                                if (luceneIndexSettings.StoreSourceData)
-                                {
-                                    doc.Add(new StringField($"_source.{entry.Name}", DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateResolution.SECOND), Field.Store.YES));
-                                }
                             }
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, "NULL", Field.Store.YES));
+                            doc.Add(new StringField(entry.Name, "NULL", store));
                         }
                         break;
 
@@ -258,15 +235,10 @@ namespace OrchardCore.Search.Lucene
                         if (entry.Value != null && Int64.TryParse(entry.Value.ToString(), out var value))
                         {
                             doc.Add(new Int64Field(entry.Name, value, store));
-
-                            if (luceneIndexSettings.StoreSourceData)
-                            {
-                                doc.Add(new Int64Field($"_source.{entry.Name}", value, Field.Store.YES));
-                            }
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, "NULL", Field.Store.YES));
+                            doc.Add(new StringField(entry.Name, "NULL", store));
                         }
 
                         break;
@@ -275,15 +247,10 @@ namespace OrchardCore.Search.Lucene
                         if (entry.Value != null)
                         {
                             doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), store));
-
-                            if (luceneIndexSettings.StoreSourceData)
-                            {
-                                doc.Add(new DoubleField($"_source.{entry.Name}", Convert.ToDouble(entry.Value), Field.Store.YES));
-                            }
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, "NULL", Field.Store.YES));
+                            doc.Add(new StringField(entry.Name, "NULL", store));
                         }
                         break;
 
@@ -292,11 +259,13 @@ namespace OrchardCore.Search.Lucene
                         {
                             var stringValue = Convert.ToString(entry.Value);
 
-                            doc.Add(new TextField(entry.Name, stringValue, store));
-
-                            if (luceneIndexSettings.StoreSourceData)
+                            if (entry.Options.HasFlag(DocumentIndexOptions.Analyze))
                             {
-                                doc.Add(new TextField($"_source.{entry.Name}", stringValue, Field.Store.YES));
+                                doc.Add(new TextField(entry.Name, stringValue, store));
+                            }
+                            else
+                            {
+                                doc.Add(new StringField(entry.Name, stringValue, store));
                             }
 
                             // This is for ElasticSearch Queries compatibility since a keyword field is always stored
@@ -304,12 +273,19 @@ namespace OrchardCore.Search.Lucene
                             // Keyword Ignore above 256 chars by default.
                             if (store == Field.Store.NO && stringValue.Length <= 256)
                             {
-                                doc.Add(new StringField($"{entry.Name}.keyword", Convert.ToString(entry.Value), Field.Store.YES));
+                                doc.Add(new StringField($"{entry.Name}.keyword", stringValue, Field.Store.YES));
                             }
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, "NULL", Field.Store.YES));
+                            if (entry.Options.HasFlag(DocumentIndexOptions.Analyze))
+                            {
+                                doc.Add(new TextField(entry.Name, "NULL", store));
+                            }
+                            else
+                            {
+                                doc.Add(new StringField(entry.Name, "NULL", store));
+                            }
                         }
                         break;
 
@@ -323,16 +299,14 @@ namespace OrchardCore.Search.Lucene
                                 doc.Add(field);
                             }
 
-                            doc.Add(new StoredField(strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
-
-                            if (luceneIndexSettings.StoreSourceData)
+                            if (entry.Options.HasFlag(DocumentIndexOptions.Store))
                             {
-                                doc.Add(new StoredField($"_source.{entry.Name}", $"{point.Latitude},{point.Longitude}"));
+                                doc.Add(new StoredField(strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
                             }
                         }
                         else
                         {
-                            doc.Add(new StringField(strategy.FieldName, "NULL", Field.Store.YES));
+                            doc.Add(new StringField(strategy.FieldName, "NULL", store));
                         }
                         break;
                 }
