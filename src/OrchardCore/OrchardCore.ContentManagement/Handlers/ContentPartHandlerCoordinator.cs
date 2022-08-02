@@ -1,6 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ContentManagement.Handlers
@@ -67,19 +69,8 @@ namespace OrchardCore.ContentManagement.Handlers
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
+            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.ActivatedAsync(context, part));
 
-            foreach (var typePartDefinition in contentTypeDefinition.Parts)
-            {
-                var partName = typePartDefinition.PartDefinition.Name;
-                var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, partName) as ContentPart;
-
-                if (part != null)
-                {
-                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
-                    await partHandlers.InvokeAsync((handler, context, part) => handler.ActivatedAsync(context, part), context, part, _logger);
-                }
-            }
         }
 
         public override async Task CreatingAsync(CreateContentContext context)
@@ -87,20 +78,7 @@ namespace OrchardCore.ContentManagement.Handlers
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
-
-            foreach (var typePartDefinition in contentTypeDefinition.Parts)
-            {
-                var partName = typePartDefinition.PartDefinition.Name;
-                var activator = _contentPartFactory.GetTypeActivator(partName);
-
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-
-                if (part != null)
-                {
-                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
-                    await partHandlers.InvokeAsync((handler, context, part) => handler.CreatingAsync(context, part), context, part, _logger);
-                }
-            }
+            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.CreatingAsync(context, part));
         }
 
         public override async Task CreatedAsync(CreateContentContext context)
@@ -108,20 +86,7 @@ namespace OrchardCore.ContentManagement.Handlers
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
-
-            foreach (var typePartDefinition in contentTypeDefinition.Parts)
-            {
-                var partName = typePartDefinition.PartDefinition.Name;
-                var activator = _contentPartFactory.GetTypeActivator(partName);
-
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-
-                if (part != null)
-                {
-                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
-                    await partHandlers.InvokeAsync((handler, context, part) => handler.CreatedAsync(context, part), context, part, _logger);
-                }
-            }
+            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.CreatedAsync(context, part));
         }
 
         public override async Task ImportingAsync(ImportContentContext context)
@@ -129,20 +94,7 @@ namespace OrchardCore.ContentManagement.Handlers
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
-
-            foreach (var typePartDefinition in contentTypeDefinition.Parts)
-            {
-                var partName = typePartDefinition.PartDefinition.Name;
-                var activator = _contentPartFactory.GetTypeActivator(partName);
-
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-
-                if (part != null)
-                {
-                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
-                    await partHandlers.InvokeAsync((handler, context, part) => handler.ImportingAsync(context, part), context, part, _logger);
-                }
-            }
+            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.ImportingAsync(context, part));
         }
 
         public override async Task ImportedAsync(ImportContentContext context)
@@ -150,20 +102,7 @@ namespace OrchardCore.ContentManagement.Handlers
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
-
-            foreach (var typePartDefinition in contentTypeDefinition.Parts)
-            {
-                var partName = typePartDefinition.PartDefinition.Name;
-                var activator = _contentPartFactory.GetTypeActivator(partName);
-
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-
-                if (part != null)
-                {
-                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
-                    await partHandlers.InvokeAsync((handler, context, part) => handler.ImportedAsync(context, part), context, part, _logger);
-                }
-            }
+            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.ImportedAsync(context, part));
         }
 
         public override async Task InitializingAsync(InitializingContentContext context)
@@ -171,19 +110,7 @@ namespace OrchardCore.ContentManagement.Handlers
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
-
-            foreach (var typePartDefinition in contentTypeDefinition.Parts)
-            {
-                var partName = typePartDefinition.PartDefinition.Name;
-                var activator = _contentPartFactory.GetTypeActivator(partName);
-
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-                if (part != null)
-                {
-                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
-                    await partHandlers.InvokeAsync((handler, context, part) => handler.InitializingAsync(context, part), context, part, _logger);
-                }
-            }
+            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.InitializingAsync(context, part));
         }
 
         public override async Task InitializedAsync(InitializingContentContext context)
@@ -191,18 +118,22 @@ namespace OrchardCore.ContentManagement.Handlers
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
-
+            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.InitializedAsync(context, part));
+        }
+        private async Task InvokeHandlersForParts<TContext>(ContentTypeDefinition contentTypeDefinition, TContext context, Func<IContentPartHandler, TContext, ContentPart, Task> dispatch) where TContext : ContentContextBase
+        {
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
+                if (string.IsNullOrEmpty(partName))
+                    throw new ArgumentNullException("partName", $"Part name for content type {contentTypeDefinition.Name} cannot be null");
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
+                var part = context.ContentItem.Get(activator.Type, partName) as ContentPart;
 
                 if (part != null)
                 {
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
-                    await partHandlers.InvokeAsync((handler, context, part) => handler.InitializedAsync(context, part), context, part, _logger);
+                    await partHandlers.InvokeAsync(dispatch, context, part, _logger);
                 }
             }
         }
@@ -223,6 +154,8 @@ namespace OrchardCore.ContentManagement.Handlers
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
+                if (string.IsNullOrEmpty(partName))
+                    throw new System.ArgumentNullException("partName cannot be null for contentType:" + contentTypeDefinition.Name);
                 var activator = _contentPartFactory.GetTypeActivator(partName);
 
                 var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
@@ -258,6 +191,8 @@ namespace OrchardCore.ContentManagement.Handlers
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
+                if (string.IsNullOrEmpty(partName))
+                    throw new System.ArgumentNullException("partName cannot be null for contentType:" + contentTypeDefinition.Name);
                 var activator = _contentPartFactory.GetTypeActivator(partName);
 
                 var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
@@ -300,6 +235,8 @@ namespace OrchardCore.ContentManagement.Handlers
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
+                if (string.IsNullOrEmpty(partName))
+                    throw new System.ArgumentNullException("partName cannot be null for contentType:" + contentTypeDefinition.Name);
                 var activator = _contentPartFactory.GetTypeActivator(partName);
 
                 var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
