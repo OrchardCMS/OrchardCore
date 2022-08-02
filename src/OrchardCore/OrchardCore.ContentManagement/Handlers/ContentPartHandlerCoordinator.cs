@@ -366,7 +366,7 @@ namespace OrchardCore.ContentManagement.Handlers
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 if (string.IsNullOrEmpty(partName))
-                    throw new ArgumentNullException("partName", $"Part name for content type {contentTypeDefinition.Name} cannot be null");
+                    throw new ArgumentNullException("partName", $"Part definition name for content type {contentTypeDefinition.Name}, part {typePartDefinition.Name ?? "n/a"} cannot be null");
                 var activator = _contentPartFactory.GetTypeActivator(partName);
                 var part = context.ContentItem.Get(activator.Type, partName) as ContentPart;
 
