@@ -323,14 +323,11 @@ namespace OrchardCore.Search.Lucene
                                 doc.Add(field);
                             }
 
-                            if (entry.Options.HasFlag(DocumentIndexOptions.Store))
-                            {
-                                doc.Add(new StoredField(strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
+                            doc.Add(new StoredField(strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
 
-                                if (luceneIndexSettings.StoreSourceData)
-                                {
-                                    doc.Add(new StoredField($"_source.{entry.Name}", $"{point.Latitude},{point.Longitude}"));
-                                }
+                            if (luceneIndexSettings.StoreSourceData)
+                            {
+                                doc.Add(new StoredField($"_source.{entry.Name}", $"{point.Latitude},{point.Longitude}"));
                             }
                         }
                         else
