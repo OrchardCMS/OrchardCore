@@ -197,7 +197,8 @@ namespace OrchardCore.Search.Lucene
             var doc = new Document
             {
                 // Always store the content item id
-                new StringField("ContentItemId", documentIndex.ContentItemId.ToString(), Field.Store.YES)
+                new StringField("ContentItemId", documentIndex.ContentItemId.ToString(), Field.Store.YES),
+                new StringField("ContentItemVersionId", documentIndex.ContentItemVersionId.ToString(), Field.Store.YES)
             };
 
             foreach (var entry in documentIndex.Entries)

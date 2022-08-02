@@ -28,6 +28,11 @@ namespace OrchardCore.Contents.Indexing
             }
 
             context.DocumentIndex.Set(
+                IndexingConstants.DisplayTextAnalyzedKey,
+                context.ContentItem.DisplayText,
+                DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
+
+            context.DocumentIndex.Set(
                 IndexingConstants.DisplayTextKey,
                 context.ContentItem.DisplayText,
                 DocumentIndexOptions.Analyze);
