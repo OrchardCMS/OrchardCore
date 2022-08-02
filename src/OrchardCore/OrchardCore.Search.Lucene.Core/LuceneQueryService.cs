@@ -56,6 +56,7 @@ namespace OrchardCore.Search.Lucene
                     sortOrder = ((JProperty)sortProperty.First).Value["order"].ToString();
                     sortType = ((JProperty)sortProperty.First).Value["type"]?.ToString();
                     var sortFieldType = SortFieldType.STRING;
+
                     if (sortType != null)
                     {
                         sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpper());
@@ -71,6 +72,7 @@ namespace OrchardCore.Search.Lucene
                         sortOrder = ((JProperty)item.First).Value["order"].ToString();
                         sortType = ((JProperty)item.First).Value["type"]?.ToString();
                         var sortFieldType = SortFieldType.STRING;
+
                         if (sortType != null)
                         {
                             sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpper());
