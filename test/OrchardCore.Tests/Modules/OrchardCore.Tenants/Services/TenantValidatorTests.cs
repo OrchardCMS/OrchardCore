@@ -21,6 +21,8 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
 
         [Theory]
         [InlineData("Tenant1", "tenant1", "", "Feature Profile", new[] { "A tenant with the same name already exists." })]
+        [InlineData("tEnAnT1", "tenant1", "", "Feature Profile", new[] { "A tenant with the same name already exists." })]
+        [InlineData("dEfAuLt", "", "", "Feature Profile", new[] { "The tenant name is in conflict with the 'Default' tenant." })]
         [InlineData("Tenant5", "tenant3", "", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
         [InlineData("Tenant5", "tenant3", null, "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
         [InlineData("Tenant5", "", "example2.com", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
