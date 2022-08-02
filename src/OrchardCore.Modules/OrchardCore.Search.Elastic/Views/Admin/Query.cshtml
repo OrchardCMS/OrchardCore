@@ -57,7 +57,7 @@
 @if (Model.Documents.Any() || Model.Fields.Any())
 {
     <div class="mb-3">
-        <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "ElasticSearch", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
+        <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Elastic", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
     </div>    
 }
 @if (Model.Documents.Any())
