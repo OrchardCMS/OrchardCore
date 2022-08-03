@@ -73,7 +73,7 @@ namespace OrchardCore.Search.Elasticsearch
                                 .Should(s => s
                                     .Wildcard(w => w
                                         .Field("Content.ContentItem.DisplayText_Normalized")
-                                        .Value(searchContext.Query.ToLowerInvariant() + "*")
+                                        .Wildcard(searchContext.Query.ToLowerInvariant() + "*")
                                     )
                                 )
                             )
