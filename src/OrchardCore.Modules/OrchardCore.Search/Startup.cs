@@ -1,13 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Routing;
 using OrchardCore.Navigation;
-using OrchardCore.Search.Configuration;
 using OrchardCore.Search.Drivers;
-using OrchardCore.Search.Model;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 

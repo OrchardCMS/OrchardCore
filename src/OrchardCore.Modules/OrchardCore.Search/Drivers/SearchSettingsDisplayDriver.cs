@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -6,12 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Model;
 using OrchardCore.Search.ViewModels;
 using OrchardCore.Settings;
-using System.Linq;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Search.Drivers
 {
@@ -52,11 +52,11 @@ namespace OrchardCore.Search.Drivers
             {
                 var searchProviders = _serviceProvider.GetServices<SearchProvider>();
 
-                if(searchProviders.Any())
+                if (searchProviders.Any())
                 {
                     model.SearchProviders = searchProviders.Select(x => x.Name);
                 }
-                
+
                 model.SearchProvider = settings.SearchProvider;
             }).Location("Content:2").OnGroup(GroupId);
         }

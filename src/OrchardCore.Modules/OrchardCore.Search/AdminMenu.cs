@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Search.Drivers;
 using OrchardCore.Navigation;
+using OrchardCore.Search.Drivers;
 
 namespace OrchardCore.Search
 {

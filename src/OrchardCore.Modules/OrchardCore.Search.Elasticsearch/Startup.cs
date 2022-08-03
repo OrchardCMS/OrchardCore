@@ -58,9 +58,16 @@ namespace OrchardCore.Search.Elasticsearch
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<SearchIndexViewModel>();
+                o.MemberAccessStrategy.Register<SearchFormViewModel>();
+                o.MemberAccessStrategy.Register<SearchResultsViewModel>();
+            });
+
             var elasticConfiguration = _shellConfiguration.GetSection(ConfigSectionName).Get<ElasticsearchConnectionOptions>();
 
-            if (CheckOptions(elasticConfiguration.Url, elasticConfiguration.Ports, _logger))
+            if (elasticConfiguration != null && CheckOptions(elasticConfiguration.Url, elasticConfiguration.Ports, _logger))
             {
                 services.Configure<ElasticsearchConnectionOptions>(o => o.ConfigurationExists = true);
 
@@ -145,13 +152,6 @@ namespace OrchardCore.Search.Elasticsearch
                 services.AddRecipeExecutionStep<ElasticsearchIndexStep>();
 
                 services.AddScoped<SearchProvider, ElasticsearchSearchProvider>();
-
-                services.Configure<TemplateOptions>(o =>
-                {
-                    o.MemberAccessStrategy.Register<SearchIndexViewModel>();
-                    o.MemberAccessStrategy.Register<SearchFormViewModel>();
-                    o.MemberAccessStrategy.Register<SearchResultsViewModel>();
-                });
             }
         }
 
