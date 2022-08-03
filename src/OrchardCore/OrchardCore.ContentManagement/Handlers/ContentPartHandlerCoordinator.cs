@@ -293,7 +293,7 @@ namespace OrchardCore.ContentManagement.Handlers
                 if (String.IsNullOrEmpty(partName))
                     throw new ArgumentNullException("partName", $"Part definition name for content type {contentTypeDefinition.Name}, part {typePartDefinition.Name ?? "n/a"} cannot be null");
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, partName) as ContentPart;
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
                 if (part != null)
                 {
