@@ -633,7 +633,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// <summary>
         /// Tries to wait for a given delay, returns false if it was cancelled.
         /// </summary>
-        private async Task<bool> TryWaitAsync(TimeSpan delay, CancellationToken stoppingToken)
+        private static async Task<bool> TryWaitAsync(TimeSpan delay, CancellationToken stoppingToken)
         {
             try
             {

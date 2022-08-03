@@ -286,7 +286,7 @@ namespace OrchardCore.Tenants.Controllers
                         }
                         else if (shellSettings.State != TenantState.Disabled && shellSettings.State != TenantState.Uninitialized)
                         {
-                            await _notifier.WarningAsync(H["The tenant '{0}' should be disabled or unitialized.", shellSettings.Name]);
+                            await _notifier.WarningAsync(H["The tenant '{0}' should be disabled or uninitialized.", shellSettings.Name]);
                         }
                         else
                         {
