@@ -1,5 +1,4 @@
 using OrchardCore.ContentManagement;
-using OrchardCore.Indexing;
 
 namespace OrchardCore.ContentFields.Fields
 {
