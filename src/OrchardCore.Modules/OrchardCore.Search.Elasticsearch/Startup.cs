@@ -135,7 +135,7 @@ namespace OrchardCore.Search.Elasticsearch
                 services.AddSingleton<ElasticsearchIndexManager>();
                 services.AddSingleton<ElasticsearchAnalyzerManager>();
                 services.AddScoped<ElasticsearchIndexingService>();
-                services.AddScoped<ISearchQueryService, SearchQueryService>();
+                services.AddScoped<IElasticsearchSearchQueryService, ElasticsearchSearchQueryService>();
 
                 services.Configure<ElasticsearchOptions>(o =>
                     o.Analyzers.Add(new ElasticsearchAnalyzer(ElasticsearchSettings.StandardAnalyzer, new StandardAnalyzer())));

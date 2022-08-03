@@ -4,11 +4,11 @@ using Nest;
 
 namespace OrchardCore.Search.Elasticsearch
 {
-    public class SearchQueryService : ISearchQueryService
+    public class ElasticsearchSearchQueryService : IElasticsearchSearchQueryService
     {
         private readonly ElasticsearchIndexManager _elasticIndexManager;
 
-        public SearchQueryService(ElasticsearchIndexManager elasticIndexManager)
+        public ElasticsearchSearchQueryService(ElasticsearchIndexManager elasticIndexManager)
         {
             _elasticIndexManager = elasticIndexManager;
         }

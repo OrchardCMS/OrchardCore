@@ -4,13 +4,13 @@ using Lucene.Net.Search;
 
 namespace OrchardCore.Search.Lucene.Services
 {
-    public class SearchQueryService : ISearchQueryService
+    public class LuceneSearchQueryService : ILuceneSearchQueryService
     {
         private readonly LuceneIndexManager _luceneIndexManager;
 
         private static HashSet<string> IdSet = new HashSet<string>(new string[] { "ContentItemId" });
 
-        public SearchQueryService(LuceneIndexManager luceneIndexManager)
+        public LuceneSearchQueryService(LuceneIndexManager luceneIndexManager)
         {
             _luceneIndexManager = luceneIndexManager;
         }

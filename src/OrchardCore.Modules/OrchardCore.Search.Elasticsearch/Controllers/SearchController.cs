@@ -30,7 +30,7 @@ namespace OrchardCore.Search.Elasticsearch
         private readonly ElasticsearchIndexingService _elasticIndexingService;
         private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
         private readonly ElasticsearchAnalyzerManager _elasticAnalyzerManager;
-        private readonly ISearchQueryService _searchQueryService;
+        private readonly IElasticsearchSearchQueryService _searchQueryService;
         private readonly ISession _session;
         private readonly IStringLocalizer S;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
@@ -44,7 +44,7 @@ namespace OrchardCore.Search.Elasticsearch
             ElasticsearchIndexingService elasticIndexingService,
             ElasticsearchIndexSettingsService elasticIndexSettingsService,
             ElasticsearchAnalyzerManager elasticAnalyzerManager,
-            ISearchQueryService searchQueryService,
+            IElasticsearchSearchQueryService searchQueryService,
             ISession session,
             IStringLocalizer<SearchController> stringLocalizer,
             IEnumerable<IPermissionProvider> permissionProviders,
