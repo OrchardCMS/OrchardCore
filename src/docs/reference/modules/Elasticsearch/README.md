@@ -2,6 +2,40 @@
 
 The Elasticsearch module allows you to manage Elasticsearch indices.
 
+## How to use
+
+### Install Elasticsearch or OpenSearch with Docker compose
+
+OpenSearch Docker Compose file : 
+
+[opensearch.txt](https://github.com/OrchardCMS/OrchardCore/files/9161365/opensearch.txt)
+
+Elasticsearch v7.17.5 Docker Compose file : 
+
+[elasticsearch.txt](https://github.com/OrchardCMS/OrchardCore/files/9161358/elasticsearch.txt)
+
+- Copy these files in a folder named Docker somewhere safe.
+- Rename these files extension as .yml instead of .txt.
+- Open up a Terminal or Command Shell in this folder.
+- Execute `docker-compose -f opensearch.yml -p opensearch up` to deploy OpenSearch containers.
+- Wait for the containers to be fully created.
+- Stop the docker containers with CTRL+C in the command shell. This will stop the containers from running.
+- Execute `docker-compose -f elasticsearch.yml -p elasticsearch up` to deploy Elasticsearch containers.
+- Always execute only one or the other because they use the same external 9200 port.
+
+Advice : don't remove these files from their folder if you want to remove all their containers at once later on in Docker desktop.
+
+You should get this result in Docker Desktop app : 
+
+![133547386-5af33f19-e5a1-426e-8f11-4739bcadc691](https://user-images.githubusercontent.com/3228637/133548093-ada7c233-f700-4a27-8f41-e178c68fcc65.png)
+
+### Set up Elasticsearch or OpenSearch in Orchard Core
+
+- Add Elastic Connection in the shell configuration (OrchardCore.Cms.Web appsettings.json file). [See Elasticsearch Configurations](#Elasticsearch-configuration).
+
+- Start an Orchard Core instance with VS Code debugger
+- Go to Orchard Core features, Enable Elasticsearch.
+
 ## Recipe step
 
 Elasticsearch indices can be created during recipe execution using the `elasticsearch-index` step.  
