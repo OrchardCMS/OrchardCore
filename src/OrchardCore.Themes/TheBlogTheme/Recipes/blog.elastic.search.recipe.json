@@ -1,19 +1,19 @@
 {
-  "name": "Blog.Elastic.Search",
-  "displayName": "Blog - Elastic Search",
-  "description": "Creates Elastic settings, permission and indices.",
+  "name": "Blog.Elasticsearch.Search",
+  "displayName": "Blog - Elasticsearch Search",
+  "description": "Creates Elasticsearch settings, permission and indices.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",
   "issetuprecipe": false,
   "categories": [ "default" ],
-  "tags": [ "blog", "elastic" ],
+  "tags": [ "blog", "Elasticsearch" ],
 
   "steps": [
     {
       "name": "feature",
       "enable": [
-        "OrchardCore.Search.Elastic"
+        "OrchardCore.Search.Elasticsearch"
       ]
     },
     {
@@ -69,7 +69,7 @@
           "Description": "Anonymous role",
           "Permissions": [
             "ViewContent",
-            "QueryElasticSearchIndex"
+            "QueryElasticsearchSearchIndex"
           ]
         }
       ]

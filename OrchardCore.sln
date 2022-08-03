@@ -404,11 +404,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Roles.Core", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.AutoSetup", "src\OrchardCore.Modules\OrchardCore.AutoSetup\OrchardCore.AutoSetup.csproj", "{1E76C17C-099A-4E6D-BC26-E93CBA4D0BD6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.Elastic.Abstractions", "src\OrchardCore\OrchardCore.Search.Elastic.Abstractions\OrchardCore.Search.Elastic.Abstractions.csproj", "{E6A90BFD-AB5C-4AED-A5AB-799136AB1521}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.Elasticsearch.Abstractions", "src\OrchardCore\OrchardCore.Search.Elasticsearch.Abstractions\OrchardCore.Search.Elasticsearch.Abstractions.csproj", "{E6A90BFD-AB5C-4AED-A5AB-799136AB1521}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.Elastic.Core", "src\OrchardCore\OrchardCore.Search.Elastic.Core\OrchardCore.Search.Elastic.Core.csproj", "{848C919B-6829-4758-9E59-51F13D25ABBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.Elasticsearch.Core", "src\OrchardCore\OrchardCore.Search.Elasticsearch.Core\OrchardCore.Search.Elasticsearch.Core.csproj", "{848C919B-6829-4758-9E59-51F13D25ABBC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.Elastic", "src\OrchardCore.Modules\OrchardCore.Search.Elastic\OrchardCore.Search.Elastic.csproj", "{B6A54EA8-F285-436D-8257-6F6EDE4C3339}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.Elasticsearch", "src\OrchardCore.Modules\OrchardCore.Search.Elasticsearch\OrchardCore.Search.Elasticsearch.csproj", "{B6A54EA8-F285-436D-8257-6F6EDE4C3339}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Data.YesSql", "src\OrchardCore\OrchardCore.Data.YesSql\OrchardCore.Data.YesSql.csproj", "{F06E4E20-3675-4BA5-AD2D-4538FAB154D5}"
 EndProject
