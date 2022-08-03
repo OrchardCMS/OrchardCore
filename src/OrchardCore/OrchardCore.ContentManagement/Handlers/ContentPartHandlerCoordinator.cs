@@ -66,58 +66,37 @@ namespace OrchardCore.ContentManagement.Handlers
 
         public override async Task ActivatedAsync(ActivatedContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.ActivatedAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.ActivatedAsync(context, part));
         }
 
         public override async Task CreatingAsync(CreateContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.CreatingAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.CreatingAsync(context, part));
         }
 
         public override async Task CreatedAsync(CreateContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.CreatedAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.CreatedAsync(context, part));
         }
 
         public override async Task ImportingAsync(ImportContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.ImportingAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.ImportingAsync(context, part));
         }
 
         public override async Task ImportedAsync(ImportContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.ImportedAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.ImportedAsync(context, part));
         }
 
         public override async Task InitializingAsync(InitializingContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.InitializingAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.InitializingAsync(context, part));
         }
 
         public override async Task InitializedAsync(InitializingContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.InitializedAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.InitializedAsync(context, part));
         }
 
         public override async Task LoadingAsync(LoadContentContext context)
@@ -166,118 +145,67 @@ namespace OrchardCore.ContentManagement.Handlers
 
         public override async Task LoadedAsync(LoadContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.LoadedAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.LoadedAsync(context, part));
         }
 
         public override async Task ValidatingAsync(ValidateContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.ValidatingAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.ValidatingAsync(context, part));
         }
 
         public override async Task ValidatedAsync(ValidateContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.ValidatedAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.ValidatedAsync(context, part));
         }
 
         public override async Task DraftSavingAsync(SaveDraftContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.DraftSavingAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.DraftSavingAsync(context, part));
         }
 
         public override async Task DraftSavedAsync(SaveDraftContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.DraftSavedAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.DraftSavedAsync(context, part));
         }
 
         public override async Task PublishingAsync(PublishContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.PublishingAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.PublishingAsync(context, part));
         }
 
         public override async Task PublishedAsync(PublishContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.PublishedAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.PublishedAsync(context, part));
         }
 
         public override async Task RemovingAsync(RemoveContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.RemovingAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.RemovingAsync(context, part));
         }
 
         public override async Task RemovedAsync(RemoveContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.RemovedAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.RemovedAsync(context, part));
         }
 
         public override async Task UnpublishingAsync(PublishContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.UnpublishingAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.UnpublishingAsync(context, part));
         }
 
         public override async Task UnpublishedAsync(PublishContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.UnpublishedAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.UnpublishedAsync(context, part));
         }
 
         public override async Task UpdatingAsync(UpdateContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.UpdatingAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.UpdatingAsync(context, part));
         }
 
         public override async Task UpdatedAsync(UpdateContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.UpdatedAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.UpdatedAsync(context, part));
         }
 
         public override async Task VersioningAsync(VersionContentContext context)
@@ -346,25 +274,23 @@ namespace OrchardCore.ContentManagement.Handlers
 
         public override async Task ClonedAsync(CloneContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.ClonedAsync(context, part));
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.ClonedAsync(context, part));
         }
         public override async Task CloningAsync(CloneContentContext context)
         {
+            await InvokeHandlersForParts(context, (handler, context, part) => handler.CloningAsync(context, part));
+        }
+
+        private async Task InvokeHandlersForParts<TContext>(TContext context, Func<IContentPartHandler, TContext, ContentPart, Task> dispatch) where TContext : ContentContextBase
+        {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
-            await InvokeHandlersForParts(contentTypeDefinition, context, (handler, context, part) => handler.CloningAsync(context, part));
-        }
 
-        private async Task InvokeHandlersForParts<TContext>(ContentTypeDefinition contentTypeDefinition, TContext context, Func<IContentPartHandler, TContext, ContentPart, Task> dispatch) where TContext : ContentContextBase
-        {
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                if (string.IsNullOrEmpty(partName))
+                if (String.IsNullOrEmpty(partName))
                     throw new ArgumentNullException("partName", $"Part definition name for content type {contentTypeDefinition.Name}, part {typePartDefinition.Name ?? "n/a"} cannot be null");
                 var activator = _contentPartFactory.GetTypeActivator(partName);
                 var part = context.ContentItem.Get(activator.Type, partName) as ContentPart;
