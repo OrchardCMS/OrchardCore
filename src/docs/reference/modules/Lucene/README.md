@@ -179,6 +179,10 @@ So you can use:
 See ElasticSearch documentation for more details: 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html
 
+## Automatic mapping
+
+Starting from OC version 1.6 the Lucene module will automatically map text fields with a  `.keyword` suffix as a `stored` value in the index unless the document is already set to be `stored` explicitly. It will ignore any value that has a length higher than 256 chars. This way, any TextField can be used as a technical value and searched by using a term query.
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/9EgZ_J1npw4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

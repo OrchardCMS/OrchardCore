@@ -4,12 +4,12 @@ The Elasticsearch module allows you to manage Elasticsearch indices.
 
 ## Recipe step
 
-Elasticsearch indices can be created during recipe execution using the `elastic-index` step.  
+Elasticsearch indices can be created during recipe execution using the `elasticsearch-index` step.  
 Here is a sample step:
 
 ```json
 {
-  "name": "elastic-index",
+  "name": "elasticsearch-index",
   "Indices": [
     {
       "Search": {
@@ -25,7 +25,7 @@ Here is a sample step:
 },
 ```
 
-### Queries recipe step
+## Queries recipe step
 
 Here is an example for creating a Elasticsearch query from a Queries recipe step:
 
@@ -70,3 +70,63 @@ Verbs: `POST` and `GET`
 
 The Elasticsearch module provides a management UI and APIs for querying Elasticsearch data using ElasticSearch Queries.
 See: https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
+
+## Elasticsearch configuration
+
+The Elasticsearch module connection configuration can be set globally in the appsettings.json file or per tenant.
+
+```json
+    "OrchardCore_Elasticsearch": {
+      "ConnectionType": "SingleNodeConnectionPool",
+      "Url": "http://localhost",
+      "Ports": [ 9200 ]
+      "CloudId": "Orchard_Core_deployment:ZWFzdHVzMi5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo0NDMkNmMxZGQ4YzBrQ2Y2NDI5ZDkyNzc1MTUxN2IyYjZkYTgkMTJmMjA1MzBlOTU0NDgyNDlkZWVmZWYzNmZlY2Q5Yjc="
+      "Username": "admin",
+      "Password": "admin",
+      "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
+      "EnableApiVersioningHeader": false
+    }
+```
+
+The connection types documentation and examples can be found at this url : 
+
+https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/connection-pooling.html
+
+## Elasticsearch vs Lucene
+
+Both modules are complementary and can be executed at the same time.
+While the Lucene module uses Lucene.NET it is not as feature complete as the Elasticsearch module.
+
+There will be discrepancies between both modules implementation because of the fact that Lucene.NET implements an older version of Lucene. Though most basic type of Queries will work with both.
+
+The Lucene module though will always only return `stored` fields from Lucene Queries while the Elasticsearch module can be set to return specific Fields or return the entire source data.
+
+Here is one example of a Query that will return only specific fields from Elasticsearch.
+
+```
+{
+  "query": {
+    "match_all": { }
+  },
+  "fields": [
+    "ContentItemId.keyword", "ContentItemVersionId.keyword"
+  ],
+  "_source": false
+}
+```
+
+The Elasticsearch index settings allows to store the "source" data or not. It is set to store the source data in the index settings by default.
+
+Elasticsearch will do an automatic mapping based on CLR Types. Every data field that is passed to Elasticsearch that is mapped as a "string" will become `analyzed` and `stored`. For example the `Content.ContentItem.DisplayText` will result as an `analyzed` field and `Content.ContentItem.DisplayText.keyword` will become a `stored` field so that it can be used as a technical value.
+
+There may be differences between Lucene and Elasticsearch indexed fields. Lucene allows to override the CLR type mapping by selecting a "Stored" option on a ContentField for example. Elasticsearch, for now, is not affected by the "Stored" or "Analyzed" options on a ContentField index settings. We may allow it eventually by executing manual mapping on the indices. So, this can result in having fields that are analyzed in Lucene and stored in Elasticsearch when using the same Field name in a Query. You then need to adapt your Queries to use the proper type of Queries.
+
+### Stored fields Query types (structured data search):
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html
+
+### Analyzed fields Query types (full-text): 
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/full-text-queries.html
+
+
