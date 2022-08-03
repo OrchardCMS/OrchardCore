@@ -11,6 +11,7 @@ using OrchardCore.Cors.Services;
 using OrchardCore.Cors.Settings;
 using OrchardCore.Cors.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Cors.Controllers
 {
@@ -21,6 +22,9 @@ namespace OrchardCore.Cors.Controllers
         private readonly CorsService _corsService;
         private readonly INotifier _notifier;
 
+        private readonly IShellHost _shellHost;
+        private readonly ShellSettings _shellSettings;
+
         private readonly IStringLocalizer T;
         private readonly IHtmlLocalizer<AdminController> TH;
 
@@ -29,14 +33,17 @@ namespace OrchardCore.Cors.Controllers
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             CorsService corsService,
-            INotifier notifier
-            )
+            INotifier notifier,
+            IShellHost shellHost,
+            ShellSettings shellSettings)
         {
             TH = htmlLocalizer;
             _notifier = notifier;
             _corsService = corsService;
             T = stringLocalizer;
             _authorizationService = authorizationService;
+            _shellHost = shellHost;
+            _shellSettings = shellSettings;
         }
 
         [HttpGet]
@@ -120,6 +127,7 @@ namespace OrchardCore.Cors.Controllers
             await _corsService.UpdateSettingsAsync(corsSettings);
 
             await _notifier.SuccessAsync(TH["The CORS settings have updated successfully."]);
+            await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
             return View(model);
         }
