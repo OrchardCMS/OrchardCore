@@ -110,9 +110,9 @@ namespace OrchardCore.Search.Elasticsearch
             var count = indexes.Count();
             var results = indexes;
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
-                results = results.Where(q => q.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) >= 0);
+                results = results.Where(q => q.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             }
 
             results = results
@@ -195,12 +195,12 @@ namespace OrchardCore.Search.Elasticsearch
                 return Forbid();
             }
 
-            bool nameWasSplit = false;
+            var nameWasSplit = false;
             //This was needed to work-around the name validation
             if (!String.IsNullOrEmpty(model.IndexName))
             {
                 //Just before validation we remove shellName
-                string[] indexNameParts = model.IndexName.Split("_");
+                var indexNameParts = model.IndexName.Split("_");
                 if (indexNameParts.Length >= 1)
                 {
                     if (indexNameParts[0].ToLower() == _shellSettings.Name.ToLower())
@@ -433,6 +433,7 @@ namespace OrchardCore.Search.Elasticsearch
             var context = new ElasticsearchQueryContext(model.IndexName);
             var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
             var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions.Value))));
+
             try
             {
                 var parameterizedQuery = JObject.Parse(tokenizedContent);
@@ -469,6 +470,7 @@ namespace OrchardCore.Search.Elasticsearch
             {
                 var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
                 var checkedContentItems = elasticIndexSettings.Where(x => itemIds.Contains(x.IndexName));
+
                 switch (options.BulkAction)
                 {
                     case ContentsBulkAction.None:
