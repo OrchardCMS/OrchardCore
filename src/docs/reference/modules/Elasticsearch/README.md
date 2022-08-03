@@ -125,7 +125,7 @@ There may be differences between Lucene and Elasticsearch indexed fields. Lucene
 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html
 
-### Analyzed fields Query types (full-text): 
+### Analyzed fields Query types (full-text search): 
 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/full-text-queries.html
 
