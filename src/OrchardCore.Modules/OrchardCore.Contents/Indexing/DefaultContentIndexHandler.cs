@@ -7,11 +7,12 @@ namespace OrchardCore.Contents.Indexing
     {
         public Task BuildIndexAsync(BuildIndexContext context)
         {
-            // Text values are analyzed but stored in field.keyword naturally
+            // Text values are stored in field.keyword naturally
+            // to replicate Elasticsearch behavior
             context.DocumentIndex.Set(
-                IndexingConstants.ContentTypeKey,
+                IndexingConstants.ContentTypeKey + ".keyword",
                 context.ContentItem.ContentType,
-                DocumentIndexOptions.Analyze);
+                DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.CreatedUtcKey,
