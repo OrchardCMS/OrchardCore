@@ -17,5 +17,6 @@ namespace OrchardCore.Contents.Indexing
         public const string DisplayTextAnalyzedKey = "Content.ContentItem.DisplayText_Analyzed";
         public const string DisplayTextNormalizedKey = "Content.ContentItem.DisplayText_Normalized";
         public const string FullTextKey = "Content.ContentItem.FullText";
+        public const string Keyword = ".keyword";
     }
 }
