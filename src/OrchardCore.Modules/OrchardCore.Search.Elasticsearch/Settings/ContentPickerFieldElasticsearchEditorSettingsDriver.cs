@@ -18,7 +18,7 @@ namespace OrchardCore.Search.Elasticsearch.Settings
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<ContentPickerFieldElasticsearchEditorSettings>("ContentPickerFieldElasticEditorSettings_Edit", async model =>
+            return Initialize<ContentPickerFieldElasticsearchEditorSettings>("ContentPickerFieldElasticsearchEditorSettings_Edit", async model =>
             {
                 partFieldDefinition.PopulateSettings<ContentPickerFieldElasticsearchEditorSettings>(model);
                 model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();

@@ -75,9 +75,9 @@ namespace OrchardCore.Search.Elasticsearch.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var searchSettings = siteSettings.As<ElasticsearchSettings>();
 
-            if (permissions.FirstOrDefault(x => x.Name == "QueryElastic" + searchSettings.SearchIndex + "Index") != null)
+            if (permissions.FirstOrDefault(x => x.Name == "QueryElasticsearch" + searchSettings.SearchIndex + "Index") != null)
             {
-                if (!await _authorizationService.AuthorizeAsync(User, permissions.FirstOrDefault(x => x.Name == "QueryElastic" + searchSettings.SearchIndex + "Index")))
+                if (!await _authorizationService.AuthorizeAsync(User, permissions.FirstOrDefault(x => x.Name == "QueryElasticsearch" + searchSettings.SearchIndex + "Index")))
                 {
                     return this.ChallengeOrForbid();
                 }

@@ -35,7 +35,7 @@ namespace OrchardCore.Search.Elasticsearch
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav()))
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Elasticsearch Search"], S["Elasticsearch Search"].PrefixPosition(), entry => entry
+                        .Add(S["Elasticsearch"], S["Elasticsearch"].PrefixPosition(), entry => entry
                              .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ElasticsearchSettingsDisplayDriver.GroupId })
                              .Permission(Permissions.ManageIndexes)
                              .LocalNav()

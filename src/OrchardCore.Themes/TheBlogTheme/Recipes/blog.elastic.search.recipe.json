@@ -18,7 +18,7 @@
     },
     {
       // Create the indices before the content items so they are indexed automatically.
-      "name": "elastic-index",
+      "name": "elasticsearch-index",
       "Indices": [
         {
           "default_search": {
@@ -53,7 +53,7 @@
     {
       // Create the search settings.
       "name": "Settings",
-      "ElasticSettings": {
+      "ElasticsearchSettings": {
         "SearchIndex": "search",
         "DefaultSearchFields": [
           "Content.ContentItem.FullText"
