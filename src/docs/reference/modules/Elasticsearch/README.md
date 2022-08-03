@@ -4,11 +4,11 @@ The Elasticsearch module allows you to manage Elasticsearch indices.
 
 ## How to use
 
-### Install Elasticsearch or OpenSearch with Docker compose
+### Install Elasticsearch 7.x or OpenSearch 1.x with Docker compose
 
-OpenSearch Docker Compose file : 
+OpenSearch v1.x Docker Compose file : 
 
-[opensearch.txt](https://github.com/OrchardCMS/OrchardCore/files/9161365/opensearch.txt)
+[opensearch.txt](https://github.com/OrchardCMS/OrchardCore/files/9248230/opensearch.txt)
 
 Elasticsearch v7.17.5 Docker Compose file : 
 
