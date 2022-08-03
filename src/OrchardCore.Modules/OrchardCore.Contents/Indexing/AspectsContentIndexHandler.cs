@@ -35,7 +35,7 @@ namespace OrchardCore.Contents.Indexing
             context.DocumentIndex.Set(
                 IndexingConstants.DisplayTextKey,
                 context.ContentItem.DisplayText,
-                DocumentIndexOptions.Analyze);
+                DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.DisplayTextNormalizedKey,

@@ -118,10 +118,10 @@ namespace OrchardCore.Search.Elasticsearch
                     settings.BasicAuthentication(elasticConfiguration.Username, elasticConfiguration.Password);
                 }
 
-                //if (!String.IsNullOrWhiteSpace(elasticConfiguration.CertificateFingerprint))
-                //{
-                //    settings.CertificateFingerprint(elasticConfiguration.CertificateFingerprint);
-                //}
+                if (!String.IsNullOrWhiteSpace(elasticConfiguration.CertificateFingerprint))
+                {
+                    settings.CertificateFingerprint(elasticConfiguration.CertificateFingerprint);
+                }
 
                 if (elasticConfiguration.EnableApiVersioningHeader)
                 {

@@ -15,7 +15,6 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.Recipes.Events;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentTypes
