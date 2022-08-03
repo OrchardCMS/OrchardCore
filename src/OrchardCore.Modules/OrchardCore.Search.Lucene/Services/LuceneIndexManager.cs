@@ -270,7 +270,7 @@ namespace OrchardCore.Search.Lucene
 
                             // This is for ElasticSearch Queries compatibility since a keyword field is always stored
                             // by default when indexing without explicit mapping in ElasticSearch.
-                            // Keyword Ignore above 256 chars by default.
+                            // Keyword ignore above 256 chars by default.
                             if (store == Field.Store.NO && stringValue.Length <= 256)
                             {
                                 doc.Add(new StringField($"{entry.Name}.keyword", stringValue, Field.Store.YES));

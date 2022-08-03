@@ -19,7 +19,6 @@ namespace OrchardCore.Search.Elasticsearch
     public class ElasticsearchIndexManager : IDisposable
     {
         private readonly IElasticClient _elasticClient;
-        private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
         private readonly IClock _clock;
         private readonly ILogger _logger;
         private bool _disposing;
@@ -29,13 +28,11 @@ namespace OrchardCore.Search.Elasticsearch
 
         public ElasticsearchIndexManager(
             IElasticClient elasticClient,
-            ElasticsearchIndexSettingsService elasticIndexSettingsService,
             IClock clock,
             ILogger<ElasticsearchIndexManager> logger
             )
         {
             _elasticClient = elasticClient;
-            _elasticIndexSettingsService = elasticIndexSettingsService;
             _clock = clock;
             _logger = logger;
         }
@@ -45,7 +42,7 @@ namespace OrchardCore.Search.Elasticsearch
             //Get Index name scoped by ShellName
             if (!await Exists(elasticIndexSettings.IndexName))
             {
-                CreateIndexDescriptor createIndexDescriptor = new CreateIndexDescriptor(elasticIndexSettings.IndexName)
+                var createIndexDescriptor = new CreateIndexDescriptor(elasticIndexSettings.IndexName)
                     .Map(m => m.SourceField(s => s.Enabled(elasticIndexSettings.StoreSourceData)));
 
                 var response = await _elasticClient.Indices.CreateAsync(createIndexDescriptor);

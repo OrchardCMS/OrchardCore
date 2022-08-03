@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="Nest" />
+    <PackageReference Include="NEST" />
   </ItemGroup>
 
   <ItemGroup>
