@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Elasticsearch.Net;
+using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -22,8 +23,8 @@ using OrchardCore.Navigation;
 using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Search.Abstractions;
+using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Search.Elasticsearch.Configurations;
-using OrchardCore.Search.Elasticsearch.Controllers;
 using OrchardCore.Search.Elasticsearch.Deployment;
 using OrchardCore.Search.Elasticsearch.Drivers;
 using OrchardCore.Search.Elasticsearch.Handlers;
@@ -144,6 +145,13 @@ namespace OrchardCore.Search.Elasticsearch
                 services.AddRecipeExecutionStep<ElasticsearchIndexStep>();
 
                 services.AddScoped<SearchProvider, ElasticsearchSearchProvider>();
+
+                services.Configure<TemplateOptions>(o =>
+                {
+                    o.MemberAccessStrategy.Register<SearchIndexViewModel>();
+                    o.MemberAccessStrategy.Register<SearchFormViewModel>();
+                    o.MemberAccessStrategy.Register<SearchResultsViewModel>();
+                });
             }
         }
 

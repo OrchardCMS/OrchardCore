@@ -31,7 +31,7 @@ using OrchardCore.Search.Elasticsearch.ViewModels;
 using OrchardCore.Settings;
 using YesSql;
 
-namespace OrchardCore.Search.Elasticsearch.Controllers
+namespace OrchardCore.Search.Elasticsearch
 {
     public class AdminController : Controller
     {

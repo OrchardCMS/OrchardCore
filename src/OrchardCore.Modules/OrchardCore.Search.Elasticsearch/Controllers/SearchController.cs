@@ -20,7 +20,7 @@ using OrchardCore.Settings;
 using YesSql;
 using YesSql.Services;
 
-namespace OrchardCore.Search.Elasticsearch.Controllers
+namespace OrchardCore.Search.Elasticsearch
 {
     public class SearchController : Controller
     {

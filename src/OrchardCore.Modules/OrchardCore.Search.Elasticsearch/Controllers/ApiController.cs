@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OrchardCore.Search.Elasticsearch.Model;
 
-namespace OrchardCore.Search.Elasticsearch.Controllers
+namespace OrchardCore.Search.Elasticsearch
 {
     [Route("api/elasticsearch")]
     [ApiController]
