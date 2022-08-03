@@ -8,6 +8,6 @@ namespace OrchardCore.Search.ViewModels
         public string SearchProvider { get; set; }
 
         [BindNever]
-        public IEnumerable<string> SearchProviders { get; set; }
+        public IEnumerable<string> SearchProviders { get; set; } = new List<string>();
     }
 }
