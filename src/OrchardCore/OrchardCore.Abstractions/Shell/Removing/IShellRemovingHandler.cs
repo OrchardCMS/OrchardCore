@@ -8,7 +8,7 @@ namespace OrchardCore.Environment.Shell.Removing;
 public interface IShellRemovingHandler
 {
     /// <summary>
-    /// Collaborates to the removing of the provided tenant.
+    /// Collaborates on the removal of the provided tenant.
     /// </summary>
     Task RemovingAsync(ShellRemovingContext context);
 }
