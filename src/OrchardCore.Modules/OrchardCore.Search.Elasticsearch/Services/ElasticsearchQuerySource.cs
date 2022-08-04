@@ -17,29 +17,20 @@ namespace OrchardCore.Search.Elasticsearch
 {
     public class ElasticsearchQuerySource : IQuerySource
     {
-        private readonly ElasticsearchIndexManager _elasticIndexManager;
-        //private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-        //private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
-        //private readonly IElasticQueryService _queryService;
+        private readonly IElasticsearchQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly ISession _session;
         private readonly JavaScriptEncoder _javaScriptEncoder;
         private readonly TemplateOptions _templateOptions;
 
         public ElasticsearchQuerySource(
-            ElasticsearchIndexManager elasticIndexManager,
-            //ElasticIndexSettingsService elasticIndexSettingsService,
-            //ElasticAnalyzerManager elasticAnalyzerManager,
-            //IElasticQueryService queryService,
+            IElasticsearchQueryService queryService,
             ILiquidTemplateManager liquidTemplateManager,
             ISession session,
             JavaScriptEncoder javaScriptEncoder,
             IOptions<TemplateOptions> templateOptions)
         {
-            _elasticIndexManager = elasticIndexManager;
-            //_elasticIndexSettingsService = elasticIndexSettingsService;
-            //_elasticAnalyzerManager = elasticAnalyzerManager;
-            //_queryService = queryService;
+            _queryService = queryService;
             _liquidTemplateManager = liquidTemplateManager;
             _session = session;
             _javaScriptEncoder = javaScriptEncoder;
@@ -56,16 +47,13 @@ namespace OrchardCore.Search.Elasticsearch
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var elasticQuery = query as ElasticsearchQuery;
-
-            //Should be renamed at OrchardCore.Queries to SearchQueryResults
-
             var elasticQueryResults = new ElasticsearchQueryResults();
 
             var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(elasticQuery.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
             var parameterizedQuery = JObject.Parse(tokenizedContent);
-
-            var elasticSearchResult = await _elasticIndexManager.SearchAsync(elasticQuery.Index, elasticQuery.Template);
-
+            var elasticSearchQueryContext = new ElasticsearchQueryContext(elasticQuery.Index);
+            var docs = await _queryService.SearchAsync(elasticSearchQueryContext, parameterizedQuery);
+            elasticQueryResults.Count = docs.Count;
 
             if (elasticQuery.ReturnContentItems)
             {
@@ -73,7 +61,7 @@ namespace OrchardCore.Search.Elasticsearch
                 elasticQueryResults.Items = new List<ContentItem>();
 
                 // Load corresponding content item versions
-                var indexedContentItemVersionIds = elasticSearchResult.TopDocs.Select(x => x.GetValueOrDefault("ContentItemVersionId").ToString()).ToArray();
+                var indexedContentItemVersionIds = docs.TopDocs.Select(x => x.GetValueOrDefault("ContentItemVersionId").ToString()).ToArray();
                 var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
 
                 // Reorder the result to preserve the one from the Elasticsearch query
@@ -87,12 +75,15 @@ namespace OrchardCore.Search.Elasticsearch
             else
             {
                 var results = new List<JObject>();
-                foreach (var document in elasticSearchResult.TopDocs)
+
+                foreach (var document in docs.TopDocs)
                 {
                     results.Add(new JObject(document.Select(x => new JProperty(x.Key, x.Value.ToString()))));
                 }
+
                 elasticQueryResults.Items = results;
             }
+
             return elasticQueryResults;
         }
     }

@@ -10,9 +10,9 @@ namespace OrchardCore.Contents.Indexing
             // Text values are stored in field.keyword naturally
             // to replicate Elasticsearch behavior
             context.DocumentIndex.Set(
-                IndexingConstants.ContentTypeKey + IndexingConstants.Keyword,
+                IndexingConstants.ContentTypeKey,
                 context.ContentItem.ContentType,
-                DocumentIndexOptions.Store);
+                DocumentIndexOptions.Analyze);
 
             context.DocumentIndex.Set(
                 IndexingConstants.CreatedUtcKey,

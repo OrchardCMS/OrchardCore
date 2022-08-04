@@ -169,6 +169,7 @@ namespace OrchardCore.Search.Elasticsearch
             {
                 _logger.LogError(ex, "Error while querying elastic with exception: {Message}", ex.Message);
             }
+
             return elasticTopDocs;
         }
     }

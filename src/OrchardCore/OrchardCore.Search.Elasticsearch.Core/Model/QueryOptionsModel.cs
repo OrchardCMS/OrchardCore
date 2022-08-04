@@ -11,7 +11,7 @@ namespace OrchardCore.Search.Elasticsearch.Model
         public int? Size { get; set; }
 
         [JsonPropertyName("from")]
-        public int? From { get; set; }
+        public int? From { get; set; } = 0;
 
         [JsonPropertyName("fields")]
         public string[] Fields { get; set; }

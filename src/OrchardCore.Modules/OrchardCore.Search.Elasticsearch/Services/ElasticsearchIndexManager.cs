@@ -13,8 +13,7 @@ using OrchardCore.Search.Elasticsearch.Model;
 namespace OrchardCore.Search.Elasticsearch
 {
     /// <summary>
-    /// Provides methods to manage physical Lucene indices.
-    /// This class is provided as a singleton to that the index searcher can be reused across requests.
+    /// Provides methods to manage physical Elasticsearch indices.
     /// </summary>
     public class ElasticsearchIndexManager : IDisposable
     {
@@ -115,7 +114,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         public async Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
-            //Convert Document to a structure suitable for Elasticsearch
+            // Convert Document to a structure suitable for Elasticsearch
             var documents = new List<Dictionary<string, object>>();
 
             foreach (var indexDocument in indexDocuments)
@@ -145,31 +144,9 @@ namespace OrchardCore.Search.Elasticsearch
             }
         }
 
-        public async Task<ElasticsearchTopDocs> SearchAsync(string indexName, string query)
-        {
-            var elasticTopDocs = new ElasticsearchTopDocs();
-
-            if (await Exists(indexName))
-            {
-                var searchResponse = await _elasticClient.SearchAsync<Dictionary<string, object>>(s => s
-                    .Index(indexName)
-                    .Query(q => new RawQuery(query))
-                    );
-
-                if (searchResponse.IsValid)
-                {
-                    elasticTopDocs.Count = searchResponse.Documents.Count;
-                    elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
-                }
-
-                _timestamps[indexName] = _clock.UtcNow;
-            }
-
-            return elasticTopDocs;
-        }
-
         /// <summary>
-        /// TODO : Refactor with "_source" consideration or deprecate in favor of other method.
+        /// Returns results from an Elasticsearch Query.
+        /// Doesn't allow to sort results.
         /// </summary>
         /// <param name="indexName"></param>
         /// <param name="query"></param>
@@ -203,6 +180,13 @@ namespace OrchardCore.Search.Elasticsearch
             return elasticTopDocs;
         }
 
+        /// <summary>
+        /// Returns results from an Elasticsearch Fluent DSL Query.
+        /// Allows to sort results.
+        /// </summary>
+        /// <param name="indexName"></param>
+        /// <param name="elasticClient"></param>
+        /// <returns></returns>
         public async Task SearchAsync(string indexName, Func<IElasticClient, Task> elasticClient)
         {
             if (await Exists(indexName))
