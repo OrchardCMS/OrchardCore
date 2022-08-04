@@ -61,7 +61,10 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
                         {
                             JsonSerializer serializer = new JsonSerializer();
                             var placementFile = serializer.Deserialize<PlacementFile>(jtr);
-                            ProcessPlacementFile(builder, featureDescriptor, placementFile);
+                            if (placementFile != null)
+                            {
+                                ProcessPlacementFile(builder, featureDescriptor, placementFile);
+                            }
                         }
                     }
                 }
@@ -70,8 +73,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         private void ProcessPlacementFile(ShapeTableBuilder builder, IFeatureInfo featureDescriptor, PlacementFile placementFile)
         {
-            if (placementFile == null) return;
-
             foreach (var entry in placementFile)
             {
                 var shapeType = entry.Key;
