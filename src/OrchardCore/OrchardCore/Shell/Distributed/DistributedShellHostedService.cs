@@ -31,7 +31,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         private readonly IShellHost _shellHost;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IShellSettingsManager _shellSettingsManager;
-        private readonly IShellRemovingManager _shellRemovingManager;
+        private readonly IShellRemovalManager _shellRemovingManager;
         private readonly ILogger _logger;
 
         private readonly ConcurrentDictionary<string, ShellIdentifier> _identifiers = new ConcurrentDictionary<string, ShellIdentifier>();
@@ -50,7 +50,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             IShellHost shellHost,
             IShellContextFactory shellContextFactory,
             IShellSettingsManager shellSettingsManager,
-            IShellRemovingManager shellRemovingManager,
+            IShellRemovalManager shellRemovingManager,
             ILogger<DistributedShellHostedService> logger)
         {
             _shellHost = shellHost;

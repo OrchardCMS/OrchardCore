@@ -30,7 +30,7 @@ namespace OrchardCore.Tenants.Controllers
     {
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
-        private readonly IShellRemovingManager _shellRemovingManager;
+        private readonly IShellRemovalManager _shellRemovingManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _currentShellSettings;
@@ -49,7 +49,7 @@ namespace OrchardCore.Tenants.Controllers
         public AdminController(
             IShellHost shellHost,
             IShellSettingsManager shellSettingsManager,
-            IShellRemovingManager shellRemovingManager,
+            IShellRemovalManager shellRemovingManager,
             IEnumerable<DatabaseProvider> databaseProviders,
             IAuthorizationService authorizationService,
             ShellSettings currentShellSettings,

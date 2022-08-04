@@ -10,18 +10,18 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Removing;
 
-public class ShellRemovingManager : IShellRemovingManager
+public class ShellRemovalManager : IShellRemovalManager
 {
     private readonly IShellHost _shellHost;
     private readonly IShellContextFactory _shellContextFactory;
     private readonly IEnumerable<IShellRemovingHandler> _shellRemovingHandlers;
     private readonly ILogger _logger;
 
-    public ShellRemovingManager(
+    public ShellRemovalManager(
         IShellHost shellHost,
         IShellContextFactory shellContextFactory,
         IEnumerable<IShellRemovingHandler> shellRemovingHandlers,
-        ILogger<ShellRemovingManager> logger)
+        ILogger<ShellRemovalManager> logger)
     {
         _shellHost = shellHost;
         _shellContextFactory = shellContextFactory;

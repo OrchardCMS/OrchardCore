@@ -5,7 +5,7 @@ namespace OrchardCore.Environment.Shell.Removing;
 /// <summary>
 /// Host service managing the removing of a given tenant.
 /// </summary>
-public interface IShellRemovingManager
+public interface IShellRemovalManager
 {
     /// <summary>
     /// Removes the provided tenant.

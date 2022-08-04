@@ -40,8 +40,8 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
 
             try
             {
-                var isBucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(_amazonS3Client, _options.BucketName);
-                if (isBucketExists)
+                var bucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(_amazonS3Client, _options.BucketName);
+                if (bucketExists)
                 {
                     _logger.LogInformation("Amazon S3 Bucket {BucketName} already exists.", _options.BucketName);
                     return;
@@ -88,36 +88,38 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
 
     public override async Task RemovingAsync(ShellRemovingContext context)
     {
-        if (_options.RemoveBucket && !String.IsNullOrEmpty(_options.BucketName))
+        if (!_options.RemoveBucket || String.IsNullOrEmpty(_options.BucketName))
         {
-            try
+            return;
+        }
+
+        try
+        {
+            var bucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(_amazonS3Client, _options.BucketName);
+            if (!bucketExists)
             {
-                var isBucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(_amazonS3Client, _options.BucketName);
-                if (!isBucketExists)
-                {
-                    return;
-                }
-
-                var bucketRequest = new DeleteBucketRequest
-                {
-                    BucketName = _options.BucketName,
-                    UseClientRegion = true
-                };
-
-                // Trying to delete bucket.
-                var response = await _amazonS3Client.DeleteBucketAsync(bucketRequest);
-                if (!response.IsSuccessful())
-                {
-                    _logger.LogError("Unable to remove the Amazon S3 Bucket {BucketName}", _options.BucketName);
-                    context.ErrorMessage = $"Failed to remove the Amazon S3 Bucket '{_options.BucketName}'.";
-                }
+                return;
             }
-            catch (Exception ex)
+
+            var bucketRequest = new DeleteBucketRequest
             {
-                _logger.LogError(ex, "Failed to remove the Amazon S3 Bucket {BucketName}", _options.BucketName);
+                BucketName = _options.BucketName,
+                UseClientRegion = true
+            };
+
+            // Trying to delete bucket.
+            var response = await _amazonS3Client.DeleteBucketAsync(bucketRequest);
+            if (!response.IsSuccessful())
+            {
+                _logger.LogError("Unable to remove the Amazon S3 Bucket {BucketName}", _options.BucketName);
                 context.ErrorMessage = $"Failed to remove the Amazon S3 Bucket '{_options.BucketName}'.";
-                context.Error = ex;
             }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to remove the Amazon S3 Bucket {BucketName}", _options.BucketName);
+            context.ErrorMessage = $"Failed to remove the Amazon S3 Bucket '{_options.BucketName}'.";
+            context.Error = ex;
         }
     }
 }
