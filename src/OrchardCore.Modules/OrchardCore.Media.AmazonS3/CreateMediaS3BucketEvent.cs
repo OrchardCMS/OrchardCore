@@ -104,7 +104,7 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
                     UseClientRegion = true
                 };
 
-                // Trying to create bucket.
+                // Trying to delete bucket.
                 var response = await _amazonS3Client.DeleteBucketAsync(bucketRequest);
                 if (!response.IsSuccessful())
                 {
