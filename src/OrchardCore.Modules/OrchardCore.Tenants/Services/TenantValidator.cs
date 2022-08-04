@@ -56,7 +56,9 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.Name), S["Invalid tenant name. Must contain characters only and no spaces."]));
             }
 
-            if (!ShellHelper.DefaultShellName.Equals(model.Name, StringComparison.OrdinalIgnoreCase) && String.IsNullOrWhiteSpace(model.RequestUrlHost) && String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            _shellHost.TryGetSettings(model.Name, out var shellSettings);
+
+            if (shellSettings?.Name != ShellHelper.DefaultShellName && String.IsNullOrWhiteSpace(model.RequestUrlHost) && String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
             {
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]));
             }
@@ -75,20 +77,26 @@ namespace OrchardCore.Tenants.Services
 
             if (model.IsNewTenant)
             {
-                if (_shellHost.TryGetSettings(model.Name, out _))
+                if (shellSettings != null)
                 {
-                    errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
+                    if (shellSettings.Name == ShellHelper.DefaultShellName)
+                    {
+                        errors.Add(new ModelError(nameof(model.Name), S["The tenant name is in conflict with the 'Default' tenant."]));
+                    }
+                    else
+                    {
+                        errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
+                    }
                 }
 
                 await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, errors);
             }
             else
             {
-                // At this point, we know we are validating existing tenant
-                if (!_shellHost.TryGetSettings(model.Name, out var existingSettings) || existingSettings.State == TenantState.Uninitialized)
+                if (shellSettings == null || shellSettings.State == TenantState.Uninitialized)
                 {
-                    // while the tenant is Uninitialized, we are still able to change the database settings
-                    // let's validate the database for assurance
+                    // While the tenant is in Uninitialized state, we still are able to change the database settings.
+                    // Let's validate the database for assurance.
 
                     await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, errors);
                 }
