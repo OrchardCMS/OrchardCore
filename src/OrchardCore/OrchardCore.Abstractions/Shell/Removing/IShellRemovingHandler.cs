@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 namespace OrchardCore.Environment.Shell.Removing;
 
 /// <summary>
-/// Host service that collaborates to the removing of a given tenant.
+/// Host service that collaborates on the removal of a given tenant.
 /// </summary>
 public interface IShellRemovingHandler
 {
