@@ -5,6 +5,6 @@ namespace OrchardCore.Search.Elasticsearch
 {
     public interface IElasticsearchQueryService
     {
-        Task<ElasticsearchTopDocs> SearchAsync(ElasticsearchQueryContext context, JObject queryObj);
+        Task<ElasticsearchTopDocs> SearchAsync(ElasticsearchQueryContext context, string query);
     }
 }

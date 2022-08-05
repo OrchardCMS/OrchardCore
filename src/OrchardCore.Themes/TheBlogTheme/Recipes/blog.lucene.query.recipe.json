@@ -26,7 +26,7 @@
           "Source": "Lucene",
           "Name": "RecentBlogPosts",
           "Index": "Search",
-          "Template": "[file:text('Snippets/recentBlogPosts.json')]",
+          "Template": "[file:text('Snippets/recentBlogPosts.Lucene.json')]",
           "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
           "ReturnContentItems": true
         }

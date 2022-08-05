@@ -50,9 +50,8 @@ namespace OrchardCore.Search.Elasticsearch
             var elasticQueryResults = new ElasticsearchQueryResults();
 
             var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(elasticQuery.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
-            var parameterizedQuery = JObject.Parse(tokenizedContent);
             var elasticSearchQueryContext = new ElasticsearchQueryContext(elasticQuery.Index);
-            var docs = await _queryService.SearchAsync(elasticSearchQueryContext, parameterizedQuery);
+            var docs = await _queryService.SearchAsync(elasticSearchQueryContext, tokenizedContent);
             elasticQueryResults.Count = docs.Count;
 
             if (elasticQuery.ReturnContentItems)

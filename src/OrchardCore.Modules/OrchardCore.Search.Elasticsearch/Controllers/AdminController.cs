@@ -436,8 +436,7 @@ namespace OrchardCore.Search.Elasticsearch
 
             try
             {
-                var parameterizedQuery = JObject.Parse(tokenizedContent);
-                var elasticTopDocs = await _queryService.SearchAsync(context, parameterizedQuery);
+                var elasticTopDocs = await _queryService.SearchAsync(context, tokenizedContent);
 
                 if (elasticTopDocs != null)
                 {
