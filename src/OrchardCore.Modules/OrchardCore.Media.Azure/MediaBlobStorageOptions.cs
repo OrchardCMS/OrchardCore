@@ -10,7 +10,7 @@ namespace OrchardCore.Media.Azure
         public bool CreateContainer { get; set; }
 
         /// <summary>
-        /// Remove blob container on shell removing if it exists.
+        /// Remove blob container on tenant removal if it exists.
         /// </summary>
         public bool RemoveContainer { get; set; }
     }

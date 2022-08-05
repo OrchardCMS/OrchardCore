@@ -28,7 +28,7 @@ public class AwsStorageOptions
     public AWSOptions AwsOptions { get; set; }
 
     /// <summary>
-    /// Indicates if bucket should be removed on shell removal.
+    /// Indicates if bucket should be removed on tenant removal.
     /// </summary>
     public bool RemoveBucket { get; set; }
 }
