@@ -497,15 +497,16 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Checks if a shell can be removed, throws an exception if the shell is not disabled or still in use.
+        /// Checks if a shell can be removed, throws an exception if the shell is neither uninitialized nor disabled.
         /// </summary>
         private void CheckCanRemoveShell(ShellSettings settings)
         {
-            if ((settings.State != TenantState.Disabled && settings.State != TenantState.Uninitialized) ||
-                _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
+            if (settings.State != TenantState.Uninitialized &&
+                (settings.State != TenantState.Disabled ||
+                _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0))
             {
                 throw new InvalidOperationException(
-                    $"The tenant '{settings.Name}' can't be removed as it is not uninitialized or disabled or still in use.");
+                    $"The tenant '{settings.Name}' can't be removed as it is neither uninitialized nor disabled.");
             }
         }
 
