@@ -36,6 +36,15 @@ namespace OrchardCore.Search.Elasticsearch
             _logger = logger;
         }
 
+        /// <summary>
+        /// <para>Creates an Elasticsearch index with _source mapping.</para>
+        /// <para><see href="https://www.elastic.co/guide/en/elasticsearch/reference/8.3/mapping-source-field.html#disable-source-field"/></para>
+        /// <para>TODO : Specify an analyzer for an index based on the ElasticsearchIndexSettings
+        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/specify-analyzer.html#specify-index-time-default-analyzer"/>
+        /// </para>
+        /// </summary>
+        /// <param name="elasticIndexSettings"></param>
+        /// <returns><see cref="Boolean"/></returns>
         public async Task<bool> CreateIndexAsync(ElasticsearchIndexSettings elasticIndexSettings)
         {
             //Get Index name scoped by ShellName
