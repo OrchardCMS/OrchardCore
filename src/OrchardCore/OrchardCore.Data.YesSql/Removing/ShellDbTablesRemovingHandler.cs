@@ -72,7 +72,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to remove the tables of tenant '{TenantName}'.", context.ShellSettings.Name);
-            context.ErrorMessage = $"Failed to remove the tables.";
+            context.ErrorMessage = "Failed to remove the tables.";
             context.Error = ex;
         }
     }

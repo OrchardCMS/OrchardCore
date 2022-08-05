@@ -61,7 +61,7 @@ public class ShellRemovalManager : IShellRemovalManager
                     "Failed to acquire a lock before executing the tenant handlers while removing the tenant '{TenantName}'.",
                     shellSettings.Name);
 
-                context.ErrorMessage = $"Failed to acquire a lock before executing the tenant handlers.";
+                context.ErrorMessage = "Failed to acquire a lock before executing the tenant handlers.";
                 return context;
             }
 
@@ -114,7 +114,7 @@ public class ShellRemovalManager : IShellRemovalManager
                     "Failed to acquire a lock before executing the host handlers while removing the tenant '{TenantName}'.",
                     shellSettings.Name);
 
-                context.ErrorMessage = $"Failed to acquire a lock before executing the host handlers.";
+                context.ErrorMessage = "Failed to acquire a lock before executing the host handlers.";
 
                 // If only local resources should be removed while syncing tenants.
                 if (context.LocalResourcesOnly)
