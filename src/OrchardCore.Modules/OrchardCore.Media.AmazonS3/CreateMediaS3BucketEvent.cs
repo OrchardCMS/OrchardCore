@@ -32,57 +32,59 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
 
     public override async Task ActivatingAsync()
     {
-        if (_options.CreateBucket &&
-            _shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized &&
-            !String.IsNullOrEmpty(_options.BucketName))
+        if (!_options.CreateBucket ||
+            _shellSettings.State == Environment.Shell.Models.TenantState.Uninitialized ||
+            String.IsNullOrEmpty(_options.BucketName))
         {
-            _logger.LogDebug("Testing Amazon S3 Bucket {BucketName} existence", _options.BucketName);
+            return;
+        }
 
-            try
+        _logger.LogDebug("Testing Amazon S3 Bucket {BucketName} existence", _options.BucketName);
+
+        try
+        {
+            var bucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(_amazonS3Client, _options.BucketName);
+            if (bucketExists)
             {
-                var bucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(_amazonS3Client, _options.BucketName);
-                if (bucketExists)
-                {
-                    _logger.LogInformation("Amazon S3 Bucket {BucketName} already exists.", _options.BucketName);
-                    return;
-                }
-
-                var bucketRequest = new PutBucketRequest
-                {
-                    BucketName = _options.BucketName,
-                    UseClientRegion = true
-                };
-
-                // Trying to create bucket.
-                var response = await _amazonS3Client.PutBucketAsync(bucketRequest);
-
-                if (!response.IsSuccessful())
-                {
-                    _logger.LogError("Unable to create Amazon S3 Bucket {BucketName}", _options.BucketName);
-                    return;
-                }
-
-                // Blocking public access for the newly created bucket.
-                var blockConfiguration = new PublicAccessBlockConfiguration
-                {
-                    BlockPublicAcls = true,
-                    BlockPublicPolicy = true,
-                    IgnorePublicAcls = true,
-                    RestrictPublicBuckets = true
-                };
-
-                await _amazonS3Client.PutPublicAccessBlockAsync(new PutPublicAccessBlockRequest
-                {
-                    PublicAccessBlockConfiguration = blockConfiguration,
-                    BucketName = _options.BucketName
-                });
-
-                _logger.LogDebug("Amazon S3 Bucket {BucketName} created.", _options.BucketName);
+                _logger.LogInformation("Amazon S3 Bucket {BucketName} already exists.", _options.BucketName);
+                return;
             }
-            catch (Exception e)
+
+            var bucketRequest = new PutBucketRequest
             {
-                _logger.LogError(e, "Unable to create Amazon S3 Bucket.");
+                BucketName = _options.BucketName,
+                UseClientRegion = true
+            };
+
+            // Trying to create bucket.
+            var response = await _amazonS3Client.PutBucketAsync(bucketRequest);
+
+            if (!response.IsSuccessful())
+            {
+                _logger.LogError("Unable to create Amazon S3 Bucket {BucketName}", _options.BucketName);
+                return;
             }
+
+            // Blocking public access for the newly created bucket.
+            var blockConfiguration = new PublicAccessBlockConfiguration
+            {
+                BlockPublicAcls = true,
+                BlockPublicPolicy = true,
+                IgnorePublicAcls = true,
+                RestrictPublicBuckets = true
+            };
+
+            await _amazonS3Client.PutPublicAccessBlockAsync(new PutPublicAccessBlockRequest
+            {
+                PublicAccessBlockConfiguration = blockConfiguration,
+                BucketName = _options.BucketName
+            });
+
+            _logger.LogDebug("Amazon S3 Bucket {BucketName} created.", _options.BucketName);
+        }
+        catch (Exception ex) when (!ex.IsFatal())
+        {
+            _logger.LogError(ex, "Unable to create Amazon S3 Bucket.");
         }
     }
 
@@ -115,7 +117,7 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
                 context.ErrorMessage = $"Failed to remove the Amazon S3 Bucket '{_options.BucketName}'.";
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (!ex.IsFatal())
         {
             _logger.LogError(ex, "Failed to remove the Amazon S3 Bucket {BucketName}", _options.BucketName);
             context.ErrorMessage = $"Failed to remove the Amazon S3 Bucket '{_options.BucketName}'.";
