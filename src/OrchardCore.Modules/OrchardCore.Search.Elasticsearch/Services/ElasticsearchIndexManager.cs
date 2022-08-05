@@ -64,7 +64,6 @@ namespace OrchardCore.Search.Elasticsearch
                 if (analyzers.Any())
                 {
                     var currentAnalyzer = analyzers.FirstOrDefault(a => a.Name == elasticIndexSettings.AnalyzerName).CreateAnalyzer();
-
                     var currentAnalyzerType = currentAnalyzer.Type;
 
                     analyzersDescriptor = new AnalyzersDescriptor();
@@ -148,7 +147,6 @@ namespace OrchardCore.Search.Elasticsearch
 
         public async Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
-            // Convert Document to a structure suitable for Elasticsearch
             var documents = new List<Dictionary<string, object>>();
 
             foreach (var indexDocument in indexDocuments)
