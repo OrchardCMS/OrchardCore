@@ -16,9 +16,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.Search.Elasticsearch
 {
     /// <summary>
-    /// This class provides services to update all the Elasticsearch indices. It is non-rentrant so that calls
-    /// from different components can be done simultaneously, e.g. from a background task, an event or a UI interaction.
-    /// It also indexes one content item at a time and provides the result to all indices.
+    /// This class provides services to update all the Elasticsearch indices.
     /// </summary>
     public class ElasticsearchIndexingService
     {

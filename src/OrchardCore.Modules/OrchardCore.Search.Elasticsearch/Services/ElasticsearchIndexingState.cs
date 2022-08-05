@@ -8,7 +8,6 @@ namespace OrchardCore.Search.Elasticsearch
     /// <summary>
     /// This class persists the indexing state, a cursor, on the filesystem alongside the index itself.
     /// This state has to be on the filesystem as each node has its own local storage for the index.
-    /// We will not need this at all
     /// </summary>
     public class ElasticsearchIndexingState
     {
@@ -24,7 +23,7 @@ namespace OrchardCore.Search.Elasticsearch
                 shellOptions.Value.ShellsApplicationDataPath,
                 shellOptions.Value.ShellsContainerName,
                 shellSettings.Name,
-                "elastic.status.json");
+                "elasticsearch.status.json");
 
             if (!File.Exists(_indexSettingsFilename))
             {

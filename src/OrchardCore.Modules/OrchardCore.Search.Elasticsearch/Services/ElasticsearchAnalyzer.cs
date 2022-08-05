@@ -3,9 +3,6 @@ using Nest;
 
 namespace OrchardCore.Search.Elasticsearch.Services
 {
-    /// <summary>
-    /// All Elasticsearch related analyzers needs to replaced
-    /// </summary>
     public class ElasticsearchAnalyzer : IElasticsearchAnalyzer
     {
         private readonly Func<IAnalyzer> _factory;
