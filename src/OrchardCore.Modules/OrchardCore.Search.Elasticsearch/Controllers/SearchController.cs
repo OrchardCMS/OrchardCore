@@ -162,7 +162,7 @@ namespace OrchardCore.Search.Elasticsearch
                     };
                 }
 
-                contentItemIds = (await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, from, size))
+                contentItemIds = (await _searchQueryService.ExecuteQueryAsync(searchSettings.SearchIndex, query, null, from, size))
                     .ToList();
             }
             catch (Exception e)

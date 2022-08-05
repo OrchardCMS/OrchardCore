@@ -152,7 +152,7 @@ namespace OrchardCore.Search.Elasticsearch
         /// <param name="sort"></param>
         /// <param name="from"></param>
         /// <param name="size"></param>
-        /// <returns>ElasticsearchTopDocs</returns>
+        /// <returns><see cref="ElasticsearchTopDocs"/></returns>
         public async Task<ElasticsearchTopDocs> SearchAsync(string indexName, QueryContainer query, List<ISort> sort, int from, int size)
         {
             var elasticTopDocs = new ElasticsearchTopDocs();
@@ -186,7 +186,6 @@ namespace OrchardCore.Search.Elasticsearch
         /// </summary>
         /// <param name="indexName"></param>
         /// <param name="elasticClient"></param>
-        /// <returns></returns>
         public async Task SearchAsync(string indexName, Func<IElasticClient, Task> elasticClient)
         {
             if (await Exists(indexName))
