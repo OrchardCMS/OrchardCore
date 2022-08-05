@@ -273,7 +273,7 @@ namespace OrchardCore.Search.Lucene
                             // Keyword ignore above 256 chars by default.
                             if (store == Field.Store.NO && stringValue.Length <= 256)
                             {
-                                doc.Add(new StringField($"{entry.Name}.keyword", stringValue, Field.Store.YES));
+                                doc.Add(new StringField($"{entry.Name}.keyword", stringValue, Field.Store.NO));
                             }
                         }
                         else
