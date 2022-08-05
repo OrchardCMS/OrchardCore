@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -60,16 +61,39 @@ namespace OrchardCore.Search.Elasticsearch
                 elasticQueryResults.Items = new List<ContentItem>();
 
                 // Load corresponding content item versions
-                var indexedContentItemVersionIds = docs.TopDocs.Select(x => x.GetValueOrDefault("ContentItemVersionId").ToString()).ToArray();
-                var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
+                var topDocs = docs.TopDocs.Where(x => x != null).ToList();
 
-                // Reorder the result to preserve the one from the Elasticsearch query
-                if (dbContentItems.Any())
+                if (topDocs.Count > 0)
                 {
-                    var dbContentItemVersionIds = dbContentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
-                    var indexedAndInDB = indexedContentItemVersionIds.Where(dbContentItemVersionIds.ContainsKey);
-                    elasticQueryResults.Items = indexedAndInDB.Select(x => dbContentItemVersionIds[x]).ToArray();
+                    var indexedContentItemVersionIds = topDocs.Select(x => x.GetValueOrDefault("ContentItemVersionId").ToString()).ToArray();
+                    var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
+
+                    // Reorder the result to preserve the one from the Elasticsearch query
+                    if (dbContentItems.Any())
+                    {
+                        var dbContentItemVersionIds = dbContentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
+                        var indexedAndInDB = indexedContentItemVersionIds.Where(dbContentItemVersionIds.ContainsKey);
+                        elasticQueryResults.Items = indexedAndInDB.Select(x => dbContentItemVersionIds[x]).ToArray();
+                    }
                 }
+
+                //TODO : get ContentItemVersionId from docs.Fields
+                
+                //var fieldDocs = docs.Fields.Where(x =>x != null && x.ContainsKey("ContentItemVersionId")).ToList();
+
+                //if (fieldDocs.Count > 0)
+                //{
+                //    var indexedContentItemVersionIds = fieldDocs.Select(x => x.GetValueOrDefault("ContentItemVersionId"));
+                //    var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
+
+                //    // Reorder the result to preserve the one from the Elasticsearch query
+                //    if (dbContentItems.Any())
+                //    {
+                //        var dbContentItemVersionIds = dbContentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
+                //        //var indexedAndInDB = indexedContentItemVersionIds.Where(dbContentItemVersionIds.ContainsKey);
+                //        //elasticQueryResults.Items = indexedAndInDB.Select(x => dbContentItemVersionIds[x]).ToArray();
+                //    }
+                //}
             }
             else
             {
