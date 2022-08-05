@@ -64,25 +64,13 @@ else
             <text>
             var settings = @Html.Raw(trumbowygSettings.Options);
             settings['lang'] = '@culture.TwoLetterISOLanguageName';
-            settings['semantic'] = {
-                'b': 'strong',
-                'i': 'em',
-                's': 'del',
-                'strike': 'del'
-            };
             </text>
         }
         else
         {   
             <text>
             var settings = { 
-                lang: '@culture.TwoLetterISOLanguageName',
-                semantic: {
-                    'b': 'strong',
-                    'i': 'em',
-                    's': 'del',
-                    'strike': 'del'
-                }
+                lang: '@culture.TwoLetterISOLanguageName'
             }
             </text>
         }
