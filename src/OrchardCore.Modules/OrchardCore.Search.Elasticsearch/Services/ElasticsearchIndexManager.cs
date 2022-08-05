@@ -9,6 +9,7 @@ using Nest;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Search.Elasticsearch.Model;
+using OrchardCore.Search.Elasticsearch.Services;
 
 namespace OrchardCore.Search.Elasticsearch
 {
@@ -18,6 +19,7 @@ namespace OrchardCore.Search.Elasticsearch
     public class ElasticsearchIndexManager : IDisposable
     {
         private readonly IElasticClient _elasticClient;
+        private readonly ElasticsearchAnalyzerManager _elasticAnalyzerManager;
         private readonly IClock _clock;
         private readonly ILogger _logger;
         private bool _disposing;
@@ -27,11 +29,13 @@ namespace OrchardCore.Search.Elasticsearch
 
         public ElasticsearchIndexManager(
             IElasticClient elasticClient,
+            ElasticsearchAnalyzerManager elasticAnalyzerManager,
             IClock clock,
             ILogger<ElasticsearchIndexManager> logger
             )
         {
             _elasticClient = elasticClient;
+            _elasticAnalyzerManager = elasticAnalyzerManager;
             _clock = clock;
             _logger = logger;
         }
@@ -39,8 +43,9 @@ namespace OrchardCore.Search.Elasticsearch
         /// <summary>
         /// <para>Creates an Elasticsearch index with _source mapping.</para>
         /// <para><see href="https://www.elastic.co/guide/en/elasticsearch/reference/8.3/mapping-source-field.html#disable-source-field"/></para>
-        /// <para>TODO: Specify an analyzer for an index based on the ElasticsearchIndexSettings
+        /// <para>Specify an analyzer for an index based on the ElasticsearchIndexSettings
         /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/specify-analyzer.html#specify-index-time-default-analyzer"/>
+        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-analyzers.html"/>
         /// </para>
         /// </summary>
         /// <param name="elasticIndexSettings"></param>
@@ -50,7 +55,27 @@ namespace OrchardCore.Search.Elasticsearch
             //Get Index name scoped by ShellName
             if (!await Exists(elasticIndexSettings.IndexName))
             {
+                var analysisDescriptor = new AnalysisDescriptor();
+                var analyzersDescriptor = new AnalyzersDescriptor();
+                var indexSettingsDescriptor = new IndexSettingsDescriptor();
+
+                var analyzers = _elasticAnalyzerManager.GetAnalyzers();
+
+                if (analyzers.Any())
+                {
+                    var currentAnalyzer = analyzers.FirstOrDefault(a => a.Name == elasticIndexSettings.AnalyzerName).CreateAnalyzer();
+
+                    var currentAnalyzerType = currentAnalyzer.Type;
+
+                    analyzersDescriptor = new AnalyzersDescriptor();
+                    analysisDescriptor.Analyzers(a => a.UserDefined(elasticIndexSettings.AnalyzerName, currentAnalyzer));
+
+                    indexSettingsDescriptor = new IndexSettingsDescriptor();
+                    indexSettingsDescriptor.Analysis(an => analysisDescriptor);
+                }
+
                 var createIndexDescriptor = new CreateIndexDescriptor(elasticIndexSettings.IndexName)
+                    .Settings(s => indexSettingsDescriptor)
                     .Map(m => m.SourceField(s => s.Enabled(elasticIndexSettings.StoreSourceData)));
 
                 var response = await _elasticClient.Indices.CreateAsync(createIndexDescriptor);
