@@ -8,7 +8,7 @@ namespace OrchardCore.Search.Lucene
     {
         /// <summary>
         /// <para>Provides a way to execute a search request in Lucene based on a JSON object.</para>
-        /// <para>Serializes that JSON object to a Lucene Query based on Orchard Core Query Providers implementations.</para>
+        /// <para>OC implementation serializes that JSON object to a Lucene Query based on its ILuceneQueryProvider implementations.</para>
         /// </summary>
         /// <param name="context"></param>
         /// <param name="queryObj"></param>
