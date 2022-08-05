@@ -154,7 +154,7 @@ namespace OrchardCore.Search.Elasticsearch
         }
 
         /// <summary>
-        /// Returns results from an Elasticsearch query from a NEST QueryContainer
+        /// Returns results from a search made with a NEST QueryContainer query.
         /// </summary>
         /// <param name="indexName"></param>
         /// <param name="query"></param>
@@ -191,7 +191,7 @@ namespace OrchardCore.Search.Elasticsearch
         }
 
         /// <summary>
-        /// Returns results from an Elasticsearch Fluent DSL query.
+        /// Returns results from a search made with NEST Fluent DSL query.
         /// </summary>
         /// <param name="indexName"></param>
         /// <param name="elasticClient"></param>
