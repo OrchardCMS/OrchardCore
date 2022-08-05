@@ -145,15 +145,15 @@ namespace OrchardCore.Search.Elasticsearch
         }
 
         /// <summary>
-        /// Returns results from an Elasticsearch Query.
-        /// Doesn't allow to sort results.
+        /// Returns results from an Elasticsearch query from a NEST QueryContainer
         /// </summary>
         /// <param name="indexName"></param>
         /// <param name="query"></param>
+        /// <param name="sort"></param>
         /// <param name="from"></param>
         /// <param name="size"></param>
-        /// <returns></returns>
-        public async Task<ElasticsearchTopDocs> SearchAsync(string indexName, QueryContainer query, int from, int size)
+        /// <returns>ElasticsearchTopDocs</returns>
+        public async Task<ElasticsearchTopDocs> SearchAsync(string indexName, QueryContainer query, List<ISort> sort, int from, int size)
         {
             var elasticTopDocs = new ElasticsearchTopDocs();
 
@@ -163,7 +163,8 @@ namespace OrchardCore.Search.Elasticsearch
                 {
                     Query = query,
                     From = from,
-                    Size = size
+                    Size = size,
+                    Sort = sort
                 };
 
                 var searchResponse = await _elasticClient.SearchAsync<Dictionary<string, object>>(searchRequest);
@@ -181,8 +182,7 @@ namespace OrchardCore.Search.Elasticsearch
         }
 
         /// <summary>
-        /// Returns results from an Elasticsearch Fluent DSL Query.
-        /// Allows to sort results.
+        /// Returns results from an Elasticsearch Fluent DSL query.
         /// </summary>
         /// <param name="indexName"></param>
         /// <param name="elasticClient"></param>

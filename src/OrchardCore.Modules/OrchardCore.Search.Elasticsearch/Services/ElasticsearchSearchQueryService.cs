@@ -17,7 +17,7 @@ namespace OrchardCore.Search.Elasticsearch
         {
             var contentItemIds = new List<string>();
 
-            var results = await _elasticIndexManager.SearchAsync(indexName, query, from, size);
+            var results = await _elasticIndexManager.SearchAsync(indexName, query, null, from, size);
 
             foreach (var item in results.TopDocs)
             {
