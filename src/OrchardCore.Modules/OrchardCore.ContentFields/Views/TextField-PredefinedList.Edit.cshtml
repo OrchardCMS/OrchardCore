@@ -35,7 +35,7 @@
     @if (listSettings.Editor == EditorOption.Dropdown)
     {
         <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
-        <select class="form-control content-preview-select" asp-for="Text" asp-items="options"></select>
+        <select class="form-select content-preview-select" asp-for="Text" asp-items="options"></select>
     }
 
     @if (!String.IsNullOrEmpty(settings.Hint))
