@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -15,19 +16,23 @@ namespace OrchardCore.Media.AmazonS3;
 public class CreateMediaS3BucketEvent : ModularTenantEvents
 {
     private readonly ShellSettings _shellSettings;
-    private readonly ILogger _logger;
     private readonly AwsStorageOptions _options;
     private readonly IAmazonS3 _amazonS3Client;
+    private readonly IStringLocalizer S;
+    private readonly ILogger _logger;
 
-    public CreateMediaS3BucketEvent(ShellSettings shellSettings,
-        IOptions<AwsStorageOptions> options,
+    public CreateMediaS3BucketEvent(
+        ShellSettings shellSettings,
         IAmazonS3 amazonS3Client,
+        IOptions<AwsStorageOptions> options,
+        IStringLocalizer<CreateMediaS3BucketEvent> localizer,
         ILogger<CreateMediaS3BucketEvent> logger)
     {
         _shellSettings = shellSettings;
-        _logger = logger;
         _amazonS3Client = amazonS3Client;
         _options = options.Value;
+        S = localizer;
+        _logger = logger;
     }
 
     public override async Task ActivatingAsync()
@@ -82,7 +87,7 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
 
             _logger.LogDebug("Amazon S3 Bucket {BucketName} created.", _options.BucketName);
         }
-        catch (Exception ex) when (!ex.IsFatal())
+        catch (AmazonS3Exception ex)
         {
             _logger.LogError(ex, "Unable to create Amazon S3 Bucket.");
         }
@@ -114,13 +119,13 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
             if (!response.IsSuccessful())
             {
                 _logger.LogError("Unable to remove the Amazon S3 Bucket {BucketName}", _options.BucketName);
-                context.ErrorMessage = $"Failed to remove the Amazon S3 Bucket '{_options.BucketName}'.";
+                context.LocalizedErrorMessage = S["Failed to remove the Amazon S3 Bucket '{0}'.", _options.BucketName];
             }
         }
-        catch (Exception ex) when (!ex.IsFatal())
+        catch (AmazonS3Exception ex)
         {
             _logger.LogError(ex, "Failed to remove the Amazon S3 Bucket {BucketName}", _options.BucketName);
-            context.ErrorMessage = $"Failed to remove the Amazon S3 Bucket '{_options.BucketName}'.";
+            context.LocalizedErrorMessage = S["Failed to remove the Amazon S3 Bucket '{0}'.", _options.BucketName];
             context.Error = ex;
         }
     }

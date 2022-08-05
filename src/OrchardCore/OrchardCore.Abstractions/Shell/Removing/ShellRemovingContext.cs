@@ -1,24 +1,20 @@
 using System;
+using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Environment.Shell.Removing;
 
 public class ShellRemovingContext
 {
-    private string _errorMessage;
-
     public ShellSettings ShellSettings { get; set; }
     public bool LocalResourcesOnly { get; set; }
     public bool FailedOnLockTimeout { get; set; }
-    public bool Success => ErrorMessage == null;
+    public bool Success => LocalizedErrorMessage == null;
 
-    public string ErrorMessage
-    {
-        get => Error != null
-            ? $"{_errorMessage} {Error.GetType().FullName}: {Error.Message}"
-            : _errorMessage;
+    public LocalizedString LocalizedErrorMessage { get; set; }
 
-        set => _errorMessage = value;
-    }
+    public string ErrorMessage => Error != null
+        ? $"{LocalizedErrorMessage.Value} {Error.GetType().FullName}: {Error.Message}"
+        : LocalizedErrorMessage.Value;
 
     public Exception Error { get; set; }
 }

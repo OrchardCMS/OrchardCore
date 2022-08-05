@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -15,16 +16,19 @@ namespace OrchardCore.Media.Azure
     {
         private readonly MediaBlobStorageOptions _options;
         private readonly ShellSettings _shellSettings;
+        private readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
         public CreateMediaBlobContainerEvent(
             IOptions<MediaBlobStorageOptions> options,
             ShellSettings shellSettings,
+            IStringLocalizer<CreateMediaBlobContainerEvent> localizer,
             ILogger<CreateMediaBlobContainerEvent> logger
             )
         {
             _options = options.Value;
             _shellSettings = shellSettings;
+            S = localizer;
             _logger = logger;
         }
 
@@ -73,13 +77,13 @@ namespace OrchardCore.Media.Azure
                 if (!response.Value)
                 {
                     _logger.LogError("Unable to remove the Azure Media Storage Container {ContainerName}.", _options.ContainerName);
-                    context.ErrorMessage = $"Unable to remove the Azure Media Storage Container '{_options.ContainerName}'.";
+                    context.LocalizedErrorMessage = S["Unable to remove the Azure Media Storage Container '{0}'.", _options.ContainerName];
                 }
             }
             catch (RequestFailedException ex)
             {
                 _logger.LogError(ex, "Failed to remove the Azure Media Storage Container {ContainerName}.", _options.ContainerName);
-                context.ErrorMessage = $"Failed to remove the Azure Media Storage Container '{_options.ContainerName}'.";
+                context.LocalizedErrorMessage = S["Failed to remove the Azure Media Storage Container '{0}'.", _options.ContainerName];
                 context.Error = ex;
             }
         }

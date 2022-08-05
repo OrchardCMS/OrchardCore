@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
@@ -15,17 +16,20 @@ public class ShellRemovalManager : IShellRemovalManager
     private readonly IShellHost _shellHost;
     private readonly IShellContextFactory _shellContextFactory;
     private readonly IEnumerable<IShellRemovingHandler> _shellRemovingHandlers;
+    private readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
     public ShellRemovalManager(
         IShellHost shellHost,
         IShellContextFactory shellContextFactory,
         IEnumerable<IShellRemovingHandler> shellRemovingHandlers,
+        IStringLocalizer<ShellRemovalManager> localizer,
         ILogger<ShellRemovalManager> logger)
     {
         _shellHost = shellHost;
         _shellContextFactory = shellContextFactory;
         _shellRemovingHandlers = shellRemovingHandlers;
+        S = localizer;
         _logger = logger;
     }
 
@@ -39,13 +43,13 @@ public class ShellRemovalManager : IShellRemovalManager
 
         if (shellSettings.Name == ShellHelper.DefaultShellName)
         {
-            context.ErrorMessage = $"The tenant should not be the '{ShellHelper.DefaultShellName}' tenant.";
+            context.LocalizedErrorMessage = S["The tenant should not be the '{0}' tenant.", ShellHelper.DefaultShellName];
             return context;
         }
 
         if (shellSettings.State != TenantState.Disabled && shellSettings.State != TenantState.Uninitialized)
         {
-            context.ErrorMessage = $"The tenant '{shellSettings.Name}' should be 'Disabled' or 'Uninitialized'.";
+            context.LocalizedErrorMessage = S["The tenant '{0}' should be 'Disabled' or 'Uninitialized'.", shellSettings.Name];
             return context;
         }
 
@@ -61,7 +65,7 @@ public class ShellRemovalManager : IShellRemovalManager
                     "Failed to acquire a lock before executing the tenant handlers while removing the tenant '{TenantName}'.",
                     shellSettings.Name);
 
-                context.ErrorMessage = "Failed to acquire a lock before executing the tenant handlers.";
+                context.LocalizedErrorMessage = S["Failed to acquire a lock before executing the tenant handlers."];
                 return context;
             }
 
@@ -94,7 +98,7 @@ public class ShellRemovalManager : IShellRemovalManager
                             type,
                             shellSettings.Name);
 
-                        context.ErrorMessage = $"Failed to execute the tenant handler '{type}'.";
+                        context.LocalizedErrorMessage = S["Failed to execute the tenant handler '{0}'.", type];
                         context.Error = ex;
 
                         break;
@@ -114,7 +118,7 @@ public class ShellRemovalManager : IShellRemovalManager
                     "Failed to acquire a lock before executing the host handlers while removing the tenant '{TenantName}'.",
                     shellSettings.Name);
 
-                context.ErrorMessage = "Failed to acquire a lock before executing the host handlers.";
+                context.LocalizedErrorMessage = S["Failed to acquire a lock before executing the host handlers."];
 
                 // If only local resources should be removed while syncing tenants.
                 if (context.LocalResourcesOnly)
@@ -149,7 +153,7 @@ public class ShellRemovalManager : IShellRemovalManager
                         type,
                         shellSettings.Name);
 
-                    context.ErrorMessage = $"Failed to execute the host handler '{type}'.";
+                    context.LocalizedErrorMessage = S["Failed to execute the host handler '{0}'.", type];
                     context.Error = ex;
 
                     break;

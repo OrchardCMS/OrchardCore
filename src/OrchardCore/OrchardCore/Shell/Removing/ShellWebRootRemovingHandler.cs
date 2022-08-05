@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Models;
 
@@ -13,13 +14,16 @@ namespace OrchardCore.Environment.Shell.Removing;
 public class ShellWebRootRemovingHandler : IShellRemovingHandler
 {
     private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
     public ShellWebRootRemovingHandler(
         IWebHostEnvironment webHostEnvironment,
+        IStringLocalizer<ShellWebRootRemovingHandler> localizer,
         ILogger<ShellWebRootRemovingHandler> logger)
     {
         _webHostEnvironment = webHostEnvironment;
+        S = localizer;
         _logger = logger;
     }
 
@@ -52,7 +56,7 @@ public class ShellWebRootRemovingHandler : IShellRemovingHandler
                 shellWebRootFolder,
                 context.ShellSettings.Name);
 
-            context.ErrorMessage = $"Failed to remove the web root folder '{shellWebRootFolder}'.";
+            context.LocalizedErrorMessage = S["Failed to remove the web root folder '{0}'.", shellWebRootFolder];
             context.Error = ex;
         }
 

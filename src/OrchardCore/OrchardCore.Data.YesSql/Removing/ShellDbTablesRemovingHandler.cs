@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
@@ -18,13 +19,16 @@ namespace OrchardCore.Environment.Shell.Removing;
 public class ShellDbTablesRemovingHandler : IShellRemovingHandler
 {
     private readonly IShellContextFactory _shellContextFactory;
+    private readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
     public ShellDbTablesRemovingHandler(
         IShellContextFactory shellContextFactory,
+        IStringLocalizer<ShellDbTablesRemovingHandler> localizer,
         ILogger<ShellDbTablesRemovingHandler> logger)
     {
         _shellContextFactory = shellContextFactory;
+        S = localizer;
         _logger = logger;
     }
 
@@ -72,7 +76,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to remove the tables of tenant '{TenantName}'.", context.ShellSettings.Name);
-            context.ErrorMessage = "Failed to remove the tables.";
+            context.LocalizedErrorMessage = S["Failed to remove the tables."];
             context.Error = ex;
         }
     }
@@ -120,7 +124,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
                         version,
                         context.ShellSettings.Name);
 
-                    context.ErrorMessage = $"Failed to replay the migration '{type}' from version '{version}'.";
+                    context.LocalizedErrorMessage = S["Failed to replay the migration '{0}' from version '{1}'.", type, version];
                     context.Error = ex;
 
                     break;

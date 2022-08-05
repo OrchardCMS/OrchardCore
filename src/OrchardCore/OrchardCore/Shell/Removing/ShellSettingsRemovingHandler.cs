@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Environment.Shell.Removing;
@@ -10,11 +11,16 @@ namespace OrchardCore.Environment.Shell.Removing;
 public class ShellSettingsRemovingHandler : IShellRemovingHandler
 {
     private readonly IShellHost _shellHost;
+    private readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
-    public ShellSettingsRemovingHandler(IShellHost shellHost, ILogger<ShellSettingsRemovingHandler> logger)
+    public ShellSettingsRemovingHandler(
+        IShellHost shellHost,
+        IStringLocalizer<ShellSettingsRemovingHandler> localizer,
+        ILogger<ShellSettingsRemovingHandler> logger)
     {
         _shellHost = shellHost;
+        S = localizer;
         _logger = logger;
     }
 
@@ -39,7 +45,7 @@ public class ShellSettingsRemovingHandler : IShellRemovingHandler
                 "Failed to remove the shell settings of tenant '{TenantName}'.",
                 context.ShellSettings.Name);
 
-            context.ErrorMessage = "Failed to remove the shell settings.";
+            context.LocalizedErrorMessage = S["Failed to remove the shell settings."];
             context.Error = ex;
         }
     }

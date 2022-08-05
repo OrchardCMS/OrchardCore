@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -12,13 +13,16 @@ namespace OrchardCore.Environment.Shell.Removing;
 public class ShellSiteFolderRemovingHandler : IShellRemovingHandler
 {
     private readonly ShellOptions _shellOptions;
+    private readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
     public ShellSiteFolderRemovingHandler(
         IOptions<ShellOptions> shellOptions,
+        IStringLocalizer<ShellSiteFolderRemovingHandler> localizer,
         ILogger<ShellSiteFolderRemovingHandler> logger)
     {
         _shellOptions = shellOptions.Value;
+        S = localizer;
         _logger = logger;
     }
 
@@ -47,7 +51,7 @@ public class ShellSiteFolderRemovingHandler : IShellRemovingHandler
                 shellAppDataFolder,
                 context.ShellSettings.Name);
 
-            context.ErrorMessage = $"Failed to remove the site folder '{shellAppDataFolder}'.";
+            context.LocalizedErrorMessage = S["Failed to remove the site folder '{0}'.", shellAppDataFolder];
             context.Error = ex;
         }
 
