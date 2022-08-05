@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nest;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Search.Elasticsearch
 {
