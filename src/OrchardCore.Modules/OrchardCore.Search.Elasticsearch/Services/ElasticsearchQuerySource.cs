@@ -78,22 +78,6 @@ namespace OrchardCore.Search.Elasticsearch
                 }
 
                 //TODO : get ContentItemVersionId from docs.Fields
-                
-                //var fieldDocs = docs.Fields.Where(x =>x != null && x.ContainsKey("ContentItemVersionId")).ToList();
-
-                //if (fieldDocs.Count > 0)
-                //{
-                //    var indexedContentItemVersionIds = fieldDocs.Select(x => x.GetValueOrDefault("ContentItemVersionId"));
-                //    var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
-
-                //    // Reorder the result to preserve the one from the Elasticsearch query
-                //    if (dbContentItems.Any())
-                //    {
-                //        var dbContentItemVersionIds = dbContentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
-                //        //var indexedAndInDB = indexedContentItemVersionIds.Where(dbContentItemVersionIds.ContainsKey);
-                //        //elasticQueryResults.Items = indexedAndInDB.Select(x => dbContentItemVersionIds[x]).ToArray();
-                //    }
-                //}
             }
             else
             {
