@@ -70,6 +70,9 @@ public class ShellRemovalManager : IShellRemovalManager
             await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
             {
                 // Execute tenant level removing handlers (singletons or scoped) in a reverse order.
+                // If feature A depends on feature B, the activating handler of feature B should run
+                // before the handler of the dependent feature A, but on removing the resources of
+                // feature B should be removed after the resources of the dependent feature A.
                 var tenantHandlers = scope.ServiceProvider.GetServices<IModularTenantEvents>().Reverse();
                 foreach (var handler in tenantHandlers)
                 {
