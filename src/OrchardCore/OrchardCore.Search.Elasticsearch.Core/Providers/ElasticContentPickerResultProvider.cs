@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Nest;
 using OrchardCore.ContentManagement;
+using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
-using OrchardCore.Search.Elasticsearch.Settings;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Providers
 {

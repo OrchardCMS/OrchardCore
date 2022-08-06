@@ -11,7 +11,6 @@ using Microsoft.Extensions.Options;
 using Nest;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -21,13 +20,10 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
-using OrchardCore.Recipes;
 using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Search.Elasticsearch.Core.Deployment;
-using OrchardCore.Search.Elasticsearch.Core.Handlers;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Providers;
-using OrchardCore.Search.Elasticsearch.Core.Recipes;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
 using OrchardCore.Security.Permissions;
@@ -68,8 +64,6 @@ namespace OrchardCore.Search.Elasticsearch
                 });
 
                 services.Configure<ElasticConnectionOptions>(o => o.ConfigurationExists = true);
-
-                services.AddSingleton<ElasticIndexSettingsService>();
                 services.AddScoped<INavigationProvider, AdminMenu>();
                 services.AddScoped<IPermissionProvider, Permissions>();
 
@@ -128,26 +122,12 @@ namespace OrchardCore.Search.Elasticsearch
 
                 var client = new ElasticClient(settings);
                 services.AddSingleton<IElasticClient>(client);
-                services.AddSingleton<ElasticIndexingState>();
-
-                services.AddSingleton<ElasticIndexManager>();
-                services.AddSingleton<ElasticAnalyzerManager>();
-                services.AddScoped<ElasticIndexingService>();
-                services.AddScoped<IElasticSearchQueryService, ElasticSearchQueryService>();
-
                 services.Configure<ElasticOptions>(o =>
                     o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.StandardAnalyzer, new StandardAnalyzer())));
 
                 services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
                 services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
-
-                services.AddScoped<IContentHandler, ElasticIndexingContentHandler>();
-                services.AddElasticQueries();
-
-                // LuceneQuerySource is registered for both the Queries module and local usage
-                services.AddScoped<IQuerySource, ElasticQuerySource>();
-                services.AddScoped<ElasticQuerySource>();
-                services.AddRecipeExecutionStep<ElasticIndexStep>();
+                services.AddElasticServices();
             }
         }
 
