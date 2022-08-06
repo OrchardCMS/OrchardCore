@@ -22,18 +22,17 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
 using OrchardCore.Recipes;
-using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Abstractions.ViewModels;
-using OrchardCore.Search.Elasticsearch.Configurations;
-using OrchardCore.Search.Elasticsearch.Deployment;
+using OrchardCore.Search.Elasticsearch.Core.Deployment;
 using OrchardCore.Search.Elasticsearch.Drivers;
-using OrchardCore.Search.Elasticsearch.Handlers;
-using OrchardCore.Search.Elasticsearch.Model;
-using OrchardCore.Search.Elasticsearch.Recipes;
-using OrchardCore.Search.Elasticsearch.Services;
+using OrchardCore.Search.Elasticsearch.Core.Handlers;
+using OrchardCore.Search.Elasticsearch.Core.Models;
+using OrchardCore.Search.Elasticsearch.Core.Recipes;
+using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Settings;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Search.Elasticsearch.Core.Providers;
 
 namespace OrchardCore.Search.Elasticsearch
 {
@@ -150,8 +149,6 @@ namespace OrchardCore.Search.Elasticsearch
                 services.AddScoped<IQuerySource, ElasticQuerySource>();
                 services.AddScoped<ElasticQuerySource>();
                 services.AddRecipeExecutionStep<ElasticIndexStep>();
-
-                services.AddScoped<SearchProvider, ElasticSearchProvider>();
             }
         }
 
