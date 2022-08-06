@@ -8,99 +8,100 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.ContentFields.Settings;
-
-public class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<ContentPickerField>
+namespace OrchardCore.ContentFields.Settings
 {
-    public const string ContentTypes = "ContentTypes";
-    public const string Stereotypes = "Stereotypes";
-    public const string AllTypes = "AllTypes";
-
-    private readonly IStringLocalizer S;
-
-    public ContentPickerFieldSettingsDriver(IStringLocalizer<ContentPickerFieldSettingsDriver> stringLocalizer)
+    public class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<ContentPickerField>
     {
-        S = stringLocalizer;
-    }
+        public const string ContentTypes = "ContentTypes";
+        public const string Stereotypes = "Stereotypes";
+        public const string AllTypes = "AllTypes";
 
-    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
-    {
-        return Initialize<ContentPickerFieldSettingsViewModel>("ContentPickerFieldSettings_Edit", model =>
+        private readonly IStringLocalizer S;
+
+        public ContentPickerFieldSettingsDriver(IStringLocalizer<ContentPickerFieldSettingsDriver> stringLocalizer)
         {
-            var settings = partFieldDefinition.GetSettings<ContentPickerFieldSettings>();
-            model.Hint = settings.Hint;
-            model.Required = settings.Required;
-            model.Multiple = settings.Multiple;
-            model.DisplayedContentTypes = settings.DisplayedContentTypes;
-            model.DisplayedStereotypes = settings.DisplayedStereotypes;
-            model.Source = GetSource(settings);
-            model.Stereotypes = String.Join(',', settings.DisplayedStereotypes ?? Array.Empty<string>());
-        }).Location("Content");
-    }
+            S = stringLocalizer;
+        }
 
-    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
-    {
-        var model = new ContentPickerFieldSettingsViewModel();
-
-        if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            var settings = new ContentPickerFieldSettings()
+            return Initialize<ContentPickerFieldSettingsViewModel>("ContentPickerFieldSettings_Edit", model =>
             {
-                Hint = model.Hint,
-                Required = model.Required,
-                Multiple = model.Multiple
-            };
+                var settings = partFieldDefinition.GetSettings<ContentPickerFieldSettings>();
+                model.Hint = settings.Hint;
+                model.Required = settings.Required;
+                model.Multiple = settings.Multiple;
+                model.DisplayedContentTypes = settings.DisplayedContentTypes;
+                model.DisplayedStereotypes = settings.DisplayedStereotypes;
+                model.Source = GetSource(settings);
+                model.Stereotypes = String.Join(',', settings.DisplayedStereotypes ?? Array.Empty<string>());
+            }).Location("Content");
+        }
 
-            if (ContentTypes.Equals(model.Source, StringComparison.OrdinalIgnoreCase))
+        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+        {
+            var model = new ContentPickerFieldSettingsViewModel();
+
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                SetContentTypes(context.Updater, model.DisplayedContentTypes, settings);
+                var settings = new ContentPickerFieldSettings()
+                {
+                    Hint = model.Hint,
+                    Required = model.Required,
+                    Multiple = model.Multiple
+                };
+
+                if (ContentTypes.Equals(model.Source, StringComparison.OrdinalIgnoreCase))
+                {
+                    SetContentTypes(context.Updater, model.DisplayedContentTypes, settings);
+                }
+                else if (Stereotypes.Equals(model.Source, StringComparison.OrdinalIgnoreCase))
+                {
+                    SetStereoTypes(context.Updater, model.Stereotypes, settings);
+                }
+                else
+                {
+                    settings.DisplayAllContentTypes = true;
+                }
+
+                context.Builder.WithSettings(settings);
             }
-            else if (Stereotypes.Equals(model.Source, StringComparison.OrdinalIgnoreCase))
+
+            return Edit(partFieldDefinition);
+        }
+
+        private void SetStereoTypes(IUpdateModel updater, string stereotypes, ContentPickerFieldSettings settings)
+        {
+            if (String.IsNullOrEmpty(stereotypes))
             {
-                SetStereoTypes(context.Updater, model.Stereotypes, settings);
+                updater.ModelState.AddModelError(Prefix, nameof(ContentPickerFieldSettingsViewModel.Stereotypes), S["Please provide a Stereotype."]);
+
+                return;
             }
-            else
+
+            settings.DisplayedStereotypes = stereotypes.Split(',', ';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        private void SetContentTypes(IUpdateModel updater, string[] displayedContentTypes, ContentPickerFieldSettings settings)
+        {
+            if (displayedContentTypes == null || displayedContentTypes.Length == 0)
             {
-                settings.DisplayAllContentTypes = true;
+                updater.ModelState.AddModelError(Prefix, nameof(ContentPickerFieldSettingsViewModel.DisplayedContentTypes), S["At least one content type must be selected."]);
+
+                return;
             }
 
-            context.Builder.WithSettings(settings);
+            settings.DisplayedContentTypes = displayedContentTypes;
         }
 
-        return Edit(partFieldDefinition);
-    }
-
-    private void SetStereoTypes(IUpdateModel updater, string stereotypes, ContentPickerFieldSettings settings)
-    {
-        if (String.IsNullOrEmpty(stereotypes))
+        private static string GetSource(ContentPickerFieldSettings settings)
         {
-            updater.ModelState.AddModelError(Prefix, nameof(ContentPickerFieldSettingsViewModel.Stereotypes), S["Please provide a Stereotype."]);
+            if (settings.DisplayAllContentTypes)
+            {
+                return AllTypes;
+            }
 
-            return;
+            return settings.DisplayedStereotypes != null && settings.DisplayedStereotypes.Length > 0 ? Stereotypes : ContentTypes;
         }
-
-        settings.DisplayedStereotypes = stereotypes.Split(',', ';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-    }
-
-    private void SetContentTypes(IUpdateModel updater, string[] displayedContentTypes, ContentPickerFieldSettings settings)
-    {
-        if (displayedContentTypes == null || displayedContentTypes.Length == 0)
-        {
-            updater.ModelState.AddModelError(Prefix, nameof(ContentPickerFieldSettingsViewModel.DisplayedContentTypes), S["At least one content type must be selected."]);
-
-            return;
-        }
-
-        settings.DisplayedContentTypes = displayedContentTypes;
-    }
-
-    private static string GetSource(ContentPickerFieldSettings settings)
-    {
-        if (settings.DisplayAllContentTypes)
-        {
-            return AllTypes;
-        }
-
-        return settings.DisplayedStereotypes != null && settings.DisplayedStereotypes.Length > 0 ? Stereotypes : ContentTypes;
     }
 }

@@ -1,6 +1,7 @@
 using System;
 
 namespace OrchardCore.ContentFields.Settings;
+
 public class ContentPickerFieldSettingsViewModel
 {
     public string Hint { get; set; }
