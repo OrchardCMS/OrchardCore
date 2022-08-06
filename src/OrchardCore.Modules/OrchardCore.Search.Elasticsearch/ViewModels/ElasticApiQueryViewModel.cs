@@ -1,6 +1,6 @@
-namespace OrchardCore.Search.Elasticsearch.Core.Models
+namespace OrchardCore.Search.Elasticsearch.ViewModels
 {
-    public class ElasticQueryModel
+    public class ElasticApiQueryViewModel
     {
         public string IndexName { set; get; }
         public string Query { set; get; }

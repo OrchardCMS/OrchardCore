@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
+using OrchardCore.Search.Elasticsearch.ViewModels;
 
 namespace OrchardCore.Search.Elasticsearch
 {
@@ -26,7 +27,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         [HttpGet]
         [Route("content")]
-        public async Task<IActionResult> Content([FromQuery] ElasticQueryModel queryModel)
+        public async Task<IActionResult> Content([FromQuery] ElasticApiQueryViewModel queryModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
             {
@@ -40,7 +41,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         [HttpPost]
         [Route("content")]
-        public async Task<IActionResult> ContentPost(ElasticQueryModel queryModel)
+        public async Task<IActionResult> ContentPost(ElasticApiQueryViewModel queryModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
             {
@@ -54,7 +55,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         [HttpGet]
         [Route("documents")]
-        public async Task<IActionResult> Documents([FromQuery] ElasticQueryModel queryModel)
+        public async Task<IActionResult> Documents([FromQuery] ElasticApiQueryViewModel queryModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
             {
@@ -68,7 +69,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         [HttpPost]
         [Route("documents")]
-        public async Task<IActionResult> DocumentsPost(ElasticQueryModel queryModel)
+        public async Task<IActionResult> DocumentsPost(ElasticApiQueryViewModel queryModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
             {
@@ -80,7 +81,7 @@ namespace OrchardCore.Search.Elasticsearch
             return new ObjectResult(result);
         }
 
-        private Task<Queries.IQueryResults> ElasticQueryApiAsync(ElasticQueryModel queryModel, bool returnContentItems = false)
+        private Task<Queries.IQueryResults> ElasticQueryApiAsync(ElasticApiQueryViewModel queryModel, bool returnContentItems = false)
         {
             var elasticQuery = new ElasticQuery
             {

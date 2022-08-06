@@ -1,8 +1,9 @@
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Search.Elasticsearch.Core.Deployment;
 
-namespace OrchardCore.Search.Elasticsearch.Core.Deployment
+namespace OrchardCore.Search.Elasticsearch.Drivers
 {
     public class ElasticSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, ElasticSettingsDeploymentStep>
     {

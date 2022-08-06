@@ -5,8 +5,9 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Search.Elasticsearch.Core.Services;
+using OrchardCore.Search.Elasticsearch.Core.Models;
 
-namespace OrchardCore.Search.Elasticsearch.Settings
+namespace OrchardCore.Search.Elasticsearch.Drivers
 {
     public class ContentPickerFieldElasticEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver
     {

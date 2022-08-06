@@ -24,15 +24,14 @@ using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Search.Elasticsearch.Core.Deployment;
-using OrchardCore.Search.Elasticsearch.Drivers;
 using OrchardCore.Search.Elasticsearch.Core.Handlers;
 using OrchardCore.Search.Elasticsearch.Core.Models;
+using OrchardCore.Search.Elasticsearch.Core.Providers;
 using OrchardCore.Search.Elasticsearch.Core.Recipes;
 using OrchardCore.Search.Elasticsearch.Core.Services;
-using OrchardCore.Search.Elasticsearch.Settings;
+using OrchardCore.Search.Elasticsearch.Drivers;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using OrchardCore.Search.Elasticsearch.Core.Providers;
 
 namespace OrchardCore.Search.Elasticsearch
 {

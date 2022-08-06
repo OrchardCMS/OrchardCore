@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace OrchardCore.Search.Elasticsearch.Settings
+namespace OrchardCore.Search.Elasticsearch.Core.Models
 {
     public class ContentPickerFieldElasticEditorSettings
     {
