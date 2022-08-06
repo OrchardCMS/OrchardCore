@@ -54,6 +54,7 @@ namespace OrchardCore.Search.Lucene
                 o.MemberAccessStrategy.Register<SearchResultsViewModel>();
             });
 
+            services.AddSingleton<SearchProvider, LuceneSearchProvider>();
             services.AddSingleton<LuceneIndexingState>();
             services.AddSingleton<LuceneIndexSettingsService>();
             services.AddSingleton<LuceneIndexManager>();
@@ -78,8 +79,6 @@ namespace OrchardCore.Search.Lucene
             services.AddScoped<IQuerySource, LuceneQuerySource>();
             services.AddScoped<LuceneQuerySource>();
             services.AddRecipeExecutionStep<LuceneIndexStep>();
-
-            services.AddScoped<SearchProvider, LuceneSearchProvider>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
