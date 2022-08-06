@@ -13,11 +13,11 @@ namespace OrchardCore.Search.Elasticsearch
     public class ApiController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly ElasticsearchQuerySource _elasticQuerySource;
+        private readonly ElasticQuerySource _elasticQuerySource;
 
         public ApiController(
             IAuthorizationService authorizationService,
-            ElasticsearchQuerySource elasticQuerySource)
+            ElasticQuerySource elasticQuerySource)
         {
             _authorizationService = authorizationService;
             _elasticQuerySource = elasticQuerySource;
@@ -25,7 +25,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         [HttpGet]
         [Route("content")]
-        public async Task<IActionResult> Content([FromQuery] ElasticsearchQueryModel queryModel)
+        public async Task<IActionResult> Content([FromQuery] ElasticQueryModel queryModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
             {
@@ -39,7 +39,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         [HttpPost]
         [Route("content")]
-        public async Task<IActionResult> ContentPost(ElasticsearchQueryModel queryModel)
+        public async Task<IActionResult> ContentPost(ElasticQueryModel queryModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
             {
@@ -53,7 +53,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         [HttpGet]
         [Route("documents")]
-        public async Task<IActionResult> Documents([FromQuery] ElasticsearchQueryModel queryModel)
+        public async Task<IActionResult> Documents([FromQuery] ElasticQueryModel queryModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
             {
@@ -67,7 +67,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         [HttpPost]
         [Route("documents")]
-        public async Task<IActionResult> DocumentsPost(ElasticsearchQueryModel queryModel)
+        public async Task<IActionResult> DocumentsPost(ElasticQueryModel queryModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
             {
@@ -79,9 +79,9 @@ namespace OrchardCore.Search.Elasticsearch
             return new ObjectResult(result);
         }
 
-        private Task<Queries.IQueryResults> ElasticQueryApiAsync(ElasticsearchQueryModel queryModel, bool returnContentItems = false)
+        private Task<Queries.IQueryResults> ElasticQueryApiAsync(ElasticQueryModel queryModel, bool returnContentItems = false)
         {
-            var elasticQuery = new ElasticsearchQuery
+            var elasticQuery = new ElasticQuery
             {
                 Index = queryModel.IndexName,
                 Template = queryModel.Query,

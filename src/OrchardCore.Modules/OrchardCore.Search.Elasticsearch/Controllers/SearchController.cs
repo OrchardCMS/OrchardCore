@@ -26,11 +26,11 @@ namespace OrchardCore.Search.Elasticsearch
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-        private readonly ElasticsearchIndexManager _elasticIndexManager;
-        private readonly ElasticsearchIndexingService _elasticIndexingService;
-        private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
-        private readonly ElasticsearchAnalyzerManager _elasticAnalyzerManager;
-        private readonly IElasticsearchSearchQueryService _searchQueryService;
+        private readonly ElasticIndexManager _elasticIndexManager;
+        private readonly ElasticIndexingService _elasticIndexingService;
+        private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+        private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
+        private readonly IElasticSearchQueryService _searchQueryService;
         private readonly ISession _session;
         private readonly IStringLocalizer S;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
@@ -40,11 +40,11 @@ namespace OrchardCore.Search.Elasticsearch
         public SearchController(
             IAuthorizationService authorizationService,
             ISiteService siteService,
-            ElasticsearchIndexManager elasticIndexManager,
-            ElasticsearchIndexingService elasticIndexingService,
-            ElasticsearchIndexSettingsService elasticIndexSettingsService,
-            ElasticsearchAnalyzerManager elasticAnalyzerManager,
-            IElasticsearchSearchQueryService searchQueryService,
+            ElasticIndexManager elasticIndexManager,
+            ElasticIndexingService elasticIndexingService,
+            ElasticIndexSettingsService elasticIndexSettingsService,
+            ElasticAnalyzerManager elasticAnalyzerManager,
+            IElasticSearchQueryService searchQueryService,
             ISession session,
             IStringLocalizer<SearchController> stringLocalizer,
             IEnumerable<IPermissionProvider> permissionProviders,
@@ -73,7 +73,7 @@ namespace OrchardCore.Search.Elasticsearch
             var permissions = await permissionsProvider.GetPermissionsAsync();
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var searchSettings = siteSettings.As<ElasticsearchSettings>();
+            var searchSettings = siteSettings.As<ElasticSettings>();
 
             if (permissions.FirstOrDefault(x => x.Name == "QueryElasticsearch" + searchSettings.SearchIndex + "Index") != null)
             {

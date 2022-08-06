@@ -1,18 +1,18 @@
 @using OrchardCore.DisplayManagement.Views
-@using OrchardCore.Search.Lucene.Deployment
+@using OrchardCore.Search.Elasticsearch.Deployment
 
-@model ShapeViewModel<LuceneIndexDeploymentStep>
+@model ShapeViewModel<ElasticIndexDeploymentStep>
 
 @{
     var includeAll = Model.Value.IncludeAll;
     var indexNames = Model.Value.IndexNames;
 }
 
-<h5>@T["Lucene Search Indexes"]</h5>
+<h5>@T["Elasticsearch Search Indexes"]</h5>
 
 @if (includeAll)
 {
-    <span class="badge bg-success">@T["All"]</span>
+    <span class="badge badge-success">@T["All"]</span>
 }
 else if (indexNames?.Length > 0)
 {
@@ -23,5 +23,5 @@ else if (indexNames?.Length > 0)
 }
 else
 {
-    <span class="badge bg-warning">@T["No index selected."]</span>
+    <span class="badge badge-warning">@T["No index selected."]</span>
 }

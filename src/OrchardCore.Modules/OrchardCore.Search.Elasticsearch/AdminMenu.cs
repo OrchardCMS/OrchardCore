@@ -24,7 +24,7 @@ namespace OrchardCore.Search.Elasticsearch
 
             builder
                 .Add(S["Search"], "7", search => search
-                    .AddClass("elasticsearch").Id("elasticsearch")
+                    .AddClass("elasticsearch").Id("Elasticsearch")
                     .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
                         .Add(S["Elasticsearch Indices"], S["Elasticsearch Indices"].PrefixPosition(), indexes => indexes
                             .Action("Index", "Admin", new { area = "OrchardCore.Search.Elasticsearch" })
@@ -36,7 +36,7 @@ namespace OrchardCore.Search.Elasticsearch
                             .LocalNav()))
                     .Add(S["Settings"], settings => settings
                         .Add(S["Elasticsearch"], S["Elasticsearch"].PrefixPosition(), entry => entry
-                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ElasticsearchSettingsDisplayDriver.GroupId })
+                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ElasticSettingsDisplayDriver.GroupId })
                              .Permission(Permissions.ManageIndexes)
                              .LocalNav()
                         )));

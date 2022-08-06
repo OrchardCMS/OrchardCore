@@ -58,7 +58,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            var elasticConfiguration = _shellConfiguration.GetSection(ConfigSectionName).Get<ElasticsearchConnectionOptions>();
+            var elasticConfiguration = _shellConfiguration.GetSection(ConfigSectionName).Get<ElasticConnectionOptions>();
 
             if (elasticConfiguration != null && CheckOptions(elasticConfiguration.Url, elasticConfiguration.Ports, _logger))
             {
@@ -69,9 +69,9 @@ namespace OrchardCore.Search.Elasticsearch
                     o.MemberAccessStrategy.Register<SearchResultsViewModel>();
                 });
 
-                services.Configure<ElasticsearchConnectionOptions>(o => o.ConfigurationExists = true);
+                services.Configure<ElasticConnectionOptions>(o => o.ConfigurationExists = true);
 
-                services.AddSingleton<ElasticsearchIndexSettingsService>();
+                services.AddSingleton<ElasticIndexSettingsService>();
                 services.AddScoped<INavigationProvider, AdminMenu>();
                 services.AddScoped<IPermissionProvider, Permissions>();
 
@@ -130,34 +130,34 @@ namespace OrchardCore.Search.Elasticsearch
 
                 var client = new ElasticClient(settings);
                 services.AddSingleton<IElasticClient>(client);
-                services.AddSingleton<ElasticsearchIndexingState>();
+                services.AddSingleton<ElasticIndexingState>();
 
-                services.AddSingleton<ElasticsearchIndexManager>();
-                services.AddSingleton<ElasticsearchAnalyzerManager>();
-                services.AddScoped<ElasticsearchIndexingService>();
-                services.AddScoped<IElasticsearchSearchQueryService, ElasticsearchSearchQueryService>();
+                services.AddSingleton<ElasticIndexManager>();
+                services.AddSingleton<ElasticAnalyzerManager>();
+                services.AddScoped<ElasticIndexingService>();
+                services.AddScoped<IElasticSearchQueryService, ElasticSearchQueryService>();
 
-                services.Configure<ElasticsearchOptions>(o =>
-                    o.Analyzers.Add(new ElasticsearchAnalyzer(ElasticsearchSettings.StandardAnalyzer, new StandardAnalyzer())));
+                services.Configure<ElasticOptions>(o =>
+                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.StandardAnalyzer, new StandardAnalyzer())));
 
-                services.AddScoped<IDisplayDriver<ISite>, ElasticsearchSettingsDisplayDriver>();
-                services.AddScoped<IDisplayDriver<Query>, ElasticsearchQueryDisplayDriver>();
+                services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
+                services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
 
-                services.AddScoped<IContentHandler, ElasticsearchIndexingContentHandler>();
+                services.AddScoped<IContentHandler, ElasticIndexingContentHandler>();
                 services.AddElasticQueries();
 
                 // LuceneQuerySource is registered for both the Queries module and local usage
-                services.AddScoped<IQuerySource, ElasticsearchQuerySource>();
-                services.AddScoped<ElasticsearchQuerySource>();
-                services.AddRecipeExecutionStep<ElasticsearchIndexStep>();
+                services.AddScoped<IQuerySource, ElasticQuerySource>();
+                services.AddScoped<ElasticQuerySource>();
+                services.AddRecipeExecutionStep<ElasticIndexStep>();
 
-                services.AddScoped<SearchProvider, ElasticsearchSearchProvider>();
+                services.AddScoped<SearchProvider, ElasticSearchProvider>();
             }
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var options = serviceProvider.GetRequiredService<IOptions<ElasticsearchConnectionOptions>>().Value;
+            var options = serviceProvider.GetRequiredService<IOptions<ElasticConnectionOptions>>().Value;
 
             if (!options.ConfigurationExists)
             {
@@ -227,13 +227,13 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, ElasticsearchIndexDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticsearchIndexDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticsearchIndexDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, ElasticIndexDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticIndexDeploymentStepDriver>();
 
-            services.AddTransient<IDeploymentSource, ElasticsearchSettingsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticsearchSettingsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticsearchSettingsDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, ElasticSettingsDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticSettingsDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticSettingsDeploymentStepDriver>();
         }
     }
 
@@ -242,9 +242,9 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IContentPickerResultProvider, ElasticsearchContentPickerResultProvider>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldElasticsearchEditorSettingsDriver>();
-            services.AddShapeAttributes<ElasticsearchContentPickerShapeProvider>();
+            services.AddScoped<IContentPickerResultProvider, ElasticContentPickerResultProvider>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldElasticEditorSettingsDriver>();
+            services.AddShapeAttributes<ElasticContentPickerShapeProvider>();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ISchemaBuilder, ElasticsearchQueryFieldTypeProvider>();
+            services.AddSingleton<ISchemaBuilder, ElasticQueryFieldTypeProvider>();
         }
     }
 }

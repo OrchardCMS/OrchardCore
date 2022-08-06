@@ -6,12 +6,12 @@ namespace OrchardCore.Search.Elasticsearch
 {
     public class Permissions : IPermissionProvider
     {
-        private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
+        private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 
         public static readonly Permission ManageIndexes = new Permission("ManageIndexes", "Manage Indexes");
         public static readonly Permission QueryElasticApi = new Permission("QueryElasticsearchApi", "Query Elasticsearch Api", new[] { ManageIndexes });
 
-        public Permissions(ElasticsearchIndexSettingsService elasticIndexSettingsService)
+        public Permissions(ElasticIndexSettingsService elasticIndexSettingsService)
         {
             _elasticIndexSettingsService = elasticIndexSettingsService;
         }

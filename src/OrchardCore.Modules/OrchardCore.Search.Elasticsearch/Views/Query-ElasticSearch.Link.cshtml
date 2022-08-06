@@ -1,6 +1,6 @@
 @model dynamic
 @using OrchardCore.Search.Elasticsearch
-@inject ElasticsearchIndexSettingsService ElasticIndexSettingsService
+@inject ElasticIndexSettingsService ElasticIndexSettingsService
 
 @{
     var disabled = !(await ElasticIndexSettingsService.GetSettingsAsync()).Any();

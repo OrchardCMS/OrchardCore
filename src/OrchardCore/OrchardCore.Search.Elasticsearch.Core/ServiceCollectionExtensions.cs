@@ -10,7 +10,7 @@ namespace OrchardCore.Search.Elasticsearch
         /// </summary>
         public static IServiceCollection AddElasticQueries(this IServiceCollection services)
         {
-            services.AddScoped<IElasticsearchQueryService, ElasticsearchQueryService>();
+            services.AddScoped<IElasticQueryService, ElasticQueryService>();
             return services;
         }
     }
