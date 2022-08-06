@@ -1,0 +1,20 @@
+@{
+    var returnUrl = Context.Request.Query["returnUrl"];
+}
+
+@if (String.IsNullOrWhiteSpace(returnUrl))
+{
+    <button type="submit" name="submit.Publish" class="btn btn-success publish" value="submit.Publish">@T["Publish"]</button>
+}
+else
+{
+    <div class="btn-group">
+        <button class="btn btn-success publish" type="submit" name="submit.Publish" value="submit.Publish">@T["Publish"]</button>
+        <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="visually-hidden">@T["Toggle Dropdown"]</span>
+        </button>
+        <div class="dropdown-menu">
+            <button class="dropdown-item publish-continue" type="submi 1203t" name="submit.Publish" value="submit.PublishAndContinue">@T["and continue"]</button>
+        </div>
+    </div>
+}
