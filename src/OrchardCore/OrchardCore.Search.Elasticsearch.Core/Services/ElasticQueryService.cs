@@ -23,7 +23,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             _logger = logger;
         }
 
-        public async Task<ElasticTopDocs> SearchAsync(ElasticQueryContext context, string query)
+        public async Task<ElasticTopDocs> SearchAsync(string indexName, string query)
         {
             var elasticTopDocs = new ElasticTopDocs();
 
@@ -36,7 +36,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             {
                 var deserializedSearchRequest = _elasticClient.RequestResponseSerializer.Deserialize<SearchRequest>(new MemoryStream(Encoding.UTF8.GetBytes(query)));
 
-                var searchRequest = new SearchRequest(context.IndexName)
+                var searchRequest = new SearchRequest(indexName)
                 {
                     Query = deserializedSearchRequest.Query,
                     From = deserializedSearchRequest.From,

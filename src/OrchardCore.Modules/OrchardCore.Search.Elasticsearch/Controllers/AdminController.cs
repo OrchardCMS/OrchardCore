@@ -36,61 +36,60 @@ namespace OrchardCore.Search.Elasticsearch
     public class AdminController : Controller
     {
         private readonly ISession _session;
-        private readonly ElasticIndexManager _elasticIndexManager;
-        private readonly ElasticIndexingService _elasticIndexingService;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly INotifier _notifier;
-        private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
-        private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-        private readonly IElasticQueryService _queryService;
+        private readonly ISiteService _siteService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ISiteService _siteService;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IElasticQueryService _queryService;
+        private readonly ElasticIndexManager _elasticIndexManager;
+        private readonly ElasticIndexingService _elasticIndexingService;
+        private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
+        private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
         private readonly dynamic New;
         private readonly JavaScriptEncoder _javaScriptEncoder;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
+        private readonly INotifier _notifier;
         private readonly ILogger _logger;
         private readonly IOptions<TemplateOptions> _templateOptions;
         private readonly ShellSettings _shellSettings;
 
         public AdminController(
             ISession session,
+            ISiteService siteService,
+            ILiquidTemplateManager liquidTemplateManager,
             IContentDefinitionManager contentDefinitionManager,
+            IAuthorizationService authorizationService,
+            IElasticQueryService queryService,
             ElasticIndexManager elasticIndexManager,
             ElasticIndexingService elasticIndexingService,
-            IAuthorizationService authorizationService,
             ElasticAnalyzerManager elasticAnalyzerManager,
             ElasticIndexSettingsService elasticIndexSettingsService,
-            IElasticQueryService queryService,
-            ILiquidTemplateManager liquidTemplateManager,
-            INotifier notifier,
-            ISiteService siteService,
             IShapeFactory shapeFactory,
             JavaScriptEncoder javaScriptEncoder,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
+            INotifier notifier,
             ILogger<AdminController> logger,
             IOptions<TemplateOptions> templateOptions,
             ShellSettings shellSettings
             )
         {
             _session = session;
-            _elasticIndexManager = elasticIndexManager;
-            _elasticIndexingService = elasticIndexingService;
-            _authorizationService = authorizationService;
-            _elasticAnalyzerManager = elasticAnalyzerManager;
-            _elasticIndexSettingsService = elasticIndexSettingsService;
-            _queryService = queryService;
+            _siteService = siteService;
             _liquidTemplateManager = liquidTemplateManager;
             _contentDefinitionManager = contentDefinitionManager;
-            _notifier = notifier;
-            _siteService = siteService;
-
+            _authorizationService = authorizationService;
+            _queryService = queryService;
+            _elasticIndexManager = elasticIndexManager;
+            _elasticIndexingService = elasticIndexingService;
+            _elasticAnalyzerManager = elasticAnalyzerManager;
+            _elasticIndexSettingsService = elasticIndexSettingsService;
             New = shapeFactory;
             _javaScriptEncoder = javaScriptEncoder;
             S = stringLocalizer;
             H = htmlLocalizer;
+            _notifier = notifier;
             _logger = logger;
             _templateOptions = templateOptions;
             _shellSettings = shellSettings;
@@ -430,13 +429,12 @@ namespace OrchardCore.Search.Elasticsearch
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var context = new ElasticQueryContext(model.IndexName);
             var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
             var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions.Value))));
 
             try
             {
-                var elasticTopDocs = await _queryService.SearchAsync(context, tokenizedContent);
+                var elasticTopDocs = await _queryService.SearchAsync(model.IndexName, tokenizedContent);
 
                 if (elasticTopDocs != null)
                 {
