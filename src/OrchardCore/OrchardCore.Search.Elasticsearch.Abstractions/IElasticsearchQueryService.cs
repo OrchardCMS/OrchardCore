@@ -7,7 +7,7 @@ namespace OrchardCore.Search.Elasticsearch
     public interface IElasticSearchQueryService
     {
         /// <summary>
-        /// Provides a way to execute a search request in Elasticsearch based on a QueryContainer. 
+        /// Provides a way to execute a search request in Elasticsearch based on a <see cref="QueryContainer"/>. 
         /// </summary>
         /// <param name="indexName"></param>
         /// <param name="query"></param>

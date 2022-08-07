@@ -1,12 +1,13 @@
 using System.Threading.Tasks;
+using OrchardCore.Queries;
 
 namespace OrchardCore.Search.Elasticsearch
 {
     public interface IElasticQueryService
     {
         /// <summary>
-        /// <para>Provides a way to execute a search request in Elasticsearch based on a JSON string.</para>
-        /// <para>OC implementation deserializes that JSON string to an Elasticsearch SearchRequest.</para>
+        /// <para>Provides a way to execute an OC <see cref="Query"/> in Elasticsearch.</para>
+        /// <para>OC implementation deserializes the <see cref="Query"/> JSON string to an Elasticsearch SearchRequest.</para>
         /// <para>Also provides a way to return only specific fields:
         /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/7.17/search-fields.html#search-fields">The fields option</see>.
         /// </para>
