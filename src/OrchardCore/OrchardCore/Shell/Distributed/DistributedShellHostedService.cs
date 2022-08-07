@@ -331,7 +331,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     }
 
                     // Retrieve the remove identifier of this tenant from the distributed cache.
-                    var removeId = await distributedCache.GetStringAsync(ReloadIdKey(name));
+                    var removeId = await distributedCache.GetStringAsync(RemoveIdKey(name));
                     if (removeId != null)
                     {
                         // Initialize the remove identifier of this tenant in the local collection.
