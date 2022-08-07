@@ -11,17 +11,14 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 {
     public class ElasticQueryService : IElasticQueryService
     {
-        private readonly IEnumerable<IElasticQueryProvider> _queryProviders;
         private readonly IElasticClient _elasticClient;
         private readonly ILogger<ElasticQueryService> _logger;
 
         public ElasticQueryService(
-            IEnumerable<IElasticQueryProvider> queryProviders,
             IElasticClient elasticClient,
             ILogger<ElasticQueryService> logger
             )
         {
-            _queryProviders = queryProviders;
             _elasticClient = elasticClient;
             _logger = logger;
         }
