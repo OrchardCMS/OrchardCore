@@ -207,6 +207,12 @@ namespace OrchardCore.Environment.Shell.Distributed
                                 }
                             }
 
+                            // The 'Default' tenant can't be removed.
+                            if (settings.Name == ShellHelper.DefaultShellName)
+                            {
+                                continue;
+                            }
+
                             // Try to retrieve the remove identifier of this tenant from the distributed cache.
                             var removeId = await distributedCache.GetStringAsync(RemoveIdKey(settings.Name));
                             if (removeId != null)
@@ -464,6 +470,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// </summary>
         public async Task RemovingAsync(string name)
         {
+            // The 'Default' tenant can't be removed.
             if (_terminated || name == ShellHelper.DefaultShellName)
             {
                 return;
