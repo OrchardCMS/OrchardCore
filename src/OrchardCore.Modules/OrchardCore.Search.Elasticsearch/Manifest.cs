@@ -22,7 +22,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Search.Elasticsearch.Worker",
     Name = "Elasticsearch Worker",
-    Description = "Provides a background task to keep local indices in sync with other instances.",
+    Description = "Provides a background task to keep indices in sync with other instances.",
     Dependencies = new[] { "OrchardCore.Search.Elasticsearch" },
     Category = "Search"
 )]

@@ -52,7 +52,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public async Task ProcessContentItemsAsync(string indexName = default)
         {
-            // TODO: Lock over the filesystem in case two instances get a command to rebuild the index concurrently.
             var allIndices = new Dictionary<string, int>();
             var lastTaskId = Int32.MaxValue;
             IEnumerable<ElasticIndexSettings> indexSettingsList = null;
