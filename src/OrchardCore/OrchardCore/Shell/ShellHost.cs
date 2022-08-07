@@ -503,8 +503,7 @@ namespace OrchardCore.Environment.Shell
         {
             if (settings.Name == ShellHelper.DefaultShellName)
             {
-                throw new InvalidOperationException(
-                    $"The '{ShellHelper.DefaultShellName}' tenant can't be removed.");
+                throw new InvalidOperationException($"The '{ShellHelper.DefaultShellName}' tenant can't be removed.");
             }
 
             if (settings.State != TenantState.Uninitialized &&

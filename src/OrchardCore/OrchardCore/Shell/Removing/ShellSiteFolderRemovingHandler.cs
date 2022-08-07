@@ -43,6 +43,11 @@ public class ShellSiteFolderRemovingHandler : IShellRemovingHandler
         catch (Exception ex) when (ex is DirectoryNotFoundException)
         {
         }
+        catch (Exception ex) when ((ex.HResult & 0x0000FFFF) == 80)
+        {
+            // Sharing violation, may happen if multiple nodes share the same file system
+            // without using a distributed lock, in that case let another node do the job.
+        }
         catch (Exception ex)
         {
             _logger.LogError(
