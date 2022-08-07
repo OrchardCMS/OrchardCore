@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nest;
 using OrchardCore.Admin;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
@@ -210,6 +211,15 @@ namespace OrchardCore.Search.Elasticsearch
             services.AddTransient<IDeploymentSource, ElasticSettingsDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticSettingsDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticSettingsDeploymentStepDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Search.Elasticsearch.Worker")]
+    public class ElasticWorkerStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
         }
     }
 
