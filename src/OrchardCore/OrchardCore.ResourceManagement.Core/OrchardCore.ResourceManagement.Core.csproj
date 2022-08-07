@@ -5,7 +5,7 @@
     <RootNamespace>OrchardCore.ResourceManagement</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Roles Core</Title>
-    <Description>$(OCCMSDescription)
+    <Description>$(OCFrameworkDescription)
 
     Core implementation for ResourceManagement module.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
