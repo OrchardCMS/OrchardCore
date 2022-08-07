@@ -3,7 +3,7 @@ using OrchardCore.Search.Abstractions;
 namespace OrchardCore.Search.Elasticsearch.Core.Providers
 {
     /// <summary>
-    /// Provides a way to determine that an Elasticsearch SearchProvider is available to the current tenant.
+    /// Creates an Elasticsearch SearchProvider.
     /// </summary>
     internal class ElasticSearchProvider : SearchProvider
     {

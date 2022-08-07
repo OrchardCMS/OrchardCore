@@ -1,5 +1,8 @@
 namespace OrchardCore.Search.Abstractions
 {
+    /// <summary>
+    /// Provides a way to determine registered SearchProviders for a tenant
+    /// </summary>
     public abstract class SearchProvider
     {
         /// <summary>

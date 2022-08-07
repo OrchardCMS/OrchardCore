@@ -3,7 +3,7 @@ using OrchardCore.Search.Abstractions;
 namespace OrchardCore.Search.Lucene.Services
 {
     /// <summary>
-    /// Provides a way to determine that a Lucene SearchProvider is available to the current tenant.
+    /// Creates a Lucene SearchProvider.
     /// </summary>
     internal class LuceneSearchProvider : SearchProvider
     {
