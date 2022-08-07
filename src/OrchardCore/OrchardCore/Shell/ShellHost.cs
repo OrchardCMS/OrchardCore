@@ -501,6 +501,12 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         private void CheckCanRemoveShell(ShellSettings settings)
         {
+            if (settings.Name == ShellHelper.DefaultShellName)
+            {
+                throw new InvalidOperationException(
+                    $"The '{ShellHelper.DefaultShellName}' tenant can't be removed.");
+            }
+
             if (settings.State != TenantState.Uninitialized &&
                 (settings.State != TenantState.Disabled ||
                 _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0))
