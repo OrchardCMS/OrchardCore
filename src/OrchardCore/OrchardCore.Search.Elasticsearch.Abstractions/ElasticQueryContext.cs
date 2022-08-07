@@ -4,21 +4,13 @@ namespace OrchardCore.Search.Elasticsearch
 {
     public class ElasticQueryContext
     {
-        public ElasticQueryContext()
-        {
-
-        }
-
-        public ElasticQueryContext(string indexName)
+        public ElasticQueryContext(string indexName, IAnalyzer defaultAnalyzer)
         {
             IndexName = indexName;
+            DefaultAnalyzer = defaultAnalyzer;
         }
 
         public string IndexName { get; set; }
-
-        /// <summary>
-        /// The Analyzer later needs to be implemented from a list of Elasticsearch Analyzers
-        /// </summary>
         public IAnalyzer DefaultAnalyzer { get; }
 
         //We may need to have configurable index searcher
