@@ -26,7 +26,7 @@
     "postinstall": "run-s install:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.2",
+    "@babel/core": "^7.18.10",
     "@babel/preset-env": "^7.18.2",
     "@babel/preset-flow": "7.17.12",
     "all-contributors-cli": "^6.20.0",
