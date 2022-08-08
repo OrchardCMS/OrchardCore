@@ -4,6 +4,5 @@ namespace OrchardCore.Environment.Shell.Distributed
     {
         public string ReleaseId { get; set; }
         public string ReloadId { get; set; }
-        public string RemoveId { get; set; }
     }
 }
