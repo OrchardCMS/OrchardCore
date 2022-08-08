@@ -363,7 +363,7 @@ Our placement would look like this (note the `_Summary` suffix to ContentPart na
 }
 ```
 
-This setup would then show your template  (e.g. `GalleryPart.cshtml` or `GalleryPart.Summary.cshtml`) where DisplayAsync was called.
+This setup would then show your template  (e.g. `GalleryPart.cshtml` or `GalleryPart.Summary.cshtml`) where `DisplayAsync` was called.
 
 ## Video
 
