@@ -341,10 +341,9 @@ Dynamic parts use `ContentPart` shape for detail display with differentiator of 
 }
 ```
 
-This setup would then show your template (e.g. `GalleryPart.cshtml` or `GalleryPart.Detail.cshtml`) where DisplayAsync was called.
+This setup would then show your template (e.g. `GalleryPart.cshtml` or `GalleryPart.Detail.cshtml`) where `DisplayAsync` was called.
 
 If we would like to show the same part in a summary display content template (or any other that isn't `Detail` display type):
-
 
 === Content-Product.Summary.html
 ``` html
@@ -352,6 +351,7 @@ If we would like to show the same part in a summary display content template (or
 ```
 
 Our placement would look like this (note the `_Summary` suffix to ContentPart name; change your suffix accordingly):
+
 ``` json
 {
   "ContentPart_Summary": [
@@ -362,6 +362,7 @@ Our placement would look like this (note the `_Summary` suffix to ContentPart na
   ]
 }
 ```
+
 This setup would then show your template  (e.g. `GalleryPart.cshtml` or `GalleryPart.Summary.cshtml`) where DisplayAsync was called.
 
 ## Video
