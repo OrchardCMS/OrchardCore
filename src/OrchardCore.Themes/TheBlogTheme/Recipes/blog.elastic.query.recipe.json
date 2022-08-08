@@ -25,7 +25,7 @@
         {
           "Source": "Elasticsearch",
           "Name": "RecentBlogPosts",
-          "Index": "[js:tenantname().toLowerCase() + '-search']",
+          "Index": "[js:tenantname().toLowerCase() + '_search']",
           "Template": "[file:text('Snippets/recentBlogPosts.ElasticSearch.json')]",
           "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
           "ReturnContentItems": true
