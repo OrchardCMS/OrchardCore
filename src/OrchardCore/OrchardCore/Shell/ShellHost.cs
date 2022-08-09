@@ -61,7 +61,7 @@ namespace OrchardCore.Environment.Shell
                 return;
             }
 
-            // Prevent concurrent requests from creating all shells multiple times
+            // Prevent concurrent requests from creating all shells multiple times.
             await _initializingSemaphore.WaitAsync();
             try
             {

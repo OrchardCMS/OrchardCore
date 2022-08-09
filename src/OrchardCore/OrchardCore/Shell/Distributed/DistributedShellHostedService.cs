@@ -19,7 +19,7 @@ namespace OrchardCore.Environment.Shell.Distributed
     internal class DistributedShellHostedService : BackgroundService
     {
         private const string ShellChangedIdKey = "SHELL_CHANGED_ID";
-        private const string ShellCreatedIdKey = "SHELL_CREATED_ID";
+        private const string ShellCountChangedIdKey = "SHELL_COUNT_CHANGED_ID";
         private const string ReleaseIdKeySuffix = "_RELEASE_ID";
         private const string ReloadIdKeySuffix = "_RELOAD_ID";
 
@@ -37,7 +37,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
         private string _shellChangedId;
-        private string _shellCreatedId;
+        private string _shellCountChangedId;
 
         private ShellContext _defaultContext;
         private DistributedContext _context;
@@ -126,11 +126,11 @@ namespace OrchardCore.Environment.Shell.Distributed
                         continue;
                     }
 
-                    // Try to retrieve the tenant created (or removed) global identifier from the distributed cache.
-                    string shellCreatedId;
+                    // Try to retrieve the tenant list changed global identifier from the distributed cache.
+                    string shellCountChangedId;
                     try
                     {
-                        shellCreatedId = await distributedCache.GetStringAsync(ShellCreatedIdKey);
+                        shellCountChangedId = await distributedCache.GetStringAsync(ShellCountChangedIdKey);
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
@@ -138,27 +138,27 @@ namespace OrchardCore.Environment.Shell.Distributed
                         continue;
                     }
 
-                    // Retrieve all tenant settings that are already loaded or not yet removed locally.
-                    var allSettings = _shellHost.GetAllSettings().ToList();
+                    // Retrieve all tenant settings that are loaded locally.
+                    var loadedSettings = _shellHost.GetAllSettings().ToList();
+                    var tenantsToRemove = Array.Empty<string>();
 
                     // Check if at least one tenant has been created or removed.
-                    var removedSettingsNames = Array.Empty<string>();
-                    if (shellCreatedId != null && _shellCreatedId != shellCreatedId)
+                    if (shellCountChangedId != null && _shellCountChangedId != shellCountChangedId)
                     {
-                        var settingsNames = await _shellSettingsManager.LoadSettingsNamesAsync();
-                        var loadedSettingsNames = allSettings.Select(s => s.Name);
+                        var sharedTenants = await _shellSettingsManager.LoadSettingsNamesAsync();
+                        var loadedTenants = loadedSettings.Select(s => s.Name);
 
                         // Retrieve all new created tenants that are not already loaded.
-                        var newSettingsNames = settingsNames.Except(loadedSettingsNames).ToArray();
+                        var tenantsToLoad = sharedTenants.Except(loadedTenants).ToArray();
 
-                        // Load and enlist the settings of all new created tenant.
-                        foreach (var name in newSettingsNames)
+                        // Load all new created tenants.
+                        foreach (var tenant in tenantsToLoad)
                         {
-                            allSettings.Add(await _shellSettingsManager.LoadSettingsAsync(name));
+                            loadedSettings.Add(await _shellSettingsManager.LoadSettingsAsync(tenant));
                         }
 
                         // Retrieve all removed tenants that are not yet removed locally.
-                        removedSettingsNames = loadedSettingsNames.Except(settingsNames).ToArray();
+                        tenantsToRemove = loadedTenants.Except(sharedTenants).ToArray();
                     }
 
                     // Init the busy start time.
@@ -166,7 +166,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     var syncingSuccess = true;
 
                     // Keep in sync all tenants by checking their specific identifiers.
-                    foreach (var settings in allSettings)
+                    foreach (var settings in loadedSettings)
                     {
                         // Wait for the min idle time after the max busy time.
                         if (!await TryWaitAfterBusyTime(stoppingToken))
@@ -210,14 +210,8 @@ namespace OrchardCore.Environment.Shell.Distributed
                                 }
                             }
 
-                            // The 'Default' tenant can't be removed.
-                            if (settings.Name == ShellHelper.DefaultShellName)
-                            {
-                                continue;
-                            }
-
                             // Check if the tenant needs to be removed locally.
-                            if (removedSettingsNames.Contains(settings.Name))
+                            if (settings.Name != ShellHelper.DefaultShellName && tenantsToRemove.Contains(settings.Name))
                             {
                                 // The local resources can only be removed if the tenant is 'Disabled' or 'Uninitialized'.
                                 if (settings.State == TenantState.Disabled || settings.State == TenantState.Uninitialized)
@@ -233,6 +227,10 @@ namespace OrchardCore.Environment.Shell.Distributed
                                     {
                                         // Otherwise, keep in sync this tenant by removing the shell locally.
                                         await _shellHost.RemoveShellContextAsync(settings, eventSource: false);
+
+                                        // Cleanup local dictionaries.
+                                        _identifiers.TryRemove(settings.Name, out _);
+                                        _semaphores.TryRemove(settings.Name, out _);
                                     }
                                 }
                             }
@@ -253,7 +251,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     if (syncingSuccess)
                     {
                         _shellChangedId = shellChangedId;
-                        _shellCreatedId = shellCreatedId;
+                        _shellCountChangedId = shellCountChangedId;
                     }
                 }
                 catch (Exception ex) when (!ex.IsFatal())
@@ -299,7 +297,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             {
                 // Retrieve the tenant global identifiers from the distributed cache.
                 var shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey);
-                var shellCreatedId = await distributedCache.GetStringAsync(ShellCreatedIdKey);
+                var shellCountChangedId = await distributedCache.GetStringAsync(ShellCountChangedIdKey);
 
                 // Retrieve the names of all the tenants.
                 var names = await _shellSettingsManager.LoadSettingsNamesAsync();
@@ -326,7 +324,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
                 // Keep in sync the tenant global identifiers.
                 _shellChangedId = shellChangedId;
-                _shellCreatedId = shellCreatedId;
+                _shellCountChangedId = shellCountChangedId;
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
@@ -427,7 +425,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                 if (name != ShellHelper.DefaultShellName && !_shellHost.TryGetSettings(name, out _))
                 {
                     // Also update the global identifier specifying that a tenant has been created.
-                    await distributedCache.SetStringAsync(ShellCreatedIdKey, identifier.ReloadId);
+                    await distributedCache.SetStringAsync(ShellCountChangedIdKey, identifier.ReloadId);
                 }
 
                 // Also update the global identifier specifying that a tenant has changed.
@@ -477,8 +475,8 @@ namespace OrchardCore.Environment.Shell.Distributed
             {
                 var removedId = IdGenerator.GenerateId();
 
-                // For a tenant removal use the same global identifier as for a new tenant.
-                await distributedCache.SetStringAsync(ShellCreatedIdKey, removedId);
+                // Also update the global identifier specifying that a tenant has been removed.
+                await distributedCache.SetStringAsync(ShellCountChangedIdKey, removedId);
 
                 // Also update the global identifier specifying that a tenant has changed.
                 await distributedCache.SetStringAsync(ShellChangedIdKey, removedId);
