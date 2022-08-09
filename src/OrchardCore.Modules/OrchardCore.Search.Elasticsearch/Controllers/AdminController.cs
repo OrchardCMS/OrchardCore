@@ -273,7 +273,7 @@ namespace OrchardCore.Search.Elasticsearch
                 return NotFound();
             }
 
-            _elasticIndexingService.ResetIndex(id);
+            await _elasticIndexingService.ResetIndex(id);
             await _elasticIndexingService.ProcessContentItemsAsync(id);
 
             await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", id]);
@@ -464,7 +464,7 @@ namespace OrchardCore.Search.Elasticsearch
                                 return NotFound();
                             }
 
-                            _elasticIndexingService.ResetIndex(item.IndexName);
+                            await _elasticIndexingService.ResetIndex(item.IndexName);
                             await _elasticIndexingService.ProcessContentItemsAsync(item.IndexName);
 
                             await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", _indexPrefix + item.IndexName]);

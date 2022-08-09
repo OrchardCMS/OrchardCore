@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
 using Microsoft.Extensions.Logging;
@@ -74,9 +75,17 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     indexSettingsDescriptor.Analysis(an => analysisDescriptor);
                 }
 
+                // Custom metadata to store the last indexing task id
+                var IndexingState = new FluentDictionary<string, object>() {
+                    { "last_task_id", 0 }
+                };
+
                 var createIndexDescriptor = new CreateIndexDescriptor(_indexPrefix + elasticIndexSettings.IndexName)
                     .Settings(s => indexSettingsDescriptor)
-                    .Map(m => m.SourceField(s => s.Enabled(elasticIndexSettings.StoreSourceData)));
+                    .Map(m => m
+                        .Meta(me => IndexingState)
+                        .SourceField(s => s
+                            .Enabled(elasticIndexSettings.StoreSourceData)));
 
                 var response = await _elasticClient.Indices.CreateAsync(createIndexDescriptor);
 
@@ -92,6 +101,45 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         {
             var response = await _elasticClient.LowLevel.Indices.GetMappingAsync<StringResponse>(_indexPrefix + indexName);
             return response.Body;
+        }
+
+        /// <summary>
+        /// Store a last_task_id in the Elasticsearch index _meta mappings.
+        /// This allows storing the last indexing task id executed on the index.
+        /// </summary>
+        /// <param name="indexName"></param>
+        /// <param name="lastTaskId"></param>
+        /// <returns></returns>
+        public async Task SetLastTaskId(string indexName, int lastTaskId)
+        {
+            var IndexingState = new FluentDictionary<string, object>() {
+                { "last_task_id", lastTaskId }
+            };
+
+            var putMappingRequest = new PutMappingRequest(_indexPrefix + indexName)
+            {
+                Meta = IndexingState
+            };
+
+            await _elasticClient.Indices.PutMappingAsync(putMappingRequest);
+        }
+
+        /// <summary>
+        /// Get a last_task_id in the Elasticsearch index _meta mappings.
+        /// This allows retrieving the last indexing task id executed on the index.
+        /// </summary>
+        /// <param name="indexName"></param>
+        /// <returns></returns>
+        public async Task<int> GetLastTaskId(string indexName)
+        {
+            var jsonDocument = JsonDocument.Parse(await GetIndexMappings(indexName));
+            jsonDocument.RootElement.TryGetProperty(_indexPrefix + indexName, out var jsonElement);
+            jsonElement.TryGetProperty("mappings", out var mappings);
+            mappings.TryGetProperty("_meta", out var meta);
+            meta.TryGetProperty("last_task_id", out var lastTaskId);
+            lastTaskId.TryGetInt32(out var intValue);
+
+            return intValue;
         }
 
         public async Task<bool> DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)

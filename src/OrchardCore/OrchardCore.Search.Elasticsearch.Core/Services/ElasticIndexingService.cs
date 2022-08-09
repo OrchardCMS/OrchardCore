@@ -23,7 +23,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         private const int BatchSize = 100;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly ElasticIndexingState _indexingState;
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
         private readonly ElasticIndexManager _indexManager;
         private readonly IIndexingTaskManager _indexingTaskManager;
@@ -33,7 +32,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         public ElasticIndexingService(
             IShellHost shellHost,
             ShellSettings shellSettings,
-            ElasticIndexingState indexingState,
             ElasticIndexSettingsService elasticIndexSettingsService,
             ElasticIndexManager indexManager,
             IIndexingTaskManager indexingTaskManager,
@@ -42,7 +40,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            _indexingState = indexingState;
             _elasticIndexSettingsService = elasticIndexSettingsService;
             _indexManager = indexManager;
             _indexingTaskManager = indexingTaskManager;
@@ -52,7 +49,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public async Task ProcessContentItemsAsync(string indexName = default)
         {
-            var allIndices = new Dictionary<string, int>();
+            var allIndices = new Dictionary<string, long>();
             var lastTaskId = Int32.MaxValue;
             IEnumerable<ElasticIndexSettings> indexSettingsList = null;
 
@@ -68,7 +65,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 // Find the lowest task id to process
                 foreach (var indexSetting in indexSettingsList)
                 {
-                    var taskId = _indexingState.GetLastTaskId(indexSetting.IndexName);
+                    var taskId = await _indexManager.GetLastTaskId(indexSetting.IndexName);
                     lastTaskId = Math.Min(lastTaskId, taskId);
                     allIndices.Add(indexSetting.IndexName, taskId);
                 }
@@ -84,7 +81,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 indexSettingsList = new ElasticIndexSettings[1] { settings }.AsEnumerable();
 
-                var taskId = _indexingState.GetLastTaskId(indexName);
+                var taskId = await _indexManager.GetLastTaskId(indexName);
                 lastTaskId = Math.Min(lastTaskId, taskId);
                 allIndices.Add(indexName, taskId);
             }
@@ -223,11 +220,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     {
                         if (indexStatus.Value < lastTaskId)
                         {
-                            _indexingState.SetLastTaskId(indexStatus.Key, lastTaskId);
+                            await _indexManager.SetLastTaskId(indexStatus.Key, lastTaskId);
                         }
                     }
 
-                    _indexingState.Update();
+                    //_indexingState.Update();
                 });
             } while (batch.Length == BatchSize);
         }
@@ -273,10 +270,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// Restarts the indexing process from the beginning in order to update
         /// current content items. It doesn't delete existing entries from the index.
         /// </summary>
-        public void ResetIndex(string indexName)
+        public async Task ResetIndex(string indexName)
         {
-            _indexingState.SetLastTaskId(indexName, 0);
-            _indexingState.Update();
+            await _indexManager.SetLastTaskId(indexName, 0);
         }
 
         /// <summary>
@@ -286,7 +282,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         {
             await _indexManager.DeleteIndex(elasticIndexSettings.IndexName);
             await _indexManager.CreateIndexAsync(elasticIndexSettings);
-            ResetIndex(elasticIndexSettings.IndexName);
+            await ResetIndex(elasticIndexSettings.IndexName);
         }
 
         public async Task<ElasticSettings> GetElasticSettingsAsync()
