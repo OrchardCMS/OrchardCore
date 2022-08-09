@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Elasticsearch.Net;
 using Microsoft.Extensions.Logging;
 using Nest;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -19,6 +20,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
     {
         private readonly IElasticClient _elasticClient;
         private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
+        private readonly string _indexPrefix;
         private readonly IClock _clock;
         private readonly ILogger _logger;
         private bool _disposing;
@@ -28,12 +30,14 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public ElasticIndexManager(
             IElasticClient elasticClient,
+            ShellSettings shellSettings,
             ElasticAnalyzerManager elasticAnalyzerManager,
             IClock clock,
             ILogger<ElasticIndexManager> logger
             )
         {
             _elasticClient = elasticClient;
+            _indexPrefix = shellSettings.Name.ToLowerInvariant() + "_";
             _elasticAnalyzerManager = elasticAnalyzerManager;
             _clock = clock;
             _logger = logger;
@@ -63,8 +67,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 if (analyzers.Any())
                 {
                     var currentAnalyzer = analyzers.FirstOrDefault(a => a.Name == elasticIndexSettings.AnalyzerName).CreateAnalyzer();
-                    var currentAnalyzerType = currentAnalyzer.Type;
-
                     analyzersDescriptor = new AnalyzersDescriptor();
                     analysisDescriptor.Analyzers(a => a.UserDefined(elasticIndexSettings.AnalyzerName, currentAnalyzer));
 
@@ -72,7 +74,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     indexSettingsDescriptor.Analysis(an => analysisDescriptor);
                 }
 
-                var createIndexDescriptor = new CreateIndexDescriptor(elasticIndexSettings.IndexName)
+                var createIndexDescriptor = new CreateIndexDescriptor(_indexPrefix + elasticIndexSettings.IndexName)
                     .Settings(s => indexSettingsDescriptor)
                     .Map(m => m.SourceField(s => s.Enabled(elasticIndexSettings.StoreSourceData)));
 
@@ -88,7 +90,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public async Task<string> GetIndexMappings(string indexName)
         {
-            var response = await _elasticClient.LowLevel.Indices.GetMappingAsync<StringResponse>(indexName);
+            var response = await _elasticClient.LowLevel.Indices.GetMappingAsync<StringResponse>(_indexPrefix + indexName);
             return response.Body;
         }
 
@@ -102,7 +104,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 foreach (var id in contentItemIds)
                     descriptor.Delete<Dictionary<string, object>>(d => d
-                        .Index(indexName)
+                        .Index(_indexPrefix + indexName)
                         .Id(id)
                     );
 
@@ -123,7 +125,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         {
             if (await Exists(indexName))
             {
-                var result = await _elasticClient.Indices.DeleteAsync(indexName);
+                var result = await _elasticClient.Indices.DeleteAsync(_indexPrefix + indexName);
                 return result.Acknowledged;
             }
             else
@@ -132,14 +134,19 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             }
         }
 
+        /// <summary>
+        /// Verify if an index exists for the current tenant.
+        /// </summary>
+        /// <param name="indexName"></param>
+        /// <returns></returns>
         public async Task<bool> Exists(string indexName)
         {
-            if (String.IsNullOrWhiteSpace(indexName))
+            if (String.IsNullOrWhiteSpace(_indexPrefix + indexName))
             {
                 return false;
             }
 
-            var existResponse = await _elasticClient.Indices.ExistsAsync(indexName);
+            var existResponse = await _elasticClient.Indices.ExistsAsync(_indexPrefix + indexName);
 
             return existResponse.Exists;
         }
@@ -162,7 +169,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     descriptor.Index<Dictionary<string, object>>(op => op
                         .Id(document.GetValueOrDefault("ContentItemId").ToString())
                         .Document(document)
-                        .Index(indexName)
+                        .Index(_indexPrefix + indexName)
                     );
                 }
 
@@ -190,7 +197,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
             if (await Exists(indexName))
             {
-                var searchRequest = new SearchRequest(indexName)
+                var searchRequest = new SearchRequest(_indexPrefix + indexName)
                 {
                     Query = query,
                     From = from,
@@ -206,7 +213,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
                 }
 
-                _timestamps[indexName] = _clock.UtcNow;
+                _timestamps[_indexPrefix + indexName] = _clock.UtcNow;
             }
 
             return elasticTopDocs;
@@ -223,7 +230,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             {
                 await elasticClient(_elasticClient);
 
-                _timestamps[indexName] = _clock.UtcNow;
+                _timestamps[_indexPrefix + indexName] = _clock.UtcNow;
             }
         }
 

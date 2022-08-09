@@ -6,19 +6,23 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nest;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services
 {
     public class ElasticQueryService : IElasticQueryService
     {
+        private readonly string _indexPrefix;
         private readonly IElasticClient _elasticClient;
         private readonly ILogger<ElasticQueryService> _logger;
 
         public ElasticQueryService(
             IElasticClient elasticClient,
+            ShellSettings shellSettings,
             ILogger<ElasticQueryService> logger
             )
         {
+            _indexPrefix = shellSettings.Name.ToLowerInvariant() + "_";
             _elasticClient = elasticClient;
             _logger = logger;
         }
@@ -36,7 +40,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             {
                 var deserializedSearchRequest = _elasticClient.RequestResponseSerializer.Deserialize<SearchRequest>(new MemoryStream(Encoding.UTF8.GetBytes(query)));
 
-                var searchRequest = new SearchRequest(indexName)
+                var searchRequest = new SearchRequest(_indexPrefix + indexName)
                 {
                     Query = deserializedSearchRequest.Query,
                     From = deserializedSearchRequest.From,

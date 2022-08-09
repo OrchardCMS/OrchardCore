@@ -21,7 +21,7 @@
       "name": "elasticsearch-index",
       "Indices": [
         {
-          "default_search": {
+          "search": {
             "AnalyzerName": "standardanalyzer",
             "IndexLatest": false,
             "IndexedContentTypes": [

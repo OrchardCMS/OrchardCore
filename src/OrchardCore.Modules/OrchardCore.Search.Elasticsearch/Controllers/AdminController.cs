@@ -52,7 +52,7 @@ namespace OrchardCore.Search.Elasticsearch
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
         private readonly IOptions<TemplateOptions> _templateOptions;
-        private readonly ShellSettings _shellSettings;
+        private readonly string _indexPrefix;
 
         public AdminController(
             ISession session,
@@ -92,7 +92,7 @@ namespace OrchardCore.Search.Elasticsearch
             _notifier = notifier;
             _logger = logger;
             _templateOptions = templateOptions;
-            _shellSettings = shellSettings;
+            _indexPrefix = shellSettings.Name.ToLowerInvariant() + "_";
         }
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
@@ -194,43 +194,20 @@ namespace OrchardCore.Search.Elasticsearch
                 return Forbid();
             }
 
-            var nameWasSplit = false;
-            //This was needed to work-around the name validation
-            if (!String.IsNullOrEmpty(model.IndexName))
-            {
-                //Just before validation we remove shellName
-                var indexNameParts = model.IndexName.Split("_");
-                if (indexNameParts.Length >= 1)
-                {
-                    if (indexNameParts[0].ToLower() == _shellSettings.Name.ToLower())
-                    {
-                        model.IndexName = indexNameParts[1];
-                        nameWasSplit = true;
-                    }
-                }
-            }
-
             ValidateModel(model);
 
             if (model.IsCreate)
             {
-                //We will need to add ShellName here to keep the indexes unique/Scoped
-                model.IndexName = $"{_shellSettings.Name}_{model.IndexName}".ToLower();
-
                 if (await _elasticIndexManager.Exists(model.IndexName))
                 {
-                    ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["An index named {0} already exists.", model.IndexName]);
+                    ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["An index named {0} already exists.", _indexPrefix + model.IndexName]);
                 }
             }
             else
             {
-                if (nameWasSplit)
-                {
-                    model.IndexName = $"{_shellSettings.Name}_{model.IndexName}".ToLower();
-                }
                 if (!await _elasticIndexManager.Exists(model.IndexName))
                 {
-                    ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exist.", model.IndexName]);
+                    ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exist.", _indexPrefix + model.IndexName]);
                 }
             }
 
@@ -260,7 +237,7 @@ namespace OrchardCore.Search.Elasticsearch
                     return View(model);
                 }
 
-                await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", model.IndexName]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", _indexPrefix + model.IndexName]);
             }
             else
             {
@@ -277,7 +254,7 @@ namespace OrchardCore.Search.Elasticsearch
                     return View(model);
                 }
 
-                await _notifier.SuccessAsync(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", model.IndexName]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", _indexPrefix + model.IndexName]);
             }
 
             return RedirectToAction("Index");
@@ -335,7 +312,7 @@ namespace OrchardCore.Search.Elasticsearch
 
             if (!await _elasticIndexManager.Exists(model.IndexName))
             {
-                await _notifier.SuccessAsync(H["Index not found on Elasticsearch server.", model.IndexName]);
+                await _notifier.SuccessAsync(H["Index not found on Elasticsearch server.", _indexPrefix + model.IndexName]);
                 return RedirectToAction("Index");
             }
 
@@ -343,12 +320,12 @@ namespace OrchardCore.Search.Elasticsearch
             {
                 await _elasticIndexingService.DeleteIndexAsync(model.IndexName);
 
-                await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", _indexPrefix + model.IndexName]);
             }
             catch (Exception e)
             {
                 await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
-                _logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
+                _logger.LogError("An error occurred while deleting the index " + _indexPrefix + model.IndexName, e);
             }
 
             return RedirectToAction("Index");
@@ -366,12 +343,12 @@ namespace OrchardCore.Search.Elasticsearch
             {
                 await _elasticIndexingService.DeleteIndexAsync(model.IndexName);
 
-                await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", _indexPrefix + model.IndexName]);
             }
             catch (Exception e)
             {
                 await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
-                _logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
+                _logger.LogError("An error occurred while deleting the index " + _indexPrefix + model.IndexName, e);
             }
 
             return RedirectToAction("Index");
@@ -381,7 +358,7 @@ namespace OrchardCore.Search.Elasticsearch
         {
             var mappings = await _elasticIndexManager.GetIndexMappings(indexName);
             var formattedJson = JValue.Parse(mappings).ToString(Formatting.Indented);
-            return View(new MappingsViewModel { IndexName = indexName, Mappings = formattedJson });
+            return View(new MappingsViewModel { IndexName = _indexPrefix + indexName, Mappings = formattedJson });
         }
 
         public Task<IActionResult> Query(string indexName, string query)
@@ -490,7 +467,7 @@ namespace OrchardCore.Search.Elasticsearch
                             _elasticIndexingService.ResetIndex(item.IndexName);
                             await _elasticIndexingService.ProcessContentItemsAsync(item.IndexName);
 
-                            await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", item.IndexName]);
+                            await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", _indexPrefix + item.IndexName]);
                         }
                         break;
                     case ContentsBulkAction.Rebuild:
@@ -503,7 +480,7 @@ namespace OrchardCore.Search.Elasticsearch
 
                             await _elasticIndexingService.RebuildIndexAsync(await _elasticIndexSettingsService.GetSettingsAsync(item.IndexName));
                             await _elasticIndexingService.ProcessContentItemsAsync(item.IndexName);
-                            await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", item.IndexName]);
+                            await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", _indexPrefix + item.IndexName]);
                         }
                         break;
                     default:
@@ -516,7 +493,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         private void ValidateModel(ElasticIndexSettingsViewModel model)
         {
-            if (model.IndexedContentTypes == null || model.IndexedContentTypes.Count() < 1)
+            if (model.IndexedContentTypes == null || model.IndexedContentTypes.Length < 1)
             {
                 ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexedContentTypes), S["At least one content type selection is required."]);
             }
@@ -525,7 +502,7 @@ namespace OrchardCore.Search.Elasticsearch
             {
                 ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["The index name is required."]);
             }
-            else if (model.IndexName.ToSafeName() != model.IndexName)
+            else if (model.IndexName.ToSafeName().ToLowerInvariant() != model.IndexName)
             {
                 ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["The index name contains unallowed chars."]);
             }
