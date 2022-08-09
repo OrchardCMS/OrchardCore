@@ -105,7 +105,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         /// <summary>
         /// Store a last_task_id in the Elasticsearch index _meta mappings.
-        /// This allows storing the last indexing task id executed on the index.
+        /// This allows storing the last indexing task id executed on the Elasticsearch index.
+        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-meta-field.html"/>
         /// </summary>
         /// <param name="indexName"></param>
         /// <param name="lastTaskId"></param>
