@@ -198,7 +198,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     // Delete all the existing documents
                     foreach (var index in updatedDocumentsByIndex)
                     {
-                        await _indexManager.DeleteAllDocumentsAsync(index.Key);
+                        var deletedDocuments = updatedDocumentsByIndex[index.Key].Select(x => x.ContentItemId);
+                        await _indexManager.DeleteDocumentsAsync(index.Key, deletedDocuments);
                     }
 
                     // Submits all the new documents to the index
