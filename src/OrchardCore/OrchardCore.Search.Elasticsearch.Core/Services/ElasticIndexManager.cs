@@ -16,7 +16,7 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 namespace OrchardCore.Search.Elasticsearch.Core.Services
 {
     /// <summary>
-    /// Provides methods to manage physical Elasticsearch indices.
+    /// Provides methods to manage Elasticsearch indices.
     /// </summary>
     public class ElasticIndexManager : IDisposable
     {
