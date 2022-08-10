@@ -56,7 +56,7 @@ namespace OrchardCore.Search.Elasticsearch
             var configuration = _shellConfiguration.GetSection(ConfigSectionName);
             var elasticConfiguration = configuration.Get<ElasticConnectionOptions>();
 
-            if (configuration.Exists() && CheckOptions(elasticConfiguration.Url, elasticConfiguration.Ports, _logger))
+            if (CheckOptions(elasticConfiguration, _logger))
             {
                 services.Configure<ElasticConnectionOptions>(o => o.ConfigurationExists = true);
 
@@ -181,17 +181,23 @@ namespace OrchardCore.Search.Elasticsearch
             );
         }
 
-        private static bool CheckOptions(string url, int[] ports, ILogger logger)
+        private static bool CheckOptions(ElasticConnectionOptions elasticConnectionOptions, ILogger logger)
         {
             var optionsAreValid = true;
 
-            if (String.IsNullOrWhiteSpace(url))
+            if (elasticConnectionOptions == null)
+            {
+                logger.LogError("Elasticsearch is enabled but not active because the configuration is missing.");
+                return false;
+            }
+
+            if (String.IsNullOrWhiteSpace(elasticConnectionOptions.Url))
             {
                 logger.LogError("Elasticsearch is enabled but not active because the 'Url' is missing or empty in application configuration.");
                 optionsAreValid = false;
             }
 
-            if (ports.Length == 0)
+            if (elasticConnectionOptions.Ports.Length == 0)
             {
                 logger.LogError("Elasticsearch is enabled but not active because a port is missing in application configuration.");
                 optionsAreValid = false;
