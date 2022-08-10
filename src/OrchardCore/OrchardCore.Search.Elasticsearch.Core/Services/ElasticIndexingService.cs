@@ -218,7 +218,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                             await _indexManager.SetLastTaskId(indexStatus.Key, lastTaskId);
                         }
                     }
-                });
+                    
+                }, activateShell: false);
             } while (batch.Length == BatchSize);
         }
 

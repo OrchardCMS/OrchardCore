@@ -38,9 +38,7 @@ namespace OrchardCore.Search.Elasticsearch
                         if (!await indexManager.Exists(settings.IndexName))
                         {
                             await elasticIndexingService.CreateIndexAsync(settings);
-
-                            // TODO: fix execution of shellscope
-                            //await elasticIndexingService.ProcessContentItemsAsync(settings.IndexName);
+                            await elasticIndexingService.ProcessContentItemsAsync(settings.IndexName);
                         }
                     }
                 });
