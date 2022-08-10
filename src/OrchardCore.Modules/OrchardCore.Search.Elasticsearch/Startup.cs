@@ -51,7 +51,7 @@ namespace OrchardCore.Search.Elasticsearch
             _logger = logger;
         }
 
-        public override void ConfigureServices(IServiceCollection services)
+        public override async void ConfigureServices(IServiceCollection services)
         {
             var configuration = _shellConfiguration.GetSection(ConfigSectionName);
             var elasticConfiguration = configuration.Get<ElasticConnectionOptions>();
@@ -131,6 +131,15 @@ namespace OrchardCore.Search.Elasticsearch
                 services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
                 services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
                 services.AddElasticServices();
+
+                try
+                {
+                    var response = await client.PingAsync();
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError(ex, "Elasticsearch is enabled but not active because the connection failed. {message}", ex.Message);
+                }
             }
         }
 
