@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Modules;
 using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Search.Abstractions;
@@ -22,11 +23,12 @@ namespace OrchardCore.Search.Elasticsearch
             services.AddSingleton<ElasticIndexManager>();
             services.AddSingleton<ElasticAnalyzerManager>();
             services.AddScoped<ElasticIndexingService>();
+            services.AddScoped<IModularTenantEvents, ElasticIndexInitializerService>();
             services.AddScoped<IElasticSearchQueryService, ElasticSearchQueryService>();
             services.AddScoped<IElasticQueryService, ElasticQueryService>();
             services.AddScoped<IContentHandler, ElasticIndexingContentHandler>();
 
-            // LuceneQuerySource is registered for both the Queries module and local usage
+            // ElasticQuerySource is registered for both the Queries module and local usage
             services.AddScoped<IQuerySource, ElasticQuerySource>();
             services.AddScoped<ElasticQuerySource>();
             services.AddRecipeExecutionStep<ElasticIndexStep>();
