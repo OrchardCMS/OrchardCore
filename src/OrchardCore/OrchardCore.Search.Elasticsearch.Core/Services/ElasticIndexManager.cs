@@ -218,6 +218,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         }
 
         /// <summary>
+        /// Makes sure that the index names are compliant with Elasticsearch specifications.
         /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html#indices-create-api-path-params"/>
         /// </summary>
         /// <param name="indexName"></param>
@@ -231,20 +232,25 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 indexName = indexName.Remove(0, 1);
             }
 
-            indexName = indexName.Replace("\\", String.Empty);
-            indexName = indexName.Replace("/", String.Empty);
-            indexName = indexName.Replace("*", String.Empty);
-            indexName = indexName.Replace("\"", String.Empty);
-            indexName = indexName.Replace("|", String.Empty);
-            indexName = indexName.Replace("<", String.Empty);
-            indexName = indexName.Replace(">", String.Empty);
-            indexName = indexName.Replace("`", String.Empty);
-            indexName = indexName.Replace("'", String.Empty);
-            indexName = indexName.Replace(" ", String.Empty);
-            indexName = indexName.Replace("#", String.Empty);
-            indexName = indexName.Replace(":", String.Empty);
-            indexName = indexName.Replace(".", String.Empty);
+            var charsToRemove = new List<char>();
+            charsToRemove.AddRange(new List<char>(){ 
+                '\\',
+                '/',
+                '*',
+                '\"',
+                '|',
+                '<',
+                '>',
+                '`',
+                '\'',
+                ' ',
+                '#',
+                ':',
+                '.',
+            });
 
+            charsToRemove.ForEach(c => indexName = indexName.Replace(c.ToString(), String.Empty));
+            
             return indexName;
         }
 
