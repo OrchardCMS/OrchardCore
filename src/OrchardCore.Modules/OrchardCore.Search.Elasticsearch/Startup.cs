@@ -51,7 +51,7 @@ namespace OrchardCore.Search.Elasticsearch
             _logger = logger;
         }
 
-        public override async void ConfigureServices(IServiceCollection services)
+        public override void ConfigureServices(IServiceCollection services)
         {
             var configuration = _shellConfiguration.GetSection(ConfigSectionName);
             var elasticConfiguration = configuration.Get<ElasticConnectionOptions>();
@@ -120,7 +120,7 @@ namespace OrchardCore.Search.Elasticsearch
 
                 try
                 {
-                    var response = await client.PingAsync();
+                    var response = client.Ping();
                     
                     services.Configure<TemplateOptions>(o =>
                     {

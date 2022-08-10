@@ -231,25 +231,19 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 indexName = indexName.Remove(0, 1);
             }
 
-            var replacements = new Dictionary<string, string>() {
-                { "\\", String.Empty },
-                { "/", String.Empty },
-                { "*", String.Empty },
-                { "?", String.Empty },
-                { "\"", String.Empty },
-                { "<", String.Empty },
-                { ">", String.Empty },
-                { "|", String.Empty },
-                { "`", String.Empty },
-                { "'", String.Empty },
-                { " ", String.Empty },
-                { ",", String.Empty },
-                { "#", String.Empty },
-                { ":", String.Empty },
-            };
-
-            var pattern = $"{String.Join("|", replacements.Keys)}";
-            Regex.Replace(indexName, pattern, match => replacements[match.Value]);
+            indexName = indexName.Replace("\\", String.Empty);
+            indexName = indexName.Replace("/", String.Empty);
+            indexName = indexName.Replace("*", String.Empty);
+            indexName = indexName.Replace("\"", String.Empty);
+            indexName = indexName.Replace("|", String.Empty);
+            indexName = indexName.Replace("<", String.Empty);
+            indexName = indexName.Replace(">", String.Empty);
+            indexName = indexName.Replace("`", String.Empty);
+            indexName = indexName.Replace("'", String.Empty);
+            indexName = indexName.Replace(" ", String.Empty);
+            indexName = indexName.Replace("#", String.Empty);
+            indexName = indexName.Replace(":", String.Empty);
+            indexName = indexName.Replace(".", String.Empty);
 
             return indexName;
         }
