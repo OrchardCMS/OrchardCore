@@ -22,7 +22,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -325,7 +324,7 @@ namespace OrchardCore.Search.Elasticsearch
             catch (Exception e)
             {
                 await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
-                _logger.LogError("An error occurred while deleting the index " + _indexPrefix + model.IndexName, e);
+                _logger.LogError(e, "An error occurred while deleting the index {indexname}", _indexPrefix + model.IndexName);
             }
 
             return RedirectToAction("Index");
@@ -348,7 +347,7 @@ namespace OrchardCore.Search.Elasticsearch
             catch (Exception e)
             {
                 await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
-                _logger.LogError("An error occurred while deleting the index " + _indexPrefix + model.IndexName, e);
+                _logger.LogError(e, "An error occurred while deleting the index {indexName}", _indexPrefix + model.IndexName);
             }
 
             return RedirectToAction("Index");
@@ -502,7 +501,7 @@ namespace OrchardCore.Search.Elasticsearch
             {
                 ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["The index name is required."]);
             }
-            else if (model.IndexName.ToSafeName().ToLowerInvariant() != model.IndexName)
+            else if (ElasticIndexManager.ToSafeIndexName(model.IndexName) != model.IndexName)
             {
                 ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["The index name contains unallowed chars."]);
             }

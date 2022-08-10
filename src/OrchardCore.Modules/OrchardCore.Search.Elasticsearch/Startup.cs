@@ -53,8 +53,6 @@ namespace OrchardCore.Search.Elasticsearch
 
         public override async void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IPermissionProvider, Permissions>();
-
             var configuration = _shellConfiguration.GetSection(ConfigSectionName);
             var elasticConfiguration = configuration.Get<ElasticConnectionOptions>();
 
@@ -132,6 +130,7 @@ namespace OrchardCore.Search.Elasticsearch
                     });
 
                     services.AddElasticServices();
+                    services.AddScoped<IPermissionProvider, Permissions>();
                     services.AddScoped<INavigationProvider, AdminMenu>();
                     services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
                     services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();

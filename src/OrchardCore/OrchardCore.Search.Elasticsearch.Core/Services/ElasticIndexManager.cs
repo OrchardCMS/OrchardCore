@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
 using Microsoft.Extensions.Logging;
@@ -214,6 +215,43 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             var existResponse = await _elasticClient.Indices.ExistsAsync(_indexPrefix + indexName);
 
             return existResponse.Exists;
+        }
+
+        /// <summary>
+        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html#indices-create-api-path-params"/>
+        /// </summary>
+        /// <param name="indexName"></param>
+        /// <returns></returns>
+        public static string ToSafeIndexName(string indexName)
+        {
+            indexName = indexName.ToLowerInvariant();
+
+            if (indexName[0] == '-' || indexName[0] == '_' || indexName[0] == '+' || indexName[0] == '.')
+            {
+                indexName = indexName.Remove(0, 1);
+            }
+
+            var replacements = new Dictionary<string, string>() {
+                { "\\", String.Empty },
+                { "/", String.Empty },
+                { "*", String.Empty },
+                { "?", String.Empty },
+                { "\"", String.Empty },
+                { "<", String.Empty },
+                { ">", String.Empty },
+                { "|", String.Empty },
+                { "`", String.Empty },
+                { "'", String.Empty },
+                { " ", String.Empty },
+                { ",", String.Empty },
+                { "#", String.Empty },
+                { ":", String.Empty },
+            };
+
+            var pattern = $"{String.Join("|", replacements.Keys)}";
+            Regex.Replace(indexName, pattern, match => replacements[match.Value]);
+
+            return indexName;
         }
 
         public async Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
