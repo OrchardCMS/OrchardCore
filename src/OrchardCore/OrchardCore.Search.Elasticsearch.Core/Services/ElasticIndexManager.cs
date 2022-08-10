@@ -170,6 +170,22 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             return success;
         }
 
+        /// <summary>
+        /// Deletes all documents in an index in one request.
+        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/docs-delete-by-query.html"/>
+        /// </summary>
+        /// <param name="indexName"></param>
+        /// <returns></returns>
+        public async Task<bool> DeleteAllDocumentsAsync(string indexName)
+        {
+            var response = await _elasticClient.DeleteByQueryAsync<Dictionary<string, object>>(del => del
+                .Index(_indexPrefix + indexName)
+                .Query(q => q.MatchAll())
+            );
+
+            return response.IsValid;
+        }
+
         public async Task<bool> DeleteIndex(string indexName)
         {
             if (await Exists(indexName))

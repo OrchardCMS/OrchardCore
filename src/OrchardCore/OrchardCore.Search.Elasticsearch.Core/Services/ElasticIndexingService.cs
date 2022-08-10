@@ -195,17 +195,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         }
                     }
 
-                    // Commented because we can't delete a document that is not already stored.
-                    // We can delete only after the document is committed once.
-                    // We let the ElasticIndexingContentHandler do it.
-
                     // Delete all the existing documents
-                    //foreach (var index in updatedDocumentsByIndex)
-                    //{
-                    //    var deletedDocuments = updatedDocumentsByIndex[index.Key].Select(x => x.ContentItemId);
-
-                    //    await _indexManager.DeleteDocumentsAsync(index.Key, deletedDocuments);
-                    //}
+                    foreach (var index in updatedDocumentsByIndex)
+                    {
+                        await _indexManager.DeleteAllDocumentsAsync(index.Key);
+                    }
 
                     // Submits all the new documents to the index
                     foreach (var index in updatedDocumentsByIndex)
@@ -223,8 +217,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                             await _indexManager.SetLastTaskId(indexStatus.Key, lastTaskId);
                         }
                     }
-
-                    //_indexingState.Update();
                 });
             } while (batch.Length == BatchSize);
         }
