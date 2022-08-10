@@ -53,22 +53,14 @@ namespace OrchardCore.Search.Elasticsearch
 
         public override async void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IPermissionProvider, Permissions>();
+
             var configuration = _shellConfiguration.GetSection(ConfigSectionName);
             var elasticConfiguration = configuration.Get<ElasticConnectionOptions>();
 
             if (CheckOptions(elasticConfiguration, _logger))
-            {
+            {    
                 services.Configure<ElasticConnectionOptions>(o => o.ConfigurationExists = true);
-
-                services.Configure<TemplateOptions>(o =>
-                {
-                    o.MemberAccessStrategy.Register<SearchIndexViewModel>();
-                    o.MemberAccessStrategy.Register<SearchFormViewModel>();
-                    o.MemberAccessStrategy.Register<SearchResultsViewModel>();
-                });
-
-                services.AddScoped<INavigationProvider, AdminMenu>();
-                services.AddScoped<IPermissionProvider, Permissions>();
 
                 IConnectionPool pool = null;
                 var uris = elasticConfiguration.Ports.Select(port => new Uri($"{elasticConfiguration.Url}:{port}")).Distinct();
@@ -128,17 +120,25 @@ namespace OrchardCore.Search.Elasticsearch
                 services.Configure<ElasticOptions>(o =>
                     o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.StandardAnalyzer, new StandardAnalyzer())));
 
-                services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
-                services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
-                services.AddElasticServices();
-
                 try
                 {
                     var response = await client.PingAsync();
+                    
+                    services.Configure<TemplateOptions>(o =>
+                    {
+                        o.MemberAccessStrategy.Register<SearchIndexViewModel>();
+                        o.MemberAccessStrategy.Register<SearchFormViewModel>();
+                        o.MemberAccessStrategy.Register<SearchResultsViewModel>();
+                    });
+
+                    services.AddElasticServices();
+                    services.AddScoped<INavigationProvider, AdminMenu>();
+                    services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
+                    services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
                 }
                 catch(Exception ex)
                 {
-                    _logger.LogError(ex, "Elasticsearch is enabled but not active because the connection failed. {message}", ex.Message);
+                    _logger.LogError(ex, "Elasticsearch is enabled but not active because the connection failed.");
                 }
             }
         }
