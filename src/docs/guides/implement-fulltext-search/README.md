@@ -7,7 +7,7 @@ Before going further, please notice that `TheBlogTheme` includes a recipe which 
 
 Let's see how we make this available for you step by step.
 
-## First step : Enable the Lucene or Elasticsearch feature in Orchard Core.
+## 1st step : Enable the Lucene or Elasticsearch feature in Orchard Core.
 
 ![Features configuration](images/1.jpg)
 
@@ -15,7 +15,7 @@ There are 3 different `Lucene` and `Elasticsearch` features in Orchard Core.
 You will require to enable the `Lucene` feature in order to create `Lucene` indices.  
 You will require to enable the `Elasticsearch` feature in order to create `Elasticsearch` indices.
 
-## Second step : Create a `Lucene` or `Elasticsearch` index
+## 2nd step : Create a `Lucene` or `Elasticsearch` index
 
 ![Indices list](images/2.jpg)
 
@@ -68,31 +68,31 @@ By default, if we don't check this option, it will only index published content 
 
 *Store source data* (Elasticsearch only): This option will by default set to true so that the "_source" data in Elasticsearch be stored. Unchecking this will allow to disable storing any data in the "_source" field by disabling it. [See documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-source-field.html#disable-source-field)
 
-
-
-## Third step : Configure search settings
+## 3rd step : Configure search settings
 
 ![Search settings](images/4.jpg)
 
 By enabling the `Lucene` module, we also added a new route mapping to `/search` which will require some settings to work properly. First thing to do after creating a new Lucene index is to go configure the search settings in Orchard Core. Here, we can define which index should be used for the `/search` page on our website and also define which Index fields should be used by this search page. Usually, we are using by default `Content.ContentItem.FullText`.
 
-## Fourth step : Set index permissions
+## 4th step : Set index permissions
 
 ![Anonymous user role settings](images/5.jpg)
 
 By default, each indexes are permission protected so that no one can query them if you don't set which ones should be public. To make the "Search" `Lucene` index available for *Anonymous* users on your website, you will require to go and edit this user role and add the permission to it. Each index will be listed here in that `OrchardCore.Search.Lucene Feature` section.
 
-## Sixth step : Set your search provider
+## 5th step : Set your search provider
+
+![Set search provider](images/8.jpg)
 
 Starting from OC 1.5 you can now use the "Search" feature to enable your website frontend search. By enabling this feature it will add a new admin menu option to select which indexing provider you want to use for your frontend search. Orchard Core will allow to use `Lucene` or `Elasticsearch`.
 
-## Seventh step : Test search page
+## 6th step : Test search page
 
 ![Search page](images/6.jpg)
 
 Here for this example I used `TheBlogTheme` recipe to automatically configure everything. So the above screenshot is an example of a search page result from that theme.
 
-## Seventh step : Fine tune full-text search
+## 7th step : Fine tune full-text search
 
 ![Content type indexing settings](images/7.jpg)
 
