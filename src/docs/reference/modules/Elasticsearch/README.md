@@ -141,9 +141,9 @@ Here is one example of a Query that will return only specific fields from Elasti
 
 The Elasticsearch index settings allows to store the "source" data or not. It is set to store the source data in the index settings by default.
 
-Elasticsearch will do an automatic mapping based on CLR Types. Every data field that is passed to Elasticsearch that is mapped as a "string" will become `analyzed` and `stored`. For example the `Content.ContentItem.DisplayText` will result as an `analyzed` field and `Content.ContentItem.DisplayText.keyword` will become a `stored` field so that it can be used as a technical value.
+Elasticsearch will do an automatic mapping based on CLR Types. Every data field that is passed to Elasticsearch that is mapped as a "string" will become `analyzed` and `stored`. For example, the `Content.ContentItem.DisplayText` will result as an `analyzed` field and `Content.ContentItem.DisplayText.keyword` will become a `stored` field so that it can be used as a technical value.
 
-There may be differences between Lucene and Elasticsearch indexed fields. Lucene allows to override the CLR type mapping by selecting a "Stored" option on a ContentField for example. Elasticsearch, for now, is not affected by the "Stored" or "Analyzed" options on a ContentField index settings. We may allow it eventually by executing manual mapping on the indices. So, this can result in having fields that are analyzed in Lucene and stored in Elasticsearch when using the same Field name in a Query. You then need to adapt your Queries to use the proper type of Queries.
+There may be differences between Lucene and Elasticsearch indexed fields. Lucene allows overriding the CLR type mapping by selecting a "Stored" option on a ContentField for example. Elasticsearch, for now, is not affected by the "Stored" or "Analyzed" options on a ContentField index settings. We may allow it eventually by executing manual mapping on the indices. So, this can result in having fields that are analyzed in Lucene and stored in Elasticsearch when using the same Field name in a Query. You then need to adapt your Queries to use the proper type of Queries.
 
 ### Stored fields Query types (structured data search):
 
