@@ -185,8 +185,8 @@ When we say that a field is indexed it means that it is parsed by the configured
 
 Though, when a field is stored it can have different contexts wether it stores the original value or not.
 
-As an example, Elasticsearch stores the original value passed in the "_source" fields of its index.
+As an example, Elasticsearch stores the original value passed in the "_source" fields of its index. All the automatically mapped fields are never stored in the index. They are indexed.
 
 Lucene will currently be able to store the original value passed only when the `stored` option is set on a specific `ContentField`. Lucene also has `stored` field by design like the `ContentItemId` of a content item. Though, the current Lucene implementation will always use a `StringField` on a `ContentField` that is set to be `stored` on its index settings and also will store its original value in the index.
 
-The equivalent of a `StringField` that will behave the same way than a `keyword` in Elasticsearch has been added to all ContentFields that are passing "text" values by using the `.keyword` suffix on the Field name. So when we are indexing a `ContentField` as a keyword it is not stored with the original value because it is also indexed and thus parsed by its configured index analyzer.
+The equivalent of a `StringField` that will behave the same way than a `keyword` in Elasticsearch has been added to all ContentFields that are passing "string" values by using the `.keyword` suffix on the field name. So when Lucene is parsing a `ContentField` as a keyword it is not stored with the original value because it is indexed and thus parsed by its configured index analyzer.
