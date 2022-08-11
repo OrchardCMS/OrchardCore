@@ -1,6 +1,6 @@
 # How to implement a website full text search
 
-Orchard Core provides a `Lucene` and `Elasticsearch` module/feature that allows you to do full text search on your websites. Most of the time, when running a blog or a simple agency website you will require to search mostly within your pages content. 
+Orchard Core provides a [Lucene](../../reference/modules/Lucene/README.md) and [Elasticsearch](../../reference/modules/Elasticsearch/README.md) module/feature that allows you to do full text search on your websites. Most of the time, when running a blog or a simple agency website you will require to search mostly within your pages content. 
 In Orchard Core it is possible to configure which text/data you want to index in the `Content Type` configuration by using `Liquid`. The steps in this guide have been written for Lucene but the same goal is also applicable for `Elasticsearch`.
 
 Before going further, please notice that `TheBlogTheme` includes a recipe which will configure all of this by default for you without any required knowledge.  
