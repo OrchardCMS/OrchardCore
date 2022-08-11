@@ -1,19 +1,16 @@
 # How to implement a website full-text search
 
-Orchard Core provides a [Lucene](../../reference/modules/Lucene/README.md) and [Elasticsearch](../../reference/modules/Elasticsearch/README.md) module/feature that allows you to do full-text search on your websites. Most of the time, when running a blog or a simple agency website you will require to search mostly within your pages content. 
-In Orchard Core it is possible to configure which text/data you want to index in the `Content Type` configuration by using `Liquid`. The steps in this guide have been written for `Lucene` but the same goal is also applicable for `Elasticsearch`.
+Orchard Core provides a [Lucene](../../reference/modules/Lucene/README.md) and [Elasticsearch](../../reference/modules/Elasticsearch/README.md) module/feature that allows you to do full-text search on your websites. Most of the time, when building a website you will require to search mostly within your pages content. Though, in Orchard Core it is also possible to configure which text/data you want to index in the `Content Type` configuration by using `Liquid`. The steps in this guide have been written for `Lucene` but the same goal is also achievable with `Elasticsearch`.
 
-Before going further, please notice that `TheBlogTheme` includes a recipe which will configure all of this by default for you without any required knowledge.  
+Before going further, please notice that `TheBlogTheme` includes a recipe which will configure all of this for you without any required knowledge.
 
-Let's see how we make this available for you step by step.
+Let's see how to make this available for you step by step.
 
 ## 1st step : Enable the Lucene or Elasticsearch feature in Orchard Core.
 
 ![Features configuration](images/1.jpg)
 
-There are 3 different `Lucene` and `Elasticsearch` features in Orchard Core.  
-You will require to enable the `Lucene` feature in order to create `Lucene` indices.  
-You will require to enable the `Elasticsearch` feature in order to create `Elasticsearch` indices.
+There are 3 different `Lucene` and `Elasticsearch` features in Orchard Core. You will require to enable the `Lucene` feature in order to create `Lucene` indices. You will require to enable the `Elasticsearch` feature in order to create `Elasticsearch` indices.
 
 ## 2nd step : Create a `Lucene` or `Elasticsearch` index
 
