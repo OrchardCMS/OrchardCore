@@ -10,13 +10,13 @@ passwordManager = function () {
 
     const shuffle = (str) => str.sort(function () { return 0.5 - Math.random() });
 
-    const copyPassword = (str) => navigator.clipboard.writeText(str);
-
     const meetUniqueRule = (str, requiredUniqueChars) => {
         let uniqueCharacters = str.filter((item, i, ar) => ar.indexOf(item) === i);
 
         return uniqueCharacters.length >= requiredUniqueChars;
     };
+
+    const copyPassword = (str) => navigator.clipboard.writeText(str);
 
     const generatePassword = (requiredPasswordLength, requireUppercase, requireLowercase, requireDigit, requireNonAlphanumeric, requiredUniqueChars) => {
         let password = [];
@@ -62,5 +62,3 @@ passwordManager = function () {
         copyPassword: copyPassword
     };
 }();
-
-

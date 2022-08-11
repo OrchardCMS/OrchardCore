@@ -245,8 +245,8 @@ namespace OrchardCore.Users
             services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
 
             services.AddScoped<IUserEventHandler, UserDisabledEventHandler>();
-            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
 
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
         }
     }
 
