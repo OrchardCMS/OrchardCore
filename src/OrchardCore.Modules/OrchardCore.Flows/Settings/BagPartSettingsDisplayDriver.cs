@@ -15,9 +15,6 @@ namespace OrchardCore.Flows.Settings
 {
     public class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<BagPart>
     {
-        public const string ContentTypes = "ContentTypes";
-        public const string Stereotypes = "Stereotypes";
-
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IStringLocalizer S;
 
@@ -39,7 +36,7 @@ namespace OrchardCore.Flows.Settings
                 model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
                 model.DisplayType = model.BagPartSettings.DisplayType;
                 model.ContentTypes = new NameValueCollection();
-                model.Source = settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0 ? Stereotypes : ContentTypes;
+                model.Source = settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0 ? BagPartSettingType.Stereotypes : BagPartSettingType.ContentTypes;
                 model.Stereotypes = String.Join(',', settings.ContainedStereotypes ?? Array.Empty<string>());
                 foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
                 {
@@ -54,44 +51,54 @@ namespace OrchardCore.Flows.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.DisplayType, m => m.Source, m => m.Stereotypes);
 
-            if (ContentTypes.Equals(model.Source, StringComparison.OrdinalIgnoreCase))
+            switch (model.Source)
             {
-                if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.ContainedContentTypes), S["At least one content type must be selected."]);
-                }
-                else
-                {
-                    context.Builder.WithSettings(new BagPartSettings
-                    {
-                        ContainedContentTypes = model.ContainedContentTypes,
-                        ContainedStereotypes = Array.Empty<string>(),
-                        DisplayType = model.DisplayType
-                    });
-                }
-            }
-            else if (Stereotypes.Equals(model.Source, StringComparison.OrdinalIgnoreCase))
-            {
-                if (String.IsNullOrEmpty(model.Stereotypes))
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Stereotypes), S["Please provide a Stereotype."]);
-                }
-                else
-                {
-                    context.Builder.WithSettings(new BagPartSettings
-                    {
-                        ContainedContentTypes = Array.Empty<string>(),
-                        ContainedStereotypes = model.Stereotypes.Split(',', ';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries),
-                        DisplayType = model.DisplayType
-                    });
-                }
-            }
-            else
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Source), S["Content type source must be set with a valid value."]);
+                case BagPartSettingType.ContentTypes:
+                    SetContentTypes(context, model);
+                    break;
+                case BagPartSettingType.Stereotypes:
+                    SetStereoTypes(context, model);
+                    break;
+                default:
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Source), S["Content type source must be set with a valid value."]);
+                    break;
             }
 
             return Edit(contentTypePartDefinition, context.Updater);
+        }
+
+        private void SetStereoTypes(UpdateTypePartEditorContext context, BagPartSettingsViewModel model)
+        {
+            if (String.IsNullOrEmpty(model.Stereotypes))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Stereotypes), S["Please provide a Stereotype."]);
+
+                return;
+            }
+
+            context.Builder.WithSettings(new BagPartSettings
+            {
+                ContainedContentTypes = Array.Empty<string>(),
+                ContainedStereotypes = model.Stereotypes.Split(',', ';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries),
+                DisplayType = model.DisplayType
+            });
+        }
+
+        private void SetContentTypes(UpdateTypePartEditorContext context, BagPartSettingsViewModel model)
+        {
+            if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.ContainedContentTypes), S["At least one content type must be selected."]);
+
+                return;
+            }
+
+            context.Builder.WithSettings(new BagPartSettings
+            {
+                ContainedContentTypes = model.ContainedContentTypes,
+                ContainedStereotypes = Array.Empty<string>(),
+                DisplayType = model.DisplayType
+            });
         }
     }
 }

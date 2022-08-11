@@ -1,18 +1,19 @@
 @model OrchardCore.Flows.ViewModels.BagPartSettingsViewModel
 @using OrchardCore.Flows.Settings
+@using OrchardCore.Flows.Models
 <div class="mb-3">
     <label asp-for="Source">@T["Contained Content Types"]</label>
     <div class="w-sm-50" id="@Html.IdFor(x => x.Source)">
         <div class="form-check">
-            <input class="form-check-input" type="radio" asp-for="Source" id="SourceContentTypes" value="@(BagPartSettingsDisplayDriver.ContentTypes)" checked="@(BagPartSettingsDisplayDriver.ContentTypes.Equals(Model.Source, StringComparison.OrdinalIgnoreCase))">
+            <input class="form-check-input" type="radio" asp-for="Source" id="SourceContentTypes" value="@(BagPartSettingType.ContentTypes)" checked="@(Model.Source == BagPartSettingType.ContentTypes))">
             <label for="SourceContentTypes">
                 @T["Content Types"]
             </label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="radio" asp-for="Source" id="SourceStereotype" value="@(BagPartSettingsDisplayDriver.Stereotypes)" checked="@(BagPartSettingsDisplayDriver.Stereotypes.Equals(Model.Source, StringComparison.OrdinalIgnoreCase))">
+            <input class="form-check-input" type="radio" asp-for="Source" id="SourceStereotype" value="@(BagPartSettingType.Stereotypes)" checked="@(Model.Source == BagPartSettingType.Stereotypes)">
             <label for="SourceStereotype">
-                @T["Stereotype"]
+                @T["Stereotype"] <span class="hint">@T["All content types of these stereotypes"]</span>
             </label>
         </div>
     </div>
@@ -52,7 +53,7 @@
                 if (!src.target.checked) {
                     return;
                 }
-                if (src.target.value == '@(BagPartSettingsDisplayDriver.Stereotypes)') {
+                if (src.target.value == '@(BagPartSettingType.Stereotypes)') {
                     contentTypesContainer.classList.add('d-none');
                     stereotypeContainer.classList.remove('d-none');
                 } else {
