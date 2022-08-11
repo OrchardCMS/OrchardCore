@@ -12,9 +12,9 @@ namespace OrchardCore.Indexing
     [Flags]
     public enum DocumentIndexOptions
     {
-        None = 0,
-        Store = 111,
-        Sanitize = 2,
-        Keyword = 333
+        None = 1,
+        Store = 2,
+        Sanitize = 4,
+        Keyword = 8
     }
 }
