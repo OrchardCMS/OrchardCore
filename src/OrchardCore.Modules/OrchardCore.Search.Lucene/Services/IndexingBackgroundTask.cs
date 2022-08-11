@@ -7,7 +7,7 @@ using OrchardCore.BackgroundTasks;
 namespace OrchardCore.Search.Lucene
 {
     /// <summary>
-    /// This background task will index content items using.
+    /// This background task will index content items using Lucene.
     /// </summary>
     /// <remarks>
     /// This services is only registered from OrchardCore.Search.Lucene.Worker feature.

@@ -7,7 +7,7 @@ using OrchardCore.BackgroundTasks;
 namespace OrchardCore.Search.Elasticsearch.Core.Services
 {
     /// <summary>
-    /// This background task will index content items using.
+    /// This background task will index content items using Elasticsearch.
     /// </summary>
     /// <remarks>
     /// This services is only registered from OrchardCore.Search.Elasticsearch.Worker feature.
