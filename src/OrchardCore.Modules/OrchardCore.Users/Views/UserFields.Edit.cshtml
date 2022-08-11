@@ -43,11 +43,19 @@
         </div>
 
         <div class="mt-2">
-            <div class="btn btn-warning btn-sm" id="generatePassword" data-password-length="@IdentityOptions.Value.Password.RequiredLength">@T["Generate password"]</div>
+            <div class="btn btn-warning btn-sm" id="generatePassword"
+             data-password-length="@IdentityOptions.Value.Password.RequiredLength"
+             data-password-requireUppercase="@IdentityOptions.Value.Password.RequireUppercase"
+             data-password-requireLowercase="@IdentityOptions.Value.Password.RequireLowercase"
+             data-password-requireDigit="@IdentityOptions.Value.Password.RequireDigit"
+             data-password-requireNonAlphanumeric="@IdentityOptions.Value.Password.RequireNonAlphanumeric"
+             data-password-requiredUniqueChars="@IdentityOptions.Value.Password.RequiredUniqueChars">
+                @T["Generate password"]
+            </div>
             <div class="btn btn-info btn-sm" id="copyPassword">@T["Copy password"]</div>
         </div>
     </div>
-    <script at="Foot" asp-name="userFieldsPassword">
+    <script at="Foot" asp-name="userFieldsPassword" depends-on="password-generator">
         document.addEventListener('DOMContentLoaded', function() {
             let password = document.getElementById('@Html.IdFor(p => p.Password)');
             let passwordConfirmation = document.getElementById('@Html.IdFor(p => p.PasswordConfirmation)');
@@ -55,63 +63,7 @@
             let passwordConfirmationToggle = document.getElementById('passwordConfirmationToggle');
             let generate = document.getElementById('generatePassword');
             let copy = document.getElementById('copyPassword');
-            const requiredPasswordLength = parseInt(generate.getAttribute('data-password-length'));
-            const allowed = {
-                uppers: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-                lowers: 'abcdefghijklmnopqrstuvwxyz',
-                digits: '0123456789',
-                symbols: '!#$%&\()*+,-./:;<=>\'?@@[\]^_`{|}~'
-            };
-            const getRandomChar = (str) => str.charAt(Math.floor(Math.random() * str.length));
-            const shuffle = (str) => str.sort(function() { return 0.5 - Math.random() });
-            const copyPassword = (str) => navigator.clipboard.writeText(str);
-            const meetUniqueRule = (str) => {
-                let uniqueCharacters = str.filter((item, i, ar) => ar.indexOf(item) === i);
 
-                return uniqueCharacters.length >= @(IdentityOptions.Value.Password.RequiredUniqueChars);
-            };
-            const generatePassword = () => {
-                let password = [];
-
-                @if (IdentityOptions.Value.Password.RequireUppercase)
-                {
-                    // At least one uppercase
-                    <text>password.push(getRandomChar(allowed.uppers));</text>
-                }
-                @if (IdentityOptions.Value.Password.RequireLowercase)
-                {
-                    // At least one lowercase
-                    <text>password.push(getRandomChar(allowed.lowers));</text>
-                }
-                @if (IdentityOptions.Value.Password.RequireDigit)
-                {
-                    // At least one digit
-                    <text>password.push(getRandomChar(allowed.digits));</text>
-                }
-
-                @if (IdentityOptions.Value.Password.RequireNonAlphanumeric)
-                {
-                    // At least one special character
-                    <text>password.push(getRandomChar(allowed.symbols));</text>
-                }
-
-                let passwordLength = password.length;
-                if (passwordLength < requiredPasswordLength) {
-                    @* At this point we need lengthier password. Fill the rest of the password with random characters *@
-                    let combineAllowed = shuffle(Object.values(allowed)).join('');
-                    for (let i = passwordLength; i < requiredPasswordLength; i++) {
-                        password.push(getRandomChar(combineAllowed));
-                    }
-                }
-
-                @if (IdentityOptions.Value.Password.RequiredUniqueChars > 1)
-                {
-                    // The generated password does not meet the required-unique-chars requirment, create another one
-                    <text>if (!meetUniqueRule(password)) return generatePassword();</text>
-                }
-
-                return shuffle(password).join('');
-            }
             const toggetIcons = (element) => {
                 if (element.classList.contains('fa-eye')) {
                     element.classList.remove('fa-eye');
@@ -123,6 +75,7 @@
                 element.classList.remove('fa-eye-slash');
                 element.classList.add('fa-eye');
             }
+
             const toggleFieldType = (element) => {
                 if (element.type == 'password') {
                     element.type = 'text';
@@ -132,6 +85,7 @@
 
                 element.type = 'password';
             }
+
             const togglePasswordFieldState = () => {
                 toggleFieldType(password);
                 toggleFieldType(passwordConfirmation);
@@ -140,13 +94,20 @@
             }
 
             generate.addEventListener('click', function() {
-                var newPassword = generatePassword();
+                const requiredPasswordLength = parseInt(generate.getAttribute('data-password-length'));
+                const requireUppercase = generate.getAttribute('data-password-requireUppercase') === 'True';
+                const requireLowercase = generate.getAttribute('data-password-requireLowercase') === 'True';
+                const requireDigit = generate.getAttribute('data-password-requireDigit') === 'True';
+                const requireNonAlphanumeric = generate.getAttribute('data-password-requireNonAlphanumeric') === 'True';
+                const requiredUniqueChars = generate.getAttribute('data-password-requiredUniqueChars') === 'True';
+
+                var newPassword = passwordManager.generatePassword(requiredPasswordLength, requireUppercase, requireLowercase, requireDigit, requireNonAlphanumeric, requiredUniqueChars);
                 password.value = newPassword;
                 passwordConfirmation.value = newPassword;
             });
 
             copy.addEventListener('click', function() {
-                copyPassword(password.value);
+                passwordManager.copyPassword(password.value);
             });
 
             passwordToggle.addEventListener('click', togglePasswordFieldState);
