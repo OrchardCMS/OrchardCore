@@ -22,12 +22,12 @@ namespace OrchardCore.Lists.Indexes
             context.DocumentIndex.Set(
                 ListContentItemIdKey,
                 parent.ListContentItemId,
-                DocumentIndexOptions.Store);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 OrderKey,
                 parent.Order,
-                DocumentIndexOptions.Store);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             return Task.CompletedTask;
         }

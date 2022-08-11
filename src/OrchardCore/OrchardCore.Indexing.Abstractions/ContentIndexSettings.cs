@@ -13,7 +13,13 @@ namespace OrchardCore.Indexing
         public bool Included { get; set; }
 
         /// <summary>
-        /// Set the content to be stored in the index document
+        /// Set the content to be indexed in the index as a keyword (tokenized as a single term).
+        /// See Lucene StringField.
+        /// </summary>
+        public bool Keyword { get; set; }
+
+        /// <summary>
+        /// Set the content to be stored in the index document. The original value will be stored.
         /// </summary>
         public bool Stored { get; set; }
 
@@ -24,6 +30,11 @@ namespace OrchardCore.Indexing
             if (Stored)
             {
                 options |= DocumentIndexOptions.Store;
+            }
+
+            if (Keyword)
+            {
+                options |= DocumentIndexOptions.Keyword;
             }
 
             return options;
