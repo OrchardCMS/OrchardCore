@@ -13,7 +13,7 @@ else
     <div class="mb-3" asp-validation-class-for="IndexName">
         <label asp-for="IndexName">@T["Index Name"]</label>
         <input asp-for="IndexName" class="form-control" readonly="@(!Model.IsCreate)" />
-        <span class="hint">@T["The shell name shall be prepended and automatically. Index name to be in lower."]</span>
+        <span class="hint">@T["Should be all lowercase. The shell name will be automatically prepended."]<a class="ms-2 seedoc" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.4/indices-create-index.html" target="_blank">@T["See documentation"].</a></span>
         <span asp-validation-for="IndexName" class="text-danger"></span>
     </div>
 
