@@ -33,9 +33,6 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Lucene
 {
-    /// <summary>
-    /// These services are registered on the tenant service collection
-    /// </summary>
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;

@@ -32,9 +32,6 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Elasticsearch
 {
-    /// <summary>
-    /// These services are registered on the tenant service collection
-    /// </summary>
     public class Startup : StartupBase
     {
         private const string ConfigSectionName = "OrchardCore_Elasticsearch";
