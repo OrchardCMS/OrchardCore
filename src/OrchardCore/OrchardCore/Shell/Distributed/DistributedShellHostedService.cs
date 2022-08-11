@@ -104,7 +104,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                         var defaultSettings = await _shellSettingsManager.LoadSettingsAsync(ShellHelper.DefaultShellName);
                         if (defaultSettings.State == TenantState.Running)
                         {
-                            // If the default tenant is running, keep it in sync by reloading it locally.
+                            // If the default tenant has been setup, keep it in sync locally by reloading it.
                             await _shellHost.ReloadShellContextAsync(defaultContext.Settings, eventSource: false);
                         }
 
