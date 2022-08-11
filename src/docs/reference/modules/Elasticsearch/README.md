@@ -160,11 +160,16 @@ Here is one example of a Query that will return only specific fields from Elasti
 }
 ```
 
-The Elasticsearch index settings allows to store the "source" data or not. It is set to store the source data in the index settings by default.
+The Elasticsearch index settings allows to store the "source" data or not. It is set to store the source data by default.
 
-Elasticsearch will do an automatic mapping based on CLR Types. Every data field that is passed to Elasticsearch that is mapped as a "string" will become `analyzed` and `stored`. For example, the `Content.ContentItem.DisplayText` will result as an `analyzed` field and `Content.ContentItem.DisplayText.keyword` will become a `stored` field so that it can be used as a technical value.
+Elasticsearch will do an automatic mapping based on CLR Types. Every data field that is passed to Elasticsearch that is mapped as a "string" will become `analyzed` and `stored`. For example, the `Content.ContentItem.DisplayText` will result as a `analyzed` field and `Content.ContentItem.DisplayText.keyword` will become a `stored` field so that it can be used as a technical value.
 
-There may be differences between Lucene and Elasticsearch indexed fields. Lucene allows overriding the CLR type mapping by selecting a "Stored" option on a ContentField for example. Elasticsearch, for now, is not affected by the "Stored" or "Analyzed" options on a ContentField index settings. We may allow it eventually by executing manual mapping on the indices. So, this can result in having fields that are analyzed in Lucene and stored in Elasticsearch when using the same Field name in a Query. You then need to adapt your Queries to use the proper type of Queries.
+There may be differences between Lucene and Elasticsearch indexed fields. Lucene allows overriding the CLR type mapping by selecting a `stored` option on a ContentField for example. Elasticsearch, for now, is not affected by the `stored` or `analyzed` options on a ContentField index settings. We may allow it eventually by executing manual mapping on the indices. So, right now, this can result in having fields that are `analyzed` in Lucene and `stored` in Elasticsearch when using the same Field name in a Query. You then need to adapt your Queries to use the proper type of Queries.
+
+| Lucene | Elasticsearch | Description | Query types |
+|--------|---------------|---------------------------|-----------------|    
+| StringField | Keyword  | A field that is indexed but not tokenized: the entire value is indexed as a single token     | stored fields   |
+| TextField   | Text     | A field that is indexed and tokenized, without term vectors  | analyzed fields |
 
 ### Stored fields Query types (structured data search):
 
@@ -174,4 +179,14 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queri
 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/full-text-queries.html
 
+### Indexed vs Stored
 
+When we say that a field is indexed it means that it is parsed by the configured Analyzer that is set on the index (Elasticsearch also allows to pass custom Analyzers on Queries). 
+
+Though, when a field is stored it can have different contexts wether it stores the original value or not.
+
+As an example, Elasticsearch stores the original value passed in the "_source" fields of its index.
+
+Lucene will currently be able to store the original value passed only when the "stored" option is set on a specific `ContentField`. Lucene also has `stored` field by design like the `ContentItemId` of a content item. Though, the current Lucene implementation will always use a `StringField` on a ContentField that is set to be `stored` on its index settings and also it will store its original value in the index.
+
+The equivalent of a `StringField` that will behave the same way than a `keyword` in Elasticsearch has been added to all ContentFields that are passing "text" values by using the `.keyword` suffix on the Field name. So when we are indexing a `ContentField` as a keyword it is not stored with the original value because it is also indexed and thus parsed by its configured index analyzer.
