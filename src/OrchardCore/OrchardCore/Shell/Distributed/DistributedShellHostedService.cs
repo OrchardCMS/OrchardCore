@@ -22,9 +22,6 @@ namespace OrchardCore.Environment.Shell.Distributed
         private const string ReleaseIdKeySuffix = "_RELEASE_ID";
         private const string ReloadIdKeySuffix = "_RELOAD_ID";
 
-        // The syncing period in seconds of the default tenant while it is uninitialized.
-        private const int DefaultTenantSyncingPeriod = 25;
-
         private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(1);
         private static readonly TimeSpan MaxRetryTime = TimeSpan.FromMinutes(1);
         private static readonly TimeSpan MaxBusyTime = TimeSpan.FromSeconds(2);
@@ -67,6 +64,9 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// </summary>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            // The syncing period in seconds of the default tenant while it is 'Uninitialized'.
+            const int DefaultTenantSyncingPeriod = 25;
+
             stoppingToken.Register(() =>
             {
                 _logger.LogInformation("'{ServiceName}' is stopping.", nameof(DistributedShellHostedService));
@@ -75,7 +75,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             // Init the idle time.
             var idleTime = MinIdleTime;
 
-            // Init the syncing period of the default tenant while it is uninitialized.
+            // Init the syncing period of the default tenant while it is 'Uninitialized'.
             var defaultTenantSyncingPeriod = 0;
 
             while (!stoppingToken.IsCancellationRequested)
@@ -94,15 +94,19 @@ namespace OrchardCore.Environment.Shell.Distributed
                         continue;
                     }
 
-                    // If the default tenant is uninitialized, check its shared state periodically.
-                    if (defaultContext.Settings.State == TenantState.Uninitialized &&
-                        defaultTenantSyncingPeriod++ > DefaultTenantSyncingPeriod)
+                    // Manage the syncing period of the default tenant while it is 'Uninitialized'.
+                    defaultTenantSyncingPeriod = defaultContext.Settings.State == TenantState.Uninitialized
+                        ? defaultTenantSyncingPeriod++
+                        : 0;
+
+                    // Check periodically if the default tenant is no more 'Uninitialized'.
+                    if (defaultTenantSyncingPeriod++ > DefaultTenantSyncingPeriod)
                     {
                         defaultTenantSyncingPeriod = 0;
 
                         // Load the shared state of the default tenant that may have been setup by another instance.
                         var defaultSettings = await _shellSettingsManager.LoadSettingsAsync(ShellHelper.DefaultShellName);
-                        if (defaultSettings.State == TenantState.Running)
+                        if (defaultSettings.State == TenantState.Running || defaultSettings.State == TenantState.Disabled)
                         {
                             // If the default tenant has been setup, keep it in sync locally by reloading it.
                             await _shellHost.ReloadShellContextAsync(defaultContext.Settings, eventSource: false);
@@ -116,8 +120,6 @@ namespace OrchardCore.Environment.Shell.Distributed
                     {
                         continue;
                     }
-
-                    defaultTenantSyncingPeriod = 0;
 
                     // Get or create a new distributed context if the default tenant has changed.
                     var context = await GetOrCreateDistributedContextAsync(defaultContext);
