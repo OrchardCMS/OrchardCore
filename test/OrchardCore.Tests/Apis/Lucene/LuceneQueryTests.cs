@@ -129,6 +129,46 @@ namespace OrchardCore.Tests.Apis.Lucene
         }
 
         [Fact]
+        public async Task LargeContentFieldMatchesOnDocumentSplit()
+        {
+            using (var context = new LuceneContext())
+            {
+                await context.InitializeAsync();
+                // Act
+                // Should find articles with "Orchard" in the title
+
+                var index = "ArticleIndex";
+
+                // { "from": 0, "size": 1, "query": { "simple_query_string": { "analyze_wildcard": true, "fields": ["Content.ContentItem.DisplayText.Normalized"], "query": "washington" } } }
+                object dynamicQuery = new
+                {
+                    from = 0,
+                    size = 1,
+                    query = new
+                    {
+                        simple_query_string = new
+                        {
+                            analyze_wildcard = true,
+                            fields = new string[] { "Content.ContentItem.DisplayText.Normalized" },
+                            query = "washington"
+                        }
+                    }
+                };
+
+                var query = JsonConvert.SerializeObject(dynamicQuery);
+
+                var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
+                var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
+
+                // Test
+                Assert.NotEmpty(queryResults.Items);
+                var contentItems = queryResults.Items.Select(x => ((JObject)x).ToObject<ContentItem>());
+
+                Assert.Contains("Orchard", contentItems.First().DisplayText, StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
+        [Fact]
         public async Task TwoWildcardQueriesWithBoostHasResults()
         {
             using (var context = new LuceneContext())

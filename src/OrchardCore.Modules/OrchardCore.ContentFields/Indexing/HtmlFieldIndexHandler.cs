@@ -15,6 +15,7 @@ namespace OrchardCore.ContentFields.Indexing
 
             foreach (var key in context.Keys)
             {
+                //context.DocumentIndex.Set(key, field.Html, options);
                 foreach (var chunk in field.Html.Chunk(MaxStringLength))
                 {
                     context.DocumentIndex.Set(key, new string(chunk), options);
