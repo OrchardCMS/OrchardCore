@@ -21,21 +21,21 @@
     <label asp-for="Source">@T["Contained Content Types"]</label>
     <div class="w-sm-50" id="@Html.IdFor(x => x.Source)">
         <div class="form-check">
-            <input class="form-check-input" type="radio" asp-for="Source" id="SourceAll" value="@ContentPickerFieldSettingsDriver.AllTypes" checked="@(ContentPickerFieldSettingsDriver.AllTypes.Equals(Model.Source, StringComparison.OrdinalIgnoreCase))">
+            <input class="form-check-input" type="radio" asp-for="Source" id="SourceAll" value="@ContentPickerSettingType.AllTypes" checked="@(Model.Source == ContentPickerSettingType.AllTypes)">
             <label for="SourceAll">
                 @T["Display All Content Types"]
             </label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="radio" asp-for="Source" id="SourceContentTypes" value="@ContentPickerFieldSettingsDriver.ContentTypes" checked="@(ContentPickerFieldSettingsDriver.ContentTypes.Equals(Model.Source, StringComparison.OrdinalIgnoreCase))">
+            <input class="form-check-input" type="radio" asp-for="Source" id="SourceContentTypes" value="@ContentPickerSettingType.ContentTypes" checked="@(Model.Source == ContentPickerSettingType.ContentTypes)">
             <label for="SourceContentTypes">
                 @T["Content Types"]
             </label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="radio" asp-for="Source" id="SourceStereotype" value="@ContentPickerFieldSettingsDriver.Stereotypes" checked="@(ContentPickerFieldSettingsDriver.Stereotypes.Equals(Model.Source, StringComparison.OrdinalIgnoreCase))">
+            <input class="form-check-input" type="radio" asp-for="Source" id="SourceStereotype" value="@ContentPickerSettingType.Stereotypes" checked="@(Model.Source == ContentPickerSettingType.Stereotypes)">
             <label for="SourceStereotype">
-                @T["Stereotype"]
+                @T["Stereotype"] <span class="hint">@T["All content types of these stereotypes"]</span>
             </label>
         </div>
     </div>
@@ -45,7 +45,7 @@
     <div class="w-sm-50" id="@Html.IdFor(x => x.Source)">
         <label asp-for="Stereotypes">@T["Stereotypes"]</label>
         <input asp-for="Stereotypes" class="form-control medium" />
-        <span class="hint">@T["The stereotypes of the content types that this bag can contain. You may define multiple Stereotypes using the comma (,) as a separator"]</span>
+        <span class="hint">@T["The stereotypes of the content types that this field can contain. You may define multiple Stereotypes using the comma (,) as a separator"]</span>
     </div>
 </div>
 
@@ -74,10 +74,10 @@
                 if (!src.target.checked) {
                     return;
                 }
-                if (src.target.value == '@(ContentPickerFieldSettingsDriver.Stereotypes)') {
+                if (src.target.value == '@(ContentPickerSettingType.Stereotypes)') {
                     contentTypesContainer.classList.add('d-none');
                     stereotypeContainer.classList.remove('d-none');
-                } else if (src.target.value == '@(ContentPickerFieldSettingsDriver.ContentTypes)') {
+                } else if (src.target.value == '@(ContentPickerSettingType.ContentTypes)') {
                     contentTypesContainer.classList.remove('d-none');
                     stereotypeContainer.classList.add('d-none');
                 } else {

@@ -12,10 +12,6 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<ContentPickerField>
     {
-        public const string ContentTypes = "ContentTypes";
-        public const string Stereotypes = "Stereotypes";
-        public const string AllTypes = "AllTypes";
-
         private readonly IStringLocalizer S;
 
         public ContentPickerFieldSettingsDriver(IStringLocalizer<ContentPickerFieldSettingsDriver> stringLocalizer)
@@ -31,9 +27,8 @@ namespace OrchardCore.ContentFields.Settings
                 model.Hint = settings.Hint;
                 model.Required = settings.Required;
                 model.Multiple = settings.Multiple;
-                model.DisplayedContentTypes = settings.DisplayedContentTypes;
-                model.DisplayedStereotypes = settings.DisplayedStereotypes;
                 model.Source = GetSource(settings);
+                model.DisplayedContentTypes = settings.DisplayedContentTypes;
                 model.Stereotypes = String.Join(',', settings.DisplayedStereotypes ?? Array.Empty<string>());
             }).Location("Content");
         }
@@ -51,17 +46,17 @@ namespace OrchardCore.ContentFields.Settings
                     Multiple = model.Multiple
                 };
 
-                if (ContentTypes.Equals(model.Source, StringComparison.OrdinalIgnoreCase))
+                switch (model.Source)
                 {
-                    SetContentTypes(context.Updater, model.DisplayedContentTypes, settings);
-                }
-                else if (Stereotypes.Equals(model.Source, StringComparison.OrdinalIgnoreCase))
-                {
-                    SetStereoTypes(context.Updater, model.Stereotypes, settings);
-                }
-                else
-                {
-                    settings.DisplayAllContentTypes = true;
+                    case ContentPickerSettingType.ContentTypes:
+                        SetContentTypes(context.Updater, model.DisplayedContentTypes, settings);
+                        break;
+                    case ContentPickerSettingType.Stereotypes:
+                        SetStereoTypes(context.Updater, model.Stereotypes, settings);
+                        break;
+                    default:
+                        settings.DisplayAllContentTypes = true;
+                        break;
                 }
 
                 context.Builder.WithSettings(settings);
@@ -94,14 +89,14 @@ namespace OrchardCore.ContentFields.Settings
             settings.DisplayedContentTypes = displayedContentTypes;
         }
 
-        private static string GetSource(ContentPickerFieldSettings settings)
+        private static ContentPickerSettingType GetSource(ContentPickerFieldSettings settings)
         {
             if (settings.DisplayAllContentTypes)
             {
-                return AllTypes;
+                return ContentPickerSettingType.AllTypes;
             }
 
-            return settings.DisplayedStereotypes != null && settings.DisplayedStereotypes.Length > 0 ? Stereotypes : ContentTypes;
+            return settings.DisplayedStereotypes != null && settings.DisplayedStereotypes.Length > 0 ? ContentPickerSettingType.Stereotypes : ContentPickerSettingType.ContentTypes;
         }
     }
 }
