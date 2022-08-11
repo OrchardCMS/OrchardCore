@@ -8,8 +8,27 @@ You can use an Elasticsearch cloud service like offered on https://www.elastic.c
 
 ### Install Elasticsearch 7.x with Docker compose
 
-Elasticsearch v7.17.5 Docker Compose file : 
+Elasticsearch uses a mmapfs directory by default to store its indices. The default operating system limits on mmap counts is likely to be too low, which may result in out of memory exceptions.
 
+https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html
+
+For Docker with WSL2, you will need to persist this setting by using a .wslconfig file.
+
+In your Windows `%userprofile%` directory (typically `C:\Users\<username>`) create or edit the file `.wslconfig` with the following:
+
+```
+[wsl2]
+kernelCommandLine = "sysctl.vm.max_map_count=262144"
+```
+
+Then exit any WSL instance, `wsl --shutdown`, and restart.
+
+```cmd
+> sysctl vm.max_map_count
+vm.max_map_count = 262144
+```
+
+Elasticsearch v7.17.5 Docker Compose file : 
 [docker-compose.yml](docker-compose.yml)
 
 - Copy this file in a folder named Elasticsearch somewhere safe.
