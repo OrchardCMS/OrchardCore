@@ -4,7 +4,7 @@ The Elasticsearch module allows you to manage Elasticsearch indices.
 
 ## How to use
 
-You can use an Elasticsearch cloud service like offered on https://www.elastic.co or install it on premise. For development, testing purpose, it is also available to be deployed with Docker.
+You can use an Elasticsearch cloud service like offered on https://www.elastic.co or install it on-premises. For development and testing purposes, it is also available to be deployed with Docker.
 
 ### Install Elasticsearch 7.x with Docker compose
 
