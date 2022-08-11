@@ -8,7 +8,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Models
         public string Url { get; set; }
 
         /// <summary>
-        /// The server connection type
+        /// The server connection port.
         /// </summary>
         public int[] Ports { get; set; }
 
