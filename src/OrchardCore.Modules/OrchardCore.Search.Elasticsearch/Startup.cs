@@ -135,7 +135,7 @@ namespace OrchardCore.Search.Elasticsearch
                     services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
                     services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     _logger.LogError(ex, "Elasticsearch is enabled but not active because the connection failed.");
                 }
