@@ -181,7 +181,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/full-text-querie
 
 ### Indexed vs Stored
 
-When we say that a field is indexed it means that it is parsed by the configured Analyzer that is set on the index (Elasticsearch also allows to pass custom Analyzers on Queries). 
+When we say that a field is indexed it means that it is parsed by the configured Analyzer that is set on the index (Elasticsearch also allows to pass custom Analyzers on Queries too). 
 
 Though, when a field is stored it can have different contexts wether it stores the original value or not.
 
