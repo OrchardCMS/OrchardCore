@@ -121,7 +121,7 @@ https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/connection-
 Both modules are complementary and can be enabled at the same time.
 While the Lucene module uses Lucene.NET it is not as feature complete as the Elasticsearch module.
 
-There will be discrepancies between both modules implementation because of the fact that Lucene.NET implements an older version of Lucene. Though most basic type of Queries will work with both.
+There will be discrepancies between both modules' implementation because of the fact that Lucene.NET implements an older version of Lucene. Though the most basic types of Queries will work with both.
 
 The Lucene module though will always only return `stored` fields from Lucene Queries while the Elasticsearch module can be set to return specific Fields or return the entire source data.
 
