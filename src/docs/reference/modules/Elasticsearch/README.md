@@ -118,7 +118,7 @@ https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/connection-
 
 ## Elasticsearch vs Lucene
 
-Both modules are complementary and can be executed at the same time.
+Both modules are complementary and can be enabled at the same time.
 While the Lucene module uses Lucene.NET it is not as feature complete as the Elasticsearch module.
 
 There will be discrepancies between both modules implementation because of the fact that Lucene.NET implements an older version of Lucene. Though most basic type of Queries will work with both.
