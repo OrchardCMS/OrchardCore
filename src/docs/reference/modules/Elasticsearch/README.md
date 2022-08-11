@@ -103,7 +103,7 @@ The Elasticsearch module connection configuration can be set globally in the app
     "OrchardCore_Elasticsearch": {
       "ConnectionType": "SingleNodeConnectionPool",
       "Url": "http://localhost",
-      "Ports": [ 9200 ]
+      "Ports": [ 9200 ],
       "CloudId": "Orchard_Core_deployment:ZWFzdHVzMi5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo0NDMkNmMxZGQ4YzBrQ2Y2NDI5ZDkyNzc1MTUxN2IyYjZkYTgkMTJmMjA1MzBlOTU0NDgyNDlkZWVmZWYzNmZlY2Q5Yjc="
       "Username": "admin",
       "Password": "admin",
