@@ -259,32 +259,32 @@ namespace OrchardCore.Search.Lucene
                         {
                             var stringValue = Convert.ToString(entry.Value);
 
-                            if (entry.Options.HasFlag(DocumentIndexOptions.Analyze))
-                            {
-                                doc.Add(new TextField(entry.Name, stringValue, store));
-                            }
-                            else
+                            if (entry.Options.HasFlag(DocumentIndexOptions.Keyword))
                             {
                                 doc.Add(new StringField(entry.Name, stringValue, store));
                             }
+                            else
+                            {
+                                doc.Add(new TextField(entry.Name, stringValue, store));
+                            }
 
-                            // This is for ElasticSearch Queries compatibility since a keyword field is always stored
+                            // This is for ElasticSearch Queries compatibility since a keyword field is always indexed
                             // by default when indexing without explicit mapping in ElasticSearch.
                             // Keyword ignore above 256 chars by default.
-                            if (store == Field.Store.NO && stringValue.Length <= 256)
+                            if (store == Field.Store.NO && !entry.Options.HasFlag(DocumentIndexOptions.Keyword) && stringValue.Length <= 256)
                             {
                                 doc.Add(new StringField($"{entry.Name}.keyword", stringValue, Field.Store.NO));
                             }
                         }
                         else
                         {
-                            if (entry.Options.HasFlag(DocumentIndexOptions.Analyze))
+                            if (entry.Options.HasFlag(DocumentIndexOptions.Keyword))
                             {
-                                doc.Add(new TextField(entry.Name, "NULL", store));
+                                doc.Add(new StringField(entry.Name, "NULL", store));
                             }
                             else
                             {
-                                doc.Add(new StringField(entry.Name, "NULL", store));
+                                doc.Add(new TextField(entry.Name, "NULL", store));
                             }
                         }
                         break;

@@ -27,7 +27,7 @@ namespace OrchardCore.Contents.Indexing
                     context.DocumentIndex.Set(
                         IndexingConstants.FullTextKey,
                         segment,
-                        DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
+                        DocumentIndexOptions.Sanitize);
                 }
             }
         }

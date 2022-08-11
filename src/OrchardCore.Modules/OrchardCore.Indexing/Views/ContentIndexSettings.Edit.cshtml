@@ -6,18 +6,13 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="ContentIndexSettings.Included" data-bs-toggle="collapse" data-bs-target="#index-settings" checked="@Model.ContentIndexSettings.Included" />
         <label class="form-check-label" asp-for="ContentIndexSettings.Included">@T["Include this element in the index"]</label>
-        <span class="hint dashed">@T["Check to include the value of this element in the index. Will handle the field based on CLR Type of the data."]</span>
+        <span class="hint dashed">@T["Check to include the value of this element in the index. Will handle the field based on CLR Type."]</span>
     </div>
     <div id="index-settings" class="collapse@(Model.ContentIndexSettings.Included ? " show": "")">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="ContentIndexSettings.Stored" checked="@Model.ContentIndexSettings.Stored" />
             <label class="form-check-label" asp-for="ContentIndexSettings.Stored">@T["Stored"]</label>
-            <span class="hint dashed">@T["Check to be able to retrieve the value from the index. Makes this field usable to only search a keyword. (Lucene only)"]</span>
-        </div>
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input" asp-for="ContentIndexSettings.Analyzed" checked="@Model.ContentIndexSettings.Analyzed" />
-            <label class="form-check-label" asp-for="ContentIndexSettings.Analyzed">@T["Analyzed"]</label>
-            <span class="hint dashed">@T["Check to include the value of this element in the index. Makes this field usable to only do a full-text search. (Lucene only)"]</span>
+            <span class="hint dashed">@T["Check to be able to retrieve the value from the index."]</span>
         </div>
     </div>
 </div>

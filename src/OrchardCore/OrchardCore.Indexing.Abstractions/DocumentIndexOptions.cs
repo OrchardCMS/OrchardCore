@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace OrchardCore.Indexing
 {
@@ -7,7 +7,7 @@ namespace OrchardCore.Indexing
     {
         None = 0,
         Store = 1,
-        Analyze = 2,
-        Sanitize = 4
+        Sanitize = 4,
+        Keyword = 5
     }
 }
