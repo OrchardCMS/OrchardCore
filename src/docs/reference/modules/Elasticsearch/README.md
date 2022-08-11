@@ -22,7 +22,7 @@ You should get this result in Docker Desktop app:
 
 ### Set up Elasticsearch in Orchard Core
 
-- Add Elastic Connection in the shell configuration (OrchardCore.Cms.Web appsettings.json file). [See Elasticsearch Configurations](#Elasticsearch-configuration).
+- Add Elastic Connection in the shell configuration (OrchardCore.Cms.Web appsettings.json file). [See Elasticsearch Configurations](#elasticsearch-configuration).
 
 - Start an Orchard Core instance with VS Code debugger
 - Go to Orchard Core features, Enable Elasticsearch.
