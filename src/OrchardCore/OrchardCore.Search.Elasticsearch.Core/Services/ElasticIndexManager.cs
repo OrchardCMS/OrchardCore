@@ -52,7 +52,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-analyzers.html"/>
         /// </para>
         /// </summary>
-        /// <param name="elasticIndexSettings"></param>
         /// <returns><see cref="Boolean"/></returns>
         public async Task<bool> CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
@@ -108,8 +107,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// This allows storing the last indexing task id executed on the Elasticsearch index.
         /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-meta-field.html"/>
         /// </summary>
-        /// <param name="indexName"></param>
-        /// <param name="lastTaskId"></param>
         /// <returns></returns>
         public async Task SetLastTaskId(string indexName, int lastTaskId)
         {
@@ -129,7 +126,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// Get a last_task_id in the Elasticsearch index _meta mappings.
         /// This allows retrieving the last indexing task id executed on the index.
         /// </summary>
-        /// <param name="indexName"></param>
         /// <returns></returns>
         public async Task<int> GetLastTaskId(string indexName)
         {
@@ -174,8 +170,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// Deletes all documents in an index in one request.
         /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/docs-delete-by-query.html"/>
         /// </summary>
-        /// <param name="indexName"></param>
-        /// <returns></returns>
         public async Task<bool> DeleteAllDocumentsAsync(string indexName)
         {
             var response = await _elasticClient.DeleteByQueryAsync<Dictionary<string, object>>(del => del
@@ -202,8 +196,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <summary>
         /// Verify if an index exists for the current tenant.
         /// </summary>
-        /// <param name="indexName"></param>
-        /// <returns></returns>
         public async Task<bool> Exists(string indexName)
         {
             if (String.IsNullOrWhiteSpace(_indexPrefix + indexName))
@@ -220,8 +212,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// Makes sure that the index names are compliant with Elasticsearch specifications.
         /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html#indices-create-api-path-params"/>
         /// </summary>
-        /// <param name="indexName"></param>
-        /// <returns></returns>
         public static string ToSafeIndexName(string indexName)
         {
             indexName = indexName.ToLowerInvariant();

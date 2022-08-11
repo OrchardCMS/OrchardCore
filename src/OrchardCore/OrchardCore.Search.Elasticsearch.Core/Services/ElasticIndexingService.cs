@@ -226,7 +226,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <summary>
         /// Creates a new index
         /// </summary>
-        /// <returns></returns>
         public async Task CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
             await _elasticIndexSettingsService.UpdateIndexAsync(elasticIndexSettings);
@@ -236,7 +235,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <summary>
         /// Update an existing index
         /// </summary>
-        /// <returns></returns>
         public Task UpdateIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
             return _elasticIndexSettingsService.UpdateIndexAsync(elasticIndexSettings);
@@ -245,7 +243,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <summary>
         /// Deletes permanently an index
         /// </summary>
-        /// <returns></returns>
         public async Task<bool> DeleteIndexAsync(string indexName)
         {
             //Delete the Elasticsearch Index first
