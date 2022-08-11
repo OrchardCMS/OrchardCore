@@ -13,8 +13,7 @@
     {
       "name": "feature",
       "enable": [
-        "OrchardCore.Search.Lucene",
-        "OrchardCore.Search"
+        "OrchardCore.Search.Lucene"
       ]
     },
     {
