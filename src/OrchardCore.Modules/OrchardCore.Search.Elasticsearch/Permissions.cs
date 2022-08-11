@@ -9,8 +9,8 @@ namespace OrchardCore.Search.Elasticsearch
     {
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 
-        public static readonly Permission ManageIndexes = new Permission("ManageIndexes", "Manage Indexes");
-        public static readonly Permission QueryElasticApi = new Permission("QueryElasticsearchApi", "Query Elasticsearch Api", new[] { ManageIndexes });
+        public static readonly Permission ManageElasticIndexes = new Permission("ManageElasticIndexes", "Manage Elasticsearch Indexes");
+        public static readonly Permission QueryElasticApi = new Permission("QueryElasticsearchApi", "Query Elasticsearch Api", new[] { ManageElasticIndexes });
 
         public Permissions(ElasticIndexSettingsService elasticIndexSettingsService)
         {
@@ -23,11 +23,11 @@ namespace OrchardCore.Search.Elasticsearch
             var result = new List<Permission>();
             foreach (var index in elasticIndexSettings)
             {
-                var permission = new Permission("QueryElasticsearch" + index.IndexName + "Index", "Query Elasticsearch " + index.IndexName + " Index", new[] { ManageIndexes });
+                var permission = new Permission("QueryElasticsearch" + index.IndexName + "Index", "Query Elasticsearch " + index.IndexName + " Index", new[] { ManageElasticIndexes });
                 result.Add(permission);
             }
 
-            result.Add(ManageIndexes);
+            result.Add(ManageElasticIndexes);
             result.Add(QueryElasticApi);
 
             return result;
@@ -40,7 +40,7 @@ namespace OrchardCore.Search.Elasticsearch
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageIndexes }
+                    Permissions = new[] { ManageElasticIndexes }
                 },
                 new PermissionStereotype
                 {

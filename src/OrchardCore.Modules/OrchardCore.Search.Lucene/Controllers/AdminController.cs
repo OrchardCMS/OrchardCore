@@ -93,7 +93,7 @@ namespace OrchardCore.Search.Lucene.Controllers
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
             {
                 return Forbid();
             }
@@ -148,7 +148,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             var IsCreate = String.IsNullOrWhiteSpace(indexName);
             var settings = new LuceneIndexSettings();
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
             {
                 return Forbid();
             }
@@ -184,7 +184,7 @@ namespace OrchardCore.Search.Lucene.Controllers
         [HttpPost, ActionName("Edit")]
         public async Task<ActionResult> EditPost(LuceneIndexSettingsViewModel model, string[] indexedContentTypes)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
             {
                 return Forbid();
             }
@@ -258,7 +258,7 @@ namespace OrchardCore.Search.Lucene.Controllers
         [HttpPost]
         public async Task<ActionResult> Reset(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
             {
                 return Forbid();
             }
@@ -287,7 +287,7 @@ namespace OrchardCore.Search.Lucene.Controllers
         [HttpPost]
         public async Task<ActionResult> Rebuild(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
             {
                 return Forbid();
             }
@@ -312,7 +312,7 @@ namespace OrchardCore.Search.Lucene.Controllers
         [HttpPost]
         public async Task<ActionResult> Delete(LuceneIndexSettingsViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
             {
                 return Forbid();
             }
@@ -350,7 +350,7 @@ namespace OrchardCore.Search.Lucene.Controllers
         [HttpPost]
         public async Task<IActionResult> Query(AdminQueryViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
             {
                 return Forbid();
             }
@@ -423,7 +423,7 @@ namespace OrchardCore.Search.Lucene.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
             {
                 return Forbid();
             }

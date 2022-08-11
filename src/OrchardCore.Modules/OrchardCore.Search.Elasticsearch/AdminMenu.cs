@@ -28,16 +28,16 @@ namespace OrchardCore.Search.Elasticsearch
                     .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
                         .Add(S["Elasticsearch Indices"], S["Elasticsearch Indices"].PrefixPosition(), indexes => indexes
                             .Action("Index", "Admin", new { area = "OrchardCore.Search.Elasticsearch" })
-                            .Permission(Permissions.ManageIndexes)
+                            .Permission(Permissions.ManageElasticIndexes)
                             .LocalNav())
                         .Add(S["Run Elasticsearch Query"], S["Run Elasticsearch Query"].PrefixPosition(), queries => queries
                             .Action("Query", "Admin", new { area = "OrchardCore.Search.Elasticsearch" })
-                            .Permission(Permissions.ManageIndexes)
+                            .Permission(Permissions.ManageElasticIndexes)
                             .LocalNav()))
                     .Add(S["Settings"], settings => settings
                         .Add(S["Elasticsearch"], S["Elasticsearch"].PrefixPosition(), entry => entry
                              .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ElasticSettingsDisplayDriver.GroupId })
-                             .Permission(Permissions.ManageIndexes)
+                             .Permission(Permissions.ManageElasticIndexes)
                              .LocalNav()
                         )));
 

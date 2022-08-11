@@ -28,16 +28,16 @@ namespace OrchardCore.Search.Lucene
                     .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
                         .Add(S["Lucene Indices"], S["Lucene Indices"].PrefixPosition(), indexes => indexes
                             .Action("Index", "Admin", new { area = "OrchardCore.Search.Lucene" })
-                            .Permission(Permissions.ManageIndexes)
+                            .Permission(Permissions.ManageLuceneIndexes)
                             .LocalNav())
                         .Add(S["Run Lucene Query"], S["Run Lucene Query"].PrefixPosition(), queries => queries
                             .Action("Query", "Admin", new { area = "OrchardCore.Search.Lucene" })
-                            .Permission(Permissions.ManageIndexes)
+                            .Permission(Permissions.ManageLuceneIndexes)
                             .LocalNav()))
                     .Add(S["Settings"], settings => settings
                         .Add(S["Lucene"], S["Lucene"].PrefixPosition(), entry => entry
                              .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LuceneSettingsDisplayDriver.GroupId })
-                             .Permission(Permissions.ManageIndexes)
+                             .Permission(Permissions.ManageLuceneIndexes)
                              .LocalNav()
                         )));
 

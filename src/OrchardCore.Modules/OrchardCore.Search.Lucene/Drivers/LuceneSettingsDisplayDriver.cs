@@ -34,7 +34,7 @@ namespace OrchardCore.Search.Lucene.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageIndexes))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLuceneIndexes))
             {
                 return null;
             }
@@ -52,7 +52,7 @@ namespace OrchardCore.Search.Lucene.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageIndexes))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLuceneIndexes))
             {
                 return null;
             }

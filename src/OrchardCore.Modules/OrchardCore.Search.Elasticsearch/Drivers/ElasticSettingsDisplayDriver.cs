@@ -35,7 +35,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageIndexes))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageElasticIndexes))
             {
                 return null;
             }
@@ -53,7 +53,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageIndexes))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageElasticIndexes))
             {
                 return null;
             }
