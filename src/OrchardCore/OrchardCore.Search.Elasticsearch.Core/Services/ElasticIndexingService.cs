@@ -117,8 +117,13 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         .Select(x => x.ContentItemId)
                         .ToArray();
 
-                    var allPublished = await contentManager.GetAsync(updatedContentItemIds);
-                    var allLatest = await contentManager.GetAsync(updatedContentItemIds, latest: true);
+                    var allPublished = new Dictionary<string, ContentItem>();
+                    var allLatest = new Dictionary<string, ContentItem>();
+
+                    var allPublishedContentItems = await contentManager.GetAsync(updatedContentItemIds);
+                    allPublished = allPublishedContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId, v => v);
+                    var allLatestContentItems = await contentManager.GetAsync(updatedContentItemIds, latest: true);
+                    allLatest = allLatestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemVersionId, v => v);
 
                     // Group all DocumentIndex by index to batch update them
                     var updatedDocumentsByIndex = new Dictionary<string, List<DocumentIndex>>();
@@ -145,7 +150,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                             if (needPublished)
                             {
-                                var contentItem = allPublished.FirstOrDefault(c => c.ContentItemId == task.ContentItemId);
+                                allPublished.TryGetValue(task.ContentItemId, out var contentItem);
 
                                 if (contentItem != null)
                                 {
@@ -156,7 +161,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                             if (needLatest)
                             {
-                                var contentItem = allLatest.FirstOrDefault(c => c.ContentItemId == task.ContentItemId);
+                                allLatest.TryGetValue(task.ContentItemId, out var contentItem);
 
                                 if (contentItem != null)
                                 {
