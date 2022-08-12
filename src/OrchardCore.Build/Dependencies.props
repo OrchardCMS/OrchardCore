@@ -31,7 +31,7 @@
     <PackageManagement Include="MailKit" Version="3.3.0" />
     <PackageManagement Include="Markdig" Version="0.30.2" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
-    <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     <PackageManagement Include="MimeKit" Version="3.3.0" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.22" />
