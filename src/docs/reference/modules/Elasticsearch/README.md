@@ -166,20 +166,6 @@ Elasticsearch will do an automatic mapping based on CLR Types. Every data field 
 
 There may be differences between Lucene and Elasticsearch indexed fields. Lucene allows to `store` and set a field as a `keyword` explicitly. Elasticsearch, for now, is not affected by the `stored` or `keyword` options on a ContentField index settings. We may allow it eventually by executing manual mapping on the indices. So, right now, this can result in having fields that are `text` in Lucene and `keyword` in Elasticsearch when using the same Field name in a Query. You then need to adapt your Queries to use the proper type of Queries.
 
-| Lucene | Elasticsearch | Description |  When Stored  | Search Query type |
-|--------|---------------|---------------------------|-----------------|------------------|
-| StringField | Keyword  | A field that is indexed but not tokenized: the entire value is indexed as a single token     | analyzed (not original value) | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html) because indexed as a single token.  |
-| TextField   | Text     | A field that is indexed and tokenized, without term vectors | analyzed (not original value)  | [analyzed fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/full-text-queries.html). Also known as full-text search |
-| StoredField | stored in _source by mapping configuration | A field containing original value (not analyzed) | original value | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html) |
-
-### Stored fields Query types (structured data search):
-
-https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html
-
-### Analyzed fields Query types (full-text search): 
-
-https://www.elastic.co/guide/en/elasticsearch/reference/current/full-text-queries.html
-
 ### Indexed vs Stored
 
 When we say that a field is indexed it means that it is parsed by the configured Analyzer that is set on the index (Elasticsearch also allows to pass custom Analyzers on Queries too). 
@@ -191,3 +177,11 @@ As an example, Elasticsearch stores the original value passed in the "_source" f
 Lucene though will currently be able to store the original value passed only when the `Store source data` option is set on a specific index setting. Lucene also has `stored` fields by design like the `ContentItemId` of a content item.
 
 The equivalent of a `StringField` that will behave the same way than a `keyword` in Elasticsearch has been added to all ContentFields that are passing "string" values by using the `.keyword` suffix on the field name. So when Lucene is parsing a `ContentField` as a keyword it is not stored with the original value because it is indexed and thus parsed by its configured index analyzer.
+
+Here is a small table to compare Lucene and Elasticsearch (string) types:
+
+| Lucene | Elasticsearch | Description |  When Stored  | Search Query type |
+|--------|---------------|---------------------------|-----------------|------------------|
+| StringField | Keyword  | A field that is indexed but not tokenized: the entire value is indexed as a single token     | analyzed (not original value) | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html) because indexed as a single token.  |
+| TextField   | Text     | A field that is indexed and tokenized, without term vectors | analyzed (not original value)  | [analyzed fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/full-text-queries.html). Also known as full-text search |
+| StoredField | stored in _source by mapping configuration | A field containing original value (not analyzed) | original value | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html) |
