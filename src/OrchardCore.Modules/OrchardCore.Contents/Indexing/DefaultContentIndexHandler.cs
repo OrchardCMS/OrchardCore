@@ -13,6 +13,11 @@ namespace OrchardCore.Contents.Indexing
                 DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
+                IndexingConstants.ContentTypeKey,
+                context.ContentItem.ContentType,
+                DocumentIndexOptions.Keyword);
+
+            context.DocumentIndex.Set(
                 IndexingConstants.CreatedUtcKey,
                 context.ContentItem.CreatedUtc,
                 DocumentIndexOptions.Keyword);
@@ -26,6 +31,11 @@ namespace OrchardCore.Contents.Indexing
                 IndexingConstants.OwnerKey,
                 context.ContentItem.Owner,
                 DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
+
+            context.DocumentIndex.Set(
+                IndexingConstants.OwnerKey,
+                context.ContentItem.Owner,
+                DocumentIndexOptions.Keyword);
 
             context.DocumentIndex.Set(
                 IndexingConstants.AuthorKey,

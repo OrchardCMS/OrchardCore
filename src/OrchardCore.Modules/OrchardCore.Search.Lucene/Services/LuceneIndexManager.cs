@@ -14,6 +14,7 @@ using Lucene.Net.Spatial.Prefix.Tree;
 using Lucene.Net.Store;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Contents.Indexing;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
@@ -139,11 +140,11 @@ namespace OrchardCore.Search.Lucene
 
         public async Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
-            await WriteAsync(indexName, writer =>
+            await WriteAsync(indexName, async writer =>
             {
                 foreach (var indexDocument in indexDocuments)
                 {
-                    writer.AddDocument(CreateLuceneDocument(indexDocument));
+                    writer.AddDocument(await CreateLuceneDocument(indexName, indexDocument));
                 }
 
                 writer.Commit();
@@ -191,14 +192,22 @@ namespace OrchardCore.Search.Lucene
             return new ReadOnlyDictionary<string, DateTime>(_timestamps);
         }
 
-        private Document CreateLuceneDocument(DocumentIndex documentIndex)
+        private async Task<Document> CreateLuceneDocument(string indexName, DocumentIndex documentIndex)
         {
+            var indexSettings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
+
             var doc = new Document
             {
                 // Always store the content item id and version id
                 new StringField("ContentItemId", documentIndex.ContentItemId.ToString(), Field.Store.YES),
                 new StringField("ContentItemVersionId", documentIndex.ContentItemVersionId.ToString(), Field.Store.YES)
             };
+
+            if (indexSettings.StoreSourceData)
+            {
+                doc.Add(new StoredField(IndexingConstants.Source + "ContentItemId", documentIndex.ContentItemId.ToString()));
+                doc.Add(new StoredField(IndexingConstants.Source + "ContentItemVersionId", documentIndex.ContentItemVersionId.ToString()));
+            }
 
             foreach (var entry in documentIndex.Entries)
             {
@@ -211,6 +220,11 @@ namespace OrchardCore.Search.Lucene
                     case DocumentIndex.Types.Boolean:
                         // Store "true"/"false" for booleans
                         doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), store));
+
+                        if (indexSettings.StoreSourceData)
+                        {
+                            doc.Add(new StoredField(IndexingConstants.Source + entry.Name, Convert.ToString(entry.Value).ToLowerInvariant()));
+                        }
                         break;
 
                     case DocumentIndex.Types.DateTime:
@@ -224,6 +238,18 @@ namespace OrchardCore.Search.Lucene
                             {
                                 doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateResolution.SECOND), store));
                             }
+
+                            if (indexSettings.StoreSourceData)
+                            {
+                                if (entry.Value is DateTimeOffset)
+                                {
+                                    doc.Add(new StoredField(IndexingConstants.Source + entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateResolution.SECOND)));
+                                }
+                                else
+                                {
+                                    doc.Add(new StoredField(IndexingConstants.Source + entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateResolution.SECOND)));
+                                }
+                            }
                         }
                         else
                         {
@@ -235,6 +261,11 @@ namespace OrchardCore.Search.Lucene
                         if (entry.Value != null && Int64.TryParse(entry.Value.ToString(), out var value))
                         {
                             doc.Add(new Int64Field(entry.Name, value, store));
+
+                            if (indexSettings.StoreSourceData)
+                            {
+                                doc.Add(new StoredField(IndexingConstants.Source + entry.Name, value));
+                            }
                         }
                         else
                         {
@@ -247,6 +278,11 @@ namespace OrchardCore.Search.Lucene
                         if (entry.Value != null)
                         {
                             doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), store));
+
+                            if (indexSettings.StoreSourceData)
+                            {
+                                doc.Add(new StoredField(IndexingConstants.Source + entry.Name, Convert.ToDouble(entry.Value)));
+                            }
                         }
                         else
                         {
@@ -275,6 +311,11 @@ namespace OrchardCore.Search.Lucene
                             {
                                 doc.Add(new StringField($"{entry.Name}.keyword", stringValue, Field.Store.NO));
                             }
+
+                            if (indexSettings.StoreSourceData)
+                            {
+                                doc.Add(new StoredField(IndexingConstants.Source + entry.Name, stringValue));
+                            }
                         }
                         else
                         {
@@ -291,6 +332,7 @@ namespace OrchardCore.Search.Lucene
 
                     case DocumentIndex.Types.GeoPoint:
                         var strategy = new RecursivePrefixTreeStrategy(_grid, entry.Name);
+
                         if (entry.Value != null && entry.Value is DocumentIndex.GeoPoint point)
                         {
                             var geoPoint = _ctx.MakePoint((double)point.Longitude, (double)point.Latitude);
@@ -299,14 +341,16 @@ namespace OrchardCore.Search.Lucene
                                 doc.Add(field);
                             }
 
-                            if (entry.Options.HasFlag(DocumentIndexOptions.Store))
+                            doc.Add(new StoredField(strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
+
+                            if (indexSettings.StoreSourceData)
                             {
-                                doc.Add(new StoredField(strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
+                                doc.Add(new StoredField(IndexingConstants.Source + strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
                             }
                         }
                         else
                         {
-                            doc.Add(new StringField(strategy.FieldName, "NULL", store));
+                            doc.Add(new StoredField(strategy.FieldName, "NULL"));
                         }
                         break;
                 }
