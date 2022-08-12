@@ -45,11 +45,11 @@ namespace OrchardCore.Queries.Deployment
 
         public override async Task<IDisplayResult> UpdateAsync(QueryBasedContentDeploymentStep step, IUpdateModel updater)
         {
-            var queryBasedContentModel = new QueryBasedContentDeploymentStepViewModel();
+            var queryBasedContentViewModel = new QueryBasedContentDeploymentStepViewModel();
 
-            if (await updater.TryUpdateModelAsync(queryBasedContentModel, Prefix, x => x.QueryName, x => x.QueryParameters, x => x.ExportAsSetupRecipe))
+            if (await updater.TryUpdateModelAsync(queryBasedContentViewModel, Prefix, viewModel => viewModel.QueryName, viewModel => viewModel.QueryParameters, viewModel => viewModel.ExportAsSetupRecipe))
             {
-                dynamic query = await _queryManager.LoadQueryAsync(queryBasedContentModel.QueryName);
+                dynamic query = await _queryManager.LoadQueryAsync(queryBasedContentViewModel.QueryName);
                 if (query.Source == "Lucene" && !query.ReturnContentItems)
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Lucene query is not returning content items."]);
@@ -59,11 +59,11 @@ namespace OrchardCore.Queries.Deployment
                     updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your SQL query is not returning documents."]);
                 }
 
-                if (queryBasedContentModel.QueryParameters != null)
+                if (queryBasedContentViewModel.QueryParameters != null)
                 {
                     try
                     {
-                        var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(queryBasedContentModel.QueryParameters);
+                        var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(queryBasedContentViewModel.QueryParameters);
                         if (parameters == null)
                         {
                             updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Make sure it is a valid JSON object. Example: { key : 'value' }"]);
@@ -75,9 +75,9 @@ namespace OrchardCore.Queries.Deployment
                     }
                 }
 
-                step.QueryName = queryBasedContentModel.QueryName;
-                step.ExportAsSetupRecipe = queryBasedContentModel.ExportAsSetupRecipe;
-                step.QueryParameters = queryBasedContentModel.QueryParameters;
+                step.QueryName = queryBasedContentViewModel.QueryName;
+                step.ExportAsSetupRecipe = queryBasedContentViewModel.ExportAsSetupRecipe;
+                step.QueryParameters = queryBasedContentViewModel.QueryParameters;
             }
 
             return Edit(step);
