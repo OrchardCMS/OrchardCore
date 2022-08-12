@@ -392,17 +392,17 @@ namespace OrchardCore.Resources
             manifest
                 .DefineStyle("trumbowyg")
                 .SetUrl("~/OrchardCore.Resources/Styles/trumbowyg.min.css", "~/OrchardCore.Resources/Styles/trumbowyg.css")
-                .SetCdn("https://cdn.jsdelivr.net/npm/trumbowyg@2.25.1/dist/ui/trumbowyg.min.css", "https://cdn.jsdelivr.net/npm/trumbowyg@2.25.1/dist/ui/trumbowyg.css")
-                .SetCdnIntegrity("sha384-kTb2zOBw/Vng2V8SH/LF2llnbNnFpSMVTOrSN0W8Z0zzE8LMM+w/vFqhD9b+esLV", "sha384-qaIYw5IcvXvWBzXq2NPvCMucQerh0hReNg45Qas5X71KWzZmGuPp+VTW5zywbg0x")
-                .SetVersion("2.25.1");
+                .SetCdn("https://cdn.jsdelivr.net/npm/trumbowyg@2.25.2/dist/ui/trumbowyg.min.css", "https://cdn.jsdelivr.net/npm/trumbowyg@2.25.2/dist/ui/trumbowyg.css")
+                .SetCdnIntegrity("sha384-wwpeiBFrdO0V1aLjiU21530YH/T4YzFEW34gCpvzo+8DZwBStD4XaQ9mkxC9ytwQ", "sha384-8aBq5EbdAWlCRbZ7E0W7ZlQACYWE+wMyYwxceZcJRatfzEHocA2SCjLs2u9GAqG2")
+                .SetVersion("2.25.2");
 
             manifest
                 .DefineScript("trumbowyg")
                 .SetDependencies("jquery-resizable")
                 .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg.min.js", "~/OrchardCore.Resources/Scripts/trumbowyg.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/trumbowyg@2.25.1/dist/trumbowyg.min.js", "https://cdn.jsdelivr.net/npm/trumbowyg@2.25.1/dist/trumbowyg.js")
-                .SetCdnIntegrity("sha384-wwt6vSsdmnPNAuXp11Jjm37wAA+b/Rm33Jhd3QE/5E4oDLeNoCTLU3kxQYsdOtdW", "sha384-N2uP/HqSD9qptuEGY2J1Iq0G5jqaYUcuMGUnyWiS6giy4adYptw2Co8hT7LQJKcT")
-                .SetVersion("2.25.1");
+                .SetCdn("https://cdn.jsdelivr.net/npm/trumbowyg@2.25.2/dist/trumbowyg.min.js", "https://cdn.jsdelivr.net/npm/trumbowyg@2.25.2/dist/trumbowyg.js")
+                .SetCdnIntegrity("sha384-cgMkkV1jH1jAfeu7o6hknHAw7ZNJPDC8yo3HfWD00QfPPcSFRW2liHVAsh5pIAFO", "sha384-d0w4Osv7z3mhSbzxfK1A/J3L02ZgvzHClV8r30qdEoJSJZ5jYpkAl2gT1dRKQqJ+")
+                .SetVersion("2.25.2");
 
             manifest
                 .DefineScript("trumbowyg-shortcodes")
@@ -414,13 +414,13 @@ namespace OrchardCore.Resources
                 .DefineStyle("trumbowyg-plugins")
                 .SetDependencies("trumbowyg")
                 .SetUrl("~/OrchardCore.Resources/Styles/trumbowyg-plugins.min.css", "~/OrchardCore.Resources/Styles/trumbowyg-plugins.css")
-                .SetVersion("2.25.1");
+                .SetVersion("2.25.2");
 
             manifest
                 .DefineScript("trumbowyg-plugins")
                 .SetDependencies("trumbowyg")
                 .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg-plugins.min.js", "~/OrchardCore.Resources/Scripts/trumbowyg-plugins.js")
-                .SetVersion("2.25.1");
+                .SetVersion("2.25.2");
 
             manifest
                 .DefineScript("vuejs")
