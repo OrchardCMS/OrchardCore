@@ -145,7 +145,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                             if (needPublished)
                             {
-                                var contentItem = await contentManager.GetAsync(task.ContentItemId);
+                                var contentItem = allPublished.FirstOrDefault(c => c.ContentItemId == task.ContentItemId);
+
                                 if (contentItem != null)
                                 {
                                     publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new ContentIndexSettings());
@@ -155,7 +156,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                             if (needLatest)
                             {
-                                var contentItem = await contentManager.GetAsync(task.ContentItemId, VersionOptions.Latest);
+                                var contentItem = allLatest.FirstOrDefault(c => c.ContentItemId == task.ContentItemId);
+
                                 if (contentItem != null)
                                 {
                                     latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new ContentIndexSettings());
