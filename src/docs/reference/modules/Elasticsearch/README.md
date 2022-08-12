@@ -162,9 +162,9 @@ Here is one example of a Query that will return only specific fields from Elasti
 
 The Elasticsearch index settings allows to store the "source" data or not. It is set to store the source data by default.
 
-Elasticsearch will do an automatic mapping based on CLR Types. Every data field that is passed to Elasticsearch that is mapped as a "string" will become `analyzed` and `stored`. For example, the `Content.ContentItem.DisplayText` will result as a `analyzed` field and `Content.ContentItem.DisplayText.keyword` will become a `stored` field so that it can be used as a technical value.
+Elasticsearch will do an automatic mapping based on CLR Types. Every data field that is passed to Elasticsearch that is mapped as a "string" will become `text` and `keyword`. For example, the `Content.ContentItem.DisplayText` will result as a `text` field and `Content.ContentItem.DisplayText.keyword` will become a `keyword` field so that it can be used as a technical value.
 
-There may be differences between Lucene and Elasticsearch indexed fields. Lucene allows overriding the CLR type mapping by selecting a `stored` option on a ContentField for example. Elasticsearch, for now, is not affected by the `stored` or `analyzed` options on a ContentField index settings. We may allow it eventually by executing manual mapping on the indices. So, right now, this can result in having fields that are `analyzed` in Lucene and `stored` in Elasticsearch when using the same Field name in a Query. You then need to adapt your Queries to use the proper type of Queries.
+There may be differences between Lucene and Elasticsearch indexed fields. Lucene allows to `store` and set a field as a `keyword` explicitly. Elasticsearch, for now, is not affected by the `stored` or `keyword` options on a ContentField index settings. We may allow it eventually by executing manual mapping on the indices. So, right now, this can result in having fields that are `text` in Lucene and `keyword` in Elasticsearch when using the same Field name in a Query. You then need to adapt your Queries to use the proper type of Queries.
 
 | Lucene | Elasticsearch | Description |  When Stored  | Search Query type |
 |--------|---------------|---------------------------|-----------------|------------------|
@@ -188,6 +188,6 @@ Though, when a field is stored it can have different contexts wether it stores t
 
 As an example, Elasticsearch stores the original value passed in the "_source" fields of its index. All the automatically mapped fields are never stored in the index. They are indexed.
 
-Lucene though will currently be able to store the original value passed only when the `stored` option is set on a specific `ContentField`. Lucene also has `stored` fields by design like the `ContentItemId` of a content item. Though, the current Lucene implementation will always use a `StringField` on a `ContentField` that is set to be `stored` on its index settings and also will store its original value in the index.
+Lucene though will currently be able to store the original value passed only when the `Store source data` option is set on a specific index setting. Lucene also has `stored` fields by design like the `ContentItemId` of a content item.
 
 The equivalent of a `StringField` that will behave the same way than a `keyword` in Elasticsearch has been added to all ContentFields that are passing "string" values by using the `.keyword` suffix on the field name. So when Lucene is parsing a `ContentField` as a keyword it is not stored with the original value because it is indexed and thus parsed by its configured index analyzer.
