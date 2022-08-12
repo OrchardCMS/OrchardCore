@@ -12,7 +12,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
     /// <remarks>
     /// This services is only registered from OrchardCore.Search.Elasticsearch.Worker feature.
     /// </remarks>
-    [BackgroundTask(Schedule = "* * * * *", Description = "Update Elasticsearch indexes.", LockTimeout = 1000, LockExpiration = 60000)]
+    [BackgroundTask(Schedule = "* * * * *", Description = "Update Elasticsearch indexes.", LockTimeout = 1000, LockExpiration = 300000)]
     public class IndexingBackgroundTask : IBackgroundTask
     {
         public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
