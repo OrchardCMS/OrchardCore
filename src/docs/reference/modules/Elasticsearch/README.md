@@ -166,10 +166,11 @@ Elasticsearch will do an automatic mapping based on CLR Types. Every data field 
 
 There may be differences between Lucene and Elasticsearch indexed fields. Lucene allows overriding the CLR type mapping by selecting a `stored` option on a ContentField for example. Elasticsearch, for now, is not affected by the `stored` or `analyzed` options on a ContentField index settings. We may allow it eventually by executing manual mapping on the indices. So, right now, this can result in having fields that are `analyzed` in Lucene and `stored` in Elasticsearch when using the same Field name in a Query. You then need to adapt your Queries to use the proper type of Queries.
 
-| Lucene | Elasticsearch | Description | Query types |
-|--------|---------------|---------------------------|-----------------|    
-| StringField | Keyword  | A field that is indexed but not tokenized: the entire value is indexed as a single token     | stored fields   |
-| TextField   | Text     | A field that is indexed and tokenized, without term vectors  | analyzed fields |
+| Lucene | Elasticsearch | Description |  When Stored  | Search Query type |
+|--------|---------------|---------------------------|-----------------|------------------|
+| StringField | Keyword  | A field that is indexed but not tokenized: the entire value is indexed as a single token     | analyzed (not original value) | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html) because indexed as a single token.  |
+| TextField   | Text     | A field that is indexed and tokenized, without term vectors | analyzed (not original value)  | [analyzed fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/full-text-queries.html). Also known as full-text search |
+| StoredField | stored in _source by mapping configuration | A field containing original value (not analyzed) | original value | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html) |
 
 ### Stored fields Query types (structured data search):
 
