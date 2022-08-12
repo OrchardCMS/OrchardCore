@@ -9,6 +9,9 @@ using OrchardCore.Search.Drivers;
 using OrchardCore.Search.Deployment;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Search.Model;
+using Microsoft.Extensions.Options;
+using OrchardCore.Search.Configuration;
 
 namespace OrchardCore.Search
 {
@@ -19,14 +22,14 @@ namespace OrchardCore.Search
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            //services.AddTransient<IConfigureOptions<SearchSettings>, SearchSettingsConfiguration>();
-            services.AddScoped<IAreaControllerRouteMapper, SearchAreaControllerRouteMapper>();
-
+            services.AddTransient<IConfigureOptions<SearchSettings>, SearchSettingsConfiguration>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, SearchSettingsDisplayDriver>();
             services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
             services.AddShapeAttributes<SearchShapes>();
+
+            //services.AddScoped<IAreaControllerRouteMapper, SearchAreaControllerRouteMapper>();
         }
     }
 
