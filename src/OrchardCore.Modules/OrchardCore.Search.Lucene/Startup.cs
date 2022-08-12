@@ -10,6 +10,7 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -51,6 +52,7 @@ namespace OrchardCore.Search.Lucene
                 o.MemberAccessStrategy.Register<SearchResultsViewModel>();
             });
 
+            services.AddScoped<IDataMigration, Migrations>();
             services.AddSingleton<SearchProvider, LuceneSearchProvider>();
             services.AddSingleton<LuceneIndexingState>();
             services.AddSingleton<LuceneIndexSettingsService>();
