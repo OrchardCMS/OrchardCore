@@ -1,10 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Routing;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Drivers;
+using OrchardCore.Search.Deployment;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -25,6 +27,17 @@ namespace OrchardCore.Search
             services.AddScoped<IDisplayDriver<ISite>, SearchSettingsDisplayDriver>();
             services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
             services.AddShapeAttributes<SearchShapes>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, SearchSettingsDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SearchSettingsDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, SearchSettingsDeploymentStepDriver>();
         }
     }
 }
