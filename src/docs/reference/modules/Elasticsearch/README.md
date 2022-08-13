@@ -170,7 +170,7 @@ There may be differences between Lucene and Elasticsearch indexed fields. Lucene
 
 When we say that a field is indexed it means that it is parsed by the configured Analyzer that is set on the index (Elasticsearch also allows to pass custom Analyzers on Queries too). 
 
-Though, when a field is stored it can have different contexts wether it stores the original value or not.
+Though, when a field is stored it can have different contexts.
 
 As an example, Elasticsearch stores the original value passed in the "_source" fields of its index. All the automatically mapped fields are never stored in the index. They are indexed.
 
