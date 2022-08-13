@@ -79,7 +79,7 @@ namespace OrchardCore.Flows.Settings
             context.Builder.WithSettings(new BagPartSettings
             {
                 ContainedContentTypes = Array.Empty<string>(),
-                ContainedStereotypes = model.Stereotypes.Split(',', ';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries),
+                ContainedStereotypes = model.Stereotypes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries),
                 DisplayType = model.DisplayType
             });
         }

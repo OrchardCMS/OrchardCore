@@ -13,7 +13,7 @@
         <div class="form-check">
             <input class="form-check-input" type="radio" asp-for="Source" id="SourceStereotype" value="@(BagPartSettingType.Stereotypes)" checked="@(Model.Source == BagPartSettingType.Stereotypes)">
             <label for="SourceStereotype">
-                @T["Stereotype"] <span class="hint">@T["All content types of these stereotypes"]</span>
+                @T["Stereotype"] <span class="hint">@T["All content types of these Stereotypes"]</span>
             </label>
         </div>
     </div>
@@ -25,11 +25,11 @@
     @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContainedContentTypes, htmlName = Html.NameFor(m => m.ContainedContentTypes) })
 </div>
 
-<div class="mb-3" id="StereotypeContainer">
+<div class="mb-3" id="StereotypesContainer">
     <div class="w-sm-50" id="@Html.IdFor(x => x.Source)">
         <label asp-for="Stereotypes">@T["Stereotypes"]</label>
         <input asp-for="Stereotypes" class="form-control medium" />
-        <span class="hint">@T["The stereotypes of the content types that this bag can contain. You may define multiple Stereotypes using the comma (,) as a separator"]</span>
+        <span class="hint">@T["The Stereotypes of the content types that this bag can contain. You may define multiple Stereotypes using the comma (,) as a separator"]</span>
     </div>
 </div>
 <div class="mb-3">
@@ -45,7 +45,7 @@
 
         var sources = document.getElementsByName('@Html.NameFor(x => x.Source)');
         var contentTypesContainer = document.getElementById('ContentTypesContainer');
-        var stereotypeContainer = document.getElementById('StereotypeContainer');
+        var stereotypeContainer = document.getElementById('StereotypesContainer');
 
         for (var i = 0; i < sources.length; i++) {
             var source = sources[i];

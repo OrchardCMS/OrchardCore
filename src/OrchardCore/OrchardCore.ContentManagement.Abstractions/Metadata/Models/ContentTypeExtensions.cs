@@ -2,6 +2,7 @@ using System;
 using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentManagement.Metadata.Models;
+
 public static class ContentTypeExtensions
 {
     public static bool HasStereotype(this ContentTypeDefinition contentTypeDefinition)
