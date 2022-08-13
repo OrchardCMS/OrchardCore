@@ -104,6 +104,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         .Keyword(obj => obj
                             .Name(IndexingConstants.OwnerKey)
                         )
+                        .Text(obj => obj
+                            .Name(IndexingConstants.FullTextKey)
+                        )
                     ));
 
                 // ContainedPart mappings
