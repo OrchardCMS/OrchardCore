@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Indexing;
@@ -9,8 +8,6 @@ namespace OrchardCore.Lists.Indexes
 {
     public class ContainedPartContentIndexHandler : IContentItemIndexHandler
     {
-        public const string OrderKey = "Content.ContentItem.ContainedPart.Order";
-
         public Task BuildIndexAsync(BuildIndexContext context)
         {
             var parent = context.ContentItem.As<ContainedPart>();
