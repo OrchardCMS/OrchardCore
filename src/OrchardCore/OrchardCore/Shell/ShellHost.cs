@@ -30,10 +30,10 @@ namespace OrchardCore.Environment.Shell
         private readonly ILogger _logger;
 
         private bool _initialized;
-        private readonly ConcurrentDictionary<string, ShellContext> _shellContexts = new ConcurrentDictionary<string, ShellContext>();
-        private readonly ConcurrentDictionary<string, ShellSettings> _shellSettings = new ConcurrentDictionary<string, ShellSettings>();
-        private readonly ConcurrentDictionary<string, SemaphoreSlim> _shellSemaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
-        private SemaphoreSlim _initializingSemaphore = new SemaphoreSlim(1);
+        private readonly ConcurrentDictionary<string, ShellContext> _shellContexts = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, ShellSettings> _shellSettings = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, SemaphoreSlim> _shellSemaphores = new();
+        private readonly SemaphoreSlim _initializingSemaphore = new(1);
 
         public ShellHost(
             IShellSettingsManager shellSettingsManager,
@@ -55,22 +55,24 @@ namespace OrchardCore.Environment.Shell
 
         public async Task InitializeAsync()
         {
-            if (!_initialized)
+            if (_initialized)
             {
-                // Prevent concurrent requests from creating all shells multiple times
-                await _initializingSemaphore.WaitAsync();
-                try
+                return;
+            }
+
+            // Prevent concurrent requests from creating all shells multiple times
+            await _initializingSemaphore.WaitAsync();
+            try
+            {
+                if (!_initialized)
                 {
-                    if (!_initialized)
-                    {
-                        await PreCreateAndRegisterShellsAsync();
-                    }
+                    await PreCreateAndRegisterShellsAsync();
                 }
-                finally
-                {
-                    _initialized = true;
-                    _initializingSemaphore.Release();
-                }
+            }
+            finally
+            {
+                _initialized = true;
+                _initializingSemaphore.Release();
             }
         }
 
@@ -183,10 +185,8 @@ namespace OrchardCore.Environment.Shell
             }
 
             var count = 0;
-            while (count < ReloadShellMaxRetriesCount)
+            while (count++ < ReloadShellMaxRetriesCount)
             {
-                count++;
-
                 if (_shellContexts.TryRemove(settings.Name, out var context))
                 {
                     _runningShellTable.Remove(settings);
@@ -449,7 +449,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Whether or not a shell can be activated and added to the running shells.
         /// </summary>
-        private bool CanRegisterShell(ShellSettings shellSettings)
+        private static bool CanRegisterShell(ShellSettings shellSettings)
         {
             return
                 shellSettings.State == TenantState.Running ||

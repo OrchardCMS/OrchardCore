@@ -37,9 +37,11 @@ namespace OrchardCore.OpenId.Recipes
                 AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
                 AllowHybridFlow = model.AllowHybridFlow,
                 AllowImplicitFlow = model.AllowImplicitFlow,
+                AllowIntrospectionEndpoint = model.AllowIntrospectionEndpoint,
                 AllowLogoutEndpoint = model.AllowLogoutEndpoint,
                 AllowPasswordFlow = model.AllowPasswordFlow,
                 AllowRefreshTokenFlow = model.AllowRefreshTokenFlow,
+                AllowRevocationEndpoint = model.AllowRevocationEndpoint,
                 ClientId = model.ClientId,
                 ClientSecret = model.ClientSecret,
                 ConsentType = model.ConsentType,
@@ -48,7 +50,8 @@ namespace OrchardCore.OpenId.Recipes
                 RedirectUris = model.RedirectUris,
                 Roles = model.RoleEntries.Select(x => x.Name).ToArray(),
                 Scopes = model.ScopeEntries.Select(x => x.Name).ToArray(),
-                Type = model.Type
+                Type = model.Type,
+                RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange,
             };
 
             await _applicationManager.UpdateDescriptorFromSettings(settings, app);
