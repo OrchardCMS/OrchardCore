@@ -11,10 +11,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Tenants",
     Name = "Tenants",
     Description = "Provides a way to manage tenants from the admin.",
-    Dependencies = new[]
-    {
-        "OrchardCore.Settings",
-    },
     Category = "Infrastructure",
     DefaultTenantOnly = true
 )]
