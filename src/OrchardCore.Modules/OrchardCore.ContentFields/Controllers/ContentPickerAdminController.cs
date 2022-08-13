@@ -58,13 +58,13 @@ namespace OrchardCore.ContentFields.Controllers
 
             if (fieldSettings.DisplayedStereotypes != null && fieldSettings.DisplayedStereotypes.Length > 0)
             {
-                contentTypes = _contentDefinitionManager
-                            .ListTypeDefinitions()
+                contentTypes = _contentDefinitionManager.ListTypeDefinitions()
                             .Where(contentType =>
                             {
-                                var settings = contentType.GetSettings<ContentTypeSettings>();
-                                return !String.IsNullOrEmpty(settings.Stereotype) && fieldSettings.DisplayedStereotypes.Contains(settings.Stereotype, StringComparer.OrdinalIgnoreCase);
-                            }).Select(x => x.Name);
+                                var stereotype = contentType.GetSettings<ContentTypeSettings>().Stereotype;
+
+                                return !String.IsNullOrEmpty(stereotype) && fieldSettings.DisplayedStereotypes.Contains(stereotype, StringComparer.OrdinalIgnoreCase);
+                            }).Select(contentType => contentType.Name);
             }
 
             var results = await resultProvider.Search(new ContentPickerSearchContext

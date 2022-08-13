@@ -33,19 +33,19 @@
             </label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="radio" asp-for="Source" id="SourceStereotype" value="@ContentPickerSettingType.Stereotypes" checked="@(Model.Source == ContentPickerSettingType.Stereotypes)">
-            <label for="SourceStereotype">
-                @T["Stereotype"] <span class="hint">@T["All content types of these stereotypes"]</span>
+            <input class="form-check-input" type="radio" asp-for="Source" id="SourceStereotypes" value="@ContentPickerSettingType.Stereotypes" checked="@(Model.Source == ContentPickerSettingType.Stereotypes)">
+            <label for="SourceStereotypes">
+                @T["Stereotype"] <span class="hint">@T["All content types of these Stereotypes"]</span>
             </label>
         </div>
     </div>
 </div>
 
-<div class="mb-3" id="StereotypeContainer">
+<div class="mb-3" id="StereotypesContainer">
     <div class="w-sm-50" id="@Html.IdFor(x => x.Source)">
         <label asp-for="Stereotypes">@T["Stereotypes"]</label>
         <input asp-for="Stereotypes" class="form-control medium" />
-        <span class="hint">@T["The stereotypes of the content types that this field can contain. You may define multiple Stereotypes using the comma (,) as a separator"]</span>
+        <span class="hint">@T["The Stereotypes of the content types that this field can contain. You may define multiple Stereotypes using the comma (,) as a separator"]</span>
     </div>
 </div>
 
@@ -67,7 +67,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         var sources = document.getElementsByName('@Html.NameFor(x => x.Source)');
         var contentTypesContainer = document.getElementById('ContentTypesContainer');
-        var stereotypeContainer = document.getElementById('StereotypeContainer');
+        var stereotypeContainer = document.getElementById('StereotypesContainer');
         for (var i = 0; i < sources.length; i++) {
             var source = sources[i];
             source.addEventListener('change', function(src) {

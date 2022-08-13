@@ -39,7 +39,7 @@ namespace OrchardCore.ContentFields.Settings
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                var settings = new ContentPickerFieldSettings()
+                var settings = new ContentPickerFieldSettings
                 {
                     Hint = model.Hint,
                     Required = model.Required,
@@ -74,7 +74,7 @@ namespace OrchardCore.ContentFields.Settings
                 return;
             }
 
-            settings.DisplayedStereotypes = stereotypes.Split(',', ';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            settings.DisplayedStereotypes = stereotypes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         }
 
         private void SetContentTypes(IUpdateModel updater, string[] displayedContentTypes, ContentPickerFieldSettings settings)
@@ -96,7 +96,9 @@ namespace OrchardCore.ContentFields.Settings
                 return ContentPickerSettingType.AllTypes;
             }
 
-            return settings.DisplayedStereotypes != null && settings.DisplayedStereotypes.Length > 0 ? ContentPickerSettingType.Stereotypes : ContentPickerSettingType.ContentTypes;
+            return settings.DisplayedStereotypes != null && settings.DisplayedStereotypes.Length > 0
+                ? ContentPickerSettingType.Stereotypes
+                : ContentPickerSettingType.ContentTypes;
         }
     }
 }
