@@ -25,7 +25,6 @@ namespace OrchardCore.Search
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            //services.AddTransient<IAreaControllerRouteMapper, SearchAreaControllerRouteMapper>();
             services.AddTransient<IConfigureOptions<SearchSettings>, SearchSettingsConfiguration>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
