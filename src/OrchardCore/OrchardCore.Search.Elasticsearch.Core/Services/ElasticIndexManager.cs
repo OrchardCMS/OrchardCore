@@ -89,6 +89,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 var response = await _elasticClient.Indices.CreateAsync(createIndexDescriptor);
 
+                // We map DisplayText here because we have 3 different fields with it.
+                // We can't have Content.ContentItem.DisplayText as it is mapped as an Object in Elasticsearch.
                 await _elasticClient.MapAsync<DisplayTextModel>(p => p
                     .Index(_indexPrefix + elasticIndexSettings.IndexName)
                     .Properties(p => p
@@ -98,7 +100,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         )
                     ));
 
-                // We map ContentType as a keyword
+                // We map ContentType as a keyword because else the automatic mapping will break the queries.
+                // We need to access it with Content.ContentItem.ContentType as a keyword
+                // for the ContentPickerResultProvider(s).
                 await _elasticClient.MapAsync<string>(p => p
                     .Index(_indexPrefix + elasticIndexSettings.IndexName)
                     .Properties(p => p
