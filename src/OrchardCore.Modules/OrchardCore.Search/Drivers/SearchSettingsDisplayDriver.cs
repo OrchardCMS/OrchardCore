@@ -21,22 +21,16 @@ namespace OrchardCore.Search.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
 
         public SearchSettingsDisplayDriver(
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
-            IServiceProvider serviceProvider,
-            IShellHost shellHost,
-            ShellSettings shellSettings
+            IServiceProvider serviceProvider
             )
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
             _serviceProvider = serviceProvider;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
         }
 
         public override async Task<IDisplayResult> EditAsync(SearchSettings settings, BuildEditorContext context)
@@ -78,8 +72,6 @@ namespace OrchardCore.Search.Drivers
 
                 section.SearchProvider = model.SearchProvider;
             }
-
-            await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
             return await EditAsync(section, context);
         }
