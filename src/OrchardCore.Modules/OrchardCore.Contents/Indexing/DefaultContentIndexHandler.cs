@@ -15,12 +15,12 @@ namespace OrchardCore.Contents.Indexing
             context.DocumentIndex.Set(
                 IndexingConstants.CreatedUtcKey,
                 context.ContentItem.CreatedUtc,
-                DocumentIndexOptions.Keyword);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.LatestKey,
                 context.ContentItem.Latest,
-                DocumentIndexOptions.Keyword);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.OwnerKey,
@@ -28,21 +28,16 @@ namespace OrchardCore.Contents.Indexing
                 DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
-                IndexingConstants.OwnerKey,
-                context.ContentItem.Owner,
-                DocumentIndexOptions.Keyword);
-
-            context.DocumentIndex.Set(
                 IndexingConstants.AuthorKey,
                 context.ContentItem.Author,
-                DocumentIndexOptions.Keyword);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.ModifiedUtcKey,
                 context.ContentItem.ModifiedUtc,
-                DocumentIndexOptions.Keyword);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
-            // We store because of ContentPickerResultProvider(s)
+            // We need to store because of ContentPickerResultProvider(s)
             context.DocumentIndex.Set(
                 IndexingConstants.PublishedKey,
                 context.ContentItem.Published,
@@ -51,7 +46,7 @@ namespace OrchardCore.Contents.Indexing
             context.DocumentIndex.Set(
                 IndexingConstants.PublishedUtcKey,
                 context.ContentItem.PublishedUtc,
-                DocumentIndexOptions.Keyword);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             return Task.CompletedTask;
         }

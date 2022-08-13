@@ -32,13 +32,13 @@ namespace OrchardCore.Contents.Indexing
                 context.ContentItem.DisplayText,
                 DocumentIndexOptions.Sanitize);
 
-            // We store because of ContentPickerResultProvider(s)
+            // We need to store because of ContentPickerResultProvider(s)
             context.DocumentIndex.Set(
                 IndexingConstants.DisplayTextKey,
                 context.ContentItem.DisplayText,
                 DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
-            // We store because of ContentPickerResultProvider(s)
+            // We need to store because of ContentPickerResultProvider(s)
             context.DocumentIndex.Set(
                 IndexingConstants.DisplayTextNormalizedKey,
                 context.ContentItem.DisplayText?.ReplaceDiacritics().ToLower(),

@@ -84,7 +84,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     .Settings(s => indexSettingsDescriptor)
                     .Map(m => m
                         .SourceField(s => s
-                            .Enabled(elasticIndexSettings.StoreSourceData))
+                            .Enabled(elasticIndexSettings.StoreSourceData)
+                            .Excludes(new string[] { "Content.ContentItem.DisplayText.Analyzed" }))
                         .Meta(me => IndexingState));
 
                 var response = await _elasticClient.Indices.CreateAsync(createIndexDescriptor);
