@@ -1,5 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
+using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 using OrchardCore.Lists.Models;
 
@@ -7,7 +9,6 @@ namespace OrchardCore.Lists.Indexes
 {
     public class ContainedPartContentIndexHandler : IContentItemIndexHandler
     {
-        public const string ListContentItemIdKey = "Content.ContentItem.ContainedPart.ListContentItemId";
         public const string OrderKey = "Content.ContentItem.ContainedPart.Order";
 
         public Task BuildIndexAsync(BuildIndexContext context)
@@ -20,12 +21,12 @@ namespace OrchardCore.Lists.Indexes
             }
 
             context.DocumentIndex.Set(
-                ListContentItemIdKey,
+                IndexingConstants.ContainedPartKey + IndexingConstants.IdsKey,
                 parent.ListContentItemId,
                 DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
-                OrderKey,
+                IndexingConstants.ContainedPartKey + IndexingConstants.OrderKey,
                 parent.Order,
                 DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 

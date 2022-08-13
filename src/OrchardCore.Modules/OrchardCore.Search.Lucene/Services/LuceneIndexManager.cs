@@ -205,8 +205,8 @@ namespace OrchardCore.Search.Lucene
 
             if (indexSettings.StoreSourceData)
             {
-                doc.Add(new StoredField(IndexingConstants.Source + "ContentItemId", documentIndex.ContentItemId.ToString()));
-                doc.Add(new StoredField(IndexingConstants.Source + "ContentItemVersionId", documentIndex.ContentItemVersionId.ToString()));
+                doc.Add(new StoredField(IndexingConstants.SourceKey + "ContentItemId", documentIndex.ContentItemId.ToString()));
+                doc.Add(new StoredField(IndexingConstants.SourceKey + "ContentItemVersionId", documentIndex.ContentItemVersionId.ToString()));
             }
 
             foreach (var entry in documentIndex.Entries)
@@ -223,7 +223,7 @@ namespace OrchardCore.Search.Lucene
 
                         if (indexSettings.StoreSourceData)
                         {
-                            doc.Add(new StoredField(IndexingConstants.Source + entry.Name, Convert.ToString(entry.Value).ToLowerInvariant()));
+                            doc.Add(new StoredField(IndexingConstants.SourceKey + entry.Name, Convert.ToString(entry.Value).ToLowerInvariant()));
                         }
                         break;
 
@@ -243,11 +243,11 @@ namespace OrchardCore.Search.Lucene
                             {
                                 if (entry.Value is DateTimeOffset)
                                 {
-                                    doc.Add(new StoredField(IndexingConstants.Source + entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateResolution.SECOND)));
+                                    doc.Add(new StoredField(IndexingConstants.SourceKey + entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateResolution.SECOND)));
                                 }
                                 else
                                 {
-                                    doc.Add(new StoredField(IndexingConstants.Source + entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateResolution.SECOND)));
+                                    doc.Add(new StoredField(IndexingConstants.SourceKey + entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateResolution.SECOND)));
                                 }
                             }
                         }
@@ -264,7 +264,7 @@ namespace OrchardCore.Search.Lucene
 
                             if (indexSettings.StoreSourceData)
                             {
-                                doc.Add(new StoredField(IndexingConstants.Source + entry.Name, value));
+                                doc.Add(new StoredField(IndexingConstants.SourceKey + entry.Name, value));
                             }
                         }
                         else
@@ -281,7 +281,7 @@ namespace OrchardCore.Search.Lucene
 
                             if (indexSettings.StoreSourceData)
                             {
-                                doc.Add(new StoredField(IndexingConstants.Source + entry.Name, Convert.ToDouble(entry.Value)));
+                                doc.Add(new StoredField(IndexingConstants.SourceKey + entry.Name, Convert.ToDouble(entry.Value)));
                             }
                         }
                         else
@@ -314,7 +314,7 @@ namespace OrchardCore.Search.Lucene
 
                             if (indexSettings.StoreSourceData)
                             {
-                                doc.Add(new StoredField(IndexingConstants.Source + entry.Name, stringValue));
+                                doc.Add(new StoredField(IndexingConstants.SourceKey + entry.Name, stringValue));
                             }
                         }
                         else
@@ -345,7 +345,7 @@ namespace OrchardCore.Search.Lucene
 
                             if (indexSettings.StoreSourceData)
                             {
-                                doc.Add(new StoredField(IndexingConstants.Source + strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
+                                doc.Add(new StoredField(IndexingConstants.SourceKey + strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
                             }
                         }
                         else

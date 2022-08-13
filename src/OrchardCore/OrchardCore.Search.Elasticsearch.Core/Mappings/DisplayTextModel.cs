@@ -1,6 +1,6 @@
 using Nest;
 
-namespace OrchardCore.Search.Elasticsearch.Core.Models
+namespace OrchardCore.Search.Elasticsearch.Core.Mappings
 {
     internal class DisplayTextModel
     {

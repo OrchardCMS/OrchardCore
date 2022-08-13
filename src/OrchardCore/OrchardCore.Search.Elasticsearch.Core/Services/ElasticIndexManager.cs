@@ -11,6 +11,7 @@ using OrchardCore.Contents.Indexing;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
+using OrchardCore.Search.Elasticsearch.Core.Mappings;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services
@@ -80,7 +81,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     { _lastTaskId, 0 }
                 };
 
-                // Manual mappings for special fields
                 var createIndexDescriptor = new CreateIndexDescriptor(_indexPrefix + elasticIndexSettings.IndexName)
                     .Settings(s => indexSettingsDescriptor)
                     .Map(m => m
@@ -90,6 +90,31 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         .Meta(me => IndexingState));
 
                 var response = await _elasticClient.Indices.CreateAsync(createIndexDescriptor);
+
+                // We force some mappings for common fields.
+                await _elasticClient.MapAsync<string>(p => p
+                    .Index(_indexPrefix + elasticIndexSettings.IndexName)
+                    .Properties(p => p
+                        .Keyword(obj => obj
+                            .Name(IndexingConstants.ContentItemIdKey)
+                        )
+                        .Keyword(obj => obj
+                            .Name(IndexingConstants.ContentItemVersionIdKey)
+                        )
+                        .Keyword(obj => obj
+                            .Name(IndexingConstants.OwnerKey)
+                        )
+                    ));
+
+                // ContainedPart mappings
+                await _elasticClient.MapAsync<ContainedPartModel>(p => p
+                    .Index(_indexPrefix + elasticIndexSettings.IndexName)
+                    .Properties(p => p
+                        .Object<ContainedPartModel>(obj => obj
+                            .Name(IndexingConstants.ContainedPartKey)
+                            .AutoMap()
+                        )
+                    ));
 
                 // We map DisplayText here because we have 3 different fields with it.
                 // We can't have Content.ContentItem.DisplayText as it is mapped as an Object in Elasticsearch.
@@ -119,13 +144,13 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     .DynamicTemplates(d => d
                         .DynamicTemplate("*.Inherited", dyn => dyn
                             .MatchMappingType("string")
-                            .PathMatch("*" + IndexingConstants.Inherited)
+                            .PathMatch("*" + IndexingConstants.InheritedKey)
                             .Mapping(m => m
                                 .Keyword(k => k))
                         )
                         .DynamicTemplate("*.Ids", dyn => dyn
                             .MatchMappingType("string")
-                            .PathMatch("*" + IndexingConstants.Ids)
+                            .PathMatch("*" + IndexingConstants.IdsKey)
                             .Mapping(m => m
                                 .Keyword(k => k))
                             )

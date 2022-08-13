@@ -34,7 +34,7 @@ namespace OrchardCore.Contents.Indexing
 
             // We need to store because of ContentPickerResultProvider(s)
             context.DocumentIndex.Set(
-                IndexingConstants.DisplayTextKey + IndexingConstants.Keyword,
+                IndexingConstants.DisplayTextKey + IndexingConstants.KeywordKey,
                 context.ContentItem.DisplayText,
                 DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
