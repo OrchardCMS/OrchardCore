@@ -93,7 +93,6 @@ namespace OrchardCore.Tenants.Controllers
             var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 
             var pageSize = 10;
-
             var siteService = HttpContext.RequestServices.GetService<ISiteService>();
             if (siteService != null)
             {
