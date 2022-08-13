@@ -70,7 +70,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             // The syncing period in seconds of the default tenant while it is 'Uninitialized'.
-            const int DefaultTenantSyncingPeriod = 25;
+            const int DefaultTenantSyncingPeriod = 20;
 
             stoppingToken.Register(() =>
             {
@@ -109,11 +109,11 @@ namespace OrchardCore.Environment.Shell.Distributed
                     {
                         defaultTenantSyncingPeriod = 0;
 
-                        // Load the shared state of the default tenant that may have been setup by another instance.
+                        // Load the settings of the default tenant that may have been setup by another instance.
                         var defaultSettings = await _shellSettingsManager.LoadSettingsAsync(ShellHelper.DefaultShellName);
-                        if (defaultSettings.State == TenantState.Running || defaultSettings.State == TenantState.Disabled)
+                        if (defaultSettings.State == TenantState.Running)
                         {
-                            // If the default tenant has been setup, keep it in sync locally by reloading it.
+                            // If the default tenant has been setup by another instance, reload it locally.
                             await _shellHost.ReloadShellContextAsync(defaultContext.Settings, eventSource: false);
                         }
 
