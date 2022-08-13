@@ -27,7 +27,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         private readonly ILogger _logger;
         private bool _disposing;
         private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
-
+        private readonly string _lastTaskId = "last_task_id";
         private readonly string[] IgnoredFields = Array.Empty<string>();
 
         public ElasticIndexManager(
@@ -77,7 +77,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 // Custom metadata to store the last indexing task id
                 var IndexingState = new FluentDictionary<string, object>() {
-                    { "last_task_id", 0 }
+                    { _lastTaskId, 0 }
                 };
 
                 // Manual mappings for special fields
@@ -109,7 +109,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     .Index(_indexPrefix + elasticIndexSettings.IndexName)
                     .Properties(p => p
                         .Keyword(obj => obj
-                            .Name("Content.ContentItem.ContentType")
+                            .Name(IndexingConstants.ContentTypeKey)
                         )
                     ));
 
@@ -136,7 +136,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         public async Task SetLastTaskId(string indexName, int lastTaskId)
         {
             var IndexingState = new FluentDictionary<string, object>() {
-                { "last_task_id", lastTaskId }
+                { _lastTaskId, lastTaskId }
             };
 
             var putMappingRequest = new PutMappingRequest(_indexPrefix + indexName)
@@ -158,7 +158,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             jsonDocument.RootElement.TryGetProperty(_indexPrefix + indexName, out var jsonElement);
             jsonElement.TryGetProperty("mappings", out var mappings);
             mappings.TryGetProperty("_meta", out var meta);
-            meta.TryGetProperty("last_task_id", out var lastTaskId);
+            meta.TryGetProperty(_lastTaskId, out var lastTaskId);
             lastTaskId.TryGetInt32(out var intValue);
 
             return intValue;
