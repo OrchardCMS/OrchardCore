@@ -79,14 +79,33 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     { "last_task_id", 0 }
                 };
 
+                // Manual mappings for special fields
                 var createIndexDescriptor = new CreateIndexDescriptor(_indexPrefix + elasticIndexSettings.IndexName)
                     .Settings(s => indexSettingsDescriptor)
                     .Map(m => m
-                        .Meta(me => IndexingState)
                         .SourceField(s => s
-                            .Enabled(elasticIndexSettings.StoreSourceData)));
+                            .Enabled(elasticIndexSettings.StoreSourceData))
+                        .Meta(me => IndexingState));
 
                 var response = await _elasticClient.Indices.CreateAsync(createIndexDescriptor);
+
+                await _elasticClient.MapAsync<DisplayTextModel>(p => p
+                    .Index(_indexPrefix + elasticIndexSettings.IndexName)
+                    .Properties(p => p
+                        .Object<DisplayTextModel>(obj => obj
+                            .Name("Content.ContentItem.DisplayText")
+                            .AutoMap()
+                        )
+                    ));
+
+                // We map ContentType as a keyword
+                await _elasticClient.MapAsync<string>(p => p
+                    .Index(_indexPrefix + elasticIndexSettings.IndexName)
+                    .Properties(p => p
+                        .Keyword(obj => obj
+                            .Name("Content.ContentItem.ContentType")
+                        )
+                    ));
 
                 return response.Acknowledged;
             }

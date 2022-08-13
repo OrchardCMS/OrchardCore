@@ -48,10 +48,10 @@ namespace OrchardCore.Search.Lucene.Services
                 }
                 else
                 {
-                    query = new WildcardQuery(new Term("Content.ContentItem.DisplayText_Normalized", searchContext.Query.ToLowerInvariant() + "*"));
+                    query = new WildcardQuery(new Term("Content.ContentItem.DisplayText.Normalized", searchContext.Query.ToLowerInvariant() + "*"));
                 }
 
-                var filter = new FieldCacheTermsFilter("Content.ContentItem.ContentType.keyword", searchContext.ContentTypes.ToArray());
+                var filter = new FieldCacheTermsFilter("Content.ContentItem.ContentType", searchContext.ContentTypes.ToArray());
 
                 var docs = searcher.Search(query, filter, 50, Sort.RELEVANCE);
 

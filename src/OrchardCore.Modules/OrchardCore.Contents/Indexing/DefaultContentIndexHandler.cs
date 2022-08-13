@@ -13,11 +13,6 @@ namespace OrchardCore.Contents.Indexing
                 DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
-                IndexingConstants.ContentTypeKey,
-                context.ContentItem.ContentType,
-                DocumentIndexOptions.Keyword);
-
-            context.DocumentIndex.Set(
                 IndexingConstants.CreatedUtcKey,
                 context.ContentItem.CreatedUtc,
                 DocumentIndexOptions.Keyword);
@@ -47,10 +42,11 @@ namespace OrchardCore.Contents.Indexing
                 context.ContentItem.ModifiedUtc,
                 DocumentIndexOptions.Keyword);
 
+            // We store because of ContentPickerResultProvider(s)
             context.DocumentIndex.Set(
                 IndexingConstants.PublishedKey,
                 context.ContentItem.Published,
-                DocumentIndexOptions.Keyword);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.PublishedUtcKey,

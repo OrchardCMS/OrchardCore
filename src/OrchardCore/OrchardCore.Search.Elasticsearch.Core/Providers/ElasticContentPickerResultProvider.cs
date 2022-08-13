@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Nest;
 using OrchardCore.ContentManagement;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 
@@ -12,9 +13,13 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
     public class ElasticContentPickerResultProvider : IContentPickerResultProvider
     {
         private readonly ElasticIndexManager _elasticIndexManager;
+        private readonly string _indexPrefix;
 
-        public ElasticContentPickerResultProvider(ElasticIndexManager elasticIndexManager)
+        public ElasticContentPickerResultProvider(
+            ShellSettings shellSettings,
+            ElasticIndexManager elasticIndexManager)
         {
+            _indexPrefix = shellSettings.Name.ToLowerInvariant() + "_";
             _elasticIndexManager = elasticIndexManager;
         }
 
@@ -46,12 +51,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
                 if (String.IsNullOrWhiteSpace(searchContext.Query))
                 {
                     searchResponse = await elasticClient.SearchAsync<Dictionary<string, object>>(s => s
-                        .Index(indexName)
+                        .Index(_indexPrefix + indexName)
                         .Query(q => q
                             .Bool(b => b
                                 .Filter(f => f
                                     .Terms(t => t
-                                        .Field("Content.ContentItem.ContentType.keyword")
+                                        .Field("Content.ContentItem.ContentType")
                                         .Terms(searchContext.ContentTypes.ToArray())
                                     )
                                 )
@@ -62,18 +67,18 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
                 else
                 {
                     searchResponse = await elasticClient.SearchAsync<Dictionary<string, object>>(s => s
-                        .Index(indexName)
+                        .Index(_indexPrefix + indexName)
                         .Query(q => q
                             .Bool(b => b
                                 .Filter(f => f
                                     .Terms(t => t
-                                        .Field("Content.ContentItem.ContentType.keyword")
+                                        .Field("Content.ContentItem.ContentType")
                                         .Terms(searchContext.ContentTypes.ToArray())
                                     )
                                 )
                                 .Should(s => s
                                     .Wildcard(w => w
-                                        .Field("Content.ContentItem.DisplayText_Normalized")
+                                        .Field("Content.ContentItem.DisplayText.Normalized")
                                         .Wildcard(searchContext.Query.ToLowerInvariant() + "*")
                                     )
                                 )
@@ -87,14 +92,17 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
                     elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
                 }
 
-                foreach (var doc in elasticTopDocs.TopDocs)
+                if (elasticTopDocs.TopDocs != null)
                 {
-                    results.Add(new ContentPickerResult
+                    foreach (var doc in elasticTopDocs.TopDocs)
                     {
-                        ContentItemId = doc["ContentItemId"].ToString(),
-                        DisplayText = doc["Content.ContentItem.DisplayText"].ToString(),
-                        HasPublished = doc["Content.ContentItem.Published"].ToString().ToLower() == "true"
-                    });
+                        results.Add(new ContentPickerResult
+                        {
+                            ContentItemId = doc["ContentItemId"].ToString(),
+                            DisplayText = doc["Content.ContentItem.DisplayText.keyword"].ToString(),
+                            HasPublished = doc["Content.ContentItem.Published"].ToString().ToLower() == "true"
+                        });
+                    }
                 }
             });
 
