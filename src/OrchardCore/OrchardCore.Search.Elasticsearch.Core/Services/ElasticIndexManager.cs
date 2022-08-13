@@ -97,7 +97,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     .Index(_indexPrefix + elasticIndexSettings.IndexName)
                     .Properties(p => p
                         .Object<DisplayTextModel>(obj => obj
-                            .Name("Content.ContentItem.DisplayText")
+                            .Name(IndexingConstants.DisplayTextKey)
                             .AutoMap()
                         )
                     ));
