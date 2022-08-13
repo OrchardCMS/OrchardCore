@@ -47,10 +47,10 @@ namespace OrchardCore.Search.Drivers
 
                 if (searchProviders.Any())
                 {
-                    model.SearchProviders = searchProviders.Select(x => x.Name);
+                    model.SearchProviders = searchProviders;
                 }
 
-                model.SearchProvider = settings.SearchProvider;
+                model.SearchProviderAreaName = settings.SearchProviderAreaName;
             }).Location("Content:2").OnGroup(GroupId);
         }
 
@@ -69,7 +69,7 @@ namespace OrchardCore.Search.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                section.SearchProvider = model.SearchProvider;
+                section.SearchProviderAreaName = model.SearchProviderAreaName;
             }
 
             return await EditAsync(section, context);

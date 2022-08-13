@@ -9,6 +9,7 @@ namespace OrchardCore.Search.Lucene.Services
     {
         public LuceneSearchProvider() : base("Lucene")
         {
+            AreaName = GetType().Assembly.GetName().Name;
         }
     }
 }

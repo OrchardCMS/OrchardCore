@@ -2,17 +2,17 @@
 
 @if (Model.SearchProviders.Any())
 {
-<div class="mb-3" asp-validation-class-for="SearchProvider">
-    <label asp-for="SearchProvider">@T["Default search provider"]</label>
-    <select asp-for="SearchProvider" class="form-select">
-        @foreach (var index in Model.SearchProviders)
-        {
-            <option value="@index" selected="@(Model.SearchProvider == index)">@index</option>
-        }
-    </select>
-    <span asp-validation-for="SearchProvider"></span>
-    <span class="hint">@T["The default search provider to use for the search page."]</span>
-</div>
+    <div class="mb-3" asp-validation-class-for="SearchProviderAreaName">
+        <label asp-for="SearchProviderAreaName">@T["Default search provider"]</label>
+        <select asp-for="SearchProviderAreaName" class="form-select">
+            @foreach (var searchProvider in Model.SearchProviders)
+            {
+                <option value="@searchProvider.AreaName" selected="@(Model.SearchProviderAreaName == searchProvider.AreaName)">@searchProvider.Name</option>
+            }
+        </select>
+        <span asp-validation-for="SearchProviderAreaName"></span>
+        <span class="hint">@T["The default search provider to use for the search page."]</span>
+    </div>
 }
 else
 {

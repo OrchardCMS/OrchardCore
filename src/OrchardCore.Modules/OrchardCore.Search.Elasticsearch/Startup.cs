@@ -21,12 +21,14 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
+using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Search.Elasticsearch.Core.Deployment;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Providers;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
+using OrchardCore.Search.Elasticsearch.Providers;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -127,6 +129,7 @@ namespace OrchardCore.Search.Elasticsearch
                     });
 
                     services.AddElasticServices();
+                    services.AddSingleton<SearchProvider, ElasticSearchProvider>();
                     services.AddScoped<IPermissionProvider, Permissions>();
                     services.AddScoped<INavigationProvider, AdminMenu>();
                     services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();

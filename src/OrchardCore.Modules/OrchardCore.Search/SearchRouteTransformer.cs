@@ -22,7 +22,7 @@ namespace OrchardCore.Search.Routing
             var site = await _siteService.GetSiteSettingsAsync();
             var settings = site.As<SearchSettings>();
 
-            var routeValue = new RouteValueDictionary( new { Name = "Search", Area = "OrchardCore.Search." + settings.SearchProvider, Action = "Search", Controller = "Search" });
+            var routeValue = new RouteValueDictionary( new { Name = "Search", Area = settings.SearchProviderAreaName, Action = "Search", Controller = "Search" });
 
             if (routeValue.Count > 0)
             {

@@ -2,6 +2,6 @@ namespace OrchardCore.Search.Model
 {
     public class SearchSettings
     {
-        public string SearchProvider { get; set; }
+        public string SearchProviderAreaName { get; set; }
     }
 }

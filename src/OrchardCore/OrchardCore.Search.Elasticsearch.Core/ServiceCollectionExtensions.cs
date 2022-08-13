@@ -18,7 +18,6 @@ namespace OrchardCore.Search.Elasticsearch
         /// </summary>
         public static IServiceCollection AddElasticServices(this IServiceCollection services)
         {
-            services.AddSingleton<SearchProvider, ElasticSearchProvider>();
             services.AddSingleton<ElasticIndexSettingsService>();
             services.AddSingleton<ElasticIndexManager>();
             services.AddSingleton<ElasticAnalyzerManager>();
