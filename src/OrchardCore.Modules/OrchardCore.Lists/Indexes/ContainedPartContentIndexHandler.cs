@@ -22,11 +22,6 @@ namespace OrchardCore.Lists.Indexes
             context.DocumentIndex.Set(
                 ListContentItemIdKey,
                 parent.ListContentItemId,
-                DocumentIndexOptions.Keyword);
-
-            context.DocumentIndex.Set(
-                ListContentItemIdKey,
-                parent.ListContentItemId,
                 DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(

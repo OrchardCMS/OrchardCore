@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Elasticsearch.Net;
 using Microsoft.Extensions.Logging;
 using Nest;
+using OrchardCore.Contents.Indexing;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
@@ -85,7 +86,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     .Map(m => m
                         .SourceField(s => s
                             .Enabled(elasticIndexSettings.StoreSourceData)
-                            .Excludes(new string[] { "Content.ContentItem.DisplayText.Analyzed" }))
+                            .Excludes(new string[] { IndexingConstants.DisplayTextAnalyzedKey }))
                         .Meta(me => IndexingState));
 
                 var response = await _elasticClient.Indices.CreateAsync(createIndexDescriptor);
