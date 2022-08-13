@@ -113,6 +113,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         )
                     ));
 
+                // DynamicTemplates mapping for Taxonomy indexing mostly.
                 await _elasticClient.MapAsync<string>(p => p
                     .Index(_indexPrefix + elasticIndexSettings.IndexName)
                     .DynamicTemplates(d => d
