@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Model;
 using OrchardCore.Search.ViewModels;
