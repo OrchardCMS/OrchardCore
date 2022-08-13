@@ -18,6 +18,8 @@ namespace OrchardCore.Contents.Indexing
         public const string DisplayTextNormalizedKey = "Content.ContentItem.DisplayText.Normalized";
         public const string FullTextKey = "Content.ContentItem.FullText";
         public const string Keyword = ".keyword";
+        public const string Inherited = ".Inherited";
+        public const string Ids = ".Ids";
         public const string Source = "_source.";
     }
 }

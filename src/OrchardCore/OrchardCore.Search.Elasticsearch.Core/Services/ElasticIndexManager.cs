@@ -113,6 +113,24 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         )
                     ));
 
+                await _elasticClient.MapAsync<string>(p => p
+                    .Index(_indexPrefix + elasticIndexSettings.IndexName)
+                    .DynamicTemplates(d => d
+                        .DynamicTemplate("*.Inherited", dyn => dyn
+                            .MatchMappingType("string")
+                            .PathMatch("*" + IndexingConstants.Inherited)
+                            .Mapping(m => m
+                                .Keyword(k => k))
+                        )
+                        .DynamicTemplate("*.Ids", dyn => dyn
+                            .MatchMappingType("string")
+                            .PathMatch("*" + IndexingConstants.Ids)
+                            .Mapping(m => m
+                                .Keyword(k => k))
+                            )
+                        )
+                    );
+
                 return response.Acknowledged;
             }
             else
