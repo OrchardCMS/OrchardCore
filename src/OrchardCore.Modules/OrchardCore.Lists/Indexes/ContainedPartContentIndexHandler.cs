@@ -27,7 +27,7 @@ namespace OrchardCore.Lists.Indexes
             context.DocumentIndex.Set(
                 OrderKey,
                 parent.Order,
-                DocumentIndexOptions.Keyword);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             return Task.CompletedTask;
         }
