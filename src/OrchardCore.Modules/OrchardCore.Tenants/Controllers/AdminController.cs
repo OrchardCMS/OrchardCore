@@ -105,7 +105,7 @@ namespace OrchardCore.Tenants.Controllers
                         Description = x["Description"],
                         Name = x.Name,
                         ShellSettings = x,
-                        IsDefaultTenant = x.Name == ShellHelper.DefaultShellName,
+                        IsDefaultTenant = x.IsDefaultShell(),
                     };
 
                     if (x.State == TenantState.Uninitialized && !String.IsNullOrEmpty(x["Secret"]))
