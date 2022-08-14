@@ -2677,8 +2677,8 @@ Vue.component('sortIndicator', {
 });
 // <upload> component
 Vue.component('upload', {
-  template: '\
-        <div :class="{ \'upload-warning\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
+    template: '\
+        <div :class="{ \'upload-danger\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
             <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning"><i class="fa fa-times" aria-hidden="true"></i> </span>\
             <p class="upload-name" :title="model.errorMessage">{{ model.name }}</p> \
             <div> \
@@ -2734,22 +2734,16 @@ Vue.component('upload', {
 });
 // <upload-list> component
 Vue.component('uploadList', {
-  template: '\
+    template: '\
         <div class="upload-list" v-show="files.length > 0"> \
             <div class="header" @click="expanded = !expanded"> \
                 <span> {{ T.uploads }} </span> \
                 <span v-show="pendingCount"> (Pending: {{ pendingCount }}) </span> \
                 <span v-show="errorCount" :class="{ \'text-danger\' : errorCount }"> ( {{ T.errors }}: {{ errorCount }} / <a href="javascript:;" v-on:click.stop="clearErrors" > {{ T.clearErrors }} </a>)</span> \
                     <div class="toggle-button"> \
-                    <div v-show="expanded"> \
-                        <i class="fa fa-chevron-down" aria-hidden="true"></i> \
-                    </div> \
-                    <div v-show="!expanded"> \
-                        <i class="fa fa-chevron-up" aria-hidden="true"></i> \
-                    </div> \
                 </div> \
             </div> \
-            <div class="card-body" v-show="expanded"> \
+            <div class="card-body"> \
                 <div class="d-flex flex-wrap"> \
                     <upload v-for="f in files" :key="f.name"  :model="f"></upload> \
                 </div > \

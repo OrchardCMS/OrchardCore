@@ -150,6 +150,12 @@
 [dir=rtl]:root[data-theme=default] .upload .error-message {
   margin-left: 50px;
 }
+:root[data-theme=default] .upload-danger {
+    color: #b4124f;
+}
+[dir]:root[data-theme=default] .upload-danger {
+    background-color: #fad1dc;
+}
 :root[data-theme=default] .upload-warning {
   color: #856404;
 }
