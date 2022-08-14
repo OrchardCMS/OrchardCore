@@ -63,7 +63,9 @@ namespace OrchardCore.Tenants.Services
 
             _shellHost.TryGetSettings(model.Name, out var shellSettings);
 
-            if (shellSettings?.Name != ShellHelper.DefaultShellName && String.IsNullOrWhiteSpace(model.RequestUrlHost) && String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            if ((shellSettings == null || !shellSettings.IsDefaultShell()) &&
+                String.IsNullOrWhiteSpace(model.RequestUrlHost) &&
+                String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
             {
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]));
             }
@@ -78,7 +80,7 @@ namespace OrchardCore.Tenants.Services
 
             if (shellSettings != null && model.IsNewTenant)
             {
-                if (shellSettings.Name == ShellHelper.DefaultShellName)
+                if (shellSettings.IsDefaultShell())
                 {
                     errors.Add(new ModelError(nameof(model.Name), S["The tenant name is in conflict with the 'Default' tenant."]));
                 }

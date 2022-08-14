@@ -76,7 +76,7 @@ namespace OrchardCore.Tenants.Controllers
         [Route("create")]
         public async Task<IActionResult> Create(CreateApiViewModel model)
         {
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -132,7 +132,7 @@ namespace OrchardCore.Tenants.Controllers
         [Route("setup")]
         public async Task<ActionResult> Setup(SetupApiViewModel model)
         {
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return this.ChallengeOrForbid("Api");
             }

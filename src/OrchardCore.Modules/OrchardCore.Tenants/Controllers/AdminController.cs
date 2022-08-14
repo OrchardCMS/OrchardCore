@@ -86,7 +86,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -230,7 +230,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -247,7 +247,7 @@ namespace OrchardCore.Tenants.Controllers
                 switch (model.BulkAction.ToString())
                 {
                     case "Disable":
-                        if (shellSettings.Name == ShellHelper.DefaultShellName)
+                        if (shellSettings.IsDefaultShell())
                         {
                             await _notifier.WarningAsync(H["You cannot disable the default tenant."]);
                         }
@@ -291,7 +291,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -332,7 +332,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -383,7 +383,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -435,7 +435,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -504,7 +504,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -514,7 +514,7 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            if (shellSettings.Name == ShellHelper.DefaultShellName)
+            if (shellSettings.IsDefaultShell())
             {
                 await _notifier.ErrorAsync(H["You cannot disable the default tenant."]);
                 return RedirectToAction(nameof(Index));
@@ -540,7 +540,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -569,7 +569,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }

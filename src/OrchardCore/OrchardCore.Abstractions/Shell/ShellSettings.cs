@@ -74,5 +74,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         public Task EnsureConfigurationAsync() => _configuration.EnsureConfigurationAsync();
+
+        public bool IsDefaultShell() => Name == ShellHelper.DefaultShellName;
     }
 }
