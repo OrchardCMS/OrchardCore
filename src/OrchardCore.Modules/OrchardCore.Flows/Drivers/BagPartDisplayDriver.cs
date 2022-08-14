@@ -214,18 +214,17 @@ namespace OrchardCore.Flows.Drivers
         {
             var settings = typePartDefinition.GetSettings<BagPartSettings>();
             var contentTypes = Enumerable.Empty<ContentTypeDefinition>();
-            
+
             if (settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0)
             {
-                contentTypes = _contentDefinitionManager
-                            .ListTypeDefinitions()
-                            .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotype(), StringComparer.OrdinalIgnoreCase));
-            } 
+                contentTypes = _contentDefinitionManager.ListTypeDefinitions()
+                    .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotype(), StringComparer.OrdinalIgnoreCase));
+            }
             else if (settings.ContainedContentTypes != null && settings.ContainedContentTypes.Length > 0)
             {
                 contentTypes = settings.ContainedContentTypes
-                               .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                               .Where(contentType => contentType != null);
+                    .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
+                    .Where(contentType => contentType != null);
             }
 
             var accessibleContentTypes = new List<ContentTypeDefinition>();
