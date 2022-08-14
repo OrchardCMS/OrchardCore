@@ -26,7 +26,7 @@ namespace OrchardCore.Workflows.Events
 
         public WorkflowExpression<bool> ErrorFilter
         {
-            get => GetProperty(() => new WorkflowExpression<bool>(getDefaultValue()));
+            get => GetProperty(() => new WorkflowExpression<bool>(GetDefaultValue()));
             set => SetProperty(value);
         }
 
@@ -39,7 +39,6 @@ namespace OrchardCore.Workflows.Events
         {
             return Outcomes("Done");
         }
-
 
         public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
@@ -54,10 +53,9 @@ namespace OrchardCore.Workflows.Events
             return await _scriptEvaluator.EvaluateAsync(ErrorFilter, workflowContext);
         }
 
-        private string getDefaultValue()
+        private string GetDefaultValue()
         {
-            var sample = $@"
-//sample code
+            var sample = $@"//sample code
 var errorInfo= input('{WorkflowFaultModel.WorkflowFaultInputKey}');
 // This is where you define the workflow to intercept or specify the exception information
 var result=  errorInfo.{nameof(WorkflowFaultModel.WorkflowName)}== 'WorkflowName' ||

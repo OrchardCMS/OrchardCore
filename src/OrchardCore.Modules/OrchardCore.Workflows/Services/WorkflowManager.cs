@@ -417,6 +417,7 @@ namespace OrchardCore.Workflows.Services
 
                     // Decrement the workflow scope recursion count.
                     DecrementRecursion(workflowContext.Workflow);
+
                     await _workflowFaultHandler.OnWorkflowFaultAsync(this, workflowContext, activityContext, ex);
 
                     return blocking.Distinct();

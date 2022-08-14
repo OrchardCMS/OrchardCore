@@ -34,6 +34,7 @@ namespace OrchardCore.Workflows.Handlers
             {
                 { WorkflowFaultModel.WorkflowFaultInputKey, faultContext }
             };
+
             await workflowManager.TriggerEventAsync(name, input);
         }
     }

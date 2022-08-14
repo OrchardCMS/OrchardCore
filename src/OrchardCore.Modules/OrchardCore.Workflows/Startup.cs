@@ -73,7 +73,6 @@ namespace OrchardCore.Workflows
             services.AddScoped<IWorkflowExpressionEvaluator, LiquidWorkflowExpressionEvaluator>();
             services.AddScoped<IWorkflowScriptEvaluator, JavaScriptWorkflowScriptEvaluator>();
 
-            //IWorkflowFaultHandler
             services.AddScoped<IWorkflowFaultHandler, DefaultWorkflowFaultHandler>();
             services.AddActivity<WorkflowFaultEvent, WorkflowFaultEventDisplayDriver>();
             services.AddActivity<Activity, ActivityMetadataDisplayDriver>();
