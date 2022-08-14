@@ -35,6 +35,12 @@ namespace OrchardCore.Workflows.Events
             return Outcomes(S["Done"]);
         }
 
+        public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            return Outcomes("Done");
+        }
+
+
         public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var faultModel = workflowContext.Input[WorkflowFaultModel.WorkflowFaultInputKey] as WorkflowFaultModel;
