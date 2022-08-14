@@ -66,7 +66,7 @@ errorInfo.{nameof(WorkflowFaultModel.FaultMessage)}.indexOf('ErrorStr') ||
 errorInfo.{nameof(WorkflowFaultModel.ActivityDisplayName)}== 'ActivityDisplayName' ||
 errorInfo.{nameof(WorkflowFaultModel.ActivityTypeName)}== 'ActivityTypeName' ||
 errorInfo.{nameof(WorkflowFaultModel.ActivityId)}== 'ActivityId' ||
-errorInfo.{nameof(WorkflowFaultModel.ExcutedActivityCount)}== 20
+errorInfo.{nameof(WorkflowFaultModel.ExecutedActivityCount)}== 20
 // If the above expression is true, the exception message will be caught
 // and a new workflow instance will be created.
 return result;";

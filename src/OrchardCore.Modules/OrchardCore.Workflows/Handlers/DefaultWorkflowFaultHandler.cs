@@ -19,7 +19,7 @@ namespace OrchardCore.Workflows.Handlers
             {
                 WorkflowId = workflowContext.Workflow.WorkflowId,
                 WorkflowName = workflowContext.WorkflowType.Name,
-                ExcutedActivityCount = workflowContext.ExecutedActivities.Count(),
+                ExecutedActivityCount = workflowContext.ExecutedActivities.Count(),
                 FaultMessage = workflowContext.Workflow.FaultMessage,
                 ActivityId = activityContext.ActivityRecord.ActivityId,
                 ActivityTypeName = activityContext.Activity.Name,

@@ -1,28 +1,32 @@
 @using OrchardCore.Workflows.Models
 @model WorkflowFaultViewModel
 
-<div class="form-group" asp-validation-class-for="ErrorFilter">
+<div class="form-group" asp-validation-class-for="ErrorFilter" xmlns="http://www.w3.org/1999/html">
     <label asp-for="ErrorFilter">@T["Trigger Condition"]</label>
     <div id="@Html.IdFor(x => x.ErrorFilter)_editor" asp-for="Text" style="min-height: 400px;" class="form-control"></div>
     <textarea asp-for="ErrorFilter" hidden>@Html.Raw(Model.ErrorFilter)</textarea>
     <span asp-validation-for="ErrorFilter"></span>
     <span class="hint">@T["A collection of workflow names that need to return a collection of strings. Javascript syntax."]</span><br/>
-    <span class="hint">@T["Get error information： input('{0}')", WorkflowFaultModel.WorkflowFaultInputKey]</span><br/>
-    <span class="hint">@T["Contains the following attributes："]</span><br/>
-    <span class="hint">@T["{0}：workflow Id", nameof(WorkflowFaultModel.WorkflowId)]</span><br/>
-    <span class="hint">@T["{0}：Workflow name", nameof(WorkflowFaultModel.WorkflowName)]</span><br/>
-    <span class="hint">@T["{0}：Number of executed nodes", nameof(WorkflowFaultModel.ExcutedActivityCount)]</span><br/>
-    <span class="hint">@T["{0}：The name of the node", nameof(WorkflowFaultModel.ActivityDisplayName)]</span><br/>
-    <span class="hint">@T["{0}：Node Type Name", nameof(WorkflowFaultModel.ActivityTypeName)]</span><br/>
-    <span class="hint">@T["{0}：Node Id", nameof(WorkflowFaultModel.ActivityId)]</span><br/>
-    <span class="hint">@T["{0}：Exception Information Summary", nameof(WorkflowFaultModel.ErrorMessage)]</span><br/>
-    <span class="hint">@T["{0}：Exception Details", nameof(WorkflowFaultModel.ExceptionDetails)]</span><br/>
-    <span class="hint">@T["{0}：Contains error messages manually raised by workflow nodes", nameof(WorkflowFaultModel.FaultMessage)]</span><br/>
+    <span class="hint">@T["You can use input('{0}') to get error information, ", WorkflowFaultModel.WorkflowFaultInputKey],
+           @T["Contains the following attributes："] </span>
+  
+    <ul>
+        <li>@T["{0}：Workflow Id.", nameof(WorkflowFaultModel.WorkflowId)]</li>
+        <li>@T["{0}：Workflow name.", nameof(WorkflowFaultModel.WorkflowName)]</li>
+        <li>@T["{0}：Executed activity count.", nameof(WorkflowFaultModel.ExecutedActivityCount)]</li>
+        <li>@T["{0}：The name of the activity.", nameof(WorkflowFaultModel.ActivityDisplayName)]</li>
+        <li>@T["{0}：Node Type Name.", nameof(WorkflowFaultModel.ActivityTypeName)]</li>
+        <li>@T["{0}：Node Id", nameof(WorkflowFaultModel.ActivityId)]</li>
+        <li>@T["{0}：Exception Information Summary.", nameof(WorkflowFaultModel.ErrorMessage)]</li>
+        <li>@T["{0}：Exception Details.", nameof(WorkflowFaultModel.ExceptionDetails)]</li>
+        <li>@T["{0}：Contains error messages manually raised by workflow nodes.", nameof(WorkflowFaultModel.FaultMessage)]</li>
+    </ul>
+
 </div>
 
 <script asp-name="monaco" depends-on="admin" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
-    $(document).ready(function () {
+    $(function () {
         require(['vs/editor/editor.main'], function () {
             var settings=  {
                   "automaticLayout": true,

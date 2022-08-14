@@ -11,6 +11,6 @@ namespace OrchardCore.Workflows.Models
         public string ErrorMessage { get; set; }
         public string FaultMessage { get; set; }
         public string WorkflowName { get; set; }
-        public int ExcutedActivityCount { get; set; }
+        public int ExecutedActivityCount { get; set; }
     }
 }
