@@ -33,28 +33,24 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: "15"
-    - name: Setup .NET Core 3.1 on ${{ matrix.os }}
+    - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.*
-    - name: Setup .NET Core 5.0 on ${{ matrix.os }}
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.*
+        dotnet-version: 6.0.x
+        include-prerelease: true
     - name: Set build number 
       if: matrix.os == 'ubuntu-latest'
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 15471 ))" >> $GITHUB_ENV
     - name: Build
       run: |
-        dotnet build --configuration Release --framework net5.0
-        dotnet build --configuration Release --framework netcoreapp3.1
+        dotnet build --configuration Release --framework net6.0
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
     - name: Functional Tests
       if: matrix.os == 'ubuntu-latest'
       run: |
-        cd test/Functional
+        cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
         npm run mvc:test
@@ -63,7 +59,7 @@ jobs:
       with:
         name: Functional Test failure
         path: |
-          test/Functional/cms-tests/cypress/screenshots
+          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data_Tests/logs
     - name: Deploy release NuGet packages
       if: matrix.os == 'ubuntu-latest'
@@ -81,7 +77,7 @@ jobs:
       run: |
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
         rm -rf ./src/OrchardCore.Cms.Web/App_Data_Tests
-        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net5.0
+        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net6.0
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:${{ steps.get_version.outputs.VERSION }} .
         docker push orchardproject/orchardcore-cms-linux:latest 
         docker push "orchardproject/orchardcore-cms-linux:${{ steps.get_version.outputs.VERSION }}"
@@ -90,7 +86,7 @@ jobs:
       run: |
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item
-        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net5.0
+        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net6.0
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:${{ steps.get_version.outputs.VERSION }} .
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
         docker push orchardproject/orchardcore-cms-windows:latest 

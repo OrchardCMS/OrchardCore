@@ -14,7 +14,7 @@ namespace OrchardCore.Users
         /// <summary>
         /// View users only allows listing or viewing a users profile.
         /// </summary>
-        public static readonly Permission ViewUsers = new Permission("View Users", "View Users", new[] { ManageUsers } );
+        public static readonly Permission ViewUsers = new Permission("View Users", "View Users", new[] { ManageUsers });
 
         // Dynamic permission template.
         private static readonly Permission ManageUsersInRole = new Permission("ManageUsersInRole_{0}", "Manage Users in Role - {0}", new[] { ManageUsers });

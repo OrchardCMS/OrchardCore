@@ -16,9 +16,10 @@
                             $("#mediaApp").detach().appendTo('#mediaModalBody .modal-body');
                             $("#mediaApp").show();
                             mediaApp.selectedMedias = [];
-                            var modal = $('#mediaModalBody').modal();
+                            var modal = new bootstrap.Modal($("#mediaModalBody"));
+                            modal.show();
                             //disable an reset on click event over the button to avoid issue if press button multiple times or have multiple editor
-                            $('#mediaHtmlFieldSelectButton').off('click');
+                            $('#mediaBodySelectButton').off('click');
                             $('#mediaBodySelectButton').on('click', function (v) {
                                 trumbowyg.restoreRange();
                                 trumbowyg.range.deleteContents();
@@ -34,7 +35,7 @@
                                 //avoid tag to be selected after add it
                                 trumbowyg.$c.focus();
 
-                                $('#mediaModalBody').modal('hide');
+                                modal.hide();
                                 return true;
                             });
                         }

@@ -1,9 +1,9 @@
+using System;
 using System.IO;
 using System.Text.Encodings.Web;
-using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Liquid;
 using Xunit;
-using System;
 
 namespace OrchardCore.Tests.DisplayManagement
 {

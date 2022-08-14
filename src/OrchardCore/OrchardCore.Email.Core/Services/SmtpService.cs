@@ -4,6 +4,7 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using MailKit.Net.Proxy;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Localization;
@@ -13,6 +14,9 @@ using MimeKit;
 
 namespace OrchardCore.Email.Services
 {
+    /// <summary>
+    /// Represents a SMTP service that allows to send emails.
+    /// </summary>
     public class SmtpService : ISmtpService
     {
         private const string EmailExtension = ".eml";
@@ -23,6 +27,12 @@ namespace OrchardCore.Email.Services
         private readonly ILogger _logger;
         private readonly IStringLocalizer S;
 
+        /// <summary>
+        /// Initializes a new instance of a <see cref="SmtpService"/>.
+        /// </summary>
+        /// <param name="options">The <see cref="IOptions{SmtpSettings}"/>.</param>
+        /// <param name="logger">The <see cref="ILogger{SmtpService}"/>.</param>
+        /// <param name="stringLocalizer">The <see cref="IStringLocalizer{SmtpService}"/>.</param>
         public SmtpService(
             IOptions<SmtpSettings> options,
             ILogger<SmtpService> logger,
@@ -34,26 +44,44 @@ namespace OrchardCore.Email.Services
             S = stringLocalizer;
         }
 
+        /// <summary>
+        /// Sends the specified message to an SMTP server for delivery.
+        /// </summary>
+        /// <param name="message">The message to be sent.</param>
+        /// <returns>A <see cref="SmtpResult"/> that holds information about the sent message, for instance if it has sent successfully or if it has failed.</returns>
+        /// <remarks>This method allows to send an email without setting <see cref="MailMessage.To"/> if <see cref="MailMessage.Cc"/> or <see cref="MailMessage.Bcc"/> is provided.</remarks>
         public async Task<SmtpResult> SendAsync(MailMessage message)
         {
-            if (_options?.DefaultSender == null)
+            if (_options == null)
             {
                 return SmtpResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
             }
 
+            SmtpResult result;
+            var response = default(string);
             try
             {
                 // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submitter (Sender)
-                message.From = String.IsNullOrWhiteSpace(message.From)
+                var senderAddress = String.IsNullOrWhiteSpace(message.From)
                     ? _options.DefaultSender
                     : message.From;
 
+                if (!String.IsNullOrWhiteSpace(senderAddress))
+                {
+                    message.From = senderAddress;
+                }
+
                 var mimeMessage = FromMailMessage(message);
+
+                if (mimeMessage.From.Count == 0 && mimeMessage.Cc.Count == 0 && mimeMessage.Bcc.Count == 0)
+                {
+                    return SmtpResult.Failed(S["The mail message should have at least one of these headers: To, Cc or Bcc."]);
+                }
 
                 switch (_options.DeliveryMethod)
                 {
                     case SmtpDeliveryMethod.Network:
-                        await SendOnlineMessage(mimeMessage);
+                        response = await SendOnlineMessageAsync(mimeMessage);
                         break;
                     case SmtpDeliveryMethod.SpecifiedPickupDirectory:
                         await SendOfflineMessage(mimeMessage, _options.PickupDirectoryLocation);
@@ -62,24 +90,30 @@ namespace OrchardCore.Email.Services
                         throw new NotSupportedException($"The '{_options.DeliveryMethod}' delivery method is not supported.");
                 }
 
-                return SmtpResult.Success;
+                result = SmtpResult.Success;
             }
             catch (Exception ex)
             {
-                return SmtpResult.Failed(S["An error occurred while sending an email: '{0}'", ex.Message]);
+                result = SmtpResult.Failed(S["An error occurred while sending an email: '{0}'", ex.Message]); 
             }
+
+            result.Response = response;
+
+            return result;
         }
 
         private MimeMessage FromMailMessage(MailMessage message)
         {
-            var senderAddress = String.IsNullOrWhiteSpace(message.Sender)
+            var submitterAddress = String.IsNullOrWhiteSpace(message.Sender)
                 ? _options.DefaultSender
                 : message.Sender;
 
-            var mimeMessage = new MimeMessage
+            var mimeMessage = new MimeMessage();
+
+            if (!String.IsNullOrEmpty(submitterAddress))
             {
-                Sender = MailboxAddress.Parse(senderAddress)
-            };
+                mimeMessage.Sender = MailboxAddress.Parse(submitterAddress);
+            }
 
             if (!string.IsNullOrWhiteSpace(message.From))
             {
@@ -136,7 +170,7 @@ namespace OrchardCore.Email.Services
             {
                 body.HtmlBody = message.Body;
             }
-            
+
             if (message.IsBodyText)
             {
                 body.TextBody = message.BodyText;
@@ -148,7 +182,7 @@ namespace OrchardCore.Email.Services
                 if (attachment.Stream != null)
                 {
                     body.Attachments.Add(attachment.Filename, attachment.Stream);
-                }            
+                }
             }
 
             mimeMessage.Body = body.ToMessageBody();
@@ -177,7 +211,13 @@ namespace OrchardCore.Email.Services
 
             return false;
         }
-        private async Task SendOnlineMessage(MimeMessage message)
+
+        protected virtual async Task OnMessageSendingAsync(SmtpClient client, MimeMessage message)
+        {
+            await Task.CompletedTask;
+        }
+
+        private async Task<string> SendOnlineMessageAsync(MimeMessage message)
         {
             var secureSocketOptions = SecureSocketOptions.Auto;
 
@@ -202,8 +242,11 @@ namespace OrchardCore.Email.Services
             using (var client = new SmtpClient())
             {
                 client.ServerCertificateValidationCallback = CertificateValidationCallback;
+
+                await OnMessageSendingAsync(client, message);
+
                 await client.ConnectAsync(_options.Host, _options.Port, secureSocketOptions);
-                var useDefaultCredentials = _options.RequireCredentials && _options.UseDefaultCredentials;
+
                 if (_options.RequireCredentials)
                 {
                     if (_options.UseDefaultCredentials)
@@ -216,8 +259,17 @@ namespace OrchardCore.Email.Services
                         await client.AuthenticateAsync(_options.UserName, _options.Password);
                     }
                 }
-                await client.SendAsync(message);
+
+                if (!String.IsNullOrEmpty( _options.ProxyHost))
+                {
+                    client.ProxyClient = new Socks5Client(_options.ProxyHost, _options.ProxyPort);
+                }
+
+                var response = await client.SendAsync(message);
+
                 await client.DisconnectAsync(true);
+
+                return response;
             }
         }
 

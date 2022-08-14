@@ -1,9 +1,7 @@
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Sitemaps.Models;
-using OrchardCore.Mvc.Core.Utilities;
 
 namespace OrchardCore.Sitemaps.Builders
 {
@@ -52,7 +50,7 @@ namespace OrchardCore.Sitemaps.Builders
         {
             var changeFrequencyValue = source.ChangeFrequency.ToString();
             var priorityIntValue = source.Priority;
-            
+
             var priorityValue = (priorityIntValue * 0.1f).ToString(CultureInfo.InvariantCulture);
 
             var changeFreq = new XElement(Namespace + "changefreq");
@@ -70,7 +68,7 @@ namespace OrchardCore.Sitemaps.Builders
             if (source.LastUpdate.HasValue)
             {
                 var lastMod = new XElement(Namespace + "lastmod");
-                lastMod.Add(source.LastUpdate.GetValueOrDefault().ToString("yyyy-MM-ddTHH:mm:sszzz"));
+                lastMod.Add(source.LastUpdate.GetValueOrDefault().ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture));
                 url.Add(lastMod);
             }
         }

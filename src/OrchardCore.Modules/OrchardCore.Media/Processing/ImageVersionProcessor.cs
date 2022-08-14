@@ -17,10 +17,18 @@ namespace OrchardCore.Media.Processing
         /// </summary>
         public const string VersionCommand = "v";
 
+        private static readonly IEnumerable<string> VersionCommands = new[] { VersionCommand };
+
         public IEnumerable<string> Commands
-            => new[] { VersionCommand };
+            => VersionCommands;
 
         public FormattedImage Process(FormattedImage image, ILogger logger, IDictionary<string, string> commands, CommandParser parser, CultureInfo culture)
             => image;
+
+        public FormattedImage Process(FormattedImage image, ILogger logger, CommandCollection commands, CommandParser parser, CultureInfo culture)
+            => image;
+
+        public bool RequiresTrueColorPixelFormat(CommandCollection commands, CommandParser parser, CultureInfo culture)
+            => false;
     }
 }

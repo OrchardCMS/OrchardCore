@@ -13,7 +13,7 @@
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="form-group">
+<div class="mb-3">
     <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
     @if (culture.IsRightToLeft())
     {
@@ -37,9 +37,16 @@
         @* set dir while keeping trumbowg translations dictionary intact *@
         @if (culture.GetLanguageDirection() == LanguageDirection.RTL)
         {
-            <text>        
+            <text>
             var langs = jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName;
-            langs['_dir'] = '@culture.GetLanguageDirection()';
+
+            if (!langs) {
+                cloned = { 
+                    ...jQuery.trumbowyg.langs['en'],
+                    _dir: '@culture.GetLanguageDirection()'
+                };
+                jQuery.trumbowyg.langs['@culture.TwoLetterISOLanguageName'] = cloned;
+            }
             </text>
         }
 

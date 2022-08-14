@@ -13,10 +13,10 @@
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["View As JSON {0}", Html.Raw(typeDisplayName)])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["View As JSON {0}", typeDisplayName])</h1></zone>
 
 <form asp-action="Download" asp-route-contentItemId="@contentItem.ContentItemId" method="post" enctype="multipart/form-data" class="no-multisubmit">
-    <div class="form-group">
+    <div class="mb-3">
         <div class="d-flex flex-row-reverse">
             <div class="btn">
                 <i class="far fa-copy" aria-hidden="true" id="json-copy-to-clipboard"></i>

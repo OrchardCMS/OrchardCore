@@ -42,51 +42,53 @@ namespace OrchardCore.Twitter.Drivers
         public override async Task<IDisplayResult> EditAsync(TwitterSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
+
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
             {
                 return null;
             }
-                return Initialize<TwitterSettingsViewModel>("TwitterSettings_Edit", model =>
+
+            return Initialize<TwitterSettingsViewModel>("TwitterSettings_Edit", model =>
+            {
+                model.APIKey = settings.ConsumerKey;
+                if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
                 {
-                    model.APIKey = settings.ConsumerKey;
-                    if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
+                    try
                     {
-                        try
-                        {
-                            var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
-                            model.APISecretKey = protector.Unprotect(settings.ConsumerSecret);
-                        }
-                        catch (CryptographicException)
-                        {
-                            _logger.LogError("The API secret key could not be decrypted. It may have been encrypted using a different key.");
-                            model.APISecretKey = string.Empty;
-                            model.HasDecryptionError = true;
-                        }
+                        var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
+                        model.APISecretKey = protector.Unprotect(settings.ConsumerSecret);
                     }
-                    else
+                    catch (CryptographicException)
                     {
+                        _logger.LogError("The API secret key could not be decrypted. It may have been encrypted using a different key.");
                         model.APISecretKey = string.Empty;
+                        model.HasDecryptionError = true;
                     }
-                    model.AccessToken = settings.AccessToken;
-                    if (!string.IsNullOrWhiteSpace(settings.AccessTokenSecret))
+                }
+                else
+                {
+                    model.APISecretKey = string.Empty;
+                }
+                model.AccessToken = settings.AccessToken;
+                if (!string.IsNullOrWhiteSpace(settings.AccessTokenSecret))
+                {
+                    try
                     {
-                        try
-                        {
-                            var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
-                            model.AccessTokenSecret = protector.Unprotect(settings.AccessTokenSecret);
-                        }
-                        catch (CryptographicException)
-                        {
-                            _logger.LogError("The access token secret could not be decrypted. It may have been encrypted using a different key.");
-                            model.AccessTokenSecret = string.Empty;
-                            model.HasDecryptionError = true;
-                        }
+                        var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
+                        model.AccessTokenSecret = protector.Unprotect(settings.AccessTokenSecret);
                     }
-                    else
+                    catch (CryptographicException)
                     {
+                        _logger.LogError("The access token secret could not be decrypted. It may have been encrypted using a different key.");
                         model.AccessTokenSecret = string.Empty;
+                        model.HasDecryptionError = true;
                     }
-                }).Location("Content:5").OnGroup(TwitterConstants.Features.Twitter);
+                }
+                else
+                {
+                    model.AccessTokenSecret = string.Empty;
+                }
+            }).Location("Content:5").OnGroup(TwitterConstants.Features.Twitter);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TwitterSettings settings, BuildEditorContext context)

@@ -124,7 +124,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                 var authorized = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem);
                 if (authorized)
                 {
-                    dashboardCreatable.Add(new SelectListItem(new LocalizedString(ctd.DisplayName, ctd.DisplayName).Value, ctd.Name));
+                    dashboardCreatable.Add(new SelectListItem(ctd.DisplayName, ctd.Name));
                 }
             }
 
