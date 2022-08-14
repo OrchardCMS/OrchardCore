@@ -5,6 +5,7 @@ theme:
   logo: docs/assets/images/orchard-logo.png
   favicon: docs/assets/images/favicon.png
   features:
+    - header.autohide
     - navigation.instant
     - navigation.tabs
   palette:

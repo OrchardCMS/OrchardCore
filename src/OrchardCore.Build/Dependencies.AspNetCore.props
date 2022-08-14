@@ -17,8 +17,8 @@
 
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM (default = net6.0) -->
   <PropertyGroup>
-    <AspNetCorePackagesVersion>6.0.7</AspNetCorePackagesVersion>
-    <MicrosoftExtensionsPackagesVersion>6.0.7</MicrosoftExtensionsPackagesVersion>
+    <AspNetCorePackagesVersion>6.0.8</AspNetCorePackagesVersion>
+    <MicrosoftExtensionsPackagesVersion>6.0.8</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
 
   <!-- 'Microsoft.AspNetCore' packages that are not included in the ASP.NET Core shared framework -->
