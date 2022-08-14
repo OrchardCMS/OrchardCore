@@ -30,7 +30,9 @@ namespace OrchardCore.Workflows.Handlers
 
             var input = new Dictionary<string, object>
             {
-                { WorkflowFaultModel.WorkflowFaultInputKey, faultContext }
+                {
+                    WorkflowFaultModel.WorkflowFaultInputKey, faultContext
+                }
             };
 
             await workflowManager.TriggerEventAsync(name, input);
