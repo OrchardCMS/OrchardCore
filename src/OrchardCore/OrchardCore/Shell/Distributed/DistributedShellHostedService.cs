@@ -80,8 +80,8 @@ namespace OrchardCore.Environment.Shell.Distributed
             // Init the idle time.
             var idleTime = MinIdleTime;
 
-            // Init the syncing period of the default tenant while it is 'Uninitialized'.
-            var defaultTenantSyncingPeriod = 0;
+            // Init the second counter used to sync the default tenant while it is 'Uninitialized'.
+            var defaultTenantSyncingSeconds = 0;
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -99,15 +99,15 @@ namespace OrchardCore.Environment.Shell.Distributed
                         continue;
                     }
 
-                    // Manage the syncing period of the default tenant while it is 'Uninitialized'.
-                    defaultTenantSyncingPeriod = defaultContext.Settings.State == TenantState.Uninitialized
-                        ? defaultTenantSyncingPeriod++
+                    // Manage the second counter used to sync the default tenant while it is 'Uninitialized'.
+                    defaultTenantSyncingSeconds = defaultContext.Settings.State == TenantState.Uninitialized
+                        ? defaultTenantSyncingSeconds++
                         : 0;
 
-                    // Check periodically if the default tenant is no more 'Uninitialized'.
-                    if (defaultTenantSyncingPeriod++ > DefaultTenantSyncingPeriod)
+                    // Check periodically if the default tenant is still 'Uninitialized'.
+                    if (defaultTenantSyncingSeconds++ > DefaultTenantSyncingPeriod)
                     {
-                        defaultTenantSyncingPeriod = 0;
+                        defaultTenantSyncingSeconds = 0;
 
                         // Load the settings of the default tenant that may have been setup by another instance.
                         var defaultSettings = await _shellSettingsManager.LoadSettingsAsync(ShellHelper.DefaultShellName);
