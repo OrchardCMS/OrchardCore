@@ -23,26 +23,23 @@ namespace OrchardCore.Cors.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly CorsService _corsService;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer T;
-        private readonly IHtmlLocalizer<AdminController> TH;
+        private readonly IHtmlLocalizer<AdminController> H;
 
         public AdminController(
             IShellHost shellHost,
             ShellSettings shellSettings,
             IAuthorizationService authorizationService,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer,
             CorsService corsService,
-            INotifier notifier
+            INotifier notifier,
+            IHtmlLocalizer<AdminController> htmlLocalizer
             )
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            TH = htmlLocalizer;
-            _notifier = notifier;
-            _corsService = corsService;
-            T = stringLocalizer;
             _authorizationService = authorizationService;
+            _corsService = corsService;
+            _notifier = notifier;
+            H = htmlLocalizer;
         }
 
         [HttpGet]
@@ -127,7 +124,7 @@ namespace OrchardCore.Cors.Controllers
 
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
-            await _notifier.SuccessAsync(TH["The CORS settings have updated successfully."]);
+            await _notifier.SuccessAsync(H["The CORS settings have updated successfully."]);
 
             return View(model);
         }
