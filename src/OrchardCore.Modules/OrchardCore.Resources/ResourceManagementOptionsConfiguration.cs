@@ -8,7 +8,7 @@ namespace OrchardCore.Resources
 {
     public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
     {
-        private readonly ResourceOptions _resourceSetting;
+        private readonly ResourceOptions _resourceOptions;
         private readonly IHostEnvironment _env;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly PathString _pathBase;
@@ -19,9 +19,9 @@ namespace OrchardCore.Resources
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
 
-        public ResourceManagementOptionsConfiguration(IOptions<ResourceOptions> resourceSettingOptions, IHostEnvironment env, IHttpContextAccessor httpContextAccessor)
+        public ResourceManagementOptionsConfiguration(IOptions<ResourceOptions> resourceOptions, IHostEnvironment env, IHttpContextAccessor httpContextAccessor)
         {
-            _resourceSetting = resourceSettingOptions.Value;
+            _resourceOptions = resourceOptions.Value;
             _env = env;
             _httpContextAccessor = httpContextAccessor;
             _pathBase = _httpContextAccessor.HttpContext.Request.PathBase;
@@ -485,7 +485,7 @@ namespace OrchardCore.Resources
         {
             options.ResourceManifests.Add(BuildManifest());
 
-            switch (_resourceSetting.ResourceDebugMode)
+            switch (_resourceOptions.ResourceDebugMode)
             {
                 case ResourceDebugMode.Enabled:
                     options.DebugMode = true;
@@ -500,9 +500,9 @@ namespace OrchardCore.Resources
                     break;
             }
 
-            options.UseCdn = _resourceSetting.UseCdn;
-            options.CdnBaseUrl = _resourceSetting.CdnBaseUrl;
-            options.AppendVersion = _resourceSetting.AppendVersion;
+            options.UseCdn = _resourceOptions.UseCdn;
+            options.CdnBaseUrl = _resourceOptions.CdnBaseUrl;
+            options.AppendVersion = _resourceOptions.AppendVersion;
             options.ContentBasePath = _pathBase.Value;
         }
     }

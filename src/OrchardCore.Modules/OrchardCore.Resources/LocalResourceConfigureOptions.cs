@@ -16,6 +16,6 @@ public class LocalResourceConfigureOptions : IConfigureOptions<ResourceOptions>
 
     public void Configure(ResourceOptions options)
     {
-        _configuration.GetSectionCompat("OrchardCore:Site_Settings").Bind(options);
+        _configuration.GetSectionCompat("OrchardCore:OrchardCore_Resources").Bind(options);
     }
 }
