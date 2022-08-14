@@ -5,6 +5,7 @@ using OrchardCore.ResourceManagement;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Resources;
+
 public static class OrchardCoreBuilderExtensions
 {
     public static OrchardCoreBuilder ConfigureResourceSettings(this OrchardCoreBuilder builder)
