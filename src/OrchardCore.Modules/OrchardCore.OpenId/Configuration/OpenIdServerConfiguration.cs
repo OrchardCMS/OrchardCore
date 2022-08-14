@@ -48,7 +48,7 @@ namespace OrchardCore.OpenId.Configuration
             }
 
             options.AddScheme<OpenIddictServerAspNetCoreHandler>(
-                OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, displayName: null);
+            OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, displayName: null);
         }
 
         public void Configure(OpenIddictServerOptions options)
@@ -67,7 +67,7 @@ namespace OrchardCore.OpenId.Configuration
             foreach (var key in _serverService.GetEncryptionKeysAsync().GetAwaiter().GetResult())
             {
                 options.EncryptionCredentials.Add(new EncryptingCredentials(key,
-                    SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
+                SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
             }
 
             foreach (var key in _serverService.GetSigningKeysAsync().GetAwaiter().GetResult())
@@ -217,17 +217,18 @@ namespace OrchardCore.OpenId.Configuration
         private async Task<OpenIdServerSettings> GetServerSettingsAsync()
         {
             var settings = await _serverService.GetSettingsAsync();
-     
 
-            if (_logger.IsEnabled(LogLevel.Warning))
+
+
+            var result = await _serverService.ValidateSettingsAsync(settings);
+            if (result.Any(result => result != ValidationResult.Success))
             {
-                var result = await _serverService.ValidateSettingsAsync(settings);
-                if (result.Any(result => result != ValidationResult.Success))
+                if (_shellSettings.State == TenantState.Running)
                 {
-                    if (_shellSettings.State == TenantState.Running)
+                    if (_logger.IsEnabled(LogLevel.Warning))
                     {
                         var errors = result.Where(x => x != ValidationResult.Success).Select(x => x.ErrorMessage);
-                        _logger.LogWarning("The Server Settings of OpenID Connect module is not correctly configured:{Error}", string.Join("\r\n;", errors));
+                        _logger.LogWarning("The Server Settings of OpenID Connect module is not correctly configured:{Error}", String.Join("\r\n;", errors));
                     }
 
                     return null;

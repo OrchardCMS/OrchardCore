@@ -62,7 +62,7 @@ namespace OrchardCore.OpenId.Configuration
             if (settings.Authority != null)
             {
                 options.AddScheme<OpenIddictValidationAspNetCoreHandler>(
-                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme, displayName: null);
+                OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme, displayName: null);
 
                 return;
             }
@@ -84,7 +84,7 @@ namespace OrchardCore.OpenId.Configuration
                 }
 
                 options.AddScheme<OpenIddictValidationAspNetCoreHandler>(
-                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme, displayName: null);
+                OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme, displayName: null);
             }).GetAwaiter().GetResult();
         }
 
@@ -154,7 +154,7 @@ namespace OrchardCore.OpenId.Configuration
                 foreach (var key in await service.GetEncryptionKeysAsync())
                 {
                     options.EncryptionCredentials.Add(new EncryptingCredentials(key,
-                        SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
+                    SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
                 }
 
                 // When the server is another tenant, don't allow the current tenant
@@ -247,15 +247,16 @@ namespace OrchardCore.OpenId.Configuration
         private async Task<OpenIdServerSettings> GetServerSettingsAsync(IOpenIdServerService service)
         {
             var settings = await service.GetSettingsAsync();
-            if (_logger.IsEnabled(LogLevel.Warning))
+
+            var result = await service.ValidateSettingsAsync(settings);
+            if (result.Any(result => result != ValidationResult.Success))
             {
-                var result = await service.ValidateSettingsAsync(settings);
-                if (result.Any(result => result != ValidationResult.Success))
+                if (_shellSettings.State == TenantState.Running)
                 {
-                    if (_shellSettings.State == TenantState.Running)
+                    if (_logger.IsEnabled(LogLevel.Warning))
                     {
                         var errors = result.Where(x => x != ValidationResult.Success).Select(x => x.ErrorMessage);
-                        _logger.LogWarning("The Server Settings of OpenID Connect module is not correctly configured:{Error}", string.Join("\r\n;", errors));
+                        _logger.LogWarning("The Server Settings of OpenID Connect module is not correctly configured:{Error}", String.Join("\r\n;", errors));
                     }
 
                     return null;
@@ -267,16 +268,17 @@ namespace OrchardCore.OpenId.Configuration
 
         private async Task<OpenIdValidationSettings> GetValidationSettingsAsync()
         {
-            var settings = await _validationService.GetSettingsAsync();  
-            if (_logger.IsEnabled(LogLevel.Warning))
+            var settings = await _validationService.GetSettingsAsync();
+
+            var result = await _validationService.ValidateSettingsAsync(settings);
+            if (result.Any(x => x != ValidationResult.Success))
             {
-                var result = await _validationService.ValidateSettingsAsync(settings);
-                if (result.Any(result => result != ValidationResult.Success))
+                if (_shellSettings.State == TenantState.Running)
                 {
-                    if (_shellSettings.State == TenantState.Running)
+                    if (_logger.IsEnabled(LogLevel.Warning))
                     {
                         var errors = result.Where(x => x != ValidationResult.Success).Select(x => x.ErrorMessage);
-                        _logger.LogWarning("The OpenID Connect module is not correctly configured:{Error}", string.Join("\r\n;", errors));
+                        _logger.LogWarning("The OpenID Connect module is not correctly configured:{Error}", String.Join("\r\n;", errors));
                     }
 
                     return null;
