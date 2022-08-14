@@ -971,6 +971,12 @@
   background-color: #fff3cd;
   border-color: #856404;
 }
+:root[data-theme=default] .upload-danger {
+    color: #b4124f;
+}
+[dir]:root[data-theme=default] .upload-danger {
+    background-color: #fad1dc;
+}
 [dir]:root[data-theme=darkmode] .upload-list {
   margin-bottom: 8px;
 }
