@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Modules;
@@ -24,8 +23,6 @@ namespace OrchardCore.Resources
             });
 
             serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
-
-            serviceCollection.TryAddTransient<IConfigureOptions<ResourceOptions>, LocalResourceConfigureOptions>();
         }
     }
 }

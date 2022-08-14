@@ -16,7 +16,7 @@ All script or stylesheet resources should be prefixed with the `~` character.
 
 ## Resource Settings
 
-Resource Settings are configured through the site admin.
+Resource Settings are configured through the site admin. 
 
 ### `AppendVersion`
 
@@ -35,6 +35,21 @@ This will also disable the `CdnBaseUrl` prepending.
 ### `CdnBaseUrl`
 
 When supplied this will prepend local resources served via the `IResourceManager` or Tag Helpers with the absolute url provided. This will be disabled in `ResourceDebugMode`
+
+## Resource Settings Configuration
+
+The `OrchardCore.Resources` module allows the user to use configuration values to override the `ResourceOptions` by calling `ConfigureResourceSettings()` extension method.
+
+The following configuration values can be customized:
+
+```json
+    "OrchardCore_Resources": {
+      "UseCdn": false,
+      "CdnBaseUrl": "",
+      "AppendVersion": true,
+      "ContentBasePath": ""
+    }
+```
 
 ## Named Resources
 
