@@ -32,6 +32,23 @@ namespace OrchardCore.ContentTypes
                 {
                     foreach (var partDefinition in contentType.ContentTypePartDefinitionRecords)
                     {
+                        if (partDefinition.Settings != null)
+                        {
+                            if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) &&
+                                !partDefinition.Settings.ContainsKey("LuceneContentIndexSettings"))
+                            {
+                                partDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingPartSettings));
+                            }
+
+                            partDefinition.Settings.Remove("ContentIndexSettings");
+                        }
+                    }
+                }
+
+                foreach (var partDefinition in step.ContentParts)
+                {
+                    if (partDefinition.Settings != null)
+                    {
                         if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) &&
                             !partDefinition.Settings.ContainsKey("LuceneContentIndexSettings"))
                         {
@@ -39,28 +56,20 @@ namespace OrchardCore.ContentTypes
                         }
 
                         partDefinition.Settings.Remove("ContentIndexSettings");
-                    }
-                }
 
-                foreach (var partDefinition in step.ContentParts)
-                {
-                    if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) &&
-                        !partDefinition.Settings.ContainsKey("LuceneContentIndexSettings"))
-                    {
-                        partDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingPartSettings));
-                    }
-
-                    partDefinition.Settings.Remove("ContentIndexSettings");
-
-                    foreach (var fieldDefinition in partDefinition.ContentPartFieldDefinitionRecords)
-                    {
-                        if (fieldDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingFieldSettings) &&
-                            !fieldDefinition.Settings.ContainsKey("LuceneContentIndexSettings"))
+                        foreach (var fieldDefinition in partDefinition.ContentPartFieldDefinitionRecords)
                         {
-                            fieldDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingFieldSettings));
-                        }
+                            if (fieldDefinition.Settings != null)
+                            {
+                                if (fieldDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingFieldSettings) &&
+                                    !fieldDefinition.Settings.ContainsKey("LuceneContentIndexSettings"))
+                                {
+                                    fieldDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingFieldSettings));
+                                }
 
-                        fieldDefinition.Settings.Remove("ContentIndexSettings");
+                                fieldDefinition.Settings.Remove("ContentIndexSettings");
+                            }
+                        }
                     }
                 }
 
