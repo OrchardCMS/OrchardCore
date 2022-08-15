@@ -100,7 +100,7 @@ namespace OrchardCore.Modules
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
-                    _logger.LogError(ex, "Error while executing '{ServiceName}'", nameof(ModularBackgroundService));
+                    _logger.LogError(ex, "Error while executing '{ServiceName}'.", nameof(ModularBackgroundService));
                 }
             }
         }

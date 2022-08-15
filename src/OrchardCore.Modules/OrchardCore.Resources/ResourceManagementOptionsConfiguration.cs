@@ -283,7 +283,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror-addon-mode-multiplex")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/addon/mode/multiplex.min.js", "~/OrchardCore.Resources/Scripts/codemirror/addon/mode/multiplex.js")
                 .SetCdn(codeMirrorUrl + "addon/mode/multiplex.min.js", codeMirrorUrl + "addon/mode/multiplex.js")
-                .SetCdnIntegrity("sha512-SnKl5kuiZJ6HI+aRXBjW1qv8USObXnN8BoPLHLQ7igatyz0QhbFgNYba9g8+zPsaYXzOm1XIrsj/b1uazysMtA==", "ssha512-xGdyL/q8XtWD05NETb/o7ONYii6T4zGvjUL22FvgfeM3pUb7EvyIFSsLBQzyxb2hCYdH7DKNXqw99Hcf9Onkiw==")
+                .SetCdnIntegrity("sha512-SnKl5kuiZJ6HI+aRXBjW1qv8USObXnN8BoPLHLQ7igatyz0QhbFgNYba9g8+zPsaYXzOm1XIrsj/b1uazysMtA==", "sha512-xGdyL/q8XtWD05NETb/o7ONYii6T4zGvjUL22FvgfeM3pUb7EvyIFSsLBQzyxb2hCYdH7DKNXqw99Hcf9Onkiw==")
                 .SetVersion(codeMirrorVersion);
 
             manifest
