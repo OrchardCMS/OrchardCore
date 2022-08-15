@@ -4,7 +4,7 @@ using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Settings;
 
-public class ResourceConfigureOptions : IConfigureOptions<ResourceOptions>
+public class ResourceConfigureOptions : IPostConfigureOptions<ResourceOptions>
 {
     private readonly ISiteService _siteService;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -17,7 +17,7 @@ public class ResourceConfigureOptions : IConfigureOptions<ResourceOptions>
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public void Configure(ResourceOptions options)
+    public void PostConfigure(string name, ResourceOptions options)
     {
         var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
 
