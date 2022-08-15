@@ -47,7 +47,6 @@
                   "DisplayName": "Default social image",
                   "Position": "1"
                 },
-                "ContentIndexSettings": {},
                 "MediaFieldSettings": {
                   "Multiple": false
                 }
@@ -61,7 +60,6 @@
                   "DisplayName": "Open graph image",
                   "Position": "2"
                 },
-                "ContentIndexSettings": {},
                 "MediaFieldSettings": {
                   "Multiple": false
                 }
@@ -75,7 +73,6 @@
                   "DisplayName": "Twitter Image",
                   "Position": "3"
                 },
-                "ContentIndexSettings": {},
                 "MediaFieldSettings": {
                   "Multiple": false
                 }
@@ -130,8 +127,7 @@
                   "Editor": "CodeMirror",
                   "Position": "12"
                 },
-                "TextFieldSettings": {},
-                "ContentIndexSettings": {}
+                "TextFieldSettings": {}
               }
             },
             {
@@ -163,8 +159,7 @@
                   "Editor": "CodeMirror",
                   "Position": "0"
                 },
-                "TextFieldSettings": {},
-                "ContentIndexSettings": {}
+                "TextFieldSettings": {}
               }
             },
             {
@@ -176,8 +171,7 @@
                   "Editor": "CodeMirror",
                   "Position": "9"
                 },
-                "TextFieldSettings": {},
-                "ContentIndexSettings": {}
+                "TextFieldSettings": {}
               }
             },
             {
@@ -189,8 +183,7 @@
                   "Editor": "CodeMirror",
                   "Position": "5"
                 },
-                "TextFieldSettings": {},
-                "ContentIndexSettings": {}
+                "TextFieldSettings": {}
               }
             }
           ]

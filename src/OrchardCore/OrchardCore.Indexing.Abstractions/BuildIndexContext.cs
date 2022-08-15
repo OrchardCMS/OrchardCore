@@ -9,7 +9,8 @@ namespace OrchardCore.Indexing
             DocumentIndex documentIndex,
             ContentItem contentItem,
             IList<string> keys,
-            ContentIndexSettings settings)
+            IContentIndexSettings settings
+        )
         {
             ContentItem = contentItem;
             DocumentIndex = documentIndex;
@@ -20,6 +21,6 @@ namespace OrchardCore.Indexing
         public IList<string> Keys { get; }
         public ContentItem ContentItem { get; }
         public DocumentIndex DocumentIndex { get; }
-        public ContentIndexSettings Settings { get; }
+        public IContentIndexSettings Settings { get; }
     }
 }

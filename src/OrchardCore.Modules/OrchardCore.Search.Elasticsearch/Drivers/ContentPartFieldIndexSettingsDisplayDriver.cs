@@ -5,9 +5,10 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Indexing.ViewModels;
+using OrchardCore.Search.Elasticsearch.Core.Models;
+using OrchardCore.Search.Elasticsearch.ViewModels;
 
-namespace OrchardCore.Indexing.Drivers
+namespace OrchardCore.Search.Elasticsearch.Drivers
 {
     public class ContentPartFieldIndexSettingsDisplayDriver : ContentPartFieldDefinitionDisplayDriver
     {
@@ -22,29 +23,29 @@ namespace OrchardCore.Indexing.Drivers
 
         public override async Task<IDisplayResult> EditAsync(ContentPartFieldDefinition contentPartFieldDefinition, IUpdateModel updater)
         {
-            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageIndexes))
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
             {
                 return null;
             }
 
-            return Initialize<ContentIndexSettingsViewModel>("ContentIndexSettings_Edit", model =>
+            return Initialize<ElasticContentIndexSettingsViewModel>("ElasticContentIndexSettings_Edit", model =>
             {
-                model.ContentIndexSettings = contentPartFieldDefinition.GetSettings<ContentIndexSettings>();
+                model.ElasticContentIndexSettings = contentPartFieldDefinition.GetSettings<ElasticContentIndexSettings>();
             }).Location("Content:10");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition contentPartFieldDefinition, UpdatePartFieldEditorContext context)
         {
-            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageIndexes))
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
             {
                 return null;
             }
 
-            var model = new ContentIndexSettingsViewModel();
+            var model = new ElasticContentIndexSettingsViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            context.Builder.WithSettings(model.ContentIndexSettings);
+            context.Builder.WithSettings(model.ElasticContentIndexSettings);
 
             return await EditAsync(contentPartFieldDefinition, context.Updater);
         }

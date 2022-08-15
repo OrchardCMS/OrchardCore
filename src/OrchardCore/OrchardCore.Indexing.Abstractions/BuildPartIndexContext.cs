@@ -11,7 +11,7 @@ namespace OrchardCore.Indexing
             ContentItem contentItem,
             IList<string> keys,
             ContentTypePartDefinition typePartDefinition,
-            ContentIndexSettings settings)
+            IContentIndexSettings settings)
             : base(documentIndex, contentItem, keys, settings)
         {
             ContentTypePartDefinition = typePartDefinition;
