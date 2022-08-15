@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Liquid;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Resources.Liquid;
@@ -10,11 +12,13 @@ namespace OrchardCore.Resources
 {
     public class Startup : StartupBase
     {
-        private readonly IConfiguration _configuration;
+        private readonly IShellConfiguration _shellConfiguration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public Startup(IConfiguration configuration)
+        public Startup(IShellConfiguration shellConfiguration, IHttpContextAccessor httpContextAccessor)
         {
-            _configuration = configuration;
+            _shellConfiguration = shellConfiguration;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public override void ConfigureServices(IServiceCollection serviceCollection)
@@ -32,7 +36,13 @@ namespace OrchardCore.Resources
 
             serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
 
-            serviceCollection.Configure<ResourceOptions>(settings => _configuration.GetSection("OrchardCore_Resources").Bind(settings));
+            serviceCollection.Configure<ResourceSettings>(settings =>
+            {
+                _shellConfiguration.GetSection("OrchardCore_Resources").Bind(settings.Options);
+
+                settings.Source = OptionSource.Configuration;
+                settings.Options.ContentBasePath = _httpContextAccessor.HttpContext.Request.PathBase.Value;
+            });
         }
     }
 }
