@@ -49,7 +49,6 @@ namespace OrchardCore.Contents.Indexing
                 var partActivator = _contentPartFactory.GetTypeActivator(partTypeName);
                 var part = (ContentPart)context.ContentItem.Get(partActivator.Type, partName);
 
-                var test = context.Settings.GetType();
                 var contentTypePartDefinitionMethod = contentTypePartDefinition.GetType().GetMethod("GetSettings");
                 var contentTypePartDefinitionGeneric = contentTypePartDefinitionMethod.MakeGenericMethod(context.Settings.GetType());
                 var typePartIndexSettings = (IContentIndexSettings)contentTypePartDefinitionGeneric.Invoke(contentTypePartDefinition, null);
