@@ -7,7 +7,7 @@ public static class ContentTypeExtensions
 {
     public static bool HasStereotype(this ContentTypeDefinition contentTypeDefinition)
     {
-        return !String.IsNullOrEmpty(contentTypeDefinition.GetSettings().Stereotype);
+        return !String.IsNullOrEmpty(contentTypeDefinition.GetStereotype());
     }
 
     public static string GetStereotype(this ContentTypeDefinition contentTypeDefinition)
