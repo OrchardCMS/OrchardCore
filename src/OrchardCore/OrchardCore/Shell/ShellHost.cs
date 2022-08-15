@@ -67,11 +67,11 @@ namespace OrchardCore.Environment.Shell
                 if (!_initialized)
                 {
                     await PreCreateAndRegisterShellsAsync();
+                    _initialized = true;
                 }
             }
             finally
             {
-                _initialized = true;
                 _initializingSemaphore.Release();
             }
         }
