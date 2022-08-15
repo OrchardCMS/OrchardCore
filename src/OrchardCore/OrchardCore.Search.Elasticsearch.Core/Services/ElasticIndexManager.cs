@@ -179,7 +179,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// This allows storing the last indexing task id executed on the Elasticsearch index.
         /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-meta-field.html"/>
         /// </summary>
-        /// <returns></returns>
         public async Task SetLastTaskId(string indexName, int lastTaskId)
         {
             var IndexingState = new FluentDictionary<string, object>() {
@@ -198,7 +197,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// Get a last_task_id in the Elasticsearch index _meta mappings.
         /// This allows retrieving the last indexing task id executed on the index.
         /// </summary>
-        /// <returns></returns>
         public async Task<int> GetLastTaskId(string indexName)
         {
             var jsonDocument = JsonDocument.Parse(await GetIndexMappings(indexName));
@@ -386,8 +384,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <summary>
         /// Returns results from a search made with NEST Fluent DSL query.
         /// </summary>
-        /// <param name="indexName"></param>
-        /// <param name="elasticClient"></param>
         public async Task SearchAsync(string indexName, Func<IElasticClient, Task> elasticClient)
         {
             if (await Exists(indexName))
