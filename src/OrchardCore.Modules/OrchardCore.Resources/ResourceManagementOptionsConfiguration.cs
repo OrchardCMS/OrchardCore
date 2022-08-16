@@ -10,7 +10,6 @@ namespace OrchardCore.Resources
     {
         private readonly ResourceOptions _resourceOptions;
         private readonly IHostEnvironment _env;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly PathString _pathBase;
         // Versions
         private const string codeMirrorVersion = "5.65.4";
@@ -19,12 +18,14 @@ namespace OrchardCore.Resources
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
 
-        public ResourceManagementOptionsConfiguration(IOptions<ResourceOptions> resourceOptions, IHostEnvironment env, IHttpContextAccessor httpContextAccessor)
+        public ResourceManagementOptionsConfiguration(
+            IOptions<ResourceOptions> resourceOptions,
+            IHostEnvironment env,
+            IHttpContextAccessor httpContextAccessor)
         {
             _resourceOptions = resourceOptions.Value;
             _env = env;
-            _httpContextAccessor = httpContextAccessor;
-            _pathBase = _httpContextAccessor.HttpContext.Request.PathBase;
+            _pathBase = httpContextAccessor.HttpContext.Request.PathBase;
         }
 
         ResourceManifest BuildManifest()
