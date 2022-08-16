@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Liquid;
@@ -9,6 +10,13 @@ namespace OrchardCore.Resources
 {
     public class Startup : StartupBase
     {
+        private readonly IConfiguration _configuration;
+
+        public Startup(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public override void ConfigureServices(IServiceCollection serviceCollection)
         {
             serviceCollection.Configure<LiquidViewOptions>(o =>
@@ -23,6 +31,8 @@ namespace OrchardCore.Resources
             });
 
             serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+
+            serviceCollection.Configure<ResourceOptions>(options => _configuration.GetSection("OrchardCore:OrchardCore_Resources").Bind(options));
         }
     }
 }
