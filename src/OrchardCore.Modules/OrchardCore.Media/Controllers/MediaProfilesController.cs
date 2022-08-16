@@ -18,7 +18,6 @@ using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Media.Controllers
 {
@@ -28,7 +27,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly MediaProfilesManager _mediaProfilesManager;
         private readonly MediaOptions _mediaOptions;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
@@ -38,7 +37,7 @@ namespace OrchardCore.Media.Controllers
             IAuthorizationService authorizationService,
             MediaProfilesManager mediaProfilesManager,
             IOptions<MediaOptions> mediaOptions,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             INotifier notifier,
             IShapeFactory shapeFactory,
             IStringLocalizer<MediaProfilesController> stringLocalizer,
@@ -48,7 +47,7 @@ namespace OrchardCore.Media.Controllers
             _authorizationService = authorizationService;
             _mediaProfilesManager = mediaProfilesManager;
             _mediaOptions = mediaOptions.Value;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             _notifier = notifier;
             New = shapeFactory;
             S = stringLocalizer;
@@ -62,8 +61,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
 
             var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
             var mediaProfiles = mediaProfilesDocument.MediaProfiles.ToList();

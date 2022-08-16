@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -17,7 +18,6 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
@@ -32,7 +32,7 @@ namespace OrchardCore.Workflows.Controllers
     [Admin]
     public class WorkflowTypeController : Controller
     {
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly ISession _session;
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowManager _workflowManager;
@@ -50,7 +50,7 @@ namespace OrchardCore.Workflows.Controllers
 
         public WorkflowTypeController
         (
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             ISession session,
             IActivityLibrary activityLibrary,
             IWorkflowManager workflowManager,
@@ -65,7 +65,7 @@ namespace OrchardCore.Workflows.Controllers
             IHtmlLocalizer<WorkflowTypeController> h,
             IUpdateModelAccessor updateModelAccessor)
         {
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             _session = session;
             _activityLibrary = activityLibrary;
             _workflowManager = workflowManager;
@@ -89,8 +89,7 @@ namespace OrchardCore.Workflows.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
 
             if (options == null)
             {

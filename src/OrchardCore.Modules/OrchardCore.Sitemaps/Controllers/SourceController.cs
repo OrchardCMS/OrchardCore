@@ -10,7 +10,6 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 using OrchardCore.Sitemaps.ViewModels;
@@ -24,7 +23,6 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly IDisplayManager<SitemapSource> _displayManager;
         private readonly IEnumerable<ISitemapSourceFactory> _factories;
         private readonly ISitemapManager _sitemapManager;
-        private readonly ISiteService _siteService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
         private readonly dynamic New;
@@ -36,7 +34,6 @@ namespace OrchardCore.Sitemaps.Controllers
             IDisplayManager<SitemapSource> displayManager,
             IEnumerable<ISitemapSourceFactory> factories,
             ISitemapManager sitemapManager,
-            ISiteService siteService,
             IUpdateModelAccessor updateModelAccessor,
             INotifier notifier,
             IShapeFactory shapeFactory,
@@ -47,7 +44,6 @@ namespace OrchardCore.Sitemaps.Controllers
             _factories = factories;
             _authorizationService = authorizationService;
             _sitemapManager = sitemapManager;
-            _siteService = siteService;
             _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
             New = shapeFactory;
