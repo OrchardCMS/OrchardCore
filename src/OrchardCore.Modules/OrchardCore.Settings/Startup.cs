@@ -94,7 +94,7 @@ namespace OrchardCore.Settings
 
             services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSiteNameProvider>();
 
-            services.AddTransient<IPostConfigureOptions<ResourceSettings>, ResourceConfigureOptions>();
+            services.AddTransient<IPostConfigureOptions<ResourceOptions>, ResourceConfigureOptions>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

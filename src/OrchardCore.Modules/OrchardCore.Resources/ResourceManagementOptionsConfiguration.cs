@@ -19,12 +19,9 @@ namespace OrchardCore.Resources
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
 
-        public ResourceManagementOptionsConfiguration(
-            IOptions<ResourceSettings> resourceSettings,
-            IHostEnvironment env,
-            IHttpContextAccessor httpContextAccessor)
+        public ResourceManagementOptionsConfiguration(IOptions<ResourceOptions> resourceOptions, IHostEnvironment env, IHttpContextAccessor httpContextAccessor)
         {
-            _resourceOptions = resourceSettings.Value.Options;
+            _resourceOptions = resourceOptions.Value;
             _env = env;
             _httpContextAccessor = httpContextAccessor;
             _pathBase = _httpContextAccessor.HttpContext.Request.PathBase;
