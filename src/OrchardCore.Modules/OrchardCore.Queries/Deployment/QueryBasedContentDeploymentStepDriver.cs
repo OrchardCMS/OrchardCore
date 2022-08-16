@@ -8,6 +8,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Queries.Deployment
 {
@@ -49,14 +50,10 @@ namespace OrchardCore.Queries.Deployment
 
             if (await updater.TryUpdateModelAsync(queryBasedContentViewModel, Prefix, viewModel => viewModel.QueryName, viewModel => viewModel.QueryParameters, viewModel => viewModel.ExportAsSetupRecipe))
             {
-                dynamic query = await _queryManager.LoadQueryAsync(queryBasedContentViewModel.QueryName);
-                if (query.Source == "Lucene" && !query.ReturnContentItems)
+                var query = await _queryManager.LoadQueryAsync(queryBasedContentViewModel.QueryName);
+                if (!query.ResultsOfType<ContentItem>())
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Lucene query is not returning content items."]);
-                }
-                else if (query.Source == "Sql" && !query.ReturnDocuments)
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your SQL query is not returning documents."]);
+                    updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Query is not returning content items."]);
                 }
 
                 if (queryBasedContentViewModel.QueryParameters != null)

@@ -27,19 +27,14 @@ namespace OrchardCore.Queries.Deployment
 
             var data = new JArray();
 
-            dynamic query = await _queryManager.GetQueryAsync(queryDeploymentStep.QueryName);
+            var query = await _queryManager.GetQueryAsync(queryDeploymentStep.QueryName);
 
             if (query == null)
             {
                 return;
             }
 
-            if (query.Source == "Lucene" && !query.ReturnContentItems)
-            {
-                return;
-            }
-
-            if (query.Source == "Sql" && !query.ReturnDocuments)
+            if (!query.ResultsOfType<ContentItem>())
             {
                 return;
             }
