@@ -96,7 +96,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
                     // Manage the second counter used to sync the default tenant while it is 'Uninitialized'.
                     defaultTenantSyncingSeconds = defaultContext.Settings.State == TenantState.Uninitialized
-                        ? defaultTenantSyncingSeconds++
+                        ? defaultTenantSyncingSeconds
                         : 0;
 
                     // Check periodically if the default tenant is still 'Uninitialized'.
