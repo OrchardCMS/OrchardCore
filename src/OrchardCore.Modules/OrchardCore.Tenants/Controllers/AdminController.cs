@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
@@ -37,7 +38,6 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IDataProtectionProvider _dataProtectorProvider;
         private readonly IClock _clock;
         private readonly INotifier _notifier;
-        private readonly ISiteService _siteService;
         private readonly ITenantValidator _tenantValidator;
 
         private readonly dynamic New;
@@ -55,7 +55,6 @@ namespace OrchardCore.Tenants.Controllers
             IDataProtectionProvider dataProtectorProvider,
             IClock clock,
             INotifier notifier,
-            ISiteService siteService,
             ITenantValidator tenantValidator,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
@@ -71,7 +70,6 @@ namespace OrchardCore.Tenants.Controllers
             _dataProtectorProvider = dataProtectorProvider;
             _clock = clock;
             _notifier = notifier;
-            _siteService = siteService;
             _tenantValidator = tenantValidator;
 
             New = shapeFactory;
@@ -94,8 +92,15 @@ namespace OrchardCore.Tenants.Controllers
             var allSettings = _shellHost.GetAllSettings().OrderBy(s => s.Name);
             var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pageSize = 10;
+            var siteService = HttpContext.RequestServices.GetService<ISiteService>();
+            if (siteService != null)
+            {
+                var siteSettings = await siteService.GetSiteSettingsAsync();
+                pageSize = siteSettings.PageSize;
+            }
+
+            var pager = new Pager(pagerParameters, pageSize);
 
             var entries = allSettings.Select(x =>
                 {

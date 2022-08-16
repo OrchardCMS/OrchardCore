@@ -58,19 +58,19 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | bootstrap             | Style  | 4.6.1, 5.1.3  | -              |
 | bootstrap-select      | Script | 1.14.0-beta2  | -              |
 | bootstrap-select      | Style  | 1.14.0-beta2  | -              |
-| codemirror            | Script | 5.65.4        | -              |
-| codemirror            | Style  | 5.65.4        | -              |
-| font-awesome          | Style  | 6.0.0         | -              |
-| font-awesome          | Script | 6.0.0         | -              |
-| font-awesome-v4-shims | Script | 6.0.0         | -              |
+| codemirror            | Script | 5.65.7        | -              |
+| codemirror            | Style  | 5.65.7        | -              |
+| font-awesome          | Style  | 6.1.2         | -              |
+| font-awesome          | Script | 6.1.2         | -              |
+| font-awesome-v4-shims | Script | 6.1.2         | -              |
 | Sortable              | Script | 1.10.2        | -              |
 | trumbowyg             | Script | 2.25.1        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
-| monaco-loader         | Script | 0.32.1        | -              |
-| monaco                | Script | 0.32.1        | monaco-loader  |
-| nouislider            | Script | 15.6.0        | -              |
-| nouislider            | Style  | 15.6.0        | -              |
+| monaco-loader         | Script | 0.34.0        | -              |
+| monaco                | Script | 0.34.0        | monaco-loader  |
+| nouislider            | Script | 15.6.1        | -              |
+| nouislider            | Style  | 15.6.1        | -              |
 
 ### Registering a Resource Manifest
 

@@ -28,3 +28,7 @@ The following configuration values can be customized:
 ```
 
 For more information please refer to [Configuration](../../core/Configuration/README.md).
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/nYfNq8sTIAg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

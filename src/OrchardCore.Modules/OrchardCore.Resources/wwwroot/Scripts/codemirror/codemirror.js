@@ -6,8 +6,8 @@
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
-// This is CodeMirror (https://codemirror.net), a code editor
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
+// This is CodeMirror (https://codemirror.net/5), a code editor
 // implemented in JavaScript on top of the browser's DOM.
 //
 // You can find some technical background for some of the code below
@@ -28,7 +28,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   var ie_version = ie && (ie_upto10 ? document.documentMode || 6 : +(edge || ie_11up)[1]);
   var webkit = !edge && /WebKit\//.test(userAgent);
   var qtwebkit = webkit && /Qt\/\d+\.\d+/.test(userAgent);
-  var chrome = !edge && /Chrome\//.test(userAgent);
+  var chrome = !edge && /Chrome\/(\d+)/.exec(userAgent);
+  var chrome_version = chrome && +chrome[1];
   var presto = /Opera\//.test(userAgent);
   var safari = /Apple Computer/.test(navigator.vendor);
   var mac_geMountainLion = /Mac OS X 1\d\D([8-9]|\d\d)\D/.test(userAgent);
@@ -157,16 +158,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     } while (child = child.parentNode);
   }
 
-  function activeElt() {
+  function activeElt(doc) {
     // IE and Edge may throw an "Unspecified Error" when accessing document.activeElement.
     // IE < 10 will throw when accessed while the page is loading or in an iframe.
     // IE > 9 and Edge will throw when accessed in an iframe if document.body is unavailable.
     var activeElement;
 
     try {
-      activeElement = document.activeElement;
+      activeElement = doc.activeElement;
     } catch (e) {
-      activeElement = document.body || null;
+      activeElement = doc.body || null;
     }
 
     while (activeElement && activeElement.shadowRoot && activeElement.shadowRoot.activeElement) {
@@ -214,6 +215,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         } catch (_e) {}
       };
     }
+
+  function doc(cm) {
+    return cm.display.wrapper.ownerDocument;
+  }
+
+  function win(cm) {
+    return doc(cm).defaultView;
+  }
 
   function bind(f) {
     var args = Array.prototype.slice.call(arguments, 1);
@@ -3960,23 +3969,23 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     cm.display.lineNumChars = null;
   }
 
-  function pageScrollX() {
+  function pageScrollX(doc) {
     // Work around https://bugs.chromium.org/p/chromium/issues/detail?id=489206
     // which causes page_Offset and bounding client rects to use
     // different reference viewports and invalidate our calculations.
     if (chrome && android) {
-      return -(document.body.getBoundingClientRect().left - parseInt(getComputedStyle(document.body).marginLeft));
+      return -(doc.body.getBoundingClientRect().left - parseInt(getComputedStyle(doc.body).marginLeft));
     }
 
-    return window.pageXOffset || (document.documentElement || document.body).scrollLeft;
+    return doc.defaultView.pageXOffset || (doc.documentElement || doc.body).scrollLeft;
   }
 
-  function pageScrollY() {
+  function pageScrollY(doc) {
     if (chrome && android) {
-      return -(document.body.getBoundingClientRect().top - parseInt(getComputedStyle(document.body).marginTop));
+      return -(doc.body.getBoundingClientRect().top - parseInt(getComputedStyle(doc.body).marginTop));
     }
 
-    return window.pageYOffset || (document.documentElement || document.body).scrollTop;
+    return doc.defaultView.pageYOffset || (doc.documentElement || doc.body).scrollTop;
   }
 
   function widgetTopHeight(lineObj) {
@@ -4024,8 +4033,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
     if (context == "page" || context == "window") {
       var lOff = cm.display.lineSpace.getBoundingClientRect();
-      yOff += lOff.top + (context == "window" ? 0 : pageScrollY());
-      var xOff = lOff.left + (context == "window" ? 0 : pageScrollX());
+      yOff += lOff.top + (context == "window" ? 0 : pageScrollY(doc(cm)));
+      var xOff = lOff.left + (context == "window" ? 0 : pageScrollX(doc(cm)));
       rect.left += xOff;
       rect.right += xOff;
     }
@@ -4046,8 +4055,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         top = coords.top; // First move into "page" coordinate system
 
     if (context == "page") {
-      left -= pageScrollX();
-      top -= pageScrollY();
+      left -= pageScrollX(doc(cm));
+      top -= pageScrollY(doc(cm));
     } else if (context == "local" || !context) {
       var localBox = cm.display.sizer.getBoundingClientRect();
       left += localBox.left;
@@ -5239,10 +5248,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     var display = cm.display,
         box = display.sizer.getBoundingClientRect(),
         doScroll = null;
+    var doc = display.wrapper.ownerDocument;
 
     if (rect.top + box.top < 0) {
       doScroll = true;
-    } else if (rect.bottom + box.top > (window.innerHeight || document.documentElement.clientHeight)) {
+    } else if (rect.bottom + box.top > (doc.defaultView.innerHeight || doc.documentElement.clientHeight)) {
       doScroll = false;
     }
 
@@ -5612,13 +5622,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   NativeScrollbars.prototype.zeroWidthHack = function () {
     var w = mac && !mac_geMountainLion ? "12px" : "18px";
     this.horiz.style.height = this.vert.style.width = w;
-    this.horiz.style.pointerEvents = this.vert.style.pointerEvents = "none";
+    this.horiz.style.visibility = this.vert.style.visibility = "hidden";
     this.disableHoriz = new Delayed();
     this.disableVert = new Delayed();
   };
 
   NativeScrollbars.prototype.enableZeroWidthBar = function (bar, delay, type) {
-    bar.style.pointerEvents = "auto";
+    bar.style.visibility = "";
 
     function maybeDisable() {
       // To find out whether the scrollbar is still visible, we
@@ -5631,7 +5641,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       var elt = type == "vert" ? document.elementFromPoint(box.right - 1, (box.top + box.bottom) / 2) : document.elementFromPoint((box.right + box.left) / 2, box.bottom - 1);
 
       if (elt != bar) {
-        bar.style.pointerEvents = "none";
+        bar.style.visibility = "hidden";
       } else {
         delay.set(1000, maybeDisable);
       }
@@ -5892,7 +5902,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       cm.display.maxLineChanged = false;
     }
 
-    var takeFocus = op.focus && op.focus == activeElt();
+    var takeFocus = op.focus && op.focus == activeElt(doc(cm));
 
     if (op.preparedSelection) {
       cm.display.input.showSelection(op.preparedSelection, takeFocus);
@@ -6171,7 +6181,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       return null;
     }
 
-    var active = activeElt();
+    var active = activeElt(doc(cm));
 
     if (!active || !contains(cm.display.lineDiv, active)) {
       return null;
@@ -6182,7 +6192,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     };
 
     if (window.getSelection) {
-      var sel = window.getSelection();
+      var sel = win(cm).getSelection();
 
       if (sel.anchorNode && sel.extend && contains(cm.display.lineDiv, sel.anchorNode)) {
         result.anchorNode = sel.anchorNode;
@@ -6196,15 +6206,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   }
 
   function restoreSelection(snapshot) {
-    if (!snapshot || !snapshot.activeElt || snapshot.activeElt == activeElt()) {
+    if (!snapshot || !snapshot.activeElt || snapshot.activeElt == activeElt(snapshot.activeElt.ownerDocument)) {
       return;
     }
 
     snapshot.activeElt.focus();
 
     if (!/^(INPUT|TEXTAREA)$/.test(snapshot.activeElt.nodeName) && snapshot.anchorNode && contains(document.body, snapshot.anchorNode) && contains(document.body, snapshot.focusNode)) {
-      var sel = window.getSelection(),
-          range = document.createRange();
+      var doc = snapshot.activeElt.ownerDocument;
+      var sel = doc.defaultView.getSelection(),
+          range = doc.createRange();
       range.setEnd(snapshot.anchorNode, snapshot.anchorOffset);
       range.collapse(false);
       sel.removeAllRanges();
@@ -6730,6 +6741,22 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   }
 
   function onScrollWheel(cm, e) {
+    // On Chrome 102, viewport updates somehow stop wheel-based
+    // scrolling. Turning off pointer events during the scroll seems
+    // to avoid the issue.
+    if (chrome && chrome_version == 102) {
+      if (cm.display.chromeScrollHack == null) {
+        cm.display.sizer.style.pointerEvents = "none";
+      } else {
+        clearTimeout(cm.display.chromeScrollHack);
+      }
+
+      cm.display.chromeScrollHack = setTimeout(function () {
+        cm.display.chromeScrollHack = null;
+        cm.display.sizer.style.pointerEvents = "";
+      }, 100);
+    }
+
     var delta = wheelEventDelta(e),
         dx = delta.x,
         dy = delta.y;
@@ -7646,7 +7673,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       var range = sel.ranges[i];
       var old = sel.ranges.length == doc.sel.ranges.length && doc.sel.ranges[i];
       var newAnchor = skipAtomic(doc, range.anchor, old && old.anchor, bias, mayClear);
-      var newHead = skipAtomic(doc, range.head, old && old.head, bias, mayClear);
+      var newHead = range.head == range.anchor ? newAnchor : skipAtomic(doc, range.head, old && old.head, bias, mayClear);
 
       if (out || newAnchor != range.anchor || newHead != range.head) {
         if (!out) {
@@ -10923,7 +10950,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       return;
     }
 
-    cm.curOp.focus = activeElt();
+    cm.curOp.focus = activeElt(doc(cm));
 
     if (signalDOMEvent(cm, e)) {
       return;
@@ -11084,7 +11111,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     var pos = posFromMouse(cm, e),
         button = e_button(e),
         repeat = pos ? clickRepeat(pos, button) : "single";
-    window.focus(); // #3261: make sure, that we're not starting a second selection
+    win(cm).focus(); // #3261: make sure, that we're not starting a second selection
 
     if (button == 1 && cm.state.selectingText) {
       cm.state.selectingText(e);
@@ -11180,7 +11207,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     if (ie) {
       setTimeout(bind(ensureFocus, cm), 0);
     } else {
-      cm.curOp.focus = activeElt();
+      cm.curOp.focus = activeElt(doc(cm));
     }
 
     var behavior = configureMouse(cm, repeat, event);
@@ -11293,15 +11320,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     }
 
     var display = cm.display,
-        doc = cm.doc;
+        doc$1 = cm.doc;
     e_preventDefault(event);
     var ourRange,
         ourIndex,
-        startSel = doc.sel,
+        startSel = doc$1.sel,
         ranges = startSel.ranges;
 
     if (behavior.addNew && !behavior.extend) {
-      ourIndex = doc.sel.contains(start);
+      ourIndex = doc$1.sel.contains(start);
 
       if (ourIndex > -1) {
         ourRange = ranges[ourIndex];
@@ -11309,8 +11336,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         ourRange = new Range(start, start);
       }
     } else {
-      ourRange = doc.sel.primary();
-      ourIndex = doc.sel.primIndex;
+      ourRange = doc$1.sel.primary();
+      ourIndex = doc$1.sel.primIndex;
     }
 
     if (behavior.unit == "rectangle") {
@@ -11332,22 +11359,22 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
     if (!behavior.addNew) {
       ourIndex = 0;
-      setSelection(doc, new Selection([ourRange], 0), sel_mouse);
-      startSel = doc.sel;
+      setSelection(doc$1, new Selection([ourRange], 0), sel_mouse);
+      startSel = doc$1.sel;
     } else if (ourIndex == -1) {
       ourIndex = ranges.length;
-      setSelection(doc, normalizeSelection(cm, ranges.concat([ourRange]), ourIndex), {
+      setSelection(doc$1, normalizeSelection(cm, ranges.concat([ourRange]), ourIndex), {
         scroll: false,
         origin: "*mouse"
       });
     } else if (ranges.length > 1 && ranges[ourIndex].empty() && behavior.unit == "char" && !behavior.extend) {
-      setSelection(doc, normalizeSelection(cm, ranges.slice(0, ourIndex).concat(ranges.slice(ourIndex + 1)), 0), {
+      setSelection(doc$1, normalizeSelection(cm, ranges.slice(0, ourIndex).concat(ranges.slice(ourIndex + 1)), 0), {
         scroll: false,
         origin: "*mouse"
       });
-      startSel = doc.sel;
+      startSel = doc$1.sel;
     } else {
-      replaceOneSelection(doc, ourIndex, ourRange, sel_mouse);
+      replaceOneSelection(doc$1, ourIndex, ourRange, sel_mouse);
     }
 
     var lastPos = start;
@@ -11362,13 +11389,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       if (behavior.unit == "rectangle") {
         var ranges = [],
             tabSize = cm.options.tabSize;
-        var startCol = countColumn(getLine(doc, start.line).text, start.ch, tabSize);
-        var posCol = countColumn(getLine(doc, pos.line).text, pos.ch, tabSize);
+        var startCol = countColumn(getLine(doc$1, start.line).text, start.ch, tabSize);
+        var posCol = countColumn(getLine(doc$1, pos.line).text, pos.ch, tabSize);
         var left = Math.min(startCol, posCol),
             right = Math.max(startCol, posCol);
 
         for (var line = Math.min(start.line, pos.line), end = Math.min(cm.lastLine(), Math.max(start.line, pos.line)); line <= end; line++) {
-          var text = getLine(doc, line).text,
+          var text = getLine(doc$1, line).text,
               leftPos = findColumn(text, left, tabSize);
 
           if (left == right) {
@@ -11382,7 +11409,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
           ranges.push(new Range(start, start));
         }
 
-        setSelection(doc, normalizeSelection(cm, startSel.ranges.slice(0, ourIndex).concat(ranges), ourIndex), {
+        setSelection(doc$1, normalizeSelection(cm, startSel.ranges.slice(0, ourIndex).concat(ranges), ourIndex), {
           origin: "*mouse",
           scroll: false
         });
@@ -11402,8 +11429,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         }
 
         var ranges$1 = startSel.ranges.slice(0);
-        ranges$1[ourIndex] = bidiSimplify(cm, new Range(_clipPos(doc, anchor), head));
-        setSelection(doc, normalizeSelection(cm, ranges$1, ourIndex), sel_mouse);
+        ranges$1[ourIndex] = bidiSimplify(cm, new Range(_clipPos(doc$1, anchor), head));
+        setSelection(doc$1, normalizeSelection(cm, ranges$1, ourIndex), sel_mouse);
       }
     }
 
@@ -11423,9 +11450,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }
 
       if (cmp(cur, lastPos) != 0) {
-        cm.curOp.focus = activeElt();
+        cm.curOp.focus = activeElt(doc(cm));
         extendTo(cur);
-        var visible = visibleLines(display, doc);
+        var visible = visibleLines(display, doc$1);
 
         if (cur.line >= visible.to || cur.line < visible.from) {
           setTimeout(operation(cm, function () {
@@ -11463,7 +11490,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
       off(display.wrapper.ownerDocument, "mousemove", move);
       off(display.wrapper.ownerDocument, "mouseup", up);
-      doc.history.lastSelOrigin = null;
+      doc$1.history.lastSelOrigin = null;
     }
 
     var move = operation(cm, function (e) {
@@ -12432,7 +12459,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     CodeMirror.prototype = {
       constructor: CodeMirror,
       focus: function focus() {
-        window.focus();
+        win(this).focus();
         this.display.input.focus();
       },
       setOption: function setOption(option, value) {
@@ -12928,7 +12955,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         signal(this, "overwriteToggle", this, this.state.overwrite);
       },
       hasFocus: function hasFocus() {
-        return this.display.input.getField() == activeElt();
+        return this.display.input.getField() == activeElt(doc(this));
       },
       isReadOnly: function isReadOnly() {
         return !!(this.options.readOnly || this.doc.cantEdit);
@@ -13210,7 +13237,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         y;
 
     if (unit == "page") {
-      var pageSize = Math.min(cm.display.wrapper.clientHeight, window.innerHeight || document.documentElement.clientHeight);
+      var pageSize = Math.min(cm.display.wrapper.clientHeight, win(cm).innerHeight || doc(cm).documentElement.clientHeight);
       var moveAmount = Math.max(pageSize - .5 * textHeight(cm.display), 3);
       y = (dir > 0 ? pos.bottom : pos.top) + dir * moveAmount;
     } else if (unit == "line") {
@@ -13361,7 +13388,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
           te = kludge.firstChild;
       cm.display.lineSpace.insertBefore(kludge, cm.display.lineSpace.firstChild);
       te.value = lastCopied.text.join("\n");
-      var hadFocus = activeElt();
+      var hadFocus = activeElt(div.ownerDocument);
       selectInput(te);
       setTimeout(function () {
         cm.display.lineSpace.removeChild(kludge);
@@ -13388,7 +13415,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
   ContentEditableInput.prototype.prepareSelection = function () {
     var result = prepareSelection(this.cm, false);
-    result.focus = activeElt() == this.div;
+    result.focus = activeElt(this.div.ownerDocument) == this.div;
     return result;
   };
 
@@ -13519,7 +13546,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
   ContentEditableInput.prototype.focus = function () {
     if (this.cm.options.readOnly != "nocursor") {
-      if (!this.selectionInEditor() || activeElt() != this.div) {
+      if (!this.selectionInEditor() || activeElt(this.div.ownerDocument) != this.div) {
         this.showSelection(this.prepareSelection(), true);
       }
 
@@ -14260,7 +14287,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   };
 
   TextareaInput.prototype.focus = function () {
-    if (this.cm.options.readOnly != "nocursor" && (!mobile || activeElt() != this.textarea)) {
+    if (this.cm.options.readOnly != "nocursor" && (!mobile || activeElt(this.textarea.ownerDocument) != this.textarea)) {
       try {
         this.textarea.focus();
       } catch (e) {} // IE8 will throw if the textarea is display: none or not in DOM
@@ -14442,14 +14469,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     var oldScrollY;
 
     if (webkit) {
-      oldScrollY = window.scrollY;
+      oldScrollY = te.ownerDocument.defaultView.scrollY;
     } // Work around Chrome issue (#2712)
 
 
     display.input.focus();
 
     if (webkit) {
-      window.scrollTo(null, oldScrollY);
+      te.ownerDocument.defaultView.scrollTo(null, oldScrollY);
     }
 
     display.input.reset(); // Adds "Select all" to context menu in FF
@@ -14561,7 +14588,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
 
     if (options.autofocus == null) {
-      var hasFocus = activeElt();
+      var hasFocus = activeElt(textarea.ownerDocument);
       options.autofocus = hasFocus == textarea || textarea.getAttribute("autofocus") != null && hasFocus == document.body;
     }
 
@@ -14719,6 +14746,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.65.4";
+  CodeMirror.version = "5.65.7";
   return CodeMirror;
 });
