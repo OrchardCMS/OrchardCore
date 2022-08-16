@@ -16,7 +16,7 @@ All script or stylesheet resources should be prefixed with the `~` character.
 
 ## Resource Settings
 
-Resource Settings are configured through the site admin. 
+Resource Settings are configured through the site admin.
 
 ### `AppendVersion`
 
