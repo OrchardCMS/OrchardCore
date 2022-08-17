@@ -27,12 +27,12 @@ else
     @if (culture.IsRightToLeft())
     {
         <div style="text-align:right">
-            <textarea asp-for="Html" class="form-control"></textarea>
+            <textarea asp-for="Html"></textarea>
         </div>
     }
     else
     {
-        <textarea asp-for="Html" class="form-control"></textarea>
+        <textarea asp-for="Html"></textarea>
     }
 
     @if (!String.IsNullOrEmpty(settings.Hint))
