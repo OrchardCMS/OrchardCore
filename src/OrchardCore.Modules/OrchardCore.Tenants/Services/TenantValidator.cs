@@ -24,7 +24,7 @@ namespace OrchardCore.Tenants.Services
         public TenantValidator(
             IShellHost shellHost,
             IFeatureProfilesService featureProfilesService,
-            IDbConnectionValidator dbConnectionValidator
+            IDbConnectionValidator dbConnectionValidator,
             IStringLocalizer<TenantValidator> stringLocalizer)
         {
             _shellHost = shellHost;
