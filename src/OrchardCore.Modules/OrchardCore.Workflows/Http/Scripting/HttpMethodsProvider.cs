@@ -82,6 +82,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                 Name = "rawResponseWrite",
                 Method = serviceProvider => (Action<byte[], string>)((bytes, contentType) => 
                 {
+                    httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
                     httpContextAccessor.HttpContext.Response.ContentType = contentType;
                     httpContextAccessor.HttpContext.Response.ContentLength = bytes.Length;
                     httpContextAccessor.HttpContext.Response.Body.WriteAsync(bytes.AsMemory()).GetAwaiter().GetResult();
