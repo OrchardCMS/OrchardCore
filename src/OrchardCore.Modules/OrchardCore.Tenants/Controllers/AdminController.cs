@@ -95,24 +95,24 @@ namespace OrchardCore.Tenants.Controllers
 
             var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
 
-            var entries = allSettings.Select(x =>
-            {
-                var entry = new ShellSettingsEntry
+             var entries = allSettings.Select(x =>
                 {
-                    Category = x["Category"],
-                    Description = x["Description"],
-                    Name = x.Name,
-                    ShellSettings = x,
-                    IsDefaultTenant = String.Equals(x.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
-                };
+                    var entry = new ShellSettingsEntry
+                    {
+                        Category = x["Category"],
+                        Description = x["Description"],
+                        Name = x.Name,
+                        ShellSettings = x,
+                        IsDefaultTenant = x.IsDefaultShell(),
+                    };
 
-                if (x.State == TenantState.Uninitialized && !String.IsNullOrEmpty(x["Secret"]))
-                {
-                    entry.Token = dataProtector.Protect(x["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
-                }
+                    if (x.State == TenantState.Uninitialized && !String.IsNullOrEmpty(x["Secret"]))
+                    {
+                        entry.Token = dataProtector.Protect(x["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
+                    }
 
-                return entry;
-            }).ToList();
+                    return entry;
+                }).ToList();
 
             if (!String.IsNullOrWhiteSpace(options.Search))
             {
@@ -237,11 +237,7 @@ namespace OrchardCore.Tenants.Controllers
 
             foreach (var tenantName in model.TenantNames ?? Enumerable.Empty<string>())
             {
-                var shellSettings = allSettings
-                    .Where(x => String.Equals(x.Name, tenantName, StringComparison.OrdinalIgnoreCase))
-                    .FirstOrDefault();
-
-                if (shellSettings == null)
+                if (!_shellHost.TryGetSettings(tenantName, out var shellSettings))
                 {
                     break;
                 }
@@ -249,7 +245,7 @@ namespace OrchardCore.Tenants.Controllers
                 switch (model.BulkAction.ToString())
                 {
                     case "Disable":
-                        if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
+                        if (shellSettings.IsDefaultShell())
                         {
                             await _notifier.WarningAsync(H["You cannot disable the default tenant."]);
                         }
@@ -390,11 +386,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
             {
                 return NotFound();
             }
@@ -451,11 +443,7 @@ namespace OrchardCore.Tenants.Controllers
                 await ValidateViewModelAsync(model, false);
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))
             {
                 return NotFound();
             }
@@ -519,16 +507,12 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(s => String.Equals(s.Name, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
             {
                 return NotFound();
             }
 
-            if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
+            if (shellSettings.IsDefaultShell())
             {
                 await _notifier.ErrorAsync(H["You cannot disable the default tenant."]);
                 return RedirectToAction(nameof(Index));
@@ -559,11 +543,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
             {
                 return NotFound();
             }
@@ -592,11 +572,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
             {
                 return NotFound();
             }
