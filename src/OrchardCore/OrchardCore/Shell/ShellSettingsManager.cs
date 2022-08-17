@@ -118,7 +118,7 @@ namespace OrchardCore.Environment.Shell
                 await EnsureConfigurationAsync();
 
                 var tenantsSettings = (await new ConfigurationBuilder()
-                    .AddSourcesAsync(_settingsSources))
+                    .AddSourcesAsync(tenant, _settingsSources))
                     .Build();
 
                 var tenantSettings = new ConfigurationBuilder()
