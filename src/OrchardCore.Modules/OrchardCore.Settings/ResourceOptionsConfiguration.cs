@@ -3,11 +3,11 @@ using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Settings;
 
-public class ResourceConfigureOptions : IPostConfigureOptions<ResourceOptions>
+public class ResourceOptionsConfiguration : IPostConfigureOptions<ResourceOptions>
 {
     private readonly ISiteService _siteService;
 
-    public ResourceConfigureOptions(ISiteService siteService)
+    public ResourceOptionsConfiguration(ISiteService siteService)
     {
         _siteService = siteService;
     }

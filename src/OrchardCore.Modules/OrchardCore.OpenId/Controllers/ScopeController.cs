@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -16,7 +16,6 @@ using OrchardCore.Navigation;
 using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.ViewModels;
-using OrchardCore.Settings;
 
 namespace OrchardCore.OpenId.Controllers
 {
@@ -26,7 +25,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringLocalizer S;
         private readonly IOpenIdScopeManager _scopeManager;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
         private readonly ShellSettings _shellSettings;
@@ -36,10 +35,9 @@ namespace OrchardCore.OpenId.Controllers
         public ScopeController(
             IOpenIdScopeManager scopeManager,
             IShapeFactory shapeFactory,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IStringLocalizer<ScopeController> stringLocalizer,
             IAuthorizationService authorizationService,
-            IHtmlLocalizer<ScopeController> htmlLocalizer,
             INotifier notifier,
             ShellDescriptor shellDescriptor,
             ShellSettings shellSettings,
@@ -47,7 +45,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             _scopeManager = scopeManager;
             New = shapeFactory;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             S = stringLocalizer;
             _authorizationService = authorizationService;
             _notifier = notifier;
@@ -63,8 +61,7 @@ namespace OrchardCore.OpenId.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
             var count = await _scopeManager.CountAsync();
 
             var model = new OpenIdScopeIndexViewModel

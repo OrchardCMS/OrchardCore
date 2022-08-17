@@ -27,7 +27,6 @@ using OrchardCore.Lucene.ViewModels;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 using YesSql;
 
 namespace OrchardCore.Lucene.Controllers
@@ -44,7 +43,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly ILuceneQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly dynamic New;
         private readonly JavaScriptEncoder _javaScriptEncoder;
         private readonly IStringLocalizer S;
@@ -63,7 +62,7 @@ namespace OrchardCore.Lucene.Controllers
             ILuceneQueryService queryService,
             ILiquidTemplateManager liquidTemplateManager,
             INotifier notifier,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
             JavaScriptEncoder javaScriptEncoder,
             IStringLocalizer<AdminController> stringLocalizer,
@@ -81,7 +80,7 @@ namespace OrchardCore.Lucene.Controllers
             _liquidTemplateManager = liquidTemplateManager;
             _contentDefinitionManager = contentDefinitionManager;
             _notifier = notifier;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
 
             New = shapeFactory;
             _javaScriptEncoder = javaScriptEncoder;
@@ -100,8 +99,7 @@ namespace OrchardCore.Lucene.Controllers
 
             var indexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName });
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
             var count = indexes.Count();
             var results = indexes;
 
