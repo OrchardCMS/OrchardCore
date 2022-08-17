@@ -3,11 +3,11 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Settings;
 
-public class ConfigurePagerOptions : IPostConfigureOptions<PagerOptions>
+public class PagerOptionsConfiguration : IPostConfigureOptions<PagerOptions>
 {
     private readonly ISiteService _siteService;
 
-    public ConfigurePagerOptions(ISiteService siteService)
+    public PagerOptionsConfiguration(ISiteService siteService)
     {
         _siteService = siteService;
     }
