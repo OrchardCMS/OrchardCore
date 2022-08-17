@@ -12,11 +12,7 @@ using OrchardCore.Modules.Manifest;
     Name = "Tenants",
     Description = "Provides a way to manage tenants from the admin.",
     Category = "Infrastructure",
-    DefaultTenantOnly = true,
-    Dependencies = new[]
-    {
-        "OrchardCore.Navigation"
-    }
+    DefaultTenantOnly = true
 )]
 
 [assembly: Feature(

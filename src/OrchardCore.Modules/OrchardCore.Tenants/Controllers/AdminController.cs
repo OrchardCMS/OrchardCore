@@ -55,10 +55,10 @@ namespace OrchardCore.Tenants.Controllers
             IClock clock,
             INotifier notifier,
             ITenantValidator tenantValidator,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer,
-            IOptions<PagerOptions> pagerOptions)
+            IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _shellHost = shellHost;
             _shellSettingsManager = shellSettingsManager;
@@ -92,6 +92,7 @@ namespace OrchardCore.Tenants.Controllers
 
             var allSettings = _shellHost.GetAllSettings().OrderBy(s => s.Name);
             var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
+
             var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
 
             var entries = allSettings.Select(x =>
