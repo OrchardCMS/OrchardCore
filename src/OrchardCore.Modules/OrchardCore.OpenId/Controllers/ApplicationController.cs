@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
@@ -14,13 +15,11 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Security.Services;
-using OrchardCore.Settings;
 
 namespace OrchardCore.OpenId.Controllers
 {
@@ -30,7 +29,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly IOpenIdScopeManager _scopeManager;
         private readonly INotifier _notifier;
@@ -39,7 +38,7 @@ namespace OrchardCore.OpenId.Controllers
 
         public ApplicationController(
             IShapeFactory shapeFactory,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IStringLocalizer<ApplicationController> stringLocalizer,
             IAuthorizationService authorizationService,
             IOpenIdApplicationManager applicationManager,
@@ -49,7 +48,7 @@ namespace OrchardCore.OpenId.Controllers
             ShellDescriptor shellDescriptor)
         {
             New = shapeFactory;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             S = stringLocalizer;
             H = htmlLocalizer;
             _authorizationService = authorizationService;
@@ -66,8 +65,7 @@ namespace OrchardCore.OpenId.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
             var count = await _applicationManager.CountAsync();
 
             var model = new OpenIdApplicationsIndexViewModel

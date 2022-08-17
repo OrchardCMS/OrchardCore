@@ -20,7 +20,6 @@ using OrchardCore.Contents;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Settings;
 
 namespace OrchardCore.AdminDashboard.Controllers
 {
@@ -32,7 +31,6 @@ namespace OrchardCore.AdminDashboard.Controllers
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ISiteService _siteService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
@@ -47,7 +45,6 @@ namespace OrchardCore.AdminDashboard.Controllers
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
-            ISiteService siteService,
             IUpdateModelAccessor updateModelAccessor,
             IShapeFactory shapeFactory,
             INotifier notifier,
@@ -61,7 +58,6 @@ namespace OrchardCore.AdminDashboard.Controllers
             _contentManager = contentManager;
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentDefinitionManager = contentDefinitionManager;
-            _siteService = siteService;
             _updateModelAccessor = updateModelAccessor;
             New = shapeFactory;
             _notifier = notifier;
