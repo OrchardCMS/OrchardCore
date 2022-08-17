@@ -10,7 +10,6 @@ using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Settings;
 using YesSql;
 
 namespace OrchardCore.Deployment.Controllers
@@ -22,7 +21,6 @@ namespace OrchardCore.Deployment.Controllers
         private readonly IDisplayManager<DeploymentStep> _displayManager;
         private readonly IEnumerable<IDeploymentStepFactory> _factories;
         private readonly ISession _session;
-        private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHtmlLocalizer H;
@@ -33,7 +31,6 @@ namespace OrchardCore.Deployment.Controllers
             IDisplayManager<DeploymentStep> displayManager,
             IEnumerable<IDeploymentStepFactory> factories,
             ISession session,
-            ISiteService siteService,
             IShapeFactory shapeFactory,
             IHtmlLocalizer<StepController> htmlLocalizer,
             INotifier notifier,
@@ -43,7 +40,6 @@ namespace OrchardCore.Deployment.Controllers
             _factories = factories;
             _authorizationService = authorizationService;
             _session = session;
-            _siteService = siteService;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
             New = shapeFactory;

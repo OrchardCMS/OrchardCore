@@ -8,20 +8,20 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Queries.ViewModels;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Queries.Controllers
 {
     public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly IQueryManager _queryManager;
         private readonly IEnumerable<IQuerySource> _querySources;
@@ -34,7 +34,7 @@ namespace OrchardCore.Queries.Controllers
         public AdminController(
             IDisplayManager<Query> displayManager,
             IAuthorizationService authorizationService,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
@@ -45,7 +45,7 @@ namespace OrchardCore.Queries.Controllers
         {
             _displayManager = displayManager;
             _authorizationService = authorizationService;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             _queryManager = queryManager;
             _querySources = querySources;
             _updateModelAccessor = updateModelAccessor;
@@ -62,8 +62,7 @@ namespace OrchardCore.Queries.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
 
             var queries = await _queryManager.ListQueriesAsync();
             queries = queries.OrderBy(x => x.Name);
