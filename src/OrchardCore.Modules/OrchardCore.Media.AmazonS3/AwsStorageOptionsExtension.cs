@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Amazon;
+using Amazon.Extensions.NETCore.Setup;
+using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage.AmazonS3;
 
@@ -18,30 +21,20 @@ public static class AwsStorageOptionsExtension
             yield return new ValidationResult(Constants.ValidationMessages.BucketNameIsEmpty);
         }
 
-        if (options.Credentials != null)
+        if (options.AwsOptions is not null)
         {
-            if (String.IsNullOrWhiteSpace(options.Credentials.SecretKey))
-            {
-                yield return new ValidationResult(Constants.ValidationMessages.SecretKeyIsEmpty);
-            }
-
-            if (String.IsNullOrWhiteSpace(options.Credentials.AccessKeyId))
-            {
-                yield return new ValidationResult(Constants.ValidationMessages.AccessKeyIdIsEmpty);
-            }
-
-            if (String.IsNullOrWhiteSpace(options.Credentials.RegionEndpoint))
+            if (options.AwsOptions.Region is null)
             {
                 yield return new ValidationResult(Constants.ValidationMessages.RegionEndpointIsEmpty);
             }
         }
     }
 
-    public static AwsStorageOptions BindConfiguration(this AwsStorageOptions options, IShellConfiguration shellConfiguration)
+    public static AwsStorageOptions BindConfiguration(this AwsStorageOptions options, IShellConfiguration shellConfiguration, ILogger logger)
     {
         var section = shellConfiguration.GetSection("OrchardCore_Media_AmazonS3");
 
-        if (section == null)
+        if (!section.Exists())
         {
             return options;
         }
@@ -50,41 +43,33 @@ public static class AwsStorageOptionsExtension
         options.BasePath = section.GetValue(nameof(options.BasePath), String.Empty);
         options.CreateBucket = section.GetValue(nameof(options.CreateBucket), false);
 
-        var credentials = section.GetSection("Credentials");
-        if (credentials.Exists())
+        try
         {
-            options.Credentials = new AwsStorageCredentials
-            {
-                RegionEndpoint =
-                    credentials.GetValue(nameof(options.Credentials.RegionEndpoint), RegionEndpoint.USEast1.SystemName),
-                SecretKey = credentials.GetValue(nameof(options.Credentials.SecretKey), String.Empty),
-                AccessKeyId = credentials.GetValue(nameof(options.Credentials.AccessKeyId), String.Empty),
-            };
+            // Binding AWS Options
+            options.AwsOptions = shellConfiguration.GetAWSOptions("OrchardCore_Media_AmazonS3");
 
-        }
-        else
-        {
-            // Attempt to load Credentials from Profile.
-            var profileName = section.GetValue("ProfileName", String.Empty);
-            if (!String.IsNullOrEmpty(profileName))
+            // In case Credentials sections was specified, trying to add BasicAWSCredential to AWSOptions
+            // since by design GetAWSOptions skips Credential section while parsing config.
+            var credentials = section.GetSection("Credentials");
+            if (credentials.Exists())
             {
-                var chain = new CredentialProfileStoreChain();
-                if (chain.TryGetProfile(profileName, out var basicProfile))
+                var secretKey = credentials.GetValue(Constants.AwsCredentialParamNames.SecretKey, String.Empty);
+                var accessKey = credentials.GetValue(Constants.AwsCredentialParamNames.AccessKey, String.Empty);
+
+                if (!String.IsNullOrWhiteSpace(accessKey) ||
+                    !String.IsNullOrWhiteSpace(secretKey))
                 {
-                    var awsCredentials = basicProfile.GetAWSCredentials(chain)?.GetCredentials();
-                    if (awsCredentials != null)
-                    {
-                        options.Credentials = new AwsStorageCredentials
-                        {
-                            RegionEndpoint = basicProfile.Region.SystemName ?? RegionEndpoint.USEast1.SystemName,
-                            SecretKey = awsCredentials.SecretKey,
-                            AccessKeyId = awsCredentials.AccessKey
-                        };
-                    }
+                    var awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
+                    options.AwsOptions.Credentials = awsCredentials;
                 }
             }
-        }
 
-        return options;
+            return options;
+        }
+        catch (ConfigurationException ex)
+        {
+            logger.LogCritical(ex, ex.Message);
+            throw;
+        }
     }
 }

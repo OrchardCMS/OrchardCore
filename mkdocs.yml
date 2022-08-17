@@ -5,6 +5,7 @@ theme:
   logo: docs/assets/images/orchard-logo.png
   favicon: docs/assets/images/favicon.png
   features:
+    - header.autohide
     - navigation.instant
     - navigation.tabs
   palette:
@@ -49,9 +50,9 @@ markdown_extensions:
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
   - markdown.extensions.meta
-  - mdx_truly_sane_lists:
-      nested_indent: 2
-      truly_sane: True
+  # - mdx_truly_sane_lists:
+  #     nested_indent: 2
+  #     truly_sane: True
   - pymdownx.b64
   - pymdownx.caret
   - pymdownx.details

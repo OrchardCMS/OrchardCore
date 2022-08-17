@@ -34,6 +34,18 @@
         <input asp-for="ClientSecret" class="form-control" autofocus autocomplete="off" />
         <span asp-validation-for="ClientSecret" class="text-danger"></span>
     </div>
+    <div class="mb-3">
+        <div class="form-check">
+             <input type="checkbox" class="form-check-input" asp-for="AllowIntrospectionEndpoint" checked="@Model.AllowIntrospectionEndpoint">
+            <label class="form-check-label" asp-for="AllowIntrospectionEndpoint">@T["Allow Introspection Endpoint"]</label>
+        </div>
+    </div>
+    <div class="mb-3">
+        <div class="form-check">
+             <input type="checkbox" class="form-check-input" asp-for="AllowRevocationEndpoint" checked="@Model.AllowRevocationEndpoint">
+            <label class="form-check-label" asp-for="AllowRevocationEndpoint">@T["Allow Revocation Endpoint"]</label>
+        </div>
+    </div>
 
     <h3>Flows</h3>
     <div id="AllowAuthorizationCodeFlowFieldSet" class="mb-3 collapse" asp-validation-class-for="AllowAuthorizationCodeFlow">
@@ -115,6 +127,17 @@
                 </div>
                 <div class="hint">
                     @T["Space delimited list of logout redirect URIs."]
+                </div>
+            </div>
+        </div>
+        <div class="mb-3" >
+             <div class="mb-3">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" asp-for="RequireProofKeyForCodeExchange" checked="@Model.RequireProofKeyForCodeExchange">
+                    <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>
+                </div>
+                <div class="hint">
+                    @T["Ensure that the client/client library supports PKCE before enabling this option."]
                 </div>
             </div>
         </div>
