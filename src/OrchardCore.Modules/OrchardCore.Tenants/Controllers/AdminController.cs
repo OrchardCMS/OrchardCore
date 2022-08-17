@@ -95,24 +95,24 @@ namespace OrchardCore.Tenants.Controllers
 
             var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
 
-             var entries = allSettings.Select(x =>
-                {
-                    var entry = new ShellSettingsEntry
-                    {
-                        Category = x["Category"],
-                        Description = x["Description"],
-                        Name = x.Name,
-                        ShellSettings = x,
-                        IsDefaultTenant = x.IsDefaultShell(),
-                    };
+            var entries = allSettings.Select(x =>
+               {
+                   var entry = new ShellSettingsEntry
+                   {
+                       Category = x["Category"],
+                       Description = x["Description"],
+                       Name = x.Name,
+                       ShellSettings = x,
+                       IsDefaultTenant = x.IsDefaultShell(),
+                   };
 
-                    if (x.State == TenantState.Uninitialized && !String.IsNullOrEmpty(x["Secret"]))
-                    {
-                        entry.Token = dataProtector.Protect(x["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
-                    }
+                   if (x.State == TenantState.Uninitialized && !String.IsNullOrEmpty(x["Secret"]))
+                   {
+                       entry.Token = dataProtector.Protect(x["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
+                   }
 
-                    return entry;
-                }).ToList();
+                   return entry;
+               }).ToList();
 
             if (!String.IsNullOrWhiteSpace(options.Search))
             {
