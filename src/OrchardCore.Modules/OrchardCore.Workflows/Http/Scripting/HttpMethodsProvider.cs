@@ -73,7 +73,10 @@ namespace OrchardCore.Workflows.Http.Scripting
             _responseWriteMethod = new GlobalMethod
             {
                 Name = "responseWrite",
-                Method = serviceProvider => (Action<string>)(text => httpContextAccessor.HttpContext.Response.WriteAsync(text).GetAwaiter().GetResult())
+                Method = serviceProvider => (Action<string>)(text => {
+                    httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
+                    httpContextAccessor.HttpContext.Response.WriteAsync(text).GetAwaiter().GetResult();
+                })
             };
 
             _absoluteUrlMethod = new GlobalMethod
