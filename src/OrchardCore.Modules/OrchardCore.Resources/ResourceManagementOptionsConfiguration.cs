@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Settings;
 
@@ -9,24 +8,24 @@ namespace OrchardCore.Resources
 {
     public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
     {
-        private readonly ISiteService _siteService;
+        private readonly ResourceOptions _resourceOptions;
         private readonly IHostEnvironment _env;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly string _pathBase;
-
-        private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
+        private readonly PathString _pathBase;
         // Versions
         private const string codeMirrorVersion = "5.65.7";
         private const string monacoEditorVersion = "0.33.0";
         // URLs
+        private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
 
-        public ResourceManagementOptionsConfiguration(ISiteService siteService, IHostEnvironment env, IHttpContextAccessor httpContextAccessor, ShellSettings shellSettings)
+        public ResourceManagementOptionsConfiguration(
+            IOptions<ResourceOptions> resourceOptions,
+            IHostEnvironment env,
+            IHttpContextAccessor httpContextAccessor)
         {
-            _siteService = siteService;
+            _resourceOptions = resourceOptions.Value;
             _env = env;
-            _httpContextAccessor = httpContextAccessor;
-            _pathBase = _httpContextAccessor.HttpContext.Request.PathBase;
+            _pathBase = httpContextAccessor.HttpContext.Request.PathBase;
         }
 
         ResourceManifest BuildManifest()
@@ -203,9 +202,9 @@ namespace OrchardCore.Resources
             manifest
                 .DefineStyle("nouislider")
                 .SetUrl("~/OrchardCore.Resources/Styles/nouislider.min.css", "~/OrchardCore.Resources/Styles/nouislider.css")
-                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.css", "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.css")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.css", "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.css")
                 .SetCdnIntegrity("sha384-PSZaVsyG9jDu8hFaSJev5s/9poIJlX7cuxSGdqCgXRHpo2DzIaZAyCd2rG/DJJmV", "sha384-SW0/EWtnMakMnwC9RHA27DeNtNCLsJ0l+oZrXlFbb2123lhLdZIbiDiwRPogNY8T")
-                .SetVersion("15.6.0");
+                .SetVersion("15.6.1");
 
             manifest
                 .DefineScript("nouislider")
@@ -283,7 +282,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror-addon-mode-multiplex")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/addon/mode/multiplex.min.js", "~/OrchardCore.Resources/Scripts/codemirror/addon/mode/multiplex.js")
                 .SetCdn(codeMirrorUrl + "addon/mode/multiplex.min.js", codeMirrorUrl + "addon/mode/multiplex.js")
-                .SetCdnIntegrity("sha512-SnKl5kuiZJ6HI+aRXBjW1qv8USObXnN8BoPLHLQ7igatyz0QhbFgNYba9g8+zPsaYXzOm1XIrsj/b1uazysMtA==", "ssha512-xGdyL/q8XtWD05NETb/o7ONYii6T4zGvjUL22FvgfeM3pUb7EvyIFSsLBQzyxb2hCYdH7DKNXqw99Hcf9Onkiw==")
+                .SetCdnIntegrity("sha512-SnKl5kuiZJ6HI+aRXBjW1qv8USObXnN8BoPLHLQ7igatyz0QhbFgNYba9g8+zPsaYXzOm1XIrsj/b1uazysMtA==", "sha512-xGdyL/q8XtWD05NETb/o7ONYii6T4zGvjUL22FvgfeM3pUb7EvyIFSsLBQzyxb2hCYdH7DKNXqw99Hcf9Onkiw==")
                 .SetVersion(codeMirrorVersion);
 
             manifest
@@ -360,7 +359,7 @@ namespace OrchardCore.Resources
                 .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/js/v4-shims.js")
                 .SetCdnIntegrity("sha384-bx00wqJq+zY9QLCMa/zViZPu1f0GJ3VXwF4GSw3GbfjwO28QCFr4qadCrNmJQ/9N", "sha384-SGuqaGE4bcW7Xl5T06BsUPUA91qaNtT53uGOcGpavQMje3goIFJbDsC0VAwtgL5g")
                 .SetVersion("5.15.4");
-            
+
             manifest
                 .DefineStyle("font-awesome")
                 .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/all.css")
@@ -487,9 +486,7 @@ namespace OrchardCore.Resources
         {
             options.ResourceManifests.Add(BuildManifest());
 
-            var settings = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
-
-            switch (settings.ResourceDebugMode)
+            switch (_resourceOptions.ResourceDebugMode)
             {
                 case ResourceDebugMode.Enabled:
                     options.DebugMode = true;
@@ -504,13 +501,10 @@ namespace OrchardCore.Resources
                     break;
             }
 
-            options.UseCdn = settings.UseCdn;
-
-            options.CdnBaseUrl = settings.CdnBaseUrl;
-
-            options.AppendVersion = settings.AppendVersion;
-
-            options.ContentBasePath = _httpContextAccessor.HttpContext.Request.PathBase.Value;
+            options.UseCdn = _resourceOptions.UseCdn;
+            options.CdnBaseUrl = _resourceOptions.CdnBaseUrl;
+            options.AppendVersion = _resourceOptions.AppendVersion;
+            options.ContentBasePath = _pathBase.Value;
         }
     }
 }

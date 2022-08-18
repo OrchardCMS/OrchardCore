@@ -18,20 +18,17 @@ namespace OrchardCore.Tenants.Services
         private readonly IShellHost _shellHost;
         private readonly IFeatureProfilesService _featureProfilesService;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
-        private readonly ShellSettings _shellSettings;
         private readonly IStringLocalizer<TenantValidator> S;
 
         public TenantValidator(
             IShellHost shellHost,
             IFeatureProfilesService featureProfilesService,
             IEnumerable<DatabaseProvider> databaseProviders,
-            ShellSettings shellSettings,
             IStringLocalizer<TenantValidator> stringLocalizer)
         {
             _shellHost = shellHost;
             _featureProfilesService = featureProfilesService;
             _databaseProviders = databaseProviders;
-            _shellSettings = shellSettings;
             S = stringLocalizer;
         }
 
@@ -64,7 +61,11 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.Name), S["Invalid tenant name. Must contain characters only and no spaces."]));
             }
 
-            if (!_shellSettings.IsDefaultShell() && String.IsNullOrWhiteSpace(model.RequestUrlHost) && String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            _shellHost.TryGetSettings(model.Name, out var shellSettings);
+
+            if ((shellSettings == null || !shellSettings.IsDefaultShell()) &&
+                String.IsNullOrWhiteSpace(model.RequestUrlHost) &&
+                String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
             {
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]));
             }
@@ -77,16 +78,21 @@ namespace OrchardCore.Tenants.Services
                 }
             }
 
-            var allSettings = _shellHost.GetAllSettings();
-
-            if (model.IsNewTenant && allSettings.Any(tenant => String.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
+            if (shellSettings != null && model.IsNewTenant)
             {
-                errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
+                if (shellSettings.IsDefaultShell())
+                {
+                    errors.Add(new ModelError(nameof(model.Name), S["The tenant name is in conflict with the 'Default' tenant."]));
+                }
+                else
+                {
+                    errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
+                }
             }
 
-            var allOtherShells = allSettings.Where(t => !String.Equals(t.Name, model.Name, StringComparison.OrdinalIgnoreCase));
+            var allOtherSettings = _shellHost.GetAllSettings().Where(s => s != shellSettings);
 
-            if (allOtherShells.Any(tenant => String.Equals(tenant.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && DoesUrlHostExist(tenant.RequestUrlHost, model.RequestUrlHost)))
+            if (allOtherSettings.Any(tenant => String.Equals(tenant.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && DoesUrlHostExist(tenant.RequestUrlHost, model.RequestUrlHost)))
             {
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }

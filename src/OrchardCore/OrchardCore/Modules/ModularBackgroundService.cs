@@ -60,8 +60,15 @@ namespace OrchardCore.Modules
 
             if (_options.ShellWarmup)
             {
-                // Ensure all ShellContext are loaded and available.
-                await _shellHost.InitializeAsync();
+                try
+                {
+                    // Ensure all tenants are pre-loaded.
+                    await _shellHost.InitializeAsync();
+                }
+                catch (Exception ex) when (!ex.IsFatal())
+                {
+                    _logger.LogError(ex, "Failed to warm up the tenants from '{ServiceName}'.", nameof(ModularBackgroundService));
+                }
             }
 
             while (GetRunningShells().Count() < 1)
@@ -93,7 +100,7 @@ namespace OrchardCore.Modules
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
-                    _logger.LogError(ex, "Error while executing '{ServiceName}'", nameof(ModularBackgroundService));
+                    _logger.LogError(ex, "Error while executing '{ServiceName}'.", nameof(ModularBackgroundService));
                 }
             }
         }

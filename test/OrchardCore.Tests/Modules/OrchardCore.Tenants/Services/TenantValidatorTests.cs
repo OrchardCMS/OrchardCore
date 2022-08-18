@@ -15,12 +15,14 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
 {
     public class TenantValidatorTests
     {
-        private readonly IList<ShellSettings> _shellSettings = new List<ShellSettings>();
+        private readonly Dictionary<string, ShellSettings> _shellSettings = new(StringComparer.OrdinalIgnoreCase);
 
         public TenantValidatorTests() => SeedTenants();
 
         [Theory]
         [InlineData("Tenant1", "tenant1", "", "Feature Profile", new[] { "A tenant with the same name already exists." })]
+        [InlineData("tEnAnT1", "tenant1", "", "Feature Profile", new[] { "A tenant with the same name already exists." })]
+        [InlineData("dEfAuLt", "", "", "Feature Profile", new[] { "The tenant name is in conflict with the 'Default' tenant." })]
         [InlineData("Tenant5", "tenant3", "", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
         [InlineData("Tenant5", "tenant3", null, "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
         [InlineData("Tenant5", "", "example2.com", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
@@ -39,7 +41,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
         public async Task TenantValidationFailsIfInvalidConfigurationsWasProvided(string name, string urlPrefix, string hostName, string featureProfile, string[] errorMessages)
         {
             // Arrange
-            var tenantValidator = CreateTenantValidator(defaultTenant: false);
+            var tenantValidator = CreateTenantValidator();
 
             // Act & Assert
             var viewModel = new EditTenantViewModel
@@ -87,10 +89,16 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
             Assert.Equal("A tenant with the same host and prefix already exists.", errors.Single().Message);
         }
 
-        private TenantValidator CreateTenantValidator(bool defaultTenant = true)
+        private delegate bool MockShellHostTryGetSettings(string name, out ShellSettings settings);
+
+        private TenantValidator CreateTenantValidator()
         {
             var shellHostMock = new Mock<IShellHost>();
-            shellHostMock.Setup(h => h.GetAllSettings()).Returns(_shellSettings);
+            shellHostMock.Setup(h => h.GetAllSettings()).Returns(_shellSettings.Values.ToArray());
+
+            shellHostMock.Setup(h => h.TryGetSettings(It.IsAny<string>(), out It.Ref<ShellSettings>.IsAny))
+                .Returns(new MockShellHostTryGetSettings((string name, out ShellSettings shellSettings) =>
+                    _shellSettings.TryGetValue(name, out shellSettings)));
 
             var featureProfilesServiceMock = new Mock<IFeatureProfilesService>();
             featureProfilesServiceMock.Setup(fp => fp.GetFeatureProfilesAsync())
@@ -107,25 +115,20 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 .Setup(l => l[It.IsAny<string>(), It.IsAny<object[]>()])
                 .Returns<string, object[]>((n, a) => new LocalizedString(n, n));
 
-            var shellSettings = defaultTenant
-                ? _shellSettings.First()
-                : new ShellSettings();
-
             return new TenantValidator(
                 shellHostMock.Object,
                 featureProfilesServiceMock.Object,
                 Enumerable.Empty<DatabaseProvider>(),
-                shellSettings,
                 stringLocalizerMock.Object);
         }
 
         private void SeedTenants()
         {
-            _shellSettings.Add(new ShellSettings{ Name = ShellHelper.DefaultShellName });
-            _shellSettings.Add(new ShellSettings { Name = "Tenant1" });
-            _shellSettings.Add(new ShellSettings { Name = "Tenant2", RequestUrlPrefix = String.Empty, RequestUrlHost = "example2.com" });
-            _shellSettings.Add(new ShellSettings { Name = "Tenant3", RequestUrlPrefix = "tenant3", RequestUrlHost = String.Empty });
-            _shellSettings.Add(new ShellSettings { Name = "Tenant4", RequestUrlPrefix = "tenant4", RequestUrlHost = "example4.com,example5.com" });
+            _shellSettings.Add(ShellHelper.DefaultShellName, new ShellSettings { Name = ShellHelper.DefaultShellName });
+            _shellSettings.Add("Tenant1", new ShellSettings { Name = "Tenant1" });
+            _shellSettings.Add("Tenant2", new ShellSettings { Name = "Tenant2", RequestUrlPrefix = String.Empty, RequestUrlHost = "example2.com" });
+            _shellSettings.Add("Tenant3", new ShellSettings { Name = "Tenant3", RequestUrlPrefix = "tenant3", RequestUrlHost = String.Empty });
+            _shellSettings.Add("Tenant4", new ShellSettings { Name = "Tenant4", RequestUrlPrefix = "tenant4", RequestUrlHost = "example4.com,example5.com" });
         }
     }
 }

@@ -67,10 +67,10 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | trumbowyg             | Script | 2.25.1        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
-| monaco-loader         | Script | 0.32.1        | -              |
-| monaco                | Script | 0.32.1        | monaco-loader  |
-| nouislider            | Script | 15.6.0        | -              |
-| nouislider            | Style  | 15.6.0        | -              |
+| monaco-loader         | Script | 0.34.0        | -              |
+| monaco                | Script | 0.34.0        | monaco-loader  |
+| nouislider            | Script | 15.6.1        | -              |
+| nouislider            | Style  | 15.6.1        | -              |
 
 ### Registering a Resource Manifest
 
