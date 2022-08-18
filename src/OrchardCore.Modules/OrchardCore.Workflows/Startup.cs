@@ -143,4 +143,13 @@ namespace OrchardCore.Workflows
             services.AddActivity<CommitTransactionTask, CommitTransactionTaskDisplayDriver>();
         }
     }
+
+    [Feature("OrchardCore.Workflows.SaveFormAttachments")]
+    public class SaveFormAttachmentsStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddActivity<SaveFormAttachmentsTask, SaveFormAttachmentsTaskDisplayDriver>();
+        }
+    }
 }

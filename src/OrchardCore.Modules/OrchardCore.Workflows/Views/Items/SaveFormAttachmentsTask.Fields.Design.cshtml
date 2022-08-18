@@ -1,0 +1,9 @@
+@model OrchardCore.Workflows.ViewModels.ActivityViewModel<SaveFormAttachmentsTask>
+
+
+<header>
+    <h4><i class="fa fa-floppy-o"></i>@Model.Activity.GetTitleOrDefault(() => T["Save form attachments"])</h4>
+</header>
+
+
+@Model.Activity.Folder

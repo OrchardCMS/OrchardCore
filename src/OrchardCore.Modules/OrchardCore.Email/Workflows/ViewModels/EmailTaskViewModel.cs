@@ -23,5 +23,7 @@ namespace OrchardCore.Email.Workflows.ViewModels
         public bool IsBodyHtml { get; set; }
 
         public bool IsBodyText { get; set; }
+        public bool IncludeStoredAttachments { get; set; }
+        public bool RemoveStoredAttachments { get; set; }
     }
 }

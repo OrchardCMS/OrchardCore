@@ -1,0 +1,14 @@
+@model OrchardCore.Workflows.ViewModels.SaveFormAttachmentsTaskViewModel
+
+<div class="form-group" asp-validation-class-for="Folder">
+    <label asp-for="Folder">@T["Folder name"]</label>
+    <input type="text" asp-for="Folder" class="form-control code" />
+    <span asp-validation-for="Folder"></span>
+    <span class="hint">@T["The folder name. In case of not using media file storage, folder is created under tenant folder."]</span>
+</div>
+
+<div class="mb-3">
+    <input type="checkbox" asp-for="UseMediaFileStore" />
+    <label asp-for="UseMediaFileStore">@T["Use Media File Store"]</label>
+    <span class="hint">@T["If checked, configured media file storage is used. Beware, currently not secured, so your files would be visible."]</span>
+</div>
