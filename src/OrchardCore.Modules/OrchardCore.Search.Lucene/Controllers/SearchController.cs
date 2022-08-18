@@ -86,13 +86,13 @@ namespace OrchardCore.Search.Lucene.Controllers
             else
             {
                 _logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
-                return BadRequest("Search is not configured.");
+                return BadRequest("Lucene search is not configured.");
             }
 
             if (searchIndex != null && !_luceneIndexManager.Exists(searchIndex))
             {
                 _logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
-                return BadRequest("Search is not configured.");
+                return BadRequest("Lucene search is not configured.");
             }
 
             var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
@@ -100,7 +100,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             if (luceneSettings == null || luceneSettings?.DefaultSearchFields == null)
             {
                 _logger.LogInformation("Couldn't execute search. No Lucene settings was defined.");
-                return BadRequest("Search is not configured.");
+                return BadRequest("Lucene search is not configured.");
             }
 
             var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(searchIndex);
@@ -108,7 +108,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             if (luceneIndexSettings == null)
             {
                 _logger.LogInformation($"Couldn't execute search. No Lucene index settings was defined for ({searchIndex}) index.");
-                return BadRequest($"Search index ({searchIndex}) is not configured.");
+                return BadRequest($"Lucene search index ({searchIndex}) is not configured.");
             }
 
             if (string.IsNullOrWhiteSpace(viewModel.Terms))

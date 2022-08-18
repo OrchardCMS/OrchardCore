@@ -28,7 +28,7 @@ namespace OrchardCore.Search.Routing
         public override async ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
         {
             var searchProviders = _serviceProvider.GetServices<SearchProvider>();
-            RouteValueDictionary routeValue;
+            RouteValueDictionary routeValue = null;
 
             if (searchProviders.Count() == 1)
             {
@@ -44,22 +44,19 @@ namespace OrchardCore.Search.Routing
                 var site = await _siteService.GetSiteSettingsAsync();
                 var settings = site.As<SearchSettings>();
 
-                routeValue = new RouteValueDictionary(new {
-                    Name = "Search",
-                    Area = settings.SearchProviderAreaName,
-                    Action = "Search",
-                    Controller = "Search" }
-                );
+                if (!String.IsNullOrEmpty(settings.SearchProviderAreaName))
+                {
+                    routeValue = new RouteValueDictionary(new
+                    {
+                        Name = "Search",
+                        Area = settings.SearchProviderAreaName,
+                        Action = "Search",
+                        Controller = "Search"
+                    });
+                }
             }
 
-            if (routeValue.Count > 0)
-            {
-                return new RouteValueDictionary(routeValue);
-            }
-            else
-            {
-                return null;
-            }
+            return routeValue;
         }
     }
 }
