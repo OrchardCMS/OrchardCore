@@ -18,7 +18,15 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
         {
             var indexingService = serviceProvider.GetService<ElasticIndexingService>();
-            return indexingService.ProcessContentItemsAsync();
+
+            if (indexingService != null)
+            {
+                return indexingService.ProcessContentItemsAsync();
+            }
+            else
+            {
+                return Task.CompletedTask;
+            }
         }
     }
 }
