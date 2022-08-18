@@ -43,7 +43,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override LocalizedString DisplayText => S["Save Form Attachments Task"];
 
-        public override LocalizedString Category => S["UI"];
+        public override LocalizedString Category => S["Media"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
@@ -63,7 +63,7 @@ namespace OrchardCore.Workflows.Activities
             var filePaths = new List<string>();
             foreach (var file in _http.HttpContext.Request.Form.Files)
             {
-                var filePath = PathExtensions.Combine(Folder, $"{workflowContext.WorkflowId}-{file.FileName}");
+                var filePath = fileStore.Combine(Folder, $"{workflowContext.WorkflowId}-{file.FileName}");
                 filePaths.Add(await fileStore.CreateFileFromStreamAsync(filePath, file.OpenReadStream()));
             }
 
