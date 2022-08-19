@@ -95,9 +95,10 @@ namespace OrchardCore.Environment.Shell.Distributed
                     }
 
                     // Manage the 'DateTime' used to sync the default tenant while it is 'Uninitialized'.
-                    defaultTenantSyncingTime = defaultContext.Settings.State == TenantState.Uninitialized
-                        ? defaultTenantSyncingTime
-                        : DateTime.UtcNow;
+                    if (defaultContext.Settings.State != TenantState.Uninitialized)
+                    {
+                        defaultTenantSyncingTime = DateTime.UtcNow;
+                    }
 
                     // Check periodically if the default tenant is still 'Uninitialized'.
                     if (DateTime.UtcNow - defaultTenantSyncingTime > DefaultTenantSyncingPeriod)
