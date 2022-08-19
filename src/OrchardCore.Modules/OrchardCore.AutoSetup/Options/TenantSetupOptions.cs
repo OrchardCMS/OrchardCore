@@ -43,7 +43,7 @@ namespace OrchardCore.AutoSetup.Options
         /// <summary>
         /// Gets or sets the database provider.
         /// </summary>
-        public string DatabaseProvider { get; set; }
+        public DatabaseProviderName DatabaseProvider { get; set; }
 
         /// <summary>
         /// Gets or sets the database connection string.
