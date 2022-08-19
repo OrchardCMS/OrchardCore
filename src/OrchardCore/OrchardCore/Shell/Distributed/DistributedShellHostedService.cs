@@ -26,6 +26,9 @@ namespace OrchardCore.Environment.Shell.Distributed
         private static readonly TimeSpan MaxRetryTime = TimeSpan.FromMinutes(1);
         private static readonly TimeSpan MaxBusyTime = TimeSpan.FromSeconds(2);
 
+        // The syncing period in seconds of the default tenant while it is 'Uninitialized'.
+        private static readonly TimeSpan DefaultTenantSyncingPeriod = TimeSpan.FromSeconds(20);
+
         private readonly IShellHost _shellHost;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IShellSettingsManager _shellSettingsManager;
@@ -64,9 +67,6 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// </summary>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            // The syncing period in seconds of the default tenant while it is 'Uninitialized'.
-            const int DefaultTenantSyncingPeriod = 20;
-
             stoppingToken.Register(() =>
             {
                 _logger.LogInformation("'{ServiceName}' is stopping.", nameof(DistributedShellHostedService));
@@ -75,8 +75,8 @@ namespace OrchardCore.Environment.Shell.Distributed
             // Init the idle time.
             var idleTime = MinIdleTime;
 
-            // Init the second counter used to sync the default tenant while it is 'Uninitialized'.
-            var defaultTenantSyncingSeconds = 0;
+            // Init the 'DateTime' used to sync the default tenant while it is 'Uninitialized'.
+            var defaultTenantSyncingTime = DateTime.UtcNow;
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -94,15 +94,15 @@ namespace OrchardCore.Environment.Shell.Distributed
                         continue;
                     }
 
-                    // Manage the second counter used to sync the default tenant while it is 'Uninitialized'.
-                    defaultTenantSyncingSeconds = defaultContext.Settings.State == TenantState.Uninitialized
-                        ? defaultTenantSyncingSeconds
-                        : 0;
+                    // Manage the 'DateTime' used to sync the default tenant while it is 'Uninitialized'.
+                    defaultTenantSyncingTime = defaultContext.Settings.State == TenantState.Uninitialized
+                        ? defaultTenantSyncingTime
+                        : DateTime.UtcNow;
 
                     // Check periodically if the default tenant is still 'Uninitialized'.
-                    if (defaultTenantSyncingSeconds++ > DefaultTenantSyncingPeriod)
+                    if (DateTime.UtcNow - defaultTenantSyncingTime > DefaultTenantSyncingPeriod)
                     {
-                        defaultTenantSyncingSeconds = 0;
+                        defaultTenantSyncingTime = DateTime.UtcNow;
 
                         // Load the settings of the default tenant that may have been setup by another instance.
                         var defaultSettings = await _shellSettingsManager.LoadSettingsAsync(ShellHelper.DefaultShellName);
