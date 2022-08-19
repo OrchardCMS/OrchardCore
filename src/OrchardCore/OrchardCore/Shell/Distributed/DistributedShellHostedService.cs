@@ -26,7 +26,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         private static readonly TimeSpan MaxRetryTime = TimeSpan.FromMinutes(1);
         private static readonly TimeSpan MaxBusyTime = TimeSpan.FromSeconds(2);
 
-        // The syncing period in seconds of the default tenant while it is 'Uninitialized'.
+        // The syncing period of the default tenant while it is 'Uninitialized'.
         private static readonly TimeSpan DefaultTenantSyncingPeriod = TimeSpan.FromSeconds(20);
 
         private readonly IShellHost _shellHost;
