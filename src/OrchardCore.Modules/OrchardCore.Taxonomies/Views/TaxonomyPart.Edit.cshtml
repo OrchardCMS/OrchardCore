@@ -33,11 +33,11 @@
     @if (termContentType != null)
     {
         <a class="btn btn-primary btn-sm"
-   asp-route-action="Create"
-   asp-route-controller="Admin"
-   asp-route-id="@Model.TaxonomyPart.TermContentType"
-   asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
-   asp-route-area="OrchardCore.Taxonomies">
+            asp-route-action="Create"
+            asp-route-controller="Admin"
+            asp-route-id="@Model.TaxonomyPart.TermContentType"
+            asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+            asp-route-area="OrchardCore.Taxonomies">
             @T["Add {0}", termContentType.DisplayName]
         </a>
     }
@@ -49,8 +49,7 @@
         dynamic termShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TermAdmin");
         termShape.TaxonomyPart = Model.TaxonomyPart;
         termShape.Index = index++;
-        @await DisplayAsync(termShape)
-        ;
+        @await DisplayAsync(termShape);
     }
 </ol>
 
