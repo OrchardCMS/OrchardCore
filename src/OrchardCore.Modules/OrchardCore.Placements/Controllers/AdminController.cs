@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
@@ -18,7 +19,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Placements.Services;
 using OrchardCore.Placements.ViewModels;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Placements.Controllers
 {
@@ -30,7 +30,7 @@ namespace OrchardCore.Placements.Controllers
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
         private readonly INotifier _notifier;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly dynamic New;
 
         public AdminController(
@@ -40,14 +40,14 @@ namespace OrchardCore.Placements.Controllers
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
             INotifier notifier,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory)
         {
             _logger = logger;
             _authorizationService = authorizationService;
             _placementsManager = placementsManager;
             _notifier = notifier;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
 
             New = shapeFactory;
             H = htmlLocalizer;
@@ -61,8 +61,7 @@ namespace OrchardCore.Placements.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
 
             var shapeTypes = await _placementsManager.ListShapePlacementsAsync();
 

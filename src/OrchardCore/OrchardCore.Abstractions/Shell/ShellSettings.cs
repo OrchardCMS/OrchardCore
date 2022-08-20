@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -15,8 +14,8 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public class ShellSettings
     {
-        private ShellConfiguration _settings;
-        private ShellConfiguration _configuration;
+        private readonly ShellConfiguration _settings;
+        private readonly ShellConfiguration _configuration;
 
         public ShellSettings()
         {
@@ -76,7 +75,6 @@ namespace OrchardCore.Environment.Shell
 
         public Task EnsureConfigurationAsync() => _configuration.EnsureConfigurationAsync();
 
-        public bool IsDefaultShell()
-            => String.Equals(Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
+        public bool IsDefaultShell() => Name == ShellHelper.DefaultShellName;
     }
 }

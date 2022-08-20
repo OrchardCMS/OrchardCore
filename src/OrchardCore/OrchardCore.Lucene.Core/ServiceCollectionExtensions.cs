@@ -18,8 +18,8 @@ namespace OrchardCore.Lucene
             services.AddSingleton<ILuceneQueryProvider, MatchQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, MatchAllQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, MatchPhraseQueryProvider>();
-            services.AddSingleton<ILuceneQueryProvider, QueryStringQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, PrefixQueryProvider>();
+            services.AddSingleton<ILuceneQueryProvider, QueryStringQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, RangeQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, RegexpQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, SimpleQueryStringQueryProvider>();

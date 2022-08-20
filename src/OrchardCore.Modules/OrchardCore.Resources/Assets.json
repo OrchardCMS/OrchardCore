@@ -32,24 +32,11 @@
     ],
     "output": "wwwroot/Styles/bootstrap-select.css"
   },
-  {
+ {
     "inputs": [
       "node_modules/bootstrap-select/dist/js/bootstrap-select.js"
     ],
     "output": "wwwroot/Scripts/bootstrap-select.js"
-  },
-  {
-    "generateRTL": true,
-    "inputs": [
-      "node_modules/bootstrap-slider/dist/css/bootstrap-slider.css"
-    ],
-    "output": "wwwroot/Styles/bootstrap-slider.css"
-  },
-  {
-    "inputs": [
-      "node_modules/bootstrap-slider/dist/bootstrap-slider.js"
-    ],
-    "output": "wwwroot/Scripts/bootstrap-slider.js"
   },
   {
     "generateRTL": false,

@@ -68,7 +68,7 @@ namespace OrchardCore.Sitemaps.Builders
             if (source.LastUpdate.HasValue)
             {
                 var lastMod = new XElement(Namespace + "lastmod");
-                lastMod.Add(source.LastUpdate.GetValueOrDefault().ToString("yyyy-MM-ddTHH:mm:sszzz"));
+                lastMod.Add(source.LastUpdate.GetValueOrDefault().ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture));
                 url.Add(lastMod);
             }
         }

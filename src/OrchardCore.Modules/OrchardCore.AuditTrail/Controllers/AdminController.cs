@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.ViewModels;
@@ -12,14 +13,13 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 using YesSql.Filters.Query;
 
 namespace OrchardCore.AuditTrail.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly IShapeFactory _shapeFactory;
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -30,7 +30,7 @@ namespace OrchardCore.AuditTrail.Controllers
         private readonly IStringLocalizer S;
 
         public AdminController(
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
             IAuditTrailManager auditTrailManager,
             IUpdateModelAccessor updateModelAccessor,
@@ -40,7 +40,7 @@ namespace OrchardCore.AuditTrail.Controllers
             IDisplayManager<AuditTrailIndexOptions> auditTrailOptionsDisplayManager,
             IStringLocalizer<AdminController> stringLocalizer)
         {
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             _shapeFactory = shapeFactory;
             _auditTrailManager = auditTrailManager;
             _updateModelAccessor = updateModelAccessor;
@@ -76,8 +76,7 @@ namespace OrchardCore.AuditTrail.Controllers
                 options.FilterResult.TryAddOrReplace(new CorrelationIdFilterNode(options.CorrelationId));
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
 
             // With the options populated we filter the query, allowing the filters to alter the options.
             var result = await _auditTrailAdminListQueryService.QueryAsync(pager.Page, pager.PageSize, options);
