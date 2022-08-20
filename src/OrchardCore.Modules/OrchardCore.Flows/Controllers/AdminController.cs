@@ -7,7 +7,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Flows.Models;
@@ -112,12 +111,12 @@ namespace OrchardCore.Flows.Controllers
 
             if (settings == null || settings.ContainedContentTypes == null || !settings.ContainedContentTypes.Any())
             {
-                return _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+                return _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotypeOrDefault() == "Widget");
             }
 
             return settings.ContainedContentTypes
                 .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                .Where(t => t != null && t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+                .Where(t => t != null && t.GetStereotypeOrDefault() == "Widget");
         }
     }
 }

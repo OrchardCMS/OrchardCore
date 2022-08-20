@@ -1,11 +1,11 @@
 @using OrchardCore.ContentManagement.Metadata.Settings;
 @using OrchardCore.Localization
-
+@using OrchardCore.ContentManagement.Metadata.Models
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
 @{
     var contentType = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotypeOrDefault() == "Widget");
 }
 
 <div class="widget widget-editor card my-1 @(Model.Inline != true ? "collapsed" : "")">
@@ -27,18 +27,20 @@
                     <ul class="dropdown-menu dropdown-menu-end">
                         @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
                         {
-                            <li><a class="dropdown-item insert-list-widget btn-sm"
-                               data-target-id="@Model.TargetId"
-                               data-html-field-prefix="@Model.HtmlFieldPrefix"
-                               data-prefixes-name="@Model.PrefixesName"
-                               data-zones-name="@Model.ZonesName"
-                               data-contenttypes-name="@Model.ContentTypesName"
-                               data-contentitems-name="@Model.ContentItemsName"
-                               data-widget-type="@type.Name"
-                               data-parent-content-type="@Model.ParentContentType"
-                               data-part-name="@Model.CollectionPartName"
-                               data-zone="@Model.ZoneValue"
-                               href="javascript:;">@type.DisplayName</a></li>
+                            <li>
+                                <a class="dropdown-item insert-list-widget btn-sm"
+                           data-target-id="@Model.TargetId"
+                           data-html-field-prefix="@Model.HtmlFieldPrefix"
+                           data-prefixes-name="@Model.PrefixesName"
+                           data-zones-name="@Model.ZonesName"
+                           data-contenttypes-name="@Model.ContentTypesName"
+                           data-contentitems-name="@Model.ContentItemsName"
+                           data-widget-type="@type.Name"
+                           data-parent-content-type="@Model.ParentContentType"
+                           data-part-name="@Model.CollectionPartName"
+                           data-zone="@Model.ZoneValue"
+                           href="javascript:;">@type.DisplayName</a>
+                            </li>
                         }
                     </ul>
                 }

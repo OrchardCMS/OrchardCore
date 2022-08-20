@@ -67,8 +67,7 @@ namespace OrchardCore.ContentManagement.Display
                 }
             }
 
-            var settings = contentTypeDefinition?.GetSettings<ContentTypeSettings>();
-            var stereotype = settings?.Stereotype ?? String.Empty;
+            var stereotype = contentTypeDefinition.GetStereotypeOrDefault() ?? String.Empty;
 
             foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
             {

@@ -9,7 +9,6 @@ using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentFields.Controllers
 {
@@ -61,7 +60,7 @@ namespace OrchardCore.ContentFields.Controllers
                 contentTypes = _contentDefinitionManager.ListTypeDefinitions()
                     .Where(contentType =>
                     {
-                        var stereotype = contentType.GetSettings<ContentTypeSettings>().Stereotype;
+                        var stereotype = contentType.GetSettings().Stereotype;
 
                         return !String.IsNullOrEmpty(stereotype) && fieldSettings.DisplayedStereotypes.Contains(stereotype);
                     }).Select(contentType => contentType.Name)

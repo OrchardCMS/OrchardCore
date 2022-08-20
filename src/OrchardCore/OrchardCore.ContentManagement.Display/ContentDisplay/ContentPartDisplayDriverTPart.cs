@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -34,15 +33,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 // The stereotype is used when not displaying for a specific content type. We don't use [Stereotype] and [ContentType] at
                 // the same time in an alternate because a content type is always of one stereotype.
 
-                var stereotype = "";
-
-                var settings = _typePartDefinition.ContentTypeDefinition?.GetSettings<ContentTypeSettings>();
-
-                if (settings != null)
-                {
-                    stereotype = settings.Stereotype;
-                }
-
+                var stereotype = _typePartDefinition.ContentTypeDefinition.GetStereotypeOrDefault() ?? String.Empty;
                 var partName = _typePartDefinition.Name;
                 var partType = _typePartDefinition.PartDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;

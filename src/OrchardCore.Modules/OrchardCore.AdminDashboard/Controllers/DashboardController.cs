@@ -15,7 +15,7 @@ using OrchardCore.AdminDashboard.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -109,9 +109,7 @@ namespace OrchardCore.AdminDashboard.Controllers
             var dashboardCreatable = new List<SelectListItem>();
 
             var widgetContentTypes = _contentDefinitionManager.ListTypeDefinitions()
-                    .Where(t =>
-                    !string.IsNullOrEmpty(t.GetSettings<ContentTypeSettings>().Stereotype) &&
-                    t.GetSettings<ContentTypeSettings>().Stereotype.Contains("DashboardWidget"))
+                    .Where(t => t.HasStereotype() && t.GetStereotypeOrDefault().Contains("DashboardWidget"))
                     .OrderBy(x => x.DisplayName);
             foreach (var ctd in widgetContentTypes)
             {

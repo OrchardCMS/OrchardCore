@@ -3,8 +3,8 @@
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
-@using OrchardCore.ContentManagement.Metadata.Settings;
-
+@using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.ContentManagement.Metadata.Models
 @*
     This template is used to render the editor for a Taxonomy content item.
     It render the hierarchy of the terms.
@@ -17,11 +17,11 @@
 @{
     var updater = ModelUpdaterAccessor.ModelUpdater;
     var canAddTerm = Model.TaxonomyPart.ContentItem.Id != 0;
-    var termContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => String.IsNullOrEmpty(t.GetSettings<ContentTypeSettings>().Stereotype)).OrderBy(x => x.DisplayName);
+    var termContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => !t.HasStereotype()).OrderBy(x => x.DisplayName);
     var index = 0;
 }
 <div class="mb-3" asp-validation-class-for="TermContentType">
-    <label asp-for="TermContentType" >@T["Term Content Type"]</label>
+    <label asp-for="TermContentType">@T["Term Content Type"]</label>
     <select asp-for="TermContentType" class="form-select col-small" asp-items="@(new SelectList(termContentTypes, "Name", "DisplayName"))">
     </select>
     <span asp-validation-for="TermContentType"></span>
@@ -33,11 +33,11 @@
     @if (termContentType != null)
     {
         <a class="btn btn-primary btn-sm"
-            asp-route-action="Create"
-            asp-route-controller="Admin"
-            asp-route-id="@Model.TaxonomyPart.TermContentType"
-            asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
-            asp-route-area="OrchardCore.Taxonomies">
+   asp-route-action="Create"
+   asp-route-controller="Admin"
+   asp-route-id="@Model.TaxonomyPart.TermContentType"
+   asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+   asp-route-area="OrchardCore.Taxonomies">
             @T["Add {0}", termContentType.DisplayName]
         </a>
     }
@@ -49,7 +49,8 @@
         dynamic termShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TermAdmin");
         termShape.TaxonomyPart = Model.TaxonomyPart;
         termShape.Index = index++;
-        @await DisplayAsync(termShape);
+        @await DisplayAsync(termShape)
+        ;
     }
 </ol>
 
@@ -60,27 +61,27 @@
     var menuItemId;
     var confirmLeave;
 
-    $(function () {
+    $(function() {
         $('#menu')
             .nestedSortable({
                 handle: 'div.menu-item-title',
                 items: 'li.menu-item',
                 toleranceElement: '> div.menu-item-title',
-                relocate: function () {
+                relocate: function() {
                     confirmLeave = true;
                     $('#@Html.IdFor(m => m.Hierarchy)').attr('value', JSON.stringify($('#menu').nestedSortable('toHierarchy')));
                 }
             });
 
-        window.onbeforeunload = function () {
+        window.onbeforeunload = function() {
             if (confirmLeave) {
                 return $('#msg-leave').text();
             }
         }
 
-        $('#menu').closest("form").on('submit', function (e) {
+        $('#menu').closest("form").on('submit', function(e) {
             confirmLeave = false;
-            window.onbeforeunload = function () { };
+            window.onbeforeunload = function() { };
         });
     });
 </script>

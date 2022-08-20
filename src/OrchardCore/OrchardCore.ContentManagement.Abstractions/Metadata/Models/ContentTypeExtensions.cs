@@ -5,6 +5,22 @@ namespace OrchardCore.ContentManagement.Metadata.Models;
 
 public static class ContentTypeExtensions
 {
+    public static bool TryGetStereotype(this ContentTypeDefinition contentTypeDefinition, out string stereotype)
+    {
+        var value = contentTypeDefinition.GetStereotypeOrDefault();
+
+        if (!String.IsNullOrEmpty(value))
+        {
+            stereotype = value;
+
+            return true;
+        }
+
+        stereotype = null;
+
+        return false;
+    }
+
     public static bool HasStereotype(this ContentTypeDefinition contentTypeDefinition)
     {
         return !String.IsNullOrEmpty(contentTypeDefinition.GetStereotypeOrDefault());

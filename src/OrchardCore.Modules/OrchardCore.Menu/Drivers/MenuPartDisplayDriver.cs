@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
@@ -41,7 +41,7 @@ namespace OrchardCore.Menu.Drivers
         {
             return Initialize<MenuPartEditViewModel>("MenuPart_Edit", async model =>
             {
-                var menuItemContentTypes = _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "MenuItem");
+                var menuItemContentTypes = _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotypeOrDefault() == "MenuItem");
                 var notify = false;
 
                 foreach (var menuItem in part.ContentItem.As<MenuItemsListPart>().MenuItems)

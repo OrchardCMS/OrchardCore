@@ -12,7 +12,6 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
@@ -205,9 +204,7 @@ namespace OrchardCore.Flows.Drivers
         {
             contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(contentType);
 
-            var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
-
-            return settings.Securable;
+            return contentTypeDefinition.IsSecurable();
         }
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(IContentDefinitionManager contentDefinitionManager, ContentTypePartDefinition typePartDefinition)
