@@ -109,7 +109,7 @@ namespace OrchardCore.AdminDashboard.Controllers
             var dashboardCreatable = new List<SelectListItem>();
 
             var widgetContentTypes = _contentDefinitionManager.ListTypeDefinitions()
-                    .Where(t => t.HasStereotype() && t.GetStereotypeOrDefault().Contains("DashboardWidget"))
+                    .Where(t => t.TryGetStereotype(out var stereotype) && stereotype.Contains("DashboardWidget"))
                     .OrderBy(x => x.DisplayName);
             foreach (var ctd in widgetContentTypes)
             {
