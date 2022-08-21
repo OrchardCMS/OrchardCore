@@ -240,6 +240,10 @@ namespace OrchardCore.Contents.Controllers
 
             var routeData = new RouteData(options.RouteValues);
 
+            if (_pagerOptions.MaxPageSize > 0 && pager.PageSize > _pagerOptions.MaxPageSize)
+            {
+                pager.PageSize = _pagerOptions.MaxPageSize;
+            }
             if (_pagerOptions.MaxPagedCount > 0 && pager.PageSize > _pagerOptions.MaxPagedCount)
             {
                 pager.PageSize = _pagerOptions.MaxPagedCount;
