@@ -180,7 +180,7 @@ namespace OrchardCore.Modules.Manifest
                 {
                     throw new InvalidOperationException($"When '{nameof(Id)}' has been provided it should not be null or empty.")
                     {
-                        Data = {{nameof(value), value}}
+                        Data = { { nameof(value), value } }
                     };
                 }
 

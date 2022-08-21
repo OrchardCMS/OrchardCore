@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrchardCore.Themes.Models;
 
 namespace OrchardCore.Themes.ViewModels

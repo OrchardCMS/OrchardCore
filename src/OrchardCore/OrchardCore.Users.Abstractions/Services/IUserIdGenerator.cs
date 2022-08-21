@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Users.Services
+namespace OrchardCore.Users.Services
 {
     public interface IUserIdGenerator
     {

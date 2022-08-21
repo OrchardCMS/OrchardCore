@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Flows.ViewModels
+namespace OrchardCore.Flows.ViewModels
 {
     public class BuildEditorViewModel
     {

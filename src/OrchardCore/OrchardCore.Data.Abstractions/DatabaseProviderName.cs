@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Data;
+namespace OrchardCore.Data;
 
 public enum DatabaseProviderName
 {

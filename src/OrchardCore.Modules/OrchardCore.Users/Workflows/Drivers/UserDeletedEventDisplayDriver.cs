@@ -1,4 +1,4 @@
-﻿using OrchardCore.DisplayManagement.Views;
+using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.Workflows.Activities;
 using OrchardCore.Users.Workflows.ViewModels;

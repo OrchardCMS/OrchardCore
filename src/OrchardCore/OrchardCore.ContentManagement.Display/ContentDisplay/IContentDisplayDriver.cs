@@ -1,4 +1,4 @@
-﻿using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Handlers;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
