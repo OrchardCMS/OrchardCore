@@ -23,6 +23,9 @@ jobs:
       with:
         dotnet-version: 6.0.x
         include-prerelease: true
+    - name: Format verify
+      run: |
+        dotnet format --verify-no-changes --verbosity normal
     - name: Build
       run: |
         dotnet build --configuration Release --framework net6.0
