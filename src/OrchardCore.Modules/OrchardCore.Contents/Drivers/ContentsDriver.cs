@@ -44,7 +44,7 @@ namespace OrchardCore.Contents.Drivers
             {
                 contentsMetadataShape.Displaying(ctx =>
                 {
-                    var hasSteretype = contentTypeDefinition.TryGetStereotype(out var stereotype);
+                    var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
 
                     if (hasSteretype && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
                     {
