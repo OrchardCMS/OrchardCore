@@ -58,8 +58,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | bootstrap             | Style  | 4.6.1, 5.1.3  | -              |
 | bootstrap-select      | Script | 1.14.0-beta2  | -              |
 | bootstrap-select      | Style  | 1.14.0-beta2  | -              |
-| codemirror            | Script | 5.65.7        | -              |
-| codemirror            | Style  | 5.65.7        | -              |
+| codemirror            | Script | 5.65.8        | -              |
+| codemirror            | Style  | 5.65.8        | -              |
 | font-awesome          | Style  | 6.1.2         | -              |
 | font-awesome          | Script | 6.1.2         | -              |
 | font-awesome-v4-shims | Script | 6.1.2         | -              |

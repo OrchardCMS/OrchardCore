@@ -11713,7 +11713,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         _replaceRange(cm.doc, val, newBreaks[i], Pos(newBreaks[i].line, newBreaks[i].ch + val.length));
       }
     });
-    option("specialChars", /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u200b\u200e\u200f\u2028\u2029\ufeff\ufff9-\ufffc]/g, function (cm, val, old) {
+    option("specialChars", /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u200b\u200e\u200f\u2028\u2029\u202d\u202e\u2066\u2067\u2069\ufeff\ufff9-\ufffc]/g, function (cm, val, old) {
       cm.state.specialChars = new RegExp(val.source + (val.test("\t") ? "" : "|\t"), "g");
 
       if (old != Init) {
@@ -14090,6 +14090,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
     this.hasSelection = false;
     this.composing = null;
+    this.resetting = false;
   };
 
   TextareaInput.prototype.init = function (display) {
@@ -14251,11 +14252,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
 
   TextareaInput.prototype.reset = function (typing) {
-    if (this.contextMenuPending || this.composing) {
+    if (this.contextMenuPending || this.composing && typing) {
       return;
     }
 
     var cm = this.cm;
+    this.resetting = true;
 
     if (cm.somethingSelected()) {
       this.prevInput = "";
@@ -14276,6 +14278,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         this.hasSelection = null;
       }
     }
+
+    this.resetting = false;
   };
 
   TextareaInput.prototype.getField = function () {
@@ -14363,7 +14367,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     // will be the case when there is a lot of text in the textarea,
     // in which case reading its value would be expensive.
 
-    if (this.contextMenuPending || !cm.state.focused || hasSelection(input) && !prevInput && !this.composing || cm.isReadOnly() || cm.options.disableInput || cm.state.keySeq) {
+    if (this.contextMenuPending || this.resetting || !cm.state.focused || hasSelection(input) && !prevInput && !this.composing || cm.isReadOnly() || cm.options.disableInput || cm.state.keySeq) {
       return false;
     }
 
@@ -14746,6 +14750,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.65.7";
+  CodeMirror.version = "5.65.8";
   return CodeMirror;
 });
