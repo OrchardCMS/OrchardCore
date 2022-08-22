@@ -38,8 +38,6 @@ namespace OrchardCore.AdminMenu
             services.AddScoped<IAdminMenuService, AdminMenuService>();
             services.AddScoped<AdminMenuNavigationProvidersCoordinator, AdminMenuNavigationProvidersCoordinator>();
 
-            services.AddScoped<IDisplayManager<MenuItem>, DisplayManager<MenuItem>>();
-
             services.AddRecipeExecutionStep<AdminMenuStep>();
 
             services.AddTransient<IDeploymentSource, AdminMenuDeploymentSource>();
