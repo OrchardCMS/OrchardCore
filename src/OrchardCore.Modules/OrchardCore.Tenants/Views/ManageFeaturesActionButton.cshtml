@@ -3,5 +3,5 @@
 
 @if (!Model.Value.ShellSettings.IsDefaultShell() && Model.Value.ShellSettings.State == TenantState.Running)
 {
-    <a asp-action="Features" asp-controller="Admin" asp-route-tenant="@Model.Value.Name" asp-route-returnUrl="" asp-area="OrchardCore.Features" class="btn btn-primary btn-sm enable">@T["Manage Features"]</a>
+    <a asp-action="Features" asp-controller="Admin" asp-route-tenant="@Model.Value.Name" asp-route-returnUrl="" asp-area="OrchardCore.Features" class="btn btn-primary btn-sm enable">@T["Features"]</a>
 }
