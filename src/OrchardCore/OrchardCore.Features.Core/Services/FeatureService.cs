@@ -10,6 +10,7 @@ using OrchardCore.Features.Models;
 using OrchardCore.Features.ViewModels;
 
 namespace OrchardCore.Features.Services;
+
 public class FeatureService
 {
     private readonly IShellFeaturesManager _shellFeaturesManager;

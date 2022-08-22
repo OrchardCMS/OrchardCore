@@ -126,32 +126,22 @@ namespace OrchardCore.Tenants.Controllers
                 entries = entries.Where(t => t.Category?.Equals(options.Category, StringComparison.OrdinalIgnoreCase) == true).ToList();
             }
 
-            switch (options.Status)
+            entries = options.Status switch
             {
-                case TenantsState.Disabled:
-                    entries = entries.Where(t => t.ShellSettings.State == TenantState.Disabled).ToList();
-                    break;
-                case TenantsState.Running:
-                    entries = entries.Where(t => t.ShellSettings.State == TenantState.Running).ToList();
-                    break;
-                case TenantsState.Uninitialized:
-                    entries = entries.Where(t => t.ShellSettings.State == TenantState.Uninitialized).ToList();
-                    break;
-            }
+                TenantsState.Disabled => entries.Where(t => t.ShellSettings.State == TenantState.Disabled).ToList(),
+                TenantsState.Running => entries.Where(t => t.ShellSettings.State == TenantState.Running).ToList(),
+                TenantsState.Uninitialized => entries.Where(t => t.ShellSettings.State == TenantState.Uninitialized).ToList(),
+                _ => entries,
+            };
 
-            switch (options.OrderBy)
+            entries = options.OrderBy switch
             {
-                case TenantsOrder.Name:
-                    entries = entries.OrderBy(t => t.Name).ToList();
-                    break;
-                case TenantsOrder.State:
-                    entries = entries.OrderBy(t => t.ShellSettings?.State).ToList();
-                    break;
-                default:
-                    entries = entries.OrderByDescending(t => t.Name).ToList();
-                    break;
-            }
-            var count = entries.Count();
+                TenantsOrder.Name => entries.OrderBy(t => t.Name).ToList(),
+                TenantsOrder.State => entries.OrderBy(t => t.ShellSettings?.State).ToList(),
+                _ => entries.OrderByDescending(t => t.Name).ToList(),
+            };
+
+            var count = entries.Count;
 
             var results = entries
                 .Skip(pager.GetStartIndex())

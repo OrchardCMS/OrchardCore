@@ -11,6 +11,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
 using OrchardCore.Routing;
@@ -23,10 +24,10 @@ namespace OrchardCore.Features.Controllers
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
         private readonly IExtensionManager _extensionManager;
-        private readonly IHtmlLocalizer H;
         private readonly IShellFeaturesManager _shellFeaturesManager;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
             IExtensionManager extensionManager,
@@ -43,8 +44,8 @@ namespace OrchardCore.Features.Controllers
             _shellSettings = shellSettings;
             _notifier = notifier;
             _extensionManager = extensionManager;
-            H = localizer;
             _shellFeaturesManager = shellFeaturesManager;
+            H = localizer;
             S = stringLocalizer;
         }
 
@@ -157,11 +158,15 @@ namespace OrchardCore.Features.Controllers
 
         private async Task ExecuteAsync(string tenant, Func<FeatureService, ShellSettings, Task> action)
         {
-            if (_shellSettings.IsDefaultShell() && !String.IsNullOrWhiteSpace(tenant) && _shellHost.TryGetSettings(tenant, out var settings) && !settings.IsDefaultShell())
+            if (_shellSettings.IsDefaultShell()
+                && !String.IsNullOrWhiteSpace(tenant)
+                && _shellHost.TryGetSettings(tenant, out var settings)
+                && !settings.IsDefaultShell()
+                && settings.State == TenantState.Running)
             {
                 // At this point we know that this request is being executed from the host.
-                // Also, we were able to find a matching tenant that isn't a default shell
-                // we are free to create a scope for the given tenant
+                // Also, we were able to find a matching running tenant that isn't a default shell
+                // we are safe to create a scope for the given tenant
                 var shellScope = await _shellHost.GetScopeAsync(settings);
 
                 await shellScope.UsingAsync(async scope =>
@@ -169,9 +174,8 @@ namespace OrchardCore.Features.Controllers
                     var shellFeatureManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
                     var extensionManager = scope.ServiceProvider.GetRequiredService<IExtensionManager>();
 
-                    var featureService = new FeatureService(shellFeatureManager, extensionManager);
-
-                    await action(featureService, settings);
+                    // at this point we apply the action on the given tenant
+                    await action(new FeatureService(shellFeatureManager, extensionManager), settings);
                 });
 
                 return;
