@@ -17,6 +17,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Contents.Workflows.Activities;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.Contents.Workflows.ViewModels
 {
@@ -25,6 +27,10 @@ namespace OrchardCore.Contents.Workflows.ViewModels
     {
         [Required]
         public string ContentType { get; set; }
+        public bool Published { get; set; }
+        public int Take { get; set; }
+        [BindNever]
+        public IList<SelectListItem> AvailableContentTypes { get; set; }
     }
 
 }

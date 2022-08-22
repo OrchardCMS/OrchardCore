@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Workflows;
+using Newtonsoft.Json;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Workflows.Activities
 {
@@ -17,12 +19,14 @@ namespace OrchardCore.Contents.Workflows.Activities
     {
         readonly IStringLocalizer S;
         private readonly ISession _session;
+        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         private readonly IContentManager _contentManager;
 
-        public ContentForEachTask(IContentManager contentManager, IStringLocalizer<RetrieveContentTask> localizer, ISession session)
+        public ContentForEachTask(IWorkflowScriptEvaluator scriptEvaluator, IContentManager contentManager, IStringLocalizer<RetrieveContentTask> localizer, ISession session)
         {
             S = localizer;
             _session = session;
+            _scriptEvaluator = scriptEvaluator;
             _contentManager = contentManager;
         }
         public override string Name => nameof(ContentForEachTask);
@@ -41,22 +45,25 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var contentItems = await _session
-                .Query<ContentItem, ContentItemIndex>(index => index.ContentType == ContentType && index.Published == true && index.Latest == true)
-                .ListAsync();
-            List<ContentItem> items = contentItems.ToList();
-            if (contentItems.Count() == 0)
+            //Store the result so a db call is not made per iteration
+            if (Skip == 0 || Take % Index == 1)
             {
-                throw new InvalidOperationException($"The '{nameof(ContentForEachTask)}' failed to evaluate the 'ContentType'.");
+                ContentItems = await _session
+                    .Query<ContentItem, ContentItemIndex>(index => index.ContentType == ContentType && (Published && index.Published == true || !Published && index.Latest == true))
+                    .Skip(Skip)
+                    .Take(Take)
+                    .ListAsync() as List<ContentItem>;
+                Skip += Take;
+                Index = 0;
             }
 
-            if (Index < contentItems.Count())
+            if (ContentItems.Count() != 0)
             {
-                var contentItem = await _contentManager.LoadAsync(items[Index]);
+                var contentItem = ContentItems[Index];
                 var current = Current = contentItem;
                 workflowContext.CorrelationId = contentItem.ContentItemId;
                 workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
-                workflowContext.LastResult = current;
+                workflowContext.LastResult = current;             
                 Index++;
                 return Outcomes("Iterate"); 
             }
@@ -66,7 +73,24 @@ namespace OrchardCore.Contents.Workflows.Activities
                 return Outcomes("Done");
             }
         }
-
+        
+        /// <summary>
+        /// The current skip number.
+        /// </summary>
+        public int Skip
+        {
+            get => GetProperty(() => 0);
+            set => SetProperty(value);
+        }
+        
+        /// <summary>
+        /// How many to take each db call.
+        /// </summary>
+        public int Take
+        {
+            get => GetProperty(() => 10);
+            set => SetProperty(value);
+        }
         /// <summary>
         /// The current number of iterations executed.
         /// </summary>
@@ -85,9 +109,24 @@ namespace OrchardCore.Contents.Workflows.Activities
             set => SetProperty(value);
         }
 
+        /// <summary>
+        /// The collection of contentItems.
+        /// </summary>
+        public List<ContentItem> ContentItems
+        {
+            get => GetProperty(() => new List<ContentItem>());
+            set => SetProperty(value);
+        }
+
         public string ContentType
         {
             get => GetProperty(() => string.Empty);
+            set => SetProperty(value);
+        }
+
+        public bool Published
+        {
+            get => GetProperty<bool>();
             set => SetProperty(value);
         }
     }
