@@ -13,6 +13,7 @@ namespace OrchardCore.Email.Controllers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
+        private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly ISmtpService _smtpService;
         private readonly IHtmlLocalizer H;
 
@@ -20,11 +21,13 @@ namespace OrchardCore.Email.Controllers
             IHtmlLocalizer<AdminController> h,
             IAuthorizationService authorizationService,
             INotifier notifier,
+            IEmailAddressValidator emailAddressValidator,
             ISmtpService smtpService)
         {
             H = h;
             _authorizationService = authorizationService;
             _notifier = notifier;
+            _emailAddressValidator = emailAddressValidator;
             _smtpService = smtpService;
         }
 
@@ -71,7 +74,7 @@ namespace OrchardCore.Email.Controllers
             return View(model);
         }
 
-        private MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
+        private static MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
         {
             var message = new MailMessage
             {
