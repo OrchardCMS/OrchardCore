@@ -105,4 +105,15 @@ namespace OrchardCore.Queries
             );
         }
     }
+
+    [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Contents")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, QueryBasedContentDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<QueryBasedContentDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, QueryBasedContentDeploymentStepDriver>();
+        }
+    }
 }

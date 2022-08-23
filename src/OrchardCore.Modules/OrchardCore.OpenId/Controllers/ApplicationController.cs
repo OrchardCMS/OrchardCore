@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
@@ -14,13 +15,11 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Security.Services;
-using OrchardCore.Settings;
 
 namespace OrchardCore.OpenId.Controllers
 {
@@ -30,7 +29,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly IOpenIdScopeManager _scopeManager;
         private readonly INotifier _notifier;
@@ -39,7 +38,7 @@ namespace OrchardCore.OpenId.Controllers
 
         public ApplicationController(
             IShapeFactory shapeFactory,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IStringLocalizer<ApplicationController> stringLocalizer,
             IAuthorizationService authorizationService,
             IOpenIdApplicationManager applicationManager,
@@ -49,7 +48,7 @@ namespace OrchardCore.OpenId.Controllers
             ShellDescriptor shellDescriptor)
         {
             New = shapeFactory;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             S = stringLocalizer;
             H = htmlLocalizer;
             _authorizationService = authorizationService;
@@ -66,8 +65,7 @@ namespace OrchardCore.OpenId.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
             var count = await _applicationManager.CountAsync();
 
             var model = new OpenIdApplicationsIndexViewModel
@@ -163,9 +161,11 @@ namespace OrchardCore.OpenId.Controllers
                 AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
                 AllowHybridFlow = model.AllowHybridFlow,
                 AllowImplicitFlow = model.AllowImplicitFlow,
+                AllowIntrospectionEndpoint = model.AllowIntrospectionEndpoint,
                 AllowLogoutEndpoint = model.AllowLogoutEndpoint,
                 AllowPasswordFlow = model.AllowPasswordFlow,
                 AllowRefreshTokenFlow = model.AllowRefreshTokenFlow,
+                AllowRevocationEndpoint = model.AllowRevocationEndpoint,
                 ClientId = model.ClientId,
                 ClientSecret = model.ClientSecret,
                 ConsentType = model.ConsentType,
@@ -174,7 +174,8 @@ namespace OrchardCore.OpenId.Controllers
                 RedirectUris = model.RedirectUris,
                 Roles = model.RoleEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
                 Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
-                Type = model.Type
+                Type = model.Type,
+                RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange
             };
 
             await _applicationManager.UpdateDescriptorFromSettings(settings);
@@ -201,6 +202,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             ValueTask<bool> HasPermissionAsync(string permission) => _applicationManager.HasPermissionAsync(application, permission);
+            ValueTask<bool> HasRequirementAsync(string requirement) => _applicationManager.HasRequirementAsync(application, requirement);
 
             var model = new EditOpenIdApplicationViewModel
             {
@@ -226,13 +228,16 @@ namespace OrchardCore.OpenId.Controllers
                 AllowPasswordFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.Password),
                 AllowRefreshTokenFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.RefreshToken),
                 AllowLogoutEndpoint = await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.Logout),
+                AllowIntrospectionEndpoint = await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.Introspection),
+                AllowRevocationEndpoint = await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.Revocation),
                 ClientId = await _applicationManager.GetClientIdAsync(application),
                 ConsentType = await _applicationManager.GetConsentTypeAsync(application),
                 DisplayName = await _applicationManager.GetDisplayNameAsync(application),
                 Id = await _applicationManager.GetPhysicalIdAsync(application),
                 PostLogoutRedirectUris = string.Join(" ", await _applicationManager.GetPostLogoutRedirectUrisAsync(application)),
                 RedirectUris = string.Join(" ", await _applicationManager.GetRedirectUrisAsync(application)),
-                Type = await _applicationManager.GetClientTypeAsync(application)
+                Type = await _applicationManager.GetClientTypeAsync(application),
+                RequireProofKeyForCodeExchange = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange)
             };
 
             var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
@@ -322,9 +327,11 @@ namespace OrchardCore.OpenId.Controllers
                 AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
                 AllowHybridFlow = model.AllowHybridFlow,
                 AllowImplicitFlow = model.AllowImplicitFlow,
+                AllowIntrospectionEndpoint = model.AllowIntrospectionEndpoint,
                 AllowLogoutEndpoint = model.AllowLogoutEndpoint,
                 AllowPasswordFlow = model.AllowPasswordFlow,
                 AllowRefreshTokenFlow = model.AllowRefreshTokenFlow,
+                AllowRevocationEndpoint = model.AllowRevocationEndpoint,
                 ClientId = model.ClientId,
                 ClientSecret = model.ClientSecret,
                 ConsentType = model.ConsentType,
@@ -333,7 +340,8 @@ namespace OrchardCore.OpenId.Controllers
                 RedirectUris = model.RedirectUris,
                 Roles = model.RoleEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
                 Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
-                Type = model.Type
+                Type = model.Type,
+                RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange
             };
 
             await _applicationManager.UpdateDescriptorFromSettings(settings, application);

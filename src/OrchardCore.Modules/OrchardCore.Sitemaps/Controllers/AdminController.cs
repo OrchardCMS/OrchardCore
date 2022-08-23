@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 using OrchardCore.Sitemaps.ViewModels;
@@ -30,7 +30,7 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly IEnumerable<ISitemapSourceFactory> _sourceFactories;
         private readonly ISitemapManager _sitemapManager;
         private readonly ISitemapIdGenerator _sitemapIdGenerator;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
@@ -44,7 +44,7 @@ namespace OrchardCore.Sitemaps.Controllers
             IEnumerable<ISitemapSourceFactory> sourceFactories,
             ISitemapManager sitemapManager,
             ISitemapIdGenerator sitemapIdGenerator,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IUpdateModelAccessor updateModelAccessor,
             INotifier notifier,
             IShapeFactory shapeFactory,
@@ -57,7 +57,7 @@ namespace OrchardCore.Sitemaps.Controllers
             _authorizationService = authorizationService;
             _sitemapManager = sitemapManager;
             _sitemapIdGenerator = sitemapIdGenerator;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
             S = stringLocalizer;
@@ -72,8 +72,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
 
             var sitemaps = (await _sitemapManager.GetSitemapsAsync())
                 .OfType<Sitemap>();

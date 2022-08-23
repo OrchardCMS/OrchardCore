@@ -27,6 +27,9 @@ namespace OrchardCore.OpenId
         public bool AllowHybridFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
         public bool AllowLogoutEndpoint { get; set; }
+        public bool AllowIntrospectionEndpoint { get; set; }
+        public bool AllowRevocationEndpoint { get; set; }
+        public bool RequireProofKeyForCodeExchange { get; set; }
     }
 
     internal static class OpenIdApplicationExtensions
@@ -158,6 +161,7 @@ namespace OrchardCore.OpenId
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.Token);
             }
+
             if (model.AllowHybridFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken);
@@ -178,6 +182,33 @@ namespace OrchardCore.OpenId
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken);
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken);
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
+            }
+
+            if (model.AllowIntrospectionEndpoint)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Introspection);
+            }
+            else
+            {
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Introspection);
+            }
+
+            if (model.AllowRevocationEndpoint)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Revocation);
+            }
+            else
+            {
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Revocation);
+            }
+
+            if (model.RequireProofKeyForCodeExchange)
+            {
+                descriptor.Requirements.Add(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange);
+            }
+            else
+            {
+                descriptor.Requirements.Remove(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange);
             }
 
             descriptor.Roles.Clear();

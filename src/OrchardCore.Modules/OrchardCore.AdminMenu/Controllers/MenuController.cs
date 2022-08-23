@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.AdminMenu.ViewModels;
@@ -16,7 +17,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 
 namespace OrchardCore.AdminMenu.Controllers
 {
@@ -25,7 +25,7 @@ namespace OrchardCore.AdminMenu.Controllers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IAdminMenuService _adminMenuService;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
@@ -35,7 +35,7 @@ namespace OrchardCore.AdminMenu.Controllers
         public MenuController(
             IAuthorizationService authorizationService,
             IAdminMenuService adminMenuService,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
             INotifier notifier,
             IStringLocalizer<MenuController> stringLocalizer,
@@ -44,7 +44,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             _authorizationService = authorizationService;
             _adminMenuService = adminMenuService;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             New = shapeFactory;
             _notifier = notifier;
             S = stringLocalizer;
@@ -59,8 +59,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
 
             var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
 

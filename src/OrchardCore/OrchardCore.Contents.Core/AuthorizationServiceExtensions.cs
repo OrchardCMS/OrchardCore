@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -16,7 +17,12 @@ namespace Microsoft.AspNetCore.Authorization
         /// </summary>
         public static async Task<bool> AuthorizeContentTypeDefinitionsAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, IEnumerable<ContentTypeDefinition> contentTypeDefinitions, IContentManager contentManager)
         {
+            ArgumentNullException.ThrowIfNull(user);
+            ArgumentNullException.ThrowIfNull(requiredPermission);
+            ArgumentNullException.ThrowIfNull(contentManager);
+
             var permission = GetOwnerVariation(requiredPermission);
+
             var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission);
 
             foreach (var contentTypeDefinition in contentTypeDefinitions)

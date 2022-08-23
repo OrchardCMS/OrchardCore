@@ -116,6 +116,17 @@
                 </div>
             </div>
         </div>
+         <div class="mb-3" >
+             <div class="mb-3">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" asp-for="RequireProofKeyForCodeExchange" checked="@Model.RequireProofKeyForCodeExchange">
+                    <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>
+                </div>
+                 <div class="hint">
+                    @T["Ensure that the client application and OAuth or OIDC library being used supports PKCE before enabling this option."]
+                 </div>
+            </div>            
+        </div>
         <div class="mb-3" asp-validation-class-for="ConsentType">
             <label asp-for="ConsentType">@T["Consent type"]</label>
             <select asp-for="ConsentType" class="form-select">
