@@ -6,8 +6,8 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="Render" checked="@Model.Render" />
         <label class="form-check-label" asp-for="Render">@T["Render"]</label>
-        <span class="hint">— @T["Whether to render metadata for this page."]</span>   
-    </div> 
+        <span class="hint dashed">@T["Whether to render metadata for this page."]</span>   
+    </div>
 </div>
 
 <div class="mb-3" asp-validation-class-for="PageTitle">

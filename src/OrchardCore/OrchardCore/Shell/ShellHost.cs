@@ -67,11 +67,11 @@ namespace OrchardCore.Environment.Shell
                 if (!_initialized)
                 {
                     await PreCreateAndRegisterShellsAsync();
+                    _initialized = true;
                 }
             }
             finally
             {
-                _initialized = true;
                 _initializingSemaphore.Release();
             }
         }
@@ -304,7 +304,7 @@ namespace OrchardCore.Environment.Shell
 
             // Is there any tenant right now?
             var allSettings = (await _shellSettingsManager.LoadSettingsAsync()).Where(CanCreateShell).ToArray();
-            var defaultSettings = allSettings.FirstOrDefault(s => s.Name == ShellHelper.DefaultShellName);
+            var defaultSettings = allSettings.FirstOrDefault(s => s.IsDefaultShell());
 
             // The 'Default' tenant is not running, run the Setup.
             if (defaultSettings?.State != TenantState.Running)

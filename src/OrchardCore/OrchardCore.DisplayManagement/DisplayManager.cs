@@ -70,7 +70,7 @@ namespace OrchardCore.DisplayManagement
             return shape;
         }
 
-        public async Task<IShape> BuildEditorAsync(TModel model, IUpdateModel updater, bool isNew, string group = null)
+        public async Task<IShape> BuildEditorAsync(TModel model, IUpdateModel updater, bool isNew, string group = null, string htmlPrefix = "")
         {
             var actualShapeType = typeof(TModel).Name + "_Edit";
 
@@ -84,7 +84,7 @@ namespace OrchardCore.DisplayManagement
                 shape,
                 group ?? "",
                 isNew,
-                "",
+                htmlPrefix,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
                 new ModelStateWrapperUpdater(updater)
@@ -104,7 +104,7 @@ namespace OrchardCore.DisplayManagement
             return shape;
         }
 
-        public async Task<IShape> UpdateEditorAsync(TModel model, IUpdateModel updater, bool isNew, string group = null)
+        public async Task<IShape> UpdateEditorAsync(TModel model, IUpdateModel updater, bool isNew, string group = null, string htmlPrefix = "")
         {
             var actualShapeType = typeof(TModel).Name + "_Edit";
 
@@ -118,7 +118,7 @@ namespace OrchardCore.DisplayManagement
                 shape,
                 group ?? "",
                 isNew,
-                "",
+                htmlPrefix,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
                 new ModelStateWrapperUpdater(updater)

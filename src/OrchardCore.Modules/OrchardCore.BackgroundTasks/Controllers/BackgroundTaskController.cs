@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks.Services;
 using OrchardCore.BackgroundTasks.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Navigation;
-using OrchardCore.Settings;
 
 namespace OrchardCore.BackgroundTasks.Controllers
 {
@@ -22,7 +22,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IBackgroundTask> _backgroundTasks;
         private readonly BackgroundTaskManager _backgroundTaskManager;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly IStringLocalizer S;
         private readonly dynamic New;
 
@@ -32,15 +32,16 @@ namespace OrchardCore.BackgroundTasks.Controllers
             IEnumerable<IBackgroundTask> backgroundTasks,
             BackgroundTaskManager backgroundTaskManager,
             IShapeFactory shapeFactory,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IStringLocalizer<BackgroundTaskController> stringLocalizer)
         {
             _tenant = shellSettings.Name;
             _authorizationService = authorizationService;
             _backgroundTasks = backgroundTasks;
             _backgroundTaskManager = backgroundTaskManager;
+            _pagerOptions = pagerOptions.Value;
+
             New = shapeFactory;
-            _siteService = siteService;
             S = stringLocalizer;
         }
 
@@ -51,8 +52,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
             var document = await _backgroundTaskManager.GetDocumentAsync();
 
             var taskEntries = _backgroundTasks.Select(t =>
