@@ -195,9 +195,16 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (!String.IsNullOrWhiteSpace(message.ReplyTo))
+            if (String.IsNullOrWhiteSpace(message.ReplyTo))
             {
-                foreach (var address in message.ReplyTo.Split(EmailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                foreach (var address in mimeMessage.From)
+                {
+                    mimeMessage.ReplyTo.Add(address);
+                }
+            }
+            else
+            {
+                foreach (var address in message.ReplyTo.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
                     if (MailboxAddress.TryParse(address, out var mailBox))
                     {
