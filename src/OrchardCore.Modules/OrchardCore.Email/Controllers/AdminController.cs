@@ -71,7 +71,7 @@ namespace OrchardCore.Email.Controllers
             return View(model);
         }
 
-        private static MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
+        private MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
         {
             var message = new MailMessage
             {
