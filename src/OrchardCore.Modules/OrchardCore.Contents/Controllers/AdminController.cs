@@ -99,8 +99,6 @@ namespace OrchardCore.Contents.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
-
             // This is used by the AdminMenus so needs to be passed into the options.
             if (!String.IsNullOrEmpty(contentTypeId))
             {
@@ -239,13 +237,9 @@ namespace OrchardCore.Contents.Controllers
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
             var routeData = new RouteData(options.RouteValues);
+            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
 
-            if (_pagerOptions.MaxPagedCount > 0 && pager.PageSize > _pagerOptions.MaxPagedCount)
-            {
-                pager.PageSize = _pagerOptions.MaxPagedCount;
-            }
-
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(_pagerOptions.MaxPagedCount > 0 ? _pagerOptions.MaxPagedCount : await query.CountAsync()).RouteData(routeData);
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(await query.CountAsync()).RouteData(routeData);
 
             // Load items so that loading handlers are invoked.
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync(_contentManager);
