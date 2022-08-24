@@ -176,7 +176,7 @@ As an example, Elasticsearch stores the original value passed in the "_source" f
 
 Lucene though will currently be able to store the original value passed when the `Store source data` option is set on a specific index setting. Lucene also has `stored` fields by design like the `ContentItemId` of a content item.
 
-The equivalent of a `StringField` that will behave the same way than a `keyword` in Elasticsearch has been added to all ContentFields that are passing "string" values by using the `.keyword` suffix on the field name.
+The equivalent of a `StringField` that will behave the same way as a `keyword` in Elasticsearch has been added to all ContentFields that are passing "string" values by using the `.keyword` suffix on the field name.
 
 Here is a small table to compare Lucene and Elasticsearch (string) types:
 
