@@ -74,7 +74,7 @@ namespace OrchardCore.Search.Lucene
 
         public int UpdateFrom1()
         {
-            // Defer this until after the subsequent migrations have succeded as the schema has changed.
+            // Defer this until after the subsequent migrations have succeeded as the schema has changed.
             ShellScope.AddDeferredTask(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
