@@ -3,7 +3,6 @@ namespace OrchardCore.Navigation;
 public class PagerOptions
 {
     private int _pageSize = 10;
-    private int _maxPageSize = 100;
 
     public int PageSize
     {
@@ -14,15 +13,6 @@ public class PagerOptions
         set { _pageSize = value; }
     }
 
-    public int MaxPageSize
-    {
-        get
-        {
-            return MaxPagedCount > 0 && _maxPageSize > MaxPagedCount ? MaxPagedCount : _maxPageSize;
-        }
+    public int MaxPageSize { get; set; }
 
-        set { _maxPageSize = value; }
-    }
-
-    public int MaxPagedCount { get; set; }
 }

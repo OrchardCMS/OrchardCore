@@ -16,7 +16,6 @@ public class PagerOptionsConfiguration : IPostConfigureOptions<PagerOptions>
     {
         var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
 
-        options.MaxPageSize = site.MaxPageSize;
         options.PageSize = site.PageSize;
     }
 }
