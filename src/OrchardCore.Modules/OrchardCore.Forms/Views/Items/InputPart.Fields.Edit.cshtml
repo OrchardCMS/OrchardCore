@@ -1,4 +1,6 @@
-@using OrchardCore.Forms.ViewModels;
+@using OrchardCore.Forms.ViewModels
+@using OrchardCore.Forms.Models
+
 @model InputPartEditViewModel
 
 <div class="mb-3">
@@ -30,7 +32,23 @@
     <span class="hint">@T["The button type."]</span>
 </div>
 
-<div class="mb-3">
+<div class="mb-3 show-for-input">
+    <label asp-for="LabelOption">@T["Label option"]</label>
+    <select asp-for="LabelOption" class="form-select content-preview-select">
+        <option value="@LabelOptions.None">@T["None"]</option>
+        <option value="@LabelOptions.Standard">@T["Standard"]</option>
+        <option value="@LabelOptions.ScreenReaders">@T["Screen Readers"]</option>
+    </select>
+    <span class="hint">@T["The type of label to create for this field."]</span>
+</div>
+
+<div class="mb-3 d-none" id="labelTextContainer">
+    <label asp-for="Label">@T["Label Text"]</label>
+    <input asp-for="Label" type="text" class="form-control content-preview-text" />
+    <span class="hint">@T["The text to display in the label."]</span>
+</div>
+
+<div class="mb-3 show-for-input">
     <label asp-for="Placeholder">@T["Placeholder Text"]</label>
     <input asp-for="Placeholder" type="text" class="form-control content-preview-text" />
     <span class="hint">@T["The text to display when the field has no value."]</span>
@@ -41,3 +59,49 @@
     <input asp-for="DefaultValue" type="text" class="form-control content-preview-text" />
     <span class="hint">@T["The default value for this field."]</span>
 </div>
+
+<div class="mb-3 show-for-input">
+    <label asp-for="ValidationOption">@T["Validation option"]</label>
+    <select asp-for="ValidationOption" class="form-select content-preview-select">
+        <option value="@ValidationOptions.None">@T["None"]</option>
+        <option value="@ValidationOptions.Standard">@T["Standard"]</option>
+    </select>
+    <span class="hint">@T["The type of validation to create for this field."]</span>
+</div>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', function() {
+        let type = document.getElementById('@Html.IdFor(p => p.Type)');
+        let labelOption = document.getElementById('@Html.IdFor(p => p.LabelOption)');
+        let labelTextContainer = document.getElementById('labelTextContainer');
+        let visibleForInputContainers = document.getElementsByClassName('show-for-input');
+
+        type.addEventListener('change', function(e) {
+
+            if (e.target.value == 'reset' || e.target.value == 'submit') {
+                for (let i = 0; i < visibleForInputContainers.length; i++) {
+                    visibleForInputContainers[i].classList.add('d-none');
+                }
+                labelTextContainer.classList.add('d-none');
+            } else {
+                for (let i = 0; i < visibleForInputContainers.length; i++) {
+                    visibleForInputContainers[i].classList.remove('d-none');
+                }
+                labelOption.dispatchEvent(new Event('change'));
+            }
+        });
+
+        type.dispatchEvent(new Event('change'));
+
+        labelOption.addEventListener('change', function(e) {
+
+            if (e.target.value != '@LabelOptions.None') {
+                labelTextContainer.classList.remove('d-none');
+            } else {
+                labelTextContainer.classList.add('d-none');
+            }
+        });
+
+        labelOption.dispatchEvent(new Event('change'));
+    });
+</script>
