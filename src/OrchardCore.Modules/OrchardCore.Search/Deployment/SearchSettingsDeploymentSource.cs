@@ -28,7 +28,6 @@ namespace OrchardCore.Search.Deployment
             var settings = await _site.GetSiteSettingsAsync();
             var searchSettings = settings.As<SearchSettings>();
 
-            // Adding Lucene settings
             result.Steps.Add(new JObject(
                 new JProperty("name", "Settings"),
                 new JProperty("SearchSettings", JObject.FromObject(searchSettings))
