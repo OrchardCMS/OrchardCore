@@ -244,10 +244,7 @@
                 "LuceneContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                  "Keyword": false
                 },
                 "AutoroutePartSettings": {
                   "AllowCustomPath": true,
@@ -572,10 +569,7 @@
                 "LuceneContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                  "Keyword": false
                 },
                 "MediaFieldSettings": {
                   "Multiple": false,
@@ -610,7 +604,7 @@
                 "LuceneContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
-                  "Analyzed": false
+                  "Keyword": false
                 },
                 "MediaFieldSettings": {
                   "Multiple": false,

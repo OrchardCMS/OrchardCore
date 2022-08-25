@@ -13,6 +13,7 @@ using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -129,6 +130,7 @@ namespace OrchardCore.Search.Elasticsearch
                     });
 
                     services.AddElasticServices();
+                    services.AddScoped<IDataMigration, Migrations>();
                     services.AddSingleton<SearchProvider, ElasticSearchProvider>();
                     services.AddScoped<IPermissionProvider, Permissions>();
                     services.AddScoped<INavigationProvider, AdminMenu>();

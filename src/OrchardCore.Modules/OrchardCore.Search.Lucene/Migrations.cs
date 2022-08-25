@@ -35,6 +35,32 @@ namespace OrchardCore.Search.Lucene
                         if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) &&
                             !partDefinition.Settings.ContainsKey(nameof(LuceneContentIndexSettings)))
                         {
+                            var included = existingPartSettings["Included"];
+                            var analyzed = existingPartSettings["Analyzed"];
+
+                            if (included != null)
+                            {
+                                if (analyzed != null)
+                                {
+                                    if ((bool)included)
+                                    {
+                                        existingPartSettings["Keyword"] = true;
+                                    }
+                                }
+                                else
+                                {
+                                    if ((bool)included && !(bool)analyzed)
+                                    {
+                                        existingPartSettings["Keyword"] = true;
+                                    }
+                                }
+                            }
+
+                            // We remove unecessary properties from old releases.
+                            existingPartSettings["Analyzed"]?.Parent.Remove();
+                            existingPartSettings["Tokenized"]?.Parent.Remove();
+                            existingPartSettings["Template"]?.Parent.Remove();
+
                             partDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingPartSettings));
                         }
 
@@ -52,6 +78,32 @@ namespace OrchardCore.Search.Lucene
                     if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) &&
                         !partDefinition.Settings.ContainsKey(nameof(LuceneContentIndexSettings)))
                     {
+                        var included = existingPartSettings["Included"];
+                        var analyzed = existingPartSettings["Analyzed"];
+
+                        if (included != null)
+                        {
+                            if (analyzed != null)
+                            {
+                                if ((bool)included)
+                                {
+                                    existingPartSettings["Keyword"] = true;
+                                }
+                            }
+                            else
+                            {
+                                if ((bool)included && !(bool)analyzed)
+                                {
+                                    existingPartSettings["Keyword"] = true;
+                                }
+                            }
+                        }
+
+                        // We remove unecessary properties from old releases.
+                        existingPartSettings["Analyzed"]?.Parent.Remove();
+                        existingPartSettings["Tokenized"]?.Parent.Remove();
+                        existingPartSettings["Template"]?.Parent.Remove();
+
                         partDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingPartSettings));
                     }
 
@@ -62,6 +114,32 @@ namespace OrchardCore.Search.Lucene
                         if (fieldDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingFieldSettings)
                         && !fieldDefinition.Settings.TryGetValue(nameof(LuceneContentIndexSettings), out var existingLuceneFieldSettings))
                         {
+                            var included = existingFieldSettings["Included"];
+                            var analyzed = existingFieldSettings["Analyzed"];
+
+                            if (included != null)
+                            {
+                                if (analyzed == null)
+                                {
+                                    if ((bool)included)
+                                    {
+                                        existingFieldSettings["Keyword"] = true;
+                                    }
+                                }
+                                else
+                                {
+                                    if ((bool)included && !(bool)analyzed)
+                                    {
+                                        existingFieldSettings["Keyword"] = true;
+                                    }
+                                }
+                            }
+
+                            // We remove unecessary properties from old releases.
+                            existingFieldSettings["Analyzed"]?.Parent.Remove();
+                            existingFieldSettings["Tokenized"]?.Parent.Remove();
+                            existingFieldSettings["Template"]?.Parent.Remove();
+
                             fieldDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingFieldSettings));
                         }
 
