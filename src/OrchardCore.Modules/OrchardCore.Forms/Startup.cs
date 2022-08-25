@@ -67,7 +67,6 @@ namespace OrchardCore.Forms
                     .UseDisplayDriver<ValidationPartDisplayDriver>();
 
             services.AddScoped<IDataMigration, Migrations>();
-
         }
     }
 }
