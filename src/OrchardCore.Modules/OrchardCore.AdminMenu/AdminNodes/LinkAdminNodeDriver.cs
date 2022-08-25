@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.AdminMenu.Services;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.AdminMenu.Services;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu.AdminNodes
@@ -62,13 +62,13 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 treeNode.LinkUrl = model.LinkUrl;
                 treeNode.IconClass = model.IconClass;
 
-                var selectedPermissions = (model.SelectedPermissionNames == null ? new string[0] : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries));
+                var selectedPermissions = (model.SelectedPermissionNames == null ? Array.Empty<string>() : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries));
 
                 var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
                 treeNode.PermissionNames = permissions
                     .Where(p => selectedPermissions.Contains(p.Name))
                     .Select(p => p.Name).ToArray();
-            };
+            }
 
             return Edit(treeNode);
         }

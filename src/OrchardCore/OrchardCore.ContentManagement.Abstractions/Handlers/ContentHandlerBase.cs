@@ -81,7 +81,7 @@ namespace OrchardCore.ContentManagement.Handlers
         public virtual Task RestoredAsync(RestoreContentContext context)
         {
             return Task.CompletedTask;
-        }        
+        }
 
         public virtual Task VersioningAsync(VersionContentContext context)
         {

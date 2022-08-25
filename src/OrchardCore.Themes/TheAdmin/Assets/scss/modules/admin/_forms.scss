@@ -12,7 +12,9 @@
 
 .validation-summary-errors {
     @extend .alert, .alert-danger;
-    padding-bottom: 0;
+    ul {
+        margin-bottom: 0px;
+    }
 }
 
 .field-validation-error {

@@ -36,7 +36,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
         public async Task UsersShouldNotBeAbleToRegisterIfNotAllowed()
         {
             // Arrange
-            var controller = SetupRegistrationController(new RegistrationSettings {
+            var controller = SetupRegistrationController(new RegistrationSettings
+            {
                 UsersCanRegister = UserRegistrationType.NoRegistration
             });
 
@@ -58,8 +59,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
             var result = await controller.Register();
             Assert.IsType<ViewResult>(result);
 
-            result = await controller.Register(new RegisterViewModel());
-            Assert.IsType<ViewResult>(result);
+            result = await controller.Register(new RegisterViewModel { UserName = "Admin", Email = "admin@orchardcore.net" });
+            Assert.IsType<RedirectResult>(result);
         }
 
         [Fact]
@@ -84,7 +85,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
         public async Task UsersCanRequireModeration()
         {
             // Arrange
-            var controller = SetupRegistrationController(new RegistrationSettings {
+            var controller = SetupRegistrationController(new RegistrationSettings
+            {
                 UsersCanRegister = UserRegistrationType.AllowRegistration,
                 UsersAreModerated = true,
             });
@@ -101,7 +103,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
         public async Task UsersCanRequireEmailConfirmation()
         {
             // Arrange
-            var controller = SetupRegistrationController(new RegistrationSettings {
+            var controller = SetupRegistrationController(new RegistrationSettings
+            {
                 UsersCanRegister = UserRegistrationType.AllowRegistration,
                 UsersMustValidateEmail = true
             });
@@ -136,7 +139,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
         }
 
         private static RegistrationController SetupRegistrationController()
-            => SetupRegistrationController(new RegistrationSettings {
+            => SetupRegistrationController(new RegistrationSettings
+            {
                 UsersCanRegister = UserRegistrationType.AllowRegistration
             });
 
@@ -145,7 +149,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
             var users = new List<IUser>();
             var mockUserManager = UsersMockHelper.MockUserManager<IUser>();
             mockUserManager.Setup(um => um.FindByEmailAsync(It.IsAny<string>()))
-                .Returns<string>(e => {
+                .Returns<string>(e =>
+                {
                     var user = users.SingleOrDefault(u => (u as User).Email == e);
 
                     return Task.FromResult(user);
@@ -182,7 +187,6 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<IAuthorizationService>(),
                 mockSiteService,
                 Mock.Of<INotifier>(),
-                new EmailAddressValidator(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
                 mockStringLocalizer.Object);

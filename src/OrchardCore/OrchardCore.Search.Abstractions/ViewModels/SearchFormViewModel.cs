@@ -9,5 +9,7 @@ namespace OrchardCore.Search.Abstractions.ViewModels
         }
 
         public string Terms { get; set; }
+
+        public string Index { get; set; }
     }
 }

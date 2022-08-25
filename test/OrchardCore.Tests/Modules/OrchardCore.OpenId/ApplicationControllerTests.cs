@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Moq;
 using OpenIddict.Abstractions;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Navigation;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Controllers;
 using OrchardCore.OpenId.ViewModels;
-using OrchardCore.Settings;
 using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
@@ -30,7 +30,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         {
             var controller = new ApplicationController(
                 Mock.Of<IShapeFactory>(),
-                Mock.Of<ISiteService>(),
+                Mock.Of<IOptions<PagerOptions>>(),
                 Mock.Of<IStringLocalizer<ApplicationController>>(),
                 Mock.Of<IAuthorizationService>(),
                 Mock.Of<IOpenIdApplicationManager>(),
@@ -48,10 +48,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         {
             var mockOpenIdScopeManager = new Mock<IOpenIdScopeManager>();
             object[] mockData = new object[0];
-            mockOpenIdScopeManager.Setup(m => m.ListAsync(null,null,default)).Returns(mockData.ToAsyncEnumerable());
+            mockOpenIdScopeManager.Setup(m => m.ListAsync(null, null, default)).Returns(mockData.ToAsyncEnumerable());
             var controller = new ApplicationController(
                 Mock.Of<IShapeFactory>(),
-                Mock.Of<ISiteService>(),
+                Mock.Of<IOptions<PagerOptions>>(),
                 Mock.Of<IStringLocalizer<ApplicationController>>(),
                 MockAuthorizationServiceMock().Object,
                 Mock.Of<IOpenIdApplicationManager>(),
@@ -75,7 +75,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         {
             var controller = new ApplicationController(
                 Mock.Of<IShapeFactory>(),
-                Mock.Of<ISiteService>(),
+                Mock.Of<IOptions<PagerOptions>>(),
                 MockStringLocalizer().Object,
                 MockAuthorizationServiceMock().Object,
                 Mock.Of<IOpenIdApplicationManager>(),
@@ -111,7 +111,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         {
             var controller = new ApplicationController(
                 Mock.Of<IShapeFactory>(),
-                Mock.Of<ISiteService>(),
+                Mock.Of<IOptions<PagerOptions>>(),
                 MockStringLocalizer().Object,
                 MockAuthorizationServiceMock().Object,
                 Mock.Of<IOpenIdApplicationManager>(),

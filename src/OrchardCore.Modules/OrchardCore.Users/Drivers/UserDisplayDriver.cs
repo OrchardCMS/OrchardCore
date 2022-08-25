@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -15,6 +15,8 @@ using OrchardCore.Modules;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
+using OrchardCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Users.Drivers
 {
@@ -28,6 +30,7 @@ namespace OrchardCore.Users.Drivers
         private IEnumerable<IUserEventHandler> _userEventHandlers;
         private readonly ILogger _logger;
         private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
@@ -36,7 +39,8 @@ namespace OrchardCore.Users.Drivers
             ILogger<UserDisplayDriver> logger,
             IEnumerable<IUserEventHandler> userEventHandlers,
             IAuthorizationService authorizationService,
-            IHtmlLocalizer<UserDisplayDriver> htmlLocalizer)
+            IHtmlLocalizer<UserDisplayDriver> htmlLocalizer,
+            IStringLocalizer<UserDisplayDriver> stringLocalizer)
         {
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
@@ -45,6 +49,7 @@ namespace OrchardCore.Users.Drivers
             _logger = logger;
             _userEventHandlers = userEventHandlers;
             H = htmlLocalizer;
+            S = stringLocalizer;
         }
 
         public override IDisplayResult Display(User user)
@@ -55,18 +60,19 @@ namespace OrchardCore.Users.Drivers
             );
         }
 
-        public override IDisplayResult Edit(User user)
+        public override Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
         {
-            return Initialize<EditUserViewModel>("UserFields_Edit", async model =>
-            {
-                model.EmailConfirmed = user.EmailConfirmed;
-                model.IsEnabled = user.IsEnabled;
-                // The current user cannot disable themselves, nor can a user without permission to manage this user disable them.
-                model.IsEditingDisabled = !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user) ||
-                    String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase);
-            })
+            return Task.FromResult<IDisplayResult>(Initialize<EditUserViewModel>("UserFields_Edit", async model =>
+           {
+               model.EmailConfirmed = user.EmailConfirmed;
+               model.IsEnabled = user.IsEnabled;
+               model.IsNewRequest = context.IsNew;
+               // The current user cannot disable themselves, nor can a user without permission to manage this user disable them.
+               model.IsEditingDisabled = !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user) ||
+                  String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase);
+           })
             .Location("Content:1.5")
-            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ViewUsers, user));
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ViewUsers, user)));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
@@ -80,7 +86,22 @@ namespace OrchardCore.Users.Drivers
 
             var model = new EditUserViewModel();
 
-            if (!await context.Updater.TryUpdateModelAsync(model, Prefix))
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            if (context.IsNew)
+            {
+                if (string.IsNullOrWhiteSpace(model.Password))
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Password), S["A password is required"]);
+                }
+
+                if (model.Password != model.PasswordConfirmation)
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Password), S["The password and the password confirmation fields must match."]);
+                }
+            }
+
+            if (!context.Updater.ModelState.IsValid)
             {
                 return await EditAsync(user, context);
             }
@@ -88,7 +109,7 @@ namespace OrchardCore.Users.Drivers
             var isEditingDisabled = !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user) ||
                     String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase);
 
-            if (!isEditingDisabled &&!model.IsEnabled && user.IsEnabled)
+            if (!isEditingDisabled && !model.IsEnabled && user.IsEnabled)
             {
                 var usersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>(); ;
                 if (usersOfAdminRole.Count() == 1 && String.Equals(user.UserId, usersOfAdminRole.First().UserId, StringComparison.OrdinalIgnoreCase))
@@ -99,7 +120,7 @@ namespace OrchardCore.Users.Drivers
                 {
                     user.IsEnabled = model.IsEnabled;
                     var userContext = new UserContext(user);
-                        // TODO This handler should be invoked through the create or update methods.
+                    // TODO This handler should be invoked through the create or update methods.
                     // otherwise it will not be invoked when a workflow, or other operation, changes this value.
                     await _userEventHandlers.InvokeAsync((handler, context) => handler.DisabledAsync(userContext), userContext, _logger);
                 }
@@ -122,7 +143,7 @@ namespace OrchardCore.Users.Drivers
                 }
             }
 
-            return Edit(user);
+            return await EditAsync(user, context);
         }
     }
 }

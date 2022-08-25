@@ -7,7 +7,7 @@
     <DefaultTargetFramework>net6.0</DefaultTargetFramework>
     
     <!-- TFMs used to build the abstractions and modules-->
-    <CommonTargetFrameworks Condition="'$(CommonTargetFrameworks)' == ''">net6.0;net5.0;netcoreapp3.1</CommonTargetFrameworks>
+    <CommonTargetFrameworks Condition="'$(CommonTargetFrameworks)' == ''">net6.0</CommonTargetFrameworks>
   </PropertyGroup>
 
   <!-- Detect if the solution is opened in VS to limit the TFMs that are analyzed by Roslyn for performance reasons -->
@@ -17,18 +17,8 @@
 
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM (default = net6.0) -->
   <PropertyGroup>
-    <AspNetCorePackagesVersion>6.0.1</AspNetCorePackagesVersion>
-    <MicrosoftExtensionsPackagesVersion>6.0.1</MicrosoftExtensionsPackagesVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0'">
-    <AspNetCorePackagesVersion>5.0.13</AspNetCorePackagesVersion>
-    <MicrosoftExtensionsPackagesVersion>5.0.1</MicrosoftExtensionsPackagesVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <AspNetCorePackagesVersion>3.1.22</AspNetCorePackagesVersion>
-    <MicrosoftExtensionsPackagesVersion>3.1.22</MicrosoftExtensionsPackagesVersion>
+    <AspNetCorePackagesVersion>6.0.8</AspNetCorePackagesVersion>
+    <MicrosoftExtensionsPackagesVersion>6.0.8</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
 
   <!-- 'Microsoft.AspNetCore' packages that are not included in the ASP.NET Core shared framework -->
