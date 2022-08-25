@@ -15,7 +15,7 @@ namespace OrchardCore.Forms
 
             _manifest
                 .DefineScript("edit-form-widget-options")
-                .SetUrl("~/OrchardCore.Forms/Scripts/edit-form-widget-options.min.js", "~/OrchardCore.Forms/Scripts/edit-form-widget-options.edit.js")
+                .SetUrl("~/OrchardCore.Forms/Scripts/edit-form-widget-options.min.js", "~/OrchardCore.Forms/Scripts/edit-form-widget-options.js")
                 .SetVersion("1.0.0");
         }
 

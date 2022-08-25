@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', function () {
     labelOptions[_x].addEventListener('change', function (e) {
       var wrapper = e.target.closest('.properties-wrapper');
       var labelTextContainer = wrapper.querySelector('.label-text-container');
-      console.log('label-options changed...', wrapper.length, labelTextContainer.length);
 
       if (e.target.value != 'None') {
         labelTextContainer.classList.remove('d-none');

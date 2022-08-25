@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
     var labelOptions = document.getElementsByClassName('field-label-option-select-menu');
 
     for (let x = 0; x < labelOptions.length; x++) {
@@ -29,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             var wrapper = e.target.closest('.properties-wrapper');
             var labelTextContainer = wrapper.querySelector('.label-text-container');
-            console.log('label-options changed...', wrapper.length, labelTextContainer.length);
 
             if (e.target.value != 'None') {
                 labelTextContainer.classList.remove('d-none');
