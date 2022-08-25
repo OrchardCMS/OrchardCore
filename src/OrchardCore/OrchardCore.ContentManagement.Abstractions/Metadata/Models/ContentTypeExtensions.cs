@@ -7,7 +7,7 @@ public static class ContentTypeExtensions
 {
     public static bool TryGetStereotype(this ContentTypeDefinition contentTypeDefinition, out string stereotype)
     {
-        var value = contentTypeDefinition.GetStereotypeOrDefault();
+        var value = contentTypeDefinition.GetStereotype();
 
         if (!String.IsNullOrEmpty(value))
         {
@@ -23,10 +23,10 @@ public static class ContentTypeExtensions
 
     public static bool HasStereotype(this ContentTypeDefinition contentTypeDefinition)
     {
-        return !String.IsNullOrEmpty(contentTypeDefinition.GetStereotypeOrDefault());
+        return !String.IsNullOrEmpty(contentTypeDefinition.GetStereotype());
     }
 
-    public static string GetStereotypeOrDefault(this ContentTypeDefinition contentTypeDefinition)
+    public static string GetStereotype(this ContentTypeDefinition contentTypeDefinition)
     {
         return contentTypeDefinition.GetSettings().Stereotype;
     }

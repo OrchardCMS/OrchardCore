@@ -5,7 +5,7 @@
 
 @{
     var contentType = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotypeOrDefault() == "Widget");
+    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget");
 }
 
 <div class="widget widget-editor card my-1 @(Model.Inline != true ? "collapsed" : "")">

@@ -33,7 +33,7 @@ namespace OrchardCore.Flows.Settings
                 model.ContainedContentTypes = model.FlowPartSettings.ContainedContentTypes;
                 model.ContentTypes = new NameValueCollection();
 
-                foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotypeOrDefault() == "Widget"))
+                foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget"))
                 {
                     model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
                 }

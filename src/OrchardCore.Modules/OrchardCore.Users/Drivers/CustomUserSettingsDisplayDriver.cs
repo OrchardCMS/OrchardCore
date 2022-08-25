@@ -87,7 +87,7 @@ namespace OrchardCore.Users.Drivers
         private IEnumerable<ContentTypeDefinition> GetContentTypeDefinitions()
             => _contentDefinitionManager
                 .ListTypeDefinitions()
-                .Where(x => x.GetStereotypeOrDefault() == "CustomUserSettings");
+                .Where(x => x.GetStereotype() == "CustomUserSettings");
 
         private async Task<ContentItem> GetUserSettingsAsync(User user, ContentTypeDefinition settingsType, Action isNew = null)
         {

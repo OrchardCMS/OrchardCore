@@ -12,6 +12,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
@@ -204,7 +205,9 @@ namespace OrchardCore.Flows.Drivers
         {
             contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(contentType);
 
-            return contentTypeDefinition.IsSecurable();
+            var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
+
+            return settings.Securable;
         }
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(IContentDefinitionManager contentDefinitionManager, ContentTypePartDefinition typePartDefinition)
@@ -215,7 +218,7 @@ namespace OrchardCore.Flows.Drivers
             if (settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0)
             {
                 contentTypes = _contentDefinitionManager.ListTypeDefinitions()
-                    .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotypeOrDefault(), StringComparer.OrdinalIgnoreCase));
+                    .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotype(), StringComparer.OrdinalIgnoreCase));
             }
             else if (settings.ContainedContentTypes != null && settings.ContainedContentTypes.Length > 0)
             {

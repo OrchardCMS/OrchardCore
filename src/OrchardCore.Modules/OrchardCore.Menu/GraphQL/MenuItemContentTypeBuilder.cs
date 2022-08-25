@@ -11,7 +11,7 @@ namespace OrchardCore.Menu.GraphQL
     {
         public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
-            if (contentTypeDefinition.GetStereotypeOrDefault() != "MenuItem")
+            if (contentTypeDefinition.GetStereotype() != "MenuItem")
             {
                 return;
             }

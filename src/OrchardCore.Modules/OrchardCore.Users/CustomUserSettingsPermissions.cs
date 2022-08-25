@@ -22,7 +22,7 @@ namespace OrchardCore.Users
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
             => Task.FromResult(_contentDefinitionManager.ListTypeDefinitions()
-                .Where(x => x.GetStereotypeOrDefault() == "CustomUserSettings")
+                .Where(x => x.GetStereotype() == "CustomUserSettings")
                 .Select(type => CreatePermissionForType(type)));
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes() => Enumerable.Empty<PermissionStereotype>();

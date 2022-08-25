@@ -111,12 +111,12 @@ namespace OrchardCore.Flows.Controllers
 
             if (settings == null || settings.ContainedContentTypes == null || !settings.ContainedContentTypes.Any())
             {
-                return _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotypeOrDefault() == "Widget");
+                return _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget");
             }
 
             return settings.ContainedContentTypes
                 .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                .Where(t => t != null && t.GetStereotypeOrDefault() == "Widget");
+                .Where(t => t != null && t.GetStereotype() == "Widget");
         }
     }
 }

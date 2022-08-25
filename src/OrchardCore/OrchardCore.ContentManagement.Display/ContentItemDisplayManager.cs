@@ -70,7 +70,7 @@ namespace OrchardCore.ContentManagement.Display
 
             if (hasStereotype)
             {
-                actualShapeType = contentTypeDefinition.GetStereotypeOrDefault();
+                actualShapeType = contentTypeDefinition.GetStereotype();
             }
 
             // [DisplayType] is only added for the ones different than Detail

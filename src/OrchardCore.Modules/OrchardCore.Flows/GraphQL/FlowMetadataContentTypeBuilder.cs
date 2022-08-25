@@ -10,7 +10,7 @@ namespace OrchardCore.Flows.GraphQL
     {
         public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
-            if (contentTypeDefinition.GetStereotypeOrDefault() != "Widget")
+            if (contentTypeDefinition.GetStereotype() != "Widget")
             {
                 return;
             }

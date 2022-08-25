@@ -33,7 +33,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 // The stereotype is used when not displaying for a specific content type. We don't use [Stereotype] and [ContentType] at
                 // the same time in an alternate because a content type is always of one stereotype.
 
-                var stereotype = _typePartDefinition.ContentTypeDefinition.GetStereotypeOrDefault() ?? String.Empty;
                 var partName = _typePartDefinition.Name;
                 var partType = _typePartDefinition.PartDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
@@ -62,6 +61,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 result.Displaying(ctx =>
                 {
+                    var stereotype = _typePartDefinition.ContentTypeDefinition.GetStereotype() ?? String.Empty;
+
                     string[] displayTypes;
 
                     if (editorPartType == shapeType)
