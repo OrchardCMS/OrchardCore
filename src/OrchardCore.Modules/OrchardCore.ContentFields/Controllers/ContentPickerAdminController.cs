@@ -60,9 +60,9 @@ namespace OrchardCore.ContentFields.Controllers
                 contentTypes = _contentDefinitionManager.ListTypeDefinitions()
                     .Where(contentType =>
                     {
-                        var hasSteretype = contentType.TryGetStereotype(out var stereotype);
+                        var hasStereotype = contentType.TryGetStereotype(out var stereotype);
 
-                        return hasSteretype && fieldSettings.DisplayedStereotypes.Contains(stereotype);
+                        return hasStereotype && fieldSettings.DisplayedStereotypes.Contains(stereotype);
                     }).Select(contentType => contentType.Name)
                     .ToArray();
             }
