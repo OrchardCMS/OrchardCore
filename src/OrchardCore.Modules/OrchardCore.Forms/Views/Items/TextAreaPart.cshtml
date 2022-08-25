@@ -18,4 +18,25 @@
         }
     }
 }
+
+@if (Model.Value.LabelOption == LabelOptions.Standard)
+{
+    <label for="@fieldId">@Model.Value.Label</label>
+}
+else if (Model.Value.LabelOption == LabelOptions.ScreenReaders)
+{
+    <label for="@fieldId" class="visually-hidden">@Model.Value.Label</label>
+}
+
 <textarea id="@fieldId" name="@fieldName" class="@fieldClass" placeholder="@Model.Value.Placeholder">@fieldValue</textarea>
+
+@if (Model.Value.ValidationOption == ValidationOptions.Standard)
+{
+    // HtmlFieldPrefix is the PartName i.e. ValidationPart, which is not needed in Display.
+    var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
+    ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = String.Empty;
+
+    @Html.ValidationMessage(fieldName)
+
+    ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix;
+}

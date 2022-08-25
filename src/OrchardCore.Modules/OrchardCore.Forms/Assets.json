@@ -11,5 +11,11 @@
       "Assets/js/SelectOptionsEditor/selectOptionsEditor.js"
     ],
     "output": "wwwroot/Scripts/selectOptionsEditor.js"
+  },
+  {
+    "inputs": [
+      "Assets/js/edit-form-widget-options.js"
+    ],
+    "output": "wwwroot/Scripts/edit-form-widget-options.js"
   }
 ]

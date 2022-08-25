@@ -4,11 +4,19 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Forms.Drivers
 {
     public class InputPartDisplayDriver : ContentPartDisplayDriver<InputPart>
     {
+        private readonly IResourceManager _resourceManager;
+
+        public InputPartDisplayDriver(IResourceManager resourceManager)
+        {
+            _resourceManager = resourceManager;
+        }
+
         public override IDisplayResult Display(InputPart part)
         {
             return View("InputPart", part).Location("Detail", "Content");
@@ -16,6 +24,8 @@ namespace OrchardCore.Forms.Drivers
 
         public override IDisplayResult Edit(InputPart part)
         {
+            ResourceManagementOptionsConfiguration.InjectEditFormWidgetOptions(_resourceManager);
+
             return Initialize<InputPartEditViewModel>("InputPart_Fields_Edit", m =>
             {
                 m.Placeholder = part.Placeholder;

@@ -12,7 +12,7 @@
 
     if (ViewData.ModelState.TryGetValue(fieldName, out var fieldEntry))
     {
-        if (Model.Value.Type == "checkbox" || Model.Value.Type == "radio")
+        if (Model.Value.Type == "checkbox")
         {
             isChecked = fieldEntry.AttemptedValue == fieldValue;
         }
@@ -27,6 +27,7 @@
         }
     }
 }
+
 @if (Model.Value.LabelOption == LabelOptions.Standard)
 {
     <label for="@fieldId">@Model.Value.Label</label>
