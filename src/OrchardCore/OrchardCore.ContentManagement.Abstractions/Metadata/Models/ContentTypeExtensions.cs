@@ -7,18 +7,9 @@ public static class ContentTypeExtensions
 {
     public static bool TryGetStereotype(this ContentTypeDefinition contentTypeDefinition, out string stereotype)
     {
-        var value = contentTypeDefinition.GetStereotype();
+        stereotype = contentTypeDefinition.GetStereotype();
 
-        if (!String.IsNullOrEmpty(value))
-        {
-            stereotype = value;
-
-            return true;
-        }
-
-        stereotype = null;
-
-        return false;
+        return !String.IsNullOrEmpty(stereotype);
     }
 
     public static bool HasStereotype(this ContentTypeDefinition contentTypeDefinition)
