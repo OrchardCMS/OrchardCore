@@ -52,6 +52,11 @@ public class ShellWebRootRemovingHandler : IShellRemovingHandler
         {
             // Sharing violation, may happen if multiple nodes share the same file system
             // without using a distributed lock, in that case let another node do the job.
+            _logger.LogWarning(
+                ex,
+                "Sharing violation while removing the web root folder '{TenantFolder}' of tenant '{TenantName}'.",
+                shellWebRootFolder,
+                context.ShellSettings.Name);
         }
         catch (Exception ex)
         {
