@@ -213,10 +213,19 @@ namespace OrchardCore.Flows.Drivers
         private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(IContentDefinitionManager contentDefinitionManager, ContentTypePartDefinition typePartDefinition)
         {
             var settings = typePartDefinition.GetSettings<BagPartSettings>();
+            var contentTypes = Enumerable.Empty<ContentTypeDefinition>();
 
-            var contentTypes = settings.ContainedContentTypes
-                .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                .Where(contentType => contentType != null);
+            if (settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0)
+            {
+                contentTypes = _contentDefinitionManager.ListTypeDefinitions()
+                    .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotypeOrDefault(), StringComparer.OrdinalIgnoreCase));
+            }
+            else if (settings.ContainedContentTypes != null && settings.ContainedContentTypes.Length > 0)
+            {
+                contentTypes = settings.ContainedContentTypes
+                    .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
+                    .Where(contentType => contentType != null);
+            }
 
             var accessibleContentTypes = new List<ContentTypeDefinition>();
 

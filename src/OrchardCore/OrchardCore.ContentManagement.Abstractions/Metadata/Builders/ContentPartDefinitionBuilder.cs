@@ -66,7 +66,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartDefinitionBuilder RemoveField(string fieldName)
         {
-            var existingField = _fields.SingleOrDefault(x => x.Name == fieldName);
+            var existingField = _fields.SingleOrDefault(x => String.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
             if (existingField != null)
             {
                 _fields.Remove(existingField);
@@ -123,7 +123,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartDefinitionBuilder WithField(string fieldName, Action<ContentPartFieldDefinitionBuilder> configuration)
         {
-            var existingField = _fields.FirstOrDefault(x => x.Name == fieldName);
+            var existingField = _fields.FirstOrDefault(x => String.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
             if (existingField != null)
             {
                 var toRemove = _fields.Where(x => x.Name == fieldName).ToArray();
@@ -144,7 +144,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public async Task<ContentPartDefinitionBuilder> WithFieldAsync(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configurationAsync)
         {
-            var existingField = _fields.FirstOrDefault(x => x.Name == fieldName);
+            var existingField = _fields.FirstOrDefault(x => String.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
 
             if (existingField != null)
             {
