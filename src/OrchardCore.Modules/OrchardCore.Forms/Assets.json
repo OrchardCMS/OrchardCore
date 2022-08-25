@@ -14,8 +14,8 @@
   },
   {
     "inputs": [
-      "Assets/js/edit-form-widget-options.js"
+      "Assets/js/formsWidgetEditor.js"
     ],
-    "output": "wwwroot/Scripts/edit-form-widget-options.js"
+    "output": "wwwroot/Scripts/formsWidgetEditor.js"
   }
 ]

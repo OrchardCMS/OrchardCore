@@ -2,7 +2,7 @@
 @using OrchardCore.Forms.Models
 @model InputPartEditViewModel
 
-<div class="properties-wrapper">
+<div class="properties-wrapper" id="@Html.IdFor(m => m)">
     <div class="mb-3">
         <label asp-for="Type">@T["Type"]</label>
         <select asp-for="Type" class="form-select content-preview-select field-type-select-menu">
@@ -68,3 +68,14 @@
         <span class="hint">@T["The type of validation to create for this field."]</span>
     </div>
 </div>
+
+<script asp-src="~/OrchardCore.Forms/Scripts/formsWidgetEditor.min.js" debug-src="~/OrchardCore.Forms/Scripts/formsWidgetEditor.js" asp-name="formsWidgetEditor" at="Foot"></script>
+
+<script at="Foot" depends-on="formsWidgetEditor">
+    var wrapper = document.getElementById('@Html.IdFor(m => m)');
+
+    if (wrapper != null) {
+        formsWidgetEditor.initilizeFieldType(wrapper);
+        formsWidgetEditor.initilizeLabelOptions(wrapper);
+    }
+</script>

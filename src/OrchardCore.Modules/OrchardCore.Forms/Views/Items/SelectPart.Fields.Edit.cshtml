@@ -4,6 +4,7 @@
 
 <script asp-src="~/OrchardCore.Forms/Scripts/selectOptionsEditor.min.js" debug-src="~/OrchardCore.Forms/Scripts/selectOptionsEditor.js" asp-name="selectOptionsEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
 <style asp-src="~/OrchardCore.Forms/Styles/selectOptionsEditor.min.css" debug-src="~/OrchardCore.Forms/Styles/selectOptionsEditor.css"></style>
+<script asp-src="~/OrchardCore.Forms/Scripts/formsWidgetEditor.min.js" debug-src="~/OrchardCore.Forms/Scripts/formsWidgetEditor.js" asp-name="formsWidgetEditor" at="Foot"></script>
 
 <script type="text/x-template" id="select-options-row" asp-name="select-options-row" at="Foot">
     <tr>
@@ -100,8 +101,10 @@
         <div class="modal-backdrop fade" ref="backdrop" v-if="showModal"></div>
     </div>
 </script>
-
-<div class="properties-wrapper">
+@{
+    var widgetId = Html.IdFor(m => m);
+}
+<div class="properties-wrapper" id="@widgetId">
 
     <div class="mb-3 show-for-input">
         <label asp-for="Editor">@T["Editor"]</label>
@@ -138,7 +141,7 @@
         <span class="hint">@T["The type of validation to create for this field."]</span>
     </div>
 
-    <div id="@Html.IdFor(m => m)" class="mb-3">
+    <div class="mb-3 field-options-wrapper" id="@(widgetId)-selectOptions">
         <label asp-for="Options">@T["Options"]</label>
         <a href="#" v-on:click.prevent.stop="showModal = true" class="float-end" title="@T["Edit Data"]"><i class="fas fa-edit" aria-hidden="true"></i></a>
         <select-options-table :data="state"
@@ -159,10 +162,18 @@
     </div>
 </div>
 
-<script at="Foot">
+<script at="Foot" depends-on="selectOptionsEditor">
     window.addEventListener('load', function() {
-        if ($('#' + '@Html.IdFor(m => m)').length > 0) {
-            initializeSelectOptionsEditor('@Html.IdFor(m => m)', @Html.Raw(Model.Options), '@Model.DefaultValue');
+        if ($('#' + '@(widgetId)-selectOptions').length > 0) {
+            initializeSelectOptionsEditor('@(widgetId)-selectOptions', @Html.Raw(Model.Options), '@Model.DefaultValue');
         }
     })
+</script>
+
+<script at="Foot" depends-on="formsWidgetEditor">
+    var wrapper = document.getElementById('@widgetId');
+
+    if (wrapper != null) {
+        formsWidgetEditor.initilizeLabelOptions(wrapper);
+    }
 </script>

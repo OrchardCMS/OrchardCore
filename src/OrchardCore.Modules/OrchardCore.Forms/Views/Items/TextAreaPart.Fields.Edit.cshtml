@@ -2,7 +2,7 @@
 @using OrchardCore.Forms.Models
 @model TextAreaPartEditViewModel
 
-<div class="properties-wrapper">
+<div class="properties-wrapper" id="@Html.IdFor(m => m)">
 
     <div class="mb-3 show-for-input">
         <label asp-for="LabelOption">@T["Label option"]</label>
@@ -42,3 +42,13 @@
     </div>
 
 </div>
+
+<script asp-src="~/OrchardCore.Forms/Scripts/formsWidgetEditor.min.js" debug-src="~/OrchardCore.Forms/Scripts/formsWidgetEditor.js" asp-name="formsWidgetEditor" at="Foot"></script>
+
+<script at="Foot" depends-on="formsWidgetEditor">
+    var wrapper = document.getElementById('@Html.IdFor(m => m)');
+
+    if (wrapper != null) {
+        formsWidgetEditor.initilizeLabelOptions(wrapper);
+    }
+</script>

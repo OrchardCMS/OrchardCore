@@ -8,7 +8,6 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
-using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Forms.Drivers
 {
@@ -21,12 +20,10 @@ namespace OrchardCore.Forms.Drivers
         };
 
         private readonly IStringLocalizer S;
-        private readonly IResourceManager _resourceManager;
 
-        public SelectPartDisplayDriver(IStringLocalizer<SelectPartDisplayDriver> stringLocalizer, IResourceManager resourceManager)
+        public SelectPartDisplayDriver(IStringLocalizer<SelectPartDisplayDriver> stringLocalizer)
         {
             S = stringLocalizer;
-            _resourceManager = resourceManager;
         }
 
         public override IDisplayResult Display(SelectPart part)
@@ -36,8 +33,6 @@ namespace OrchardCore.Forms.Drivers
 
         public override IDisplayResult Edit(SelectPart part)
         {
-            ResourceManagementOptionsConfiguration.InjectEditFormWidgetOptions(_resourceManager);
-
             return Initialize<SelectPartEditViewModel>("SelectPart_Fields_Edit", m =>
             {
                 m.Options = JsonConvert.SerializeObject(part.Options ?? Array.Empty<SelectOption>(), SerializerSettings);

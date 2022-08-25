@@ -1,7 +1,6 @@
 using Fluid;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
@@ -9,7 +8,6 @@ using OrchardCore.Forms.Drivers;
 using OrchardCore.Forms.Filters;
 using OrchardCore.Forms.Models;
 using OrchardCore.Modules;
-using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Forms
 {
@@ -70,7 +68,6 @@ namespace OrchardCore.Forms
 
             services.AddScoped<IDataMigration, Migrations>();
 
-            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         }
     }
 }
