@@ -127,7 +127,7 @@ namespace OrchardCore.Email.Services
                 }
                 else
                 {
-                    errors.Add(S["Invalid {0} email.", nameof(message.Sender)]);
+                    errors.Add(S["Invalid email address: '{0}'", submitterAddress]);
                 }
             }
 
@@ -141,8 +141,7 @@ namespace OrchardCore.Email.Services
                     }
                     else
                     {
-                        errors.Add(S["Invalid {0} email.", nameof(message.From)]);
-                        break;
+                        errors.Add(S["Invalid email address: '{0}'", address]);
                     }
                 }
             }
@@ -157,8 +156,7 @@ namespace OrchardCore.Email.Services
                     }
                     else
                     {
-                        errors.Add(S["Invalid {0} email.", nameof(message.To)]);
-                        break;
+                        errors.Add(S["Invalid email address: '{0}'", address]);
                     }
                 }
             }
@@ -173,8 +171,7 @@ namespace OrchardCore.Email.Services
                     }
                     else
                     {
-                        errors.Add(S["Invalid {0} email.", nameof(message.Cc)]);
-                        break;
+                        errors.Add(S["Invalid email address: '{0}'", address]);
                     }
                 }
             }
@@ -189,8 +186,7 @@ namespace OrchardCore.Email.Services
                     }
                     else
                     {
-                        errors.Add(S["Invalid {0} email.", nameof(message.Bcc)]);
-                        break;
+                        errors.Add(S["Invalid email address: '{0}'", address]);
                     }
                 }
             }
@@ -212,8 +208,7 @@ namespace OrchardCore.Email.Services
                     }
                     else
                     {
-                        errors.Add(S["Invalid {0} email.", nameof(message.ReplyTo)]);
-                        break;
+                        errors.Add(S["Invalid email address: '{0}'", address]);
                     }
                 }
             }
