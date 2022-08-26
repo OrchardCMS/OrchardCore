@@ -123,9 +123,9 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, bool, bool)"/>,
+        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, bool, bool, bool)"/>,
         /// arguments in order,
-        /// <c>id, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>
@@ -139,9 +139,9 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, bool, bool)"/>,
+        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
         /// arguments in order,
-        /// <c>id, name, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, name, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>
@@ -155,9 +155,9 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, bool, bool)"/>,
+        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
         /// arguments in order,
-        /// <c>id, name, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, name, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>
@@ -171,9 +171,9 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, string, bool, bool)"/>,
+        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
         /// arguments in order,
-        /// <c>id, name, type, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, name, type, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>

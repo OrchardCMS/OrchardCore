@@ -51,7 +51,6 @@ namespace OrchardCore.Modules.Manifest
             const bool alwaysEnabled = default;
             const bool listable = true;
 
-
             var depString = String.Join(';', deps);
 
             ReportKeyValuePairs(
@@ -107,7 +106,6 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(deps), depString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(listable), listable)
                 , new RenderKeyValuePair(nameof(listable), listable)
             );
 
@@ -318,7 +316,6 @@ namespace OrchardCore.Modules.Manifest
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
             const bool listable = true;
-
 
             var expected = LoremWords(7);
 

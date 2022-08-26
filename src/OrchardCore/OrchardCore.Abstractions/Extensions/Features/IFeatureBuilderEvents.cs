@@ -21,7 +21,6 @@ namespace OrchardCore.Environment.Extensions.Features
         public bool DefaultTenantOnly { get; set; }
         public bool IsAlwaysEnabled { get; set; }
         public bool Listable { get; set; }
-
     }
 
     public abstract class FeatureBuilderEvents : IFeatureBuilderEvents

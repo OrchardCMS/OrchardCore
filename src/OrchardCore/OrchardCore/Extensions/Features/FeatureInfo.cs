@@ -46,6 +46,5 @@ namespace OrchardCore.Environment.Extensions.Features
         public string[] Dependencies { get; }
         public bool IsAlwaysEnabled { get; }
         public bool Listable { get; }
-
     }
 }
