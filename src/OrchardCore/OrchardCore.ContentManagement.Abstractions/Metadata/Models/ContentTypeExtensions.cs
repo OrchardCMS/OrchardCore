@@ -9,7 +9,7 @@ public static class ContentTypeExtensions
     {
         stereotype = contentTypeDefinition.GetStereotype();
 
-        return !String.IsNullOrEmpty(stereotype);
+        return !String.IsNullOrWhiteSpace(stereotype);
     }
 
     public static bool HasStereotype(this ContentTypeDefinition contentTypeDefinition)
@@ -49,7 +49,7 @@ public static class ContentTypeExtensions
 
     public static bool HasDescription(this ContentTypeDefinition contentTypeDefinition)
     {
-        return !String.IsNullOrEmpty(contentTypeDefinition.GetSettings().Description);
+        return !String.IsNullOrWhiteSpace(contentTypeDefinition.GetSettings().Description);
     }
 
     public static string GetDescription(this ContentTypeDefinition contentTypeDefinition)

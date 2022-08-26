@@ -227,8 +227,7 @@ namespace OrchardCore.ContentManagement
                     var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                     // Check if not versionable, meaning we use only one version
-
-                    if (contentTypeDefinition == null || !contentTypeDefinition.IsVersionable())
+                    if (contentTypeDefinition != null && !contentTypeDefinition.IsVersionable())
                     {
                         contentItem.Published = false;
                     }
