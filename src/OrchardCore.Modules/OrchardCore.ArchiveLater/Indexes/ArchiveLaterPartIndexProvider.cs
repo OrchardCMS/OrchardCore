@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ArchiveLater.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data;
-using OrchardCore.ArchiveLater.Models;
 using YesSql.Indexes;
 
 namespace OrchardCore.ArchiveLater.Indexes;

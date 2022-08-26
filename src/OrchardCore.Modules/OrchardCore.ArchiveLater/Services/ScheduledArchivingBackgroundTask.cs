@@ -4,10 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.ArchiveLater.Indexes;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
-using OrchardCore.ArchiveLater.Indexes;
 using YesSql;
 
 namespace OrchardCore.ArchiveLater.Services;
