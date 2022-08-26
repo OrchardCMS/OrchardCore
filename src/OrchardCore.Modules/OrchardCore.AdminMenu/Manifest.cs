@@ -6,5 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "The admin menu module enables user custom admin menus.",
-    Category = "Content Management"
+    Category = "Content Management",
+    Listable = false
 )]

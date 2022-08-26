@@ -23,7 +23,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 {
     public class DefaultShapeTableManagerTests : IDisposable
     {
-        private IServiceProvider _serviceProvider;
+        private readonly IServiceProvider _serviceProvider;
 
         private class TestModuleExtensionInfo : IExtensionInfo
         {
@@ -45,7 +45,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false) }
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false, true) }
                     };
 
                 Features = features;
@@ -79,7 +79,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false) }
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false, true) }
                     };
 
                 Features = features;
@@ -106,7 +106,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 Features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, new string[] { baseTheme.Id }, false, false) }
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, new string[] { baseTheme.Id }, false, false, true) }
                     };
 
                 Id = name;
@@ -213,7 +213,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
         public class TestExtensionManager : IExtensionManager
         {
-            private IEnumerable<IFeatureInfo> _features;
+            private readonly IEnumerable<IFeatureInfo> _features;
             public TestExtensionManager(IEnumerable<IFeatureInfo> features)
             {
                 _features = features;

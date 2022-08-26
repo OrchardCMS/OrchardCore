@@ -23,7 +23,8 @@
                            Description="four"
                            Dependencies="five;six;seven"
                            DefaultTenant="true"
-                           AlwaysEnabled="true" />
+                           AlwaysEnabled="true"
+                           Listable="true" />
 
     <OrchardCoreAttributes Include="$(MSBuildProjectName).Two"
                            Type="feature"
@@ -32,7 +33,8 @@
                            Description="five"
                            Dependencies="six;seven;eight"
                            DefaultTenant="true"
-                           AlwaysEnabled="true" />
+                           AlwaysEnabled="true" 
+                           Listable="true" />
 
     <OrchardCoreAttributes Include="$(MSBuildProjectName)"
                            Category="three"
@@ -44,7 +46,8 @@
                            Dependencies="nine;ten;eleven"
                            Tags="ten;eleven;twelve"
                            DefaultTenant="true"
-                           AlwaysEnabled="true" />
+                           AlwaysEnabled="true" 
+                           Listable="true" />
   </ItemGroup>
 
   <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.targets" />

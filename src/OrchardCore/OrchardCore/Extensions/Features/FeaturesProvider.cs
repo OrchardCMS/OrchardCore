@@ -4,8 +4,6 @@ using System.Linq;
 
 namespace OrchardCore.Environment.Extensions.Features
 {
-    using Modules.Manifest;
-
     /// <inheritdoc/>
     public class FeaturesProvider : IFeaturesProvider
     {
@@ -48,8 +46,6 @@ namespace OrchardCore.Environment.Extensions.Features
                     var featureCategory = feature.Categorize(manifestInfo.ModuleInfo);
                     var featurePriority = feature.Prioritize(manifestInfo.ModuleInfo);
                     var featureDescription = feature.Describe(manifestInfo.ModuleInfo);
-                    var featureDefaultTenantOnly = feature.DefaultTenantOnly;
-                    var featureIsAlwaysEnabled = feature.IsAlwaysEnabled;
 
                     var context = new FeatureBuildingContext
                     {
@@ -61,8 +57,9 @@ namespace OrchardCore.Environment.Extensions.Features
                         ManifestInfo = manifestInfo,
                         Priority = featurePriority,
                         FeatureDependencyIds = featureDependencyIds,
-                        DefaultTenantOnly = featureDefaultTenantOnly,
-                        IsAlwaysEnabled = featureIsAlwaysEnabled
+                        DefaultTenantOnly = feature.DefaultTenantOnly,
+                        IsAlwaysEnabled = feature.IsAlwaysEnabled,
+                        Listable = feature.Listable
                     };
 
                     foreach (var builder in _featureBuilderEvents)
@@ -79,7 +76,8 @@ namespace OrchardCore.Environment.Extensions.Features
                         context.ExtensionInfo,
                         context.FeatureDependencyIds,
                         context.DefaultTenantOnly,
-                        context.IsAlwaysEnabled);
+                        context.IsAlwaysEnabled,
+                        context.Listable);
 
                     foreach (var builder in _featureBuilderEvents)
                     {
@@ -101,8 +99,6 @@ namespace OrchardCore.Environment.Extensions.Features
                 var featureCategory = manifestInfo.ModuleInfo.Categorize();
                 var featurePriority = manifestInfo.ModuleInfo.Prioritize();
                 var featureDescription = manifestInfo.ModuleInfo.Describe();
-                var featureDefaultTenantOnly = manifestInfo.ModuleInfo.DefaultTenantOnly;
-                var featureIsAlwaysEnabled = manifestInfo.ModuleInfo.IsAlwaysEnabled;
 
                 var context = new FeatureBuildingContext
                 {
@@ -114,8 +110,9 @@ namespace OrchardCore.Environment.Extensions.Features
                     ManifestInfo = manifestInfo,
                     Priority = featurePriority,
                     FeatureDependencyIds = featureDependencyIds,
-                    DefaultTenantOnly = featureDefaultTenantOnly,
-                    IsAlwaysEnabled = featureIsAlwaysEnabled
+                    DefaultTenantOnly = manifestInfo.ModuleInfo.DefaultTenantOnly,
+                    IsAlwaysEnabled = manifestInfo.ModuleInfo.IsAlwaysEnabled,
+                    Listable = manifestInfo.ModuleInfo.Listable,
                 };
 
                 foreach (var builder in _featureBuilderEvents)
@@ -132,7 +129,8 @@ namespace OrchardCore.Environment.Extensions.Features
                     context.ExtensionInfo,
                     context.FeatureDependencyIds,
                     context.DefaultTenantOnly,
-                    context.IsAlwaysEnabled);
+                    context.IsAlwaysEnabled,
+                    context.Listable);
 
                 foreach (var builder in _featureBuilderEvents)
                 {

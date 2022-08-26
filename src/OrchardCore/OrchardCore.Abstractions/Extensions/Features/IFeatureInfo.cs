@@ -11,5 +11,6 @@ namespace OrchardCore.Environment.Extensions.Features
         IExtensionInfo Extension { get; }
         string[] Dependencies { get; }
         bool IsAlwaysEnabled { get; }
+        bool Listable { get; }
     }
 }

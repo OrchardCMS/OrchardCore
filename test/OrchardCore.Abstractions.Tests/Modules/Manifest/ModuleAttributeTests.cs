@@ -56,9 +56,9 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, bool, bool)"/>
+        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
-        /// <c>id, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         [Fact]
         public virtual void Ipsum_Ctor_Id()
@@ -66,16 +66,17 @@ namespace OrchardCore.Modules.Manifest
             var id = LoremWords(1);
             var description = LoremWords(7);
             var author = LoremWords(2);
-            var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
+            var semVer = String.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
             var website = LoremWebsiteUrl();
             var deps = LoremWords(5).Split(' ');
             var tags = LoremWords(5).Split(' ');
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
+            const bool listable = true;
 
-            var priString = string.Empty;
-            var depString = string.Join(';', deps);
-            var tagString = string.Join(';', tags);
+            var priString = String.Empty;
+            var depString = String.Join(';', deps);
+            var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id)
@@ -87,9 +88,10 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+                , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var module = CreateFromArgs(ModuleString7Object2CtorClassifier, id, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled);
+            var module = CreateFromArgs(ModuleString7Object2CtorClassifier, id, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
 
             Assert.Equal(id, module.Id);
             Assert.Equal(id, module.Name);
@@ -121,9 +123,9 @@ namespace OrchardCore.Modules.Manifest
 
         // TODO: TBD: add the ArgumentException path for the bool (object) variations...
         /// <summary>
-        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, bool, bool)"/>
+        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
-        /// <c>id, name, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, name, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         [Fact]
         public virtual void Ipsum_Ctor_Id_Name()
@@ -132,16 +134,17 @@ namespace OrchardCore.Modules.Manifest
             var name = LoremWords(1);
             var description = LoremWords(7);
             var author = LoremWords(2);
-            var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
+            var semVer = String.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
             var website = LoremWebsiteUrl();
             var deps = LoremWords(5).Split(' ');
             var tags = LoremWords(5).Split(' ');
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
+            const bool listable = true;
 
-            var priString = string.Empty;
-            var depString = string.Join(';', deps);
-            var tagString = string.Join(';', tags);
+            var priString = String.Empty;
+            var depString = String.Join(';', deps);
+            var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id)
@@ -154,9 +157,10 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+                , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var module = CreateFromArgs(ModuleString8Object2CtorClassifier, id, name, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled);
+            var module = CreateFromArgs(ModuleString8Object2CtorClassifier, id, name, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
 
             Assert.Equal(id, module.Id);
             Assert.Equal(name, module.Name);
@@ -187,9 +191,9 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, bool, bool)"/>
+        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
-        /// <c>id, name, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, name, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         [Fact]
         public virtual void Ipsum_Ctor_Id_Name_Cat_Pri()
@@ -200,16 +204,17 @@ namespace OrchardCore.Modules.Manifest
             var priority = DefaultPriority + 1;
             var description = LoremWords(7);
             var author = LoremWords(2);
-            var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
+            var semVer = String.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
             var website = LoremWebsiteUrl();
             var deps = LoremWords(5).Split(' ');
             var tags = LoremWords(5).Split(' ');
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
+            const bool listable = true;
 
             var priString = $"{priority}";
-            var depString = string.Join(';', deps);
-            var tagString = string.Join(';', tags);
+            var depString = String.Join(';', deps);
+            var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id)
@@ -224,9 +229,10 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+                , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var module = CreateFromArgs(ModuleString10Object2CtorClassifier, id, name, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled);
+            var module = CreateFromArgs(ModuleString10Object2CtorClassifier, id, name, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
 
             Assert.Equal(id, module.Id);
             Assert.Equal(name, module.Name);
@@ -255,9 +261,9 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, string, bool, bool)"/>
+        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
-        /// <c>id, name, type, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, name, type, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         [Fact]
         public virtual void Ipsum_Ctor_Id_Name_Type_Cat_Pri()
@@ -269,16 +275,17 @@ namespace OrchardCore.Modules.Manifest
             var priority = DefaultPriority + 1;
             var description = LoremWords(7);
             var author = LoremWords(2);
-            var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
+            var semVer = String.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
             var website = LoremWebsiteUrl();
             var deps = LoremWords(5).Split(' ');
             var tags = LoremWords(5).Split(' ');
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
+            const bool listable = true;
 
             var priString = $"{priority}";
-            var depString = string.Join(';', deps);
-            var tagString = string.Join(';', tags);
+            var depString = String.Join(';', deps);
+            var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id)
@@ -294,9 +301,10 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+                , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var module = CreateFromArgs(ModuleString11Object2CtorClassifier, id, name, type, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled);
+            var module = CreateFromArgs(ModuleString11Object2CtorClassifier, id, name, type, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
 
             Assert.Equal(id, module.Id);
             Assert.Equal(name, module.Name);
@@ -356,10 +364,11 @@ namespace OrchardCore.Modules.Manifest
             var tags = GetArray("seven", "eight", "nine");
             const bool defaultTenant = true;
             const bool alwaysEnabled = true;
+            const bool listable = true;
 
-            var priString = string.Empty;
-            var depString = string.Join(';', deps);
-            var tagString = string.Join(';', tags);
+            var priString = String.Empty;
+            var depString = String.Join(';', deps);
+            var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id)
@@ -371,6 +380,7 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+                , new RenderKeyValuePair(nameof(listable), listable)
             );
 
             // We are looking for one instance of ModuleAttribute in particular in this case
@@ -425,10 +435,11 @@ namespace OrchardCore.Modules.Manifest
             var tags = GetArray("eight", "nine", "ten");
             const bool defaultTenant = true;
             const bool alwaysEnabled = true;
+            const bool listable = true;
 
-            var priString = string.Empty;
-            var depString = string.Join(';', deps);
-            var tagString = string.Join(';', tags);
+            var priString = String.Empty;
+            var depString = String.Join(';', deps);
+            var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id)
@@ -441,6 +452,7 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+                , new RenderKeyValuePair(nameof(listable), listable)
             );
 
             // We are looking for one instance of ModuleAttribute in particular in this case
@@ -496,10 +508,11 @@ namespace OrchardCore.Modules.Manifest
             var tags = GetArray("ten", "eleven", "twelve");
             const bool defaultTenant = true;
             const bool alwaysEnabled = true;
+            const bool listable = true;
 
             var priString = $"{priority}";
-            var depString = string.Join(';', deps);
-            var tagString = string.Join(';', tags);
+            var depString = String.Join(';', deps);
+            var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id)
@@ -514,6 +527,7 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+                , new RenderKeyValuePair(nameof(listable), listable)
             );
 
             // We are looking for one instance of ModuleAttribute in particular in this case
@@ -626,7 +640,7 @@ namespace OrchardCore.Modules.Manifest
              * should contain 'two' in the following shapes:
              */
             Assert.Contains(features, _ =>
-                _.Id == string.Join(".", baseId, One)
+                _.Id == String.Join(".", baseId, One)
                 && _.Name == _.Id
                 && _.Category == Two.ToLower()
                 && _.InternalPriority == _3
@@ -637,7 +651,7 @@ namespace OrchardCore.Modules.Manifest
             );
 
             Assert.Contains(features, _ =>
-                _.Id == string.Join(".", baseId, Two)
+                _.Id == String.Join(".", baseId, Two)
                 && _.Name == _.Id
                 && _.Category == three
                 && _.InternalPriority == _4

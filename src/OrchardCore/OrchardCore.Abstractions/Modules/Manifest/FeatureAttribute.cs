@@ -68,12 +68,14 @@ namespace OrchardCore.Modules.Manifest
         /// corresponding to each of the feature <see cref="Name"/> properties.</param>
         /// <param name="defaultTenant">Whether considered default tenant only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.</param>
+        /// <param name="listable">Whether feature is listable on the Features UI</param>
         public FeatureAttribute(
             string id
             , string description
             , string featureDependencies
             , object defaultTenant
             , object alwaysEnabled
+            , object listable
         ) : this(
             id
             , default
@@ -83,6 +85,7 @@ namespace OrchardCore.Modules.Manifest
             , featureDependencies
             , defaultTenant
             , alwaysEnabled
+            , listable
         )
         {
         }
@@ -100,6 +103,7 @@ namespace OrchardCore.Modules.Manifest
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// <param name="listable">Whether feature is listable on the Features UI</param>
         public FeatureAttribute(
             string id
             , string name
@@ -107,6 +111,7 @@ namespace OrchardCore.Modules.Manifest
             , string featureDependencies
             , object defaultTenant
             , object alwaysEnabled
+            , object listable
         ) : this(
             id
             , name
@@ -116,6 +121,7 @@ namespace OrchardCore.Modules.Manifest
             , featureDependencies
             , defaultTenant
             , alwaysEnabled
+            , listable
         )
         {
         }
@@ -135,6 +141,7 @@ namespace OrchardCore.Modules.Manifest
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// <param name="listable">Whether feature is listable on the Features UI</param>
         public FeatureAttribute(
             string id
             , string name
@@ -144,6 +151,7 @@ namespace OrchardCore.Modules.Manifest
             , string featureDependencies
             , object defaultTenant
             , object alwaysEnabled
+            , object listable
         )
         {
             Id = id;
@@ -158,6 +166,7 @@ namespace OrchardCore.Modules.Manifest
 
             DefaultTenantOnly = ToBoolean(defaultTenant);
             IsAlwaysEnabled = ToBoolean(alwaysEnabled);
+            Listable = ToBoolean(listable ?? true);
         }
 
         /// <summary>
@@ -180,7 +189,7 @@ namespace OrchardCore.Modules.Manifest
                 {
                     throw new InvalidOperationException($"When '{nameof(Id)}' has been provided it should not be null or empty.")
                     {
-                        Data = {{nameof(value), value}}
+                        Data = { { nameof(value), value } }
                     };
                 }
 
@@ -350,5 +359,10 @@ namespace OrchardCore.Modules.Manifest
         /// Once enabled, check whether the feature cannot be disabled. Defaults to <c>false</c>.
         /// </summary>
         public virtual bool IsAlwaysEnabled { get; set; } = false;
+
+        /// <summary>
+        /// Set to <c>false</c> to not list the feature on the Features UI.
+        /// </summary>
+        public virtual bool Listable { get; set; } = true;
     }
 }

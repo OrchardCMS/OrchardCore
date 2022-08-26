@@ -32,6 +32,7 @@
     , 10: string tagString
     , 11: bool defaultTenant
     , 12: bool alwaysEnabled
+    , 13: bool listable
     -->
     <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleAttribute">
       <_Parameter1>one</_Parameter1>
@@ -46,6 +47,7 @@
       <_Parameter10>ten;eleven;twelve</_Parameter10>
       <_Parameter11>true</_Parameter11>
       <_Parameter12>true</_Parameter12>
+      <_Parameter13>true</_Parameter13>
     </AssemblyAttribute>
   </ItemGroup>
 

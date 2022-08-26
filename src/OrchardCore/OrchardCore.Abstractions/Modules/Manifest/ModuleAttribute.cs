@@ -58,6 +58,7 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="listable">Whether feature is listable on the Features UI</param>
         public ModuleAttribute(
             string id
             , string description
@@ -68,6 +69,7 @@ namespace OrchardCore.Modules.Manifest
             , string tags
             , object defaultTenant
             , object alwaysEnabled
+            , object listable
         ) : this(
             id
             , default
@@ -81,6 +83,7 @@ namespace OrchardCore.Modules.Manifest
             , tags
             , defaultTenant
             , alwaysEnabled
+            , listable
         )
         {
         }
@@ -107,6 +110,7 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="listable">Whether feature is listable on the Features UI</param>
         public ModuleAttribute(
             string id
             , string name
@@ -118,6 +122,7 @@ namespace OrchardCore.Modules.Manifest
             , string tags
             , object defaultTenant
             , object alwaysEnabled
+            , object listable
         ) : this(
             id
             , name
@@ -131,6 +136,7 @@ namespace OrchardCore.Modules.Manifest
             , tags
             , defaultTenant
             , alwaysEnabled
+            , listable
         )
         {
         }
@@ -159,6 +165,7 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="listable">Whether feature is listable on the Features UI</param>
         public ModuleAttribute(
             string id
             , string name
@@ -172,6 +179,7 @@ namespace OrchardCore.Modules.Manifest
             , string tags
             , object defaultTenant
             , object alwaysEnabled
+            , object listable
         ) : base(
             id
             , name
@@ -181,6 +189,7 @@ namespace OrchardCore.Modules.Manifest
             , featureDependencies
             , defaultTenant
             , alwaysEnabled
+            , listable
         )
         {
             Author = author;
@@ -214,6 +223,7 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="listable">Whether feature is listable on the Features UI</param>
         public ModuleAttribute(
             string id
             , string name
@@ -228,6 +238,7 @@ namespace OrchardCore.Modules.Manifest
             , string tags
             , object defaultTenant
             , object alwaysEnabled
+            , object listable
         ) : this(
             id
             , name
@@ -241,6 +252,7 @@ namespace OrchardCore.Modules.Manifest
             , tags
             , defaultTenant
             , alwaysEnabled
+            , listable
         )
         {
             type = (type ?? string.Empty).Trim();

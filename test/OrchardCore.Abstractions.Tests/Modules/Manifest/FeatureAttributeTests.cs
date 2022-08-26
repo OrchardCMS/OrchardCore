@@ -37,9 +37,9 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="FeatureAttribute(string, string, string, bool, bool)"/>
+        /// Verify the <see cref="FeatureAttribute(string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
-        /// <c>id, description, featureDependencies, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, description, featureDependencies, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         [Fact]
         public virtual void Ipsum_Ctor_Id()
@@ -49,8 +49,10 @@ namespace OrchardCore.Modules.Manifest
             var deps = LoremWords(5).Split(' ');
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
+            const bool listable = true;
 
-            var depString = string.Join(';', deps);
+
+            var depString = String.Join(';', deps);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id)
@@ -58,9 +60,10 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(deps), depString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+                , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var feature = CreateFromArgs(FeatureString3Object2CtorClassifier, id, description, depString, defaultTenant, alwaysEnabled);
+            var feature = CreateFromArgs(FeatureString3Object2CtorClassifier, id, description, depString, defaultTenant, alwaysEnabled, listable);
 
             Assert.True(feature.Exists);
             Assert.Equal(id, feature.Id);
@@ -70,7 +73,7 @@ namespace OrchardCore.Modules.Manifest
             Assert.Equal(description, feature.Description);
 
             Assert.Null(feature.InternalPriority);
-            Assert.Equal(string.Empty, feature.Priority);
+            Assert.Equal(String.Empty, feature.Priority);
 
             Assert.NotNull(feature.Dependencies);
             Assert.Equal(deps, feature.Dependencies);
@@ -80,9 +83,9 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="FeatureAttribute(string, string, string, string, bool, bool)"/>
+        /// Verify the <see cref="FeatureAttribute(string, string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
-        /// <c>id, name, description, featureDependencies, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, name, description, featureDependencies, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         [Fact]
         public virtual void Ipsum_Ctor_Id_Name()
@@ -93,8 +96,9 @@ namespace OrchardCore.Modules.Manifest
             var deps = LoremWords(5).Split(' ');
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
+            const bool listable = true;
 
-            var depString = string.Join(';', deps);
+            var depString = String.Join(';', deps);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id)
@@ -103,9 +107,11 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(deps), depString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+                , new RenderKeyValuePair(nameof(listable), listable)
+                , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var feature = CreateFromArgs(FeatureString4Object2CtorClassifier, id, name, description, depString, defaultTenant, alwaysEnabled);
+            var feature = CreateFromArgs(FeatureString4Object2CtorClassifier, id, name, description, depString, defaultTenant, alwaysEnabled, listable);
 
             Assert.True(feature.Exists);
             Assert.Equal(id, feature.Id);
@@ -115,7 +121,7 @@ namespace OrchardCore.Modules.Manifest
             Assert.Equal(description, feature.Description);
 
             Assert.Null(feature.InternalPriority);
-            Assert.Equal(string.Empty, feature.Priority);
+            Assert.Equal(String.Empty, feature.Priority);
 
             Assert.NotNull(feature.Dependencies);
             Assert.Equal(deps, feature.Dependencies);
@@ -125,9 +131,9 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="FeatureAttribute(string, string, string, string, string, string, bool, bool)"/>
+        /// Verify the <see cref="FeatureAttribute(string, string, string, string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
-        /// <c>id, name, category, priority, description, featureDependencies, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, name, category, priority, description, featureDependencies, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         [Fact]
         public virtual void Ipsum_Ctor_Id_Name_Cat_Pri()
@@ -140,8 +146,9 @@ namespace OrchardCore.Modules.Manifest
             var deps = LoremWords(5).Split(' ');
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
+            const bool listable = true;
 
-            var depString = string.Join(';', deps);
+            var depString = String.Join(';', deps);
             var priString = $"{priority}";
 
             ReportKeyValuePairs(
@@ -153,9 +160,10 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(deps), depString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+                , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var feature = CreateFromArgs(FeatureString6Object2CtorClassifier, id, name, category, priString, description, depString, defaultTenant, alwaysEnabled);
+            var feature = CreateFromArgs(FeatureString6Object2CtorClassifier, id, name, category, priString, description, depString, defaultTenant, alwaysEnabled, listable);
 
             Assert.True(feature.Exists);
             Assert.Equal(id, feature.Id);
@@ -267,6 +275,7 @@ namespace OrchardCore.Modules.Manifest
             const string depString = null;
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
+            const bool listable = true;
 
             var priority = DefaultPriority;
             var expected = priority + 1;
@@ -277,11 +286,12 @@ namespace OrchardCore.Modules.Manifest
                 , LoremWords(1)
                 , name
                 , category
-                , priString ?? string.Empty
+                , priString ?? String.Empty
                 , description
                 , depString
                 , defaultTenant
                 , alwaysEnabled
+                , listable
             );
 
             var alpha = CreateForPriority();
@@ -307,6 +317,8 @@ namespace OrchardCore.Modules.Manifest
             const string depString = null;
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
+            const bool listable = true;
+
 
             var expected = LoremWords(7);
 
@@ -321,6 +333,7 @@ namespace OrchardCore.Modules.Manifest
                 , depString
                 , defaultTenant
                 , alwaysEnabled
+                , listable
             );
 
             var alpha = CreateForDescription();
@@ -346,6 +359,7 @@ namespace OrchardCore.Modules.Manifest
             const string depString = null;
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
+            const bool listable = true;
 
             var expected = LoremWords(1);
 
@@ -360,6 +374,7 @@ namespace OrchardCore.Modules.Manifest
                 , depString
                 , defaultTenant
                 , alwaysEnabled
+                , listable
             );
 
             var alpha = CreateForCategory();
@@ -386,7 +401,7 @@ namespace OrchardCore.Modules.Manifest
         public virtual void Dependencies(char delim)
         {
             var deps = LoremWords(5).Split(' ');
-            var depString = string.Join(delim, deps);
+            var depString = String.Join(delim, deps);
 
             var listDelims = FeatureAttribute.ListDelims;
 
@@ -400,6 +415,7 @@ namespace OrchardCore.Modules.Manifest
                 , depString
                 , default(bool)
                 , default(bool)
+                , true
             );
 
             var feature = CreateForDeps(deps);

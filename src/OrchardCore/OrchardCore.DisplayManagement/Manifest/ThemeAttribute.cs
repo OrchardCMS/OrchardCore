@@ -179,6 +179,7 @@ namespace OrchardCore.DisplayManagement.Manifest
             , tags
             , defaultTenant
             , alwaysEnabled
+            , listable: true
         )
         {
             BaseTheme = baseTheme;

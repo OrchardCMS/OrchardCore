@@ -9,6 +9,7 @@ namespace OrchardCore.Environment.Extensions.Features
             Id = Name = id;
             Extension = extensionInfo;
             Dependencies = Array.Empty<string>();
+            Listable = true;
         }
 
         public FeatureInfo(
@@ -20,7 +21,8 @@ namespace OrchardCore.Environment.Extensions.Features
             IExtensionInfo extension,
             string[] dependencies,
             bool defaultTenantOnly,
-            bool isAlwaysEnabled)
+            bool isAlwaysEnabled,
+            bool listable)
         {
             Id = id;
             Name = name;
@@ -31,6 +33,7 @@ namespace OrchardCore.Environment.Extensions.Features
             Dependencies = dependencies;
             DefaultTenantOnly = defaultTenantOnly;
             IsAlwaysEnabled = isAlwaysEnabled;
+            Listable = listable;
         }
 
         public string Id { get; }
@@ -42,5 +45,7 @@ namespace OrchardCore.Environment.Extensions.Features
         public IExtensionInfo Extension { get; }
         public string[] Dependencies { get; }
         public bool IsAlwaysEnabled { get; }
+        public bool Listable { get; }
+
     }
 }
