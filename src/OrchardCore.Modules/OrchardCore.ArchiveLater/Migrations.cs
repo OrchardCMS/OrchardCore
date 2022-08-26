@@ -5,6 +5,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.ArchiveLater.Indexes;
 using OrchardCore.ArchiveLater.Models;
 using YesSql.Sql;
+using OrchardCore.ContentManagement.Records;
 
 namespace OrchardCore.ArchiveLater
 {
@@ -24,12 +25,19 @@ namespace OrchardCore.ArchiveLater
                 .WithDescription("Adds the ability to schedule content items to be archived at a given future date and time."));
 
             SchemaBuilder.CreateMapIndexTable<ArchiveLaterPartIndex>(table => table
+                .Column<string>(nameof(ArchiveLaterPartIndex.ContentItemId))
+                .Column<bool>(nameof(ArchiveLaterPartIndex.Latest))
+                .Column<bool>(nameof(ArchiveLaterPartIndex.Published))
                 .Column<DateTime>(nameof(ArchiveLaterPartIndex.ScheduledArchiveDateTimeUtc))
             );
 
             SchemaBuilder.AlterIndexTable<ArchiveLaterPartIndex>(table => table
-                .CreateIndex($"IDX_{nameof(ArchiveLaterPartIndex)}_{nameof(ArchiveLaterPartIndex.ScheduledArchiveDateTimeUtc)}",
-                    "DocumentId",
+                .CreateIndex($"IDX_{nameof(ArchiveLaterPartIndex)}_{nameof(ContentItemIndex.DocumentId)}",
+                    "Id",
+                    nameof(ContentItemIndex.DocumentId),
+                    nameof(ArchiveLaterPartIndex.ContentItemId),
+                    nameof(ArchiveLaterPartIndex.Latest),
+                    nameof(ArchiveLaterPartIndex.Published),
                     nameof(ArchiveLaterPartIndex.ScheduledArchiveDateTimeUtc))
             );
 

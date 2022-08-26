@@ -28,7 +28,7 @@ namespace OrchardCore.ArchiveLater.Services
         {
             var itemsToArchive = await serviceProvider
                 .GetRequiredService<ISession>()
-                .Query<ContentItem, ArchiveLaterPartIndex>(index => index.ScheduledArchiveDateTimeUtc < _clock.UtcNow)
+                .QueryIndex<ArchiveLaterPartIndex>(index => index.Latest && index.Published && index.ScheduledArchiveDateTimeUtc < _clock.UtcNow)
                 .ListAsync();
 
             if (!itemsToArchive.Any())
@@ -36,11 +36,15 @@ namespace OrchardCore.ArchiveLater.Services
                 return;
             }
 
+            var contentManager = serviceProvider.GetRequiredService<IContentManager>();
+
             foreach (var item in itemsToArchive)
             {
-                _logger.LogDebug("Archiving scheduled content item {ContentItemId}.", item.ContentItemId);
+                var contentItem = await contentManager.GetAsync(item.ContentItemId);
 
-                await serviceProvider.GetRequiredService<IContentManager>().UnpublishAsync(item);
+                _logger.LogDebug("Archiving scheduled content item {ContentItemId}.", contentItem.ContentItemId);
+
+                await contentManager.UnpublishAsync(contentItem);
             }
         }
     }

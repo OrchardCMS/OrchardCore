@@ -28,8 +28,8 @@ namespace OrchardCore.ArchiveLater
 
             services
                 .AddContentPart<ArchiveLaterPart>()
-                .UseDisplayDriver<ArchiveLaterPartDisplayDriver>()
-                .AddHandler<ArchiveLaterPartHandler>();
+                .UseDisplayDriver<ArchiveLaterPartDisplayDriver>();
+                //.AddHandler<ArchiveLaterPartHandler>();
 
             services.AddScoped<IDataMigration, Migrations>();
 
