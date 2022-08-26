@@ -57,7 +57,7 @@ namespace OrchardCore.Settings.Drivers
                     site.PageTitleFormat = model.PageTitleFormat;
                     site.BaseUrl = model.BaseUrl;
                     site.TimeZoneId = model.TimeZone;
-                    site.PageSize = model.PageSize;
+                    site.PageSize = model.PageSize.Value;
                     site.UseCdn = model.UseCdn;
                     site.CdnBaseUrl = model.CdnBaseUrl;
                     site.ResourceDebugMode = model.ResourceDebugMode;
@@ -65,9 +65,19 @@ namespace OrchardCore.Settings.Drivers
                     site.CacheMode = model.CacheMode;
                 }
 
-                if (!String.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out var baseUrl))
+                if (!String.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out _))
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(site.BaseUrl), S["The Base url must be a fully qualified URL."]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
+                }
+
+                if (model.PageSize.Value < 1)
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be greater than zero."]);
+                }
+
+                if (site.MaxPageSize > 0 && site.MaxPageSize > model.PageSize.Value)
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be less than or equal to {0}.", site.MaxPageSize]);
                 }
 
                 if (context.Updater.ModelState.IsValid)
