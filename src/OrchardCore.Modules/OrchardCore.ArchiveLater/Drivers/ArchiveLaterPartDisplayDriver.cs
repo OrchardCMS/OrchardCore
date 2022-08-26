@@ -11,64 +11,63 @@ using OrchardCore.Modules;
 using OrchardCore.ArchiveLater.Models;
 using OrchardCore.ArchiveLater.ViewModels;
 
-namespace OrchardCore.ArchiveLater.Drivers
+namespace OrchardCore.ArchiveLater.Drivers;
+
+public class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<ArchiveLaterPart>
 {
-    public class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<ArchiveLaterPart>
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly ILocalClock _localClock;
+
+    public ArchiveLaterPartDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService,
+        ILocalClock localClock)
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly ILocalClock _localClock;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+        _localClock = localClock;
+    }
 
-        public ArchiveLaterPartDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService,
-            ILocalClock localClock)
+    public override IDisplayResult Display(ArchiveLaterPart part, BuildPartDisplayContext context)
+        => Initialize<ArchiveLaterPartViewModel>(
+            $"{nameof(ArchiveLaterPart)}_SummaryAdmin",
+            model => PopulateViewModel(part, model)).Location("SummaryAdmin", "Meta:25");
+
+    public override IDisplayResult Edit(ArchiveLaterPart part, BuildPartEditorContext context)
+        => Initialize<ArchiveLaterPartViewModel>(
+            GetEditorShapeType(context),
+            model => PopulateViewModel(part, model)).Location("Actions:10");
+
+    public override async Task<IDisplayResult> UpdateAsync(ArchiveLaterPart part, IUpdateModel updater, UpdatePartEditorContext context)
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+
+        if (await _authorizationService.AuthorizeAsync(httpContext?.User, CommonPermissions.PublishContent, part.ContentItem))
         {
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
-            _localClock = localClock;
-        }
+            var viewModel = new ArchiveLaterPartViewModel();
 
-        public override IDisplayResult Display(ArchiveLaterPart part, BuildPartDisplayContext context)
-            => Initialize<ArchiveLaterPartViewModel>(
-                $"{nameof(ArchiveLaterPart)}_SummaryAdmin",
-                model => PopulateViewModel(part, model)).Location("SummaryAdmin", "Meta:25");
+            await updater.TryUpdateModelAsync(viewModel, Prefix);
 
-        public override IDisplayResult Edit(ArchiveLaterPart part, BuildPartEditorContext context)
-            => Initialize<ArchiveLaterPartViewModel>(
-                GetEditorShapeType(context),
-                model => PopulateViewModel(part, model)).Location("Actions:10");
-
-        public override async Task<IDisplayResult> UpdateAsync(ArchiveLaterPart part, IUpdateModel updater, UpdatePartEditorContext context)
-        {
-            var httpContext = _httpContextAccessor.HttpContext;
-
-            if (await _authorizationService.AuthorizeAsync(httpContext?.User, CommonPermissions.PublishContent, part.ContentItem))
+            if (viewModel.ScheduledArchiveLocalDateTime == null || httpContext.Request.Form["submit.Save"] == "submit.CancelArchiveLater")
             {
-                var viewModel = new ArchiveLaterPartViewModel();
-
-                await updater.TryUpdateModelAsync(viewModel, Prefix);
-
-                if (viewModel.ScheduledArchiveLocalDateTime == null || httpContext.Request.Form["submit.Save"] == "submit.CancelArchiveLater")
-                {
-                    part.ScheduledArchiveUtc = null;
-                }
-                else
-                {
-                    part.ScheduledArchiveUtc = await _localClock.ConvertToUtcAsync(viewModel.ScheduledArchiveLocalDateTime.Value);
-                }
+                part.ScheduledArchiveUtc = null;
             }
-
-            return Edit(part, context);
+            else
+            {
+                part.ScheduledArchiveUtc = await _localClock.ConvertToUtcAsync(viewModel.ScheduledArchiveLocalDateTime.Value);
+            }
         }
 
-        private async ValueTask PopulateViewModel(ArchiveLaterPart part, ArchiveLaterPartViewModel viewModel)
-        {
-            viewModel.ContentItem = part.ContentItem;
-            viewModel.ScheduledArchiveUtc = part.ScheduledArchiveUtc;
-            viewModel.ScheduledArchiveLocalDateTime = part.ScheduledArchiveUtc.HasValue
-                ? (await _localClock.ConvertToLocalAsync(part.ScheduledArchiveUtc.Value)).DateTime
-                : (DateTime?)null;
-        }
+        return Edit(part, context);
+    }
+
+    private async ValueTask PopulateViewModel(ArchiveLaterPart part, ArchiveLaterPartViewModel viewModel)
+    {
+        viewModel.ContentItem = part.ContentItem;
+        viewModel.ScheduledArchiveUtc = part.ScheduledArchiveUtc;
+        viewModel.ScheduledArchiveLocalDateTime = part.ScheduledArchiveUtc.HasValue
+            ? (await _localClock.ConvertToLocalAsync(part.ScheduledArchiveUtc.Value)).DateTime
+            : (DateTime?)null;
     }
 }

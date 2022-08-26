@@ -1,10 +1,9 @@
 using System;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.ArchiveLater.Models
+namespace OrchardCore.ArchiveLater.Models;
+
+public class ArchiveLaterPart : ContentPart
 {
-    public class ArchiveLaterPart : ContentPart
-    {
-        public DateTime? ScheduledArchiveUtc { get; set; }
-    }
+    public DateTime? ScheduledArchiveUtc { get; set; }
 }

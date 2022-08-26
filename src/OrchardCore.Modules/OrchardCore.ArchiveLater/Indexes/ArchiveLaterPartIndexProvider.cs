@@ -10,70 +10,69 @@ using OrchardCore.Data;
 using OrchardCore.ArchiveLater.Models;
 using YesSql.Indexes;
 
-namespace OrchardCore.ArchiveLater.Indexes
+namespace OrchardCore.ArchiveLater.Indexes;
+
+public class ArchiveLaterPartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
 {
-    public class ArchiveLaterPartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
+    private readonly IServiceProvider _serviceProvider;
+    private readonly HashSet<string> _partRemoved = new();
+    private IContentDefinitionManager _contentDefinitionManager;
+
+    public ArchiveLaterPartIndexProvider(IServiceProvider serviceProvider)
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<string> _partRemoved = new();
-        private IContentDefinitionManager _contentDefinitionManager;
+        _serviceProvider = serviceProvider;
+    }
 
-        public ArchiveLaterPartIndexProvider(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
+    public override Task UpdatedAsync(UpdateContentContext context)
+    {
+        var part = context.ContentItem.As<ArchiveLaterPart>();
 
-        public override Task UpdatedAsync(UpdateContentContext context)
+        if (part != null)
         {
-            var part = context.ContentItem.As<ArchiveLaterPart>();
-         
-            if (part != null)
+            _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            if (!contentTypeDefinition.Parts.Any(pd => pd.Name == nameof(ArchiveLaterPart)))
             {
-                _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
-
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-                if (!contentTypeDefinition.Parts.Any(pd => pd.Name == nameof(ArchiveLaterPart)))
-                {
-                    context.ContentItem.Remove<ArchiveLaterPart>();
-                    _partRemoved.Add(context.ContentItem.ContentItemId);
-                }
+                context.ContentItem.Remove<ArchiveLaterPart>();
+                _partRemoved.Add(context.ContentItem.ContentItemId);
             }
-
-            return Task.CompletedTask;
         }
 
-        public string CollectionName { get; set; }
+        return Task.CompletedTask;
+    }
 
-        public Type ForType() => typeof(ContentItem);
+    public string CollectionName { get; set; }
 
-        public void Describe(IDescriptor context) => Describe((DescribeContext<ContentItem>)context);
+    public Type ForType() => typeof(ContentItem);
 
-        public void Describe(DescribeContext<ContentItem> context)
-        {
-            context
-                .For<ArchiveLaterPartIndex>()
-                .When(contentItem => contentItem.Has<ArchiveLaterPart>() || _partRemoved.Contains(contentItem.ContentItemId))
-                .Map(contentItem =>
+    public void Describe(IDescriptor context) => Describe((DescribeContext<ContentItem>)context);
+
+    public void Describe(DescribeContext<ContentItem> context)
+    {
+        context
+            .For<ArchiveLaterPartIndex>()
+            .When(contentItem => contentItem.Has<ArchiveLaterPart>() || _partRemoved.Contains(contentItem.ContentItemId))
+            .Map(contentItem =>
+            {
+                if (!contentItem.Published || !contentItem.Latest)
                 {
-                    if (!contentItem.Published || !contentItem.Latest)
-                    {
-                        return null;
-                    }
+                    return null;
+                }
 
-                    var part = contentItem.As<ArchiveLaterPart>();
-                    if (part == null || !part.ScheduledArchiveUtc.HasValue)
-                    {
-                        return null;
-                    }
+                var part = contentItem.As<ArchiveLaterPart>();
+                if (part == null || !part.ScheduledArchiveUtc.HasValue)
+                {
+                    return null;
+                }
 
-                    return new ArchiveLaterPartIndex
-                    {
-                        ContentItemId = part.ContentItem.ContentItemId,
-                        Latest = part.ContentItem.Latest,
-                        Published = part.ContentItem.Published,
-                        ScheduledArchiveDateTimeUtc = part.ScheduledArchiveUtc,
-                    };
-                });
-        }
+                return new ArchiveLaterPartIndex
+                {
+                    ContentItemId = part.ContentItem.ContentItemId,
+                    Latest = part.ContentItem.Latest,
+                    Published = part.ContentItem.Published,
+                    ScheduledArchiveDateTimeUtc = part.ScheduledArchiveUtc,
+                };
+            });
     }
 }
