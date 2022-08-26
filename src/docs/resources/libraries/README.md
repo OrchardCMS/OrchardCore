@@ -24,14 +24,14 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Markdig](https://github.com/lunet-io/markdig) | .NET Markdown engine. | 0.30.3 | [BSD-2-Clause](https://github.com/lunet-io/markdig/blob/master/license.txt) |
 | [MessagePack](https://github.com/neuecc/MessagePack-CSharp) | Extremely Fast MessagePack Serializer for C# | 2.2.60 | [MIT](https://github.com/neuecc/MessagePack-CSharp/blob/master/LICENSE) |
 | [Microsoft.SourceLink.GitHub](https://github.com/dotnet/sourcelink) | Source Link enables a great source debugging experience. | 1.1.1 | [MIT](https://github.com/dotnet/sourcelink/blob/main/License.txt) |
-| [MimeKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 3.3.0 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
+| [MimeKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 3.4.0 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
 | [MiniProfiler](https://github.com/MiniProfiler/dotnet) | A simple but effective mini-profiler for ASP.NET (and Core) websites | 4.2.22 | [MIT](https://github.com/MiniProfiler/dotnet/blob/main/LICENSE.txt) |
 | [Moq](https://github.com/moq/moq) | The most popular and friendly mocking framework for .NET. | 4.18.2 | [MIT](https://github.com/moq/moq/blob/main/LICENSE) |
 | [NCrontab](https://github.com/atifaziz/NCrontab) | Crontab for .NET | 3.3.1 | [Apache-2.0](https://github.com/atifaziz/NCrontab/blob/master/COPYING.txt) |
 | [NLog.Web.AspNetCore](https://github.com/NLog/NLog.Web/tree/master/src/NLog.Web.AspNetCore) | NLog integration for ASP.NET. | 5.1.1 | [BSD-3-Clause](https://github.com/NLog/NLog.Web/blob/master/LICENSE) |
 | [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) | Json.NET is a popular high-performance JSON framework for .NET | 13.0.1 | [MIT](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md) |
 | [NJsonSchema](https://github.com/RicoSuter/NJsonSchema) | JSON Schema reader, generator and validator for .NET | 10.7.2 | [MIT](https://github.com/RicoSuter/NJsonSchema/blob/master/LICENSE.md) |
-| [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 3.1.1 | [Apache-2.0](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
+| [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 3.1.2 | [Apache-2.0](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
 | [OpenIddict](https://github.com/openiddict/openiddict-core) | Versatile OpenID Connect stack for ASP.NET Core. | 3.1.1 | [Apache-2.0](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
 | [PdfPig](https://github.com/UglyToad/PdfPig/) | Library to read and extract text and other content from PDF files. | 0.1.6 | [Apache-2.0](https://github.com/UglyToad/PdfPig/blob/master/LICENSE) |
 | [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore) | Serilog integration for ASP.NET Core. | 6.0.1 | [Apache-2.0](https://github.com/serilog/serilog-aspnetcore/blob/dev/LICENSE) |
@@ -66,8 +66,8 @@ The below table lists the different Client side libraries:
 
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
-| [EasyMDE](https://github.com/Ionaru/easy-markdown-editor) | A simple, beautiful, and embeddable JavaScript Markdown editor. | 2.16.1 | [MIT](https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE) |
-| [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | 1.9.9 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
+| [EasyMDE](https://github.com/Ionaru/easy-markdown-editor) | A simple, beautiful, and embeddable JavaScript Markdown editor. | 2.17.0 | [MIT](https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE) |
+| [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | 1.11.5 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
 | [GraphiQL explorer](https://github.com/onegraph/graphiql-explorer) | Explorer plugin for GraphiQL. | 0.6.3 | [MIT](https://github.com/OneGraph/graphiql-explorer/blob/master/LICENSE) |
 | [GraphQL](https://github.com/graphql/graphql-js) | A reference implementation of GraphQL for JavaScript. | 15.8.0 | [MIT](https://github.com/graphql/graphql-js/blob/main/LICENSE) |
 | [Gulp](https://github.com/gulpjs/gulp) | A toolkit to automate & enhance your workflow. | 4.0.2 | [MIT](https://github.com/gulpjs/gulp/blob/master/LICENSE) |
