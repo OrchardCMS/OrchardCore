@@ -259,8 +259,8 @@ namespace OrchardCore.Modules.Manifest
             , listable
         )
         {
-            type = (type ?? string.Empty).Trim();
-            _type = string.IsNullOrEmpty(type) ? null : type;
+            type = (type ?? String.Empty).Trim();
+            _type = String.IsNullOrEmpty(type) ? null : type;
         }
 
         /// <summary>

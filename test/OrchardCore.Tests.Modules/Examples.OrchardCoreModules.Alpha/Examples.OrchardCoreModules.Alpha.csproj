@@ -33,7 +33,7 @@
                            Description="five"
                            Dependencies="six;seven;eight"
                            DefaultTenant="true"
-                           AlwaysEnabled="true" 
+                           AlwaysEnabled="true"
                            Listable="true" />
 
     <OrchardCoreAttributes Include="$(MSBuildProjectName)"
@@ -46,7 +46,7 @@
                            Dependencies="nine;ten;eleven"
                            Tags="ten;eleven;twelve"
                            DefaultTenant="true"
-                           AlwaysEnabled="true" 
+                           AlwaysEnabled="true"
                            Listable="true" />
   </ItemGroup>
 

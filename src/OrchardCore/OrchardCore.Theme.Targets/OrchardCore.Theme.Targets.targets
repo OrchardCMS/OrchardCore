@@ -49,6 +49,7 @@
     11: , string tags
     12: , object defaultTenant
     13: , object alwaysEnabled
+    14: , object listable
     -->
   <!-- OrchardCoreEmbeddingAfter/BeforeTargets declared in the 'OrchardCore.Modules.Targets.targets' file;
     may be appended by consuming developer discretionary requirements. -->
@@ -76,6 +77,7 @@
         <_Parameter11>%(OrchardCoreThemes.Tags)</_Parameter11>
         <_Parameter12>%(OrchardCoreThemes.DefaultTenant)</_Parameter12>
         <_Parameter13>%(OrchardCoreThemes.AlwaysEnabled)</_Parameter13>
+        <_Parameter14>%(OrchardCoreThemes.Listable)</_Parameter14>
       </AssemblyAttribute>
     </ItemGroup>
   </Target>
