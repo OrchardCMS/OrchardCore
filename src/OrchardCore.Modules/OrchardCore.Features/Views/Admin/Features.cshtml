@@ -56,10 +56,6 @@
                     @{
                         foreach (var feature in features)
                         {
-                            if (!feature.Listable)
-                            {
-                                continue;
-                            }
                             //var lifecycleStatus = feature.Descriptor.Extension.LifecycleStatus;
                             var featureId = feature.Descriptor.Id;
                             var featureName = feature.Descriptor.Name;
@@ -70,8 +66,8 @@
                             var dependenciesNames = String.Join(" ", dependencies.Select(d => d.Descriptor.Name));
                             var missingDependencies = feature.FeatureDependencies
                             .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
-                            var showDisable = !feature.IsAlwaysEnabled && categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
-                            var showEnable = !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup" && feature.Descriptor.Id != "OrchardCore.AutoSetup";
+                            var showDisable = feature.Listable && !feature.IsAlwaysEnabled && categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
+                            var showEnable = feature.Listable && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup" && feature.Descriptor.Id != "OrchardCore.AutoSetup";
 
                             <li class="list-group-item" data-filter-value="@categoryName @dependenciesNames @featureName">
                                 <div class="row">
@@ -103,6 +99,21 @@
                                                 {
                                                     <span class="badge bg-warning">
                                                         @d
+                                                    </span>
+                                                }
+                                            }
+                                            @if (!showEnable && !showDisable)
+                                            {
+                                                if (feature.IsEnabled)
+                                                {
+                                                    <span class="badge bg-info">
+                                                        @T["Enabled"]
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-info">
+                                                        @T["Disabled"]
                                                     </span>
                                                 }
                                             }
