@@ -130,7 +130,7 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type ModuleString7Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type ModuleString7Object3CtorClassifier(int index, object arg) =>
             index switch
             {
                 7 or 8 or 9 => typeof(object),
@@ -146,7 +146,7 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type ModuleString8Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type ModuleString8Object3CtorClassifier(int index, object arg) =>
             index switch
             {
                 8 or 9 or 10 => typeof(object),
@@ -162,7 +162,7 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type ModuleString10Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type ModuleString10Object3CtorClassifier(int index, object arg) =>
             index switch
             {
                 10 or 11 or 12 => typeof(object),
@@ -178,7 +178,7 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type ModuleString11Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type ModuleString11Object3CtorClassifier(int index, object arg) =>
             index switch
             {
                 11 or 12 or 13 => typeof(object),

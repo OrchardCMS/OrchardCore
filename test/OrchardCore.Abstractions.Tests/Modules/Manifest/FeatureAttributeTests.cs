@@ -62,7 +62,7 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var feature = CreateFromArgs(FeatureString3Object2CtorClassifier, id, description, depString, defaultTenant, alwaysEnabled, listable);
+            var feature = CreateFromArgs(FeatureString3Object3CtorClassifier, id, description, depString, defaultTenant, alwaysEnabled, listable);
 
             Assert.True(feature.Exists);
             Assert.Equal(id, feature.Id);
@@ -109,7 +109,7 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var feature = CreateFromArgs(FeatureString4Object2CtorClassifier, id, name, description, depString, defaultTenant, alwaysEnabled, listable);
+            var feature = CreateFromArgs(FeatureString4Object3CtorClassifier, id, name, description, depString, defaultTenant, alwaysEnabled, listable);
 
             Assert.True(feature.Exists);
             Assert.Equal(id, feature.Id);
@@ -161,7 +161,7 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var feature = CreateFromArgs(FeatureString6Object2CtorClassifier, id, name, category, priString, description, depString, defaultTenant, alwaysEnabled, listable);
+            var feature = CreateFromArgs(FeatureString6Object3CtorClassifier, id, name, category, priString, description, depString, defaultTenant, alwaysEnabled, listable);
 
             Assert.True(feature.Exists);
             Assert.Equal(id, feature.Id);
@@ -280,7 +280,7 @@ namespace OrchardCore.Modules.Manifest
 
             // TODO: TBD: also for attributes created using property initializers
             FeatureAttribute CreateForPriority(string priString = null) => CreateFromArgs(
-                FeatureString6Object2CtorClassifier
+                FeatureString6Object3CtorClassifier
                 , LoremWords(1)
                 , name
                 , category
@@ -321,7 +321,7 @@ namespace OrchardCore.Modules.Manifest
 
             // TODO: TBD: also for attributes created using property initializers
             FeatureAttribute CreateForDescription(string description = null) => CreateFromArgs(
-                FeatureString6Object2CtorClassifier
+                FeatureString6Object3CtorClassifier
                 , LoremWords(1)
                 , name
                 , category
@@ -362,7 +362,7 @@ namespace OrchardCore.Modules.Manifest
 
             // TODO: TBD: also for attributes created using property initializers
             FeatureAttribute CreateForCategory(string category = null) => CreateFromArgs(
-                FeatureString6Object2CtorClassifier
+                FeatureString6Object3CtorClassifier
                 , LoremWords(1)
                 , name
                 , category
@@ -403,7 +403,7 @@ namespace OrchardCore.Modules.Manifest
             var listDelims = FeatureAttribute.ListDelims;
 
             FeatureAttribute CreateForDeps(params string[] deps) => CreateFromArgs(
-                FeatureString6Object2CtorClassifier
+                FeatureString6Object3CtorClassifier
                 , LoremWords(1)
                 , null
                 , null

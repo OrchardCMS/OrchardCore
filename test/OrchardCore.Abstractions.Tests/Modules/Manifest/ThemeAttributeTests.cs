@@ -22,17 +22,17 @@ namespace OrchardCore.DisplayManagement.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, bool, bool)"/>,
+        /// <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
         /// arguments in order,
-        /// <c>id, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         /// <param name="index">The parameter index.</param>
         /// <param name="_">The argument, unused.</param>
         /// <returns></returns>
-        private static Type ThemeString8Bool2CtorClassifier(int index, object _) =>
+        private static Type ThemeString8Bool3CtorClassifier(int index, object _) =>
             index switch
             {
-                8 or 9 => typeof(object),
+                8 or 9 or 10 => typeof(object),
                 _ => typeof(string),
             };
 
@@ -48,40 +48,40 @@ namespace OrchardCore.DisplayManagement.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, string, bool, bool)"/>,
+        /// <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
         /// arguments in order,
-        /// <c>id, name, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, name, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         /// <param name="index">The parameter index.</param>
         /// <param name="_">The argument, unused.</param>
         /// <returns></returns>
-        private static Type ThemeString9Bool2CtorClassifier(int index, object _) =>
+        private static Type ThemeString9Bool3CtorClassifier(int index, object _) =>
             index switch
             {
-                9 or 10 => typeof(object),
+                9 or 10 or 11 => typeof(object),
                 _ => typeof(string),
             };
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, string, string, string, bool, bool)"/>,
+        /// <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
         /// arguments in order,
-        /// <c>id, name, baseTheme, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, name, baseTheme, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         /// <param name="index">The parameter index.</param>
         /// <param name="_">The argument, unused.</param>
         /// <returns></returns>
-        private static Type ThemeString11Bool2CtorClassifier(int index, object _) =>
+        private static Type ThemeString11Bool3CtorClassifier(int index, object _) =>
             index switch
             {
-                11 or 12 => typeof(object),
+                11 or 12 or 13 => typeof(object),
                 _ => typeof(string),
             };
 
         /// <summary>
-        /// Verify the <see cref="ThemeAttribute(string, string, string, string, string, string, string ,string, bool, bool)"/>
+        /// Verify the <see cref="ThemeAttribute(string, string, string, string, string, string, string ,string, bool, bool, bool)"/>
         /// ctor, arguments
-        /// <c>id, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         [Fact]
         public virtual void Ipsum_Ctor_Id()
@@ -90,15 +90,16 @@ namespace OrchardCore.DisplayManagement.Manifest
             var baseTheme = LoremWords(1);
             var description = LoremWords(7);
             var author = LoremWords(2);
-            var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
+            var semVer = String.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
             var deps = LoremWords(5).Split(' ');
             var website = LoremWebsiteUrl();
             var tags = LoremWords(5).Split(' ');
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
+            const bool listable = true;
 
-            var depString = string.Join(';', deps);
-            var tagString = string.Join(';', tags);
+            var depString = String.Join(';', deps);
+            var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id)
@@ -111,17 +112,18 @@ namespace OrchardCore.DisplayManagement.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+                , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var theme = CreateFromArgs(ThemeString8Bool2CtorClassifier, id, baseTheme, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled);
+            var theme = CreateFromArgs(ThemeString8Bool3CtorClassifier, id, baseTheme, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
 
             Assert.Equal(id, theme.Id);
             Assert.Equal(id, theme.Name);
             Assert.Equal(baseTheme, theme.BaseTheme);
 
-            Assert.Equal(string.Empty, theme.Category);
+            Assert.Equal(String.Empty, theme.Category);
             Assert.Null(theme.InternalPriority);
-            Assert.Equal(string.Empty, theme.Priority);
+            Assert.Equal(String.Empty, theme.Priority);
 
             Assert.Equal(description, theme.Description);
 
@@ -143,9 +145,9 @@ namespace OrchardCore.DisplayManagement.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ThemeAttribute(string, string, string, string, string, string, string, string ,string, bool, bool)"/>
+        /// Verify the <see cref="ThemeAttribute(string, string, string, string, string, string, string, string ,string, bool, bool, bool)"/>
         /// ctor, arguments
-        /// <c>id, name, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, name, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         [Fact]
         public virtual void Ipsum_Ctor_Id_Name()
@@ -155,15 +157,16 @@ namespace OrchardCore.DisplayManagement.Manifest
             var baseTheme = LoremWords(1);
             var description = LoremWords(7);
             var author = LoremWords(2);
-            var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
+            var semVer = String.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
             var deps = LoremWords(5).Split(' ');
             var website = LoremWebsiteUrl();
             var tags = LoremWords(5).Split(' ');
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
+            const bool listable = true;
 
-            var depString = string.Join(';', deps);
-            var tagString = string.Join(';', tags);
+            var depString = String.Join(';', deps);
+            var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id)
@@ -177,17 +180,18 @@ namespace OrchardCore.DisplayManagement.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+                , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var theme = CreateFromArgs(ThemeString9Bool2CtorClassifier, id, name, baseTheme, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled);
+            var theme = CreateFromArgs(ThemeString9Bool3CtorClassifier, id, name, baseTheme, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
 
             Assert.Equal(id, theme.Id);
             Assert.Equal(name, theme.Name);
             Assert.Equal(baseTheme, theme.BaseTheme);
 
-            Assert.Equal(string.Empty, theme.Category);
+            Assert.Equal(String.Empty, theme.Category);
             Assert.Null(theme.InternalPriority);
-            Assert.Equal(string.Empty, theme.Priority);
+            Assert.Equal(String.Empty, theme.Priority);
 
             Assert.Equal(description, theme.Description);
 
@@ -209,9 +213,9 @@ namespace OrchardCore.DisplayManagement.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, string, string ,string, bool, bool)"/>
+        /// Verify the <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, string, string ,string, bool, bool, bool)"/>
         /// ctor, arguments
-        /// <c>id, name, baseTheme, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, name, baseTheme, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
         /// </summary>
         [Fact]
         public virtual void Ipsum_Ctor_Id_Name_Cat_Pri()
@@ -223,15 +227,16 @@ namespace OrchardCore.DisplayManagement.Manifest
             var priority = DefaultPriority + 1;
             var description = LoremWords(7);
             var author = LoremWords(2);
-            var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
+            var semVer = String.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
             var deps = LoremWords(5).Split(' ');
             var website = LoremWebsiteUrl();
             var tags = LoremWords(5).Split(' ');
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
+            const bool listable = true;
 
-            var depString = string.Join(';', deps);
-            var tagString = string.Join(';', tags);
+            var depString = String.Join(';', deps);
+            var tagString = String.Join(';', tags);
             var priString = $"{priority}";
 
             ReportKeyValuePairs(
@@ -248,9 +253,10 @@ namespace OrchardCore.DisplayManagement.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+                , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var theme = CreateFromArgs(ThemeString11Bool2CtorClassifier, id, name, baseTheme, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled);
+            var theme = CreateFromArgs(ThemeString11Bool3CtorClassifier, id, name, baseTheme, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
 
             Assert.Equal(id, theme.Id);
             Assert.Equal(name, theme.Name);
@@ -287,7 +293,7 @@ namespace OrchardCore.DisplayManagement.Manifest
         {
             var id = "one";
             var baseTheme = "two";
-            var category = string.Empty;
+            var category = String.Empty;
             var description = "three";
             var author = "four";
             var semVer = "5.6.7";
@@ -296,10 +302,11 @@ namespace OrchardCore.DisplayManagement.Manifest
             var tags = GetArray("eight", "nine", "ten");
             const bool defaultTenant = true;
             const bool alwaysEnabled = true;
+            const bool listable = true;
 
-            var priString = string.Empty;
-            var depString = string.Join(';', deps);
-            var tagString = string.Join(';', tags);
+            var priString = String.Empty;
+            var depString = String.Join(';', deps);
+            var tagString = String.Join(';', tags);
 
             // Would inject via Theory but for issues xUnit failing to discover the cases
             var rootType = typeof(Examples.Themes.AssyAttrib.Charlie.Root);
@@ -315,6 +322,7 @@ namespace OrchardCore.DisplayManagement.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+                , new RenderKeyValuePair(nameof(listable), listable)
             );
 
             // We are looking for one instance of ThemeAttribute in particular in this case
@@ -362,7 +370,7 @@ namespace OrchardCore.DisplayManagement.Manifest
             var id = "one";
             var name = "two";
             var baseTheme = "three";
-            var category = string.Empty;
+            var category = String.Empty;
             var description = "four";
             var author = "five";
             var semVer = "6.7.8";
@@ -371,10 +379,11 @@ namespace OrchardCore.DisplayManagement.Manifest
             var tags = GetArray("nine", "ten", "eleven");
             const bool defaultTenant = true;
             const bool alwaysEnabled = true;
+            const bool listable = true;
 
-            var priString = string.Empty;
-            var depString = string.Join(';', deps);
-            var tagString = string.Join(';', tags);
+            var priString = String.Empty;
+            var depString = String.Join(';', deps);
+            var tagString = String.Join(';', tags);
 
             // Would inject via Theory but for issues xUnit failing to discover the cases
             var rootType = typeof(Examples.Themes.AssyAttrib.Bravo.Root);
@@ -391,6 +400,7 @@ namespace OrchardCore.DisplayManagement.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+                , new RenderKeyValuePair(nameof(listable), listable)
             );
 
             // We are looking for one instance of ThemeAttribute in particular in this case
@@ -448,10 +458,11 @@ namespace OrchardCore.DisplayManagement.Manifest
             var tags = GetArray("eleven", "twelve", "thirteen");
             const bool defaultTenant = true;
             const bool alwaysEnabled = true;
+            const bool listable = true;
 
             var priString = $"{priority}";
-            var depString = string.Join(';', deps);
-            var tagString = string.Join(';', tags);
+            var depString = String.Join(';', deps);
+            var tagString = String.Join(';', tags);
 
             // Would inject via Theory but for issues xUnit failing to discover the cases
             var rootType = typeof(Examples.Themes.AssyAttrib.Alpha.Root);
@@ -470,6 +481,7 @@ namespace OrchardCore.DisplayManagement.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+                , new RenderKeyValuePair(nameof(listable), listable)
             );
 
             // We are looking for one instance of ThemeAttribute in particular in this case

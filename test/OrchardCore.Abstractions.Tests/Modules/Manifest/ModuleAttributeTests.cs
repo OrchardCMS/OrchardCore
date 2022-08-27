@@ -91,7 +91,7 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var module = CreateFromArgs(ModuleString7Object2CtorClassifier, id, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
+            var module = CreateFromArgs(ModuleString7Object3CtorClassifier, id, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
 
             Assert.Equal(id, module.Id);
             Assert.Equal(id, module.Name);
@@ -160,7 +160,7 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var module = CreateFromArgs(ModuleString8Object2CtorClassifier, id, name, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
+            var module = CreateFromArgs(ModuleString8Object3CtorClassifier, id, name, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
 
             Assert.Equal(id, module.Id);
             Assert.Equal(name, module.Name);
@@ -232,7 +232,7 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var module = CreateFromArgs(ModuleString10Object2CtorClassifier, id, name, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
+            var module = CreateFromArgs(ModuleString10Object3CtorClassifier, id, name, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
 
             Assert.Equal(id, module.Id);
             Assert.Equal(name, module.Name);
@@ -304,7 +304,7 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(listable), listable)
             );
 
-            var module = CreateFromArgs(ModuleString11Object2CtorClassifier, id, name, type, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
+            var module = CreateFromArgs(ModuleString11Object3CtorClassifier, id, name, type, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
 
             Assert.Equal(id, module.Id);
             Assert.Equal(name, module.Name);

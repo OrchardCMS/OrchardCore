@@ -68,8 +68,7 @@ namespace OrchardCore.Modules.Manifest
         /// corresponding to each of the feature <see cref="Name"/> properties.</param>
         /// <param name="defaultTenant">Whether considered default tenant only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.</param>
-        /// <param name="listable">Whether feature is listable on the Features UI
-        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// <param name="listable">Whether feature is listable on the Features UI.</param>
         public FeatureAttribute(
             string id
             , string description
@@ -160,7 +159,7 @@ namespace OrchardCore.Modules.Manifest
             Id = id;
             Name = name;
             Category = category ?? DefaultCategory;
-            Priority = priority ?? string.Empty;
+            Priority = priority ?? String.Empty;
             Description = description ?? DefaultDescription;
             DelimitedDependencies = featureDependencies ?? DefaultFeatureDependencies;
 
@@ -175,7 +174,7 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Whether the feature exists based on the <see cref="Id"/>.
         /// </summary>
-        public virtual bool Exists => !string.IsNullOrEmpty(Id);
+        public virtual bool Exists => !String.IsNullOrEmpty(Id);
 
         private string _id;
 
@@ -188,7 +187,7 @@ namespace OrchardCore.Modules.Manifest
             set
             {
                 // Guards setting Id with strictly invalid values.
-                if (string.IsNullOrEmpty(value))
+                if (String.IsNullOrEmpty(value))
                 {
                     throw new InvalidOperationException($"When '{nameof(Id)}' has been provided it should not be null or empty.")
                     {
@@ -204,12 +203,12 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Returns the <see cref="string"/> <paramref name="s"/> as is, or <c>null</c> when that
-        /// or <see cref="string.Empty"/>.
+        /// or <see cref="String.Empty"/>.
         /// </summary>
         /// <param name="s">The string value to consider.</param>
         /// <returns>The <paramref name="s"/> value as is, or Null when either that or Empty.</returns>
-        /// <see cref="string.IsNullOrEmpty(string?)"/>
-        internal static string StringOrNull(string s) => string.IsNullOrEmpty(s) ? null : s;
+        /// <see cref="String.IsNullOrEmpty(string?)"/>
+        internal static string StringOrNull(string s) => String.IsNullOrEmpty(s) ? null : s;
 
         /// <summary>
         /// Gets or sets the human readable or canonical feature name. <see cref="Id"/> will be
@@ -248,7 +247,7 @@ namespace OrchardCore.Modules.Manifest
         /// <returns>The first or default Description with optional back stop features.</returns>
         internal virtual string Describe(params FeatureAttribute[] additionalFeatures)
         {
-            static bool IsNotNullOrEmpty(string s) => !string.IsNullOrEmpty(s);
+            static bool IsNotNullOrEmpty(string s) => !String.IsNullOrEmpty(s);
             var firstOrDefaultResult = GetValues(this).Concat(additionalFeatures)
                 .Select(feature => feature.Description)
                 .FirstOrDefault(IsNotNullOrEmpty);
@@ -267,7 +266,7 @@ namespace OrchardCore.Modules.Manifest
         /// perspective. Also common are comma (&apos;,&apos;) and space (&apos; &apos;)
         /// delimiters.
         /// </summary>
-        /// <see cref="string.Split(char[], StringSplitOptions)"/>
+        /// <see cref="String.Split(char[], StringSplitOptions)"/>
         internal protected static char[] ListDelims { get; } = GetValues(';', ',', ' ').ToArray();
 
         /// <summary>
@@ -346,7 +345,7 @@ namespace OrchardCore.Modules.Manifest
         /// <returns>The Category normalized across This instance and optional Module.</returns>
         internal virtual string Categorize(params FeatureAttribute[] additionalFeatures)
         {
-            static bool IsNotNullOrEmpty(string s) => !string.IsNullOrEmpty(s);
+            static bool IsNotNullOrEmpty(string s) => !String.IsNullOrEmpty(s);
             var categories = GetValues(this).Concat(additionalFeatures).Select(feature => feature.Category);
             var category = categories.FirstOrDefault(IsNotNullOrEmpty);
             // TODO: MWP: 'Uncategorized'? or is empty acceptable here?

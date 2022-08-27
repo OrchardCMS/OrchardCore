@@ -133,7 +133,7 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type FeatureString3Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type FeatureString3Object3CtorClassifier(int index, object arg) =>
             index switch
             {
                 3 or 4 or 5 => typeof(object),
@@ -148,7 +148,7 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type FeatureString4Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type FeatureString4Object3CtorClassifier(int index, object arg) =>
             index switch
             {
                 4 or 5 or 6 => typeof(object),
@@ -163,7 +163,7 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type FeatureString6Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type FeatureString6Object3CtorClassifier(int index, object arg) =>
             index switch
             {
                 6 or 7 or 8 => typeof(object),
@@ -373,7 +373,6 @@ namespace OrchardCore.Modules.Manifest
             where T : Attribute
         {
             predicate ??= DefaultAssemblyAttribPredicate;
-
             var attribs = rootType.Assembly.GetCustomAttributes<T>().Where(predicate).ToArray();
             return attribs;
         }
