@@ -68,7 +68,8 @@ namespace OrchardCore.Modules.Manifest
         /// corresponding to each of the feature <see cref="Name"/> properties.</param>
         /// <param name="defaultTenant">Whether considered default tenant only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.</param>
-        /// <param name="listable">Whether feature is listable on the Features UI</param>
+        /// <param name="listable">Whether feature is listable on the Features UI
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public FeatureAttribute(
             string id
             , string description
@@ -103,7 +104,8 @@ namespace OrchardCore.Modules.Manifest
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-        /// <param name="listable">Whether feature is listable on the Features UI</param>
+        /// <param name="listable">Whether feature is listable on the Features UI
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public FeatureAttribute(
             string id
             , string name
@@ -141,7 +143,8 @@ namespace OrchardCore.Modules.Manifest
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-        /// <param name="listable">Whether feature is listable on the Features UI</param>
+        /// <param name="listable">Whether feature is listable on the Features UI
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public FeatureAttribute(
             string id
             , string name

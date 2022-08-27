@@ -29,6 +29,7 @@
     11: , string tags
     12: , object defaultTenant
     13: , object alwaysEnabled
+    14: , object listable
     -->
     <!-- TODO: TBD: possible to switch after a sort using MSBuild? -->
     <!-- TODO: TBD: with of course 'Include' being the 'Id' -->
@@ -41,7 +42,8 @@
                            Description="five"
                            Dependencies="six;seven;eight"
                            DefaultTenant="true"
-                           AlwaysEnabled="true" />
+                           AlwaysEnabled="true"
+                           Listable="true" />
     <OrchardCoreAttributes Include="OrchardCore.FeatureSet.Bravo"
                            Type="feature"
                            Name="Bravo"
@@ -50,7 +52,8 @@
                            Description="six"
                            Dependencies="seven;eight;nine"
                            DefaultTenant="true"
-                           AlwaysEnabled="true" />
+                           AlwaysEnabled="true"
+                           Listable="true" />
     <OrchardCoreAttributes Include="OrchardCore.FeatureSet.Charlie"
                            Type="feature"
                            Name="Charlie"
@@ -59,7 +62,8 @@
                            Description="seven"
                            Dependencies="eight;nine;ten"
                            DefaultTenant="true"
-                           AlwaysEnabled="true" />
+                           AlwaysEnabled="true"
+                           Listable="true" />
   </ItemGroup>
 
   <ItemGroup>

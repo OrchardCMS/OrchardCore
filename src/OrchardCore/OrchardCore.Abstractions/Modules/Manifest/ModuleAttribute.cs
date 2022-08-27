@@ -58,7 +58,8 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
-        /// <param name="listable">Whether feature is listable on the Features UI</param>
+        /// <param name="listable">Whether feature is listable on the Features UI
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
             string id
             , string description
@@ -110,7 +111,8 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
-        /// <param name="listable">Whether feature is listable on the Features UI</param>
+        /// <param name="listable">Whether feature is listable on the Features UI
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
             string id
             , string name
@@ -165,7 +167,8 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
-        /// <param name="listable">Whether feature is listable on the Features UI</param>
+        /// <param name="listable">Whether feature is listable on the Features UI
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
             string id
             , string name
@@ -223,7 +226,8 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
-        /// <param name="listable">Whether feature is listable on the Features UI</param>
+        /// <param name="listable">Whether feature is listable on the Features UI
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
             string id
             , string name

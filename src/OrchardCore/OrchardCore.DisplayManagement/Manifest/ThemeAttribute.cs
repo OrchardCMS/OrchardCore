@@ -44,6 +44,8 @@ namespace OrchardCore.DisplayManagement.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="listable">Whether feature is listable on the Features UI
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ThemeAttribute(
             string id
             , string baseTheme
@@ -55,6 +57,7 @@ namespace OrchardCore.DisplayManagement.Manifest
             , string tags
             , object defaultTenant
             , object alwaysEnabled
+            , object listable
         ) : this(
             id
             , default
@@ -69,6 +72,7 @@ namespace OrchardCore.DisplayManagement.Manifest
             , tags
             , defaultTenant
             , alwaysEnabled
+            , listable
         )
         {
         }
@@ -96,6 +100,8 @@ namespace OrchardCore.DisplayManagement.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="listable">Whether feature is listable on the Features UI
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ThemeAttribute(
             string id
             , string name
@@ -108,6 +114,7 @@ namespace OrchardCore.DisplayManagement.Manifest
             , string tags
             , object defaultTenant
             , object alwaysEnabled
+            , object listable
         ) : this(
             id
             , name
@@ -122,6 +129,7 @@ namespace OrchardCore.DisplayManagement.Manifest
             , tags
             , defaultTenant
             , alwaysEnabled
+            , listable
         )
         {
         }
@@ -152,6 +160,8 @@ namespace OrchardCore.DisplayManagement.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="listable">Whether feature is listable on the Features UI
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ThemeAttribute(
             string id
             , string name
@@ -166,6 +176,7 @@ namespace OrchardCore.DisplayManagement.Manifest
             , string tags
             , object defaultTenant
             , object alwaysEnabled
+            , object listable
         ) : base(
             id
             , name
@@ -179,7 +190,7 @@ namespace OrchardCore.DisplayManagement.Manifest
             , tags
             , defaultTenant
             , alwaysEnabled
-            , listable: true
+            , listable
         )
         {
             BaseTheme = baseTheme;
