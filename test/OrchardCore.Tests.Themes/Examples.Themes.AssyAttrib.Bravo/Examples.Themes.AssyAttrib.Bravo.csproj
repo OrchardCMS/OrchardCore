@@ -35,7 +35,6 @@
     9: , string tags
     10: , object defaultTenant
     11: , object alwaysEnabled
-    12: , object listable
     -->
     <AssemblyAttribute Include="OrchardCore.DisplayManagement.Manifest.ThemeAttribute">
       <_Parameter1>one</_Parameter1>
@@ -49,7 +48,6 @@
       <_Parameter9>nine;ten;eleven</_Parameter9>
       <_Parameter10>true</_Parameter10>
       <_Parameter11>true</_Parameter11>
-      <_Parameter12>true</_Parameter12>
     </AssemblyAttribute>
   </ItemGroup>
 
