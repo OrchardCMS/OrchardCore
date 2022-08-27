@@ -56,6 +56,10 @@
                     @{
                         foreach (var feature in features)
                         {
+                            if (!feature.Listable)
+                            {
+                                continue;
+                            }
                             //var lifecycleStatus = feature.Descriptor.Extension.LifecycleStatus;
                             var featureId = feature.Descriptor.Id;
                             var featureName = feature.Descriptor.Name;
@@ -133,11 +137,11 @@
     }
 </form>
 <script at="Foot">
-    $(function () {
+    $(function() {
         var searchBox = $('#search-box');
 
         // On each keypress filter the list of features
-        searchBox.keyup(function (e) {
+        searchBox.keyup(function(e) {
             var search = $(this).val().toLowerCase();
             var elementsToFilter = $("[data-filter-value]");
 
@@ -146,21 +150,19 @@
                 searchBox.val('');
                 elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
             } else {
-                elementsToFilter.each(function () {
+                elementsToFilter.each(function() {
                     var text = $(this).data('filter-value').toLowerCase();
                     var found = text.indexOf(search) > -1;
 
-                    if (found)
-                    {
+                    if (found) {
                         $(this).removeClass("d-none first-child-visible last-child-visible");
                     }
-                    else
-                    {
+                    else {
                         $(this).addClass("d-none");
                     }
                 });
 
-                $('ul.list-group').each(function () {
+                $('ul.list-group').each(function() {
                     $(this).find('li').filter(":not(.d-none)").first().addClass("first-child-visible");
                     $(this).find('li').filter(":not(.d-none)").last().addClass("last-child-visible");
                 });
@@ -176,7 +178,7 @@
         });
 
         //prevent posting form on pressing enter key
-        searchBox.keypress(function (e) {
+        searchBox.keypress(function(e) {
             var key = e.charCode || e.keyCode || 0;
             if (key == 13) {
                 return false;
@@ -185,7 +187,7 @@
 
         $(".dropdown-menu a").filter(function() {
             return $(this).data("action");
-        }).on('click', function () {
+        }).on('click', function() {
             $("[name='BulkAction']").val($(this).data('action'));
             $("[name='submit.BulkAction']").click();
         });

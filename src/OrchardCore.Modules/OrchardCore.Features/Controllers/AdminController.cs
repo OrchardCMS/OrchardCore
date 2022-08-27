@@ -57,7 +57,7 @@ namespace OrchardCore.Features.Controllers
 
             var moduleFeatures = new List<ModuleFeature>();
 
-            var features = (await _shellFeaturesManager.GetAvailableFeaturesAsync()).Where(f => !f.IsTheme() && f.Listable);
+            var features = (await _shellFeaturesManager.GetAvailableFeaturesAsync()).Where(f => !f.IsTheme());
 
             foreach (var moduleFeatureInfo in features)
             {
@@ -69,6 +69,7 @@ namespace OrchardCore.Features.Controllers
                     Descriptor = moduleFeatureInfo,
                     IsEnabled = enabledFeatures.Contains(moduleFeatureInfo),
                     IsAlwaysEnabled = alwaysEnabledFeatures.Contains(moduleFeatureInfo),
+                    Listable = moduleFeatureInfo.Listable,
                     //IsRecentlyInstalled = _moduleService.IsRecentlyInstalled(f.Extension),
                     //NeedsUpdate = featuresThatNeedUpdate.Contains(f.Id),
                     EnabledDependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id && enabledFeatures.Contains(x)).ToList(),

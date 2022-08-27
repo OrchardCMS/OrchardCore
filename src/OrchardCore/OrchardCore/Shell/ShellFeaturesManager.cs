@@ -67,9 +67,68 @@ namespace OrchardCore.Environment.Shell
             return Task.FromResult(_extensionManager.GetFeatures().Where(f => _shellDescriptor.Features.All(sf => sf.Id != f.Id)));
         }
 
-        public Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)
+        public async Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)
         {
-            return _shellDescriptorFeaturesManager.UpdateFeaturesAsync(_shellDescriptor, featuresToDisable, featuresToEnable, force);
+            var toDisable = new List<IFeatureInfo>();
+            var toEnable = new List<IFeatureInfo>();
+
+            // Look for features that can be enabled automatically.
+            foreach (var featureToEnable in featuresToEnable)
+            {
+                if (!featureToEnable.Listable)
+                {
+                    // Not listable features are managed internally and can't be explicitly enabled.
+                    continue;
+                }
+
+                // When any of the dependencies are not listable, we'll need to manually enable them.
+                var autoEnable = _extensionManager.GetFeatureDependencies(featureToEnable.Id)
+                    .Where(feature => !feature.Listable).ToArray();
+
+                toEnable.AddRange(autoEnable);
+                toEnable.Add(featureToEnable);
+            }
+
+            // Look for features that can be disabled automatically.
+            foreach (var featureToDisable in featuresToDisable)
+            {
+                if (!featureToDisable.Listable)
+                {
+                    // Not listable features are managed internally and can't be explicitly disabled
+                    continue;
+                }
+                // If any of the dependencies are not listable, we'll need to manually disable them.
+                // Get any features that are selectable and could be disabled automatically.
+                var canBeDisabled = _extensionManager.GetFeatureDependencies(featureToDisable.Id)
+                    .Where(feature => !feature.Listable && !toEnable.Any(willEnableFeature => willEnableFeature.Id == feature.Id))
+                    .ToArray();
+
+                toDisable.AddRange(canBeDisabled);
+                toDisable.Add(featureToDisable);
+            }
+
+            var willAutoDisable = toDisable.Where(f => !f.Listable).ToArray();
+
+            if (willAutoDisable.Length > 0)
+            {
+                // At this point, we have features that will be auto disabled.
+                // Let's make sure no enabled features will still need them.
+                var enabledFeatures = await GetEnabledFeaturesAsync();
+
+                // At this point, we know there are at least one feature that will be automatically disabled.
+                foreach (var enabledFeature in enabledFeatures)
+                {
+                    if (toDisable.Any(feature => feature.Id == enabledFeature.Id && enabledFeature.Listable))
+                    {
+                        // This feature will be disabled, we don't need to evaluate it
+                        continue;
+                    }
+
+                    ShouldDisable(enabledFeature.Id, toDisable, willAutoDisable);
+                }
+            }
+
+            return await _shellDescriptorFeaturesManager.UpdateFeaturesAsync(_shellDescriptor, toDisable, toEnable, force);
         }
 
         public Task<IEnumerable<IExtensionInfo>> GetEnabledExtensionsAsync()
@@ -80,6 +139,34 @@ namespace OrchardCore.Environment.Shell
 
             // Extensions are still ordered according to the weight of their first features.
             return Task.FromResult(_extensionManager.GetExtensions().Where(e => enabledIds.Contains(e.Id)));
+        }
+
+        /// <summary>
+        /// Recursively evaluate dependencies and removes it necessary from toDisable
+        /// </summary>
+        private void ShouldDisable(string id, List<IFeatureInfo> toDisable, IFeatureInfo[] willAutoDisable)
+        {
+            var dependencies = _extensionManager.GetFeatureDependencies(id);
+
+            foreach (var dependency in dependencies)
+            {
+                if (dependency.Id == id || dependency.Listable)
+                {
+                    continue;
+                }
+
+                var cannotDisable = willAutoDisable.FirstOrDefault(feature => feature.Id == dependency.Id);
+
+                if (cannotDisable != null)
+                {
+                    // This dependency is needed by other features, let's not disable it.
+                    toDisable.Remove(cannotDisable);
+                }
+                else
+                {
+                    ShouldDisable(dependency.Id, toDisable, willAutoDisable);
+                }
+            }
         }
     }
 }
