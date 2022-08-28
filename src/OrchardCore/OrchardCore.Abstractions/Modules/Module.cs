@@ -68,7 +68,7 @@ namespace OrchardCore.Modules
                         , null
                         , true
                         , default
-                        , true
+                        , default
                     ));
 
                     // Adds the application default feature.
@@ -81,7 +81,7 @@ namespace OrchardCore.Modules
                         , null
                         , true
                         , default
-                        , true
+                        , default
                     ));
                 }
 

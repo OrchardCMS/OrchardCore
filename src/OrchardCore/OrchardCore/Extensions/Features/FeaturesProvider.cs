@@ -48,7 +48,7 @@ namespace OrchardCore.Environment.Extensions.Features
                     var featureDescription = feature.Describe(manifestInfo.ModuleInfo);
                     var featureDefaultTenantOnly = feature.DefaultTenantOnly;
                     var featureIsAlwaysEnabled = feature.IsAlwaysEnabled;
-                    var featureIsListable = feature.Listable;
+                    var featureEnabledByDependencyOnly = feature.EnabledByDependencyOnly;
 
                     var context = new FeatureBuildingContext
                     {
@@ -62,7 +62,7 @@ namespace OrchardCore.Environment.Extensions.Features
                         FeatureDependencyIds = featureDependencyIds,
                         DefaultTenantOnly = featureDefaultTenantOnly,
                         IsAlwaysEnabled = featureIsAlwaysEnabled,
-                        Listable = featureIsListable
+                        EnabledByDependencyOnly = featureEnabledByDependencyOnly
                     };
 
                     foreach (var builder in _featureBuilderEvents)
@@ -80,7 +80,7 @@ namespace OrchardCore.Environment.Extensions.Features
                         context.FeatureDependencyIds,
                         context.DefaultTenantOnly,
                         context.IsAlwaysEnabled,
-                        context.Listable);
+                        context.EnabledByDependencyOnly);
 
                     foreach (var builder in _featureBuilderEvents)
                     {
@@ -104,7 +104,7 @@ namespace OrchardCore.Environment.Extensions.Features
                 var featureDescription = manifestInfo.ModuleInfo.Describe();
                 var featureDefaultTenantOnly = manifestInfo.ModuleInfo.DefaultTenantOnly;
                 var featureIsAlwaysEnabled = manifestInfo.ModuleInfo.IsAlwaysEnabled;
-                var featureIsListable = manifestInfo.ModuleInfo.Listable;
+                var featureEnabledByDependencyOnly = manifestInfo.ModuleInfo.EnabledByDependencyOnly;
 
                 var context = new FeatureBuildingContext
                 {
@@ -118,7 +118,7 @@ namespace OrchardCore.Environment.Extensions.Features
                     FeatureDependencyIds = featureDependencyIds,
                     DefaultTenantOnly = featureDefaultTenantOnly,
                     IsAlwaysEnabled = featureIsAlwaysEnabled,
-                    Listable = featureIsListable,
+                    EnabledByDependencyOnly = featureEnabledByDependencyOnly,
                 };
 
                 foreach (var builder in _featureBuilderEvents)
@@ -136,7 +136,7 @@ namespace OrchardCore.Environment.Extensions.Features
                     context.FeatureDependencyIds,
                     context.DefaultTenantOnly,
                     context.IsAlwaysEnabled,
-                    context.Listable);
+                    context.EnabledByDependencyOnly);
 
                 foreach (var builder in _featureBuilderEvents)
                 {

@@ -58,7 +58,7 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
-        /// <c>id, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
+        /// <c>id, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         [Fact]
         public virtual void Ipsum_Ctor_Id()
@@ -72,7 +72,7 @@ namespace OrchardCore.Modules.Manifest
             var tags = LoremWords(5).Split(' ');
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
-            const bool listable = true;
+            const bool enabledByDependencyOnly = default;
 
             var priString = String.Empty;
             var depString = String.Join(';', deps);
@@ -88,10 +88,10 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(listable), listable)
+                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
-            var module = CreateFromArgs(ModuleString7Object3CtorClassifier, id, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
+            var module = CreateFromArgs(ModuleString7Object3CtorClassifier, id, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
 
             Assert.Equal(id, module.Id);
             Assert.Equal(id, module.Name);
@@ -125,7 +125,7 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
-        /// <c>id, name, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
+        /// <c>id, name, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         [Fact]
         public virtual void Ipsum_Ctor_Id_Name()
@@ -140,7 +140,7 @@ namespace OrchardCore.Modules.Manifest
             var tags = LoremWords(5).Split(' ');
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
-            const bool listable = true;
+            const bool enabledByDependencyOnly = default;
 
             var priString = String.Empty;
             var depString = String.Join(';', deps);
@@ -157,10 +157,10 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(listable), listable)
+                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
-            var module = CreateFromArgs(ModuleString8Object3CtorClassifier, id, name, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
+            var module = CreateFromArgs(ModuleString8Object3CtorClassifier, id, name, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
 
             Assert.Equal(id, module.Id);
             Assert.Equal(name, module.Name);
@@ -193,7 +193,7 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
-        /// <c>id, name, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
+        /// <c>id, name, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         [Fact]
         public virtual void Ipsum_Ctor_Id_Name_Cat_Pri()
@@ -210,7 +210,7 @@ namespace OrchardCore.Modules.Manifest
             var tags = LoremWords(5).Split(' ');
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
-            const bool listable = true;
+            const bool enabledByDependencyOnly = default;
 
             var priString = $"{priority}";
             var depString = String.Join(';', deps);
@@ -229,10 +229,10 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(listable), listable)
+                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
-            var module = CreateFromArgs(ModuleString10Object3CtorClassifier, id, name, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
+            var module = CreateFromArgs(ModuleString10Object3CtorClassifier, id, name, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
 
             Assert.Equal(id, module.Id);
             Assert.Equal(name, module.Name);
@@ -263,7 +263,7 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
-        /// <c>id, name, type, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, listable</c>.
+        /// <c>id, name, type, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         [Fact]
         public virtual void Ipsum_Ctor_Id_Name_Type_Cat_Pri()
@@ -281,7 +281,7 @@ namespace OrchardCore.Modules.Manifest
             var tags = LoremWords(5).Split(' ');
             const bool defaultTenant = default;
             const bool alwaysEnabled = default;
-            const bool listable = true;
+            const bool enabledByDependencyOnly = default;
 
             var priString = $"{priority}";
             var depString = String.Join(';', deps);
@@ -301,10 +301,10 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(listable), listable)
+                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
-            var module = CreateFromArgs(ModuleString11Object3CtorClassifier, id, name, type, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, listable);
+            var module = CreateFromArgs(ModuleString11Object3CtorClassifier, id, name, type, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
 
             Assert.Equal(id, module.Id);
             Assert.Equal(name, module.Name);
@@ -364,7 +364,7 @@ namespace OrchardCore.Modules.Manifest
             var tags = GetArray("seven", "eight", "nine");
             const bool defaultTenant = true;
             const bool alwaysEnabled = true;
-            const bool listable = true;
+            const bool enabledByDependencyOnly = default;
 
             var priString = String.Empty;
             var depString = String.Join(';', deps);
@@ -380,7 +380,7 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(listable), listable)
+                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             // We are looking for one instance of ModuleAttribute in particular in this case
@@ -435,7 +435,7 @@ namespace OrchardCore.Modules.Manifest
             var tags = GetArray("eight", "nine", "ten");
             const bool defaultTenant = true;
             const bool alwaysEnabled = true;
-            const bool listable = true;
+            const bool enabledByDependencyOnly = default;
 
             var priString = String.Empty;
             var depString = String.Join(';', deps);
@@ -452,7 +452,7 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(listable), listable)
+                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             // We are looking for one instance of ModuleAttribute in particular in this case
@@ -508,7 +508,7 @@ namespace OrchardCore.Modules.Manifest
             var tags = GetArray("ten", "eleven", "twelve");
             const bool defaultTenant = true;
             const bool alwaysEnabled = true;
-            const bool listable = true;
+            const bool enabledByDependencyOnly = default;
 
             var priString = $"{priority}";
             var depString = String.Join(';', deps);
@@ -527,7 +527,7 @@ namespace OrchardCore.Modules.Manifest
                 , new RenderKeyValuePair(nameof(tags), tagString)
                 , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
                 , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(listable), listable)
+                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             // We are looking for one instance of ModuleAttribute in particular in this case

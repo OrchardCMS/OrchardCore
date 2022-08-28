@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.props" />
   <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.props" />
@@ -29,7 +29,7 @@
     11: , string tags
     12: , object defaultTenant
     13: , object alwaysEnabled
-    14: , object listable
+    14: , object enabledByDependencyOnly
     -->
     <!-- TODO: TBD: possible to switch after a sort using MSBuild? -->
     <!-- TODO: TBD: with of course 'Include' being the 'Id' -->
@@ -43,7 +43,7 @@
                            Dependencies="six;seven;eight"
                            DefaultTenant="true"
                            AlwaysEnabled="true"
-                           Listable="true" />
+                           EnabledByDependencyOnly="false" />
     <OrchardCoreAttributes Include="OrchardCore.FeatureSet.Bravo"
                            Type="feature"
                            Name="Bravo"
@@ -53,7 +53,7 @@
                            Dependencies="seven;eight;nine"
                            DefaultTenant="true"
                            AlwaysEnabled="true"
-                           Listable="true" />
+                           EnabledByDependencyOnly="false" />
     <OrchardCoreAttributes Include="OrchardCore.FeatureSet.Charlie"
                            Type="feature"
                            Name="Charlie"
@@ -63,7 +63,7 @@
                            Dependencies="eight;nine;ten"
                            DefaultTenant="true"
                            AlwaysEnabled="true"
-                           Listable="true" />
+                           EnabledByDependencyOnly="false" />
   </ItemGroup>
 
   <ItemGroup>

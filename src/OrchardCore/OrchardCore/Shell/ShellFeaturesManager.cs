@@ -75,15 +75,15 @@ namespace OrchardCore.Environment.Shell
             // Look for features that can be enabled automatically.
             foreach (var featureToEnable in featuresToEnable)
             {
-                if (!featureToEnable.Listable)
+                if (!featureToEnable.EnabledByDependencyOnly)
                 {
-                    // Not listable features are managed internally and can't be explicitly enabled.
+                    // EnabledByDependencyOnly features are managed internally and can't be explicitly enabled.
                     continue;
                 }
 
-                // When any of the dependencies are not listable, we'll need to manually enable them.
+                // When any of the dependencies are EnabledByDependencyOnly, we'll need to manually enable them.
                 var autoEnable = _extensionManager.GetFeatureDependencies(featureToEnable.Id)
-                    .Where(feature => !feature.Listable).ToArray();
+                    .Where(feature => !feature.EnabledByDependencyOnly).ToArray();
 
                 toEnable.AddRange(autoEnable);
                 toEnable.Add(featureToEnable);
@@ -92,22 +92,22 @@ namespace OrchardCore.Environment.Shell
             // Look for features that can be disabled automatically.
             foreach (var featureToDisable in featuresToDisable)
             {
-                if (!featureToDisable.Listable)
+                if (!featureToDisable.EnabledByDependencyOnly)
                 {
-                    // Not listable features are managed internally and can't be explicitly disabled
+                    // EnabledByDependencyOnly features are managed internally and can't be explicitly disabled
                     continue;
                 }
-                // If any of the dependencies are not listable, we'll need to manually disable them.
+                // If any of the dependencies are EnabledByDependencyOnly, we'll need to manually disable them.
                 // Get any features that are selectable and could be disabled automatically.
                 var canBeDisabled = _extensionManager.GetFeatureDependencies(featureToDisable.Id)
-                    .Where(feature => !feature.Listable && !toEnable.Any(willEnableFeature => willEnableFeature.Id == feature.Id))
+                    .Where(feature => !feature.EnabledByDependencyOnly && !toEnable.Any(willEnableFeature => willEnableFeature.Id == feature.Id))
                     .ToArray();
 
                 toDisable.AddRange(canBeDisabled);
                 toDisable.Add(featureToDisable);
             }
 
-            var willAutoDisable = toDisable.Where(f => !f.Listable).ToArray();
+            var willAutoDisable = toDisable.Where(f => !f.EnabledByDependencyOnly).ToArray();
 
             if (willAutoDisable.Length > 0)
             {
@@ -118,7 +118,7 @@ namespace OrchardCore.Environment.Shell
                 // At this point, we know there are at least one feature that will be automatically disabled.
                 foreach (var enabledFeature in enabledFeatures)
                 {
-                    if (toDisable.Any(feature => feature.Id == enabledFeature.Id && enabledFeature.Listable))
+                    if (toDisable.Any(feature => feature.Id == enabledFeature.Id && enabledFeature.EnabledByDependencyOnly))
                     {
                         // This feature will be disabled, we don't need to evaluate it
                         continue;
@@ -150,7 +150,7 @@ namespace OrchardCore.Environment.Shell
 
             foreach (var dependency in dependencies)
             {
-                if (dependency.Id == id || dependency.Listable)
+                if (dependency.Id == id || dependency.EnabledByDependencyOnly)
                 {
                     continue;
                 }

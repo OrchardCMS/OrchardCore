@@ -66,8 +66,8 @@
                             var dependenciesNames = String.Join(" ", dependencies.Select(d => d.Descriptor.Name));
                             var missingDependencies = feature.FeatureDependencies
                             .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
-                            var showDisable = feature.Listable && !feature.IsAlwaysEnabled && categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
-                            var showEnable = feature.Listable && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup" && feature.Descriptor.Id != "OrchardCore.AutoSetup";
+                            var showDisable = feature.EnabledByDependencyOnly && !feature.IsAlwaysEnabled && categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
+                            var showEnable = feature.EnabledByDependencyOnly && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup" && feature.Descriptor.Id != "OrchardCore.AutoSetup";
 
                             <li class="list-group-item" data-filter-value="@categoryName @dependenciesNames @featureName">
                                 <div class="row">

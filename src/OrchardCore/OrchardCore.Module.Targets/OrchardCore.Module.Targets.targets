@@ -137,7 +137,7 @@
     6: , string featureDependencies
     7: , object defaultTenant
     8: , object alwaysEnabled
-    9: , object listable
+    9: , object enabledByDependencyOnly
     -->
   <Target Name="OrchardCoreEmbedFeatures"
           DependsOnTargets="OrchardCoreErrorsFeatureNoErrors"
@@ -147,7 +147,7 @@
     <Message
       Importance="high"
       Condition="'$(OrchardCoreDebugTargets)' == 'true'"
-      Text="Embedding '@(OrchardCoreFeatures)' feature: {'id': '%(OrchardCoreFeatures.Identity)', 'name': '%(OrchardCoreFeatures.Name)', 'category': '%(OrchardCoreFeatures.Category)', 'priority': '%(OrchardCoreFeatures.Priority)', 'description': '%(OrchardCoreFeatures.Description)', 'dependencies': '%(OrchardCoreFeatures.Dependencies)', 'defaultTenant': '%(OrchardCoreFeatures.DefaultTenant)', 'alwaysEnabled': '%(OrchardCoreFeatures.AlwaysEnabled)', 'listable': '%(OrchardCoreFeatures.Listable)')}" />
+      Text="Embedding '@(OrchardCoreFeatures)' feature: {'id': '%(OrchardCoreFeatures.Identity)', 'name': '%(OrchardCoreFeatures.Name)', 'category': '%(OrchardCoreFeatures.Category)', 'priority': '%(OrchardCoreFeatures.Priority)', 'description': '%(OrchardCoreFeatures.Description)', 'dependencies': '%(OrchardCoreFeatures.Dependencies)', 'defaultTenant': '%(OrchardCoreFeatures.DefaultTenant)', 'alwaysEnabled': '%(OrchardCoreFeatures.AlwaysEnabled)')}" />
     <ItemGroup>
       <AssemblyAttribute Include="OrchardCore.Modules.Manifest.FeatureAttribute">
         <_Parameter1>@(OrchardCoreFeatures)</_Parameter1>
@@ -158,7 +158,7 @@
         <_Parameter6>%(OrchardCoreFeatures.Dependencies)</_Parameter6>
         <_Parameter7>%(OrchardCoreFeatures.DefaultTenant)</_Parameter7>
         <_Parameter8>%(OrchardCoreFeatures.AlwaysEnabled)</_Parameter8>
-        <_Parameter9>%(OrchardCoreFeatures.Listable)</_Parameter9>
+        <_Parameter9>%(OrchardCoreFeatures.EnabledByDependencyOnly)</_Parameter9>
       </AssemblyAttribute>
     </ItemGroup>
   </Target>
@@ -187,7 +187,7 @@
     11: , string tags
     12: , object defaultTenant
     13: , object alwaysEnabled
-    14: , object listable
+    14: , object enabledByDependencyOnly
     -->
   <Target Name="OrchardCoreEmbedModules"
           DependsOnTargets="OrchardCoreErrorsModuleAtMostOne"
@@ -197,7 +197,7 @@
     <!-- 'ModuleType' property consistent with other usage, i.e. 'ModuleMarkerAttribute' -->
     <Message Importance="high"
              Condition="'$(OrchardCoreDebugTargets)' == 'true'"
-             Text="Embedding '@(OrchardCoreModules)' module: {'id': '%(OrchardCoreModules.Identity)', 'name': '%(OrchardCoreModules.Name)', 'type': '%(OrchardCoreModules.ModuleType)', 'category': '%(OrchardCoreModules.Category)', 'priority': '%(OrchardCoreModules.Priority)', 'description': '%(OrchardCoreModules.Description)', 'author': '%(OrchardCoreModules.Author)', 'version': '%(OrchardCoreModules.Version)', 'website': '%(OrchardCoreModules.Website)', 'dependencies': '%(OrchardCoreModules.Dependencies)', 'tags': '%(OrchardCoreModules.Tags)', 'defaultTenant': '%(OrchardCoreModules.DefaultTenant)', 'alwaysEnabled': '%(OrchardCoreModules.AlwaysEnabled)', 'listable': '%(OrchardCoreModules.Listable)')}" />
+             Text="Embedding '@(OrchardCoreModules)' module: {'id': '%(OrchardCoreModules.Identity)', 'name': '%(OrchardCoreModules.Name)', 'type': '%(OrchardCoreModules.ModuleType)', 'category': '%(OrchardCoreModules.Category)', 'priority': '%(OrchardCoreModules.Priority)', 'description': '%(OrchardCoreModules.Description)', 'author': '%(OrchardCoreModules.Author)', 'version': '%(OrchardCoreModules.Version)', 'website': '%(OrchardCoreModules.Website)', 'dependencies': '%(OrchardCoreModules.Dependencies)', 'tags': '%(OrchardCoreModules.Tags)', 'defaultTenant': '%(OrchardCoreModules.DefaultTenant)', 'alwaysEnabled': '%(OrchardCoreModules.AlwaysEnabled)')}" />
     <ItemGroup>
       <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleAttribute">
         <_Parameter1>@(OrchardCoreModules)</_Parameter1>
@@ -213,7 +213,7 @@
         <_Parameter11>%(OrchardCoreModules.Tags)</_Parameter11>
         <_Parameter12>%(OrchardCoreModules.DefaultTenant)</_Parameter12>
         <_Parameter13>%(OrchardCoreModules.AlwaysEnabled)</_Parameter13>
-        <_Parameter13>%(OrchardCoreModules.Listable)</_Parameter13>
+        <_Parameter14>%(OrchardCoreModules.EnabledByDependencyOnly)</_Parameter14>
       </AssemblyAttribute>
     </ItemGroup>
   </Target>

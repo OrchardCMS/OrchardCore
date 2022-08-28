@@ -58,7 +58,7 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
-        /// <param name="listable">Whether feature is listable on the Features UI
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
             string id
@@ -70,7 +70,7 @@ namespace OrchardCore.Modules.Manifest
             , string tags
             , object defaultTenant
             , object alwaysEnabled
-            , object listable
+            , object enabledByDependencyOnly
         ) : this(
             id
             , default
@@ -84,7 +84,7 @@ namespace OrchardCore.Modules.Manifest
             , tags
             , defaultTenant
             , alwaysEnabled
-            , listable
+            , enabledByDependencyOnly
         )
         {
         }
@@ -111,7 +111,7 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
-        /// <param name="listable">Whether feature is listable on the Features UI
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
             string id
@@ -124,7 +124,7 @@ namespace OrchardCore.Modules.Manifest
             , string tags
             , object defaultTenant
             , object alwaysEnabled
-            , object listable
+            , object enabledByDependencyOnly
         ) : this(
             id
             , name
@@ -138,7 +138,7 @@ namespace OrchardCore.Modules.Manifest
             , tags
             , defaultTenant
             , alwaysEnabled
-            , listable
+            , enabledByDependencyOnly
         )
         {
         }
@@ -167,7 +167,7 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
-        /// <param name="listable">Whether feature is listable on the Features UI
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
             string id
@@ -182,7 +182,7 @@ namespace OrchardCore.Modules.Manifest
             , string tags
             , object defaultTenant
             , object alwaysEnabled
-            , object listable
+            , object enabledByDependencyOnly
         ) : base(
             id
             , name
@@ -192,7 +192,7 @@ namespace OrchardCore.Modules.Manifest
             , featureDependencies
             , defaultTenant
             , alwaysEnabled
-            , listable
+            , enabledByDependencyOnly
         )
         {
             Author = author;
@@ -226,7 +226,7 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
-        /// <param name="listable">Whether feature is listable on the Features UI
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
             string id
@@ -242,7 +242,7 @@ namespace OrchardCore.Modules.Manifest
             , string tags
             , object defaultTenant
             , object alwaysEnabled
-            , object listable
+            , object enabledByDependencyOnly
         ) : this(
             id
             , name
@@ -256,7 +256,7 @@ namespace OrchardCore.Modules.Manifest
             , tags
             , defaultTenant
             , alwaysEnabled
-            , listable
+            , enabledByDependencyOnly
         )
         {
             type = (type ?? String.Empty).Trim();

@@ -33,7 +33,7 @@
                            Tags="eleven;twelve;thirteen"
                            DefaultTenant="true"
                            AlwaysEnabled="true"
-                           Listable="true" />
+                           EnabledByDependencyOnly="false" />
   </ItemGroup>
 
   <ItemGroup>

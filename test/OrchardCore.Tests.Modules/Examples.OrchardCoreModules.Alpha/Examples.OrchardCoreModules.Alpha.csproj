@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.props" />
   <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.props" />
@@ -24,7 +24,7 @@
                            Dependencies="five;six;seven"
                            DefaultTenant="true"
                            AlwaysEnabled="true"
-                           Listable="true" />
+                           EnabledByDependencyOnly="false" />
 
     <OrchardCoreAttributes Include="$(MSBuildProjectName).Two"
                            Type="feature"
@@ -34,7 +34,7 @@
                            Dependencies="six;seven;eight"
                            DefaultTenant="true"
                            AlwaysEnabled="true"
-                           Listable="true" />
+                           EnabledByDependencyOnly="false" />
 
     <OrchardCoreAttributes Include="$(MSBuildProjectName)"
                            Category="three"
@@ -47,7 +47,7 @@
                            Tags="ten;eleven;twelve"
                            DefaultTenant="true"
                            AlwaysEnabled="true"
-                           Listable="true" />
+                           EnabledByDependencyOnly="false" />
   </ItemGroup>
 
   <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.targets" />

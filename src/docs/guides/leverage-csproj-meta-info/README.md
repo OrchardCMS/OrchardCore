@@ -30,7 +30,8 @@ There are several items you may be interested in, depending on your projects, i.
                      Description="..."
                      Dependencies="..."
                      DefaultTenant="..."
-                     AlwaysEnabled="..." />
+                     AlwaysEnabled="..."
+                     IsOnDemand="..." />
 ```
 
 ```xml
@@ -46,7 +47,8 @@ There are several items you may be interested in, depending on your projects, i.
                     Dependencies="..."
                     Tags="..."
                     DefaultTenant="..."
-                    AlwaysEnabled="..." />
+                    AlwaysEnabled="..."
+                    IsOnDemand="..." />
 ```
 
 ```xml
@@ -62,7 +64,8 @@ There are several items you may be interested in, depending on your projects, i.
                    Dependencies="..."
                    Tags="..."
                    DefaultTenant="..."
-                   AlwaysEnabled="..." />
+                   AlwaysEnabled="..."
+                   IsOnDemand="..."/>
 ```
 
 With all _properties_ described as follows.
@@ -82,6 +85,7 @@ With all _properties_ described as follows.
 |`Tags`|`list`|Optional, semi-colon delimited list of tags. <sup>3</sup>|
 |`DefaultTenant`|`bool` <sup>1</sup>|Optional, Boolean, `true|false`, defaults to `false`.|
 |`AlwaysEnabled`|`bool` <sup>1</sup>|Optional, Boolean, `true|false`, defaults to `false`.|
+|`IsOnDemand`|`bool` <sup>1</sup>|Optional, Boolean, `true|false`, defaults to `false`.|
 
 <sup>[1] `MSBuild` relays all meta data as `string`, leaving authors to contend with either `string` or `object` type conversions i.e. either `int` or `bool`, which is fine for our purposes.</sup>
 <br/><sup>[2] Depending on the `Attribute` context, `ModuleAttribute` yields `"Module"`, `ThemeAttribute` yields `"Theme"` by default.</sup>

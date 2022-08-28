@@ -128,7 +128,7 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Classifier supporting
         /// <see cref="FeatureAttribute(string, string, string, bool, bool, bool)"/>, arguments in
-        /// order, <c>id, description, featureDependencies, defaultTenant, alwaysEnabled, listable</c>.
+        /// order, <c>id, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>
@@ -143,7 +143,7 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Classifier supporting
         /// <see cref="FeatureAttribute(string, string, string, string, bool, bool, bool)"/>, arguments in
-        /// order, <c>id, name, description, featureDependencies, defaultTenant, alwaysEnabled, listable</c>.
+        /// order, <c>id, name, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>
@@ -158,7 +158,7 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Classifier supporting
         /// <see cref="FeatureAttribute(string, string, string, string, string, string, bool, bool, bool)"/>, arguments in
-        /// order, <c>id, name, category, priority, description, featureDependencies, defaultTenant, alwaysEnabled, listable</c>.
+        /// order, <c>id, name, category, priority, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>

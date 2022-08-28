@@ -68,14 +68,15 @@ namespace OrchardCore.Modules.Manifest
         /// corresponding to each of the feature <see cref="Name"/> properties.</param>
         /// <param name="defaultTenant">Whether considered default tenant only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.</param>
-        /// <param name="listable">Whether feature is listable on the Features UI.</param>
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public FeatureAttribute(
             string id
             , string description
             , string featureDependencies
             , object defaultTenant
             , object alwaysEnabled
-            , object listable
+            , object enabledByDependencyOnly
         ) : this(
             id
             , default
@@ -85,7 +86,7 @@ namespace OrchardCore.Modules.Manifest
             , featureDependencies
             , defaultTenant
             , alwaysEnabled
-            , listable
+            , enabledByDependencyOnly
         )
         {
         }
@@ -103,7 +104,7 @@ namespace OrchardCore.Modules.Manifest
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-        /// <param name="listable">Whether feature is listable on the Features UI
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public FeatureAttribute(
             string id
@@ -112,7 +113,7 @@ namespace OrchardCore.Modules.Manifest
             , string featureDependencies
             , object defaultTenant
             , object alwaysEnabled
-            , object listable
+            , object enabledByDependencyOnly
         ) : this(
             id
             , name
@@ -122,7 +123,7 @@ namespace OrchardCore.Modules.Manifest
             , featureDependencies
             , defaultTenant
             , alwaysEnabled
-            , listable
+            , enabledByDependencyOnly
         )
         {
         }
@@ -142,7 +143,7 @@ namespace OrchardCore.Modules.Manifest
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-        /// <param name="listable">Whether feature is listable on the Features UI
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public FeatureAttribute(
             string id
@@ -153,7 +154,7 @@ namespace OrchardCore.Modules.Manifest
             , string featureDependencies
             , object defaultTenant
             , object alwaysEnabled
-            , object listable
+            , object enabledByDependencyOnly
         )
         {
             Id = id;
@@ -168,7 +169,7 @@ namespace OrchardCore.Modules.Manifest
 
             DefaultTenantOnly = ToBoolean(defaultTenant);
             IsAlwaysEnabled = ToBoolean(alwaysEnabled);
-            Listable = ToBoolean(listable ?? true);
+            EnabledByDependencyOnly = ToBoolean(enabledByDependencyOnly);
         }
 
         /// <summary>
@@ -363,8 +364,8 @@ namespace OrchardCore.Modules.Manifest
         public virtual bool IsAlwaysEnabled { get; set; } = false;
 
         /// <summary>
-        /// Set to <c>false</c> to not list the feature on the Features UI.
+        /// Set to <c>true</c> to make the feature available by dependency only.
         /// </summary>
-        public virtual bool Listable { get; set; } = true;
+        public virtual bool EnabledByDependencyOnly { get; set; };
     }
 }

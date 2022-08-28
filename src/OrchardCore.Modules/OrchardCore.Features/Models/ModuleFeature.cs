@@ -39,9 +39,9 @@ namespace OrchardCore.Features.Models
         public bool IsRecentlyInstalled { get; set; }
 
         /// <summary>
-        /// Boolean value indicating if the feature is listable.
+        /// Boolean value indicating if the feature is enabled by dependency only.
         /// </summary>
-        public bool Listable { get; set; }
+        public bool EnabledByDependencyOnly { get; set; }
 
         /// <summary>
         /// List of enabled features that depend on this feature.
