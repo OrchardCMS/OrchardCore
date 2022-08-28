@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.DisplayManagement.Handlers;
 
 namespace OrchardCore.DisplayManagement.Descriptors
@@ -29,7 +30,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
     {
         public static IServiceCollection AddShapeAttributes<T>(this IServiceCollection services) where T : class, IShapeAttributeProvider
         {
-            services.AddScoped<T>();
+            services.TryAddScoped<T>();
             services.AddScoped<IShapeAttributeProvider>(sp => sp.GetService<T>());
 
             return services;
