@@ -366,6 +366,6 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Set to <c>true</c> to make the feature available by dependency only.
         /// </summary>
-        public virtual bool EnabledByDependencyOnly { get; set; };
+        public virtual bool EnabledByDependencyOnly { get; set; }
     }
 }
