@@ -60,7 +60,7 @@ namespace OrchardCore.Themes.Controllers
             var themes = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
                 .Where(f =>
                 {
-                    if (!f.IsTheme() || f.IsAlwaysEnabled || f.EnabledByDependencyOnly)
+                    if (f.IsAlwaysEnabled || f.EnabledByDependencyOnly || !f.IsTheme())
                     {
                         return false;
                     }
