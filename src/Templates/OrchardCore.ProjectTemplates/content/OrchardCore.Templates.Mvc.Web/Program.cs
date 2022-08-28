@@ -1,6 +1,7 @@
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOrchardCore()
+builder.Services
+    .AddOrchardCore()
     .AddMvc()
     // // Orchard Specific Pipeline
     // .ConfigureServices( services => {

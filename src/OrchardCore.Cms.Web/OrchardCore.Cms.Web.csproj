@@ -12,8 +12,12 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <RazorRuntimeCompilation>false</RazorRuntimeCompilation>
     <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <ImplicitUsings Condition="'$(RazorRuntimeCompilation)' == 'false'">enable</ImplicitUsings>
   </PropertyGroup>
+  <!-- For Unit Tests-->
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
+  </ItemGroup>
 
   <!-- Watcher include and excludes -->
   <ItemGroup>

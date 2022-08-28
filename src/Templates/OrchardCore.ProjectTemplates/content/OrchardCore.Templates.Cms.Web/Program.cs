@@ -18,7 +18,8 @@ builder.Host.UseSerilog((hostingContext, configBuilder) =>
     });
 #endif
 
-builder.Services.AddOrchardCms()
+builder.Services
+    .AddOrchardCms()
     // // Orchard Specific Pipeline
     // .ConfigureServices( services => {
 
