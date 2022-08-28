@@ -22,13 +22,10 @@ builder.Services
     .AddOrchardCms()
     // // Orchard Specific Pipeline
     // .ConfigureServices( services => {
-
     // })
     // .Configure( (app, routes, services) => {
-
     // })
 ;
-
 
 var app = builder.Build();
 
