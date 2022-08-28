@@ -104,7 +104,7 @@
 @{
     var widgetId = Html.IdFor(m => m);
 }
-<div class="properties-wrapper" id="@widgetId">
+<div class="properties-wrapper select-part-properties-wrapper" id="@widgetId">
 
     <div class="mb-3 show-for-input">
         <label asp-for="Editor">@T["Editor"]</label>
@@ -141,7 +141,13 @@
         <span class="hint">@T["The type of validation to create for this field."]</span>
     </div>
 
-    <div class="mb-3 field-options-wrapper" id="@(widgetId)-selectOptions">
+    <div class="mb-3 field-options-wrapper" id="@(widgetId)-selectOptions" data-defaultValue="@Model.DefaultValue">
+        <div class="d-none field-options-wrapper-initial-options">
+            @Html.Raw(Model.Options)
+        </div>
+        <div class="d-none field-options-wrapper-initial-default-value">
+            @Model.DefaultValue
+        </div>
         <label asp-for="Options">@T["Options"]</label>
         <a href="#" v-on:click.prevent.stop="showModal = true" class="float-end" title="@T["Edit Data"]"><i class="fas fa-edit" aria-hidden="true"></i></a>
         <select-options-table :data="state"
@@ -163,11 +169,33 @@
 </div>
 
 <script at="Foot" depends-on="selectOptionsEditor">
-    window.addEventListener('load', function() {
-        if ($('#' + '@(widgetId)-selectOptions').length > 0) {
-            initializeSelectOptionsEditor('@(widgetId)-selectOptions', @Html.Raw(Model.Options), '@Model.DefaultValue');
+    function initializeSelectOptionsEditorForElement(id, options, value) {
+        var wrapper = document.getElementById(id);
+
+        if (wrapper != null) {
+            initializeSelectOptionsEditor(id, options, value);
         }
-    })
+    }
+
+    // call this method when a widget is added to the DOM
+    initializeSelectOptionsEditorForElement('@(widgetId)-selectOptions', @Html.Raw(Model.Options), @Model.DefaultValue);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var wrappers = document.getElementsByName('select-part-properties-wrapper');
+
+        for (let i = 0; i < wrappers.length; i++) {
+            var wrapper = wrappers[i];
+
+            var fieldWrapper = wrapper.querySelector('.field-options-wrapper');
+
+            if (fieldWrapper != null) {
+                var initialDefaultValue = fieldWrapper.querySelector('.field-options-wrapper-initial-default-value');
+                var initialOptions = fieldWrapper.querySelector('.field-options-wrapper-initial-options');
+
+                initializeSelectOptionsEditorForElement(fieldWrapper.Id, initialOptions, initialDefaultValue.innerHTML)
+            }
+        }
+    });
 </script>
 
 <script at="Foot" depends-on="formsWidgetEditor">
