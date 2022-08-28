@@ -69,66 +69,73 @@ namespace OrchardCore.Environment.Shell
 
         public async Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)
         {
-            var toDisable = new List<IFeatureInfo>();
-            var toEnable = new List<IFeatureInfo>();
+            var safeToDisableFeatures = new List<IFeatureInfo>();
+            var safeToEnableFeatures = new List<IFeatureInfo>();
 
             // Look for features that can be enabled automatically.
             foreach (var featureToEnable in featuresToEnable)
             {
-                if (!featureToEnable.EnabledByDependencyOnly)
+                if (featureToEnable.EnabledByDependencyOnly)
                 {
                     // EnabledByDependencyOnly features are managed internally and can't be explicitly enabled.
                     continue;
                 }
 
-                // When any of the dependencies are EnabledByDependencyOnly, we'll need to manually enable them.
-                var autoEnable = _extensionManager.GetFeatureDependencies(featureToEnable.Id)
-                    .Where(feature => !feature.EnabledByDependencyOnly).ToArray();
+                // its safe to enable this feature
+                safeToEnableFeatures.Add(featureToEnable);
 
-                toEnable.AddRange(autoEnable);
-                toEnable.Add(featureToEnable);
+
+                // Find any dependency that has EnabledByDependencyOnly, and manually enable it.
+                var autoEnable = _extensionManager.GetFeatureDependencies(featureToEnable.Id)
+                    .Where(feature => feature.EnabledByDependencyOnly);
+
+                safeToEnableFeatures.AddRange(autoEnable);
             }
 
             // Look for features that can be disabled automatically.
             foreach (var featureToDisable in featuresToDisable)
             {
-                if (!featureToDisable.EnabledByDependencyOnly)
+                if (featureToDisable.IsAlwaysEnabled || featureToDisable.EnabledByDependencyOnly)
                 {
+                    // IsAlwaysEnabled cannot be disabled
                     // EnabledByDependencyOnly features are managed internally and can't be explicitly disabled
                     continue;
                 }
-                // If any of the dependencies are EnabledByDependencyOnly, we'll need to manually disable them.
+
+                // It's safe to disable this feature
+                safeToDisableFeatures.Add(featureToDisable);
+
+                // If any of the dependencies has EnabledByDependencyOnly, we'll need to manually disable it.
                 // Get any features that are selectable and could be disabled automatically.
                 var canBeDisabled = _extensionManager.GetFeatureDependencies(featureToDisable.Id)
-                    .Where(feature => !feature.EnabledByDependencyOnly && !toEnable.Any(willEnableFeature => willEnableFeature.Id == feature.Id))
+                    .Where(feature => feature.EnabledByDependencyOnly && !safeToEnableFeatures.Any(safeToEnableFeature => safeToEnableFeature.Id == feature.Id))
                     .ToArray();
 
-                toDisable.AddRange(canBeDisabled);
-                toDisable.Add(featureToDisable);
+                safeToDisableFeatures.AddRange(canBeDisabled);
             }
 
-            var willAutoDisable = toDisable.Where(f => !f.EnabledByDependencyOnly).ToArray();
+            var willAutoDisable = safeToDisableFeatures.Where(safeToDisableFeature => safeToDisableFeature.EnabledByDependencyOnly).ToArray();
 
             if (willAutoDisable.Length > 0)
             {
-                // At this point, we have features that will be auto disabled.
-                // Let's make sure no enabled features will still need them.
+                // At this point, we know there are at least one feature that will be automatically disabled.
+
                 var enabledFeatures = await GetEnabledFeaturesAsync();
 
-                // At this point, we know there are at least one feature that will be automatically disabled.
+                // Let's check all the enabled features recursively to make sure it's truely safe to disable them
                 foreach (var enabledFeature in enabledFeatures)
                 {
-                    if (toDisable.Any(feature => feature.Id == enabledFeature.Id && enabledFeature.EnabledByDependencyOnly))
+                    if (safeToDisableFeatures.Any(feature => feature.Id == enabledFeature.Id && !enabledFeature.EnabledByDependencyOnly))
                     {
                         // This feature will be disabled, we don't need to evaluate it
                         continue;
                     }
 
-                    ShouldDisable(enabledFeature.Id, toDisable, willAutoDisable);
+                    EvaluateDependenciesAndKeepWhatIsNeeded(enabledFeature.Id, safeToDisableFeatures, willAutoDisable);
                 }
             }
 
-            return await _shellDescriptorFeaturesManager.UpdateFeaturesAsync(_shellDescriptor, toDisable, toEnable, force);
+            return await _shellDescriptorFeaturesManager.UpdateFeaturesAsync(_shellDescriptor, safeToDisableFeatures, safeToEnableFeatures, force);
         }
 
         public Task<IEnumerable<IExtensionInfo>> GetEnabledExtensionsAsync()
@@ -144,13 +151,13 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Recursively evaluate dependencies and removes it necessary from toDisable
         /// </summary>
-        private void ShouldDisable(string id, List<IFeatureInfo> toDisable, IFeatureInfo[] willAutoDisable)
+        private void EvaluateDependenciesAndKeepWhatIsNeeded(string id, List<IFeatureInfo> safeToDisableFeatures, IFeatureInfo[] willAutoDisable)
         {
             var dependencies = _extensionManager.GetFeatureDependencies(id);
 
             foreach (var dependency in dependencies)
             {
-                if (dependency.Id == id || dependency.EnabledByDependencyOnly)
+                if (dependency.Id == id || !dependency.EnabledByDependencyOnly)
                 {
                     continue;
                 }
@@ -160,11 +167,11 @@ namespace OrchardCore.Environment.Shell
                 if (cannotDisable != null)
                 {
                     // This dependency is needed by other features, let's not disable it.
-                    toDisable.Remove(cannotDisable);
+                    safeToDisableFeatures.Remove(cannotDisable);
                 }
                 else
                 {
-                    ShouldDisable(dependency.Id, toDisable, willAutoDisable);
+                    EvaluateDependenciesAndKeepWhatIsNeeded(dependency.Id, safeToDisableFeatures, willAutoDisable);
                 }
             }
         }
