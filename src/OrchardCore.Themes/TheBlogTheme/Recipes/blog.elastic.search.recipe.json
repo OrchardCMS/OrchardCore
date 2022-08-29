@@ -19,7 +19,7 @@
     },
     {
       // Create the indices before the content items so they are indexed automatically.
-      "name": "elasticsearch-index",
+      "name": "ElasticIndexSettings",
       "Indices": [
         {
           "search": {
@@ -59,7 +59,8 @@
         "DefaultSearchFields": [
           "Content.ContentItem.FullText"
         ],
-        "AllowElasticQueryStringQueryInSearch": false
+        "AllowElasticQueryStringQueryInSearch": false,
+        "SyncWithLucene":  true
       }
     },
     {

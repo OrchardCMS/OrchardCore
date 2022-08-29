@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
@@ -27,6 +29,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         private readonly ElasticIndexManager _indexManager;
         private readonly IIndexingTaskManager _indexingTaskManager;
         private readonly ISiteService _siteService;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILogger _logger;
 
         public ElasticIndexingService(
@@ -36,6 +39,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             ElasticIndexManager indexManager,
             IIndexingTaskManager indexingTaskManager,
             ISiteService siteService,
+            IContentDefinitionManager contentDefinitionManager,
             ILogger<ElasticIndexingService> logger)
         {
             _shellHost = shellHost;
@@ -44,6 +48,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             _indexManager = indexManager;
             _indexingTaskManager = indexingTaskManager;
             _siteService = siteService;
+            _contentDefinitionManager = contentDefinitionManager;
             _logger = logger;
         }
 
@@ -295,6 +300,66 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             {
                 return new ElasticSettings();
             }
+        }
+
+        /// <summary>
+        /// Synchronizes Elasticsearch content index settings with Lucene ones.
+        /// </summary>
+        public Task SyncSettings()
+        {
+            var contentTypeDefinitions = _contentDefinitionManager.LoadTypeDefinitions();
+
+            foreach (var contentTypeDefinition in contentTypeDefinitions)
+            {
+                foreach (var partDefinition in contentTypeDefinition.Parts)
+                {
+                    _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                    {
+                        if (partDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingPartSettings))
+                        {
+                            var included = existingPartSettings["Included"];
+
+                            if (included != null && (bool)included)
+                            {
+                                partDefinition.Settings.Add(new JProperty(nameof(ElasticContentIndexSettings), JToken.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>())));
+                            }
+                        }
+                    });
+                }
+            }
+
+            var partDefinitions = _contentDefinitionManager.LoadPartDefinitions();
+
+            foreach (var partDefinition in partDefinitions)
+            {
+                _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                {
+                    if (partDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingPartSettings))
+                    {
+                        var included = existingPartSettings["Included"];
+
+                        if (included != null && (bool)included)
+                        {
+                            partDefinition.Settings.Add(new JProperty(nameof(ElasticContentIndexSettings), JToken.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>())));
+                        }
+                    }
+
+                    foreach (var fieldDefinition in partDefinition.Fields)
+                    {
+                        if (fieldDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingFieldSettings))
+                        {
+                            var included = existingFieldSettings["Included"];
+
+                            if (included != null && (bool)included)
+                            {
+                                fieldDefinition.Settings.Add(new JProperty(nameof(ElasticContentIndexSettings), JToken.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>())));
+                            }
+                        }
+                    }
+                });
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

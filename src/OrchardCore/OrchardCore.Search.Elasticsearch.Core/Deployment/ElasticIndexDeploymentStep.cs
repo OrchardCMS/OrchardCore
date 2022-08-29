@@ -9,7 +9,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
     {
         public ElasticIndexDeploymentStep()
         {
-            Name = "ElasticsearchIndex";
+            Name = "ElasticIndexSettings";
         }
 
         public bool IncludeAll { get; set; } = true;

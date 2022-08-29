@@ -31,6 +31,7 @@ namespace OrchardCore.Search.Elasticsearch
             services.AddScoped<IQuerySource, ElasticQuerySource>();
             services.AddScoped<ElasticQuerySource>();
             services.AddRecipeExecutionStep<ElasticIndexStep>();
+            services.AddRecipeExecutionStep<ElasticSettingsStep>();
 
             return services;
         }
