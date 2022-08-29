@@ -50,12 +50,12 @@ You should get this result in Docker Desktop app:
 
 ## Recipe step
 
-Elasticsearch indices can be created during recipe execution using the `elasticsearch-index` step.  
+Elasticsearch indices can be created during recipe execution using the `ElasticIndexSettings` step.  
 Here is a sample step:
 
 ```json
 {
-  "name": "elasticsearch-index",
+  "name": "ElasticIndexSettings",
   "Indices": [
     {
       "Search": {
@@ -68,6 +68,25 @@ Here is a sample step:
       }
     }
   ]
+},
+```
+
+## Elastic settings recipe step
+
+Here is an example for setting default search settings:
+
+```json
+{
+  // Create the search settings.
+  "name": "Settings",
+  "ElasticSettings": {
+    "SearchIndex": "search",
+    "DefaultSearchFields": [
+      "Content.ContentItem.FullText"
+    ],
+    "AllowElasticQueryStringQueryInSearch": false,
+    "SyncWithLucene":  true // Allows to sync content index settings
+  }
 },
 ```
 
