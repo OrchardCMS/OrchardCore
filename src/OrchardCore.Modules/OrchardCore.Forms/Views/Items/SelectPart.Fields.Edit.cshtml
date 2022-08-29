@@ -104,7 +104,7 @@
 @{
     var widgetId = Html.IdFor(m => m);
 }
-<div class="properties-wrapper select-part-properties-wrapper" id="@widgetId">
+<div class="select-part-properties-wrapper" id="@widgetId">
 
     <div class="mb-3 show-for-input">
         <label asp-for="Editor">@T["Editor"]</label>
@@ -116,38 +116,10 @@
         <span class="hint">@T["The editor style to use for this field."]</span>
     </div>
 
-    <div class="mb-3 show-for-input">
-        <label asp-for="LabelOption">@T["Label option"]</label>
-        <select asp-for="LabelOption" class="form-select content-preview-select field-label-option-select-menu">
-            <option value="@LabelOptions.None">@T["None"]</option>
-            <option value="@LabelOptions.Standard">@T["Standard"]</option>
-            <option value="@LabelOptions.ScreenReaders">@T["Screen Readers"]</option>
-        </select>
-        <span class="hint">@T["The type of label to create for this field."]</span>
-    </div>
-
-    <div class="mb-3 d-none label-text-container">
-        <label asp-for="Label">@T["Label Text"]</label>
-        <input asp-for="Label" type="text" class="form-control content-preview-text" />
-        <span class="hint">@T["The text to display in the label."]</span>
-    </div>
-
-    <div class="mb-3 show-for-input">
-        <label asp-for="ValidationOption">@T["Validation option"]</label>
-        <select asp-for="ValidationOption" class="form-select content-preview-select">
-            <option value="@ValidationOptions.None">@T["None"]</option>
-            <option value="@ValidationOptions.Standard">@T["Standard"]</option>
-        </select>
-        <span class="hint">@T["The type of validation to create for this field."]</span>
-    </div>
-
     <div class="mb-3 field-options-wrapper" id="@(widgetId)-selectOptions" data-defaultValue="@Model.DefaultValue">
-        <div class="d-none field-options-wrapper-initial-options">
-            @Html.Raw(Model.Options)
-        </div>
-        <div class="d-none field-options-wrapper-initial-default-value">
-            @Model.DefaultValue
-        </div>
+        <input type="hidden" class="field-options-wrapper-initial-default-value" value="@Model.DefaultValue" />
+        <div class="d-none field-options-wrapper-initial-options">@Html.Raw(Model.Options)</div>
+
         <label asp-for="Options">@T["Options"]</label>
         <a href="#" v-on:click.prevent.stop="showModal = true" class="float-end" title="@T["Edit Data"]"><i class="fas fa-edit" aria-hidden="true"></i></a>
         <select-options-table :data="state"
@@ -192,16 +164,43 @@
                 var initialDefaultValue = fieldWrapper.querySelector('.field-options-wrapper-initial-default-value');
                 var initialOptions = fieldWrapper.querySelector('.field-options-wrapper-initial-options');
 
-                initializeSelectOptionsEditorForElement(fieldWrapper.Id, initialOptions, initialDefaultValue.innerHTML)
+                initializeSelectOptionsEditorForElement(fieldWrapper.Id, initialOptions.innerHTML, initialDefaultValue.value)
             }
         }
     });
 </script>
 
-<script at="Foot" depends-on="formsWidgetEditor">
-    var wrapper = document.getElementById('@widgetId');
+<script at="Foot">
+    var initilizeFieldType = (wrapper) => {
+        var selectMenus = wrapper.getElementsByClassName('field-type-select-menu');
+
+        for (let i = 0; i < selectMenus.length; i++) {
+            var selectMenu = selectMenus[i];
+            selectMenu.addEventListener('change', function(e) {
+                var visibleForInputContainers = wrapper.getElementsByClassName('show-for-input');
+
+                for (let i = 0; i < visibleForInputContainers.length; i++) {
+                    var container = visibleForInputContainers[i];
+                    if (e.target.value == 'reset' || e.target.value == 'submit' || e.target.value == 'hidden') {
+                        container.classList.add('d-none');
+                    } else {
+                        container.classList.remove('d-none');
+                    }
+                }
+            });
+            selectMenu.dispatchEvent(new Event('change'));
+        }
+    };
+
+    var wrapper = document.getElementById('@Html.IdFor(m => m)');
 
     if (wrapper != null) {
-        formsWidgetEditor.initilizeLabelOptions(wrapper);
+        // at this point, we know this wrapper was added after page load, let's initilize it
+        initilizeFieldType(wrapper);
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // at this point, let's initilize any existing SelectPart after the page is loaded
+        initilizeFieldType(document);
+    });
 </script>

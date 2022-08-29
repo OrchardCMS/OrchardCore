@@ -19,15 +19,6 @@
     }
 }
 
-@if (Model.Value.LabelOption == LabelOptions.Standard)
-{
-    <label for="@fieldId">@Model.Value.Label</label>
-}
-else if (Model.Value.LabelOption == LabelOptions.ScreenReaders)
-{
-    <label for="@fieldId" class="visually-hidden">@Model.Value.Label</label>
-}
-
 @if (Model.Value.Editor == SelectEditorOption.Checkbox || Model.Value.Editor == SelectEditorOption.Radio)
 {
     int i = 0;
@@ -51,15 +42,4 @@ else
             <option value="@optionValue" selected="@isOptionSelected">@option.Text</option>
         }
     </select>
-}
-
-@if (Model.Value.ValidationOption == ValidationOptions.Standard)
-{
-    // HtmlFieldPrefix is the PartName i.e. ValidationPart, which is not needed in Display.
-    var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
-    ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = String.Empty;
-
-    @Html.ValidationMessage(fieldName)
-
-    ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix;
 }

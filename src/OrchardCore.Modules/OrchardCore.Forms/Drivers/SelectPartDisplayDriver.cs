@@ -37,9 +37,6 @@ namespace OrchardCore.Forms.Drivers
             {
                 m.Options = JsonConvert.SerializeObject(part.Options ?? Array.Empty<SelectOption>(), SerializerSettings);
                 m.DefaultValue = part.DefaultValue;
-                m.LabelOption = part.LabelOption;
-                m.Label = part.Label;
-                m.ValidationOption = part.ValidationOption;
                 m.Editor = part.Editor;
             });
         }
@@ -53,13 +50,10 @@ namespace OrchardCore.Forms.Drivers
                 part.DefaultValue = viewModel.DefaultValue;
                 try
                 {
+                    part.Editor = viewModel.Editor;
                     part.Options = String.IsNullOrWhiteSpace(viewModel.Options)
                         ? Array.Empty<SelectOption>()
                         : JsonConvert.DeserializeObject<SelectOption[]>(viewModel.Options);
-                    part.LabelOption = viewModel.LabelOption;
-                    part.Label = viewModel.Label;
-                    part.ValidationOption = viewModel.ValidationOption;
-                    part.Editor = viewModel.Editor;
                 }
                 catch
                 {

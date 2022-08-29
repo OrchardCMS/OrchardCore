@@ -2,53 +2,14 @@
 @using OrchardCore.Forms.Models
 @model TextAreaPartEditViewModel
 
-<div class="properties-wrapper" id="@Html.IdFor(m => m)">
-
-    <div class="mb-3 show-for-input">
-        <label asp-for="LabelOption">@T["Label option"]</label>
-        <select asp-for="LabelOption" class="form-select content-preview-select field-label-option-select-menu">
-            <option value="@LabelOptions.None">@T["None"]</option>
-            <option value="@LabelOptions.Standard">@T["Standard"]</option>
-            <option value="@LabelOptions.ScreenReaders">@T["Screen Readers"]</option>
-        </select>
-        <span class="hint">@T["The type of label to create for this field."]</span>
-    </div>
-
-    <div class="mb-3 d-none label-text-container">
-        <label asp-for="Label">@T["Label Text"]</label>
-        <input asp-for="Label" type="text" class="form-control content-preview-text" />
-        <span class="hint">@T["The text to display in the label."]</span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Placeholder">@T["Placeholder Text"]</label>
-        <input asp-for="Placeholder" type="text" class="form-control content-preview-text" />
-        <span class="hint">@T["The text to display when the textarea has no value."]</span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="DefaultValue">@T["Default Value"]</label>
-        <input asp-for="DefaultValue" type="text" class="form-control content-preview-text" />
-        <span class="hint">@T["The default value for this textarea."]</span>
-    </div>
-
-    <div class="mb-3 show-for-input">
-        <label asp-for="ValidationOption">@T["Validation option"]</label>
-        <select asp-for="ValidationOption" class="form-select content-preview-select">
-            <option value="@ValidationOptions.None">@T["None"]</option>
-            <option value="@ValidationOptions.Standard">@T["Standard"]</option>
-        </select>
-        <span class="hint">@T["The type of validation to create for this field."]</span>
-    </div>
-
+<div class="mb-3">
+    <label asp-for="Placeholder">@T["Placeholder Text"]</label>
+    <input asp-for="Placeholder" type="text" class="form-control content-preview-text" />
+    <span class="hint">@T["The text to display when the textarea has no value."]</span>
 </div>
 
-<script asp-src="~/OrchardCore.Forms/Scripts/formsWidgetEditor.min.js" debug-src="~/OrchardCore.Forms/Scripts/formsWidgetEditor.js" asp-name="formsWidgetEditor" at="Foot"></script>
-
-<script at="Foot" depends-on="formsWidgetEditor">
-    var wrapper = document.getElementById('@Html.IdFor(m => m)');
-
-    if (wrapper != null) {
-        formsWidgetEditor.initilizeLabelOptions(wrapper);
-    }
-</script>
+<div class="mb-3">
+    <label asp-for="DefaultValue">@T["Default Value"]</label>
+    <input asp-for="DefaultValue" type="text" class="form-control content-preview-text" />
+    <span class="hint">@T["The default value for this textarea."]</span>
+</div>

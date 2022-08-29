@@ -5,16 +5,8 @@ namespace OrchardCore.Forms.Models
     public class SelectPart : ContentPart
     {
         public SelectOption[] Options { get; set; }
-
         public string DefaultValue { get; set; }
-
         public SelectEditorOption Editor { get; set; }
-
-        public LabelOptions LabelOption { get; set; }
-
-        public string Label { get; set; }
-
-        public ValidationOptions ValidationOption { get; set; }
     }
 
     public class SelectOption

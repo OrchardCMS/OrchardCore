@@ -21,9 +21,6 @@ namespace OrchardCore.Forms.Drivers
                 m.Placeholder = part.Placeholder;
                 m.DefaultValue = part.DefaultValue;
                 m.Type = part.Type;
-                m.LabelOption = part.LabelOption;
-                m.Label = part.Label;
-                m.ValidationOption = part.ValidationOption;
             });
         }
 
@@ -36,9 +33,6 @@ namespace OrchardCore.Forms.Drivers
                 part.Placeholder = viewModel.Placeholder?.Trim();
                 part.DefaultValue = viewModel.DefaultValue?.Trim();
                 part.Type = viewModel.Type?.Trim();
-                part.LabelOption = viewModel.LabelOption;
-                part.Label = viewModel.Label;
-                part.ValidationOption = viewModel.ValidationOption;
             }
 
             return Edit(part);
