@@ -80,6 +80,8 @@ namespace OrchardCore.Lucene
             services.AddScoped<IQuerySource, LuceneQuerySource>();
             services.AddScoped<LuceneQuerySource>();
             services.AddRecipeExecutionStep<LuceneIndexStep>();
+            services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
+            services.AddRecipeExecutionStep<LuceneIndexResetStep>();
 
             services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
             services.AddShapeAttributes<SearchShapes>();
