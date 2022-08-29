@@ -1,5 +1,4 @@
 @using OrchardCore.Forms.ViewModels
-@using OrchardCore.Forms.Models
 @model InputPartEditViewModel
 @{
     var wrapperId = Html.IdFor(m => m);
@@ -44,7 +43,7 @@
     <span class="hint">@T["The default value for this field."]</span>
 </div>
 
-<script at="Head">
+<script at="Foot">
     var initilizeFieldType = (wrapper) => {
         var selectMenus = wrapper.getElementsByClassName('field-type-select-menu');
         for (let i = 0; i < selectMenus.length; i++) {
