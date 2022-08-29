@@ -4,7 +4,6 @@
 
 <script asp-src="~/OrchardCore.Forms/Scripts/selectOptionsEditor.min.js" debug-src="~/OrchardCore.Forms/Scripts/selectOptionsEditor.js" asp-name="selectOptionsEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
 <style asp-src="~/OrchardCore.Forms/Styles/selectOptionsEditor.min.css" debug-src="~/OrchardCore.Forms/Styles/selectOptionsEditor.css"></style>
-<script asp-src="~/OrchardCore.Forms/Scripts/formsWidgetEditor.min.js" debug-src="~/OrchardCore.Forms/Scripts/formsWidgetEditor.js" asp-name="formsWidgetEditor" at="Foot"></script>
 
 <script type="text/x-template" id="select-options-row" asp-name="select-options-row" at="Foot">
     <tr>
@@ -173,7 +172,6 @@
 <script at="Foot">
     var initilizeFieldType = (wrapper) => {
         var selectMenus = wrapper.getElementsByClassName('field-type-select-menu');
-
         for (let i = 0; i < selectMenus.length; i++) {
             var selectMenu = selectMenus[i];
             selectMenu.addEventListener('change', function(e) {
@@ -191,14 +189,11 @@
             selectMenu.dispatchEvent(new Event('change'));
         }
     };
-
     var wrapper = document.getElementById('@Html.IdFor(m => m)');
-
     if (wrapper != null) {
         // at this point, we know this wrapper was added after page load, let's initilize it
         initilizeFieldType(wrapper);
     }
-
     document.addEventListener('DOMContentLoaded', function() {
         // at this point, let's initilize any existing SelectPart after the page is loaded
         initilizeFieldType(document);

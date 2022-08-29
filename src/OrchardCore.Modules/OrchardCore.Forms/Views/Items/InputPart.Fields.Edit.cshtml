@@ -45,17 +45,14 @@
 </div>
 
 <script at="Head">
-
     var initilizeFieldType = (wrapper) => {
         var selectMenus = wrapper.getElementsByClassName('field-type-select-menu');
-
         for (let i = 0; i < selectMenus.length; i++) {
             var selectMenu = selectMenus[i];
             var widgetWrapper = selectMenu.closest('.widget-editor-body');
-
             selectMenu.addEventListener('change', function(e) {
                 var visibleForInputContainers = (widgetWrapper || wrapper).getElementsByClassName('show-for-input');
-                if (visibleForInputContainers.length == null) {
+                if (visibleForInputContainers.length == 0) {
                     return;
                 }
                 var value = e.target.value;
@@ -69,15 +66,11 @@
             });
         }
     };
-
     var wrapper = document.getElementById('@wrapperId')
-
     if (wrapper != null) {
         initilizeFieldType(wrapper);
     }
-
     document.addEventListener('DOMContentLoaded', function() {
         initilizeFieldType(document);
     });
-
 </script>
