@@ -130,7 +130,6 @@ namespace OrchardCore.Search.Elasticsearch
                     });
 
                     services.AddElasticServices();
-                    services.AddScoped<IDataMigration, Migrations>();
                     services.AddSingleton<SearchProvider, ElasticSearchProvider>();
                     services.AddScoped<IPermissionProvider, Permissions>();
                     services.AddScoped<INavigationProvider, AdminMenu>();
@@ -190,6 +189,13 @@ namespace OrchardCore.Search.Elasticsearch
                 areaName: "OrchardCore.Search.Elasticsearch",
                 pattern: _adminOptions.AdminUrlPrefix + "/elasticsearch/Reset/{id}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Reset) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Elasticsearch.SyncSettings",
+                areaName: "OrchardCore.Search.Elasticsearch",
+                pattern: _adminOptions.AdminUrlPrefix + "/elasticsearch/SyncSettings",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.SyncSettings) }
             );
         }
 
