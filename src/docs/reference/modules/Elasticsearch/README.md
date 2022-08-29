@@ -71,7 +71,7 @@ Here is a sample step:
 },
 ```
 
-## Elastic settings recipe step
+## Elasticsearch settings recipe step
 
 Here is an example for setting default search settings:
 
