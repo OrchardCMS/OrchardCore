@@ -28,7 +28,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
             // Adding Elasticsearch settings
             result.Steps.Add(new JObject(
                 new JProperty("name", "Settings"),
-                new JProperty("ElasticsearchSettings", JObject.FromObject(elasticSettings))
+                new JProperty("ElasticSettings", JObject.FromObject(elasticSettings))
             ));
         }
     }

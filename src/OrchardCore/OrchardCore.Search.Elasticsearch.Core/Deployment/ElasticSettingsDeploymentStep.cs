@@ -9,7 +9,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
     {
         public ElasticSettingsDeploymentStep()
         {
-            Name = "ElasticsearchSettings";
+            Name = "ElasticSettings";
         }
     }
 }
