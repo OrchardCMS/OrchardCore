@@ -1,43 +1,37 @@
 @model LuceneIndexResetDeploymentStepViewModel
 
-@{
-    var indexNames = Model.IndexNames;
-    var allIndexNames = Model.AllIndexNames;
-}
-
-<h5>@T["Reset search Indices"]</h5>
+<h5>@T["Reset Search Indexes"]</h5>
 
 <div class="mb-3 mt-4 mb-5">
     <div class="row">
         <div class="col">
             <div class="form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IncludeAll"
-                           data-reverseToggle=".idxsel" />
-                    @T["Include all search indices."]
+                    <input class="form-check-input" asp-for="IncludeAll" data-element-id-to-collapse="indexes-list" />
+                    @T["Include all Search Indexes."]
                 </label>
             </div>
         </div>
     </div>
 </div>
 
-<div class="idxsel mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
+<div id="indexes-list" class="mt-4 mb-5 collapse @(Model.IncludeAll ? "" : "show")">
     <div class="row">
         <div class="col-small">
-            <span class="hint">@T["The search indices to reset as part of the plan."]</span>
+            <span class="hint">@T["The Search Indexes to reset as part of the plan."]</span>
         </div>
     </div>
     <div class="row">
         <div class="col-small">
             <ul class="list-group">
-                @foreach (var indexName in allIndexNames)
+                @foreach (var indexName in Model.AllIndexNames)
                 {
-                    var checkd = indexNames?.Contains(indexName);
+                    var isChecked = Model.IndexNames?.Contains(indexName);
 
                     <li class="list-group-item">
                         <div class="form-check">
                             <label class="form-check-label">
-                                <input class="form-check-input" type="checkbox" name="@Html.NameFor(m => m.IndexNames)" value="@indexName" checked="@checkd">
+                                <input class="form-check-input" type="checkbox" name="@Html.NameFor(m => m.IndexNames)" value="@indexName" checked="@isChecked">
                                 @indexName
                             </label>
                         </div>
@@ -49,14 +43,9 @@
 </div>
 
 <script at="Foot">
-    $(function () {
-        $("[data-reversetoggle]").on("click", function () {
-            var state = this.checked;
-            if (state) {
-                $($(this).attr("data-reversetoggle")).collapse('hide');
-            } else {
-                $($(this).attr("data-reversetoggle")).collapse('show');
-            }
+    (function () {
+        document.getElementById('@Html.IdFor(x => x.IncludeAll)').addEventListener('change', (e) => {
+            new bootstrap.Collapse(document.getElementById(e.target.dataset.elementIdToCollapse));
         });
-    });
+    })();
 </script>
