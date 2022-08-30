@@ -37,22 +37,18 @@ namespace OrchardCore.Lucene.Deployment
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LuceneIndexRebuildDeploymentStep step, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(LuceneIndexRebuildDeploymentStep rebuildIndexStep, IUpdateModel updater)
         {
-            step.IndexNames = Array.Empty<string>();
+            rebuildIndexStep.IndexNames = Array.Empty<string>();
 
-            await updater.TryUpdateModelAsync(step,
-                                              Prefix,
-                                              x => x.IndexNames,
-                                              x => x.IncludeAll);
+            await updater.TryUpdateModelAsync(rebuildIndexStep, Prefix, step => step.IndexNames, step => step.IncludeAll);
 
-            // don't have the selected option if include all
-            if (step.IncludeAll)
+            if (rebuildIndexStep.IncludeAll)
             {
-                step.IndexNames = Array.Empty<string>();
+                rebuildIndexStep.IndexNames = Array.Empty<string>();
             }
 
-            return Edit(step);
+            return Edit(rebuildIndexStep);
         }
     }
 }
