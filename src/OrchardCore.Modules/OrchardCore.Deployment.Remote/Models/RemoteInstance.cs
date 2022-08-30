@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Deployment.Remote.Models
+namespace OrchardCore.Deployment.Remote.Models
 {
     public class RemoteInstance
     {

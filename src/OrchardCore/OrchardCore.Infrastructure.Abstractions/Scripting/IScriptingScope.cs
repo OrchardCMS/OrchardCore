@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Scripting
+namespace OrchardCore.Scripting
 {
     public interface IScriptingScope
     {

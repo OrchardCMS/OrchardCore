@@ -1,4 +1,4 @@
-﻿using OrchardCore.Indexing;
+using OrchardCore.Indexing;
 
 namespace OrchardCore.Lucene.Settings
 {

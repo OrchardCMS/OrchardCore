@@ -1,4 +1,4 @@
-﻿using OrchardCore.Feeds.Models;
+using OrchardCore.Feeds.Models;
 
 namespace OrchardCore.Feeds
 {

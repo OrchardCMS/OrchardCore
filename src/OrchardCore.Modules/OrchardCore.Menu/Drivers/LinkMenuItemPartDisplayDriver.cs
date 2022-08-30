@@ -31,7 +31,7 @@ namespace OrchardCore.Menu.Drivers
             )
         {
             _urlHelperFactory = urlHelperFactory;
-            _actionContextAccessor = actionContextAccessor; 
+            _actionContextAccessor = actionContextAccessor;
             _htmlSanitizerService = htmlSanitizerService;
             _htmlencoder = htmlencoder;
             S = localizer;

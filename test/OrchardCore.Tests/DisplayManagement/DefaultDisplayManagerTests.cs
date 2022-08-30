@@ -191,7 +191,7 @@ namespace OrchardCore.Tests.DisplayManagement
             _additionalBindings["Foo"] = new ShapeBinding
             {
                 BindingName = "Foo",
-                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString($"Yes there is { ((dynamic)ctx.Value).Data }."))
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString($"Yes there is {((dynamic)ctx.Value).Data}."))
             };
 
             var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));

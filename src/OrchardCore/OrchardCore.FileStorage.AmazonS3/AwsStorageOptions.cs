@@ -1,4 +1,4 @@
-﻿using Amazon.Extensions.NETCore.Setup;
+using Amazon.Extensions.NETCore.Setup;
 
 namespace OrchardCore.FileStorage.AmazonS3;
 

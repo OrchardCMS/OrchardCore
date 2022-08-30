@@ -94,7 +94,7 @@ namespace OrchardCore.Email.Services
             }
             catch (Exception ex)
             {
-                result = SmtpResult.Failed(S["An error occurred while sending an email: '{0}'", ex.Message]); 
+                result = SmtpResult.Failed(S["An error occurred while sending an email: '{0}'", ex.Message]);
             }
 
             result.Response = response;
@@ -260,7 +260,7 @@ namespace OrchardCore.Email.Services
                     }
                 }
 
-                if (!String.IsNullOrEmpty( _options.ProxyHost))
+                if (!String.IsNullOrEmpty(_options.ProxyHost))
                 {
                     client.ProxyClient = new Socks5Client(_options.ProxyHost, _options.ProxyPort);
                 }

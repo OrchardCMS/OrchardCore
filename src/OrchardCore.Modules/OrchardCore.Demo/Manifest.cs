@@ -20,4 +20,4 @@ using OrchardCore.Modules.Manifest;
     Name = "Orchard Foo Demo",
     Description = "Foo feature sample.",
     Category = "Samples"
-)] 
+)]

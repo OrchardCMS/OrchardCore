@@ -1,4 +1,4 @@
-﻿using OrchardCore.Users.Workflows.Activities;
+using OrchardCore.Users.Workflows.Activities;
 
 namespace OrchardCore.Users.Workflows.ViewModels
 {

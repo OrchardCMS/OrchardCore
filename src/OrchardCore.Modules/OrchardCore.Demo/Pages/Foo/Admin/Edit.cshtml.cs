@@ -1,12 +1,12 @@
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
-using YesSql;
-using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Modules;
+using YesSql;
 namespace OrchardCore.Demo.Pages
 {
     [Feature("OrchardCore.Demo.Foo")]

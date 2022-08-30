@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+using System.Xml.Linq;
 using OrchardCore.XmlRpc.Models;
 
 namespace OrchardCore.XmlRpc.Services
