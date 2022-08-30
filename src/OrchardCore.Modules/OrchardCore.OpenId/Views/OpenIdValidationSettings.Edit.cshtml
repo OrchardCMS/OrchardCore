@@ -25,14 +25,14 @@
     <label asp-for="Authority">@T["Authority"]</label>
     <input asp-for="Authority" class="form-control" />
     <span asp-validation-for="Authority"></span>
-    <span class="hint">@T["The address of the remote OpenID Connect server. Using a HTTPS address is strongly recommended."]</span>
+    <span class="hint">@T["The address of the remote OpenID Connect server. An HTTPS address is required."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="MetadataAddress">
-    <label asp-for="MetadataAddress">@T["Well Known Metadata Address"]</label>
+    <label asp-for="MetadataAddress">@T["OpenID Connect Metadata Address"]</label>
     <input asp-for="MetadataAddress" class="form-control" />
     <span asp-validation-for="MetadataAddress"></span>
-    <span class="hint">@T["The address of the metatdata endpoint. Optional. (https://{your base url}/.well-known/openid-configuration)"]</span>
+    <span class="hint">@T["The well-formed URI of the OpenID Connect Metadata Address endpoint. This is only for advanced scenarios when metadata is not available from the standard authority endpoint. It cannot be used when using a Tenant and a HTTPS address is required."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="Audience">
