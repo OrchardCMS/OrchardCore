@@ -19,19 +19,4 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement.Core\OrchardCore.ResourceManagement.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="wwwroot\Vendor\jquery-3.6.0\jquery.js">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Update="wwwroot\Vendor\jquery-3.6.0\jquery.min.js">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Update="wwwroot\Vendor\jquery-3.6.0\jquery.slim.js">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Update="wwwroot\Vendor\jquery-3.6.0\jquery.slim.min.js">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
 </Project>
