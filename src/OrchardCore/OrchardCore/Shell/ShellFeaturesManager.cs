@@ -67,9 +67,9 @@ namespace OrchardCore.Environment.Shell
             return Task.FromResult(_extensionManager.GetFeatures().Where(f => _shellDescriptor.Features.All(sf => sf.Id != f.Id)));
         }
 
-        public async Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)
+        public Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)
         {
-            return await _shellDescriptorFeaturesManager.UpdateFeaturesAsync(_shellDescriptor, featuresToDisable, featuresToEnable, force);
+            return _shellDescriptorFeaturesManager.UpdateFeaturesAsync(_shellDescriptor, featuresToDisable, featuresToEnable, force);
         }
 
         public Task<IEnumerable<IExtensionInfo>> GetEnabledExtensionsAsync()
@@ -80,34 +80,6 @@ namespace OrchardCore.Environment.Shell
 
             // Extensions are still ordered according to the weight of their first features.
             return Task.FromResult(_extensionManager.GetExtensions().Where(e => enabledIds.Contains(e.Id)));
-        }
-
-        /// <summary>
-        /// Recursively evaluate dependencies and removes it necessary from toDisable
-        /// </summary>
-        private void EvaluateDependenciesAndKeepWhatIsNeeded(string id, List<IFeatureInfo> safeToDisableFeatures, IFeatureInfo[] willAutoDisable)
-        {
-            var dependencies = _extensionManager.GetFeatureDependencies(id);
-
-            foreach (var dependency in dependencies)
-            {
-                if (dependency.Id == id || !dependency.EnabledByDependencyOnly)
-                {
-                    continue;
-                }
-
-                var cannotDisable = willAutoDisable.FirstOrDefault(feature => feature.Id == dependency.Id);
-
-                if (cannotDisable != null)
-                {
-                    // This dependency is needed by other features, let's not disable it.
-                    safeToDisableFeatures.Remove(cannotDisable);
-                }
-                else
-                {
-                    EvaluateDependenciesAndKeepWhatIsNeeded(dependency.Id, safeToDisableFeatures, willAutoDisable);
-                }
-            }
         }
     }
 }
