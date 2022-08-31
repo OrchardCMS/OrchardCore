@@ -1,6 +1,6 @@
 @model LuceneIndexRebuildDeploymentStepViewModel
 
-<h5>@T["Rebuild Search Indexes"]</h5>
+<h5>@T["Rebuild Lucene Search Indices"]</h5>
 
 <div class="mb-3 mt-4 mb-5">
     <div class="row">
@@ -8,7 +8,7 @@
             <div class="form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="IncludeAll" data-element-id-to-collapse="indexes-list"/>
-                    @T["Include all Search Indexes."]
+                    @T["Include all Lucene search indices."]
                 </label>
             </div>
         </div>
@@ -18,7 +18,7 @@
 <div id="indexes-list" class="mt-4 mb-5 collapse @(Model.IncludeAll ? "" : "show")">
     <div class="row">
         <div class="col-small">
-            <span class="hint">@T["The Search Indexes to rebuild as part of the plan."]</span>
+            <span class="hint">@T["The Lucene search indices to rebuild as part of the plan."]</span>
         </div>
     </div>
     <div class="row">

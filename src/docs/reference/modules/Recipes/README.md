@@ -148,9 +148,11 @@ You can also set the default Lucene Settings.
     }
 ```
 
-### Reset Lucene Index Step
+### Reset Lucene Search Index Step
 
 This Reset Lucene Index Step resets a lucene index.
+Restarts the indexing process from the beginning in order to update current content items.
+It doesn't delete existing entries from the index.
 
 ```json
     {
@@ -161,9 +163,10 @@ This Reset Lucene Index Step resets a lucene index.
     }
 ```
 
-### Rebuild Lucene Index Step
+### Rebuild Lucene Search Index Step
 
 This Rebuild Lucene Index Step rebuilds a lucene index.
+Deletes and recreates the full index content.
 
 ```json
     {

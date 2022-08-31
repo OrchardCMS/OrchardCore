@@ -3,7 +3,7 @@ using OrchardCore.Deployment;
 namespace OrchardCore.Lucene.Deployment
 {
     /// <summary>
-    /// Adds rebuild lucene index task to a <see cref="DeploymentPlanResult"/>.
+    /// Adds rebuild Lucene index task to a <see cref="DeploymentPlanResult"/>.
     /// </summary>
     public class LuceneIndexRebuildDeploymentStep : DeploymentStep
     {

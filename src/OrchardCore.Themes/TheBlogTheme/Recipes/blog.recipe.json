@@ -1292,6 +1292,12 @@
           "Quality": 100
         }
       }
-    }    
+    },
+    {
+      "name": "lucene-index-rebuild",
+      "Indices": [
+        "Search"
+      ]
+    }
   ]
 }

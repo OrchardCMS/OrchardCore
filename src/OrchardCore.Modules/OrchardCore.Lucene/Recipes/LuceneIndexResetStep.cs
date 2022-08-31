@@ -18,8 +18,7 @@ namespace OrchardCore.Lucene.Recipes
         public LuceneIndexResetStep(
             LuceneIndexSettingsService luceneIndexSettingsService,
             LuceneIndexingService luceneIndexingService,
-            LuceneIndexManager luceneIndexManager
-            )
+            LuceneIndexManager luceneIndexManager)
         {
             _luceneIndexSettingsService = luceneIndexSettingsService;
             _luceneIndexManager = luceneIndexManager;
