@@ -148,6 +148,32 @@ You can also set the default Lucene Settings.
     }
 ```
 
+### Reset Lucene Index Step
+
+This Reset Lucene Index Step resets a lucene index.
+
+```json
+    {
+      "name": "lucene-index-reset",
+      "Indices": [
+        "IndexName1", "IndexName2"
+      ]
+    }
+```
+
+### Rebuild Lucene Index Step
+
+This Rebuild Lucene Index Step rebuilds a lucene index.
+
+```json
+    {
+      "name": "lucene-index-rebuild",
+      "Indices": [
+        "IndexName1", "IndexName2"
+      ]
+    }
+```
+
 ### Content Step
 
 The Content step allows you to create content items.
