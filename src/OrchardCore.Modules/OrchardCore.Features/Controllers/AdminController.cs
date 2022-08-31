@@ -102,7 +102,7 @@ namespace OrchardCore.Features.Controllers
             if (ModelState.IsValid)
             {
                 var features = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                    .Where(f => !f.IsTheme() && !f.EnabledByDependencyOnly && model.FeatureIds.Contains(f.Id));
+                    .Where(f => !f.EnabledByDependencyOnly && !f.IsTheme() && model.FeatureIds.Contains(f.Id));
 
                 await EnableOrDisableFeaturesAsync(features, model.BulkAction, force);
             }

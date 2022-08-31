@@ -192,7 +192,7 @@ namespace OrchardCore.Themes.Controllers
             }
 
             var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                .FirstOrDefault(f => f.Id == id && f.IsTheme() && !f.IsAlwaysEnabled && !f.EnabledByDependencyOnly);
+                .FirstOrDefault(f => f.Id == id && !f.IsAlwaysEnabled && !f.EnabledByDependencyOnly && f.IsTheme());
 
             if (feature == null)
             {
@@ -215,7 +215,7 @@ namespace OrchardCore.Themes.Controllers
             }
 
             var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                .FirstOrDefault(f => f.Id == id && f.IsTheme() && !f.IsAlwaysEnabled && !f.EnabledByDependencyOnly);
+                .FirstOrDefault(f => f.Id == id && !f.IsAlwaysEnabled && !f.EnabledByDependencyOnly && f.IsTheme());
 
             if (feature == null)
             {
