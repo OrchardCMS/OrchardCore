@@ -47,9 +47,15 @@ namespace OrchardCore.Environment.Shell
 
             var alwaysEnabledIds = _alwaysEnabledFeatures.Select(sf => sf.Id).ToArray();
 
+            var onDemandFeaturesToDisable = _extensionManager.GetFeatures()
+                .Where(f => f.EnabledByDependencyOnly);
+
             var allFeaturesToDisable = featuresToDisable
                 .Where(f => !alwaysEnabledIds.Contains(f.Id))
                 .SelectMany(feature => GetFeaturesToDisable(feature, enabledFeatureIds, force))
+                // Always attempt to disable EnabledByDependencyOnly features
+                // to ensure we auto disable any feature that is no longer needed
+                .Union(onDemandFeaturesToDisable)
                 .Distinct()
                 .Reverse()
                 .ToList();
