@@ -16,7 +16,6 @@ using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
-using GraphQL.NewtonsoftJson;
 
 namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
 {
