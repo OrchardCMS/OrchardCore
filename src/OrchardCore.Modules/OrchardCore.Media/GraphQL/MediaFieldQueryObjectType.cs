@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Types;
@@ -17,7 +18,14 @@ namespace OrchardCore.Media.GraphQL
                 .Name("paths")
                 .Description("the media paths")
                 .PagingArguments()
-                .Resolve(x => x.Page(x.Source.Paths));
+                .Resolve(x =>
+                {
+                    if (x.Source?.Paths is null)
+                    {
+                        return Array.Empty<string>();
+                    }
+                    return x.Page(x.Source.Paths);
+                });
 
             Field<ListGraphType<StringGraphType>, IEnumerable<string>>()
                 .Name("urls")
@@ -25,6 +33,10 @@ namespace OrchardCore.Media.GraphQL
                 .PagingArguments()
                 .Resolve(x =>
                 {
+                    if (x.Source?.Paths is null)
+                    {
+                        return Array.Empty<string>();
+                    }
                     var paths = x.Page(x.Source.Paths);
                     var mediaFileStore = x.RequestServices.GetService<IMediaFileStore>();
                     return paths.Select(p => mediaFileStore.MapPathToPublicUrl(p));

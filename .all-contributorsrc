@@ -568,7 +568,8 @@
       "contributions": [
         "code",
         "video",
-        "translation"
+        "translation",
+        "doc"
       ]
     },
     {
@@ -2542,6 +2543,60 @@
       "profile": "https://github.com/DemeSzabolcs",
       "contributions": [
         "doc"
+      ]
+    },
+    {
+      "login": "mazuryv",
+      "name": "Mazur Yuriy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/26767342?v=4",
+      "profile": "http://mazur.dp.ua/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "devlife",
+      "name": "Mike Paterson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/237369?v=4",
+      "profile": "http://sleepcanwait.blogspot.com/",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "neglectedvalue",
+      "name": "neglectedvalue",
+      "avatar_url": "https://avatars.githubusercontent.com/u/69389840?v=4",
+      "profile": "https://github.com/neglectedvalue",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "PBMikeW",
+      "name": "Mike Williamson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/89110166?v=4",
+      "profile": "https://github.com/PBMikeW",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ProstoMimoProhodill",
+      "name": "Andrew",
+      "avatar_url": "https://avatars.githubusercontent.com/u/32439583?v=4",
+      "profile": "https://github.com/ProstoMimoProhodill",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "MZole",
+      "name": "Zoltán Máté",
+      "avatar_url": "https://avatars.githubusercontent.com/u/99020631?v=4",
+      "profile": "https://github.com/MZole",
+      "contributions": [
+        "code"
       ]
     }
   ],

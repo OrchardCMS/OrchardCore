@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <PackageReference Include="AngleSharp" />
-    <PackageReference Include="Lorem.Universal.NET" Version="4.0.80" />
+    <PackageReference Include="Lorem.Universal.NET" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="System.Linq.Async" />

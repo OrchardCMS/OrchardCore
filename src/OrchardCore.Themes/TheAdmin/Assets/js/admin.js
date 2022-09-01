@@ -7,54 +7,56 @@ function confirmDialog({callback, ...options}) {
             <div class="modal-content">\
                 <div class="modal-header">\
                     <h5 class="modal-title">' + title + '</h5>\
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">\
-                        <span aria-hidden="true">&times;</span>\
-                    </button>\
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>\
                 </div>\
                 <div class="modal-body">\
                     <p>' + message +'</p>\
                 </div>\
                 <div class="modal-footer">\
                     <button id="modalOkButton" type="button" class="btn ' + okClass + '">' + okText + '</button>\
-                    <button id="modalCancelButton" type="button" class="btn ' + cancelClass + '" data-dismiss="modal">' + cancelText + '</button>\
+                    <button id="modalCancelButton" type="button" class="btn ' + cancelClass + '" data-bs-dismiss="modal">' + cancelText + '</button>\
                 </div>\
             </div>\
         </div>\
-    </div>').appendTo("body");
-    $("#confirmRemoveModal").modal({
+    </div>').appendTo('body');
+
+    var confirmModal = new bootstrap.Modal($('#confirmRemoveModal'), {
         backdrop: 'static',
         keyboard: false
+    })
+
+    confirmModal.show();
+
+    document.getElementById('confirmRemoveModal').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('confirmRemoveModal').remove();
+        confirmModal.dispose();
     });
 
-    $("#confirmRemoveModal").on('hidden.bs.modal', function () {
-        $("#confirmRemoveModal").remove();
-    });
-
-    $("#modalOkButton").click(function () {
+    $('#modalOkButton').click(function () {
         callback(true);
-        $("#confirmRemoveModal").modal("hide");
+        confirmModal.hide();
     });
 
-    $("#modalCancelButton").click(function () {
+    $('#modalCancelButton').click(function () {
         callback(false);
-        $("#confirmRemoveModal").modal("hide");
+        confirmModal.hide();
     });
 }
 
 // Prevents page flickering while downloading css
-$(window).on("load", function() {
-    $("body").removeClass("preload");
+$(window).on('load', function() {
+    $('body').removeClass('preload');
 });
 
 $(function () {
-    $("body").on("click", "[data-url-af~='RemoveUrl'], a[itemprop~='RemoveUrl']", function () {
+    $('body').on('click', '[data-url-af~="RemoveUrl"], a[itemprop~="RemoveUrl"]', function () {
         var _this = $(this);
-        if(_this.filter("a[itemprop~='UnsafeUrl']").length == 1)
+        if(_this.filter('a[itemprop~="UnsafeUrl"]').length == 1)
         {
             console.warn('Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.')
         }
         // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled below.
-        if (_this.filter("[data-url-af~='UnsafeUrl'], a[itemprop~='UnsafeUrl']").length == 1) {
+        if (_this.filter('[data-url-af~="UnsafeUrl"], a[itemprop~="UnsafeUrl"]').length == 1) {
             return false;
         }
         confirmDialog({..._this.data(),
@@ -64,7 +66,7 @@ $(function () {
                     if (url == undefined) {
                         var form = _this.parents('form');
                         // This line is reuired in case we used the FormValueRequiredAttribute
-                        form.append($("<input type=\"hidden\" name=\"" + _this.attr('name') + "\" value=\"" + _this.attr('value') + "\" />"));
+                        form.append($('<input type="hidden" name="' + _this.attr('name') + '" value="' + _this.attr('value') + '" />'));
                         form.submit();
                     }
                     else {
@@ -78,29 +80,29 @@ $(function () {
 });
 
 $(function () {
-    var magicToken = $("input[name=__RequestVerificationToken]").first();
+    var magicToken = $('input[name=__RequestVerificationToken]').first();
     if (magicToken) {
-        $("body").on("click", "a[data-url-af~='UnsafeUrl'], a[itemprop~='UnsafeUrl']", function () {
+        $('body').on('click', 'a[data-url-af~="UnsafeUrl"], a[itemprop~="UnsafeUrl"]', function () {
             var _this = $(this);
-            if(_this.filter("a[itemprop~='UnsafeUrl']").length == 1)
+            if(_this.filter('a[itemprop~="UnsafeUrl"]').length == 1)
             {
                 console.warn('Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.')
             }
             var hrefParts = _this.attr("href").split("?");
-            var form = $("<form action=\"" + hrefParts[0] + "\" method=\"POST\" />");
+            var form = $('<form action="' + hrefParts[0] + '" method="POST" />');
             form.append(magicToken.clone());
             if (hrefParts.length > 1) {
-                var queryParts = hrefParts[1].split("&");
+                var queryParts = hrefParts[1].split('&');
                 for (var i = 0; i < queryParts.length; i++) {
-                    var queryPartKVP = queryParts[i].split("=");
+                    var queryPartKVP = queryParts[i].split('=');
                     //trusting hrefs in the page here
-                    form.append($("<input type=\"hidden\" name=\"" + decodeURIComponent(queryPartKVP[0]) + "\" value=\"" + decodeURIComponent(queryPartKVP[1]) + "\" />"));
+                    form.append($('<input type="hidden" name="' + decodeURIComponent(queryPartKVP[0]) + '" value="' + decodeURIComponent(queryPartKVP[1]) + '" />'));
                 }
             }
-            form.css({ "position": "absolute", "left": "-9999em" });
+            form.css({ 'position': 'absolute', 'left': '-9999em' });
             $("body").append(form);
 
-            var unsafeUrlPrompt = _this.data("unsafe-url");
+            var unsafeUrlPrompt = _this.data('unsafe-url');
 
             if (unsafeUrlPrompt && unsafeUrlPrompt.length > 0) {
                 confirmDialog({..._this.data(),
@@ -114,7 +116,7 @@ $(function () {
                 return false;
             }
 
-            if (_this.filter("[data-url-af~='RemoveUrl'], a[itemprop~='RemoveUrl']").length == 1) {
+            if (_this.filter('[data-url-af~="RemoveUrl"], a[itemprop~="RemoveUrl"]').length == 1) {
                 confirmDialog({..._this.data(), 
                     callback: function(resp) {
                         if (resp) {
@@ -133,15 +135,15 @@ $(function () {
 });
 
 $(function () {
-    $('input[data-toggle="collapse"]').each(function () {
+    $('input[data-bs-toggle="collapse"]').each(function () {
         // Prevent bootstrap from altering its behavior
         // c.f. https://github.com/twbs/bootstrap/issues/21079
-        $(this).removeAttr("data-toggle");
+        $(this).removeAttr('data-bs-toggle');
 
         // Expand the section if necessary
-        var target = $($(this).data('target'));
+        var target = $($(this).data('bs-target'));
         if ($(this).prop('checked')) {
-            target.addClass('show');
+            target.addClass('visible');
         }
 
         $(this).on('change', function (e) {
@@ -155,13 +157,13 @@ $(function () {
 });
 
 $(function () {
-    $('input[data-toggle="collapse active"]').each(function () {
+    $('input[data-bs-toggle="collapse active"]').each(function () {
         // Prevent bootstrap from altering its behavior for inputs that hide target when input value is checked
         // c.f. https://github.com/twbs/bootstrap/issues/21079
-        $(this).removeAttr("data-toggle");
+        $(this).removeAttr("data-bs-toggle");
 
         // Expand the section if necessary
-        var target = $($(this).data('target'));
+        var target = $($(this).data('bs-target'));
         if (!$(this).prop('checked')) {
             target.addClass('show');
         }
@@ -176,13 +178,19 @@ $(function () {
         });
     });
 
+    // Tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
 });
 
 function getTechnicalName(name) {
-    var result = "", c;
+    var result = '', c;
 
     if (!name || name.length == 0) {
-        return "";
+        return '';
     }
 
     name = removeDiacritics(name);
@@ -205,11 +213,9 @@ function isNumber(str) {
     return str.length === 1 && str.match(/[0-9]/i);
 }
 
-$('[data-bs-toggle="tooltip"]').tooltip();
-
 //Prevent multi submissions on forms
-$("body").on("submit", "form.no-multisubmit", function (e) {
-    var submittingClass = "submitting";
+$('body').on('submit', 'form.no-multisubmit', function (e) {
+    var submittingClass = 'submitting';
     form = $(this);
 
     if (form.hasClass(submittingClass)) {

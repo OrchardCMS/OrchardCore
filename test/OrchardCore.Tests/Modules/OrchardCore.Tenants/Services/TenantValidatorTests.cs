@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Moq;
 using OrchardCore.Data;
@@ -9,18 +10,24 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
+using OrchardCore.Tests.Apis.Context;
 using Xunit;
 
 namespace OrchardCore.Modules.Tenants.Services.Tests
 {
-    public class TenantValidatorTests
+    public class TenantValidatorTests : SiteContext
     {
-        private readonly IList<ShellSettings> _shellSettings = new List<ShellSettings>();
+        public static IShellHost ShellHost { get; }
 
-        public TenantValidatorTests() => SeedTenants();
+        static TenantValidatorTests()
+        {
+            ShellHost = Site.Services.GetRequiredService<IShellHost>();
+        }
 
         [Theory]
         [InlineData("Tenant1", "tenant1", "", "Feature Profile", new[] { "A tenant with the same name already exists." })]
+        [InlineData("tEnAnT1", "tenant1", "", "Feature Profile", new[] { "A tenant with the same name already exists." })]
+        [InlineData("dEfAuLt", "", "", "Feature Profile", new[] { "The tenant name is in conflict with the 'Default' tenant." })]
         [InlineData("Tenant5", "tenant3", "", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
         [InlineData("Tenant5", "tenant3", null, "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
         [InlineData("Tenant5", "", "example2.com", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
@@ -39,9 +46,12 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
         public async Task TenantValidationFailsIfInvalidConfigurationsWasProvided(string name, string urlPrefix, string hostName, string featureProfile, string[] errorMessages)
         {
             // Arrange
+            await ShellHost.InitializeAsync();
+            await SeedTenantsAsync();
+
             var tenantValidator = CreateTenantValidator(defaultTenant: false);
 
-            // Act & Assert
+            // Act
             var viewModel = new EditTenantViewModel
             {
                 Name = name,
@@ -68,6 +78,9 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
         public async Task DuplicateTenantHostOrPrefixShouldFailValidation(bool isNewTenant)
         {
             // Arrange
+            await ShellHost.InitializeAsync();
+            await SeedTenantsAsync();
+
             var tenantValidator = CreateTenantValidator();
 
             var viewModel = new EditTenantViewModel
@@ -82,16 +95,13 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
             // Act
             var errors = await tenantValidator.ValidateAsync(viewModel);
 
-            // Asserts
+            // Assert
             Assert.Single(errors);
             Assert.Equal("A tenant with the same host and prefix already exists.", errors.Single().Message);
         }
 
-        private TenantValidator CreateTenantValidator(bool defaultTenant = true)
+        private static TenantValidator CreateTenantValidator(bool defaultTenant = true)
         {
-            var shellHostMock = new Mock<IShellHost>();
-            shellHostMock.Setup(h => h.GetAllSettings()).Returns(_shellSettings);
-
             var featureProfilesServiceMock = new Mock<IFeatureProfilesService>();
             featureProfilesServiceMock.Setup(fp => fp.GetFeatureProfilesAsync())
                 .Returns(Task.FromResult((IDictionary<string, FeatureProfile>)new Dictionary<string, FeatureProfile>
@@ -108,24 +118,27 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 .Returns<string, object[]>((n, a) => new LocalizedString(n, n));
 
             var shellSettings = defaultTenant
-                ? _shellSettings.First()
+                ? ShellHost.GetSettings(ShellHelper.DefaultShellName)
                 : new ShellSettings();
 
+            var connectionFactory = new Mock<IDbConnectionValidator>();
+            connectionFactory.Setup(l => l.ValidateAsync(shellSettings["ProviderName"], shellSettings["ConnectionName"], shellSettings["TablePrefix"]));
+
             return new TenantValidator(
-                shellHostMock.Object,
+                ShellHost,
                 featureProfilesServiceMock.Object,
-                Enumerable.Empty<DatabaseProvider>(),
-                shellSettings,
-                stringLocalizerMock.Object);
+                connectionFactory.Object,
+                stringLocalizerMock.Object
+                );
         }
 
-        private void SeedTenants()
+        private static async Task SeedTenantsAsync()
         {
-            _shellSettings.Add(new ShellSettings{ Name = ShellHelper.DefaultShellName });
-            _shellSettings.Add(new ShellSettings { Name = "Tenant1" });
-            _shellSettings.Add(new ShellSettings { Name = "Tenant2", RequestUrlPrefix = String.Empty, RequestUrlHost = "example2.com" });
-            _shellSettings.Add(new ShellSettings { Name = "Tenant3", RequestUrlPrefix = "tenant3", RequestUrlHost = String.Empty });
-            _shellSettings.Add(new ShellSettings { Name = "Tenant4", RequestUrlPrefix = "tenant4", RequestUrlHost = "example4.com,example5.com" });
+            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant1", State = TenantState.Uninitialized });
+            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant2", State = TenantState.Uninitialized, RequestUrlPrefix = String.Empty, RequestUrlHost = "example2.com" });
+            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant2", State = TenantState.Uninitialized, RequestUrlPrefix = String.Empty, RequestUrlHost = "example2.com" });
+            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant3", State = TenantState.Uninitialized, RequestUrlPrefix = "tenant3", RequestUrlHost = String.Empty });
+            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant4", State = TenantState.Uninitialized, RequestUrlPrefix = "tenant4", RequestUrlHost = "example4.com,example5.com" });
         }
     }
 }

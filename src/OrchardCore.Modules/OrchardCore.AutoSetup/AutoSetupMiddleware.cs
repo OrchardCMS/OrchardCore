@@ -214,7 +214,7 @@ namespace OrchardCore.AutoSetup
 
             shellSettings["ConnectionString"] = setupOptions.DatabaseConnectionString;
             shellSettings["TablePrefix"] = setupOptions.DatabaseTablePrefix;
-            shellSettings["DatabaseProvider"] = setupOptions.DatabaseProvider;
+            shellSettings["DatabaseProvider"] = setupOptions.DatabaseProvider.ToString();
             shellSettings["Secret"] = Guid.NewGuid().ToString();
             shellSettings["RecipeName"] = setupOptions.RecipeName;
 

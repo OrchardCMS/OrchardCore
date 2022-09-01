@@ -41,6 +41,10 @@ namespace OrchardCore.Apis.GraphQL
 
         public static IEnumerable<TSource> Page<T, TSource>(this IResolveFieldContext<T> context, IEnumerable<TSource> source)
         {
+            if (source is null)
+            {
+                return Array.Empty<TSource>();
+            }
             var skip = context.GetArgument<int>("skip");
             var first = context.GetArgument<int>("first");
             var last = context.GetArgument<int>("last");
