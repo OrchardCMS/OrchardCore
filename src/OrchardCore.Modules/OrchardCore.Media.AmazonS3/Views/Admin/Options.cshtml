@@ -1,0 +1,29 @@
+@model OrchardCore.Media.AmazonS3.ViewModels.OptionsViewModel
+<h1>@RenderTitleSegments(T["Amazon S3 storage options"])</h1>
+
+<p class="alert alert-secondary">
+    @T["Amazon S3 storage is configured with appsettings.json."]
+    <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Media.AmazonS3/#configuration" target="_blank">@T["See documentation."]</a>
+</p>
+
+<div class="mb-3 row">
+    <label asp-for="BucketName" class="col-sm-2 col-form-label">@T["Bucket Name"]</label>
+    <div class="col-sm-10">
+        <code><input type="text" class="form-control-plaintext" value="@Model.BucketName" readonly /></code>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label asp-for="BasePath" class="col-sm-2 col-form-label">@T["Base Path"]</label>
+    <div class="col-sm-10">
+        <code><input type="text" class="form-control-plaintext" value="@Model.BasePath" readonly /></code>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="CreateBucket" checked="@Model.CreateBucket" disabled />
+        <label class="form-check-label" asp-for="CreateBucket">@T["Create Bucket"]</label>
+        <span class="hint">@T["Whether a bucket is created on startup if it does not exist."]</span>
+    </div>
+</div>

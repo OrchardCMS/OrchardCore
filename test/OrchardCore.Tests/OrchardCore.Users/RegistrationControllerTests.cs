@@ -59,8 +59,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
             var result = await controller.Register();
             Assert.IsType<ViewResult>(result);
 
-            result = await controller.Register(new RegisterViewModel());
-            Assert.IsType<ViewResult>(result);
+            result = await controller.Register(new RegisterViewModel { UserName = "Admin", Email = "admin@orchardcore.net" });
+            Assert.IsType<RedirectResult>(result);
         }
 
         [Fact]

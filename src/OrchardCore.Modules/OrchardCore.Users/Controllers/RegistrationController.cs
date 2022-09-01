@@ -88,7 +88,7 @@ namespace OrchardCore.Users.Controllers
 
             ViewData["ReturnUrl"] = returnUrl;
 
-            if (TryValidateModel(model) && ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var iUser = await this.RegisterUser(model, S["Confirm your account"], _logger);
                 // If we get a user, redirect to returnUrl

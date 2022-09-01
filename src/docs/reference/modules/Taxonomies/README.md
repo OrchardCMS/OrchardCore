@@ -31,13 +31,13 @@ You might invoke the `TermShape` from a content template to render a sidebar of 
 === "Liquid"
 
     ``` liquid
-    {% shape "term", alias: "alias:categories" %}
+    {% shape "term", alias: "alias:Categories" %}
     ```
 
 === "Razor"
 
     ``` html
-    <shape type="Term" alias="Categories" />
+    <shape type="Term" alias="alias:Categories" />
     ```
 
 You can also specify a `TermContentItemId` to render a part of the term hierarchy.
@@ -100,7 +100,6 @@ You can also specify a `TermContentItemId` to render a part of the term hierarch
     {
         <p class="alert alert-warning">@T["The list is empty"]</p>
     }
-    @tag
     ```
 
 ### TermItem
@@ -393,10 +392,10 @@ Provides taxonomy filters in the admin contents list.
 
 ## Videos
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/DpaN02c2sDI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/DpaN02c2sDI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/nyPgQMwizbU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/nyPgQMwizbU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/G9lkGRD9G_E" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/G9lkGRD9G_E" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/NVjRz5ru7N4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NVjRz5ru7N4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

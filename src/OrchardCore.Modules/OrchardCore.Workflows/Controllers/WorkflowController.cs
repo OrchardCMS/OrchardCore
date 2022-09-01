@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using OrchardCore.Admin;
@@ -16,7 +17,6 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
@@ -30,7 +30,7 @@ namespace OrchardCore.Workflows.Controllers
     [Admin]
     public class WorkflowController : Controller
     {
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly ISession _session;
         private readonly IWorkflowManager _workflowManager;
         private readonly IWorkflowTypeStore _workflowTypeStore;
@@ -43,7 +43,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IStringLocalizer S;
 
         public WorkflowController(
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             ISession session,
             IWorkflowManager workflowManager,
             IWorkflowTypeStore workflowTypeStore,
@@ -56,7 +56,7 @@ namespace OrchardCore.Workflows.Controllers
             IStringLocalizer<WorkflowController> stringLocalizer,
             IUpdateModelAccessor updateModelAccessor)
         {
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             _session = session;
             _workflowManager = workflowManager;
             _workflowTypeStore = workflowTypeStore;
@@ -85,7 +85,6 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
 
             var query = _session.Query<Workflow, WorkflowIndex>();
             query = query.Where(x => x.WorkflowTypeId == workflowType.WorkflowTypeId);
@@ -116,7 +115,7 @@ namespace OrchardCore.Workflows.Controllers
                     break;
             }
 
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
 
             var routeData = new RouteData();
             routeData.Values.Add("Filter", model.Options.Filter);

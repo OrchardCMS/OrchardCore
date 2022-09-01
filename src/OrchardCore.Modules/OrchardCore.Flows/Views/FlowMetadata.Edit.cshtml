@@ -2,47 +2,47 @@
 @model FlowMetadata
 
 <div class="btn-group btn-group-sm" role="group">
-    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <i class="fa fa-align-@Model.Alignment.ToString().ToLowerInvariant()" aria-hidden="true"></i>
+    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fa fa-align-@Model.Alignment.ToString().ToLowerInvariant()" aria-hidden="true" aria-hidden="true"></i>
     </button>
-    <div class="dropdown-menu btn-group-toggle" data-toggle="buttons">
+    <div class="dropdown-menu btn-group-toggle" data-bs-toggle="buttons">
         <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Left ? "active" : null)">
-            <input asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Left" type="radio" autocomplete="off" value="Left"><i class="fa fa-align-left" aria-hidden="true"></i> @T["Left"]
+            <input class="d-none" asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Left" type="radio" autocomplete="off" value="Left"><i class="fa fa-align-left" aria-hidden="true"></i> @T["Left"]
         </label>
         <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Center ? "active" : null)">
-            <input asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Center" type="radio" autocomplete="off" value="Center"><i class="fa fa-align-center" aria-hidden="true"></i> @T["Center"]
+            <input class="d-none" asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Center" type="radio" autocomplete="off" value="Center"><i class="fa fa-align-center" aria-hidden="true"></i> @T["Center"]
         </label>
         <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Right ? "active" : null)">
-            <input asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Right" type="radio" autocomplete="off" value="Right"><i class="fa fa-align-right" aria-hidden="true"></i> @T["Right"]
+            <input class="d-none" asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Right" type="radio" autocomplete="off" value="Right"><i class="fa fa-align-right" aria-hidden="true"></i> @T["Right"]
         </label>
         <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Justify ? "active" : null)">
-            <input asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Justify" type="radio" autocomplete="off" value="Justify"><i class="fa fa-align-justify" aria-hidden="true"></i> @T["Justify"]
+            <input class="d-none" asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Justify" type="radio" autocomplete="off" value="Justify"><i class="fa fa-align-justify" aria-hidden="true"></i> @T["Justify"]
         </label>
     </div>
 </div>
 
 <div class="btn-group btn-group-sm" role="group">
-    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         @T[Html.Encode(Model.Size + "%")] @* Allows for custom string representations like half, quarter, ...*@
     </button>
-    <div class="dropdown-menu btn-group-toggle" data-toggle="buttons">
+    <div class="dropdown-menu btn-group-toggle" data-bs-toggle="buttons">
         <label class="btn btn-secondary dropdown-item @(Model.Size == 25 ? "active" : null)">
-            <input asp-for="Size" id="@Html.IdFor(x => x.Size)_25" type="radio" autocomplete="off" value="25">@T["25%"]
+            <input class="d-none" asp-for="Size" id="@Html.IdFor(x => x.Size)_25" type="radio" autocomplete="off" value="25">@T["25%"]
         </label>
         <label class="btn btn-secondary dropdown-item @(Model.Size == 33 ? "active" : null)">
-            <input asp-for="Size" id="@Html.IdFor(x => x.Size)_33" type="radio" autocomplete="off" value="33">@T["33%"]
+            <input class="d-none" asp-for="Size" id="@Html.IdFor(x => x.Size)_33" type="radio" autocomplete="off" value="33">@T["33%"]
         </label>
         <label class="btn btn-secondary dropdown-item @(Model.Size == 50 ? "active" : null)">
-            <input asp-for="Size" id="@Html.IdFor(x => x.Size)_50" type="radio" autocomplete="off" value="50">@T["50%"]
+            <input class="d-none" asp-for="Size" id="@Html.IdFor(x => x.Size)_50" type="radio" autocomplete="off" value="50">@T["50%"]
         </label>
         <label class="btn btn-secondary dropdown-item @(Model.Size == 66 ? "active" : null)">
-            <input asp-for="Size" id="@Html.IdFor(x => x.Size)_66" type="radio" autocomplete="off" value="66">@T["66%"]
+            <input class="d-none" asp-for="Size" id="@Html.IdFor(x => x.Size)_66" type="radio" autocomplete="off" value="66">@T["66%"]
         </label>
         <label class="btn btn-secondary dropdown-item @(Model.Size == 75 ? "active" : null)">
-            <input asp-for="Size" id="@Html.IdFor(x => x.Size)_75" type="radio" autocomplete="off" value="75">@T["75%"]
+            <input class="d-none" asp-for="Size" id="@Html.IdFor(x => x.Size)_75" type="radio" autocomplete="off" value="75">@T["75%"]
         </label>
         <label class="btn btn-secondary dropdown-item @(Model.Size == 100 ? "active" : null)">
-            <input asp-for="Size" id="@Html.IdFor(x => x.Size)_100" type="radio" autocomplete="off" value="100">@T["100%"]
+            <input class="d-none" asp-for="Size" id="@Html.IdFor(x => x.Size)_100" type="radio" autocomplete="off" value="100">@T["100%"]
         </label>
     </div>
 </div>

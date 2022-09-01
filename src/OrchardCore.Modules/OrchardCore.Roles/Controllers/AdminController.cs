@@ -11,6 +11,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Roles.ViewModels;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -85,6 +86,11 @@ namespace OrchardCore.Roles.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateRoleViewModel model)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
+            {
+                return Forbid();
+            }
+
             if (ModelState.IsValid)
             {
                 model.RoleName = model.RoleName.Trim();
@@ -234,34 +240,45 @@ namespace OrchardCore.Roles.Controllers
             };
         }
 
-        private async Task<IDictionary<string, IEnumerable<Permission>>> GetInstalledPermissionsAsync()
+        private async Task<IDictionary<PermissionGroupKey, IEnumerable<Permission>>> GetInstalledPermissionsAsync()
         {
-            var installedPermissions = new Dictionary<string, IEnumerable<Permission>>();
+            var installedPermissions = new Dictionary<PermissionGroupKey, IEnumerable<Permission>>();
             foreach (var permissionProvider in _permissionProviders)
             {
                 var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
-                var featureName = feature.Id;
-
                 var permissions = await permissionProvider.GetPermissionsAsync();
 
                 foreach (var permission in permissions)
                 {
-                    var category = permission.Category;
+                    var groupKey = GetGroupKey(feature, permission.Category);
 
-                    string title = String.IsNullOrWhiteSpace(category) ? S["{0} Feature", featureName] : category;
+                    if (installedPermissions.ContainsKey(groupKey))
+                    {
+                        installedPermissions[groupKey] = installedPermissions[groupKey].Concat(new[] { permission });
 
-                    if (installedPermissions.ContainsKey(title))
-                    {
-                        installedPermissions[title] = installedPermissions[title].Concat(new[] { permission });
+                        continue;
                     }
-                    else
-                    {
-                        installedPermissions.Add(title, new[] { permission });
-                    }
+
+                    installedPermissions.Add(groupKey, new[] { permission });
                 }
             }
 
             return installedPermissions;
+        }
+
+        private PermissionGroupKey GetGroupKey(IFeatureInfo feature, string category)
+        {
+            if (!String.IsNullOrWhiteSpace(category))
+            {
+                return new PermissionGroupKey(category, category);
+            }
+
+            var title = String.IsNullOrWhiteSpace(feature.Name) ? S["{0} Feature", feature.Id] : feature.Name;
+
+            return new PermissionGroupKey(feature.Id, title)
+            {
+                Source = feature.Id,
+            };
         }
 
         private async Task<IEnumerable<string>> GetEffectivePermissions(Role role, IEnumerable<Permission> allPermissions)
