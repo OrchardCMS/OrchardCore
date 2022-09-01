@@ -7,6 +7,7 @@ using GraphQL.Conversion;
 using GraphQL.Execution;
 using GraphQL.Types;
 using GraphQL.Validation;
+using GraphQL.SystemTextJson;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
