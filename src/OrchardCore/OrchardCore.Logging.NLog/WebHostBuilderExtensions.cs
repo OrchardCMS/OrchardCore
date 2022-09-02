@@ -10,7 +10,6 @@ using NLog.Web;
 
 namespace OrchardCore.Logging
 {
-    [Obsolete("Use HostBuilderExtensions instead.")]
     public static class WebHostBuilderExtensions
     {
         public static IWebHostBuilder UseNLogWeb(this IWebHostBuilder builder)
