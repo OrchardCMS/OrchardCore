@@ -110,14 +110,6 @@ namespace OrchardCore.OpenId.Services
                     }));
                 }
 
-                if (settings.Authority.Scheme != Uri.UriSchemeHttps)
-                {
-                    results.Add(new ValidationResult(S["The specified authority requires the use of HTTPS."], new[]
-                    {
-                        nameof(settings.Authority)
-                    }));
-                }
-
                 if (!String.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
                 {
                     results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
@@ -138,14 +130,6 @@ namespace OrchardCore.OpenId.Services
                     }));
                 }
 
-                if (settings.MetadataAddress.Scheme != Uri.UriSchemeHttps)
-                {
-                    results.Add(new ValidationResult(S["The specified metadata address requires the use of HTTPS."], new[]
-                    {
-                        nameof(settings.MetadataAddress)
-                    }));
-                }
-
                 if (!String.IsNullOrEmpty(settings.MetadataAddress.Query) || !string.IsNullOrEmpty(settings.MetadataAddress.Fragment))
                 {
                     results.Add(new ValidationResult(S["The metadata address cannot contain a query string or a fragment."], new[]
@@ -158,11 +142,10 @@ namespace OrchardCore.OpenId.Services
                 {
                     results.Add(new ValidationResult(S["No metatada address can be set when using another tenant."], new[]
                     {
-                    nameof(settings.MetadataAddress)
-                }));
+                        nameof(settings.MetadataAddress)
+                    }));
                 }
             }
-
 
             if (!String.IsNullOrEmpty(settings.Tenant) && !string.IsNullOrEmpty(settings.Audience))
             {
