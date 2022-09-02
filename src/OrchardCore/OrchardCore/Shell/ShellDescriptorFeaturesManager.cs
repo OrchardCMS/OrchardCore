@@ -38,7 +38,7 @@ namespace OrchardCore.Environment.Shell
 
             var enabledFeatures = _extensionManager.GetFeatures()
                 .Where(f => shellDescriptor.Features.Any(sf => sf.Id == f.Id))
-                .ToList();
+                .ToArray();
 
             var enabledFeatureIds = enabledFeatures
                 .Select(f => f.Id)
