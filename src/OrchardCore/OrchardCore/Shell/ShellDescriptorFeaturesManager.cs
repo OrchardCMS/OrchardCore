@@ -36,8 +36,11 @@ namespace OrchardCore.Environment.Shell
         {
             var featureEventHandlers = ShellScope.Services.GetServices<IFeatureEventHandler>();
 
-            var enabledFeatureIds = _extensionManager.GetFeatures()
+            var enabledFeatures = _extensionManager.GetFeatures()
                 .Where(f => shellDescriptor.Features.Any(sf => sf.Id == f.Id))
+                .ToArray();
+
+            var enabledFeatureIds = enabledFeatures
                 .Select(f => f.Id)
                 .ToHashSet();
 
@@ -47,15 +50,15 @@ namespace OrchardCore.Environment.Shell
 
             var alwaysEnabledIds = _alwaysEnabledFeatures.Select(sf => sf.Id).ToArray();
 
-            var onDemandFeaturesToDisable = _extensionManager.GetFeatures()
+            var byDependencyOnlyFeaturesToDisable = enabledFeatures
                 .Where(f => f.EnabledByDependencyOnly);
 
             var allFeaturesToDisable = featuresToDisable
                 .Where(f => !alwaysEnabledIds.Contains(f.Id))
                 .SelectMany(feature => GetFeaturesToDisable(feature, enabledFeatureIds, force))
-                // Always attempt to disable EnabledByDependencyOnly features
-                // to ensure we auto disable any feature that is no longer needed
-                .Union(onDemandFeaturesToDisable)
+                // Always attempt to disable 'EnabledByDependencyOnly' features
+                // to ensure we auto disable any feature that is no longer needed.
+                .Union(byDependencyOnlyFeaturesToDisable)
                 .Distinct()
                 .Reverse()
                 .ToList();
