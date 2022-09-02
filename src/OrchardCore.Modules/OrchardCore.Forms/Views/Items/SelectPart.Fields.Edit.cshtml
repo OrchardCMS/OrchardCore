@@ -140,62 +140,11 @@
 </div>
 
 <script at="Foot" depends-on="selectOptionsEditor">
-    function initializeSelectOptionsEditorForElement(id, options, value) {
-        var wrapper = document.getElementById(id);
+    selectOptionsEditor.initilizeElement('@(widgetId)-selectOptions', @Html.Raw(Model.Options), @Model.DefaultValue);
 
-        if (wrapper != null) {
-            initializeSelectOptionsEditor(id, options, value);
-        }
-    }
-
-    // call this method when a widget is added to the DOM
-    initializeSelectOptionsEditorForElement('@(widgetId)-selectOptions', @Html.Raw(Model.Options), @Model.DefaultValue);
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var wrappers = document.getElementsByName('select-part-properties-wrapper');
-
-        for (let i = 0; i < wrappers.length; i++) {
-            var wrapper = wrappers[i];
-
-            var fieldWrapper = wrapper.querySelector('.field-options-wrapper');
-
-            if (fieldWrapper != null) {
-                var initialDefaultValue = fieldWrapper.querySelector('.field-options-wrapper-initial-default-value');
-                var initialOptions = fieldWrapper.querySelector('.field-options-wrapper-initial-options');
-
-                initializeSelectOptionsEditorForElement(fieldWrapper.Id, initialOptions.innerHTML, initialDefaultValue.value)
-            }
-        }
-    });
-</script>
-
-<script at="Foot">
-    var initilizeFieldType = (wrapper) => {
-        var selectMenus = wrapper.getElementsByClassName('field-type-select-menu');
-        for (let i = 0; i < selectMenus.length; i++) {
-            var selectMenu = selectMenus[i];
-            selectMenu.addEventListener('change', function(e) {
-                var visibleForInputContainers = wrapper.getElementsByClassName('show-for-input');
-
-                for (let i = 0; i < visibleForInputContainers.length; i++) {
-                    var container = visibleForInputContainers[i];
-                    if (e.target.value == 'reset' || e.target.value == 'submit' || e.target.value == 'hidden') {
-                        container.classList.add('d-none');
-                    } else {
-                        container.classList.remove('d-none');
-                    }
-                }
-            });
-            selectMenu.dispatchEvent(new Event('change'));
-        }
-    };
     var wrapper = document.getElementById('@Html.IdFor(m => m)');
     if (wrapper != null) {
         // at this point, we know this wrapper was added after page load, let's initilize it
-        initilizeFieldType(wrapper);
+        selectOptionsEditor.initilizeFieldType(wrapper);
     }
-    document.addEventListener('DOMContentLoaded', function() {
-        // at this point, let's initilize any existing SelectPart after the page is loaded
-        initilizeFieldType(document);
-    });
 </script>

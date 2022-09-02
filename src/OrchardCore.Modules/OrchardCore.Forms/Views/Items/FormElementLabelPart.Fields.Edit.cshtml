@@ -23,32 +23,12 @@
     </div>
 </div>
 
-<script at="Foot">
-    var initilizeLabelType = (wrapper) => {
-        var selectMenus = wrapper.getElementsByClassName('field-label-option-select-menu');
+<script asp-src="~/OrchardCore.Forms/Scripts/formElementLabelManager.min.js" debug-src="~/OrchardCore.Forms/Scripts/formElementLabelManager.js" asp-name="formElementLabelManager" at="Foot"></script>
 
-        for (let i = 0; i < selectMenus.length; i++) {
-            var selectMenu = selectMenus[i];
-            selectMenu.addEventListener('change', function(e) {
-                var labelTextContainer = wrapper.querySelector('.label-text-container');
-
-                if (e.target.value == '@LabelOptions.None') {
-                    labelTextContainer.classList.add('d-none');
-                } else {
-                    labelTextContainer.classList.remove('d-none');
-                }
-            });
-            selectMenu.dispatchEvent(new Event('change'));
-        }
-    };
-
+<script at="Foot" depends-on="formElementLabelManager">
     var wrapper = document.getElementById('@wrapperId');
 
     if (wrapper != null) {
-        initilizeLabelType(wrapper);
+        formElementLabelManager.initilize(wrapper);
     }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        initilizeLabelType(document);
-    });
 </script>
