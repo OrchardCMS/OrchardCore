@@ -34,6 +34,7 @@
     8: , string tags
     9: , object defaultTenant
     10: , object alwaysEnabled
+    11: , object enabledByDependencyOnly
     -->
     <AssemblyAttribute Include="OrchardCore.DisplayManagement.Manifest.ThemeAttribute">
       <_Parameter1>one</_Parameter1>
@@ -46,6 +47,7 @@
       <_Parameter8>eight;nine;ten</_Parameter8>
       <_Parameter9>true</_Parameter9>
       <_Parameter10>true</_Parameter10>
+      <_Parameter11>false</_Parameter11>
     </AssemblyAttribute>
   </ItemGroup>
 

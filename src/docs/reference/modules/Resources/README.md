@@ -44,8 +44,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 
 | Name                  | Type   | Versions      | Dependencies   |
 | --------------------- | ------ | ------------- | -------------- |
-| jQuery                | Script | 3.6.0         | -              |
-| jQuery.slim           | Script | 3.6.0         | -              |
+| jQuery                | Script | 3.6.1         | -              |
+| jQuery.slim           | Script | 3.6.1         | -              |
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | jquery.easing         | Script | 1.4.1         | -              |
@@ -60,11 +60,12 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | bootstrap-select      | Style  | 1.14.0-beta2  | -              |
 | codemirror            | Script | 5.65.7        | -              |
 | codemirror            | Style  | 5.65.7        | -              |
-| font-awesome          | Style  | 6.1.2         | -              |
-| font-awesome          | Script | 6.1.2         | -              |
-| font-awesome-v4-shims | Script | 6.1.2         | -              |
+| font-awesome          | Style  | 6.2.0         | -              |
+| font-awesome          | Script | 6.2.0         | -              |
+| font-awesome-v4-shims | Script | 6.2.0         | -              |
 | Sortable              | Script | 1.10.2        | -              |
-| trumbowyg             | Script | 2.25.1        | -              |
+| trumbowyg             | Style  | 2.25.2        | -              |
+| trumbowyg             | Script | 2.25.2        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
 | monaco-loader         | Script | 0.34.0        | -              |
