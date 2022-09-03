@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
@@ -41,6 +42,7 @@ namespace OrchardCore.Tenants.Controllers
         private readonly INotifier _notifier;
         private readonly ITenantValidator _tenantValidator;
         private readonly PagerOptions _pagerOptions;
+        private readonly ILogger _logger;
         private readonly dynamic New;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
@@ -59,6 +61,7 @@ namespace OrchardCore.Tenants.Controllers
             INotifier notifier,
             ITenantValidator tenantValidator,
             IOptions<PagerOptions> pagerOptions,
+            ILogger<AdminController> logger,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
@@ -76,10 +79,12 @@ namespace OrchardCore.Tenants.Controllers
             _notifier = notifier;
             _tenantValidator = tenantValidator;
             _pagerOptions = pagerOptions.Value;
+            _logger = logger;
 
             New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index(TenantIndexOptions options, PagerParameters pagerParameters)
@@ -292,6 +297,11 @@ namespace OrchardCore.Tenants.Controllers
                             if (!context.Success)
                             {
                                 await _notifier.ErrorAsync(H["An error occurred while removing the tenant '{0}'. {1}", shellSettings.Name, context.ErrorMessage]);
+                            }
+                            else
+                            {
+                                _logger.LogInformation("The tenant '{TenantName}' was removed successfully.", shellSettings.Name);
+                                await _notifier.SuccessAsync(H["The tenant '{0}' was removed successfully", shellSettings.Name]);
                             }
                         }
 
@@ -640,6 +650,11 @@ namespace OrchardCore.Tenants.Controllers
             if (!context.Success)
             {
                 await _notifier.ErrorAsync(H["An error occurred while removing the tenant '{0}'. {1}", id, context.ErrorMessage]);
+            }
+            else
+            {
+                _logger.LogInformation("The tenant '{TenantName}' was removed successfully.", shellSettings.Name);
+                await _notifier.SuccessAsync(H["The tenant '{0}' was removed successfully", shellSettings.Name]);
             }
 
             return RedirectToAction(nameof(Index));
