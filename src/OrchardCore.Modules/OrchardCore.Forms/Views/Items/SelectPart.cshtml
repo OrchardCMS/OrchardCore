@@ -5,7 +5,7 @@
     var formInputElementPart = Model.Value.ContentItem.As<FormInputElementPart>();
     var elementId = formElementPart.Id;
     var fieldName = formInputElementPart.Name;
-    var fieldId = !String.IsNullOrEmpty(elementId) ? elementId : !String.IsNullOrEmpty(fieldName) ? Html.GenerateIdFromName(fieldName) : default(string);
+    var fieldId = !string.IsNullOrEmpty(elementId) ? elementId : !string.IsNullOrEmpty(fieldName) ? Html.GenerateIdFromName(fieldName) : default(string);
     var fieldValue = Model.Value.DefaultValue;
     var fieldClass = "form-select";
 
@@ -18,11 +18,28 @@
         }
     }
 }
-<select id="@fieldId" name="@fieldName" class="@fieldClass">
+
+@if (Model.Value.Editor == SelectEditorOption.Checkbox || Model.Value.Editor == SelectEditorOption.Radio)
+{
+    int i = 0;
+    var htmlType = Model.Value.Editor == SelectEditorOption.Checkbox ? "checkbox" : "radio";
     @foreach (var option in Model.Value.Options)
     {
-        var optionValue = !String.IsNullOrWhiteSpace(option.Value) ? option.Value : option.Text;
-        var isOptionSelected = optionValue == fieldValue;
-        <option value="@optionValue" selected="@isOptionSelected">@option.Text</option>
+        <div class="form-check">
+            <input type="@htmlType" id="@(fieldId + "_" + i)" name="@fieldName" class="form-check-input" value="@option.Value" @(option.Value == fieldValue ? "checked='checked'" : "") />
+            <label class="form-check-label" for="@(fieldId + "_" + i)">@option.Text</label>
+        </div>
+        i++;
     }
-</select>
+}
+else
+{
+    <select id="@fieldId" name="@fieldName" class="@fieldClass">
+        @foreach (var option in Model.Value.Options)
+        {
+            var optionValue = !string.IsNullOrWhiteSpace(option.Value) ? option.Value : option.Text;
+            var isOptionSelected = optionValue == fieldValue;
+            <option value="@optionValue" selected="@isOptionSelected">@option.Text</option>
+        }
+    </select>
+}
