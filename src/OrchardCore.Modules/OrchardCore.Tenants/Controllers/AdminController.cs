@@ -300,7 +300,11 @@ namespace OrchardCore.Tenants.Controllers
                             }
                             else
                             {
-                                _logger.LogInformation("The tenant '{TenantName}' was removed successfully.", shellSettings.Name);
+                                if (_logger.IsEnabled(LogLevel.Information))
+                                {
+                                    _logger.LogInformation("The tenant '{TenantName}' was removed successfully.", shellSettings.Name);
+                                }
+
                                 await _notifier.SuccessAsync(H["The tenant '{0}' was removed successfully", shellSettings.Name]);
                             }
                         }
@@ -653,7 +657,11 @@ namespace OrchardCore.Tenants.Controllers
             }
             else
             {
-                _logger.LogInformation("The tenant '{TenantName}' was removed successfully.", shellSettings.Name);
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("The tenant '{TenantName}' was removed successfully.", shellSettings.Name);
+                }
+
                 await _notifier.SuccessAsync(H["The tenant '{0}' was removed successfully", shellSettings.Name]);
             }
 

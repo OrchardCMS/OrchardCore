@@ -47,11 +47,14 @@ public class ShellSiteFolderRemovingHandler : IShellRemovingHandler
         {
             // Sharing violation, may happen if multiple nodes share the same file system
             // without using a distributed lock, in that case let another node do the job.
-            _logger.LogWarning(
-                ex,
-                "Sharing violation while removing the site folder '{TenantFolder}' of tenant '{TenantName}'.",
-                shellAppDataFolder,
-                context.ShellSettings.Name);
+            if (_logger.IsEnabled(LogLevel.Warning))
+            {
+                _logger.LogWarning(
+                    ex,
+                    "Sharing violation while removing the site folder '{TenantFolder}' of tenant '{TenantName}'.",
+                    shellAppDataFolder,
+                    context.ShellSettings.Name);
+            }
         }
         catch (Exception ex)
         {
