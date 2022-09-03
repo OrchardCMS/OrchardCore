@@ -45,16 +45,16 @@ namespace OrchardCore.Environment.Shell
                 .ToHashSet();
 
             var installedFeatureIds = enabledFeatureIds
-                .Concat(shellDescriptor.Installed.Select(sf => sf.Id))
+                .Concat(shellDescriptor.Installed.Select(shellFeature => shellFeature.Id))
                 .ToHashSet();
 
-            var alwaysEnabledIds = _alwaysEnabledFeatures.Select(sf => sf.Id).ToArray();
+            var alwaysEnabledIds = _alwaysEnabledFeatures.Select(shellFeature => shellFeature.Id).ToArray();
 
             var byDependencyOnlyFeaturesToDisable = enabledFeatures
                 .Where(feature => feature.EnabledByDependencyOnly);
 
             var allFeaturesToDisable = featuresToDisable
-                .Where(feature => !feature.EnabledByDependencyOnly && !feature.IsAlwaysEnabled && !alwaysEnabledIds.Contains(feature.Id))
+                .Where(feature => !feature.EnabledByDependencyOnly && !alwaysEnabledIds.Contains(feature.Id))
                 .SelectMany(feature => GetFeaturesToDisable(feature, enabledFeatureIds, force))
                 // Always attempt to disable 'EnabledByDependencyOnly' features
                 // to ensure we auto disable any feature that is no longer needed.
