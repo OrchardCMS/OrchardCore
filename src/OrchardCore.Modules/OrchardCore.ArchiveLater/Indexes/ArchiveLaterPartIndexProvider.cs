@@ -69,9 +69,9 @@ public class ArchiveLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
                 return new ArchiveLaterPartIndex
                 {
                     ContentItemId = part.ContentItem.ContentItemId,
-                    Latest = part.ContentItem.Latest,
-                    Published = part.ContentItem.Published,
                     ScheduledArchiveDateTimeUtc = part.ScheduledArchiveUtc,
+                    Published = part.ContentItem.Published,
+                    Latest = part.ContentItem.Latest
                 };
             });
     }

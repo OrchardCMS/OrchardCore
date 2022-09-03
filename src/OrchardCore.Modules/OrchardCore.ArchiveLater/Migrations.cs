@@ -26,9 +26,9 @@ public class Migrations : DataMigration
 
         SchemaBuilder.CreateMapIndexTable<ArchiveLaterPartIndex>(table => table
             .Column<string>(nameof(ArchiveLaterPartIndex.ContentItemId))
-            .Column<bool>(nameof(ArchiveLaterPartIndex.Latest))
-            .Column<bool>(nameof(ArchiveLaterPartIndex.Published))
             .Column<DateTime>(nameof(ArchiveLaterPartIndex.ScheduledArchiveDateTimeUtc))
+            .Column<bool>(nameof(ArchiveLaterPartIndex.Published))
+            .Column<bool>(nameof(ArchiveLaterPartIndex.Latest))
         );
 
         SchemaBuilder.AlterIndexTable<ArchiveLaterPartIndex>(table => table
@@ -36,9 +36,9 @@ public class Migrations : DataMigration
                 "Id",
                 nameof(ContentItemIndex.DocumentId),
                 nameof(ArchiveLaterPartIndex.ContentItemId),
-                nameof(ArchiveLaterPartIndex.Latest),
+                nameof(ArchiveLaterPartIndex.ScheduledArchiveDateTimeUtc),
                 nameof(ArchiveLaterPartIndex.Published),
-                nameof(ArchiveLaterPartIndex.ScheduledArchiveDateTimeUtc))
+                nameof(ArchiveLaterPartIndex.Latest))
         );
 
         return 1;

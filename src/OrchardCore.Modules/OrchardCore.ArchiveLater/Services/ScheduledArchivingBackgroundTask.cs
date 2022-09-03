@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ArchiveLater.Indexes;
+using OrchardCore.ArchiveLater.Models;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
+using OrchardCore.Entities;
 using OrchardCore.Modules;
 using YesSql;
 
@@ -41,6 +43,12 @@ public class ScheduledArchivingBackgroundTask : IBackgroundTask
         foreach (var item in itemsToArchive)
         {
             var contentItem = await contentManager.GetAsync(item.ContentItemId);
+
+            var part = contentItem.As<ArchiveLaterPart>();
+            if (part != null)
+            {
+                part.ScheduledArchiveUtc = null;
+            }
 
             _logger.LogDebug("Archiving scheduled content item {ContentItemId}.", contentItem.ContentItemId);
 

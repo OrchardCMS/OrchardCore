@@ -13,30 +13,28 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
 
-namespace OrchardCore.ArchiveLater
+namespace OrchardCore.ArchiveLater;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+
+    public override void ConfigureServices(IServiceCollection services)
     {
-
-        public override void ConfigureServices(IServiceCollection services)
+        services.Configure<TemplateOptions>(o =>
         {
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<ArchiveLaterPartViewModel>();
-            });
+            o.MemberAccessStrategy.Register<ArchiveLaterPartViewModel>();
+        });
 
-            services
-                .AddContentPart<ArchiveLaterPart>()
-                .UseDisplayDriver<ArchiveLaterPartDisplayDriver>();
-                //.AddHandler<ArchiveLaterPartHandler>();
+        services
+            .AddContentPart<ArchiveLaterPart>()
+            .UseDisplayDriver<ArchiveLaterPartDisplayDriver>();
 
-            services.AddScoped<IDataMigration, Migrations>();
+        services.AddScoped<IDataMigration, Migrations>();
 
-            services.AddScoped<ArchiveLaterPartIndexProvider>();
-            services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<ArchiveLaterPartIndexProvider>());
-            services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<ArchiveLaterPartIndexProvider>());
+        services.AddScoped<ArchiveLaterPartIndexProvider>();
+        services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<ArchiveLaterPartIndexProvider>());
+        services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<ArchiveLaterPartIndexProvider>());
 
-            services.AddSingleton<IBackgroundTask, ScheduledArchivingBackgroundTask>();
-        }
+        services.AddSingleton<IBackgroundTask, ScheduledArchivingBackgroundTask>();
     }
 }
