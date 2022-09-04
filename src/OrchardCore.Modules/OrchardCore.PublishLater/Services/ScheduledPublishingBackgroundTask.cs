@@ -8,6 +8,7 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
 using OrchardCore.PublishLater.Indexes;
+using OrchardCore.PublishLater.Models;
 using YesSql;
 
 namespace OrchardCore.PublishLater.Services;
@@ -41,6 +42,8 @@ public class ScheduledPublishingBackgroundTask : IBackgroundTask
         foreach (var item in itemsToPublish)
         {
             var contentItem = await contentManager.GetAsync(item.ContentItemId);
+            var part = contentItem.As<PublishLaterPart>();
+            part.ScheduledPublishUtc = null;
 
             _logger.LogDebug("Publishing scheduled content item {ContentItemId}.", contentItem.ContentItemId);
 

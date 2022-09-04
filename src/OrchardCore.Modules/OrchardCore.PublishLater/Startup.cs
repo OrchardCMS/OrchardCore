@@ -8,7 +8,6 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
 using OrchardCore.PublishLater.Drivers;
-using OrchardCore.PublishLater.Handlers;
 using OrchardCore.PublishLater.Indexes;
 using OrchardCore.PublishLater.Models;
 using OrchardCore.PublishLater.Services;
@@ -29,7 +28,6 @@ public class Startup : StartupBase
         services
             .AddContentPart<PublishLaterPart>()
             .UseDisplayDriver<PublishLaterPartDisplayDriver>();
-        //.AddHandler<PublishLaterPartHandler>();
 
         services.AddScoped<IDataMigration, Migrations>();
 
