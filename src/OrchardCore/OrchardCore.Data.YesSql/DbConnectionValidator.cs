@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using MySqlConnector;
 using Npgsql;
 using OrchardCore.Data.YesSql.Abstractions;
+using OrchardCore.Environment.Shell.Configuration;
 using YesSql;
 using YesSql.Provider.MySql;
 using YesSql.Provider.PostgreSql;
@@ -20,16 +21,19 @@ namespace OrchardCore.Data;
 public class DbConnectionValidator : IDbConnectionValidator
 {
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
+    private readonly IShellsSettingsSources _shellsSettingsSources;
     private readonly ITableNameConvention _tableNameConvention;
     private readonly YesSqlOptions _yesSqlOptions;
 
     public DbConnectionValidator(
         IEnumerable<DatabaseProvider> databaseProviders,
+        IShellsSettingsSources shellsSettingsSources,
         ITableNameConvention tableNameConvention,
         IOptions<YesSqlOptions> yesSqlOptions
         )
     {
         _databaseProviders = databaseProviders;
+        _shellsSettingsSources = shellsSettingsSources;
         _tableNameConvention = tableNameConvention;
         _yesSqlOptions = yesSqlOptions.Value;
     }
@@ -69,6 +73,13 @@ public class DbConnectionValidator : IDbConnectionValidator
         catch
         {
             return DbConnectionValidatorResult.InvalidConnection;
+        }
+
+        // If the shell settings come from the same database, the document table may already exist.
+        if (_shellsSettingsSources.GetType().Name == "DatabaseShellsSettingsSources")
+        {
+            // 'DocumentNotFound' is returned to not break the validation.
+            return DbConnectionValidatorResult.DocumentNotFound;
         }
 
         var selectBuilder = GetSelectBuilderForDocumentTable(tablePrefix, providerName);
@@ -111,7 +122,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             DatabaseProviderName.MySql => new DbConnectionFactory<MySqlConnection>(connectionString),
             DatabaseProviderName.Sqlite => new DbConnectionFactory<SqliteConnection>(connectionString),
             DatabaseProviderName.Postgres => new DbConnectionFactory<NpgsqlConnection>(connectionString),
-            _ => throw new ArgumentOutOfRangeException("Unsupported Database Provider"),
+            _ => throw new ArgumentOutOfRangeException(nameof(providerName), "Unsupported Database Provider"),
         };
     }
 
@@ -123,7 +134,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             DatabaseProviderName.MySql => new MySqlDialect(),
             DatabaseProviderName.Sqlite => new SqliteDialect(),
             DatabaseProviderName.Postgres => new PostgreSqlDialect(),
-            _ => throw new ArgumentOutOfRangeException("Unsupported Database Provider"),
+            _ => throw new ArgumentOutOfRangeException(nameof(providerName), "Unsupported Database Provider"),
         };
 
         var prefix = String.Empty;
