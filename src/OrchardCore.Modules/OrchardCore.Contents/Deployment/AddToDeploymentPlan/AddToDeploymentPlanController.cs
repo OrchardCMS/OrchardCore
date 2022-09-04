@@ -81,7 +81,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 return BadRequest();
             }
 
-            var step = ((ContentItemDeploymentStep)stepFactory).Create();
+            var step = (ContentItemDeploymentStep)stepFactory.Create();
 
             step.ContentItemId = contentItem.ContentItemId;
 
