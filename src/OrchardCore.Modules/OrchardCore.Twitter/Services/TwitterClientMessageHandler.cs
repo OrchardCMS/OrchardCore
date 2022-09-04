@@ -46,10 +46,15 @@ namespace OrchardCore.Twitter.Services
             var protrector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
             var queryString = request.RequestUri.Query;
 
-            if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
+            if (!String.IsNullOrWhiteSpace(settings.ConsumerSecret))
+            {
                 settings.ConsumerSecret = protrector.Unprotect(settings.ConsumerSecret);
-            if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
+            }
+
+            if (!String.IsNullOrWhiteSpace(settings.AccessTokenSecret))
+            {
                 settings.AccessTokenSecret = protrector.Unprotect(settings.AccessTokenSecret);
+            }
 
             var nonce = GetNonce();
             var timeStamp = Convert.ToInt64((_clock.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds).ToString();
