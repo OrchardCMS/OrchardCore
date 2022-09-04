@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 using MySqlConnector;
 using Npgsql;
 using OrchardCore.Data.YesSql.Abstractions;
-using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using YesSql;
 using YesSql.Provider.MySql;
 using YesSql.Provider.PostgreSql;
@@ -21,19 +21,16 @@ namespace OrchardCore.Data;
 public class DbConnectionValidator : IDbConnectionValidator
 {
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
-    private readonly IShellsSettingsSources _shellsSettingsSources;
     private readonly ITableNameConvention _tableNameConvention;
     private readonly YesSqlOptions _yesSqlOptions;
 
     public DbConnectionValidator(
         IEnumerable<DatabaseProvider> databaseProviders,
-        IShellsSettingsSources shellsSettingsSources,
         ITableNameConvention tableNameConvention,
         IOptions<YesSqlOptions> yesSqlOptions
         )
     {
         _databaseProviders = databaseProviders;
-        _shellsSettingsSources = shellsSettingsSources;
         _tableNameConvention = tableNameConvention;
         _yesSqlOptions = yesSqlOptions.Value;
     }
@@ -75,43 +72,40 @@ public class DbConnectionValidator : IDbConnectionValidator
             return DbConnectionValidatorResult.InvalidConnection;
         }
 
-        // If the shell settings come from the same database, the document table may already exist.
-        if (_shellsSettingsSources.GetType().Name == "DatabaseShellsSettingsSources")
-        {
-            // In that case return 'DocumentNotFound' to not break the validation.
-            return DbConnectionValidatorResult.DocumentNotFound;
-        }
-
-        var selectBuilder = GetSelectBuilderForDocumentTable(tablePrefix, providerName);
+        var sqlBuilder = GetSqlBuilderForShellDescriptorDocument(tablePrefix, providerName);
 
         try
         {
-            var selectCommand = connection.CreateCommand();
-            selectCommand.CommandText = selectBuilder.ToSqlString();
+            var sqlCommand = connection.CreateCommand();
+            sqlCommand.CommandText = sqlBuilder.ToSqlString();
 
-            using var result = await selectCommand.ExecuteReaderAsync();
+            using var result = await sqlCommand.ExecuteReaderAsync();
+            if (result.HasRows)
+            {
+                // At this point we know that the 'ShellDescriptor' document exists.
+                return DbConnectionValidatorResult.DocumentFound;
+            }
 
-            // At this point the query succeeded and the table exists.
-            return DbConnectionValidatorResult.DocumentFound;
+            // The 'Document' table exists but not the 'ShellDescriptor' document.
+            return DbConnectionValidatorResult.DocumentNotFound;
         }
         catch
         {
             // At this point we know that the document table does not exist.
-
             return DbConnectionValidatorResult.DocumentNotFound;
         }
     }
 
-    private ISqlBuilder GetSelectBuilderForDocumentTable(string tablePrefix, DatabaseProviderName providerName)
+    private ISqlBuilder GetSqlBuilderForShellDescriptorDocument(string tablePrefix, DatabaseProviderName providerName)
     {
-        var selectBuilder = GetSqlBuilder(providerName, tablePrefix);
+        var sqlBuilder = GetSqlBuilder(providerName, tablePrefix);
 
-        selectBuilder.Select();
-        selectBuilder.AddSelector("*");
-        selectBuilder.Table(_tableNameConvention.GetDocumentTable());
-        selectBuilder.Take("1");
+        sqlBuilder.Select();
+        sqlBuilder.AddSelector("*");
+        sqlBuilder.Table(_tableNameConvention.GetDocumentTable());
+        sqlBuilder.WhereAnd($"Type = '{typeof(ShellDescriptor).FullName}, {typeof(ShellDescriptor).Assembly.GetName().Name}'");
 
-        return selectBuilder;
+        return sqlBuilder;
     }
 
     private static IConnectionFactory GetFactory(DatabaseProviderName providerName, string connectionString)
