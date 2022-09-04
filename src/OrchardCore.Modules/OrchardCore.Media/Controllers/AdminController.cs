@@ -296,6 +296,11 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteMediaList(string[] paths)
         {
+            if (paths == null)
+            {
+                return NotFound();
+            }
+
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
@@ -309,15 +314,12 @@ namespace OrchardCore.Media.Controllers
                 }
             }
 
-            if (paths == null)
-            {
-                return NotFound();
-            }
-
             foreach (var p in paths)
             {
                 if (await _mediaFileStore.TryDeleteFileAsync(p) == false)
+                {
                     return NotFound();
+                }
             }
 
             return Ok();
