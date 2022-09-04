@@ -78,7 +78,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         // If the shell settings come from the same database, the document table may already exist.
         if (_shellsSettingsSources.GetType().Name == "DatabaseShellsSettingsSources")
         {
-            // 'DocumentNotFound' is returned to not break the validation.
+            // In that case return 'DocumentNotFound' to not break the validation.
             return DbConnectionValidatorResult.DocumentNotFound;
         }
 
@@ -91,12 +91,12 @@ public class DbConnectionValidator : IDbConnectionValidator
 
             using var result = await selectCommand.ExecuteReaderAsync();
 
-            // at this point the query succeeded and the table exists
+            // At this point the query succeeded and the table exists.
             return DbConnectionValidatorResult.DocumentFound;
         }
         catch
         {
-            // at this point we know that the document table does not exist
+            // At this point we know that the document table does not exist.
 
             return DbConnectionValidatorResult.DocumentNotFound;
         }
