@@ -91,7 +91,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                     Assert.False(draftVersion?.Published);
 
                     var newVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == "newversion");
-                    Assert.Equal("new version", newVersion.DisplayText);
+                    Assert.Equal("new version", newVersion?.DisplayText);
                     Assert.True(newVersion?.Latest);
                     Assert.True(newVersion?.Published);
                 });
