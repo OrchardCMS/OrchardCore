@@ -51,7 +51,7 @@ public class DbConnectionValidator : IDbConnectionValidator
 
         if (provider != null && !provider.HasConnectionString)
         {
-            return DbConnectionValidatorResult.DocumentNotFound;
+            return DbConnectionValidatorResult.Success;
         }
 
         if (String.IsNullOrWhiteSpace(connectionString))
@@ -80,20 +80,19 @@ public class DbConnectionValidator : IDbConnectionValidator
             sqlCommand.CommandText = sqlBuilder.ToSqlString();
 
             using var result = await sqlCommand.ExecuteReaderAsync();
+
+            // If the 'ShellDescriptor' document already exists.
             if (result.HasRows)
             {
-                // At this point we know that the 'ShellDescriptor' document exists.
-                return DbConnectionValidatorResult.DocumentFound;
+                // The database and prefix are already in use.
+                return DbConnectionValidatorResult.DatabaseAndPrefixInUse;
             }
-
-            // The 'Document' table exists but not the 'ShellDescriptor' document.
-            return DbConnectionValidatorResult.DocumentNotFound;
         }
         catch
         {
-            // At this point we know that the document table does not exist.
-            return DbConnectionValidatorResult.DocumentNotFound;
         }
+
+        return DbConnectionValidatorResult.Success;
     }
 
     private ISqlBuilder GetSqlBuilderForShellDescriptorDocument(string tablePrefix, DatabaseProviderName providerName)
