@@ -43,11 +43,9 @@ namespace OrchardCore.Liquid.Filters
                     case DateTime dateTime:
                         value = dateTime;
                         break;
-
                     case DateTimeOffset dateTimeOffset:
                         value = dateTimeOffset;
                         break;
-
                     default:
                         return NilValue.Instance;
                 }
