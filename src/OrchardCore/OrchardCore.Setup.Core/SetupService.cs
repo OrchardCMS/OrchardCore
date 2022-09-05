@@ -182,7 +182,7 @@ namespace OrchardCore.Setup.Services
                     context.Errors.Add(String.Empty, S["The provided connection string is invalid or server is unreachable."]);
                     break;
                 case DbConnectionValidatorResult.DocumentFound:
-                    context.Errors.Add(String.Empty, S["The provided database is already in use."]);
+                    context.Errors.Add(String.Empty, S["The provided database and prefix are already in use."]);
                     break;
             }
 
