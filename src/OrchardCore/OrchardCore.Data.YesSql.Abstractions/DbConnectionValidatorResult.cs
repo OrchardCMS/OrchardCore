@@ -6,6 +6,6 @@ public enum DbConnectionValidatorResult
     NoProvider,
     UnsupportedProvider,
     InvalidConnection,
-    DatabaseAndPrefixInUse,
+    DatabaseAndTablePrefixInUse,
     Success,
 }

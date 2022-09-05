@@ -85,7 +85,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             if (result.HasRows)
             {
                 // The database and prefix are already in use.
-                return DbConnectionValidatorResult.DatabaseAndPrefixInUse;
+                return DbConnectionValidatorResult.DatabaseAndTablePrefixInUse;
             }
         }
         catch
