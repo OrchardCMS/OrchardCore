@@ -32,7 +32,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         {
             services.TryAddScoped<T>();
             services.TryAddEnumerable(
-                ServiceDescriptor.Scoped<IShapeAttributeProvider>(sp => sp.GetRequiredService<T>()));
+                ServiceDescriptor.Scoped<IShapeAttributeProvider, T>(sp => sp.GetRequiredService<T>()));
             return services;
         }
     }
