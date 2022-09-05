@@ -7,11 +7,11 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Liquid.Filters
 {
-    public class TimeZoneFilter : ILiquidFilter
+    internal class UtcTimeZoneFilter : ILiquidFilter
     {
         private readonly ILocalClock _localClock;
 
-        public TimeZoneFilter(ILocalClock localClock)
+        public UtcTimeZoneFilter(ILocalClock localClock)
         {
             _localClock = localClock;
         }
@@ -27,12 +27,6 @@ namespace OrchardCore.Liquid.Filters
                 if (stringValue == "now" || stringValue == "today")
                 {
                     value = await _localClock.LocalNowAsync;
-                }
-                else if (stringValue == "utc_now" || stringValue == "utc_today")
-                {
-                    value = await _localClock.LocalNowAsync;
-
-                    return new ObjectValue(await _localClock.ConvertToUtcAsync(value.DateTime));
                 }
                 else
                 {
@@ -59,7 +53,7 @@ namespace OrchardCore.Liquid.Filters
                 }
             }
 
-            return new ObjectValue(await _localClock.ConvertToLocalAsync(value));
+            return new ObjectValue(await _localClock.ConvertToUtcAsync(value.DateTime));
         }
     }
 }

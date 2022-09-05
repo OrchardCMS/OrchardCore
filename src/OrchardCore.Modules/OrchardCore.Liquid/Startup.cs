@@ -65,7 +65,8 @@ namespace OrchardCore.Liquid
                 options.Filters.AddFilter("json", JsonFilter.Json);
                 options.Filters.AddFilter("jsonparse", JsonParseFilter.JsonParse);
             })
-            .AddLiquidFilter<TimeZoneFilter>("local")
+            .AddLiquidFilter<LocalTimeZoneFilter>("local")
+            .AddLiquidFilter<UtcTimeZoneFilter>("utc")
             .AddLiquidFilter<SlugifyFilter>("slugify")
             .AddLiquidFilter<LiquidFilter>("liquid")
             .AddLiquidFilter<ContentUrlFilter>("href")
