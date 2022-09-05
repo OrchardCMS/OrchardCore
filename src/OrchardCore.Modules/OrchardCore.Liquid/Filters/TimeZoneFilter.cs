@@ -28,6 +28,12 @@ namespace OrchardCore.Liquid.Filters
                 {
                     value = await _localClock.LocalNowAsync;
                 }
+                else if (stringValue == "utc_now" || stringValue == "utc_today")
+                {
+                    value = await _localClock.LocalNowAsync;
+
+                    return new ObjectValue(await _localClock.ConvertToUtcAsync(value.DateTime));
+                }
                 else
                 {
                     if (!DateTimeOffset.TryParse(stringValue, ctx.Options.CultureInfo, DateTimeStyles.AssumeUniversal, out value))
