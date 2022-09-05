@@ -31,8 +31,8 @@ namespace OrchardCore.DisplayManagement.Descriptors
         public static IServiceCollection AddShapeAttributes<T>(this IServiceCollection services) where T : class, IShapeAttributeProvider
         {
             services.TryAddScoped<T>();
-            services.AddScoped<IShapeAttributeProvider>(sp => sp.GetService<T>());
-
+            services.TryAddEnumerable(
+                ServiceDescriptor.Scoped<IShapeAttributeProvider>(sp => sp.GetRequiredService<T>()));
             return services;
         }
     }
