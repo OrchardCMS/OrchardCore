@@ -45,7 +45,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (remoteClient == null)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized");
+                return StatusCode((int)HttpStatusCode.BadRequest, "The remote client was not provided");
             }
 
             var apiKey = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey));
