@@ -276,7 +276,7 @@ namespace OrchardCore.Search.Lucene
         /// Restarts the indexing process from the beginning in order to update
         /// current content items. It doesn't delete existing entries from the index.
         /// </summary>
-        public void ResetIndex(string indexName)
+        public void ResetIndexAsync(string indexName)
         {
             _indexingState.SetLastTaskId(indexName, 0);
             _indexingState.Update();
@@ -294,7 +294,7 @@ namespace OrchardCore.Search.Lucene
 
             await _indexManager.CreateIndexAsync(indexName);
 
-            ResetIndex(indexName);
+            ResetIndexAsync(indexName);
         }
 
         public async Task<LuceneSettings> GetLuceneSettingsAsync()

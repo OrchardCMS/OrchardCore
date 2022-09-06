@@ -273,7 +273,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// Restarts the indexing process from the beginning in order to update
         /// current content items. It doesn't delete existing entries from the index.
         /// </summary>
-        public async Task ResetIndex(string indexName)
+        public async Task ResetIndexAsync(string indexName)
         {
             await _indexManager.SetLastTaskId(indexName, 0);
         }
@@ -285,7 +285,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         {
             await _indexManager.DeleteIndex(elasticIndexSettings.IndexName);
             await _indexManager.CreateIndexAsync(elasticIndexSettings);
-            await ResetIndex(elasticIndexSettings.IndexName);
+            await ResetIndexAsync(elasticIndexSettings.IndexName);
         }
 
         public async Task<ElasticSettings> GetElasticSettingsAsync()

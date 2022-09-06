@@ -274,7 +274,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                 }
                 else
                 {
-                    _luceneIndexingService.ResetIndex(id);
+                    _luceneIndexingService.ResetIndexAsync(id);
                     await _luceneIndexingService.ProcessContentItemsAsync(id);
                 }
 
@@ -451,7 +451,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                                 return NotFound();
                             }
 
-                            _luceneIndexingService.ResetIndex(item.IndexName);
+                            _luceneIndexingService.ResetIndexAsync(item.IndexName);
                             await _luceneIndexingService.ProcessContentItemsAsync(item.IndexName);
 
                             await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", item.IndexName]);
