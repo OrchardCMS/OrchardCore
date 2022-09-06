@@ -113,7 +113,7 @@ namespace OrchardCore.Tenants.Controllers
 
                     var token = CreateSetupToken(settings);
 
-                    return StatusCode(201, GetEncodedUrl(settings, token));
+                    return Created(GetEncodedUrl(settings, token));
                 }
                 else
                 {
@@ -165,7 +165,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (shellSettings.State == TenantState.Running)
             {
-                return StatusCode(201);
+                return Created(GetEncodedUrl(shellSettings, null));
             }
 
             if (shellSettings.State != TenantState.Uninitialized)
@@ -280,7 +280,7 @@ namespace OrchardCore.Tenants.Controllers
                     ModelState.AddModelError(error.Key, error.Value);
                 }
 
-                return StatusCode(500, ModelState);
+                return this.InternalServerError(ModelState);
             }
 
             return Ok(executionId);

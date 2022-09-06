@@ -92,7 +92,7 @@ namespace OrchardCore.ContentPreview.Controllers
                     }
                 }
 
-                return StatusCode(500, new { errors = errors });
+                return this.InternalServerError(new { errors });
             }
 
             var previewAspect = await _contentManager.PopulateAspectAsync(contentItem, new PreviewAspect());
