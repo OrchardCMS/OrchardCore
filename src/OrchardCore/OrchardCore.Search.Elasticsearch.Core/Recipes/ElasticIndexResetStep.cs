@@ -8,7 +8,7 @@ using OrchardCore.Search.Elasticsearch.Core.Services;
 namespace OrchardCore.Search.Elasticsearch.Core.Recipes
 {
     /// <summary>
-    /// This recipe step resets a Elasticsearch index.
+    /// This recipe step resets an Elasticsearch index.
     /// </summary>
     public class ElasticIndexResetStep : IRecipeStepHandler
     {

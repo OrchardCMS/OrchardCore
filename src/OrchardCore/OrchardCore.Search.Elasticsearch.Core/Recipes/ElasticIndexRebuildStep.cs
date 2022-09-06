@@ -8,7 +8,7 @@ using OrchardCore.Search.Elasticsearch.Core.Services;
 namespace OrchardCore.Search.Elasticsearch.Core.Recipes
 {
     /// <summary>
-    /// This recipe step rebuilds a lucene index.
+    /// This recipe step rebuilds an Elasticsearch index.
     /// </summary>
     public class ElasticIndexRebuildStep : IRecipeStepHandler
     {
