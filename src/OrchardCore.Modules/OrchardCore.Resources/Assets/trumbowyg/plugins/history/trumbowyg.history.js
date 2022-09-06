@@ -17,6 +17,12 @@
                     undo: 'Undo'
                 }
             },
+            by: {
+                history: {
+                    redo: 'Паўтарыць',
+                    undo: 'Скасаваць'
+                }
+            },
             da: {
                 history: {
                     redo: 'Annuller fortryd',
@@ -57,6 +63,18 @@
                 history: {
                     redo: 'Refazer',
                     undo: 'Desfazer'
+                }
+            },
+            ru: {
+                history: {
+                    redo: 'Повторить',
+                    undo: 'Отменить'
+                }
+            },
+            tr: {
+                history: {
+                    redo: 'Geri al',
+                    undo: 'Yinele'
                 }
             },
             zh_tw: {
