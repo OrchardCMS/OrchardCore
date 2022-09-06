@@ -90,6 +90,33 @@ Here is an example for setting default search settings:
 },
 ```
 
+### Reset Elasticsearch Index Step
+
+This Reset Index Step resets an Elasticsearch index.
+Restarts the indexing process from the beginning in order to update current content items.
+It doesn't delete existing entries from the index.
+
+```json
+    {
+      "name": "lucene-index-reset",
+      "Indices": [
+        "IndexName1", "IndexName2"
+      ]
+    }
+```
+### Rebuild Elasticsearch Index Step
+
+This Rebuild Index Step rebuilds an Elasticsearch index.
+Deletes and recreates the full index content.
+```json
+    {
+      "name": "lucene-index-rebuild",
+      "Indices": [
+        "IndexName1", "IndexName2"
+      ]
+    }
+```
+
 ## Queries recipe step
 
 Here is an example for creating a Elasticsearch query from a Queries recipe step:

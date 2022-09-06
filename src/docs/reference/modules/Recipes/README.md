@@ -148,6 +148,69 @@ You can also set the default Lucene Settings.
     }
 ```
 
+### Elasticsearch step
+
+The Elasticsearch index step allows you to run the Elasticsearch indexation of content types.  
+You can also set the default Elasticsearch Settings.
+
+```json
+    {
+      // Create the indices before the content items so they are indexed automatically.
+      "name": "ElasticIndexSettings",
+      "Indices": [
+        {
+          "Search": {
+            "AnalyzerName": "standardanalyzer",
+            "IndexLatest": false,
+            "IndexedContentTypes": [
+              "Blog",
+              "BlogPost"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      // Create the search settings.
+      "name": "Settings",
+      "ElasticSettings": {
+        "SearchIndex": "search",
+        "DefaultSearchFields": [
+          "Content.ContentItem.FullText"
+        ],
+        "AllowElasticQueryStringQueryInSearch": false,
+        "SyncWithLucene":  true // Allows to sync content index settings
+      }
+    },
+```
+
+### Reset Elasticsearch Index Step
+
+This Reset Index Step resets an Elasticsearch index.
+Restarts the indexing process from the beginning in order to update current content items.
+It doesn't delete existing entries from the index.
+
+```json
+    {
+      "name": "lucene-index-reset",
+      "Indices": [
+        "IndexName1", "IndexName2"
+      ]
+    }
+```
+### Rebuild Elasticsearch Index Step
+
+This Rebuild Index Step rebuilds an Elasticsearch index.
+Deletes and recreates the full index content.
+```json
+    {
+      "name": "lucene-index-rebuild",
+      "Indices": [
+        "IndexName1", "IndexName2"
+      ]
+    }
+```
+
 ### Content Step
 
 The Content step allows you to create content items.
