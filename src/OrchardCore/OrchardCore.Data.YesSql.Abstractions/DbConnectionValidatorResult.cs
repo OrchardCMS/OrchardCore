@@ -34,7 +34,7 @@ public enum DbConnectionValidatorResult
     InvalidConnection,
 
     /// <summary>
-    /// Invalid or unsupported database provider.
+    /// Unsupported database provider.
     /// </summary>
     UnsupportedProvider
 }
