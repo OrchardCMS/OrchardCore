@@ -74,7 +74,15 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 return Forbid();
             }
 
-            var step = (ContentItemDeploymentStep)_factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep)).Create();
+            var stepFactory = _factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep));
+
+            if (stepFactory == null)
+            {
+                return BadRequest();
+            }
+
+            var step = (ContentItemDeploymentStep)stepFactory.Create();
+
             step.ContentItemId = contentItem.ContentItemId;
 
             deploymentPlan.DeploymentSteps.Add(step);
