@@ -33,7 +33,7 @@ The following configuration values can be customized:
     "OrchardCore_GitHub": {
       "ClientID": "",
       "ClientSecret": "",
-      "CallbackPath": "/",
+      "CallbackPath": "/signin-github",
       "SaveTokens": false
     }
 ```

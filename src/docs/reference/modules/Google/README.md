@@ -67,7 +67,7 @@ The following configuration values can be customized:
     "OrchardCore_Google": {
       "ClientID": "",
       "ClientSecret": "",
-      "CallbackPath": "/",
+      "CallbackPath": "/signin-google",
       "SaveTokens": false
     }
 ```

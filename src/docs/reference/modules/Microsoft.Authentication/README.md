@@ -68,7 +68,7 @@ The following configuration values can be customized:
     "OrchardCore_Microsoft_Authentication_MicrosoftAccount": {
       "AppId": "",
       "AppSecret": "",
-      "CallbackPath": "/",
+      "CallbackPath": "/signin-microsoft",
       "SaveTokens": false
     }
 ```
@@ -78,7 +78,7 @@ The following configuration values can be customized:
       "DisplayName": "",
       "AppId": "",
       "TenantId": "",
-      "CallbackPath": "/",
+      "CallbackPath": "/signin-oidc",
       "SaveTokens": false
     }
 ```
