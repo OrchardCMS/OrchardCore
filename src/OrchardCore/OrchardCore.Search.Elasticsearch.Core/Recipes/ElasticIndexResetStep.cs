@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -12,40 +13,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
     /// </summary>
     public class ElasticIndexResetStep : IRecipeStepHandler
     {
-        private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-        private readonly ElasticIndexingService _elasticIndexingService;
-        private readonly ElasticIndexManager _elasticIndexManager;
-
-        public ElasticIndexResetStep(
-            ElasticIndexSettingsService elasticIndexSettingsService,
-            ElasticIndexingService elasticIndexingService,
-            ElasticIndexManager elasticIndexManager)
-        {
-            _elasticIndexSettingsService = elasticIndexSettingsService;
-            _elasticIndexManager = elasticIndexManager;
-            _elasticIndexingService = elasticIndexingService;
-        }
-
-        private async Task ResetIndexAsync(string indexName)
-        {
-            var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync(indexName);
-
-            if (elasticIndexSettings != null)
-            {
-                if (!await _elasticIndexManager.Exists(indexName))
-                {
-                    await _elasticIndexingService.CreateIndexAsync(elasticIndexSettings);
-                    await _elasticIndexingService.ProcessContentItemsAsync(indexName);
-                }
-                else
-                {
-                    await _elasticIndexingService.ResetIndex(indexName);
-                    await _elasticIndexingService.ProcessContentItemsAsync(indexName);
-                }
-            }
-            await Task.CompletedTask;
-        }
-
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "elastic-index-reset", StringComparison.OrdinalIgnoreCase))
@@ -54,12 +21,25 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
             }
 
             var indices = context.Step["Indices"];
+
             if (indices != null)
             {
-                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-reset", async (shellScope) => {
-                    foreach (var indexName in indices)
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-reset", async scope => {
+
+                    var elasticIndexingService = scope.ServiceProvider.GetService<ElasticIndexingService>();
+                    var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticIndexSettingsService>();
+
+                    foreach (var indexToken in indices)
                     {
-                        await ResetIndexAsync(indexName.ToObject<string>());
+                        var indexName = indexToken.ToObject<string>();
+
+                        var elasticIndexSettings = await elasticIndexSettingsService.GetSettingsAsync(indexName);
+
+                        if (elasticIndexSettings != null)
+                        {
+                            await elasticIndexingService.RebuildIndexAsync(elasticIndexSettings);
+                            await elasticIndexingService.ProcessContentItemsAsync(indexName);
+                        }
                     }
                 });
             }

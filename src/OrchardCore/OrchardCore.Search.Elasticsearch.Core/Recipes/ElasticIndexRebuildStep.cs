@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -12,29 +13,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
     /// </summary>
     public class ElasticIndexRebuildStep : IRecipeStepHandler
     {
-        private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-        private readonly ElasticIndexingService _elasticIndexingService;
-
-        public ElasticIndexRebuildStep(
-            ElasticIndexSettingsService elasticIndexSettingsService,
-            ElasticIndexingService elasticIndexingService
-            )
-        {
-            _elasticIndexSettingsService = elasticIndexSettingsService;
-            _elasticIndexingService = elasticIndexingService;
-        }
-
-        private async Task RebuildIndexAsync(string indexName)
-        {
-            var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync(indexName);
-
-            if (elasticIndexSettings != null)
-            {
-                await _elasticIndexingService.RebuildIndexAsync(elasticIndexSettings);
-                await _elasticIndexingService.ProcessContentItemsAsync(indexName);
-            }
-        }
-
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "elastic-index-rebuild", StringComparison.OrdinalIgnoreCase))
@@ -46,10 +24,22 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
 
             if (indices != null)
             {
-                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-rebuild", async (shellScope) => {
-                    foreach (var indexName in indices)
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-rebuild", async scope => {
+
+                    var elasticIndexingService = scope.ServiceProvider.GetService<ElasticIndexingService>();
+                    var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticIndexSettingsService>();
+
+                    foreach (var indexToken in indices)
                     {
-                        await RebuildIndexAsync(indexName.ToObject<string>());
+                        var indexName = indexToken.ToObject<string>();
+
+                        var elasticIndexSettings = await elasticIndexSettingsService.GetSettingsAsync(indexName);
+
+                        if (elasticIndexSettings != null)
+                        {
+                            await elasticIndexingService.RebuildIndexAsync(elasticIndexSettings);
+                            await elasticIndexingService.ProcessContentItemsAsync(indexName);
+                        }
                     }
                 });
             }
