@@ -113,7 +113,7 @@ namespace OrchardCore.Tenants.Controllers
 
                     var token = CreateSetupToken(settings);
 
-                    return Created(GetEncodedUrl(settings, token));
+                    return Created(GetEncodedUrl(settings, token), null);
                 }
                 else
                 {
@@ -165,7 +165,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (shellSettings.State == TenantState.Running)
             {
-                return Created(GetEncodedUrl(shellSettings, null));
+                return Created(GetEncodedUrl(shellSettings, null), null);
             }
 
             if (shellSettings.State != TenantState.Uninitialized)
