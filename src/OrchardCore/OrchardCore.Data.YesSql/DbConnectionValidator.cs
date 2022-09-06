@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using MySqlConnector;
 using Npgsql;
 using OrchardCore.Data.YesSql.Abstractions;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using YesSql;
 using YesSql.Provider.MySql;
 using YesSql.Provider.PostgreSql;
@@ -84,10 +85,12 @@ public class DbConnectionValidator : IDbConnectionValidator
             if (result.HasRows)
             {
                 // At this point we know that the Document table and the ShellDescriptor record exists.
+                // This also means that this table is used for a tenant.
                 return DbConnectionValidatorResult.ShellDescriptorDocumentFound;
             }
 
             // At this point the Document table exists with no ShellDescriptor document.
+            // This also means that this table is used for other purposes that a tenant (ex., Database Shells Configuration.)
             return DbConnectionValidatorResult.DocumentTableFound;
         }
         catch
@@ -103,8 +106,8 @@ public class DbConnectionValidator : IDbConnectionValidator
         selectBuilder.Select();
         selectBuilder.AddSelector("*");
         selectBuilder.Table(_tableNameConvention.GetDocumentTable());
+        selectBuilder.WhereAnd($"Type = '{typeof(ShellDescriptor).FullName}, {typeof(ShellDescriptor).Assembly.GetName().Name}'");
         selectBuilder.Take("1");
-        selectBuilder.WhereAnd("Type = 'OrchardCore.Shells.Database.Models.DatabaseShellsSettings, OrchardCore.Infrastructure'");
 
         return selectBuilder;
     }
