@@ -236,6 +236,14 @@ namespace OrchardCore.Search.Elasticsearch
             services.AddTransient<IDeploymentSource, ElasticSettingsDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticSettingsDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticSettingsDeploymentStepDriver>();
+
+            services.AddTransient<IDeploymentSource, ElasticIndexRebuildDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexRebuildDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticIndexRebuildDeploymentStepDriver>();
+
+            services.AddTransient<IDeploymentSource, ElasticIndexResetDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexResetDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticIndexResetDeploymentStepDriver>();
         }
     }
 

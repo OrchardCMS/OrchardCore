@@ -64,6 +64,12 @@
       }
     },
     {
+      "name": "elastic-index-rebuild",
+      "Indices": [
+        "search"
+      ]
+    },
+    {
       // Create the search index permissions.
       "name": "Roles",
       "Roles": [
