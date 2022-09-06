@@ -15,12 +15,12 @@
 <script asp-name="vue-multiselect-wrapper" asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-wrapper.js" at="Foot" depends-on="vuejs, vue-multiselect, sortable, vuedraggable"></script>
 <style asp-name="vue-multiselect-wrapper" asp-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-wrapper.min.css" debug-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-wrapper.css" depends-on="vue-multiselect"></style>
 
-<label asp-for="ContentItemIds">@Model.PartFieldDefinition.DisplayName()</label>
+<div class="mb-3 field-wrapper @fieldName-wrapper" id="@Html.IdFor(x => x.ContentItemIds)_FieldWrapper">
+    <label asp-for="ContentItemIds">@Model.PartFieldDefinition.DisplayName()</label>
 
-<div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="@multiple">
+    <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="@multiple">
 
-    <div class="mb-3">
-        <ul class="list-group w-xl-50 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>
+        <ul class="mb-1 list-group w-xl-50 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>
             <draggable v-model="arrayOfItems">
                 <li v-for="(item, i) in arrayOfItems"
                     class="cursor-move list-group-item content-picker-default__list-item d-flex align-items-start justify-content-between"
@@ -33,9 +33,7 @@
                 </li>
             </draggable>
         </ul>
-    </div>
 
-    <div class="mb-3">
         <div class="w-xl-50">
             <input asp-for="ContentItemIds" type="hidden" v-model="selectedIds" />
             <vue-multiselect v-model="value" :options="options" track-by="id"

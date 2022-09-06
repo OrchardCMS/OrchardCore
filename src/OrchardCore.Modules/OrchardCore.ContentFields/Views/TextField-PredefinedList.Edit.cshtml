@@ -14,9 +14,10 @@
 
         options.Add(new SelectListItem { Text = option.Name, Value = option.Value, Selected = isSelected });
     }
+    var fieldName = Model.PartFieldDefinition.Name;
 }
 
-<div class="mb-3">
+<div class="mb-3 field-wrapper @fieldName-wrapper" id="@Html.IdFor(x => x.Text)_FieldWrapper">
 
     @if (listSettings.Editor == EditorOption.Radio)
     {
