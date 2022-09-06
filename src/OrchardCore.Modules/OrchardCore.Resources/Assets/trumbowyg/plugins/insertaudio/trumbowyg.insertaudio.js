@@ -1,4 +1,4 @@
-/*/* ===========================================================
+﻿/*/* ===========================================================
  * trumbowyg.insertaudio.js v1.0
  * InsertAudio plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -36,6 +36,9 @@
             // jshint camelcase:false
             en: {
                 insertAudio: 'Insert Audio'
+            },
+            by: {
+                insertAudio: 'Уставіць аўдыё'
             },
             da: {
                 insertAudio: 'Indsæt lyd'
