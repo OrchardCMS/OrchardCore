@@ -50,7 +50,7 @@ public class DbConnectionValidator : IDbConnectionValidator
 
         if (provider != null && !provider.HasConnectionString)
         {
-            return DbConnectionValidatorResult.DocumentNotFound;
+            return DbConnectionValidatorResult.DocumentTableNotFound;
         }
 
         if (String.IsNullOrWhiteSpace(connectionString))
@@ -80,25 +80,31 @@ public class DbConnectionValidator : IDbConnectionValidator
 
             using var result = await selectCommand.ExecuteReaderAsync();
 
-            // at this point the query succeeded and the table exists
-            return DbConnectionValidatorResult.DocumentFound;
+            // At this point, the query work and the 'Document' table exists.
+            if (result.HasRows)
+            {
+                // At this point we know that the Document table and the ShellDescriptor record exists.
+                return DbConnectionValidatorResult.ShellDescriptorDocumentFound;
+            }
+
+            // At this point the Document table exists with no ShellDescriptor document.
+            return DbConnectionValidatorResult.DocumentTableFound;
         }
         catch
         {
-            // at this point we know that the document table does not exist
-
-            return DbConnectionValidatorResult.DocumentNotFound;
+            // At this point we know that the document table does not exist.
+            return DbConnectionValidatorResult.DocumentTableNotFound;
         }
     }
 
     private ISqlBuilder GetSelectBuilderForDocumentTable(string tablePrefix, DatabaseProviderName providerName)
     {
         var selectBuilder = GetSqlBuilder(providerName, tablePrefix);
-
         selectBuilder.Select();
         selectBuilder.AddSelector("*");
         selectBuilder.Table(_tableNameConvention.GetDocumentTable());
         selectBuilder.Take("1");
+        selectBuilder.WhereAnd("Type = 'OrchardCore.Shells.Database.Models.DatabaseShellsSettings, OrchardCore.Infrastructure'");
 
         return selectBuilder;
     }
@@ -111,7 +117,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             DatabaseProviderName.MySql => new DbConnectionFactory<MySqlConnection>(connectionString),
             DatabaseProviderName.Sqlite => new DbConnectionFactory<SqliteConnection>(connectionString),
             DatabaseProviderName.Postgres => new DbConnectionFactory<NpgsqlConnection>(connectionString),
-            _ => throw new ArgumentOutOfRangeException("Unsupported Database Provider"),
+            _ => throw new ArgumentOutOfRangeException(nameof(providerName), "Unsupported Database Provider"),
         };
     }
 
@@ -123,7 +129,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             DatabaseProviderName.MySql => new MySqlDialect(),
             DatabaseProviderName.Sqlite => new SqliteDialect(),
             DatabaseProviderName.Postgres => new PostgreSqlDialect(),
-            _ => throw new ArgumentOutOfRangeException("Unsupported Database Provider"),
+            _ => throw new ArgumentOutOfRangeException(nameof(providerName), "Unsupported Database Provider"),
         };
 
         var prefix = String.Empty;
