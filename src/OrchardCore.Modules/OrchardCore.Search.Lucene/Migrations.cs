@@ -148,11 +148,6 @@ namespace OrchardCore.Search.Lucene
                 });
             }
 
-            return 1;
-        }
-
-        public int UpdateFrom1()
-        {
             // Defer this until after the subsequent migrations have succeeded as the schema has changed.
             ShellScope.AddDeferredTask(async scope =>
             {
@@ -205,7 +200,7 @@ namespace OrchardCore.Search.Lucene
                 }
             });
 
-            return 2;
+            return 1;
         }
     }
 }
