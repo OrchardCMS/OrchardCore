@@ -120,7 +120,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             DatabaseProviderName.MySql => new DbConnectionFactory<MySqlConnection>(connectionString),
             DatabaseProviderName.Sqlite => new DbConnectionFactory<SqliteConnection>(connectionString),
             DatabaseProviderName.Postgres => new DbConnectionFactory<NpgsqlConnection>(connectionString),
-            _ => throw new ArgumentOutOfRangeException(nameof(providerName), "Unsupported Database Provider"),
+            _ => throw new ArgumentOutOfRangeException(nameof(providerName), "Unsupported database provider"),
         };
     }
 
@@ -132,7 +132,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             DatabaseProviderName.MySql => new MySqlDialect(),
             DatabaseProviderName.Sqlite => new SqliteDialect(),
             DatabaseProviderName.Postgres => new PostgreSqlDialect(),
-            _ => throw new ArgumentOutOfRangeException(nameof(providerName), "Unsupported Database Provider"),
+            _ => throw new ArgumentOutOfRangeException(nameof(providerName), "Unsupported database provider"),
         };
 
         var prefix = String.Empty;
