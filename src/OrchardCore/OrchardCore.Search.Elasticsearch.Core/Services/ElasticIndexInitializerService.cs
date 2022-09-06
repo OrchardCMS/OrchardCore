@@ -12,7 +12,7 @@ namespace OrchardCore.Search.Elasticsearch
     /// Provides a way to initialize Elasticsearch index on startup of the application
     /// if the index is not found on the Elasticsearch server.
     /// </summary>
-    public class ElasticIndexInitializerService : IModularTenantEvents
+    public class ElasticIndexInitializerService : ModularTenantEvents
     {
         private readonly ShellSettings _shellSettings;
 
@@ -21,7 +21,7 @@ namespace OrchardCore.Search.Elasticsearch
             _shellSettings = shellSettings;
         }
 
-        public Task ActivatedAsync()
+        public override Task ActivatedAsync()
         {
             if (_shellSettings.State == TenantState.Running)
             {
@@ -44,21 +44,6 @@ namespace OrchardCore.Search.Elasticsearch
                 });
             }
 
-            return Task.CompletedTask;
-        }
-
-        public Task ActivatingAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task TerminatedAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task TerminatingAsync()
-        {
             return Task.CompletedTask;
         }
     }
