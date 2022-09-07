@@ -1,5 +1,8 @@
 namespace OrchardCore.Data;
 
+/// <summary>
+/// The result from validating a database connection using <see cref="IDbConnectionValidator"/>
+/// </summary>
 public enum DbConnectionValidatorResult
 {
     /// <summary>

@@ -93,6 +93,48 @@ public class DbConnectionValidator : IDbConnectionValidator
             // This also means that this table is used for other purposes that a tenant (ex., Database Shells Configuration.)
             return DbConnectionValidatorResult.DocumentTableFound;
         }
+        catch (SqlException e)
+        {
+            for (var i = 0; i < e.Errors.Count; i++)
+            {
+                if (e.Errors[i].Number == 207)
+                {
+                    // This means that the table exists but some expected columns do not exists.
+                    // This likely to mean that the the table was not created using YesSql.
+                    return DbConnectionValidatorResult.DocumentTableFound;
+                }
+                else if (e.Errors[i].Number == 208)
+                {
+                    return DbConnectionValidatorResult.DocumentTableNotFound;
+                }
+            }
+
+            return DbConnectionValidatorResult.InvalidConnection;
+        }
+        catch (MySqlException e)
+        {
+            return e.ErrorCode switch
+            {
+                MySqlErrorCode.NoSuchTable => DbConnectionValidatorResult.DocumentTableNotFound,
+                // This means that the table exists but some expected columns do not exists.
+                // This likely to mean that the the table was not created using YesSql.
+                MySqlErrorCode.BadFieldError => DbConnectionValidatorResult.DocumentTableFound,
+                _ => DbConnectionValidatorResult.InvalidConnection,
+            };
+        }
+        catch (PostgresException e)
+        {
+            return e.SqlState switch
+            {
+                //https://www.postgresql.org/docs/current/errcodes-appendix.html
+                // 'undefined_table'
+                "42P01" => DbConnectionValidatorResult.DocumentTableNotFound,
+
+                // 'undefined_column' this likely to mean that the the table was not created using YesSql.
+                "42703" => DbConnectionValidatorResult.DocumentTableFound,
+                _ => DbConnectionValidatorResult.InvalidConnection
+            };
+        }
         catch
         {
             // At this point we know that the document table does not exist.
@@ -104,7 +146,9 @@ public class DbConnectionValidator : IDbConnectionValidator
     {
         var selectBuilder = GetSqlBuilder(providerName, tablePrefix);
         selectBuilder.Select();
-        selectBuilder.AddSelector("*");
+        // Here we explicitly select the expected column used by YesSql instead of '*'
+        // to ensure that this table can be consumed by YesSql.
+        selectBuilder.AddSelector("Id, Type, Content, Version");
         selectBuilder.Table(_tableNameConvention.GetDocumentTable());
         selectBuilder.WhereAnd($"Type = '{typeof(ShellDescriptor).FullName}, {typeof(ShellDescriptor).Assembly.GetName().Name}'");
         selectBuilder.Take("1");
