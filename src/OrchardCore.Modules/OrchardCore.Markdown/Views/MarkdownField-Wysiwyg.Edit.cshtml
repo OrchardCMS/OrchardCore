@@ -24,8 +24,8 @@
 <script at="Foot">
     $(function() {
         var markdownElement = document.getElementById("@Html.IdFor(m => m.Markdown)");
-    @* When field is rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
-                                                        if (markdownElement) {
+        @* When field is rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
+        if (markdownElement) {
             var mde = new EasyMDE({
                 element: markdownElement,
                 forceSync: true,
@@ -39,11 +39,11 @@
                 $(document).trigger('contentpreview:render');
             });
 
-    @if (culture.IsRightToLeft())
-    {
+        @if (culture.IsRightToLeft())
+        {
         <text>$('.editor-toolbar').attr('style', 'direction:rtl;text-align:right');
-                    $('.CodeMirror').attr('style', 'text-align:right'); </text>
-    }
+        $('.CodeMirror').attr('style', 'text-align:right'); </text>
+        }
                                                         }
     });
 </script>
