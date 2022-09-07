@@ -5,6 +5,7 @@
 @{
     var shortcodeDescriptors = await ShortcodeDescriptorManager.GetShortcodeDescriptors();
     var categories = shortcodeDescriptors
+        .Where(s => s != null)
         .SelectMany(s => s.Categories)
         .GroupBy(c => c, StringComparer.OrdinalIgnoreCase)
         .Select(g => g.Key);
