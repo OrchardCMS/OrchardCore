@@ -14,6 +14,7 @@ using YesSql.Provider.MySql;
 using YesSql.Provider.PostgreSql;
 using YesSql.Provider.Sqlite;
 using YesSql.Provider.SqlServer;
+using YesSql.Services;
 using YesSql.Sql;
 
 namespace OrchardCore.Data;
@@ -144,7 +145,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         selectBuilder.Select();
         selectBuilder.Selector("*");
         selectBuilder.Table(_tableNameConvention.GetDocumentTable());
-        selectBuilder.WhereAnd($"Type = '{typeof(ShellDescriptor).FullName}, {typeof(ShellDescriptor).Assembly.GetName().Name}'");
+        selectBuilder.WhereAnd($"Type = '{new TypeService()[typeof(ShellDescriptor)]}'");
         selectBuilder.Take("1");
 
         return selectBuilder;
