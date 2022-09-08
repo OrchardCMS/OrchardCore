@@ -9,6 +9,7 @@ using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
@@ -27,10 +28,12 @@ namespace OrchardCore.Tenants
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
+        private readonly IShellConfiguration _shellConfiguration;
 
-        public Startup(IOptions<AdminOptions> adminOptions)
+        public Startup(IOptions<AdminOptions> adminOptions, IShellConfiguration shellConfiguration)
         {
             _adminOptions = adminOptions.Value;
+            _shellConfiguration = shellConfiguration;
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -39,6 +42,8 @@ namespace OrchardCore.Tenants
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<ITenantValidator, TenantValidator>();
             services.AddSetup();
+
+            services.Configure<TenantsOptions>(_shellConfiguration.GetSection("OrchardCore_Tenants"));
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

@@ -42,6 +42,7 @@ namespace OrchardCore.Tenants.Controllers
         private readonly INotifier _notifier;
         private readonly ITenantValidator _tenantValidator;
         private readonly PagerOptions _pagerOptions;
+        private readonly TenantsOptions _tenantsOptions;
         private readonly ILogger _logger;
         private readonly dynamic New;
         private readonly IStringLocalizer S;
@@ -61,6 +62,7 @@ namespace OrchardCore.Tenants.Controllers
             INotifier notifier,
             ITenantValidator tenantValidator,
             IOptions<PagerOptions> pagerOptions,
+            IOptions<TenantsOptions> tenantsOptions,
             ILogger<AdminController> logger,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
@@ -79,6 +81,7 @@ namespace OrchardCore.Tenants.Controllers
             _notifier = notifier;
             _tenantValidator = tenantValidator;
             _pagerOptions = pagerOptions.Value;
+            _tenantsOptions = tenantsOptions.Value;
             _logger = logger;
 
             New = shapeFactory;
@@ -239,6 +242,11 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             if (!_currentShellSettings.IsDefaultShell())
+            {
+                return Forbid();
+            }
+
+            if (model.BulkAction.ToString() == "Remove" && !_tenantsOptions.TenantRemovalAllowed)
             {
                 return Forbid();
             }
@@ -629,7 +637,7 @@ namespace OrchardCore.Tenants.Controllers
         [HttpPost]
         public async Task<IActionResult> Remove(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants) || !_tenantsOptions.TenantRemovalAllowed)
             {
                 return Forbid();
             }
