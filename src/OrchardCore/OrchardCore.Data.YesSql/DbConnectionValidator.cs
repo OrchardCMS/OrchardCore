@@ -86,7 +86,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             }
 
             var columns = Enumerable.Range(0, result.FieldCount).Select(result.GetName);
-            if (!columns.Any(c => c == "Type") || !columns.Any(c => c == "Content") || !columns.Any(c => c == "Version"))
+            if (!columns.Any(c => c == "Type"|| c == "Content" || c == "Version"))
             {
                 // The 'Document' table exists with another schema.
                 return DbConnectionValidatorResult.DocumentTableFound;
