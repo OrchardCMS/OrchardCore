@@ -20,6 +20,8 @@ namespace OrchardCore.Data;
 
 public class DbConnectionValidator : IDbConnectionValidator
 {
+    private static readonly string[] _requiredDocumentTableColumns = new[] { "Id", "Type", "Content", "Version" };
+
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
     private readonly ITableNameConvention _tableNameConvention;
     private readonly YesSqlOptions _yesSqlOptions;
@@ -85,11 +87,12 @@ public class DbConnectionValidator : IDbConnectionValidator
                 return DbConnectionValidatorResult.DocumentTableFound;
             }
 
-            var columns = Enumerable.Range(0, result.FieldCount)
+            var requiredColumnsCount = Enumerable.Range(0, result.FieldCount)
                 .Select(result.GetName)
-                .Where(c => c == "Type" || c == "Content" || c == "Version");
+                .Where(c => _requiredDocumentTableColumns.Contains(c))
+                .Count();
 
-            if (columns.Count() != 3)
+            if (requiredColumnsCount != _requiredDocumentTableColumns.Length)
             {
                 // The 'Document' table exists with another schema.
                 return DbConnectionValidatorResult.DocumentTableFound;
