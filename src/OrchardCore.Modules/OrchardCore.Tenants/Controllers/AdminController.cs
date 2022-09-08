@@ -96,14 +96,14 @@ namespace OrchardCore.Tenants.Controllers
             var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
 
             var entries = allSettings.Select(x =>
-                {
-                    var entry = new ShellSettingsEntry
-                    {
-                        Category = x["Category"],
-                        Description = x["Description"],
-                        Name = x.Name,
-                        ShellSettings = x,
-                    };
+               {
+                   var entry = new ShellSettingsEntry
+                   {
+                       Category = x["Category"],
+                       Description = x["Description"],
+                       Name = x.Name,
+                       ShellSettings = x,
+                   };
 
                    if (x.State == TenantState.Uninitialized && !String.IsNullOrEmpty(x["Secret"]))
                    {

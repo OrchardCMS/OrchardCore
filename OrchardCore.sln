@@ -474,6 +474,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Features.Core", "src\OrchardCore\OrchardCore.Features.Core\OrchardCore.Features.Core.csproj", "{A6563050-EE6D-4E7C-81AA-C383DB3ED124}"
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ArchiveLater", "src\OrchardCore.Modules\OrchardCore.ArchiveLater\OrchardCore.ArchiveLater.csproj", "{190C4BEB-C506-4F7F-BDCA-93F3C1C221BC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Features.Core", "src\OrchardCore\OrchardCore.Features.Core\OrchardCore.Features.Core.csproj", "{25543247-4348-4835-B39C-71BDCEF3B99F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
