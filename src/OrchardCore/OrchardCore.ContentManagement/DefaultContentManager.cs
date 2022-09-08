@@ -171,7 +171,7 @@ namespace OrchardCore.ContentManagement
             }
 
             ContentItem contentItem = null;
-            if (options.IsAllVersions)
+            if (options.IsAnyVersions)
             {
                 contentItem = await _session
                     .Query<ContentItem, ContentItemIndex>()

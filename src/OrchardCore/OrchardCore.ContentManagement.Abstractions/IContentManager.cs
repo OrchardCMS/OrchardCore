@@ -262,12 +262,12 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// Gets all versions.
         /// </summary>
-        public static VersionOptions AllVersions { get { return new VersionOptions { IsAllVersions = true }; } }
+        public static VersionOptions AnyVersion { get { return new VersionOptions { IsAnyVersions = true }; } }
 
         public bool IsLatest { get; private set; }
         public bool IsPublished { get; private set; }
         public bool IsDraft { get; private set; }
         public bool IsDraftRequired { get; private set; }
-        public bool IsAllVersions { get; private set; }
+        public bool IsAnyVersions { get; private set; }
     }
 }
