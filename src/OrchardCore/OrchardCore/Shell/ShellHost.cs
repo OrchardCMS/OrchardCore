@@ -454,7 +454,8 @@ namespace OrchardCore.Environment.Shell
             return
                 shellSettings.State == TenantState.Running ||
                 shellSettings.State == TenantState.Uninitialized ||
-                shellSettings.State == TenantState.Initializing;
+                shellSettings.State == TenantState.Initializing ||
+                shellSettings.State == TenantState.Disabled;
         }
 
         /// <summary>

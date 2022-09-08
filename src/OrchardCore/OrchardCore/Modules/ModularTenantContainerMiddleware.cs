@@ -44,6 +44,13 @@ namespace OrchardCore.Modules
                     return;
                 }
 
+                if (shellSettings.State == TenantState.Disabled)
+                {
+                    httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    await httpContext.Response.WriteAsync("The requested tenant is currently disabled.");
+                    return;
+                }
+
                 // Makes 'RequestServices' aware of the current 'ShellScope'.
                 httpContext.UseShellScopeServices();
 
