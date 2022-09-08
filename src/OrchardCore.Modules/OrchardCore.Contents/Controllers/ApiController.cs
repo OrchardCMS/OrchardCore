@@ -71,7 +71,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (contentItem == null)
             {
-                return StatusCode(204);
+                return NoContent();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteContent, contentItem))

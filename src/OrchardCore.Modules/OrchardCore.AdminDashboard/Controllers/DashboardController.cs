@@ -149,7 +149,7 @@ namespace OrchardCore.AdminDashboard.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminDashboard))
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
 
             var contentItemIds = parts.Select(i => i.ContentItemId).ToArray();
@@ -161,7 +161,7 @@ namespace OrchardCore.AdminDashboard.Controllers
 
             if (latestItems == null)
             {
-                return StatusCode(404);
+                return NotFound();
             }
 
             foreach (var contentItem in latestItems)
@@ -169,7 +169,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                 var dashboardPart = contentItem.As<DashboardPart>();
                 if (dashboardPart == null)
                 {
-                    return StatusCode(403);
+                    return Forbid();
                 }
 
                 var partViewModel = parts.Where(m => m.ContentItemId == contentItem.ContentItemId).FirstOrDefault();
@@ -200,7 +200,7 @@ namespace OrchardCore.AdminDashboard.Controllers
 
             if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
-                return StatusCode(200);
+                return Ok();
             }
             else
             {
