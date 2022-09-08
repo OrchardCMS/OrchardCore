@@ -1,7 +1,7 @@
 namespace OrchardCore.Data;
 
 /// <summary>
-/// The result from validating a database connection using <see cref="IDbConnectionValidator"/>
+/// The result from validating a database connection using <see cref="IDbConnectionValidator"/>.
 /// </summary>
 public enum DbConnectionValidatorResult
 {
@@ -16,23 +16,22 @@ public enum DbConnectionValidatorResult
     NoProvider,
 
     /// <summary>
-    /// The connection string is valid. But, the Document table does not exists.
+    /// The connection string is valid and the 'Document' table does not exists.
     /// </summary>
     DocumentTableNotFound,
 
     /// <summary>
-    /// The connection string is valid and the Document table exists.
+    /// The connection string is valid and the 'Document' table exists.
     /// </summary>
     DocumentTableFound,
 
     /// <summary>
-    /// The connection string is valid and the Document table exists with at least one shell-descriptor document.
-    /// This also means that the Document table is used by an existing tenant.
+    /// The 'Document' table exists with no 'ShellDescriptor' document.
     /// </summary>
-    ShellDescriptorDocumentFound,
+    ShellDescriptorDocumentNotFound,
 
     /// <summary>
-    /// Unable to open a connection to the given database connection string.
+    /// Unable to open a connection with the given database connection string.
     /// </summary>
     InvalidConnection,
 

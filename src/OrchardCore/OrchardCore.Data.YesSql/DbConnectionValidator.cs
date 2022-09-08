@@ -35,7 +35,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         _yesSqlOptions = yesSqlOptions.Value;
     }
 
-    public async Task<DbConnectionValidatorResult> ValidateAsync(string databaseProvider, string connectionString, string tablePrefix)
+    public async Task<DbConnectionValidatorResult> ValidateAsync(string databaseProvider, string connectionString, string tablePrefix, bool isDefaultShell)
     {
         if (String.IsNullOrWhiteSpace(databaseProvider))
         {
@@ -73,82 +73,70 @@ public class DbConnectionValidator : IDbConnectionValidator
         }
 
         var selectBuilder = GetSelectBuilderForDocumentTable(tablePrefix, providerName);
-
         try
         {
             var selectCommand = connection.CreateCommand();
             selectCommand.CommandText = selectBuilder.ToSqlString();
 
             using var result = await selectCommand.ExecuteReaderAsync();
-
-            // At this point, the query work and the 'Document' table exists.
-            if (result.HasRows)
+            if (!isDefaultShell)
             {
-                // At this point we know that the Document table and the ShellDescriptor record exists.
-                // This also means that this table is used for a tenant.
-                return DbConnectionValidatorResult.ShellDescriptorDocumentFound;
+                // The 'Document' table exists.
+                return DbConnectionValidatorResult.DocumentTableFound;
             }
 
-            // At this point the Document table exists with no ShellDescriptor document.
-            // This also means that this table is used for other purposes that a tenant (ex., Database Shells Configuration.)
-            return DbConnectionValidatorResult.DocumentTableFound;
-        }
-        catch (SqlException e)
-        {
-            for (var i = 0; i < e.Errors.Count; i++)
+            var columns = Enumerable.Range(0, result.FieldCount).Select(result.GetName);
+            if (!columns.Any(c => c == "Type") || !columns.Any(c => c == "Content") || !columns.Any(c => c == "Version"))
             {
-                if (e.Errors[i].Number == 207)
-                {
-                    // This means that the table exists but some expected columns do not exists.
-                    // This likely to mean that the the table was not created using YesSql.
-                    return DbConnectionValidatorResult.DocumentTableFound;
-                }
-                else if (e.Errors[i].Number == 208)
-                {
-                    return DbConnectionValidatorResult.DocumentTableNotFound;
-                }
+                // The 'Document' table exists with another schema.
+                return DbConnectionValidatorResult.DocumentTableFound;
             }
-
-            return DbConnectionValidatorResult.InvalidConnection;
-        }
-        catch (MySqlException e)
-        {
-            return e.ErrorCode switch
-            {
-                MySqlErrorCode.NoSuchTable => DbConnectionValidatorResult.DocumentTableNotFound,
-                // This means that the table exists but some expected columns do not exists.
-                // This likely to mean that the the table was not created using YesSql.
-                MySqlErrorCode.BadFieldError => DbConnectionValidatorResult.DocumentTableFound,
-                _ => DbConnectionValidatorResult.InvalidConnection,
-            };
-        }
-        catch (PostgresException e)
-        {
-            return e.SqlState switch
-            {
-                //https://www.postgresql.org/docs/current/errcodes-appendix.html
-                // 'undefined_table'
-                "42P01" => DbConnectionValidatorResult.DocumentTableNotFound,
-
-                // 'undefined_column' this likely to mean that the the table was not created using YesSql.
-                "42703" => DbConnectionValidatorResult.DocumentTableFound,
-                _ => DbConnectionValidatorResult.InvalidConnection
-            };
         }
         catch
         {
-            // At this point we know that the document table does not exist.
+            // The 'Document' table does not exist.
             return DbConnectionValidatorResult.DocumentTableNotFound;
         }
+
+        selectBuilder = GetSelectBuilderForShellDescriptorDocument(tablePrefix, providerName);
+        try
+        {
+            var selectCommand = connection.CreateCommand();
+            selectCommand.CommandText = selectBuilder.ToSqlString();
+
+            using var result = await selectCommand.ExecuteReaderAsync();
+            if (!result.HasRows)
+            {
+                // The 'Document' table exists with no 'ShellDescriptor' document.
+                return DbConnectionValidatorResult.ShellDescriptorDocumentNotFound;
+            }
+        }
+        catch
+        {
+        }
+
+        // The 'Document' table exists.
+        return DbConnectionValidatorResult.DocumentTableFound;
     }
 
     private ISqlBuilder GetSelectBuilderForDocumentTable(string tablePrefix, DatabaseProviderName providerName)
     {
         var selectBuilder = GetSqlBuilder(providerName, tablePrefix);
+
         selectBuilder.Select();
-        // Here we explicitly select the expected column used by YesSql instead of '*'
-        // to ensure that this table can be consumed by YesSql.
-        selectBuilder.AddSelector("Id, Type, Content, Version");
+        selectBuilder.Selector("*");
+        selectBuilder.Table(_tableNameConvention.GetDocumentTable());
+        selectBuilder.Take("1");
+
+        return selectBuilder;
+    }
+
+    private ISqlBuilder GetSelectBuilderForShellDescriptorDocument(string tablePrefix, DatabaseProviderName providerName)
+    {
+        var selectBuilder = GetSqlBuilder(providerName, tablePrefix);
+
+        selectBuilder.Select();
+        selectBuilder.Selector("*");
         selectBuilder.Table(_tableNameConvention.GetDocumentTable());
         selectBuilder.WhereAnd($"Type = '{typeof(ShellDescriptor).FullName}, {typeof(ShellDescriptor).Assembly.GetName().Name}'");
         selectBuilder.Take("1");
