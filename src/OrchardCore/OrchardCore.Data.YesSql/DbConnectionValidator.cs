@@ -85,8 +85,11 @@ public class DbConnectionValidator : IDbConnectionValidator
                 return DbConnectionValidatorResult.DocumentTableFound;
             }
 
-            var columns = Enumerable.Range(0, result.FieldCount).Select(result.GetName);
-            if (!columns.Any(c => c == "Type") || !columns.Any(c => c == "Content") || !columns.Any(c => c == "Version"))
+            var columns = Enumerable.Range(0, result.FieldCount)
+                .Select(result.GetName)
+                .Where(c => c == "Type" || c == "Content" || c == "Version");
+
+            if (columns.Count() != 3)
             {
                 // The 'Document' table exists with another schema.
                 return DbConnectionValidatorResult.DocumentTableFound;
