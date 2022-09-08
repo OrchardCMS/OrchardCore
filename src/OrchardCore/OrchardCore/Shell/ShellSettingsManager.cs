@@ -269,7 +269,7 @@ namespace OrchardCore.Environment.Shell
                 .AddConfiguration(_applicationConfiguration)
                 .AddSourcesAsync(_tenantsConfigSources);
 
-            if (lastProviders.Count() > 0)
+            if (lastProviders?.Length > 0)
             {
                 configurationBuilder.AddConfiguration(new ConfigurationRoot(lastProviders));
             }

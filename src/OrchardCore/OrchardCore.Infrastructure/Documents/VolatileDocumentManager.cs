@@ -18,6 +18,7 @@ namespace OrchardCore.Documents
     public class VolatileDocumentManager<TDocument> : DocumentManager<TDocument>, IVolatileDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
         private readonly IDistributedLock _distributedLock;
+        private readonly ILogger _logger;
 
         private delegate Task<TDocument> UpdateDelegate();
         private delegate Task AfterUpdateDelegate(TDocument document);
@@ -32,6 +33,7 @@ namespace OrchardCore.Documents
         {
             _isVolatile = true;
             _distributedLock = distributedLock;
+            _logger = logger;
         }
 
         public async Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null)
@@ -46,7 +48,9 @@ namespace OrchardCore.Documents
                 {
                     await DocumentStore.CancelAsync();
 
-                    throw new InvalidOperationException($"Can't update the '{typeof(TDocument).Name}' if not able to access the distributed cache");
+                    _logger.LogError("Can't update the '{DocumentName}' if not able to access the distributed cache", typeof(TDocument).Name);
+                    
+                    throw;
                 }
             }
 
