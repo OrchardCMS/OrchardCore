@@ -22,6 +22,7 @@ namespace OrchardCore.Data;
 public class DbConnectionValidator : IDbConnectionValidator
 {
     private static readonly string[] _requiredDocumentTableColumns = new[] { "Id", "Type", "Content", "Version" };
+    private static readonly string _shellDescriptorTypeColumnValue = new TypeService()[typeof(ShellDescriptor)];
 
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
     private readonly ITableNameConvention _tableNameConvention;
@@ -145,7 +146,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         selectBuilder.Select();
         selectBuilder.Selector("*");
         selectBuilder.Table(_tableNameConvention.GetDocumentTable());
-        selectBuilder.WhereAnd($"Type = '{new TypeService()[typeof(ShellDescriptor)]}'");
+        selectBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
         selectBuilder.Take("1");
 
         return selectBuilder;
