@@ -171,9 +171,9 @@ namespace OrchardCore.Resources
             manifest
                .DefineScript("popperjs")
                .SetUrl("~/OrchardCore.Resources/Scripts/popper.min.js", "~/OrchardCore.Resources/Scripts/popper.js")
-               .SetCdn("https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js", "https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.js")
-               .SetCdnIntegrity("sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB", "sha384-7bLhHCLchQRw474eiNFHP0txk38fyqbVOG/RohbcYXnTrdd9mNPQrVkOcY14iscj")
-               .SetVersion("2.10.2");
+               .SetCdn("https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js", "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.js")
+               .SetCdnIntegrity("sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3", "sha384-VQo0vWAZ18Sqo1Alu/vX3/9h02S6fyWFzsl04LHApi5zmn8ZTmjmqTn0WqxmlPPm")
+               .SetVersion("2.11.6");
 
             manifest
                 .DefineScript("bootstrap")
