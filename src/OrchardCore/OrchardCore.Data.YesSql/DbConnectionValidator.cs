@@ -91,7 +91,7 @@ public class DbConnectionValidator : IDbConnectionValidator
 
             var requiredColumnsCount = Enumerable.Range(0, result.FieldCount)
                 .Select(result.GetName)
-                .Where(c => _requiredDocumentTableColumns.Contains(c))
+                .Where(c => _requiredDocumentTableColumns.Contains(c, StringComparer.OrdinalIgnoreCase))
                 .Count();
 
             if (requiredColumnsCount != _requiredDocumentTableColumns.Length)
