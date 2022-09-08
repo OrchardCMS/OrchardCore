@@ -211,7 +211,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 case PublicationStatusEnum.Published: return VersionOptions.Published;
                 case PublicationStatusEnum.Draft: return VersionOptions.Draft;
                 case PublicationStatusEnum.Latest: return VersionOptions.Latest;
-                case PublicationStatusEnum.All: return VersionOptions.AllVersions;
+                case PublicationStatusEnum.All: return VersionOptions.AnyVersion;
                 default: return VersionOptions.Published;
             }
         }
