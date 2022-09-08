@@ -1,0 +1,19 @@
+@using OrchardCore.Forms.ViewModels
+@using OrchardCore.Forms.Models
+@model ShapeViewModel<FormElementLabelPart>
+@{
+    var formElementPart = Model.Value.ContentItem.As<FormElementPart>();
+    var formInputElementPart = Model.Value.ContentItem.As<FormInputElementPart>();
+    var elementId = formElementPart.Id;
+    var fieldName = formInputElementPart.Name;
+    var fieldId = !String.IsNullOrEmpty(elementId) ? elementId : !String.IsNullOrEmpty(fieldName) ? Html.GenerateIdFromName(fieldName) : default(string);
+}
+
+@if (Model.Value.Option == LabelOptions.Standard)
+{
+    <label for="@fieldId" class="form-label">@Model.Value.Label</label>
+}
+else if (Model.Value.Option == LabelOptions.ScreenReaders)
+{
+    <label for="@fieldId" class="visually-hidden">@Model.Value.Label</label>
+}

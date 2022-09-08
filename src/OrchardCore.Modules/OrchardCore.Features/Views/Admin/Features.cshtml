@@ -59,15 +59,14 @@
                             //var lifecycleStatus = feature.Descriptor.Extension.LifecycleStatus;
                             var featureId = feature.Descriptor.Id;
                             var featureName = feature.Descriptor.Name;
-                            var featureState = feature.IsEnabled ? "enabled" : "disabled";
 
                             var dependencies = (from d in feature.FeatureDependencies
                                                 select (from f in Model.Features where f.Descriptor.Id == d.Id select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
                             var dependenciesNames = String.Join(" ", dependencies.Select(d => d.Descriptor.Name));
                             var missingDependencies = feature.FeatureDependencies
                             .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
-                            var showDisable = !feature.IsAlwaysEnabled && categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
-                            var showEnable = !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup" && feature.Descriptor.Id != "OrchardCore.AutoSetup";
+                            var showDisable = !feature.EnabledByDependencyOnly && !feature.IsAlwaysEnabled && categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
+                            var showEnable = !feature.EnabledByDependencyOnly && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup" && feature.Descriptor.Id != "OrchardCore.AutoSetup";
 
                             <li class="list-group-item" data-filter-value="@categoryName @dependenciesNames @featureName">
                                 <div class="row">
@@ -105,19 +104,43 @@
                                         </div>
                                     </div>
                                     <div class="col-md-2 text-end">
-                                        @if (showEnable && !feature.IsEnabled)
+                                        @if (feature.EnabledByDependencyOnly)
                                         {
-                                            <a id="btn-enable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Enable" asp-route-id="@feature.Descriptor.Id" class="btn btn-primary btn-sm" data-url-af="UnsafeUrl">@T["Enable"]</a>
-                                        }
-                                        @if (showDisable && feature.IsEnabled)
-                                        {
-                                            var confirmationMessage = T["Are you sure you want to disable the {0} feature? Continue?", feature.Descriptor.Name];
-                                            if (feature.EnabledDependentFeatures.Any())
+                                            @if (feature.IsEnabled)
                                             {
-                                                var enabledDependentFeatures = new HtmlString($"<ul>{String.Join("", feature.EnabledDependentFeatures.Select(f => $"<li>{f.Name}</li>"))}</ul>");
-                                                confirmationMessage = T["Disabling the {0} feature will also disable the following dependent features:{1}Continue?", feature.Descriptor.Name, enabledDependentFeatures];
+                                                <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automaticlly enabled based on dependency and cannot be manually disabled."]">
+                                                    <button class="btn btn-danger btn-sm" disabled>@T["Disable"]</button>
+                                                </div>
                                             }
-                                            <a id="btn-disable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+                                            else
+                                            {
+                                                <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automaticlly disabled based on dependency and cannot be manually enabled."]">
+                                                    <button class="btn btn-primary btn-sm" disabled>@T["Enable"]</button>
+                                                </div>
+                                            }
+                                        }
+                                        else if (feature.IsAlwaysEnabled && feature.IsEnabled)
+                                        {
+                                            <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is always enabled and cannot be manually disabled."]">
+                                                <button class="btn btn-danger btn-sm" disabled>@T["Disable"]</button>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            if (showEnable && !feature.IsEnabled)
+                                            {
+                                                <a id="btn-enable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Enable" asp-route-id="@feature.Descriptor.Id" class="btn btn-primary btn-sm" data-url-af="UnsafeUrl">@T["Enable"]</a>
+                                            }
+                                            @if (showDisable && feature.IsEnabled)
+                                            {
+                                                var confirmationMessage = T["Are you sure you want to disable the {0} feature? Continue?", feature.Descriptor.Name];
+                                                if (feature.EnabledDependentFeatures.Any())
+                                                {
+                                                    var enabledDependentFeatures = new HtmlString($"<ul>{String.Join("", feature.EnabledDependentFeatures.Select(f => $"<li>{f.Name}</li>"))}</ul>");
+                                                    confirmationMessage = T["Disabling the {0} feature will also disable the following dependent features:{1}Continue?", feature.Descriptor.Name, enabledDependentFeatures];
+                                                }
+                                                <a id="btn-disable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+                                            }
                                         }
                                     </div>
                                 </div>
@@ -133,11 +156,11 @@
     }
 </form>
 <script at="Foot">
-    $(function () {
+    $(function() {
         var searchBox = $('#search-box');
 
         // On each keypress filter the list of features
-        searchBox.keyup(function (e) {
+        searchBox.keyup(function(e) {
             var search = $(this).val().toLowerCase();
             var elementsToFilter = $("[data-filter-value]");
 
@@ -146,21 +169,19 @@
                 searchBox.val('');
                 elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
             } else {
-                elementsToFilter.each(function () {
+                elementsToFilter.each(function() {
                     var text = $(this).data('filter-value').toLowerCase();
                     var found = text.indexOf(search) > -1;
 
-                    if (found)
-                    {
+                    if (found) {
                         $(this).removeClass("d-none first-child-visible last-child-visible");
                     }
-                    else
-                    {
+                    else {
                         $(this).addClass("d-none");
                     }
                 });
 
-                $('ul.list-group').each(function () {
+                $('ul.list-group').each(function() {
                     $(this).find('li').filter(":not(.d-none)").first().addClass("first-child-visible");
                     $(this).find('li').filter(":not(.d-none)").last().addClass("last-child-visible");
                 });
@@ -176,7 +197,7 @@
         });
 
         //prevent posting form on pressing enter key
-        searchBox.keypress(function (e) {
+        searchBox.keypress(function(e) {
             var key = e.charCode || e.keyCode || 0;
             if (key == 13) {
                 return false;
@@ -185,7 +206,7 @@
 
         $(".dropdown-menu a").filter(function() {
             return $(this).data("action");
-        }).on('click', function () {
+        }).on('click', function() {
             $("[name='BulkAction']").val($(this).data('action'));
             $("[name='submit.BulkAction']").click();
         });

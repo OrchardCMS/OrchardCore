@@ -66,6 +66,7 @@
     var passwordTooltip = T["Password must have at least {0}.", passwordOptions];
 }
 <form asp-action="Index">
+
     <div class="bg-light p-2">
         @if (LocOptions.Value.SupportedUICultures.Count() > 1)
         {
@@ -92,6 +93,9 @@
         <h1>@T["Setup"]</h1>
         <p class="lead">@T["Please answer a few questions to configure your site."]</p>
     </div>
+
+    <div asp-validation-summary="ModelOnly"></div>
+
     @if (defaultRecipe == null)
     {
         <div class="alert alert-danger" role="alert">
@@ -173,7 +177,7 @@
 
             <div class="mb-3 col-md-6 tablePrefix" asp-validation-class-for="TablePrefix">
                 <label asp-for="TablePrefix">@T["Table Prefix"]</label>
-                <input asp-for="TablePrefix" class="form-select" />
+                <input asp-for="TablePrefix" class="form-control" />
                 <span asp-validation-for="TablePrefix" class="text-danger"></span>
                 <span class="text-muted form-text small">@T["You can specify a table prefix if you intend to reuse the same database for multiple sites."]</span>
             </div>
@@ -236,7 +240,7 @@
 </form>
 <script src="~/OrchardCore.Setup/Scripts/setup.min.js"></script>
 <script>
-    $(function(){
+    $(function() {
         $('#Password').strength({
             minLength: @(options.Password.RequiredLength),
             upperCase: @(options.Password.RequireUppercase ? "true" : "false"),
@@ -253,13 +257,13 @@
 
         toggleConnectionString = document.querySelector('#toggleConnectionString');
         if (toggleConnectionString) {
-            toggleConnectionString.addEventListener('click', function (e) {
+            toggleConnectionString.addEventListener('click', function(e) {
                 togglePasswordVisibility(document.querySelector('#ConnectionString'), document.querySelector('#toggleConnectionString'))
             });
         }
 
         togglePassword = document.querySelector('#togglePassword');
-        togglePassword.addEventListener('click', function (e) {
+        togglePassword.addEventListener('click', function(e) {
             togglePasswordVisibility(document.querySelector('#Password'), document.querySelector('#togglePassword'))
         });
 

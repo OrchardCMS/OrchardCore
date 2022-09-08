@@ -5,6 +5,7 @@ theme:
   logo: docs/assets/images/orchard-logo.png
   favicon: docs/assets/images/favicon.png
   features:
+    - header.autohide
     - navigation.instant
     - navigation.tabs
   palette:
@@ -110,6 +111,7 @@ nav:
       - Gulp pipeline: docs/guides/gulp-pipeline/README.md
   - Key Topics:
       - Manage your Content: docs/topics/content-management/README.md
+      - Content Relationships: docs/topics/content-relationships/README.md
       - Customize the Display: docs/topics/display/README.md
       - Localize your site: docs/topics/localize/README.md
       - Handle the Media: docs/topics/media/README.md

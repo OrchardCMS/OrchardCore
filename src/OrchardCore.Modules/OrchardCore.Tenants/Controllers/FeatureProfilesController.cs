@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
@@ -16,7 +17,6 @@ using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
@@ -28,8 +28,8 @@ namespace OrchardCore.Tenants.Controllers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly FeatureProfilesManager _featureProfilesManager;
-        private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+        private readonly PagerOptions _pagerOptions;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
@@ -37,8 +37,8 @@ namespace OrchardCore.Tenants.Controllers
         public FeatureProfilesController(
             IAuthorizationService authorizationService,
             FeatureProfilesManager featueProfilesManager,
-            ISiteService siteService,
             INotifier notifier,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
             IStringLocalizer<FeatureProfilesController> stringLocalizer,
             IHtmlLocalizer<FeatureProfilesController> htmlLocalizer
@@ -46,8 +46,8 @@ namespace OrchardCore.Tenants.Controllers
         {
             _authorizationService = authorizationService;
             _featureProfilesManager = featueProfilesManager;
-            _siteService = siteService;
             _notifier = notifier;
+            _pagerOptions = pagerOptions.Value;
             New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
@@ -60,8 +60,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
             var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
 
             var featureProfiles = featureProfilesDocument.FeatureProfiles.ToList();

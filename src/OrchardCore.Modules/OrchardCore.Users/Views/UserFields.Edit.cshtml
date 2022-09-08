@@ -1,6 +1,9 @@
 @model EditUserViewModel
 @using OrchardCore.Entities
 @using OrchardCore.Users.Models
+@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Identity
+@inject IOptions<IdentityOptions> IdentityOptions
 
 @if (Site.As<RegistrationSettings>().UsersMustValidateEmail)
 {
@@ -40,30 +43,40 @@
         </div>
 
         <div class="mt-2">
-            <div class="btn btn-warning btn-sm" id="generatePassword">@T["Generate password"]</div>
+            <div class="btn btn-warning btn-sm" id="generatePassword"
+             data-password-length="@IdentityOptions.Value.Password.RequiredLength"
+             data-password-requireUppercase="@IdentityOptions.Value.Password.RequireUppercase.ToString().ToLowerInvariant()"
+             data-password-requireLowercase="@IdentityOptions.Value.Password.RequireLowercase.ToString().ToLowerInvariant()"
+             data-password-requireDigit="@IdentityOptions.Value.Password.RequireDigit.ToString().ToLowerInvariant()"
+             data-password-requireNonAlphanumeric="@IdentityOptions.Value.Password.RequireNonAlphanumeric.ToString().ToLowerInvariant()"
+             data-password-requiredUniqueChars="@IdentityOptions.Value.Password.RequiredUniqueChars">
+                @T["Generate password"]
+            </div>
             <div class="btn btn-info btn-sm" id="copyPassword">@T["Copy password"]</div>
         </div>
     </div>
-
-    <script at="Foot" asp-name="userFieldsPassword">
+    <script at="Foot" asp-name="userFieldsPassword" depends-on="password-generator">
         document.addEventListener('DOMContentLoaded', function() {
-            const strongPasswordLength = 12;
             let password = document.getElementById('@Html.IdFor(p => p.Password)');
             let passwordConfirmation = document.getElementById('@Html.IdFor(p => p.PasswordConfirmation)');
             let passwordToggle = document.getElementById('passwordToggle');
             let passwordConfirmationToggle = document.getElementById('passwordConfirmationToggle');
             let generate = document.getElementById('generatePassword');
             let copy = document.getElementById('copyPassword');
-            function toggetIcons(element) {
+
+            const toggetIcons = (element) => {
                 if (element.classList.contains('fa-eye')) {
                     element.classList.remove('fa-eye');
                     element.classList.add('fa-eye-slash');
+
                     return;
                 }
+
                 element.classList.remove('fa-eye-slash');
                 element.classList.add('fa-eye');
             }
-            function toggleFieldType(element) {
+
+            const toggleFieldType = (element) => {
                 if (element.type == 'password') {
                     element.type = 'text';
 
@@ -72,36 +85,33 @@
 
                 element.type = 'password';
             }
-            function generatePassword() {
-                const chars = '0123456789abcdefghijklmnopqrstuvwxyz!@@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                let password = '';
-                for (var i = 0; i <= strongPasswordLength; i++) {
-                    var randomNumber = Math.floor(Math.random() * chars.length);
-                    password += chars.substring(randomNumber, randomNumber + 1);
-                }
 
-                return password;
-            }
-            function copyPassword(text) {
-                navigator.clipboard.writeText(text);
-            }
-            function togglePasswordFieldState() {
+            const togglePasswordFieldState = () => {
                 toggleFieldType(password);
                 toggleFieldType(passwordConfirmation);
                 toggetIcons(passwordToggle.querySelector('.toggle-icon'));
                 toggetIcons(passwordConfirmationToggle.querySelector('.toggle-icon'));
             }
+
             generate.addEventListener('click', function() {
-                var newPassword = generatePassword();
+                const requiredPasswordLength = parseInt(generate.getAttribute('data-password-length'));
+                const requireUppercase = generate.getAttribute('data-password-requireUppercase') === 'true';
+                const requireLowercase = generate.getAttribute('data-password-requireLowercase') === 'true';
+                const requireDigit = generate.getAttribute('data-password-requireDigit') === 'True';
+                const requireNonAlphanumeric = generate.getAttribute('data-password-requireNonAlphanumeric') === 'true';
+                const requiredUniqueChars = generate.getAttribute('data-password-requiredUniqueChars') === 'true';
+
+                var newPassword = passwordManager.generatePassword(requiredPasswordLength, requireUppercase, requireLowercase, requireDigit, requireNonAlphanumeric, requiredUniqueChars);
                 password.value = newPassword;
                 passwordConfirmation.value = newPassword;
             });
+
             copy.addEventListener('click', function() {
-                copyPassword(password.value);
+                passwordManager.copyPassword(password.value);
             });
+
             passwordToggle.addEventListener('click', togglePasswordFieldState);
             passwordConfirmationToggle.addEventListener('click', togglePasswordFieldState);
         });
     </script>
 }
-

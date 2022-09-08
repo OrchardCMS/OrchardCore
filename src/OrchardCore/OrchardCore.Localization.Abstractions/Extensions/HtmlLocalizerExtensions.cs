@@ -42,7 +42,7 @@ namespace Microsoft.AspNetCore.Mvc.Localization
 
             if (pluralForms.Length == 0)
             {
-                throw new ArgumentException(nameof(pluralForms), "PluralForms array can't be empty, it must contain at least one element. If you don't want to specify the plural text, use IStringLocalizer without Plural extension.");
+                throw new ArgumentException("PluralForms array can't be empty, it must contain at least one element. If you don't want to specify the plural text, use IStringLocalizer without Plural extension.", nameof(pluralForms));
             }
 
             var name = pluralForms[0];
