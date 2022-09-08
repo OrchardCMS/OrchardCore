@@ -142,6 +142,76 @@ namespace OrchardCore.Forms
             return 3;
         }
 
+        public int UpdateFrom3()
+        {
+            _contentDefinitionManager.AlterPartDefinition("FormElementLabelPart", part => part
+                .Attachable()
+                .WithDisplayName("Form Element Label Part")
+                .WithDescription("Provides a way to capture element's label.")
+            );
+
+            _contentDefinitionManager.AlterPartDefinition("FormElementValidationPart", part => part
+                .Attachable()
+                .WithDisplayName("Form Element Validation Part")
+            );
+
+            _contentDefinitionManager.AlterTypeDefinition("Select", type => type
+                .WithPart("FormInputElementPart", part => part
+                    .WithPosition("1")
+                )
+                .WithPart("FormElementPart", part => part
+                    .WithPosition("2")
+                )
+                .WithPart("FormElementLabelPart", part => part
+                    .WithPosition("3")
+                )
+                .WithPart("SelectPart", part => part
+                    .WithPosition("4")
+                )
+                .WithPart("FormElementValidationPart", part => part
+                    .WithPosition("5")
+                )
+            );
+
+            _contentDefinitionManager.AlterTypeDefinition("Input", type => type
+                .WithPart("FormInputElementPart", part => part
+                    .WithPosition("1")
+                )
+                .WithPart("FormElementPart", part => part
+                    .WithPosition("2")
+                )
+                .WithPart("FormElementLabelPart", part => part
+                    .WithPosition("3")
+                )
+                .WithPart("InputPart", part => part
+                    .WithPosition("4")
+                )
+                .WithPart("FormElementValidationPart", part => part
+                    .WithPosition("5")
+                )
+            );
+
+            _contentDefinitionManager.AlterTypeDefinition("TextArea", type => type
+                .WithPart("FormInputElementPart", part => part
+                    .WithPosition("1")
+                )
+                .WithPart("FormElementPart", part => part
+                    .WithPosition("2")
+                )
+                .WithPart("FormElementLabelPart", part => part
+                    .WithPosition("3")
+                )
+                .WithPart("TextAreaPart", part => part
+                    .WithPosition("4")
+                )
+                .WithPart("FormElementValidationPart", part => part
+                    .WithPosition("5")
+                )
+            );
+
+            return 4;
+        }
+
         internal class TitlePartSettings
         {
             public int Options { get; set; }

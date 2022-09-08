@@ -17,4 +17,6 @@ public class YesSqlOptions
     public IAccessorFactory VersionAccessorFactory { get; set; }
 
     public IContentSerializer ContentSerializer { get; set; }
+
+    public string TablePrefixSeparator { get; set; } = "_";
 }
