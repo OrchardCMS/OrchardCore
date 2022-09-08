@@ -10,7 +10,7 @@ jobs:
     name: Functional Tests - MVC
     runs-on: ubuntu-latest
     container:
-      image: cypress/included:9.5.2
+      image: cypress/included:9.6.1
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
@@ -39,7 +39,7 @@ jobs:
     name: Functional Tests - CMS Sqlite
     runs-on: ubuntu-latest
     container:
-      image: cypress/included:9.5.2
+      image: cypress/included:9.6.1
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET 6.0
@@ -67,7 +67,7 @@ jobs:
     name: Functional Tests - CMS Postgres
     runs-on: ubuntu-latest
     container:
-      image: cypress/included:9.5.2
+      image: cypress/included:9.6.1
     services:
       postgres:
         image: postgres:11
@@ -111,7 +111,7 @@ jobs:
     name: Functional Tests - CMS MySql
     runs-on: ubuntu-latest
     container:
-      image: cypress/included:9.5.2
+      image: cypress/included:9.6.1
     services:
       mariadb:
         image: mariadb:latest
@@ -151,7 +151,7 @@ jobs:
     name: Functional Tests - CMS SqlServer 2019
     runs-on: ubuntu-latest
     container:
-      image: cypress/included:9.5.2
+      image: cypress/included:9.6.1
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest

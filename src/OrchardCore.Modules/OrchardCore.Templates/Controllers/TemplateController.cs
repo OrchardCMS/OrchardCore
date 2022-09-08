@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 using OrchardCore.Templates.Models;
 using OrchardCore.Templates.Services;
 using OrchardCore.Templates.ViewModels;
@@ -26,7 +26,7 @@ namespace OrchardCore.Templates.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly TemplatesManager _templatesManager;
         private readonly AdminTemplatesManager _adminTemplatesManager;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
@@ -37,7 +37,7 @@ namespace OrchardCore.Templates.Controllers
             TemplatesManager templatesManager,
             AdminTemplatesManager adminTemplatesManager,
             IShapeFactory shapeFactory,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IStringLocalizer<TemplateController> stringLocalizer,
             IHtmlLocalizer<TemplateController> htmlLocalizer,
             INotifier notifier)
@@ -46,7 +46,7 @@ namespace OrchardCore.Templates.Controllers
             _templatesManager = templatesManager;
             _adminTemplatesManager = adminTemplatesManager;
             New = shapeFactory;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             _notifier = notifier;
             S = stringLocalizer;
             H = htmlLocalizer;
@@ -72,8 +72,7 @@ namespace OrchardCore.Templates.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
             var templatesDocument = options.AdminTemplates
                 ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
                 : await _templatesManager.GetTemplatesDocumentAsync()

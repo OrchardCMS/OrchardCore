@@ -5,7 +5,7 @@ var applyFilter = function (category: string, q: string) {
     category = category || $('.activity-picker-categories .nav-link.active').attr('href').substr(1);
     q = q || <string>$('.modal-activities input[type=search]').val();
 
-    const $cards = $('.activity.card').show();
+    const $cards = $('.activity.col').show();
 
     // Remove activities whoes type doesn't match the configured activity type.
     $cards.filter((i, el) => {
@@ -31,7 +31,7 @@ var applyFilter = function (category: string, q: string) {
         const category = categoryListItem.data('category');
 
         // Count number of activities within this category and for the specified activity type (Event or Task).
-        const activityCount = $(`.activity.card[data-category='${category}'][data-activity-type='${type}']`).length;
+        const activityCount = $(`.activity.col[data-category='${category}'][data-activity-type='${type}']`).length;
         activityCount == 0 ? categoryListItem.hide() : categoryListItem.show();
     });
 };

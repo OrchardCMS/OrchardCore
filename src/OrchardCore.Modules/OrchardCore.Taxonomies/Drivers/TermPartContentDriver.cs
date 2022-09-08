@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Records;
@@ -10,7 +11,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Navigation;
-using OrchardCore.Settings;
 using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.ViewModels;
@@ -21,16 +21,16 @@ namespace OrchardCore.Taxonomies.Drivers
     public class TermPartContentDriver : ContentDisplayDriver
     {
         private readonly ISession _session;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly IContentManager _contentManager;
 
         public TermPartContentDriver(
             ISession session,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IContentManager contentManager)
         {
             _session = session;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             _contentManager = contentManager;
         }
 
@@ -41,8 +41,7 @@ namespace OrchardCore.Taxonomies.Drivers
             {
                 return Task.FromResult<IDisplayResult>(Initialize<TermPartViewModel>("TermPart", async m =>
                 {
-                    var siteSettings = await _siteService.GetSiteSettingsAsync();
-                    var pager = await GetPagerAsync(context.Updater, siteSettings.PageSize);
+                    var pager = await GetPagerAsync(context.Updater, _pagerOptions.PageSize);
                     m.TaxonomyContentItemId = part.TaxonomyContentItemId;
                     m.ContentItem = part.ContentItem;
                     m.ContentItems = (await QueryTermItemsAsync(part, pager)).ToArray();

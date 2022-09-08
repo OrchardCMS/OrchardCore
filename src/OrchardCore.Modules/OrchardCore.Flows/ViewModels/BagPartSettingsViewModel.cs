@@ -10,5 +10,7 @@ namespace OrchardCore.Flows.ViewModels
         public NameValueCollection ContentTypes { get; set; }
         public string DisplayType { get; set; }
         public string[] ContainedContentTypes { get; set; } = Array.Empty<string>();
+        public BagPartSettingType Source { get; set; }
+        public string Stereotypes { get; set; }
     }
 }

@@ -13,7 +13,7 @@ For Ubuntu/Linux users : https://docs.docker.com/engine/install/ubuntu/
 
 ## What you will build
 
-You will build Docker images and containers from command shell using `docker` and `docker-compose` commands. Images are built from Orchard Core source code targetting a specific OS. Then we can deploy "containers" from them. This allow you to see how Orchard Core respond in different environments or also deploy Orchard Core on a production server eventually.
+You will build Docker images and containers from command shell using `docker` and `docker-compose` commands. Images are built from Orchard Core source code targeting a specific OS. Then we can deploy "containers" from them. This allow you to see how Orchard Core respond in different environments or also deploy Orchard Core on a production server eventually.
 
 ## Dockerfile
 

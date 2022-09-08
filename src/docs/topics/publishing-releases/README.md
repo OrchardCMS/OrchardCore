@@ -27,7 +27,7 @@ Update the source so everything looks like on the new version.
 - [ ] Create a `release/<version name>` branch out of `main`, e.g. `release/1.3.1`.
 - [ ] Update the `OrchardCore.Commons.props` file with `<VersionSuffix></VersionSuffix>` such that preview build numbers are not injected in packages. Verify the `VersionPrefix` tag matches the released version.
 - [ ] Update module versions in `src/OrchardCore/OrchardCore.Abstractions/Modules/Manifest/ManifestConstants.cs`.
-- [ ] Remove the warning in `src/docs/getting-started/templates/README.md` since the issue will be fixed, then remove this comment.
+- [ ] Update the version in the command lines in from all documentation files.
 
 ### Test the release
 
