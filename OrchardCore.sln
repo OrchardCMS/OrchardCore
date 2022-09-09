@@ -472,6 +472,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Media.AmazonS3"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ArchiveLater", "src\OrchardCore.Modules\OrchardCore.ArchiveLater\OrchardCore.ArchiveLater.csproj", "{190C4BEB-C506-4F7F-BDCA-93F3C1C221BC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Features.Core", "src\OrchardCore\OrchardCore.Features.Core\OrchardCore.Features.Core.csproj", "{122EC0DA-A593-4038-BD21-2D4A7061F348}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1244,10 +1246,18 @@ Global
 		{FF1C550C-6D30-499A-AF11-68DE7C8B6869}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF1C550C-6D30-499A-AF11-68DE7C8B6869}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF1C550C-6D30-499A-AF11-68DE7C8B6869}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6563050-EE6D-4E7C-81AA-C383DB3ED124}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6563050-EE6D-4E7C-81AA-C383DB3ED124}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6563050-EE6D-4E7C-81AA-C383DB3ED124}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6563050-EE6D-4E7C-81AA-C383DB3ED124}.Release|Any CPU.Build.0 = Release|Any CPU
 		{190C4BEB-C506-4F7F-BDCA-93F3C1C221BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{190C4BEB-C506-4F7F-BDCA-93F3C1C221BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{190C4BEB-C506-4F7F-BDCA-93F3C1C221BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{190C4BEB-C506-4F7F-BDCA-93F3C1C221BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{122EC0DA-A593-4038-BD21-2D4A7061F348}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{122EC0DA-A593-4038-BD21-2D4A7061F348}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{122EC0DA-A593-4038-BD21-2D4A7061F348}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{122EC0DA-A593-4038-BD21-2D4A7061F348}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1466,6 +1476,7 @@ Global
 		{38F43FA0-5BA8-4D6B-8F66-C708D590EF76} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{FF1C550C-6D30-499A-AF11-68DE7C8B6869} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{190C4BEB-C506-4F7F-BDCA-93F3C1C221BC} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{122EC0DA-A593-4038-BD21-2D4A7061F348} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
