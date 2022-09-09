@@ -109,14 +109,11 @@ namespace OrchardCore.Contents.Liquid
                 {
                     var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(displayFor);
 
-                    if (metadata.DisplayRouteValues != null)
+                    if (metadata.DisplayRouteValues != null && routeValues != null)
                     {
-                        if (routeValues != null)
+                        foreach (var attribute in routeValues)
                         {
-                            foreach (var attribute in routeValues)
-                            {
-                                metadata.DisplayRouteValues.Add(attribute.Key, attribute.Value);
-                            }
+                            metadata.DisplayRouteValues.Add(attribute.Key, attribute.Value);
                         }
 
                         customAttributes["href"] = urlHelper.Action(metadata.DisplayRouteValues["action"].ToString(), metadata.DisplayRouteValues);
@@ -125,10 +122,9 @@ namespace OrchardCore.Contents.Liquid
             }
             else if (editFor != null)
             {
-                contentItem = editFor;
-                var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(editFor);
+                var metadata = await PopulateAspectForContentItemMetadataAsync(editFor);
 
-                if (metadata.EditorRouteValues != null)
+                if (metadata.EditorRouteValues != null && routeValues != null)
                 {
                     foreach (var attribute in routeValues)
                     {
@@ -140,17 +136,13 @@ namespace OrchardCore.Contents.Liquid
             }
             else if (adminFor != null)
             {
-                contentItem = adminFor;
-                var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(adminFor);
+                var metadata = await PopulateAspectForContentItemMetadataAsync(adminFor);
 
-                if (metadata.AdminRouteValues != null)
+                if (metadata.AdminRouteValues != null && routeValues != null)
                 {
-                    if (routeValues != null)
+                    foreach (var attribute in routeValues)
                     {
-                        foreach (var attribute in routeValues)
-                        {
-                            metadata.AdminRouteValues.Add(attribute.Key, attribute.Value);
-                        }
+                        metadata.AdminRouteValues.Add(attribute.Key, attribute.Value);
                     }
 
                     customAttributes["href"] = urlHelper.Action(metadata.AdminRouteValues["action"].ToString(), metadata.AdminRouteValues);
@@ -158,17 +150,13 @@ namespace OrchardCore.Contents.Liquid
             }
             else if (removeFor != null)
             {
-                contentItem = removeFor;
-                var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(removeFor);
+                var metadata = await PopulateAspectForContentItemMetadataAsync(removeFor);
 
-                if (metadata.RemoveRouteValues != null)
+                if (metadata.RemoveRouteValues != null && routeValues != null)
                 {
-                    if (routeValues != null)
+                    foreach (var attribute in routeValues)
                     {
-                        foreach (var attribute in routeValues)
-                        {
-                            metadata.RemoveRouteValues.Add(attribute.Key, attribute.Value);
-                        }
+                        metadata.RemoveRouteValues.Add(attribute.Key, attribute.Value);
                     }
 
                     customAttributes["href"] = urlHelper.Action(metadata.RemoveRouteValues["action"].ToString(), metadata.RemoveRouteValues);
@@ -176,17 +164,13 @@ namespace OrchardCore.Contents.Liquid
             }
             else if (createFor != null)
             {
-                contentItem = createFor;
-                var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(createFor);
+                var metadata = await PopulateAspectForContentItemMetadataAsync(createFor);
 
-                if (metadata.CreateRouteValues == null)
+                if (metadata.CreateRouteValues != null && routeValues != null)
                 {
-                    if (routeValues != null)
+                    foreach (var attribute in routeValues)
                     {
-                        foreach (var attribute in routeValues)
-                        {
-                            metadata.CreateRouteValues.Add(attribute.Key, attribute.Value);
-                        }
+                        metadata.CreateRouteValues.Add(attribute.Key, attribute.Value);
                     }
 
                     customAttributes["href"] = urlHelper.Action(metadata.CreateRouteValues["action"].ToString(), metadata.CreateRouteValues);
@@ -230,6 +214,13 @@ namespace OrchardCore.Contents.Liquid
             tagBuilder.RenderEndTag().WriteTo(writer, (HtmlEncoder)encoder);
 
             return Completion.Normal;
+
+            async Task<ContentItemMetadata> PopulateAspectForContentItemMetadataAsync(ContentItem item)
+            {
+                contentItem = item;
+
+                return await contentManager.PopulateAspectAsync<ContentItemMetadata>(item);
+            }
         }
     }
 }
