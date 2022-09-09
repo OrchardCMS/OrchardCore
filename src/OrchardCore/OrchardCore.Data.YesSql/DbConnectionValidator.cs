@@ -8,17 +8,22 @@ using Microsoft.Extensions.Options;
 using MySqlConnector;
 using Npgsql;
 using OrchardCore.Data.YesSql.Abstractions;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using YesSql;
 using YesSql.Provider.MySql;
 using YesSql.Provider.PostgreSql;
 using YesSql.Provider.Sqlite;
 using YesSql.Provider.SqlServer;
+using YesSql.Services;
 using YesSql.Sql;
 
 namespace OrchardCore.Data;
 
 public class DbConnectionValidator : IDbConnectionValidator
 {
+    private static readonly string[] _requiredDocumentTableColumns = new[] { "Id", "Type", "Content", "Version" };
+    private static readonly string _shellDescriptorTypeColumnValue = new TypeService()[typeof(ShellDescriptor)];
+
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
     private readonly ITableNameConvention _tableNameConvention;
     private readonly YesSqlOptions _yesSqlOptions;
@@ -34,7 +39,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         _yesSqlOptions = yesSqlOptions.Value;
     }
 
-    public async Task<DbConnectionValidatorResult> ValidateAsync(string databaseProvider, string connectionString, string tablePrefix)
+    public async Task<DbConnectionValidatorResult> ValidateAsync(string databaseProvider, string connectionString, string tablePrefix, bool isDefaultShell)
     {
         if (String.IsNullOrWhiteSpace(databaseProvider))
         {
@@ -50,7 +55,7 @@ public class DbConnectionValidator : IDbConnectionValidator
 
         if (provider != null && !provider.HasConnectionString)
         {
-            return DbConnectionValidatorResult.DocumentNotFound;
+            return DbConnectionValidatorResult.DocumentTableNotFound;
         }
 
         if (String.IsNullOrWhiteSpace(connectionString))
@@ -72,23 +77,54 @@ public class DbConnectionValidator : IDbConnectionValidator
         }
 
         var selectBuilder = GetSelectBuilderForDocumentTable(tablePrefix, providerName);
-
         try
         {
             var selectCommand = connection.CreateCommand();
             selectCommand.CommandText = selectBuilder.ToSqlString();
 
             using var result = await selectCommand.ExecuteReaderAsync();
+            if (!isDefaultShell)
+            {
+                // The 'Document' table exists.
+                return DbConnectionValidatorResult.DocumentTableFound;
+            }
 
-            // at this point the query succeeded and the table exists
-            return DbConnectionValidatorResult.DocumentFound;
+            var requiredColumnsCount = Enumerable.Range(0, result.FieldCount)
+                .Select(result.GetName)
+                .Where(c => _requiredDocumentTableColumns.Contains(c, StringComparer.OrdinalIgnoreCase))
+                .Count();
+
+            if (requiredColumnsCount != _requiredDocumentTableColumns.Length)
+            {
+                // The 'Document' table exists with another schema.
+                return DbConnectionValidatorResult.DocumentTableFound;
+            }
         }
         catch
         {
-            // at this point we know that the document table does not exist
-
-            return DbConnectionValidatorResult.DocumentNotFound;
+            // The 'Document' table does not exist.
+            return DbConnectionValidatorResult.DocumentTableNotFound;
         }
+
+        selectBuilder = GetSelectBuilderForShellDescriptorDocument(tablePrefix, providerName);
+        try
+        {
+            var selectCommand = connection.CreateCommand();
+            selectCommand.CommandText = selectBuilder.ToSqlString();
+
+            using var result = await selectCommand.ExecuteReaderAsync();
+            if (!result.HasRows)
+            {
+                // The 'Document' table exists with no 'ShellDescriptor' document.
+                return DbConnectionValidatorResult.ShellDescriptorDocumentNotFound;
+            }
+        }
+        catch
+        {
+        }
+
+        // The 'Document' table exists.
+        return DbConnectionValidatorResult.DocumentTableFound;
     }
 
     private ISqlBuilder GetSelectBuilderForDocumentTable(string tablePrefix, DatabaseProviderName providerName)
@@ -96,8 +132,21 @@ public class DbConnectionValidator : IDbConnectionValidator
         var selectBuilder = GetSqlBuilder(providerName, tablePrefix);
 
         selectBuilder.Select();
-        selectBuilder.AddSelector("*");
+        selectBuilder.Selector("*");
         selectBuilder.Table(_tableNameConvention.GetDocumentTable());
+        selectBuilder.Take("1");
+
+        return selectBuilder;
+    }
+
+    private ISqlBuilder GetSelectBuilderForShellDescriptorDocument(string tablePrefix, DatabaseProviderName providerName)
+    {
+        var selectBuilder = GetSqlBuilder(providerName, tablePrefix);
+
+        selectBuilder.Select();
+        selectBuilder.Selector("*");
+        selectBuilder.Table(_tableNameConvention.GetDocumentTable());
+        selectBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
         selectBuilder.Take("1");
 
         return selectBuilder;
@@ -111,7 +160,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             DatabaseProviderName.MySql => new DbConnectionFactory<MySqlConnection>(connectionString),
             DatabaseProviderName.Sqlite => new DbConnectionFactory<SqliteConnection>(connectionString),
             DatabaseProviderName.Postgres => new DbConnectionFactory<NpgsqlConnection>(connectionString),
-            _ => throw new ArgumentOutOfRangeException("Unsupported Database Provider"),
+            _ => throw new ArgumentOutOfRangeException(nameof(providerName), "Unsupported database provider"),
         };
     }
 
@@ -123,7 +172,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             DatabaseProviderName.MySql => new MySqlDialect(),
             DatabaseProviderName.Sqlite => new SqliteDialect(),
             DatabaseProviderName.Postgres => new PostgreSqlDialect(),
-            _ => throw new ArgumentOutOfRangeException("Unsupported Database Provider"),
+            _ => throw new ArgumentOutOfRangeException(nameof(providerName), "Unsupported database provider"),
         };
 
         var prefix = String.Empty;

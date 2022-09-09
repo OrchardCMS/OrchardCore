@@ -1,22 +1,42 @@
 namespace OrchardCore.Data;
 
+/// <summary>
+/// The result from validating a database connection using <see cref="IDbConnectionValidator"/>.
+/// </summary>
 public enum DbConnectionValidatorResult
 {
-    // Unknown indicates that the connection string status is unknown or was not yet validated
+    /// <summary>
+    /// The connection string status is unknown or was not validated.
+    /// </summary>
     Unknown,
 
-    // NoProvider indicated that the provider is missing
+    /// <summary>
+    /// The database provider is missing.
+    /// </summary>
     NoProvider,
 
-    // DocumentNotFound indicates that the connection string was valid, yet the Document table does not exist 
-    DocumentNotFound,
+    /// <summary>
+    /// The connection string is valid and the 'Document' table does not exists.
+    /// </summary>
+    DocumentTableNotFound,
 
-    // DocumentFound indicates that the connection string was valid, yet the Document table exist
-    DocumentFound,
+    /// <summary>
+    /// The connection string is valid and the 'Document' table exists.
+    /// </summary>
+    DocumentTableFound,
 
-    // InvalidConnection unable to open a connection to the given connection string
+    /// <summary>
+    /// The 'Document' table exists with no 'ShellDescriptor' document.
+    /// </summary>
+    ShellDescriptorDocumentNotFound,
+
+    /// <summary>
+    /// Unable to open a connection with the given database connection string.
+    /// </summary>
     InvalidConnection,
 
-    // UnsupportedProvider indicated invalid or unsupported database provider
+    /// <summary>
+    /// Unsupported database provider.
+    /// </summary>
     UnsupportedProvider
 }
