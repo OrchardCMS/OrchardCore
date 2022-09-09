@@ -1,7 +1,8 @@
 @model OrchardCore.ContentFields.ViewModels.EditLocalizationSetContentPickerFieldViewModel
-@using Newtonsoft.Json;
-@using Newtonsoft.Json.Serialization;
-@using OrchardCore.Environment.Shell;
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Serialization
+@using OrchardCore.Environment.Shell
+@using OrchardCore.Mvc.Utilities
 
 @inject ShellSettings ShellSettings
 
@@ -20,7 +21,7 @@
 
 <label asp-for="LocalizationSets">@Model.PartFieldDefinition.DisplayName()</label>
 
-<div class="mb-3 field-wrapper @fieldName-wrapper" id="@Html.IdFor(x => x.LocalizationSets)_FieldWrapper">
+<div class="mb-3 field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x.LocalizationSets)_FieldWrapper">
 
     <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="LocalizationSetContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="@multiple">
 

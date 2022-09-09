@@ -1,6 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.EditMultiTextFieldViewModel
 @using OrchardCore.Mvc.Utilities
-
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
     var options = new List<SelectListItem>();
@@ -13,7 +12,8 @@
     }
     var fieldName = Model.PartFieldDefinition.Name;
 }
-<div class="mb-3 field-wrapper @fieldName-wrapper" id="@Html.IdFor(x => x.Values)_FieldWrapper">
+
+<div class="mb-3 field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x.Values)_FieldWrapper">
     <label asp-for="Values">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="row">
         <div class="col-md-6 col-lg-4">

@@ -1,5 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.EditNumericFieldViewModel
-
+@using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<NumericFieldSettings>();
     string name = Model.PartFieldDefinition.DisplayName();
@@ -8,7 +8,7 @@
     var fieldName = Model.PartFieldDefinition.Name;
 }
 
-<div class="mb-3 field-wrapper @fieldName-wrapper" id="@Html.IdFor(x => x.Value)_FieldWrapper">
+<div class="mb-3 field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x.Value)_FieldWrapper">
     <div class="row">
         <div class="col-md-6 col-lg-4">
             <label asp-for="Value">@name</label>

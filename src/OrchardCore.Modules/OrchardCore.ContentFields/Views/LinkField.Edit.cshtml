@@ -1,5 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.EditLinkFieldViewModel
-
+@using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<LinkFieldSettings>();
     var isRequired = settings.Required && String.IsNullOrWhiteSpace(settings.DefaultUrl);
@@ -10,7 +10,7 @@
     var useFormFloating = String.IsNullOrWhiteSpace(settings.UrlPlaceholder) || String.IsNullOrWhiteSpace(settings.TextPlaceholder);
 }
 
-<div class="row field-wrapper @fieldName-wrapper" id="@Html.IdFor(x => x.Text)_FieldWrapper">
+<div class="row field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x.Text)_FieldWrapper">
     <div class="mb-1 col-md-12">
         <label asp-for="Url">@Model.PartFieldDefinition.DisplayName()</label>
     </div>
