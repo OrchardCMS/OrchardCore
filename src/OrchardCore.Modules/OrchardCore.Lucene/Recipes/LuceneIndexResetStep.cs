@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -11,40 +12,6 @@ namespace OrchardCore.Lucene.Recipes
     /// </summary>
     public class LuceneIndexResetStep : IRecipeStepHandler
     {
-        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
-        private readonly LuceneIndexingService _luceneIndexingService;
-        private readonly LuceneIndexManager _luceneIndexManager;
-
-        public LuceneIndexResetStep(
-            LuceneIndexSettingsService luceneIndexSettingsService,
-            LuceneIndexingService luceneIndexingService,
-            LuceneIndexManager luceneIndexManager)
-        {
-            _luceneIndexSettingsService = luceneIndexSettingsService;
-            _luceneIndexManager = luceneIndexManager;
-            _luceneIndexingService = luceneIndexingService;
-        }
-
-        private async Task ResetIndexAsync(string indexName)
-        {
-            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
-
-            if (luceneIndexSettings != null)
-            {
-                if (!_luceneIndexManager.Exists(indexName))
-                {
-                    await _luceneIndexingService.CreateIndexAsync(luceneIndexSettings);
-                    await _luceneIndexingService.ProcessContentItemsAsync(indexName);
-                }
-                else
-                {
-                    _luceneIndexingService.ResetIndex(indexName);
-                    await _luceneIndexingService.ProcessContentItemsAsync(indexName);
-                }
-            }
-            await Task.CompletedTask;
-        }
-
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "lucene-index-reset", StringComparison.OrdinalIgnoreCase))
@@ -55,10 +22,26 @@ namespace OrchardCore.Lucene.Recipes
             var indices = context.Step["Indices"];
             if (indices != null)
             {
-                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("lucene-index-reset", async (shellScope) => {
-                    foreach (var indexName in indices)
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("lucene-index-reset", async (scope) => {
+                    var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
+                    var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
+                    var luceneIndexManager = scope.ServiceProvider.GetRequiredService<LuceneIndexManager>();
+                    foreach (var indexToken in indices)
                     {
-                        await ResetIndexAsync(indexName.ToObject<string>());
+                        var indexName = indexToken.ToObject<string>();
+                        var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync(indexName);
+                        if (luceneIndexSettings != null)
+                        {
+                            if (!luceneIndexManager.Exists(indexName))
+                            {
+                                await luceneIndexingService.CreateIndexAsync(luceneIndexSettings);
+                            }
+                            else
+                            {
+                                luceneIndexingService.ResetIndex(indexName);
+                            }
+                            await luceneIndexingService.ProcessContentItemsAsync(indexName);
+                        }
                     }
                 });
             }

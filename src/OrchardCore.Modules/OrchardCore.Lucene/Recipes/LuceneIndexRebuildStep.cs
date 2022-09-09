@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -11,29 +12,6 @@ namespace OrchardCore.Lucene.Recipes
     /// </summary>
     public class LuceneIndexRebuildStep : IRecipeStepHandler
     {
-        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
-        private readonly LuceneIndexingService _luceneIndexingService;
-
-        public LuceneIndexRebuildStep(
-            LuceneIndexSettingsService luceneIndexSettingsService,
-            LuceneIndexingService luceneIndexingService
-            )
-        {
-            _luceneIndexSettingsService = luceneIndexSettingsService;
-            _luceneIndexingService = luceneIndexingService;
-        }
-
-        private async Task RebuildIndexAsync(string indexName)
-        {
-            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
-
-            if (luceneIndexSettings != null)
-            {
-                await _luceneIndexingService.RebuildIndexAsync(indexName);
-                await _luceneIndexingService.ProcessContentItemsAsync(indexName);
-            }
-        }
-
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "lucene-index-rebuild", StringComparison.OrdinalIgnoreCase))
@@ -44,10 +22,18 @@ namespace OrchardCore.Lucene.Recipes
             var indices = context.Step["Indices"];
             if (indices != null)
             {
-                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("lucene-index-rebuild", async (shellScope) => {
-                    foreach (var indexName in indices)
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("lucene-index-rebuild", async (scope) => {
+                    var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
+                    var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
+                    foreach (var indexToken in indices)
                     {
-                        await RebuildIndexAsync(indexName.ToObject<string>());
+                        var indexName = indexToken.ToObject<string>();
+                        var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync(indexName);
+                        if (luceneIndexSettings != null)
+                        {
+                            await luceneIndexingService.RebuildIndexAsync(indexName);
+                            await luceneIndexingService.ProcessContentItemsAsync(indexName);
+                        }
                     }
                 });
             }
