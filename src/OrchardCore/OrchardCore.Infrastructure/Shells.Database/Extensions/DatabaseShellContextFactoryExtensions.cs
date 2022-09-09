@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -12,7 +13,7 @@ namespace OrchardCore.Shells.Database.Extensions
     {
         internal static Task<ShellContext> GetDatabaseContextAsync(this IShellContextFactory shellContextFactory, DatabaseShellsStorageOptions options)
         {
-            if (options.DatabaseProvider == null)
+            if (options.DatabaseProvider == DatabaseProviderName.None)
             {
                 throw new ArgumentNullException(nameof(options.DatabaseProvider),
                     "The 'OrchardCore.Shells.Database' configuration section should define a 'DatabaseProvider'");
@@ -24,7 +25,7 @@ namespace OrchardCore.Shells.Database.Extensions
                 State = TenantState.Running
             };
 
-            settings["DatabaseProvider"] = options.DatabaseProvider;
+            settings["DatabaseProvider"] = options.DatabaseProvider.ToString();
             settings["ConnectionString"] = options.ConnectionString;
             settings["TablePrefix"] = options.TablePrefix;
 
