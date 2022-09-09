@@ -112,7 +112,7 @@ namespace OrchardCore.Setup.Services
             catch
             {
                 context.ShellSettings.State = initialState;
-                await _shellHost.UpdateShellSettingsAsync(context.ShellSettings);
+                await _shellHost.ReloadShellContextAsync(context.ShellSettings);
 
                 throw;
             }
