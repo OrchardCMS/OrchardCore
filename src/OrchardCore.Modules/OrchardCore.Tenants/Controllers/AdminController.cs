@@ -31,7 +31,7 @@ namespace OrchardCore.Tenants.Controllers
     {
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
-        private readonly IShellRemovalManager _shellRemovingManager;
+        private readonly IShellRemovalManager _shellRemovalManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _currentShellSettings;
@@ -51,7 +51,7 @@ namespace OrchardCore.Tenants.Controllers
         public AdminController(
             IShellHost shellHost,
             IShellSettingsManager shellSettingsManager,
-            IShellRemovalManager shellRemovingManager,
+            IShellRemovalManager shellRemovalManager,
             IEnumerable<DatabaseProvider> databaseProviders,
             IAuthorizationService authorizationService,
             ShellSettings currentShellSettings,
@@ -70,7 +70,7 @@ namespace OrchardCore.Tenants.Controllers
         {
             _shellHost = shellHost;
             _shellSettingsManager = shellSettingsManager;
-            _shellRemovingManager = shellRemovingManager;
+            _shellRemovalManager = shellRemovalManager;
             _databaseProviders = databaseProviders;
             _authorizationService = authorizationService;
             _currentShellSettings = currentShellSettings;
@@ -301,7 +301,7 @@ namespace OrchardCore.Tenants.Controllers
                         }
                         else
                         {
-                            var context = await _shellRemovingManager.RemoveAsync(shellSettings);
+                            var context = await _shellRemovalManager.RemoveAsync(shellSettings);
                             if (!context.Success)
                             {
                                 await _notifier.ErrorAsync(H["An error occurred while removing the tenant '{0}'. {1}", shellSettings.Name, context.ErrorMessage]);
@@ -658,16 +658,16 @@ namespace OrchardCore.Tenants.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var context = await _shellRemovingManager.RemoveAsync(shellSettings);
+            var context = await _shellRemovalManager.RemoveAsync(shellSettings);
             if (!context.Success)
             {
                 await _notifier.ErrorAsync(H["An error occurred while removing the tenant '{0}'. {1}", id, context.ErrorMessage]);
             }
             else
             {
-                if (_logger.IsEnabled(LogLevel.Information))
+                if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                    _logger.LogInformation("The tenant '{TenantName}' was removed successfully.", shellSettings.Name);
+                    _logger.LogWarning("The tenant '{TenantName}' was removed successfully.", shellSettings.Name);
                 }
 
                 await _notifier.SuccessAsync(H["The tenant '{0}' was removed successfully", shellSettings.Name]);
