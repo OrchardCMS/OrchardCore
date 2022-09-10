@@ -5,7 +5,7 @@
 
 @{
     var includeAll = Model.Value.IncludeAll;
-    var indexNames = Model.Value.IndexNames;
+    var indices = Model.Value.Indices;
 }
 
 <h5>@T["Reset Elasticsearch Indices"]</h5>
@@ -14,9 +14,9 @@
 {
     <span class="badge bg-success">@T["All"]</span>
 }
-else if (indexNames?.Length > 0)
+else if (indices?.Length > 0)
 {
-    foreach (var indexName in indexNames)
+    foreach (var indexName in indices)
     {
         <span class="badge ta-badge">@indexName</span>
     }

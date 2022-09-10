@@ -14,6 +14,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
 
         public bool IncludeAll { get; set; } = true;
 
-        public string[] IndexNames { get; set; }
+        public string[] Indices { get; set; }
     }
 }

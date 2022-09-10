@@ -27,10 +27,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
             var indexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
 
             var data = new JArray();
-            var indicesToRebuild = elasticIndexRebuildStep.IncludeAll ? indexSettings.Select(x => x.IndexName).ToArray() : elasticIndexRebuildStep.IndexNames;
+            var indicesToRebuild = elasticIndexRebuildStep.IncludeAll ? indexSettings.Select(x => x.IndexName).ToArray() : elasticIndexRebuildStep.Indices;
 
             result.Steps.Add(new JObject(
                 new JProperty("name", "elastic-index-rebuild"),
+                new JProperty("includeAll", elasticIndexRebuildStep.IncludeAll),
                 new JProperty("Indices", new JArray(indicesToRebuild))
             ));
         }

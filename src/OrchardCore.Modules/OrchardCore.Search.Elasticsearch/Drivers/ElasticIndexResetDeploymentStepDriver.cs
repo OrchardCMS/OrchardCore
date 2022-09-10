@@ -33,20 +33,20 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
             return Initialize<ElasticIndexResetDeploymentStepViewModel>("ElasticIndexResetDeploymentStep_Fields_Edit", async model =>
             {
                 model.IncludeAll = step.IncludeAll;
-                model.IndexNames = step.IndexNames;
+                model.IndexNames = step.Indices;
                 model.AllIndexNames = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
             }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ElasticIndexResetDeploymentStep resetIndexStep, IUpdateModel updater)
         {
-            resetIndexStep.IndexNames = Array.Empty<string>();
+            resetIndexStep.Indices = Array.Empty<string>();
 
-            await updater.TryUpdateModelAsync(resetIndexStep, Prefix, step => step.IndexNames, step => step.IncludeAll);
+            await updater.TryUpdateModelAsync(resetIndexStep, Prefix, step => step.Indices, step => step.IncludeAll);
 
             if (resetIndexStep.IncludeAll)
             {
-                resetIndexStep.IndexNames = Array.Empty<string>();
+                resetIndexStep.Indices = Array.Empty<string>();
             }
 
             return Edit(resetIndexStep);
