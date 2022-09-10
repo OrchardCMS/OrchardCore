@@ -37,7 +37,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
 
                         if (elasticIndexSettings != null)
                         {
-                            await elasticIndexingService.ResetIndexAsync(elasticIndexSettings);
+                            await elasticIndexingService.ResetIndexAsync(elasticIndexSettings.IndexName);
                             await elasticIndexingService.ProcessContentItemsAsync(indexName);
                         }
                     }
