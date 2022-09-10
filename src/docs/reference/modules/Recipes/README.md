@@ -157,9 +157,17 @@ It doesn't delete existing entries from the index.
 ```json
     {
       "name": "lucene-index-reset",
+      "includeAll": false,
       "Indices": [
         "IndexName1", "IndexName2"
       ]
+    }
+```
+
+```json
+    {
+      "name": "lucene-index-reset",
+      "includeAll": true
     }
 ```
 
@@ -171,9 +179,17 @@ Deletes and recreates the full index content.
 ```json
     {
       "name": "lucene-index-rebuild",
+      "includeAll": false,
       "Indices": [
         "IndexName1", "IndexName2"
       ]
+    }
+```
+
+```json
+    {
+      "name": "lucene-index-rebuild",
+      "includeAll": true
     }
 ```
 
