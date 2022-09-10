@@ -38,9 +38,7 @@ namespace OrchardCore.Navigation
 
                     var viewContextAccessor = context.ServiceProvider.GetRequiredService<ViewContextAccessor>();
                     var viewContext = viewContextAccessor.ViewContext;
-
                     var navigationManagers = context.ServiceProvider.GetServices<INavigationManager>();
-                    //var navigationManager = context.ServiceProvider.GetRequiredService<INavigationManager>();
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
 
