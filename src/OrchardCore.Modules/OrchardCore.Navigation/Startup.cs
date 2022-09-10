@@ -16,7 +16,7 @@ namespace OrchardCore.Navigation
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddNavigation();
+            services.AddScoped<INavigationManager, NavigationManager>();
 
             services.AddScoped<IShapeTableProvider, NavigationShapes>();
             services.AddScoped<IShapeTableProvider, PagerShapesTableProvider>();
