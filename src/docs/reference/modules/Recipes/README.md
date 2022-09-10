@@ -193,11 +193,22 @@ It doesn't delete existing entries from the index.
 ```json
     {
       "name": "lucene-index-reset",
+      "IncludeAll": false,
       "Indices": [
         "IndexName1", "IndexName2"
       ]
     }
 ```
+
+To reset all indices:   
+
+```json
+    {
+      "name": "lucene-index-reset",
+      "IncludeAll": true
+    }
+```
+
 ### Rebuild Elasticsearch Index Step
 
 This Rebuild Index Step rebuilds an Elasticsearch index.
@@ -205,9 +216,19 @@ Deletes and recreates the full index content.
 ```json
     {
       "name": "lucene-index-rebuild",
+      "IncludeAll": false,
       "Indices": [
         "IndexName1", "IndexName2"
       ]
+    }
+```
+
+To rebuild all indices:   
+
+```json
+    {
+      "name": "lucene-index-rebuild",
+      "IncludeAll": true
     }
 ```
 
