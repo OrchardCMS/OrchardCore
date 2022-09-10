@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -15,12 +13,6 @@ namespace OrchardCore.Lucene.Recipes
     /// </summary>
     public class LuceneIndexRebuildStep : IRecipeStepHandler
     {
-        private readonly ShellSettings _shellSettings;
-
-        public LuceneIndexRebuildStep(ShellSettings shellSettings) {
-            _shellSettings = shellSettings;
-        }
-
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "lucene-index-rebuild", StringComparison.OrdinalIgnoreCase))
@@ -32,7 +24,6 @@ namespace OrchardCore.Lucene.Recipes
 
             if (model.IncludeAll || model.Indices.Length > 0)
             {
-                _shellSettings.State = TenantState.Running;
                 await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("lucene-index-rebuild", async (scope) =>
                 {
                     var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
@@ -49,8 +40,7 @@ namespace OrchardCore.Lucene.Recipes
                             await luceneIndexingService.ProcessContentItemsAsync(indexName);
                         }
                     }
-                });
-                _shellSettings.State = TenantState.Initializing;
+                }, true);
             }
         }
 

@@ -14,12 +14,12 @@ public static class HttpBackgroundJob
     /// <summary>
     /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
     /// </summary>
-    public static Task ExecuteAfterEndOfRequestAsync(string jobName, Func<ShellScope, Task> job)
+    public static Task ExecuteAfterEndOfRequestAsync(string jobName, Func<ShellScope, Task> job, bool bypassStateCheck = false)
     {
         var scope = ShellScope.Current;
 
         // Can't be executed e.g. during a tenant setup.
-        if (scope.ShellContext.Settings.State != TenantState.Running)
+        if (!bypassStateCheck && scope.ShellContext.Settings.State != TenantState.Running)
         {
             return Task.CompletedTask;
         }
