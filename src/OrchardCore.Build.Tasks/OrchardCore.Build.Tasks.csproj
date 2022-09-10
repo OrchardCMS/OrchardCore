@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\OrchardCore.Build\OrchardCore.Commons.targets" />
+  <Import Project="..\OrchardCore.Build\Dependencies.props" />
+
+  <PropertyGroup>
+    <TargetFramework>$(CommonTargetFrameworks)</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Utilities.Core" />
+  </ItemGroup>
+
+</Project>
