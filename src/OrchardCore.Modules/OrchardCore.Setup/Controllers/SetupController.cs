@@ -61,7 +61,7 @@ namespace OrchardCore.Setup.Controllers
 
             if (!await ShouldProceedWithTokenAsync(token))
             {
-                return StatusCode(404);
+                return NotFound();
             }
 
             var model = new SetupViewModel
