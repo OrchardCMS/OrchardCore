@@ -1,7 +1,10 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -12,6 +15,12 @@ namespace OrchardCore.Lucene.Recipes
     /// </summary>
     public class LuceneIndexRebuildStep : IRecipeStepHandler
     {
+        private readonly ShellSettings _shellSettings;
+
+        public LuceneIndexRebuildStep(ShellSettings shellSettings) {
+            _shellSettings = shellSettings;
+        }
+
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "lucene-index-rebuild", StringComparison.OrdinalIgnoreCase))
@@ -19,15 +28,20 @@ namespace OrchardCore.Lucene.Recipes
                 return;
             }
 
-            var indices = context.Step["Indices"];
-            if (indices != null)
+            var model = context.Step.ToObject<LuceneIndexRebuildStepModel>();
+
+            if (model.IncludeAll || model.Indices.Length > 0)
             {
-                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("lucene-index-rebuild", async (scope) => {
+                _shellSettings.State = TenantState.Running;
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("lucene-index-rebuild", async (scope) =>
+                {
                     var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
                     var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
-                    foreach (var indexToken in indices)
+
+                    var indices = model.IncludeAll ? (await luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray() : model.Indices;
+
+                    foreach (var indexName in indices)
                     {
-                        var indexName = indexToken.ToObject<string>();
                         var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync(indexName);
                         if (luceneIndexSettings != null)
                         {
@@ -36,7 +50,14 @@ namespace OrchardCore.Lucene.Recipes
                         }
                     }
                 });
+                _shellSettings.State = TenantState.Initializing;
             }
+        }
+
+        private class LuceneIndexRebuildStepModel
+        {
+            public bool IncludeAll { get; set; } = false;
+            public string[] Indices { get; set; } = Array.Empty<string>();
         }
     }
 }
