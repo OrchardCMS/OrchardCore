@@ -85,6 +85,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
         private FieldType BuildSchemaBasedFieldType(LuceneQuery query, JToken querySchema, string fieldTypeName)
         {
             var properties = querySchema["properties"];
+
             if (properties == null)
             {
                 return null;
@@ -162,6 +163,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
         private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, LuceneQuery query, string fieldTypeName)
         {
             var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
+
             if (typetype == null)
             {
                 return null;

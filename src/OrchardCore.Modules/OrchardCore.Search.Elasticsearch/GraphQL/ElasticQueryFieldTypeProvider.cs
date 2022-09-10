@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -85,6 +86,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
         private FieldType BuildSchemaBasedFieldType(ElasticQuery query, JToken querySchema, string fieldTypeName)
         {
             var properties = querySchema["properties"];
+
             if (properties == null)
             {
                 return null;
@@ -141,7 +143,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                 ResolvedType = new ListGraphType(typetype),
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
-                    var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
+                    var queryManager = context.RequestServices.GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(query.Name);
 
                     var parameters = context.GetArgument<string>("parameters");
@@ -162,6 +164,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
         private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, ElasticQuery query, string fieldTypeName)
         {
             var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
+
             if (typetype == null)
             {
                 return null;
@@ -178,7 +181,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                 ResolvedType = typetype.ResolvedType,
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
-                    var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
+                    var queryManager = context.RequestServices.GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(query.Name);
 
                     var parameters = context.GetArgument<string>("parameters");
