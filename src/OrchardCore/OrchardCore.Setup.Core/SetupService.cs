@@ -170,7 +170,7 @@ namespace OrchardCore.Setup.Services
                 shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix) ? databaseTablePrefix?.ToString() : String.Empty;
             }
 
-            switch (await _dbConnectionValidator.ValidateAsync(shellSettings["DatabaseProvider"], shellSettings["ConnectionString"], shellSettings["TablePrefix"]))
+            switch (await _dbConnectionValidator.ValidateAsync(shellSettings["DatabaseProvider"], shellSettings["ConnectionString"], shellSettings["TablePrefix"], shellSettings.IsDefaultShell()))
             {
                 case DbConnectionValidatorResult.NoProvider:
                     context.Errors.Add(String.Empty, S["DatabaseProvider setting is required."]);
@@ -181,8 +181,8 @@ namespace OrchardCore.Setup.Services
                 case DbConnectionValidatorResult.InvalidConnection:
                     context.Errors.Add(String.Empty, S["The provided connection string is invalid or server is unreachable."]);
                     break;
-                case DbConnectionValidatorResult.DocumentFound:
-                    context.Errors.Add(String.Empty, S["The provided database table is already in use."]);
+                case DbConnectionValidatorResult.DocumentTableFound:
+                    context.Errors.Add(String.Empty, S["The provided database and table prefix are already in use."]);
                     break;
             }
 
