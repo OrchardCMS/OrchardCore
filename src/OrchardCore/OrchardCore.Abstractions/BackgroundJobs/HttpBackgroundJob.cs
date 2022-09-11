@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.BackgroundTasks;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 
@@ -18,7 +19,7 @@ public static class HttpBackgroundJob
     {
         var scope = ShellScope.Current;
 
-        // Allow a job to be triggered e.g. during a tenant setup, but later on only check if the tenant is running.
+        // Allow a job to be triggered e.g. during a tenant setup, but only check later on if the tenant is running.
         if (scope.ShellContext.Settings.State != TenantState.Running && scope.ShellContext.Settings.State != TenantState.Initializing)
         {
             return Task.CompletedTask;
@@ -46,17 +47,21 @@ public static class HttpBackgroundJob
                 }
             }
 
-            httpContextAccessor.HttpContext = scope.ShellContext.CreateHttpContext();
+            // Retrieve the shell context that may have been reloaded.
+            var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
+            var shellContext = await shellHost.GetOrCreateShellContextAsync(scope.ShellContext.Settings);
 
-            // Use a new scope as the shell may have been reloaded.
+            // Can't be executed e.g. if a tenant setup failed.
+            if (shellContext == null || shellContext.Settings.State != TenantState.Running)
+            {
+                return;
+            }
+
+            httpContextAccessor.HttpContext = shellContext.CreateHttpContext();
+
+            // Use a new scope as the shell context may have been reloaded.
             await ShellScope.UsingChildScopeAsync(async scope =>
             {
-                // Can't be executed e.g. if a tenant setup failed.
-                if (scope.ShellContext.Settings.State != TenantState.Running)
-                {
-                    return;
-                }
-
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellScope>>();
                 try
                 {
