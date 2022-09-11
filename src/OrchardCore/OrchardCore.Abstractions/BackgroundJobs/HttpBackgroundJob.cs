@@ -19,7 +19,7 @@ public static class HttpBackgroundJob
     {
         var scope = ShellScope.Current;
 
-        // Allow a job to be triggered e.g. during a tenant setup, but only check later on if the tenant is running.
+        // Allow a job to be triggered e.g. during a tenant setup, but later on only check if the tenant is running.
         if (scope.ShellContext.Settings.State != TenantState.Running && scope.ShellContext.Settings.State != TenantState.Initializing)
         {
             return Task.CompletedTask;
