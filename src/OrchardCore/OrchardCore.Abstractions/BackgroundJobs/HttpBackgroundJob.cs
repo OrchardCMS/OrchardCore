@@ -18,8 +18,8 @@ public static class HttpBackgroundJob
     {
         var scope = ShellScope.Current;
 
-        // Can't be executed e.g. during a tenant setup.
-        if (scope.ShellContext.Settings.State != TenantState.Running)
+        // Allow a job to be triggered e.g. during a tenant setup, but only check later on if the tenant is running.
+        if (scope.ShellContext.Settings.State != TenantState.Running && scope.ShellContext.Settings.State != TenantState.Initializing)
         {
             return Task.CompletedTask;
         }
@@ -48,19 +48,29 @@ public static class HttpBackgroundJob
 
             httpContextAccessor.HttpContext = scope.ShellContext.CreateHttpContext();
 
-            var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellScope>>();
-            try
+            // Use a new scope as the shell may have been reloaded.
+            await ShellScope.UsingChildScopeAsync(async scope =>
             {
-                await job(scope);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(
-                    ex,
-                    "Error while executing the background job '{JobName}' after the end of the request on tenant '{TenantName}'.",
-                    jobName,
-                    scope.ShellContext.Settings.Name);
-            }
+                // Can't be executed e.g. if a tenant setup failed.
+                if (scope.ShellContext.Settings.State != TenantState.Running)
+                {
+                    return;
+                }
+
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellScope>>();
+                try
+                {
+                    await job(scope);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(
+                        ex,
+                        "Error while executing the background job '{JobName}' after the end of the request on tenant '{TenantName}'.",
+                        jobName,
+                        scope.ShellContext.Settings.Name);
+                }
+            });
         });
 
         return Task.CompletedTask;
