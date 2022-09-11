@@ -63,8 +63,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             return DbConnectionValidatorResult.InvalidConnection;
         }
 
-        IConnectionFactory factory = null;
-        ISqlDialect dialect = null;
+        var (factory, dialect) = GetConnectionFactoryAndSqlDialect(providerName, connectionString);
 
         switch (providerName)
         {
@@ -156,29 +155,58 @@ public class DbConnectionValidator : IDbConnectionValidator
 
         // The 'Document' table exists.
         return DbConnectionValidatorResult.DocumentTableFound;
+    }
 
-        static ISqlBuilder GetDocumentTableSelectBuilder(string tablePrefix, string tablePrefixSeparator, string documentTable, ISqlDialect dialect, bool isShellDescriptorDocument = false)
+    private static (IConnectionFactory, ISqlDialect) GetConnectionFactoryAndSqlDialect(DatabaseProviderName providerName, string connectionString)
+    {
+        IConnectionFactory factory;
+        ISqlDialect dialect;
+        switch (providerName)
         {
-            var prefix = String.Empty;
-
-            if (!String.IsNullOrEmpty(tablePrefix))
-            {
-                prefix = tablePrefix.Trim() + (tablePrefixSeparator ?? String.Empty);
-            }
-
-            var selectBuilder = new SqlBuilder(prefix, dialect);
-            selectBuilder.Select();
-            selectBuilder.Selector("*");
-            selectBuilder.Table(documentTable);
-
-            if (isShellDescriptorDocument)
-            {
-                selectBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
-            }
-
-            selectBuilder.Take("1");
-
-            return selectBuilder;
+            case DatabaseProviderName.SqlConnection:
+                factory = new DbConnectionFactory<SqlConnection>(connectionString);
+                dialect = new SqlServerDialect();
+                break;
+            case DatabaseProviderName.Sqlite:
+                factory = new DbConnectionFactory<SqliteConnection>(connectionString);
+                dialect = new SqliteDialect();
+                break;
+            case DatabaseProviderName.MySql:
+                factory = new DbConnectionFactory<MySqlConnection>(connectionString);
+                dialect = new MySqlDialect();
+                break;
+            case DatabaseProviderName.Postgres:
+                factory = new DbConnectionFactory<NpgsqlConnection>(connectionString);
+                dialect = new PostgreSqlDialect();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(providerName), "Unsupported Database Provider");
         }
+
+        return (factory, dialect);
+    }
+
+    private static ISqlBuilder GetDocumentTableSelectBuilder(string tablePrefix, string tablePrefixSeparator, string documentTable, ISqlDialect dialect, bool isShellDescriptorDocument = false)
+    {
+        var prefix = String.Empty;
+
+        if (!String.IsNullOrEmpty(tablePrefix))
+        {
+            prefix = tablePrefix.Trim() + (tablePrefixSeparator ?? String.Empty);
+        }
+
+        var selectBuilder = new SqlBuilder(prefix, dialect);
+        selectBuilder.Select();
+        selectBuilder.Selector("*");
+        selectBuilder.Table(documentTable);
+
+        if (isShellDescriptorDocument)
+        {
+            selectBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
+        }
+
+        selectBuilder.Take("1");
+
+        return selectBuilder;
     }
 }
