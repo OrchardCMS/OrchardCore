@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Drivers;
@@ -37,6 +36,8 @@ namespace OrchardCore.Admin
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddNavigation();
+
             services.Configure<MvcOptions>((options) =>
             {
                 options.Filters.Add(typeof(AdminFilter));
