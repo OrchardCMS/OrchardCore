@@ -24,6 +24,19 @@ See the [`Microsoft.Data.Sqlite` documentation](https://docs.microsoft.com/en-us
 }
 ```
 
+## Configuring YesSql
+
+OrchardCore uses the `YesSql` library to interact with the configured database provider. `YesSql` is shipped with configuration that is suitable for most use cases. However, you can change these settings by configuring `YesSqlOptions`.
+
+For example, you can change the default table prefix seperator from `_` to `-` by adding the following code to your startup code.
+
+```C#
+services.Configure<YesSqlOptions>(options =>
+{
+    options.TablePrefixSeparator = "-";
+});
+```
+
 ## Running SQL queries
 
 ### Creating a `DbConnection` instance
