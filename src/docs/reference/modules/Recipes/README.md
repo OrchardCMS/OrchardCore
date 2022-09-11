@@ -154,6 +154,8 @@ This Reset Lucene Index Step resets a lucene index.
 Restarts the indexing process from the beginning in order to update current content items.
 It doesn't delete existing entries from the index.
 
+`includeAll` property indicates whether to include all available Lucene Indices. When set to true, `Indices` property can be ommited.
+
 ```json
     {
       "name": "lucene-index-reset",
@@ -175,6 +177,8 @@ It doesn't delete existing entries from the index.
 
 This Rebuild Lucene Index Step rebuilds a lucene index.
 Deletes and recreates the full index content.
+
+`includeAll` property indicates whether to include all available Lucene Indices. When set to true, `Indices` property can be ommited.
 
 ```json
     {
