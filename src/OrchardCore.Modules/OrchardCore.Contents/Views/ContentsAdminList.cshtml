@@ -7,9 +7,9 @@
 <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 @Html.HiddenFor(o => o.Options.BulkAction)
 
-<div class="card bg-light mb-3 position-sticky action-bar">
+<div class="card bg-primary mb-3 position-sticky action-bar">
     <div class="card-body">
-        <div class="row">
+        <div class="row gx-3">
             <div class="col">
                 @await DisplayAsync(Model.Header.Search)
             </div>
@@ -21,11 +21,11 @@
 </div>
 <ul class="list-group with-checkbox">
     <li class="list-group-item bg-primary">
-        <div class="row">
+        <div class="row gx-3">
             <div class="col">
                 @await DisplayAsync(Model.Header.Summary)
             </div>
-            <div class="col d-flex justify-content-start flex-row-reverse">
+            <div class="col col-md-auto text-end">
                 @await DisplayAsync(Model.Header.Actions)
             </div>
         </div>
