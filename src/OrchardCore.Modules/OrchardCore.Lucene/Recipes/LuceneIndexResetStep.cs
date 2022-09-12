@@ -47,7 +47,7 @@ namespace OrchardCore.Lucene.Recipes
                             await luceneIndexingService.ProcessContentItemsAsync(indexName);
                         }
                     }
-                }, true);
+                });
             }
         }
 
