@@ -164,7 +164,8 @@ namespace OrchardCore.Tenants.Controllers
                     entries = entries.OrderByDescending(t => t.Name).ToList();
                     break;
             }
-            var count = entries.Count();
+
+            var count = entries.Count;
 
             var results = entries
                 .Skip(pager.GetStartIndex())
@@ -308,9 +309,9 @@ namespace OrchardCore.Tenants.Controllers
                             }
                             else
                             {
-                                if (_logger.IsEnabled(LogLevel.Information))
+                                if (_logger.IsEnabled(LogLevel.Warning))
                                 {
-                                    _logger.LogInformation("The tenant '{TenantName}' was removed.", shellSettings.Name);
+                                    _logger.LogWarning("The tenant '{TenantName}' was removed.", shellSettings.Name);
                                 }
 
                                 await _notifier.SuccessAsync(H["The tenant '{0}' was removed, see the log file for more info.", shellSettings.Name]);
