@@ -161,9 +161,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (shellSettings.State != TenantState.Running)
             {
-                return Problem(
-                    title: S["You can only disable an Enabled tenant."],
-                    statusCode: (int)HttpStatusCode.BadRequest);
+                return BadRequest(S["You can only disable an Enabled tenant."]);
             }
 
             shellSettings.State = TenantState.Disabled;
@@ -193,9 +191,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (shellSettings.State != TenantState.Disabled)
             {
-                return Problem(
-                    title: S["You can only enable a Disabled tenant."],
-                    statusCode: (int)HttpStatusCode.BadRequest);
+                return BadRequest(S["You can only enable a Disabled tenant."]);
             }
 
             shellSettings.State = TenantState.Running;
@@ -225,9 +221,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (shellSettings.State != TenantState.Disabled && shellSettings.State != TenantState.Uninitialized)
             {
-                return Problem(
-                    title: S["You can only remove a 'Disabled' or 'Uninitialized' tenant."],
-                    statusCode: (int)HttpStatusCode.BadRequest);
+                return BadRequest(S["You can only remove a 'Disabled' or 'Uninitialized' tenant."]);
             }
 
             var context = await _shellRemovalManager.RemoveAsync(shellSettings);

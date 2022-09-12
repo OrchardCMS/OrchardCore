@@ -160,14 +160,12 @@ internal class ShellDbTablesInfo : ISchemaBuilder
         }
         catch (Exception ex)
         {
-            if (!ThrowOnError)
-            {
-                _logger.LogError(ex, "Failed to remove 'MapIndexTables'.");
-            }
-            else
+            if (ThrowOnError)
             {
                 throw;
             }
+
+            _logger.LogError(ex, "Failed to remove 'MapIndexTables'.");
         }
     }
 
@@ -193,14 +191,12 @@ internal class ShellDbTablesInfo : ISchemaBuilder
         }
         catch (Exception ex)
         {
-            if (!ThrowOnError)
-            {
-                _logger.LogError(ex, "Failed to remove 'ReduceIndexTables'.");
-            }
-            else
+            if (ThrowOnError)
             {
                 throw;
             }
+
+            _logger.LogError(ex, "Failed to remove 'ReduceIndexTables'.");
         }
     }
 
@@ -221,14 +217,12 @@ internal class ShellDbTablesInfo : ISchemaBuilder
         }
         catch (Exception ex)
         {
-            if (!ThrowOnError)
-            {
-                _logger.LogError(ex, "Failed to remove 'DocumentTables'.");
-            }
-            else
+            if (ThrowOnError)
             {
                 throw;
             }
+
+            _logger.LogError(ex, "Failed to remove 'DocumentTables'.");
         }
     }
 
@@ -243,14 +237,12 @@ internal class ShellDbTablesInfo : ISchemaBuilder
         }
         catch (Exception ex)
         {
-            if (!ThrowOnError)
-            {
-                _logger.LogError(ex, "Failed to remove 'Tables'.");
-            }
-            else
+            if (ThrowOnError)
             {
                 throw;
             }
+
+            _logger.LogError(ex, "Failed to remove 'Tables'.");
         }
     }
 
@@ -263,39 +255,16 @@ internal class ShellDbTablesInfo : ISchemaBuilder
         }
         catch (Exception ex)
         {
-            if (!ThrowOnError)
-            {
-                _logger.LogError(ex, "Failed to remove table {0}.", name);
-            }
-            else
+            if (ThrowOnError)
             {
                 throw;
             }
+
+            _logger.LogError(ex, "Failed to remove table {TableName}.", Prefix(name));
         }
     }
 
-    public ISchemaBuilder CreateForeignKey(string name, string srcTable, string[] srcColumns, string destTable, string[] destColumns)
-    {
-        try
-        {
-            var command = new CreateForeignKeyCommand(Dialect.FormatKeyName(Prefix(name)), Prefix(srcTable), srcColumns, Prefix(destTable), destColumns);
-            var sql = _commandInterpreter.CreateSql(command);
-            Execute(sql);
-        }
-        catch (Exception ex)
-        {
-            if (!ThrowOnError)
-            {
-                _logger.LogError(ex, "Failed to create foreign key {0}.", name);
-            }
-            else
-            {
-                throw;
-            }
-        }
-
-        return this;
-    }
+    public ISchemaBuilder CreateForeignKey(string name, string srcTable, string[] srcColumns, string destTable, string[] destColumns) => this;
 
     public ISchemaBuilder DropForeignKey(string srcTable, string name)
     {
@@ -306,14 +275,12 @@ internal class ShellDbTablesInfo : ISchemaBuilder
         }
         catch (Exception ex)
         {
-            if (!ThrowOnError)
-            {
-                _logger.LogError(ex, "Failed to drop foreign key {0}.", name);
-            }
-            else
+            if (ThrowOnError)
             {
                 throw;
             }
+
+            _logger.LogError(ex, "Failed to drop foreign key {KeyName}.", Prefix(name));
         }
 
         return this;

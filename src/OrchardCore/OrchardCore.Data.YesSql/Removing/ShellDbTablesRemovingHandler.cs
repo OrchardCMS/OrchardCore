@@ -159,8 +159,11 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
                         version,
                         shellSettings.Name);
 
-                    context.LocalizedErrorMessage = S["Failed to replay the migration '{0}' from version '{1}'.", type, version];
-                    context.Error = ex;
+                    // Replaying a migration may fail for the same reason that a setup or any migration failed.
+                    // So the tenant removal is not interrupted, the already enlisted tables may be sufficient.
+
+                    // context.LocalizedErrorMessage = S["Failed to replay the migration '{0}' from version '{1}'.", type, version];
+                    // context.Error = ex;
 
                     break;
                 }
