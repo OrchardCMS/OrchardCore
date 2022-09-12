@@ -9,6 +9,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Abstractions.Setup;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.Data;
 using OrchardCore.Data.YesSql.Abstractions;
 using OrchardCore.Environment.Shell;
@@ -16,6 +17,7 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -105,6 +107,7 @@ namespace OrchardCore.Setup.Services
                 if (context.Errors.Any())
                 {
                     context.ShellSettings.State = initialState;
+                    await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
                 }
 
                 return executionId;
@@ -112,6 +115,8 @@ namespace OrchardCore.Setup.Services
             catch
             {
                 context.ShellSettings.State = initialState;
+                await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
+
                 throw;
             }
         }
@@ -253,6 +258,8 @@ namespace OrchardCore.Setup.Services
                     context.Errors[key] = message;
                 }
 
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("JobTest", scope => Task.CompletedTask);
+
                 // Invoke modules to react to the setup event
                 var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
@@ -265,9 +272,6 @@ namespace OrchardCore.Setup.Services
 
             if (context.Errors.Any())
             {
-                // So that the new registered shell is reverted back to the 'Uninitialized' state.
-                context.ShellSettings = shellSettings;
-
                 return executionId;
             }
 

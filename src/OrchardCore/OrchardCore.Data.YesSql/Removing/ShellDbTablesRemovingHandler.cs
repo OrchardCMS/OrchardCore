@@ -67,7 +67,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
                 using var transaction = connection.BeginTransaction(store.Configuration.IsolationLevel);
 
                 // Remove all tables of this tenant.
-                shellDbTablesInfo.Configure(transaction);
+                shellDbTablesInfo.Configure(transaction, _logger, throwOnError: false);
                 shellDbTablesInfo.RemoveAllTables();
 
                 transaction.Commit();

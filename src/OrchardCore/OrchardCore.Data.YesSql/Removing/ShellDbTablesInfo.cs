@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using Dapper;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using YesSql;
 using YesSql.Services;
 using YesSql.Sql;
@@ -21,6 +23,7 @@ internal class ShellDbTablesInfo : ISchemaBuilder
     public DbConnection Connection { get; set; }
     public DbTransaction Transaction { get; set; }
     public bool ThrowOnError { get; private set; }
+    public ILogger _logger { get; set; } = NullLogger.Instance;
 
     public HashSet<(string Name, Type Type, string Collection)> MapIndexTables { get; private set; } =
         new HashSet<(string Name, Type Type, string Collection)>();
@@ -49,7 +52,7 @@ internal class ShellDbTablesInfo : ISchemaBuilder
         return this;
     }
 
-    public ShellDbTablesInfo Configure(DbTransaction transaction, bool throwOnError = true)
+    public ShellDbTablesInfo Configure(DbTransaction transaction, ILogger logger, bool throwOnError = true)
     {
         Transaction = transaction;
         Connection = transaction.Connection;
@@ -155,9 +158,13 @@ internal class ShellDbTablesInfo : ISchemaBuilder
                 RemoveTable(indexTable);
             }
         }
-        catch
+        catch (Exception ex)
         {
-            if (ThrowOnError)
+            if (!ThrowOnError)
+            {
+                _logger.LogError(ex, "Failed to remove 'MapIndexTables'.");
+            }
+            else
             {
                 throw;
             }
@@ -184,9 +191,13 @@ internal class ShellDbTablesInfo : ISchemaBuilder
                 RemoveTable(indexTable);
             }
         }
-        catch
+        catch (Exception ex)
         {
-            if (ThrowOnError)
+            if (!ThrowOnError)
+            {
+                _logger.LogError(ex, "Failed to remove 'ReduceIndexTables'.");
+            }
+            else
             {
                 throw;
             }
@@ -197,6 +208,10 @@ internal class ShellDbTablesInfo : ISchemaBuilder
     {
         try
         {
+            // Always try to remove the main 'Document' table that may have been
+            // auto created on 'YesSql' side, even if no document was persisted.
+            DocumentTables.Add(TableNameConvention.GetDocumentTable(String.Empty));
+
             foreach (var name in DocumentTables)
             {
                 RemoveTable(name);
@@ -204,9 +219,13 @@ internal class ShellDbTablesInfo : ISchemaBuilder
 
             RemoveTable(DbBlockIdGenerator.TableName);
         }
-        catch
+        catch (Exception ex)
         {
-            if (ThrowOnError)
+            if (!ThrowOnError)
+            {
+                _logger.LogError(ex, "Failed to remove 'DocumentTables'.");
+            }
+            else
             {
                 throw;
             }
@@ -222,9 +241,13 @@ internal class ShellDbTablesInfo : ISchemaBuilder
                 RemoveTable(name);
             }
         }
-        catch
+        catch (Exception ex)
         {
-            if (ThrowOnError)
+            if (!ThrowOnError)
+            {
+                _logger.LogError(ex, "Failed to remove 'Tables'.");
+            }
+            else
             {
                 throw;
             }
@@ -238,9 +261,13 @@ internal class ShellDbTablesInfo : ISchemaBuilder
             var deleteTable = new DropTableCommand(Prefix(name));
             Execute(_commandInterpreter.CreateSql(deleteTable));
         }
-        catch
+        catch (Exception ex)
         {
-            if (ThrowOnError)
+            if (!ThrowOnError)
+            {
+                _logger.LogError(ex, "Failed to remove table {0}.", name);
+            }
+            else
             {
                 throw;
             }
@@ -255,9 +282,13 @@ internal class ShellDbTablesInfo : ISchemaBuilder
             var sql = _commandInterpreter.CreateSql(command);
             Execute(sql);
         }
-        catch
+        catch (Exception ex)
         {
-            if (ThrowOnError)
+            if (!ThrowOnError)
+            {
+                _logger.LogError(ex, "Failed to create foreign key {0}.", name);
+            }
+            else
             {
                 throw;
             }
@@ -273,9 +304,13 @@ internal class ShellDbTablesInfo : ISchemaBuilder
             var command = new DropForeignKeyCommand(Dialect.FormatKeyName(Prefix(srcTable)), Prefix(name));
             Execute(_commandInterpreter.CreateSql(command));
         }
-        catch
+        catch (Exception ex)
         {
-            if (ThrowOnError)
+            if (!ThrowOnError)
+            {
+                _logger.LogError(ex, "Failed to drop foreign key {0}.", name);
+            }
+            else
             {
                 throw;
             }
