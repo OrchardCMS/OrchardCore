@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 
@@ -11,31 +12,50 @@ namespace OrchardCore.Users
     {
         public static readonly Permission ManageUsers = CommonPermissions.ManageUsers;
         public static readonly Permission ViewUsers = CommonPermissions.ViewUsers;
+        public static readonly Permission EditOwnUserInformation = new("ManageOwnUserInformation", "Edit own user information", new Permission[] { ManageUsers });
 
-        public static readonly Permission ManageOwnUserInformation = new Permission("ManageOwnUserInformation", "Manage own user information", new Permission[] { ManageUsers });
+        private readonly IServiceProvider _serviceProvider;
 
-        private readonly IRoleService _roleService;
+        private IRoleService _roleService;
 
-        public Permissions(IRoleService roleService)
+        public Permissions(IServiceProvider serviceProvider)
         {
-            _roleService = roleService;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            var list = new List<Permission>
+            var list = new List<Permission>()
             {
-                ManageUsers,
-                ManageOwnUserInformation,
-                ViewUsers
+                EditOwnUserInformation
             };
 
-            var roles = (await _roleService.GetRoleNamesAsync())
-                .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
+            // lazy resolve the RoleService and it may not be available since the Users modules does not have direct dependeny on the Roles module
+            _roleService ??= _serviceProvider.GetService<IRoleService>();
 
-            foreach (var role in roles)
+            if (_roleService != null)
             {
-                list.Add(CommonPermissions.CreatePermissionForManageUsersInRole(role));
+                var roles = (await _roleService.GetRoleNamesAsync())
+                    .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(x => x).ToList();
+
+                list.Add(CommonPermissions.ListUsers);
+                foreach (var role in roles)
+                {
+                    list.Add(CommonPermissions.CreateListUsersInRolePermission(role));
+                }
+
+                list.Add(CommonPermissions.EditUsers);
+                foreach (var role in roles)
+                {
+                    list.Add(CommonPermissions.CreateEditUsersInRolePermission(role));
+                }
+
+                list.Add(CommonPermissions.DeleteUsers);
+                foreach (var role in roles)
+                {
+                    list.Add(CommonPermissions.CreateDeleteUsersInRolePermission(role));
+                }
             }
 
             return list;
@@ -46,23 +66,29 @@ namespace OrchardCore.Users
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] { ManageUsers }
+                    Permissions = new[] {
+                        ManageUsers,
+                        CommonPermissions.ListUsers,
+                        CommonPermissions.EditUsers,
+                        CommonPermissions.DeleteUsers,
+                        CommonPermissions.ManageUserProfileSettings
+                    }
                 },
                 new PermissionStereotype {
                     Name = "Editor",
-                    Permissions = new[] { ManageOwnUserInformation }
+                    Permissions = new[] { EditOwnUserInformation }
                 },
                 new PermissionStereotype {
                     Name = "Moderator",
-                    Permissions = new[] { ManageOwnUserInformation }
+                    Permissions = new[] { EditOwnUserInformation }
                 },
                 new PermissionStereotype {
                     Name = "Contributor",
-                    Permissions = new[] { ManageOwnUserInformation }
+                    Permissions = new[] { EditOwnUserInformation }
                 },
                 new PermissionStereotype {
                     Name = "Author",
-                    Permissions = new[] { ManageOwnUserInformation }
+                    Permissions = new[] { EditOwnUserInformation }
                 }
             };
         }

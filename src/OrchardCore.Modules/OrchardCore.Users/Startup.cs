@@ -192,7 +192,6 @@ namespace OrchardCore.Users
             });
 
             services.AddSingleton<IIndexProvider, UserIndexProvider>();
-            services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByClaimIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
@@ -202,12 +201,9 @@ namespace OrchardCore.Users
             services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
             services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
 
-            services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
-
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<ICommandHandler, UserCommands>();
-            services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
             services.AddScoped<IExternalLoginEventHandler, ScriptExternalLoginEventHandler>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -216,7 +212,6 @@ namespace OrchardCore.Users
             services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
 
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
-            services.AddScoped<IDisplayDriver<User>, UserRoleDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserInformationDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
 
@@ -247,6 +242,24 @@ namespace OrchardCore.Users
             services.AddScoped<IUserEventHandler, UserDisabledEventHandler>();
 
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
+
+            services.AddScoped<IDisplayDriver<ISite>, UserProfileSettingsDisplayDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Users")]
+    [RequireFeatures("OrchardCore.Roles")]
+    public class RolesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
+            services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
+            services.AddScoped<IDisplayDriver<User>, UserRoleDisplayDriver>();
+            services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
+            services.AddScoped<IDataMigration, UserMigrations>();
+            services.AddSingleton<IIndexProvider, UserRoleIndexProvider>();
+            services.AddSingleton<IUsersAdminListFilterProvider, RolesAdminListFilterProvider>();
         }
     }
 

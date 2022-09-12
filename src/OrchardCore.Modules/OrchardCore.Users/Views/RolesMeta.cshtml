@@ -1,0 +1,8 @@
+@model SummaryAdminUserViewModel
+
+<div data-bs-toggle="tooltip" title="@T["The roles this user has"]">
+    @foreach (var roleName in Model.User.RoleNames)
+    {
+        <span class="badge bg-secondary">@roleName</span>
+    }
+</div>

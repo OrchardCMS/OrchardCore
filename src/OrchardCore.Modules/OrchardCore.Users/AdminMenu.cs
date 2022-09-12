@@ -29,7 +29,7 @@ namespace OrchardCore.Users
                         .Add(S["Users"], S["Users"].PrefixPosition(), users => users
                             .AddClass("users").Id("users")
                             .Action("Index", "Admin", "OrchardCore.Users")
-                            .Permission(Permissions.ViewUsers)
+                            .Permission(CommonPermissions.ListUsers)
                             .Resource(new User())
                             .LocalNav()
                          )
@@ -41,6 +41,19 @@ namespace OrchardCore.Users
                                 )
                             )
                        );
+
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings
+                       .Add(S["User Profile Settings"], S["User Profile Settings"].PrefixPosition(), entry => entry
+                          .AddClass("UserProfileSettings")
+                          .Id("UserProfileSettings")
+                          .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = UserProfileSettingsDisplayDriver.GroupId })
+                          .Permission(CommonPermissions.ManageUserProfileSettings)
+                          .LocalNav()
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }
