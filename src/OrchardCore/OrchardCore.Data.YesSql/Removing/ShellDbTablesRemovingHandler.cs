@@ -5,10 +5,12 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Data;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Scope;
 using YesSql;
 
 namespace OrchardCore.Environment.Shell.Removing;
@@ -37,7 +39,28 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
     /// </summary>
     public async Task RemovingAsync(ShellRemovingContext context)
     {
-        if (context.LocalResourcesOnly || context.ShellSettings.State == TenantState.Uninitialized)
+        if (context.LocalResourcesOnly)
+        {
+            return;
+        }
+
+        // Remove the database tables, even if 'Uninitialized' but with a valid connection, and if the 'Document'
+        // table exists. This allows to cleanup the remaining database tables of a tenant whose setup has failed.
+
+        var dbConnectionValidator = ShellScope.Services?.GetService<IDbConnectionValidator>();
+        if (dbConnectionValidator == null)
+        {
+            return;
+        }
+
+        var result = await dbConnectionValidator.ValidateAsync(
+            context.ShellSettings["DatabaseProvider"],
+            context.ShellSettings["ConnectionString"],
+            context.ShellSettings["TablePrefix"],
+            isDefaultShell: false);
+
+        // Check for a valid connection and if at least the 'Document' table exists.
+        if (result != DbConnectionValidatorResult.DocumentTableFound)
         {
             return;
         }
@@ -48,10 +71,16 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
             return;
         }
 
+        // Can't resolve 'IStore' if 'Uninitialized', so force to 'Disabled'.
+        var shellSettings = new ShellSettings(context.ShellSettings)
+        {
+            State = TenantState.Disabled,
+        };
+
         try
         {
             // Create a minimum shell context without any features.
-            using var shellContext = await _shellContextFactory.CreateMinimumContextAsync(context.ShellSettings);
+            using var shellContext = await _shellContextFactory.CreateMinimumContextAsync(shellSettings);
             var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
 
             using var connection = store.Configuration.ConnectionFactory.CreateConnection();
@@ -75,7 +104,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to remove the tables of tenant '{TenantName}'.", context.ShellSettings.Name);
+            _logger.LogError(ex, "Failed to remove the tables of tenant '{TenantName}'.", shellSettings.Name);
             context.LocalizedErrorMessage = S["Failed to remove the tables."];
             context.Error = ex;
         }
@@ -93,8 +122,14 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
             return shellDbTablesInfo;
         }
 
+        // Can't resolve 'IStore' if 'Uninitialized', so force to 'Disabled'.
+        var shellSettings = new ShellSettings(context.ShellSettings)
+        {
+            State = TenantState.Disabled,
+        };
+
         // Create an isolated shell context composed of all features that have been installed.
-        using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(context.ShellSettings);
+        using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
         await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
         {
             var store = scope.ServiceProvider.GetRequiredService<IStore>();
@@ -122,7 +157,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
                         "Failed to replay the migration '{MigrationType}' from version '{Version}' on tenant '{TenantName}'.",
                         type,
                         version,
-                        context.ShellSettings.Name);
+                        shellSettings.Name);
 
                     context.LocalizedErrorMessage = S["Failed to replay the migration '{0}' from version '{1}'.", type, version];
                     context.Error = ex;
