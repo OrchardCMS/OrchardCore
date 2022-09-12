@@ -32,7 +32,7 @@ OrchardCore uses the `YesSql` library to interact with the configured database p
 | --- | --- |
 | `CommandsPageSize` | Gets or sets the command page size. If you have to many queries in one command, `YesSql` will split the large command into multiple commands. |
 | `ContentTypeOptions` | Gets or sets the `QueryGatingEnabled` option in `YesSql`. |
-| `TableNameConvention` | You can provide your own implemenation for generating ids. |
+| `TableNameConvention` | You can provide your own implementation for generating ids. |
 | `IdentifierAccessorFactory` | You can provide your own value accessor factory. |
 | `VersionAccessorFactory` | You can provide your own version accessor factory. |
 | `ContentSerializer` | You can provide your own content serializer. |
