@@ -65,28 +65,6 @@ public class DbConnectionValidator : IDbConnectionValidator
 
         var (factory, dialect) = GetConnectionFactoryAndSqlDialect(providerName, connectionString);
 
-        switch (providerName)
-        {
-            case DatabaseProviderName.SqlConnection:
-                factory = new DbConnectionFactory<SqlConnection>(connectionString);
-                dialect = new SqlServerDialect();
-                break;
-            case DatabaseProviderName.Sqlite:
-                factory = new DbConnectionFactory<SqliteConnection>(connectionString);
-                dialect = new SqliteDialect();
-                break;
-            case DatabaseProviderName.MySql:
-                factory = new DbConnectionFactory<MySqlConnection>(connectionString);
-                dialect = new MySqlDialect();
-                break;
-            case DatabaseProviderName.Postgres:
-                factory = new DbConnectionFactory<NpgsqlConnection>(connectionString);
-                dialect = new PostgreSqlDialect();
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(providerName), "Unsupported Database Provider");
-        }
-
         using var connection = factory.CreateConnection();
 
         try
