@@ -108,12 +108,14 @@ namespace OrchardCore.Contents.Liquid
                 else
                 {
                     var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(displayFor);
-
-                    if (metadata.DisplayRouteValues != null && routeValues != null)
+                    if (metadata.DisplayRouteValues != null)
                     {
-                        foreach (var attribute in routeValues)
+                        if (routeValues != null)
                         {
-                            metadata.DisplayRouteValues.Add(attribute.Key, attribute.Value);
+                            foreach (var attribute in routeValues)
+                            {
+                                metadata.DisplayRouteValues.Add(attribute.Key, attribute.Value);
+                            }
                         }
 
                         customAttributes["href"] = urlHelper.Action(metadata.DisplayRouteValues["action"].ToString(), metadata.DisplayRouteValues);
