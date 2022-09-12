@@ -310,10 +310,10 @@ namespace OrchardCore.Tenants.Controllers
                             {
                                 if (_logger.IsEnabled(LogLevel.Information))
                                 {
-                                    _logger.LogInformation("The tenant '{TenantName}' was removed successfully.", shellSettings.Name);
+                                    _logger.LogInformation("The tenant '{TenantName}' was removed.", shellSettings.Name);
                                 }
 
-                                await _notifier.SuccessAsync(H["The tenant '{0}' was removed successfully", shellSettings.Name]);
+                                await _notifier.SuccessAsync(H["The tenant '{0}' was removed, the log file may contain additional info.", shellSettings.Name]);
                             }
                         }
 
@@ -667,10 +667,10 @@ namespace OrchardCore.Tenants.Controllers
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                    _logger.LogWarning("The tenant '{TenantName}' was removed successfully.", shellSettings.Name);
+                    _logger.LogWarning("The tenant '{TenantName}' was removed.", shellSettings.Name);
                 }
 
-                await _notifier.SuccessAsync(H["The tenant '{0}' was removed successfully", shellSettings.Name]);
+                await _notifier.SuccessAsync(H["The tenant '{0}' was removed, the log file may contain additional info.", shellSettings.Name]);
             }
 
             return RedirectToAction(nameof(Index));

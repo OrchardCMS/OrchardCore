@@ -235,7 +235,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (_logger.IsEnabled(LogLevel.Warning))
             {
-                _logger.LogWarning("The tenant '{TenantName}' was removed successfully.", shellSettings.Name);
+                _logger.LogWarning("The tenant '{TenantName}' was removed.", shellSettings.Name);
             }
 
             return Ok();
