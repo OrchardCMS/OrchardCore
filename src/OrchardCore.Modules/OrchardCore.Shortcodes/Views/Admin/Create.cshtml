@@ -1,15 +1,15 @@
 @model ShortcodeTemplateViewModel
 @inject IDisplayManager<ShortcodeDescriptor> ShortcodeDescriptorDisplayManager
 @inject IShortcodeDescriptorManager ShortcodeDescriptorManager
-@{  
+@{
     var shortcodeDescriptors = await ShortcodeDescriptorManager.GetShortcodeDescriptors();
-    var categories = shortcodeDescriptors
-        .Where(s => s != null)
-        .SelectMany(s => s.Categories)
-        .GroupBy(c => c, StringComparer.OrdinalIgnoreCase)
-        .Select(g => g.Key);
 
-    var jCategories = JsonConvert.SerializeObject(categories);  
+    var categories = shortcodeDescriptors.SelectMany(shortcodeDescriptor => shortcodeDescriptor.Categories ?? Enumerable.Empty<string>())
+    .Distinct(StringComparer.OrdinalIgnoreCase)
+    .OrderBy(category => category)
+    .ToList();
+
+    var jCategories = JsonConvert.SerializeObject(categories);
     var jSelectedCategories = JsonConvert.SerializeObject(Model.Categories);
 }
 
@@ -31,14 +31,14 @@
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
 <style asp-name="vue-multiselect"></style>
-<style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>    
+<style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>
 <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Create Shortcode"])</h1></zone>
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
-    <div class="row" >
+    <div class="row">
         <div class="col-12 col-md-6">
             <div class="mb-3" asp-validation-class-for="Name">
                 <label asp-for="Name">@T["Name"]</label>
@@ -57,49 +57,49 @@
                 <label asp-for="Usage">@T["Usage"]</label>
                 <textarea asp-for="Usage" rows="10" class="form-control"></textarea>
                 <span class="hint">@T["Example usage of the shortcode."]</span>
-            </div>   
+            </div>
 
             @* Do not move app from here, it is specific to categories, and causes conflicts with codemirror due to dom rewrites. *@
             <div class="mb-3" asp-validation-class-for="SelectedCategories" id="shortcodeCategories" data-categories="@jCategories" data-selected-categories="@jSelectedCategories">
                 <label asp-for="SelectedCategories">@T["Categories"]</label>
-                <input class="form-control" asp-for="SelectedCategories" type="hidden" v-bind:value="getSelectedCategories()"/>
-                    <vue-multiselect v-model="value"
-                                     placeholder="@T["Type to search"]"
-                                     select-label="@T["Select"]"
-                                     deselect-label="@T["Remove"]"
-                                     :options="options"
-                                     :multiple="true"
-                                     :show-labels="false"
-                                     :close-on-select="false"
-                                     :clear-on-select="false"
-                                     :taggable="true"
-                                     tag-position="bottom"
-                                     tag-placeholder="@T["Press enter to add a category"]"
-                                     @@tag="addCategory">
-                        <template slot="noResult">
-                            @T["No categories found"]
-                        </template>
-                        <template slot="noOptions">
-                            @T["No categories found"]
-                        </template>
-                    </vue-multiselect>
+                <input class="form-control" asp-for="SelectedCategories" type="hidden" v-bind:value="getSelectedCategories()" />
+                <vue-multiselect v-model="value"
+                                 placeholder="@T["Type to search"]"
+                                 select-label="@T["Select"]"
+                                 deselect-label="@T["Remove"]"
+                                 :options="options"
+                                 :multiple="true"
+                                 :show-labels="false"
+                                 :close-on-select="false"
+                                 :clear-on-select="false"
+                                 :taggable="true"
+                                 tag-position="bottom"
+                                 tag-placeholder="@T["Press enter to add a category"]"
+                                 @@tag="addCategory">
+                    <template slot="noResult">
+                        @T["No categories found"]
+                    </template>
+                    <template slot="noOptions">
+                        @T["No categories found"]
+                    </template>
+                </vue-multiselect>
                 <span class="hint">@T["The categories for this shortcode."]</span>
-            </div>      
+            </div>
 
             <div class="mb-3" asp-validation-class-for="DefaultValue">
                 <label asp-for="DefaultValue">@T["Default Shortcode Value"]</label>
                 <input asp-for="DefaultValue" class="form-control" />
                 <span class="hint">@T["The default value of the shortcode when selected. Defaults to [name]."]</span>
-            </div>  
+            </div>
         </div>
         <div class="col-12 col-md-6 d-flex align-items-center justify-content-center">
             <div id="shortcodePreview" style="display: none;">
-            @{
-                var descriptor = new ShortcodeDescriptor();
-                dynamic shape = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");
-                shape.Actions = null;
-                @await DisplayAsync(shape)
-            }
+                @{
+                    var descriptor = new ShortcodeDescriptor();
+                    dynamic shape = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");
+                    shape.Actions = null;
+                    @await DisplayAsync(shape)
+                }
             </div>
         </div>
         <div class="col-12">
@@ -129,7 +129,7 @@
 
 <script at="Foot">
     initializeShortcodesTemplateEditor(
-        document.getElementById('shortcodeCategories'), 
+        document.getElementById('shortcodeCategories'),
         document.getElementById('@Html.IdFor(x => x.Content)'),
         document.getElementById('@Html.IdFor(x => x.Usage)'),
         document.getElementById('shortcodePreview'),
