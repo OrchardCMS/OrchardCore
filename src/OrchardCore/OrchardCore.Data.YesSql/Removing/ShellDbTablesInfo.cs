@@ -15,7 +15,6 @@ namespace OrchardCore.Environment.Shell.Removing;
 internal class ShellDbTablesInfo : ISchemaBuilder
 {
     private ICommandInterpreter _commandInterpreter;
-    public string DatabaseProvider { get; set; }
     public string TablePrefix { get; set; }
     public IEnumerable<string> TableNames { get; set; } = Enumerable.Empty<string>();
     public ISqlDialect Dialect { get; private set; }
@@ -34,13 +33,6 @@ internal class ShellDbTablesInfo : ISchemaBuilder
     public HashSet<string> BridgeTables { get; private set; } = new HashSet<string>();
     public HashSet<string> DocumentTables { get; private set; } = new HashSet<string>();
     public HashSet<string> Tables { get; private set; } = new HashSet<string>();
-
-    public ShellDbTablesInfo Configure(ShellSettings shellSettings)
-    {
-        DatabaseProvider = shellSettings["DatabaseProvider"];
-
-        return this;
-    }
 
     public ShellDbTablesInfo Configure(IConfiguration configuration)
     {
