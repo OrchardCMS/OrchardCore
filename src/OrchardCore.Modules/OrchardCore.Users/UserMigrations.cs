@@ -20,17 +20,17 @@ public class UserMigrations : DataMigration
     {
         SchemaBuilder.CreateMapIndexTable<UserRoleIndex>(table => table
             .Column<string>("UserId", column => column.WithLength(26))
-            .Column<string>("Role")
+            .Column<string>("Role", column => column.WithLength(255))
         );
 
-        // first save exting changes to make sure that the index is created before we populate it
+        // First save changes to make sure that user indexes are created before we execute query
         await _session.SaveChangesAsync();
 
         var users = await _session.Query<User>().ListAsync();
 
         foreach (var user in users)
         {
-            // this will force the index provider to update the indexes
+            // Saving the user will allow all index providers to run
             _session.Save(user);
         }
 

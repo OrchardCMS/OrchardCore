@@ -259,6 +259,7 @@ namespace OrchardCore.Users
             services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
             services.AddScoped<IDataMigration, UserMigrations>();
             services.AddSingleton<IIndexProvider, UserRoleIndexProvider>();
+            services.AddScoped<IPermissionProvider, UserRolePermissions>();
             services.AddSingleton<IUsersAdminListFilterProvider, RolesAdminListFilterProvider>();
         }
     }
