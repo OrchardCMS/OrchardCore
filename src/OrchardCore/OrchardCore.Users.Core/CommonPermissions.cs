@@ -23,11 +23,14 @@ namespace OrchardCore.Users
         public static readonly Permission ManageUserProfileSettings = new(nameof(ManageUserProfileSettings), "Manage user profile settings", new[] { ManageUsers }, true);
 
         public static Permission CreateListUsersInRolePermission(string name) =>
-            CreateDynamicPermission(name, new Permission("listUsersInRole_{0}", "List users in role - {0}", new[] { ListUsers }));
+            CreateDynamicPermission(name, new Permission("ListUsersInRole_{0}", "List users in role - {0}", new[] { ListUsers }));
+
         public static Permission CreateEditUsersInRolePermission(string name) =>
             CreateDynamicPermission(name, new Permission("EditUsersInRole_{0}", "Edit users in role - {0}", new[] { EditUsers }, true));
+
         public static Permission CreateDeleteUsersInRolePermission(string name) =>
             CreateDynamicPermission(name, new Permission("DeleteUsersInRole_{0}", "Delete users in role - {0}", new[] { DeleteUsers }, true));
+
         public static Permission CreateAssignUserToRolePermission(string name) =>
             CreatePermissionForManageUsersInRole(name);
 

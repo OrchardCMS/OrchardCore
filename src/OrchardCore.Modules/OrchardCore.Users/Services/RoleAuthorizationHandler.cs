@@ -75,10 +75,11 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
 
             if (!roleNames.Any())
             {
-                // if the provided user does not have role mean it's a dummy user and we'll check to see if the current user has access to any permission variant
+                // When the given user does not have any role, means it's a dummy user. 
                 roleNames = await AvailableRolesAsync();
             }
 
+            // Check every role to see if the current user has permission to at least one role.
             foreach (var roleName in roleNames)
             {
                 if (await TryAuthenticateAsync(context, requirement.Permission, roleName))
@@ -88,7 +89,6 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
                     return;
                 }
             }
-
         }
     }
 
@@ -96,11 +96,8 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
 
     private async Task<IEnumerable<string>> AvailableRolesAsync()
     {
-        if (_roleNames == null)
-        {
-            _roleNames = (await _roleService.GetRoleNamesAsync())
+        _roleNames ??= (await _roleService.GetRoleNamesAsync())
                            .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
-        }
 
         return _roleNames;
     }

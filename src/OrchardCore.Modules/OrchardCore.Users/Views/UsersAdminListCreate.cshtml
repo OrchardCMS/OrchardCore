@@ -1,8 +1,12 @@
 @model UserIndexOptions
 @using OrchardCore.Users.Models
 @inject IAuthorizationService AuthorizationService
+@{
+    var dummyUser = new User();
+}
 
-@if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, new User()))
+@if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, dummyUser)
+&& await AuthorizationService.AuthorizeAsync(User, CommonPermissions.AssignRole, dummyUser))
 {
     <div class="btn-group float-end">
         <a asp-route-action="Create" class="btn btn-sm btn-secondary float-end create" role="button">@T["Add User"]</a>
