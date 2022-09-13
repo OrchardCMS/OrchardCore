@@ -35,18 +35,13 @@ namespace OrchardCore.Users
             CreatePermissionForManageUsersInRole(name);
 
         // Dynamic permission template.
-        private static readonly Permission AssignUserToRole = new("AssignUserToRole_{0}", "Assign users to {0} role", new[] { AssignRole }, true);
-        private static readonly Permission ManageUsersInRole = new("ManageUsersInRole_{0}", "Manage users in role - {0}");
+        private static readonly Permission AssignUserToRole = new("ManageUsersInRole_{0}", "Assign users to {0} role", new[] { AssignRole }, true);
 
         private static Permission CreatePermissionForManageUsersInRole(string name)
             => new(
                     String.Format(AssignUserToRole.Name, name),
                     String.Format(AssignUserToRole.Description, name),
-                    new[] {
-                        AssignRole,
-                        // This permission provides backward compatibility.
-                        new Permission(String.Format(ManageUsersInRole.Name, name))
-                    }
+                    AssignUserToRole.ImpliedBy
                 );
 
         private static Permission CreateDynamicPermission(string name, Permission permission)
