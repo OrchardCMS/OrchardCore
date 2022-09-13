@@ -5,24 +5,30 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Features"])</h1></zone>
 
 <form autocomplete="off" class="position-sticky action-bar">
-    <div class="card mb-3">
-        <div class="card-body bg-primary p-3">
-            <div class="mb-0">
-                <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
-                    <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
-                    <input id="search-box" class="form-control me-sm-2" placeholder="@T["Search"]" type="search" autofocus />
+    <div class="card bg-primary mb-3">
+        <div class="card-body">
+
+            <div class="row gx-3">
+                <div class="col">
+                    <div class="input-group input-group-sm has-search">
+                        <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
+                        <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                    </div>
                 </div>
-                <div class="dropdown float-end order-md-1">
-                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        @T["Bulk Actions"]
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
-                        <li><a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Disable)">@T["Disable"]</a></li>
-                        <li><a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Enable)">@T["Enable"]</a></li>
-                        <li><a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Toggle)">@T["Toggle"]</a></li>
-                    </ul>
+                <div class="col-auto">
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @T["Bulk Actions"]
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
+                            <li><a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Disable)">@T["Disable"]</a></li>
+                            <li><a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Enable)">@T["Enable"]</a></li>
+                            <li><a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Toggle)">@T["Toggle"]</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
+
         </div>
     </div>
 </form>
@@ -210,6 +216,5 @@
             $("[name='BulkAction']").val($(this).data('action'));
             $("[name='submit.BulkAction']").click();
         });
-
     });
 </script>
