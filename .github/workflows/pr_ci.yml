@@ -18,14 +18,14 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: "15"
-    - name: Setup .NET 6.0
+    - name: Setup .NET 7.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
         include-prerelease: true
     - name: Build
       run: |
-        dotnet build --configuration Release --framework net6.0
+        dotnet build --configuration Release --framework net7.0
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj

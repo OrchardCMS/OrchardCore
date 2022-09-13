@@ -16,10 +16,10 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: "15"
-    - name: Setup .NET 6.0
+    - name: Setup .NET 7.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -42,10 +42,10 @@ jobs:
       image: cypress/included:9.6.1
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET 6.0
+    - name: Setup .NET 7.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -86,10 +86,10 @@ jobs:
       OrchardCore__DatabaseProvider: "Postgres"
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET 6.0
+    - name: Setup .NET 7.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -126,10 +126,10 @@ jobs:
       OrchardCore__DatabaseProvider: "MySql"
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET 6.0
+    - name: Setup .NET 7.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -165,10 +165,10 @@ jobs:
       OrchardCore__DatabaseProvider: "SqlConnection"
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET 6.0
+    - name: Setup .NET 7.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
