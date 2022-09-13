@@ -12,6 +12,7 @@
 
 .validation-summary-errors {
     @extend .alert, .alert-danger;
+
     ul {
         margin-bottom: 0px;
     }
@@ -74,7 +75,7 @@ input[type="password"]::-ms-clear {
 
 .has-filter .form-control-feedback, .has-search .form-control-feedback {
     position: absolute;
-    left: 10px;
+    left: 1.75rem;
     z-index: 4;
     display: block;
     width: 1rem;
@@ -86,9 +87,10 @@ input[type="password"]::-ms-clear {
 }
 
 .has-search .form-control-feedback {
-    left: 10px;
+    left: 1.75rem;
 }
 
 .has-filter .form-control-feedback {
-    left: 55px;
+    left: 4.25rem;
+    top: 0.25rem;
 }

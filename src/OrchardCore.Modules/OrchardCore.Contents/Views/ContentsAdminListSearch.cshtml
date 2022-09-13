@@ -12,7 +12,7 @@
         dropdownClassList.Add("dropdown-menu-start");
     }
 }
-<div class="input-group input-group-sm has-filter">
+<div class="input-group has-filter">
     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="fa fa-filter" title="@T["Filters"]" aria-hidden="true"></i>
     </button>
@@ -94,13 +94,13 @@
                             <h4>@T["Current filter"]</h4>
                             @if (!String.IsNullOrEmpty(Model.FilterResult.ToString()))
                             {
-                                <pre>@Model.FilterResult.ToString()</pre>
-                                <pre class="d-inline">@Model.FilterResult.ToNormalizedString()</pre>
-                                <span class="hint dashed">@T["including all implied groups and operators"]</span>
+                                    <pre>@Model.FilterResult.ToString()</pre>
+                                    <pre class="d-inline">@Model.FilterResult.ToNormalizedString()</pre>
+                                    <span class="hint dashed">@T["including all implied groups and operators"]</span>
                             }
                             else
                             {
-                                <p class="alert alert-info mt-3 mb-0">@T["No current filter applied"]</p>
+                                    <p class="alert alert-info mt-3 mb-0">@T["No current filter applied"]</p>
                             }
                         </div>
                     </div>

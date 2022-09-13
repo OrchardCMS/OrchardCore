@@ -6,12 +6,12 @@
 
 @if (Model.CreatableTypes.Count == 1)
 {
-    <a class="btn btn-sm btn-secondary" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = Model.CreatableTypes.First().Value, returnUrl = FullRequestPath })">@T["New {0}", Model.CreatableTypes.First().Text]</a>
+    <a class="btn btn-secondary" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = Model.CreatableTypes.First().Value, returnUrl = FullRequestPath })">@T["New {0}", Model.CreatableTypes.First().Text]</a>
 }
 else
 {
     <div class="dropdown">
-        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="new-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="new-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             @T["New"]
         </button>
         <ul class="dropdown-menu dropdown-menu-end scrollable" aria-labelledby="bulk-action-menu-button">
