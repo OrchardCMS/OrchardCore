@@ -44,31 +44,28 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
             return;
         }
 
-        // Remove the database tables, even if 'Uninitialized' but with a valid connection, and if the 'Document'
-        // table exists. This allows to cleanup the remaining database tables of a tenant whose setup has failed.
-
-        var dbConnectionValidator = ShellScope.Services?.GetService<IDbConnectionValidator>();
-        if (dbConnectionValidator == null)
+        if (context.ShellSettings.State == TenantState.Uninitialized)
         {
-            return;
-        }
+            // An 'Uninitialized' tenant with a valid connection, and at least the 'Document' table,
+            // probably means that the tenant setup failed, and that some tables need to be cleanup.
 
-        var result = await dbConnectionValidator.ValidateAsync(
-            context.ShellSettings["DatabaseProvider"],
-            context.ShellSettings["ConnectionString"],
-            context.ShellSettings["TablePrefix"],
-            isDefaultShell: false);
+            var dbConnectionValidator = ShellScope.Services?.GetService<IDbConnectionValidator>();
+            if (dbConnectionValidator == null)
+            {
+                return;
+            }
 
-        // Check for a valid connection and if at least the 'Document' table exists.
-        if (result != DbConnectionValidatorResult.DocumentTableFound)
-        {
-            return;
-        }
+            // Check for a valid connection and if at least the 'Document' table exists.
+            var result = await dbConnectionValidator.ValidateAsync(
+                context.ShellSettings["DatabaseProvider"],
+                context.ShellSettings["ConnectionString"],
+                context.ShellSettings["TablePrefix"],
+                isDefaultShell: false);
 
-        var shellDbTablesInfo = await GetTablesToRemoveAsync(context);
-        if (!context.Success)
-        {
-            return;
+            if (result != DbConnectionValidatorResult.DocumentTableFound)
+            {
+                return;
+            }
         }
 
         // Can't resolve 'IStore' if 'Uninitialized', so force to 'Disabled'.
@@ -76,6 +73,12 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         {
             State = TenantState.Disabled,
         };
+
+        var shellDbTablesInfo = await GetTablesToRemoveAsync(shellSettings);
+        if (!context.Success)
+        {
+            return;
+        }
 
         try
         {
@@ -113,20 +116,14 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
     /// <summary>
     /// Gets the database tables retrieved from the migrations of the provided tenant.
     /// </summary>
-    private async Task<ShellDbTablesInfo> GetTablesToRemoveAsync(ShellRemovingContext context)
+    private async Task<ShellDbTablesInfo> GetTablesToRemoveAsync(ShellSettings shellSettings)
     {
-        var shellDbTablesInfo = new ShellDbTablesInfo().Configure(context.ShellSettings);
+        var shellDbTablesInfo = new ShellDbTablesInfo().Configure(shellSettings);
         if (shellDbTablesInfo.DatabaseProvider == "Sqlite")
         {
             // The whole database file will be removed.
             return shellDbTablesInfo;
         }
-
-        // Can't resolve 'IStore' if 'Uninitialized', so force to 'Disabled'.
-        var shellSettings = new ShellSettings(context.ShellSettings)
-        {
-            State = TenantState.Disabled,
-        };
 
         // Create an isolated shell context composed of all features that have been installed.
         using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
@@ -161,9 +158,6 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
 
                     // Replaying a migration may fail for the same reason that a setup or any migration failed.
                     // So the tenant removal is not interrupted, the already enlisted tables may be sufficient.
-
-                    // context.LocalizedErrorMessage = S["Failed to replay the migration '{0}' from version '{1}'.", type, version];
-                    // context.Error = ex;
 
                     break;
                 }
