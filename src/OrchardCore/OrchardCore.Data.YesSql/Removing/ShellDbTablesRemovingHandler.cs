@@ -44,7 +44,10 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
             return;
         }
 
-        if (context.ShellSettings.State == TenantState.Uninitialized)
+        // In case of 'Sqlite' the validator always returns 'DocumentTableNotFound',
+        // which may be not true, so for now always try to remove the database file.
+        if (context.ShellSettings.State == TenantState.Uninitialized &&
+            context.ShellSettings["DatabaseProvider"] != DataProviderName.Sqlite)
         {
             // An 'Uninitialized' tenant with a valid connection, and at least the 'Document' table,
             // probably means that the tenant setup failed, and that some tables need to be cleanup.
