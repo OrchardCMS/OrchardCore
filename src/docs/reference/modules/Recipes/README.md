@@ -148,87 +148,52 @@ You can also set the default Lucene Settings.
     }
 ```
 
-### Elasticsearch step
+### Reset Lucene Search Index Step
 
-The Elasticsearch index step allows you to run the Elasticsearch indexation of content types.  
-You can also set the default Elasticsearch Settings.
-
-```json
-    {
-      // Create the indices before the content items so they are indexed automatically.
-      "name": "ElasticIndexSettings",
-      "Indices": [
-        {
-          "Search": {
-            "AnalyzerName": "standardanalyzer",
-            "IndexLatest": false,
-            "IndexedContentTypes": [
-              "Blog",
-              "BlogPost"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      // Create the search settings.
-      "name": "Settings",
-      "ElasticSettings": {
-        "SearchIndex": "search",
-        "DefaultSearchFields": [
-          "Content.ContentItem.FullText"
-        ],
-        "AllowElasticQueryStringQueryInSearch": false,
-        "SyncWithLucene":  true // Allows to sync content index settings
-      }
-    },
-```
-
-### Reset Elasticsearch Index Step
-
-This Reset Index Step resets an Elasticsearch index.
+This Reset Lucene Index Step resets a lucene index.
 Restarts the indexing process from the beginning in order to update current content items.
 It doesn't delete existing entries from the index.
 
+The `includeAll` property indicates whether to include all available Lucene indices. When set to `true`, the `Indices` property can be omitted.
+
 ```json
     {
       "name": "lucene-index-reset",
-      "IncludeAll": false,
+      "includeAll": false,
       "Indices": [
         "IndexName1", "IndexName2"
       ]
     }
 ```
 
-To reset all indices:   
-
 ```json
     {
       "name": "lucene-index-reset",
-      "IncludeAll": true
+      "includeAll": true
     }
 ```
 
-### Rebuild Elasticsearch Index Step
+### Rebuild Lucene Search Index Step
 
-This Rebuild Index Step rebuilds an Elasticsearch index.
+This Rebuild Lucene Index Step rebuilds a lucene index.
 Deletes and recreates the full index content.
+
+The `includeAll` property indicates whether to include all available Lucene indices. When set to `true`, the `Indices` property can be omitted.
+
 ```json
     {
       "name": "lucene-index-rebuild",
-      "IncludeAll": false,
+      "includeAll": false,
       "Indices": [
         "IndexName1", "IndexName2"
       ]
     }
 ```
 
-To rebuild all indices:   
-
 ```json
     {
       "name": "lucene-index-rebuild",
-      "IncludeAll": true
+      "includeAll": true
     }
 ```
 
