@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Lucene.Deployment
+namespace OrchardCore.Search.Lucene.Deployment
 {
     public class LuceneIndexResetDeploymentSource : IDeploymentSource
     {

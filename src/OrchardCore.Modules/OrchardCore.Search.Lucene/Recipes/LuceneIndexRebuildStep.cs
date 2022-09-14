@@ -6,7 +6,7 @@ using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Lucene.Recipes
+namespace OrchardCore.Search.Lucene.Recipes
 {
     /// <summary>
     /// This recipe step rebuilds a lucene index.

@@ -5,9 +5,9 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Lucene.ViewModels;
+using OrchardCore.Search.Lucene.ViewModels;
 
-namespace OrchardCore.Lucene.Deployment
+namespace OrchardCore.Search.Lucene.Deployment
 {
     public class LuceneIndexRebuildDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneIndexRebuildDeploymentStep>
     {

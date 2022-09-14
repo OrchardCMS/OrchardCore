@@ -1,6 +1,6 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Lucene.Deployment
+namespace OrchardCore.Search.Lucene.Deployment
 {
     /// <summary>
     /// Adds rebuild Lucene index task to a <see cref="DeploymentPlanResult"/>.

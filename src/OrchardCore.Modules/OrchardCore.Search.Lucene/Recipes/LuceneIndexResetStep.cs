@@ -6,7 +6,7 @@ using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Lucene.Recipes
+namespace OrchardCore.Search.Lucene.Recipes
 {
     /// <summary>
     /// This recipe step resets a lucene index.
@@ -42,7 +42,7 @@ namespace OrchardCore.Lucene.Recipes
                             }
                             else
                             {
-                                luceneIndexingService.ResetIndex(indexName);
+                                luceneIndexingService.ResetIndexAsync(indexName);
                             }
                             await luceneIndexingService.ProcessContentItemsAsync(indexName);
                         }

@@ -1,4 +1,4 @@
-namespace OrchardCore.Lucene.ViewModels
+namespace OrchardCore.Search.Lucene.ViewModels
 {
     public class LuceneIndexRebuildDeploymentStepViewModel
     {
