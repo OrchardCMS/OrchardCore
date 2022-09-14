@@ -130,9 +130,12 @@ namespace OrchardCore.Contents.Liquid
 
                 if (metadata.EditorRouteValues != null)
                 {
-                    foreach (var attribute in routeValues)
+                    if (routeValues != null)
                     {
-                        metadata.EditorRouteValues.Add(attribute.Key, attribute.Value);
+                        foreach (var attribute in routeValues)
+                        {
+                            metadata.EditorRouteValues.Add(attribute.Key, attribute.Value);
+                        }
                     }
 
                     customAttributes["href"] = urlHelper.Action(metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues);
@@ -179,7 +182,7 @@ namespace OrchardCore.Contents.Liquid
                 contentItem = createFor;
                 var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(createFor);
 
-                if (metadata.CreateRouteValues == null)
+                if (metadata.CreateRouteValues != null)
                 {
                     if (routeValues != null)
                     {
