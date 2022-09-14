@@ -479,6 +479,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var principal = new ClaimsPrincipal(identity);
+            principal.SetScopes(request.GetScopes());
             principal.SetResources(await GetResourcesAsync(request.GetScopes()));
 
             return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
