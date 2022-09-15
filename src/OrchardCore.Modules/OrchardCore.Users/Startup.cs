@@ -27,7 +27,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes.Services;
 using OrchardCore.ResourceManagement;
-using OrchardCore.Roles.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
@@ -178,9 +177,9 @@ namespace OrchardCore.Users
             services.TryAddScoped<IUserClaimStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserAuthenticationTokenStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
 
-            services.TryAddScoped<IRoleService, RoleService>();
             services.TryAddScoped<RoleManager<IRole>>();
-            services.TryAddScoped<IRoleStore<IRole>, RoleStore>();
+            services.TryAddScoped<IRoleStore<IRole>, EmptyRoleStore>();
+            services.TryAddScoped<IRoleService, EmptyRoleService>();
 
             services.ConfigureApplicationCookie(options =>
             {
