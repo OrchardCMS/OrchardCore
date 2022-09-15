@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Esprima;
 using Jint;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Scripting.JavaScript
 {
-    public class JavaScriptEngine : IScriptingEngine
+    public sealed class JavaScriptEngine : IScriptingEngine
     {
         private readonly IMemoryCache _memoryCache;
 
@@ -32,37 +31,21 @@ namespace OrchardCore.Scripting.JavaScript
 
         public object Evaluate(IScriptingScope scope, string script)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
-
-            var jsScope = scope as JavaScriptScope;
-
-            if (jsScope == null)
+            static void ThrowInvalidScopeTypeException()
             {
                 throw new ArgumentException($"Expected a scope of type {nameof(JavaScriptScope)}", nameof(scope));
             }
 
-            var parsedAst = _memoryCache.GetOrCreate(script, entry =>
+            if (scope is not JavaScriptScope jsScope)
             {
-                var parser = new JavaScriptParser(script);
-                return parser.ParseScript();
-            });
+                ThrowInvalidScopeTypeException();
+            }
 
-            var result = jsScope.Engine.Evaluate(parsedAst)?.ToObject();
+            var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string) entry.Key));
+
+            var result = jsScope.Engine.Evaluate(parsedAst).ToObject();
 
             return result;
-        }
-    }
-
-    public class MethodProxy
-    {
-        public IList<object> Arguments { get; set; }
-        public Func<IServiceProvider, IList<object>, object> Callback { get; set; }
-        public object Invoke()
-        {
-            return Callback(null, Arguments);
         }
     }
 }
