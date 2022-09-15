@@ -34,8 +34,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         IEnumerable<DatabaseProvider> databaseProviders,
         IOptions<YesSqlOptions> yesSqlOptions,
         IOptions<SqliteOptions> sqliteOptions,
-        IOptions<ShellOptions> shellOptions
-        )
+        IOptions<ShellOptions> shellOptions)
     {
         _databaseProviders = databaseProviders;
         _yesSqlOptions = yesSqlOptions.Value;

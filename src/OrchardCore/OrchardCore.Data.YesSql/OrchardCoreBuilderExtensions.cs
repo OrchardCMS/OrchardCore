@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
-                services.AddOptions<StoreCollectionOptions>();
+                //services.AddOptions<StoreCollectionOptions>();
                 services.AddTransient<IConfigureOptions<SqliteOptions>, SqliteOptionsConfiguration>();
 
                 // Adding supported databases
@@ -48,12 +48,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.TryAddDataProvider(name: "MySql", value: DatabaseProviderValue.MySql, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
                 services.TryAddDataProvider(name: "Postgres", value: DatabaseProviderValue.Postgres, hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
 
-                services.Configure<YesSqlOptions>(options => options.TableNameConvention = new YesSql.Configuration().TableNameConvention);
+                services.PostConfigure<YesSqlOptions>(options => options.TableNameConvention ??= new YesSql.Configuration().TableNameConvention);
 
                 // Configuring data access
                 services.AddSingleton(sp =>
                 {
-                    var shellSettings = sp.GetRequiredService<ShellSettings>();
+                    var shellSettings = sp.GetService<ShellSettings>();
 
                     // Before the setup, a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
                     if (shellSettings.State == TenantState.Uninitialized || shellSettings["DatabaseProvider"] == null)
@@ -61,7 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         return null;
                     }
 
-                    var yesSqlOptions = sp.GetRequiredService<IOptions<YesSqlOptions>>().Value;
+                    var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
                     var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions);
 
                     switch (shellSettings["DatabaseProvider"])
@@ -72,8 +72,8 @@ namespace Microsoft.Extensions.DependencyInjection
                                 .UseBlockIdGenerator();
                             break;
                         case DatabaseProviderValue.Sqlite:
-                            var shellOptions = sp.GetRequiredService<IOptions<ShellOptions>>().Value;
-                            var sqliteOptions = sp.GetRequiredService<IOptions<SqliteOptions>>().Value;
+                            var shellOptions = sp.GetService<IOptions<ShellOptions>>().Value;
+                            var sqliteOptions = sp.GetService<IOptions<SqliteOptions>>().Value;
 
                             var databaseFolder = SqliteHelper.GetDatabaseFolder(shellOptions, shellSettings.Name);
                             Directory.CreateDirectory(databaseFolder);
@@ -165,16 +165,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 CommandsPageSize = yesSqlOptions.CommandsPageSize,
                 QueryGatingEnabled = yesSqlOptions.QueryGatingEnabled,
                 ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
+                TableNameConvention = yesSqlOptions.TableNameConvention,
             };
 
             if (yesSqlOptions.IdGenerator != null)
             {
                 storeConfiguration.IdGenerator = yesSqlOptions.IdGenerator;
-            }
-
-            if (yesSqlOptions.TableNameConvention != null)
-            {
-                storeConfiguration.TableNameConvention = yesSqlOptions.TableNameConvention;
             }
 
             if (yesSqlOptions.IdentifierAccessorFactory != null)
