@@ -29105,6 +29105,9 @@ html[dir][data-theme=default] .bg-primary {
 html[data-theme=default] .bootstrap-select .popover-header .close {
   color: black;
 }
+html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
+  color: #212529 !important;
+}
 html[data-theme=default] .hint {
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -58520,6 +58523,9 @@ html[dir][data-theme=darkmode] .bg-primary {
 }
 html[dir][data-theme=darkmode] #mediaApp {
   background-color: #181a1b;
+}
+html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
+  color: #fff !important;
 }
 html[data-theme=darkmode] .blockquote-footer {
   color: #888;
