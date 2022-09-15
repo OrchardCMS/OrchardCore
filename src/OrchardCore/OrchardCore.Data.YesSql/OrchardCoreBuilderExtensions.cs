@@ -44,10 +44,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddTransient<IConfigureOptions<SqliteOptions>, SqliteOptionsConfiguration>();
 
                 // Adding supported databases
-                services.TryAddDataProvider(name: "Sql Server", value: DatabaseProviderName.SqlConnection, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
-                services.TryAddDataProvider(name: "Sqlite", value: DatabaseProviderName.Sqlite, hasConnectionString: false, hasTablePrefix: false, isDefault: true);
-                services.TryAddDataProvider(name: "MySql", value: DatabaseProviderName.MySql, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
-                services.TryAddDataProvider(name: "Postgres", value: DatabaseProviderName.Postgres, hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "Sql Server", value: DatabaseProviderValue.SqlConnection, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "Sqlite", value: DatabaseProviderValue.Sqlite, hasConnectionString: false, hasTablePrefix: false, isDefault: true);
+                services.TryAddDataProvider(name: "MySql", value: DatabaseProviderValue.MySql, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "Postgres", value: DatabaseProviderValue.Postgres, hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
 
                 services.Configure<YesSqlOptions>(options => options.TableNameConvention = new YesSql.Configuration().TableNameConvention);
 
@@ -67,12 +67,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     switch (shellSettings["DatabaseProvider"])
                     {
-                        case DatabaseProviderName.SqlConnection:
+                        case DatabaseProviderValue.SqlConnection:
                             storeConfiguration
                                 .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
                                 .UseBlockIdGenerator();
                             break;
-                        case DatabaseProviderName.Sqlite:
+                        case DatabaseProviderValue.Sqlite:
                             var shellOptions = sp.GetService<IOptions<ShellOptions>>();
                             var sqliteOptions = sp.GetService<IOptions<SqliteOptions>>()?.Value ?? new SqliteOptions();
                             var option = shellOptions.Value;
@@ -90,12 +90,12 @@ namespace Microsoft.Extensions.DependencyInjection
                                 .UseSqLite(connectionStringBuilder.ToString(), IsolationLevel.ReadUncommitted)
                                 .UseDefaultIdGenerator();
                             break;
-                        case DatabaseProviderName.MySql:
+                        case DatabaseProviderValue.MySql:
                             storeConfiguration
                                 .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
                                 .UseBlockIdGenerator();
                             break;
-                        case DatabaseProviderName.Postgres:
+                        case DatabaseProviderValue.Postgres:
                             storeConfiguration
                                 .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
                                 .UseBlockIdGenerator();

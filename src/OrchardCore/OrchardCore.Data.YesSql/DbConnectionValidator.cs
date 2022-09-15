@@ -59,7 +59,7 @@ public class DbConnectionValidator : IDbConnectionValidator
 
         if (!provider.HasConnectionString)
         {
-            if (provider.Value != DatabaseProviderName.Sqlite)
+            if (provider.Value != DatabaseProviderValue.Sqlite)
             {
                 return DbConnectionValidatorResult.DocumentTableNotFound;
             }
@@ -92,7 +92,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         }
         catch
         {
-            if (provider.Value != DatabaseProviderName.Sqlite)
+            if (provider.Value != DatabaseProviderValue.Sqlite)
             {
                 return DbConnectionValidatorResult.InvalidConnection;
             }
@@ -180,10 +180,10 @@ public class DbConnectionValidator : IDbConnectionValidator
     {
         return databaseProvider switch
         {
-            DatabaseProviderName.SqlConnection => new DbConnectionFactory<SqlConnection>(connectionString),
-            DatabaseProviderName.MySql => new DbConnectionFactory<MySqlConnection>(connectionString),
-            DatabaseProviderName.Sqlite => new DbConnectionFactory<SqliteConnection>(connectionString),
-            DatabaseProviderName.Postgres => new DbConnectionFactory<NpgsqlConnection>(connectionString),
+            DatabaseProviderValue.SqlConnection => new DbConnectionFactory<SqlConnection>(connectionString),
+            DatabaseProviderValue.MySql => new DbConnectionFactory<MySqlConnection>(connectionString),
+            DatabaseProviderValue.Sqlite => new DbConnectionFactory<SqliteConnection>(connectionString),
+            DatabaseProviderValue.Postgres => new DbConnectionFactory<NpgsqlConnection>(connectionString),
             _ => throw new ArgumentOutOfRangeException(nameof(databaseProvider), "Unsupported database provider"),
         };
     }
@@ -192,10 +192,10 @@ public class DbConnectionValidator : IDbConnectionValidator
     {
         ISqlDialect dialect = databaseProvider switch
         {
-            DatabaseProviderName.SqlConnection => new SqlServerDialect(),
-            DatabaseProviderName.MySql => new MySqlDialect(),
-            DatabaseProviderName.Sqlite => new SqliteDialect(),
-            DatabaseProviderName.Postgres => new PostgreSqlDialect(),
+            DatabaseProviderValue.SqlConnection => new SqlServerDialect(),
+            DatabaseProviderValue.MySql => new MySqlDialect(),
+            DatabaseProviderValue.Sqlite => new SqliteDialect(),
+            DatabaseProviderValue.Postgres => new PostgreSqlDialect(),
             _ => throw new ArgumentOutOfRangeException(nameof(databaseProvider), "Unsupported database provider"),
         };
 

@@ -118,7 +118,7 @@ namespace OrchardCore.Tenants.Services
                     errors.Add(new ModelError(nameof(TenantViewModel.ConnectionString), S["The provided connection string is invalid or server is unreachable."]));
                     break;
                 case DbConnectionValidatorResult.DocumentTableFound:
-                    if (databaseProvider == DatabaseProviderName.Sqlite)
+                    if (databaseProvider == DatabaseProviderValue.Sqlite)
                     {
                         errors.Add(new ModelError(String.Empty, S["The related database file is already in use."]));
                     }
