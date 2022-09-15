@@ -47,6 +47,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.TryAddDataProvider(name: "MySql", value: DatabaseProviderValue.MySql, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
                 services.TryAddDataProvider(name: "Postgres", value: DatabaseProviderValue.Postgres, hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
 
+                // Ensure a non null 'TableNameConvention' to be always used for `YesSql.Configuration`.
                 services.PostConfigure<YesSqlOptions>(o => o.TableNameConvention ??= new YesSql.Configuration().TableNameConvention);
 
                 // Configuring data access
