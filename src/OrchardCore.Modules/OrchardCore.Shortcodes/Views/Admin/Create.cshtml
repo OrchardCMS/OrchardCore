@@ -1,7 +1,7 @@
 @model ShortcodeTemplateViewModel
 @inject IDisplayManager<ShortcodeDescriptor> ShortcodeDescriptorDisplayManager
 @inject IShortcodeDescriptorManager ShortcodeDescriptorManager
-@{  
+@{
     var shortcodeDescriptors = await ShortcodeDescriptorManager.GetShortcodeDescriptors();
     var categories = shortcodeDescriptors
         .SelectMany(shortcodeDescriptor => shortcodeDescriptor.Categories ?? Enumerable.Empty<string>())
