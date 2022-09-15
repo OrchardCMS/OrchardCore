@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
@@ -64,17 +63,7 @@ public class DbConnectionValidator : IDbConnectionValidator
                 return DbConnectionValidatorResult.DocumentTableNotFound;
             }
 
-            var databaseFolder = Path.Combine(_shellOptions.ShellsApplicationDataPath, _shellOptions.ShellsContainerName, shellName);
-            var databaseFile = Path.Combine(databaseFolder, "yessql.db");
-
-            var connectionStringBuilder = new SqliteConnectionStringBuilder
-            {
-                DataSource = databaseFile,
-                Cache = SqliteCacheMode.Shared,
-                Pooling = _sqliteOptions.UseConnectionPooling
-            };
-
-            connectionString = connectionStringBuilder.ToString();
+            connectionString = SqliteHelper.GetConnectionString(_sqliteOptions, _shellOptions, shellName);
         }
 
         if (String.IsNullOrWhiteSpace(connectionString))

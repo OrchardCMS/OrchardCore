@@ -19,7 +19,6 @@ using YesSql.Provider.MySql;
 using YesSql.Provider.PostgreSql;
 using YesSql.Provider.Sqlite;
 using YesSql.Provider.SqlServer;
-using YesSql.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -54,7 +53,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 // Configuring data access
                 services.AddSingleton(sp =>
                 {
-                    var shellSettings = sp.GetService<ShellSettings>();
+                    var shellSettings = sp.GetRequiredService<ShellSettings>();
 
                     // Before the setup, a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
                     if (shellSettings.State == TenantState.Uninitialized || shellSettings["DatabaseProvider"] == null)
@@ -62,7 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         return null;
                     }
 
-                    var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
+                    var yesSqlOptions = sp.GetRequiredService<IOptions<YesSqlOptions>>().Value;
                     var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions);
 
                     switch (shellSettings["DatabaseProvider"])
@@ -73,21 +72,15 @@ namespace Microsoft.Extensions.DependencyInjection
                                 .UseBlockIdGenerator();
                             break;
                         case DatabaseProviderValue.Sqlite:
-                            var shellOptions = sp.GetService<IOptions<ShellOptions>>();
-                            var sqliteOptions = sp.GetService<IOptions<SqliteOptions>>()?.Value ?? new SqliteOptions();
-                            var option = shellOptions.Value;
-                            var databaseFolder = Path.Combine(option.ShellsApplicationDataPath, option.ShellsContainerName, shellSettings.Name);
-                            var databaseFile = Path.Combine(databaseFolder, "yessql.db");
-                            var connectionStringBuilder = new SqliteConnectionStringBuilder
-                            {
-                                DataSource = databaseFile,
-                                Cache = SqliteCacheMode.Shared,
-                                Pooling = sqliteOptions.UseConnectionPooling
-                            };
+                            var shellOptions = sp.GetRequiredService<IOptions<ShellOptions>>().Value;
+                            var sqliteOptions = sp.GetRequiredService<IOptions<SqliteOptions>>().Value;
 
+                            var databaseFolder = SqliteHelper.GetDatabaseFolder(shellOptions, shellSettings.Name);
                             Directory.CreateDirectory(databaseFolder);
+
+                            var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder);
                             storeConfiguration
-                                .UseSqLite(connectionStringBuilder.ToString(), IsolationLevel.ReadUncommitted)
+                                .UseSqLite(connectionString, IsolationLevel.ReadUncommitted)
                                 .UseDefaultIdGenerator();
                             break;
                         case DatabaseProviderValue.MySql:
