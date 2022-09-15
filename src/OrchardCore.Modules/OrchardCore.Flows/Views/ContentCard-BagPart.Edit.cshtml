@@ -14,14 +14,14 @@
 
 <div class="widget widget-editor card my-1@(collapsed ? " collapsed" : String.Empty)">
     <div class="widget-editor-header card-header text-muted py-1 ps-3 pe-1">
-        @if (Model.CanMove != false)
+        @if (Model.CanMove)
         {
             <div class="widget-editor-handle"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div>
         }
         <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
         <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand"><i class="fa fa-angle-@(Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left")" aria-hidden="true"></i></button>
         @T["{0} <span class=\"hint dashed\">{1}</span>", contentItem.DisplayText, contentType]
-        @if (Model.CanDelete != false)
+        @if (Model.CanDelete)
         {
             <div class="btn-group btn-group-sm float-end" role="group">
                 @* We don't render an Insert button as the container type is not known here *@
