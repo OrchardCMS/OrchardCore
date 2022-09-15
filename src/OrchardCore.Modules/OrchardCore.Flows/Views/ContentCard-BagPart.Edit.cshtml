@@ -5,15 +5,14 @@
 @{
     ContentItem contentItem = Model.ContentItem;
     var contentType = ContentDefinitionManager.GetTypeDefinition(contentItem.ContentType).DisplayName;
-    var collapsed = Model.Inline != true;
+    var collapsed = !Model.Inline;
     if (!ViewContext.ModelState.IsValid && ViewContext.ModelState.Keys.Any(key => key.StartsWith(Model.PrefixValue, StringComparison.OrdinalIgnoreCase)))
     {
-        // At this point we know that the at least one field in the bag has an error, esure that the bag is not collapsed
         collapsed = false;
     }
 }
 
-<div class="widget widget-editor card my-1 @(collapsed ? "collapsed" : "")">
+<div class="widget widget-editor card my-1@(collapsed ? " collapsed" : String.Empty)">
     <div class="widget-editor-header card-header text-muted py-1 ps-3 pe-1">
         @if (Model.CanMove != false)
         {
