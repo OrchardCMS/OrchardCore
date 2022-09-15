@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
-using OrchardCore.Data.YesSql.Abstractions;
+using OrchardCore.Data.YesSql;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
@@ -19,6 +19,7 @@ using YesSql.Provider.MySql;
 using YesSql.Provider.PostgreSql;
 using YesSql.Provider.Sqlite;
 using YesSql.Provider.SqlServer;
+using YesSql.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -48,18 +49,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.TryAddDataProvider(name: "MySql", value: DatabaseProviderName.MySql, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
                 services.TryAddDataProvider(name: "Postgres", value: DatabaseProviderName.Postgres, hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
 
-                // register ITableNameConvention
-                services.AddScoped(sp =>
-                {
-                    var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
-
-                    if (yesSqlOptions.TableNameConvention != null)
-                    {
-                        return yesSqlOptions.TableNameConvention;
-                    }
-
-                    return new YesSql.Configuration().TableNameConvention;
-                });
+                services.Configure<YesSqlOptions>(options => options.TableNameConvention = new YesSql.Configuration().TableNameConvention);
 
                 // Configuring data access
                 services.AddSingleton(sp =>
@@ -75,12 +65,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
                     var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions);
 
-                    if (!Enum.TryParse(shellSettings["DatabaseProvider"], out DatabaseProviderName providerName))
-                    {
-                        throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
-                    }
-
-                    switch (providerName)
+                    switch (shellSettings["DatabaseProvider"])
                     {
                         case DatabaseProviderName.SqlConnection:
                             storeConfiguration
@@ -121,11 +106,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     if (!String.IsNullOrEmpty(shellSettings["TablePrefix"]))
                     {
-                        // For backward compatibility, if the TablePrefixSeparator isn't set, we use _ as the default value.
-                        var seperator = shellSettings["TablePrefixSeparator"] ?? "_";
-
-                        var tablePrefix = shellSettings["TablePrefix"].Trim() + (seperator ?? String.Empty);
-
+                        var tablePrefix = shellSettings["TablePrefix"].Trim() + yesSqlOptions.TablePrefixSeparator;
                         storeConfiguration = storeConfiguration.SetTablePrefix(tablePrefix);
                     }
 

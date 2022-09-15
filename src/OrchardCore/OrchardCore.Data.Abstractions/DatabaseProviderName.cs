@@ -1,10 +1,9 @@
-﻿namespace OrchardCore.Data;
+namespace OrchardCore.Data;
 
-public enum DatabaseProviderName
+public static class DatabaseProviderName
 {
-    None,
-    SqlConnection,
-    Sqlite,
-    MySql,
-    Postgres,
+    public const string MySql = nameof(MySql);
+    public const string Postgres = nameof(Postgres);
+    public const string SqlConnection = nameof(SqlConnection);
+    public const string Sqlite = nameof(Sqlite);
 }

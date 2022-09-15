@@ -180,9 +180,8 @@ namespace OrchardCore.Tenants.Controllers
                 databaseProvider = model.DatabaseProvider;
             }
 
-            Enum.TryParse(databaseProvider, out DatabaseProviderName providerName);
-
-            var selectedProvider = _databaseProviders.FirstOrDefault(x => x.Value == providerName);
+            var selectedProvider = _databaseProviders.FirstOrDefault(provider =>
+                String.Equals(provider.Value, databaseProvider, StringComparison.OrdinalIgnoreCase));
 
             if (selectedProvider == null)
             {
