@@ -56,7 +56,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         {
                             var fieldType = fieldProvider.GetField(field);
 
-                            if (fieldType != null)
+                            if (fieldType != null && !contentItemType.HasField(fieldType.Name))
                             {
                                 if (_contentOptions.ShouldSkip(fieldType.Type, fieldType.Name))
                                 {
