@@ -99,8 +99,6 @@ namespace OrchardCore.Contents.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
-
             // This is used by the AdminMenus so needs to be passed into the options.
             if (!String.IsNullOrEmpty(contentTypeId))
             {
@@ -213,7 +211,7 @@ namespace OrchardCore.Contents.Controllers
 
                 options.ContentTypeOptions = new List<SelectListItem>
                 {
-                    new SelectListItem() { Text = S["All content types"], Value = "" }
+                    new SelectListItem() { Text = S["All content types"], Value = String.Empty }
                 };
 
                 foreach (var option in contentTypeOptions)
@@ -239,16 +237,7 @@ namespace OrchardCore.Contents.Controllers
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
             var routeData = new RouteData(options.RouteValues);
-
-            if (_pagerOptions.MaxPageSize > 0 && pager.PageSize > _pagerOptions.MaxPageSize)
-            {
-                pager.PageSize = _pagerOptions.MaxPageSize;
-            }
-            if (_pagerOptions.MaxPagedCount > 0 && pager.PageSize > _pagerOptions.MaxPagedCount)
-            {
-                pager.PageSize = _pagerOptions.MaxPagedCount;
-            }
-
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var pagerShape = (await New.Pager(pager)).TotalItemCount(_pagerOptions.MaxPagedCount > 0 ? _pagerOptions.MaxPagedCount : await query.CountAsync()).RouteData(routeData);
 
             // Load items so that loading handlers are invoked.
@@ -392,7 +381,7 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                await _notifier.SuccessAsync(String.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? H["Your content draft has been saved."]
                     : H["Your {0} draft has been saved.", typeDefinition.DisplayName]);
             });
@@ -511,7 +500,7 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                await _notifier.SuccessAsync(String.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? H["Your content draft has been saved."]
                     : H["Your {0} draft has been saved.", typeDefinition.DisplayName]);
             });
@@ -540,7 +529,7 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                await _notifier.SuccessAsync(String.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? H["Your content has been published."]
                     : H["Your {0} has been published.", typeDefinition.DisplayName]);
             });
@@ -634,7 +623,7 @@ namespace OrchardCore.Contents.Controllers
 
                 await _contentManager.DiscardDraftAsync(contentItem);
 
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                await _notifier.SuccessAsync(String.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? H["The draft has been removed."]
                     : H["The {0} draft has been removed.", typeDefinition.DisplayName]);
             }
@@ -684,7 +673,7 @@ namespace OrchardCore.Contents.Controllers
 
             var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-            if (string.IsNullOrEmpty(typeDefinition.DisplayName))
+            if (String.IsNullOrEmpty(typeDefinition.DisplayName))
             {
                 await _notifier.SuccessAsync(H["That content has been published."]);
             }

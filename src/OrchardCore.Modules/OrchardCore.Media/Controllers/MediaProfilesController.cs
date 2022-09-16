@@ -61,7 +61,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
             var mediaProfiles = mediaProfilesDocument.MediaProfiles.ToList();
