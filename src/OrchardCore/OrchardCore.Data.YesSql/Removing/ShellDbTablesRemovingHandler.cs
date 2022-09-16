@@ -45,7 +45,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         }
 
         // In case of 'Sqlite' the validator always returns 'DocumentTableNotFound',
-        // which may be not true, so for now always try to remove the database file.
+        // which may not be true, so for now always try to remove the database file.
         if (context.ShellSettings.State == TenantState.Uninitialized &&
             context.ShellSettings["DatabaseProvider"] != DataProviderName.Sqlite)
         {
