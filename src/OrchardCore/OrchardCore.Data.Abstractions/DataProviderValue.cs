@@ -1,6 +1,6 @@
 namespace OrchardCore.Data;
 
-public static class DataProviderName
+public static class DataProviderValue
 {
     public const string MySql = nameof(MySql);
     public const string Postgres = nameof(Postgres);

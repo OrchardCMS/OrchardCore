@@ -47,7 +47,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         // In case of 'Sqlite' the validator always returns 'DocumentTableNotFound',
         // which may not be true, so for now always try to remove the database file.
         if (context.ShellSettings.State == TenantState.Uninitialized &&
-            context.ShellSettings["DatabaseProvider"] != DataProviderName.Sqlite)
+            context.ShellSettings["DatabaseProvider"] != DataProviderValue.Sqlite)
         {
             // An 'Uninitialized' tenant with a valid connection, and at least the 'Document' table,
             // probably means that the tenant setup failed, and that some tables need to be cleanup.
@@ -90,7 +90,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
             var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
 
             using var connection = store.Configuration.ConnectionFactory.CreateConnection();
-            if (shellSettings["DatabaseProvider"] == DataProviderName.Sqlite && connection is SqliteConnection sqliteConnection)
+            if (shellSettings["DatabaseProvider"] == DataProviderValue.Sqlite && connection is SqliteConnection sqliteConnection)
             {
                 // Clear the pool to unlock the file and remove it.
                 SqliteConnection.ClearPool(sqliteConnection);
@@ -122,7 +122,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
     private async Task<ShellDbTablesInfo> GetTablesToRemoveAsync(ShellSettings shellSettings)
     {
         var shellDbTablesInfo = new ShellDbTablesInfo();
-        if (shellSettings["DatabaseProvider"] == DataProviderName.Sqlite)
+        if (shellSettings["DatabaseProvider"] == DataProviderValue.Sqlite)
         {
             // The whole database file will be removed.
             return shellDbTablesInfo;
