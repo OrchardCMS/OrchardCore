@@ -61,12 +61,12 @@ namespace OrchardCore.Liquid.Services
                 }
             }
 
-            var length = Math.Min(slug.Length - GetTrailingHypenCount(slug.AsSpan()), MaxLength);
+            var length = Math.Min(slug.Length - GetTrailingHyphenCount(slug.AsSpan()), MaxLength);
 
             return new string(slug.AsSpan()[..length]).Normalize(NormalizationForm.FormC);
         }
 
-        private static int GetTrailingHypenCount(ReadOnlySpan<char> input)
+        private static int GetTrailingHyphenCount(ReadOnlySpan<char> input)
         {
             var hyphenCount = 0;
             for (var i = input.Length - 1; i >= 0; i--)
