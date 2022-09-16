@@ -90,7 +90,7 @@ namespace OrchardCore.Liquid
                 .UseDisplayDriver<LiquidPartDisplayDriver>()
                 .AddHandler<LiquidPartHandler>();
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
         }
     }
