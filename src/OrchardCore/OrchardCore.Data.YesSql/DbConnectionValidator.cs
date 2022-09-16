@@ -188,8 +188,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         };
 
         var prefix = String.Empty;
-
-        if (!String.IsNullOrEmpty(tablePrefix))
+        if (!String.IsNullOrWhiteSpace(tablePrefix))
         {
             prefix = tablePrefix.Trim() + _yesSqlOptions.TablePrefixSeparator;
         }
