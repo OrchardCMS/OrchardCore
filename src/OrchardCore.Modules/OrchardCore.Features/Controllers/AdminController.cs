@@ -16,7 +16,7 @@ using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
 using OrchardCore.Routing;
 
-namespace OrchardCore.Features.Controllers
+namespace OrchardCore.Features.Controllers 
 {
     public class AdminController : Controller
     {
