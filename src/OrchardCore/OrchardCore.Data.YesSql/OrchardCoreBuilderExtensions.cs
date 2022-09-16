@@ -97,7 +97,7 @@ namespace Microsoft.Extensions.DependencyInjection
                             throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
                     }
 
-                    if (!String.IsNullOrEmpty(shellSettings["TablePrefix"]))
+                    if (!String.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
                     {
                         var tablePrefix = shellSettings["TablePrefix"].Trim() + yesSqlOptions.TablePrefixSeparator;
                         storeConfiguration = storeConfiguration.SetTablePrefix(tablePrefix);

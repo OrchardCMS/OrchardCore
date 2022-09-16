@@ -30,12 +30,10 @@ namespace OrchardCore.Indexing.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
-        private readonly string _tablePrefix;
         private readonly List<IndexingTask> _tasksQueue = new List<IndexingTask>();
 
         public IndexingTaskManager(
             IClock clock,
-            ShellSettings shellSettings,
             IStore store,
             IDbConnectionAccessor dbConnectionAccessor,
             IHttpContextAccessor httpContextAccessor,
@@ -46,13 +44,6 @@ namespace OrchardCore.Indexing.Services
             _dbConnectionAccessor = dbConnectionAccessor;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
-
-            _tablePrefix = shellSettings["TablePrefix"];
-
-            if (!String.IsNullOrEmpty(_tablePrefix))
-            {
-                _tablePrefix += '_';
-            }
         }
 
         public Task CreateTaskAsync(ContentItem contentItem, IndexingTaskTypes type)
@@ -104,12 +95,6 @@ namespace OrchardCore.Indexing.Services
             var dbConnectionAccessor = serviceProvider.GetService<IDbConnectionAccessor>();
             var shellSettings = serviceProvider.GetService<ShellSettings>();
             var logger = serviceProvider.GetService<ILogger<IndexingTaskManager>>();
-            var tablePrefix = shellSettings["TablePrefix"];
-
-            if (!String.IsNullOrEmpty(tablePrefix))
-            {
-                tablePrefix += '_';
-            }
 
             var contentItemIds = new HashSet<string>();
 
@@ -130,7 +115,7 @@ namespace OrchardCore.Indexing.Services
 
             // At this point, content items ids should be unique in localQueue
             var ids = localQueue.Select(x => x.ContentItemId).ToArray();
-            var table = $"{tablePrefix}{nameof(IndexingTask)}";
+            var table = $"{session.Store.Configuration.TablePrefix}{nameof(IndexingTask)}";
 
             using (var connection = dbConnectionAccessor.CreateConnection())
             {
@@ -188,7 +173,7 @@ namespace OrchardCore.Indexing.Services
                 try
                 {
                     var dialect = _store.Configuration.SqlDialect;
-                    var sqlBuilder = dialect.CreateBuilder(_tablePrefix);
+                    var sqlBuilder = dialect.CreateBuilder(_store.Configuration.TablePrefix);
 
                     sqlBuilder.Select();
                     sqlBuilder.Table(nameof(IndexingTask));
