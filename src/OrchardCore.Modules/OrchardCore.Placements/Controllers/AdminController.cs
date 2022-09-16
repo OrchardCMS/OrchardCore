@@ -61,7 +61,7 @@ namespace OrchardCore.Placements.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var shapeTypes = await _placementsManager.ListShapePlacementsAsync();
 

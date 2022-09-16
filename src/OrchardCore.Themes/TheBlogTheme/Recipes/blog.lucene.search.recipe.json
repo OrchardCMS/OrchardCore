@@ -73,6 +73,12 @@
           ]
         }
       ]
+    },
+    {
+      "name": "lucene-index-rebuild",
+      "Indices": [
+        "Search"
+      ]
     }
   ]
 }

@@ -61,7 +61,7 @@ namespace OrchardCore.OpenId.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var count = await _scopeManager.CountAsync();
 
             var model = new OpenIdScopeIndexViewModel

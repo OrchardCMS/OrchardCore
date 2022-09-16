@@ -218,7 +218,7 @@ namespace OrchardCore.Flows.Drivers
             if (settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0)
             {
                 contentTypes = _contentDefinitionManager.ListTypeDefinitions()
-                    .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotypeOrDefault(), StringComparer.OrdinalIgnoreCase));
+                    .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotype(), StringComparer.OrdinalIgnoreCase));
             }
             else if (settings.ContainedContentTypes != null && settings.ContainedContentTypes.Length > 0)
             {
