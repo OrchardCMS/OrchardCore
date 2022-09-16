@@ -40,6 +40,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 var displayMode = _typePartDefinition.DisplayMode();
                 var hasDisplayMode = !String.IsNullOrEmpty(displayMode);
                 var isDisplayModeShapeType = shapeType == partType + DisplaySeparator + displayMode;
+                var stereotype = _typePartDefinition.ContentTypeDefinition.GetStereotype() ?? String.Empty;
 
                 // If the shape type and the field type only differ by the display mode
                 if (hasDisplayMode && isDisplayModeShapeType)
@@ -61,8 +62,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 result.Displaying(ctx =>
                 {
-                    var stereotype = _typePartDefinition.ContentTypeDefinition.GetStereotype() ?? String.Empty;
-
                     string[] displayTypes;
 
                     if (editorPartType == shapeType)
