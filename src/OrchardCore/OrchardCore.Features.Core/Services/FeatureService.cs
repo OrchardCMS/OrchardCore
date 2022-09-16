@@ -36,6 +36,7 @@ public class FeatureService
 
         return (await GetAvailableFeatures()).FirstOrDefault(feature => feature.Id == id);
     }
+
     public async Task<IEnumerable<IFeatureInfo>> GetAvailableFeatures(string[] ids)
     {
         if (ids == null || ids.Length == 0)
