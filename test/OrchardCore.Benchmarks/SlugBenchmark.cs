@@ -17,19 +17,20 @@ namespace OrchardCore.Benchmark
         /*
          * Summary 24th December 2021
          *
-         * BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19042.1415 (20H2/October2020Update)
+         * BenchmarkDotNet=v0.13.2, OS=Windows 10 (10.0.19044.2006/21H2/November2021Update)
          * Intel Core i7-3687U CPU 2.10GHz(Ivy Bridge), 1 CPU, 4 logical and 2 physical cores
-         * .NET SDK= 6.0.100
+         * .NET SDK= 6.0.301
          *
-         * [Host]   : .NET 6.0.0 (6.0.21.52210), X64 RyuJIT
-         * ShortRun : .NET 6.0.0 (6.0.21.52210), X64 RyuJIT
+         * [Host]     : .NET 6.0.6 (6.0.622.26707), X64 RyuJIT AVX
+         * DefaultJob : .NET 6.0.6 (6.0.622.26707), X64 RyuJIT AVX
          *
          * Job=ShortRun IterationCount = 3  LaunchCount=1
          * WarmupCount=3
          * 
-         * |          Method |     Mean |     Error |    StdDev |  Gen 0 | Allocated |
-         * |---------------- |---------:|----------:|----------:|-------:|----------:|
-         * | EvaluateSlugify | 1.477 us | 0.5187 us | 0.0284 us | 0.2174 |     456 B |
+         * |                       Method |        Mean |     Error |    StdDev |   Gen0 | Allocated |
+         * |----------------------------- |------------:|----------:|----------:|-------:|----------:|
+         * | EvaluateSlugifyWithShortSlug |    782.3 ns |   5.05 ns |   4.73 ns | 0.0801 |     168 B |
+         * |  EvaluateSlugifyWithLongSlug | 11,815.4 ns | 224.44 ns | 249.46 ns | 1.2054 |    2528 B |
          */
 
         [Benchmark]
