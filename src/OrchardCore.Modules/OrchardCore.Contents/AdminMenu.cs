@@ -8,7 +8,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Admin.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Security;
 using OrchardCore.Entities;
@@ -56,7 +56,7 @@ namespace OrchardCore.Contents
             }
 
             var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
-            var contentTypes = contentTypeDefinitions.Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
+            var contentTypes = contentTypeDefinitions.Where(ctd => ctd.IsCreatable()).OrderBy(ctd => ctd.DisplayName);
             await builder.AddAsync(S["Content"], NavigationConstants.AdminMenuContentPosition, async content =>
             {
                 content.AddClass("content").Id("content");

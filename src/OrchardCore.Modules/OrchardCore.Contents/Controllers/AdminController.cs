@@ -15,7 +15,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
@@ -91,7 +90,7 @@ namespace OrchardCore.Contents.Controllers
             string contentTypeId = "")
         {
             var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions()
-                    .Where(ctd => IsCreatable(ctd))
+                    .Where(ctd => ctd.IsCreatable())
                     .OrderBy(ctd => ctd.DisplayName);
 
             if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ViewContent, contentTypeDefinitions, _contentManager))
@@ -124,7 +123,7 @@ namespace OrchardCore.Contents.Controllers
                 var creatableList = new List<SelectListItem>();
 
                 // Allows non creatable types to be created by another admin page.
-                if (IsCreatable(contentTypeDefinition) || options.CanCreateSelectedContentType)
+                if (contentTypeDefinition.IsCreatable() || options.CanCreateSelectedContentType)
                 {
                     var contentItem = await CreateContentItemForOwnedByCurrentAsync(contentTypeDefinition.Name);
 
@@ -146,7 +145,7 @@ namespace OrchardCore.Contents.Controllers
                     {
                         var contentItem = await CreateContentItemForOwnedByCurrentAsync(contentTypeDefinition.Name);
 
-                        if (IsCreatable(contentTypeDefinition) && await IsAuthorizedAsync(CommonPermissions.EditContent, contentItem))
+                        if (contentTypeDefinition.IsCreatable() && await IsAuthorizedAsync(CommonPermissions.EditContent, contentItem))
                         {
                             creatableList.Add(new SelectListItem(contentTypeDefinition.DisplayName, contentTypeDefinition.Name));
                         }
@@ -192,7 +191,7 @@ namespace OrchardCore.Contents.Controllers
 
                 foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
                 {
-                    if (!ctd.GetSettings<ContentTypeSettings>().Listable)
+                    if (!ctd.IsListable())
                     {
                         continue;
                     }
@@ -713,11 +712,6 @@ namespace OrchardCore.Contents.Controllers
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
-        }
-
-        private static bool IsCreatable(ContentTypeDefinition contentTypeDefinition)
-        {
-            return contentTypeDefinition.GetSettings<ContentTypeSettings>().Creatable;
         }
 
         private async Task<ContentItem> CreateContentItemForOwnedByCurrentAsync(string contentType)
