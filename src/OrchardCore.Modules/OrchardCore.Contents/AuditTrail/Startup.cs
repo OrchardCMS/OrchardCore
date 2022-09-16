@@ -36,7 +36,7 @@ namespace OrchardCore.Contents.AuditTrail
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddContentPart<AuditTrailPart>()
                 .UseDisplayDriver<AuditTrailPartDisplayDriver>();
 
