@@ -6,6 +6,7 @@
     ContentItem contentItem = Model.ContentItem;
     var contentType = ContentDefinitionManager.GetTypeDefinition(contentItem.ContentType).DisplayName;
     var collapsed = !Model.Inline;
+
     if (!ViewContext.ModelState.IsValid && ViewContext.ModelState.Keys.Any(key => key.StartsWith(Model.PrefixValue, StringComparison.OrdinalIgnoreCase)))
     {
         collapsed = false;
