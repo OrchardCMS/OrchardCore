@@ -5,7 +5,7 @@ using OrchardCore.Security;
 
 namespace OrchardCore.Users.Services;
 
-public class EmptyRoleStore : IRoleStore<IRole>
+public class NullRoleStore : IRoleStore<IRole>
 {
     public Task<IdentityResult> CreateAsync(IRole role, CancellationToken cancellationToken)
     {

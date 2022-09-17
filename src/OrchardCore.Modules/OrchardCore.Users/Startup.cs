@@ -29,7 +29,6 @@ using OrchardCore.Recipes.Services;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Security.Services;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Setup.Events;
@@ -166,7 +165,6 @@ namespace OrchardCore.Users
             // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
             // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
             services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
-
             services.TryAddScoped<UserStore>();
             services.TryAddScoped<IUserStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserRoleStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
@@ -178,8 +176,7 @@ namespace OrchardCore.Users
             services.TryAddScoped<IUserAuthenticationTokenStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
 
             services.TryAddScoped<RoleManager<IRole>>();
-            services.TryAddScoped<IRoleStore<IRole>, EmptyRoleStore>();
-            services.TryAddScoped<IRoleService, EmptyRoleService>();
+            services.TryAddScoped<IRoleStore<IRole>, NullRoleStore>();
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -207,12 +204,9 @@ namespace OrchardCore.Users
             services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
             services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
 
-            services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
-
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<ICommandHandler, UserCommands>();
-            services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
             services.AddScoped<IExternalLoginEventHandler, ScriptExternalLoginEventHandler>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -252,6 +246,28 @@ namespace OrchardCore.Users
             services.AddScoped<IUserEventHandler, UserDisabledEventHandler>();
 
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
+        }
+    }
+
+    [Feature("OrchardCore.Users")]
+    [RequireFeatures("OrchardCore.Roles")]
+    public class RolesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<RoleBaseUserStore>();
+            services.AddScoped<IUserStore<IUser>>(sp => sp.GetRequiredService<RoleBaseUserStore>());
+            services.AddScoped<IUserRoleStore<IUser>>(sp => sp.GetRequiredService<RoleBaseUserStore>());
+            services.AddScoped<IUserPasswordStore<IUser>>(sp => sp.GetRequiredService<RoleBaseUserStore>());
+            services.AddScoped<IUserEmailStore<IUser>>(sp => sp.GetRequiredService<RoleBaseUserStore>());
+            services.AddScoped<IUserSecurityStampStore<IUser>>(sp => sp.GetRequiredService<RoleBaseUserStore>());
+            services.AddScoped<IUserLoginStore<IUser>>(sp => sp.GetRequiredService<RoleBaseUserStore>());
+            services.AddScoped<IUserClaimStore<IUser>>(sp => sp.GetRequiredService<RoleBaseUserStore>());
+            services.AddScoped<IUserAuthenticationTokenStore<IUser>>(sp => sp.GetRequiredService<RoleBaseUserStore>());
+
+            services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
+            services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
+            services.AddScoped<IPermissionProvider, RolePermissions>();
         }
     }
 
