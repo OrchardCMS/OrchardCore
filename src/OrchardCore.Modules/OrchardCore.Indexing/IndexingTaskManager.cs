@@ -104,12 +104,6 @@ namespace OrchardCore.Indexing.Services
             var dbConnectionAccessor = serviceProvider.GetService<IDbConnectionAccessor>();
             var shellSettings = serviceProvider.GetService<ShellSettings>();
             var logger = serviceProvider.GetService<ILogger<IndexingTaskManager>>();
-            var tablePrefix = shellSettings["TablePrefix"];
-
-            if (!String.IsNullOrEmpty(tablePrefix))
-            {
-                tablePrefix += '_';
-            }
 
             var contentItemIds = new HashSet<string>();
 
@@ -130,7 +124,7 @@ namespace OrchardCore.Indexing.Services
 
             // At this point, content items ids should be unique in localQueue
             var ids = localQueue.Select(x => x.ContentItemId).ToArray();
-            var table = $"{tablePrefix}{nameof(IndexingTask)}";
+            var table = $"{session.Store.Configuration.TablePrefix}{nameof(IndexingTask)}";
 
             using (var connection = dbConnectionAccessor.CreateConnection())
             {

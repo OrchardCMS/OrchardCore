@@ -155,14 +155,10 @@ namespace OrchardCore.Search.Lucene
                 var dbConnectionAccessor = scope.ServiceProvider.GetService<IDbConnectionAccessor>();
                 var shellSettings = scope.ServiceProvider.GetService<ShellSettings>();
                 var logger = scope.ServiceProvider.GetService<ILogger<Migrations>>();
-                var tablePrefix = shellSettings["TablePrefix"];
+                var tablePrefix = session.Store.Configuration.TablePrefix;
+                var documentTableName = session.Store.Configuration.TableNameConvention.GetDocumentTable();
 
-                if (!String.IsNullOrEmpty(tablePrefix))
-                {
-                    tablePrefix += '_';
-                }
-
-                var table = $"{tablePrefix}{nameof(Document)}";
+                var table = $"{session.Store.Configuration.TablePrefix}{documentTableName}";
 
                 using (var connection = dbConnectionAccessor.CreateConnection())
                 {
