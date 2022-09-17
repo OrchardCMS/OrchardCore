@@ -7,7 +7,7 @@
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
             <li><h6 class="dropdown-header">@T["Signed in as"]<span class="ms-1 font-weight-bold">@User.Identity.Name</span></h6></li>
             <li><hr class="dropdown-divider" /></li>
-            @if (await AuthorizationService.AuthorizeAsync(User, Permissions.EditOwnUserInformation))
+            @if (await AuthorizationService.AuthorizeAsync(User, Permissions.ManageOwnUserInformation))
             {
                 <li><a class="dropdown-item" asp-area="OrchardCore.Users" asp-action="Edit" asp-controller="Admin" asp-route-returnUrl="@FullRequestPath"><span><i class="far fa-address-card" aria-hidden="true"></i></span>&nbsp;<span> @T["Profile"]</span></a></li>
             }

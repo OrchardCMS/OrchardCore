@@ -57,7 +57,7 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
 
             if (String.Equals(requirement.Permission.Name, CommonPermissions.EditUsers.Name, StringComparison.OrdinalIgnoreCase)
                 && user.UserId != null && user.UserId.Equals(currentUserId, StringComparison.OrdinalIgnoreCase)
-                && await _authorizationService.AuthorizeAsync(context.User, Permissions.EditOwnUserInformation))
+                && await _authorizationService.AuthorizeAsync(context.User, Permissions.ManageOwnUserInformation))
             {
                 context.Succeed(requirement);
 
@@ -123,7 +123,13 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
         }
 
         if (String.Equals(permission.Name, CommonPermissions.AssignRole.Name, StringComparison.OrdinalIgnoreCase)
-            && await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.CreateAssignUserToRolePermission(roleName)))
+            && await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.CreateAssignUsersToRolePermission(roleName)))
+        {
+            return true;
+        }
+
+        if (String.Equals(permission.Name, CommonPermissions.ManageUsers.Name, StringComparison.OrdinalIgnoreCase)
+            && await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.CreatePermissionForManageUsersInRole(roleName)))
         {
             return true;
         }

@@ -32,7 +32,9 @@ public class UserRolePermissions : IPermissionProvider
 
             list.Add(CommonPermissions.CreateDeleteUsersInRolePermission(role));
 
-            list.Add(CommonPermissions.CreateAssignUserToRolePermission(role));
+            list.Add(CommonPermissions.CreateAssignUsersToRolePermission(role));
+
+            list.Add(CommonPermissions.CreatePermissionForManageUsersInRole(role));
         }
 
         return list;

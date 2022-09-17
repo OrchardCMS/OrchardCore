@@ -107,7 +107,7 @@ namespace OrchardCore.Users.Drivers
 
         private async Task<bool> CanEditUserInfoAsync(User user)
         {
-            return !IsCurrentUser(user) || await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.EditOwnUserInformation);
+            return !IsCurrentUser(user) || await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserInformation);
         }
 
         private bool IsCurrentUser(User user)

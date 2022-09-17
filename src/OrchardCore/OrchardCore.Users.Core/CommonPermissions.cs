@@ -16,11 +16,11 @@ namespace OrchardCore.Users
         /// </summary>
         public static readonly Permission ViewUsers = new("View Users", "View user's profile", new[] { ManageUsers });
 
-        public static readonly Permission EditUsers = new(nameof(EditUsers), "Edit any user", new[] { ManageUsers }, true);
-        public static readonly Permission DeleteUsers = new(nameof(DeleteUsers), "Delete any user", new[] { ManageUsers }, true);
-        public static readonly Permission ListUsers = new(nameof(ListUsers), "List all Users", new[] { EditUsers, DeleteUsers });
-        public static readonly Permission AssignRole = new(nameof(AssignRole), "Assign any role", new[] { EditUsers }, true);
-        public static readonly Permission ManageUserProfileSettings = new(nameof(ManageUserProfileSettings), "Manage user profile settings", new[] { ManageUsers }, true);
+        public static readonly Permission EditUsers = new("EditUsers", "Edit any user", new[] { ManageUsers }, true);
+        public static readonly Permission DeleteUsers = new("DeleteUsers", "Delete any user", new[] { ManageUsers }, true);
+        public static readonly Permission ListUsers = new("ListUsers", "List all Users", new[] { EditUsers, DeleteUsers });
+        public static readonly Permission AssignRole = new("AssignRole", "Assign any role", new[] { EditUsers }, true);
+        public static readonly Permission ManageUserProfileSettings = new("ManageUserProfileSettings", "Manage user profile settings", new[] { ManageUsers }, true);
 
         public static Permission CreateListUsersInRolePermission(string name) =>
             CreateDynamicPermission(name, new Permission("ListUsersInRole_{0}", "List users in role - {0}", new[] { ListUsers }));
@@ -31,18 +31,13 @@ namespace OrchardCore.Users
         public static Permission CreateDeleteUsersInRolePermission(string name) =>
             CreateDynamicPermission(name, new Permission("DeleteUsersInRole_{0}", "Delete users in role - {0}", new[] { DeleteUsers }, true));
 
-        public static Permission CreateAssignUserToRolePermission(string name) =>
-            CreatePermissionForManageUsersInRole(name);
+        public static Permission CreateAssignUsersToRolePermission(string name) =>
+            CreateDynamicPermission(name, new Permission("AssignUsersInRole_{0}", "Delete users in role - {0}", new[] { AssignRole }, true));
+
+        public static Permission CreatePermissionForManageUsersInRole(string name) =>
+            CreateDynamicPermission(name, new Permission("ManageUsersInRole_{0}", "Manage users to {0} role", new[] { ManageUsers }, true));
 
         // Dynamic permission template.
-        private static readonly Permission AssignUserToRole = new("ManageUsersInRole_{0}", "Assign users to {0} role", new[] { AssignRole }, true);
-
-        private static Permission CreatePermissionForManageUsersInRole(string name)
-            => new(
-                    String.Format(AssignUserToRole.Name, name),
-                    String.Format(AssignUserToRole.Description, name),
-                    AssignUserToRole.ImpliedBy
-                );
 
         private static Permission CreateDynamicPermission(string name, Permission permission)
             => new(
