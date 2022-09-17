@@ -140,11 +140,13 @@ namespace OrchardCore.Search.Lucene
 
         public async Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
-            await WriteAsync(indexName, async writer =>
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
+
+            await WriteAsync(indexName, writer =>
             {
                 foreach (var indexDocument in indexDocuments)
                 {
-                    writer.AddDocument(await CreateLuceneDocument(indexName, indexDocument));
+                    writer.AddDocument(CreateLuceneDocument(indexName, indexDocument, luceneIndexSettings));
                 }
 
                 writer.Commit();
@@ -192,10 +194,8 @@ namespace OrchardCore.Search.Lucene
             return new ReadOnlyDictionary<string, DateTime>(_timestamps);
         }
 
-        private async Task<Document> CreateLuceneDocument(string indexName, DocumentIndex documentIndex)
+        private Document CreateLuceneDocument(string indexName, DocumentIndex documentIndex, LuceneIndexSettings indexSettings)
         {
-            var indexSettings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
-
             var doc = new Document
             {
                 // Always store the content item id and version id
