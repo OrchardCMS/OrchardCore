@@ -194,7 +194,7 @@ namespace OrchardCore.Users
             services.AddSingleton<IIndexProvider, UserIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByClaimIndexProvider>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalProviderFactory>();

@@ -67,7 +67,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
 
             var shortcodeTemplates = shortcodeTemplatesDocument.ShortcodeTemplates.ToList();

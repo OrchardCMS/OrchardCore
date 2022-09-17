@@ -80,6 +80,8 @@ namespace OrchardCore.Lucene
             services.AddScoped<IQuerySource, LuceneQuerySource>();
             services.AddScoped<LuceneQuerySource>();
             services.AddRecipeExecutionStep<LuceneIndexStep>();
+            services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
+            services.AddRecipeExecutionStep<LuceneIndexResetStep>();
 
             services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
             services.AddShapeAttributes<SearchShapes>();
@@ -145,6 +147,14 @@ namespace OrchardCore.Lucene
             services.AddTransient<IDeploymentSource, LuceneSettingsDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneSettingsDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneSettingsDeploymentStepDriver>();
+
+            services.AddTransient<IDeploymentSource, LuceneIndexRebuildDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneIndexRebuildDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneIndexRebuildDeploymentStepDriver>();
+
+            services.AddTransient<IDeploymentSource, LuceneIndexResetDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneIndexResetDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneIndexResetDeploymentStepDriver>();
         }
     }
 

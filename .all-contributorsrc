@@ -2598,6 +2598,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "vahpetr",
+      "name": "Vasilev Pyotr",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10128393?v=4",
+      "profile": "https://github.com/vahpetr",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "aderderian",
+      "name": "Arra Derderian",
+      "avatar_url": "https://avatars.githubusercontent.com/u/868165?v=4",
+      "profile": "https://github.com/aderderian",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

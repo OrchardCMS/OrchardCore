@@ -9,7 +9,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
@@ -88,7 +87,7 @@ namespace OrchardCore.Users.Drivers
         private IEnumerable<ContentTypeDefinition> GetContentTypeDefinitions()
             => _contentDefinitionManager
                 .ListTypeDefinitions()
-                .Where(x => x.GetSettings<ContentTypeSettings>().Stereotype == "CustomUserSettings");
+                .Where(x => x.GetStereotype() == "CustomUserSettings");
 
         private async Task<ContentItem> GetUserSettingsAsync(User user, ContentTypeDefinition settingsType, Action isNew = null)
         {

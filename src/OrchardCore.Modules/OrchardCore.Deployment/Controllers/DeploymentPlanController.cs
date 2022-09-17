@@ -72,7 +72,7 @@ namespace OrchardCore.Deployment.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var deploymentPlans = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
 
