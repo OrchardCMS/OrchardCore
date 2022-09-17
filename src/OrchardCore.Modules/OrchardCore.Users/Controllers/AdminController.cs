@@ -116,7 +116,7 @@ namespace OrchardCore.Users.Controllers
 
             var routeData = new RouteData(options.RouteValues);
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var count = await users.CountAsync();
 

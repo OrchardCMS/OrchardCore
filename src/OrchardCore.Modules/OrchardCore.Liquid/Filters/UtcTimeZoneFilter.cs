@@ -7,11 +7,11 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Liquid.Filters
 {
-    public class TimeZoneFilter : ILiquidFilter
+    public class UtcTimeZoneFilter : ILiquidFilter
     {
         private readonly ILocalClock _localClock;
 
-        public TimeZoneFilter(ILocalClock localClock)
+        public UtcTimeZoneFilter(ILocalClock localClock)
         {
             _localClock = localClock;
         }
@@ -43,17 +43,15 @@ namespace OrchardCore.Liquid.Filters
                     case DateTime dateTime:
                         value = dateTime;
                         break;
-
                     case DateTimeOffset dateTimeOffset:
                         value = dateTimeOffset;
                         break;
-
                     default:
                         return NilValue.Instance;
                 }
             }
 
-            return new ObjectValue(await _localClock.ConvertToLocalAsync(value));
+            return new ObjectValue(await _localClock.ConvertToUtcAsync(value.DateTime));
         }
     }
 }

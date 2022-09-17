@@ -100,7 +100,7 @@ namespace OrchardCore.Search.Lucene.Controllers
 
             var indexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName });
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var count = indexes.Count();
             var results = indexes;
 

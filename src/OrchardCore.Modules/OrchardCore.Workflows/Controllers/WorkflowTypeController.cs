@@ -89,7 +89,7 @@ namespace OrchardCore.Workflows.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             if (options == null)
             {
