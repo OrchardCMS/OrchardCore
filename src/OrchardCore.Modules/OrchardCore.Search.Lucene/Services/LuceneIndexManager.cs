@@ -146,7 +146,7 @@ namespace OrchardCore.Search.Lucene
             {
                 foreach (var indexDocument in indexDocuments)
                 {
-                    writer.AddDocument(CreateLuceneDocument(indexName, indexDocument, luceneIndexSettings));
+                    writer.AddDocument(CreateLuceneDocument(indexDocument, luceneIndexSettings));
                 }
 
                 writer.Commit();
@@ -194,7 +194,7 @@ namespace OrchardCore.Search.Lucene
             return new ReadOnlyDictionary<string, DateTime>(_timestamps);
         }
 
-        private Document CreateLuceneDocument(string indexName, DocumentIndex documentIndex, LuceneIndexSettings indexSettings)
+        private Document CreateLuceneDocument(DocumentIndex documentIndex, LuceneIndexSettings indexSettings)
         {
             var doc = new Document
             {
