@@ -165,6 +165,7 @@ namespace OrchardCore.Users
             // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
             // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
             services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
+
             services.TryAddScoped<UserStore>();
             services.TryAddScoped<IUserStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserRoleStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
@@ -267,7 +268,7 @@ namespace OrchardCore.Users
 
             services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
             services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
-            services.AddScoped<IPermissionProvider, RolePermissions>();
+            services.AddScoped<IPermissionProvider, UserRolePermissions>();
         }
     }
 

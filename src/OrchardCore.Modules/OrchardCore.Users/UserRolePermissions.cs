@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,11 +7,11 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Users
 {
-    public class RolePermissions : IPermissionProvider
+    public class UserRolePermissions : IPermissionProvider
     {
         private readonly IRoleService _roleService;
 
-        public RolePermissions(IRoleService roleService)
+        public UserRolePermissions(IRoleService roleService)
         {
             _roleService = roleService;
         }
