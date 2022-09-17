@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Localization
@@ -13,8 +14,15 @@ namespace OrchardCore.Localization
         /// <summary>
         /// Gets a permission for managing the cultures.
         /// </summary>
-        public static readonly Permission ManageCultures = new Permission("ManageCultures", "Manage supported culture");
+        public static readonly Permission ManageCultures = new ("ManageCultures");
 
+        private readonly IStringLocalizer S;
+
+        public Permissions(IStringLocalizer<Permissions> localizer)
+        {
+            S = localizer;
+            ManageCultures.Description = S["Manage supported culture"];
+        }
         /// <inheritdocs />
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
