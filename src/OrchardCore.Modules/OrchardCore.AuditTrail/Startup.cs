@@ -55,7 +55,7 @@ namespace OrchardCore.AuditTrail
 
             services.Configure<StoreCollectionOptions>(o => o.Collections.Add(AuditTrailEvent.Collection));
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddSingleton<IIndexProvider, AuditTrailEventIndexProvider>();
             services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
 

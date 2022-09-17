@@ -11,11 +11,10 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
     Context.Items["ShortcodeModal"] = new object();
     var shortcodeDescriptors = await ShortcodeDescriptorManager.GetShortcodeDescriptors();
     var categories = shortcodeDescriptors
-        .Where(s => s != null)
-        .SelectMany(s => s.Categories)
-        .OrderBy(c => c, StringComparer.OrdinalIgnoreCase)
-        .GroupBy(c => c, StringComparer.OrdinalIgnoreCase)
-        .Select(g => g.Key);
+        .SelectMany(shortcodeDescriptor => shortcodeDescriptor.Categories ?? Enumerable.Empty<string>())
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .OrderBy(category => category)
+        .ToList();
 
     var jShortcodes = JsonConvert.SerializeObject(shortcodeDescriptors.Select(d => new { name = d.Name, categories = d.Categories }));
     var jCategories = JsonConvert.SerializeObject(categories);

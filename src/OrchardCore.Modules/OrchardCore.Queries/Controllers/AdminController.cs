@@ -62,7 +62,7 @@ namespace OrchardCore.Queries.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var queries = await _queryManager.ListQueriesAsync();
             queries = queries.OrderBy(x => x.Name);

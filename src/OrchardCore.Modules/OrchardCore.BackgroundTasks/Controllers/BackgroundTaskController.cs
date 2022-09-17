@@ -52,7 +52,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var document = await _backgroundTaskManager.GetDocumentAsync();
 
             var taskEntries = _backgroundTasks.Select(t =>
