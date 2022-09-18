@@ -69,7 +69,7 @@ public class ShellWebRootRemovingHandler : IShellRemovingHandler
                 shellWebRootFolder,
                 context.ShellSettings.Name);
 
-            context.LocalizedErrorMessage = S["Failed to remove the web root folder '{0}'.", shellWebRootFolder];
+            context.ErrorMessage = S["Failed to remove the web root folder '{0}'.", shellWebRootFolder];
             context.Error = ex;
         }
 

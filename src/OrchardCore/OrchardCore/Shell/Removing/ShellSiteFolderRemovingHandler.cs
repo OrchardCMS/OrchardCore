@@ -64,7 +64,7 @@ public class ShellSiteFolderRemovingHandler : IShellRemovingHandler
                 shellAppDataFolder,
                 context.ShellSettings.Name);
 
-            context.LocalizedErrorMessage = S["Failed to remove the site folder '{0}'.", shellAppDataFolder];
+            context.ErrorMessage = S["Failed to remove the site folder '{0}'.", shellAppDataFolder];
             context.Error = ex;
         }
 

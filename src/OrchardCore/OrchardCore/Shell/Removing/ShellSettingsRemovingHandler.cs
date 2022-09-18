@@ -45,7 +45,7 @@ public class ShellSettingsRemovingHandler : IShellRemovingHandler
                 "Failed to remove the shell settings of tenant '{TenantName}'.",
                 context.ShellSettings.Name);
 
-            context.LocalizedErrorMessage = S["Failed to remove the shell settings."];
+            context.ErrorMessage = S["Failed to remove the shell settings."];
             context.Error = ex;
         }
     }

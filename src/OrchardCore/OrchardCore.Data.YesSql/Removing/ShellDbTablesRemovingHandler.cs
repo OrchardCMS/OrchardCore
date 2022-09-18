@@ -111,7 +111,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to remove the tables of tenant '{TenantName}'.", shellSettings.Name);
-            context.LocalizedErrorMessage = S["Failed to remove the tables."];
+            context.ErrorMessage = S["Failed to remove the tables."];
             context.Error = ex;
         }
     }

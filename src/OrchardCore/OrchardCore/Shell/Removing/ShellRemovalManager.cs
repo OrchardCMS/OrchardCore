@@ -43,13 +43,13 @@ public class ShellRemovalManager : IShellRemovalManager
 
         if (shellSettings.Name == ShellHelper.DefaultShellName)
         {
-            context.LocalizedErrorMessage = S["The tenant should not be the '{0}' tenant.", ShellHelper.DefaultShellName];
+            context.ErrorMessage = S["The tenant should not be the '{0}' tenant.", ShellHelper.DefaultShellName];
             return context;
         }
 
         if (shellSettings.State != TenantState.Disabled && shellSettings.State != TenantState.Uninitialized)
         {
-            context.LocalizedErrorMessage = S["The tenant '{0}' should be 'Disabled' or 'Uninitialized'.", shellSettings.Name];
+            context.ErrorMessage = S["The tenant '{0}' should be 'Disabled' or 'Uninitialized'.", shellSettings.Name];
             return context;
         }
 
@@ -65,7 +65,7 @@ public class ShellRemovalManager : IShellRemovalManager
                     "Failed to acquire a lock before executing the tenant handlers while removing the tenant '{TenantName}'.",
                     shellSettings.Name);
 
-                context.LocalizedErrorMessage = S["Failed to acquire a lock before executing the tenant handlers."];
+                context.ErrorMessage = S["Failed to acquire a lock before executing the tenant handlers."];
                 return context;
             }
 
@@ -98,7 +98,7 @@ public class ShellRemovalManager : IShellRemovalManager
                             type,
                             shellSettings.Name);
 
-                        context.LocalizedErrorMessage = S["Failed to execute the tenant handler '{0}'.", type];
+                        context.ErrorMessage = S["Failed to execute the tenant handler '{0}'.", type];
                         context.Error = ex;
 
                         break;
@@ -118,7 +118,7 @@ public class ShellRemovalManager : IShellRemovalManager
                     "Failed to acquire a lock before executing the host handlers while removing the tenant '{TenantName}'.",
                     shellSettings.Name);
 
-                context.LocalizedErrorMessage = S["Failed to acquire a lock before executing the host handlers."];
+                context.ErrorMessage = S["Failed to acquire a lock before executing the host handlers."];
 
                 // If only local resources should be removed while syncing tenants.
                 if (context.LocalResourcesOnly)
@@ -153,7 +153,7 @@ public class ShellRemovalManager : IShellRemovalManager
                         type,
                         shellSettings.Name);
 
-                    context.LocalizedErrorMessage = S["Failed to execute the host handler '{0}'.", type];
+                    context.ErrorMessage = S["Failed to execute the host handler '{0}'.", type];
                     context.Error = ex;
 
                     break;
