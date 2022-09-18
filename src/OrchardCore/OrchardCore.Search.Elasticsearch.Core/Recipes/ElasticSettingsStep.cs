@@ -39,7 +39,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
             if (step != null)
             {
                 if (step["SyncWithLucene"] != null && (bool)step["SyncWithLucene"])
-                { 
+                {
                     await _elasticIndexingService.SyncSettings();
                 }
             }
