@@ -39,14 +39,14 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             _templateOptions = templateOptions.Value;
         }
 
-        public string Name => "Elasticsearch";
+        public String Name => "Elasticsearch";
 
         public Query Create()
         {
             return new ElasticQuery();
         }
 
-        public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
+        public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<String, object> parameters)
         {
             var elasticQuery = query as ElasticQuery;
             var elasticQueryResults = new ElasticQueryResults();

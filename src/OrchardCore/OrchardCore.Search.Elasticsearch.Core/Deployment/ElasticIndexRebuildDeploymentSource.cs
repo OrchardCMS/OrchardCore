@@ -1,4 +1,4 @@
-using System.Linq;
+using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
@@ -27,7 +27,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
             var indexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
 
             var data = new JArray();
-            var indicesToRebuild = elasticIndexRebuildStep.IncludeAll ? indexSettings.Select(x => x.IndexName).ToArray() : elasticIndexRebuildStep.Indices;
+            var indicesToRebuild = elasticIndexRebuildStep.IncludeAll ? Array.Empty<string>() : elasticIndexRebuildStep.Indices;
 
             result.Steps.Add(new JObject(
                 new JProperty("name", "elastic-index-rebuild"),
