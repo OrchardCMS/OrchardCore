@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -13,14 +13,14 @@ using YesSql;
 
 namespace OrchardCore.Users.Services
 {
-    public class RoleBaseUserStore : UserStoreBase
+    public class RoleBasedUserStore : UserStore
     {
         private readonly IRoleService _roleService;
 
-        public RoleBaseUserStore(ISession session,
+        public RoleBasedUserStore(ISession session,
             ILookupNormalizer keyNormalizer,
             IUserIdGenerator userIdGenerator,
-            ILogger<RoleBaseUserStore> logger,
+            ILogger<RoleBasedUserStore> logger,
             IEnumerable<IUserEventHandler> handlers,
             IDataProtectionProvider dataProtectionProvider,
             IRoleService roleService)
