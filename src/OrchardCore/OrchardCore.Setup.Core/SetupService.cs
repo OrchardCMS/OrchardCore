@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Abstractions.Setup;
 using OrchardCore.Data;
-using OrchardCore.Data.YesSql.Abstractions;
+using OrchardCore.Data.YesSql;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
@@ -105,6 +105,7 @@ namespace OrchardCore.Setup.Services
                 if (context.Errors.Any())
                 {
                     context.ShellSettings.State = initialState;
+                    await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
                 }
 
                 return executionId;
@@ -112,6 +113,8 @@ namespace OrchardCore.Setup.Services
             catch
             {
                 context.ShellSettings.State = initialState;
+                await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
+
                 throw;
             }
         }
@@ -161,8 +164,6 @@ namespace OrchardCore.Setup.Services
 
             var shellSettings = new ShellSettings(context.ShellSettings);
 
-            shellSettings["TablePrefixSeparator"] = _yesSqlOptions.TablePrefixSeparator ?? String.Empty;
-
             if (String.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
             {
                 shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider) ? databaseProvider?.ToString() : String.Empty;
@@ -170,7 +171,7 @@ namespace OrchardCore.Setup.Services
                 shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix) ? databaseTablePrefix?.ToString() : String.Empty;
             }
 
-            switch (await _dbConnectionValidator.ValidateAsync(shellSettings["DatabaseProvider"], shellSettings["ConnectionString"], shellSettings["TablePrefix"], shellSettings.IsDefaultShell()))
+            switch (await _dbConnectionValidator.ValidateAsync(shellSettings["DatabaseProvider"], shellSettings["ConnectionString"], shellSettings["TablePrefix"], shellSettings.Name))
             {
                 case DbConnectionValidatorResult.NoProvider:
                     context.Errors.Add(String.Empty, S["DatabaseProvider setting is required."]);
@@ -265,9 +266,6 @@ namespace OrchardCore.Setup.Services
 
             if (context.Errors.Any())
             {
-                // So that the new registered shell is reverted back to the 'Uninitialized' state.
-                context.ShellSettings = shellSettings;
-
                 return executionId;
             }
 
