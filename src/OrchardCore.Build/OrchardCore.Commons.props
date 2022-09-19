@@ -3,6 +3,7 @@
   <Import Project="Dependencies.props" />
 
   <PropertyGroup>
+    <LangVersion>latestMajor</LangVersion>
     <VersionPrefix>1.5.0</VersionPrefix>
     <VersionSuffix>preview</VersionSuffix>
     <VersionSuffix Condition="'$(VersionSuffix)'!='' AND '$(BuildNumber)' != ''">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
