@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.Security;
 using OrchardCore.Contents.ViewModels;
@@ -168,7 +167,7 @@ namespace OrchardCore.Contents.Services
 
                         foreach (var ctd in contentDefinitionManager.ListTypeDefinitions())
                         {
-                            if (!ctd.GetSettings<ContentTypeSettings>().Listable)
+                            if (!ctd.IsListable())
                             {
                                 continue;
                             }

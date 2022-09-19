@@ -1,6 +1,6 @@
 using YesSql;
 
-namespace OrchardCore.Data.YesSql.Abstractions;
+namespace OrchardCore.Data.YesSql;
 
 public class YesSqlOptions
 {

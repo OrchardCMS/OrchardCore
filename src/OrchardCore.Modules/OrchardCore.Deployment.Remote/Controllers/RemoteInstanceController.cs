@@ -56,7 +56,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var remoteInstances = (await _service.GetRemoteInstanceListAsync()).RemoteInstances;
 

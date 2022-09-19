@@ -1,5 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
-
+@using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
     var listSettings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
@@ -14,9 +14,10 @@
 
         options.Add(new SelectListItem { Text = option.Name, Value = option.Value, Selected = isSelected });
     }
+    var fieldName = Model.PartFieldDefinition.Name;
 }
 
-<div class="mb-3">
+<div class="mb-3 field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x.Text)_FieldWrapper">
 
     @if (listSettings.Editor == EditorOption.Radio)
     {

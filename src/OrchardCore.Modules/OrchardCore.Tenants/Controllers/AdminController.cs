@@ -105,7 +105,7 @@ namespace OrchardCore.Tenants.Controllers
             var allSettings = _shellHost.GetAllSettings().OrderBy(s => s.Name);
             var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var entries = allSettings.Select(x =>
                {

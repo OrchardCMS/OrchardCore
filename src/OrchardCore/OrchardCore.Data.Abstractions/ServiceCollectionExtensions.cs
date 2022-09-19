@@ -19,7 +19,7 @@ namespace OrchardCore.Data
         /// <param name="isDefault">Whether the data provider is the default one.</param>
         /// <param name="sampleConnectionString">A sample connection string, e.g. Server={Server Name};Database={Database Name};IntegratedSecurity=true</param>
         /// <returns></returns>
-        public static IServiceCollection TryAddDataProvider(this IServiceCollection services, string name, DatabaseProviderName value, bool hasConnectionString, bool hasTablePrefix, bool isDefault, string sampleConnectionString = "")
+        public static IServiceCollection TryAddDataProvider(this IServiceCollection services, string name, string value, bool hasConnectionString, bool hasTablePrefix, bool isDefault, string sampleConnectionString = "")
         {
             for (var i = services.Count - 1; i >= 0; i--)
             {
