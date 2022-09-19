@@ -34,7 +34,7 @@ namespace OrchardCore.Templates.Cms.Module
                 .AddHandler<MyTestPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MyTestPartSettingsDisplayDriver>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
 #endif
         }
 

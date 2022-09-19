@@ -4,5 +4,5 @@ namespace OrchardCore.Data;
 
 public interface IDbConnectionValidator
 {
-    Task<DbConnectionValidatorResult> ValidateAsync(string databaseProvider, string connectionString, string tablePrefix, bool isDefaultShell);
+    Task<DbConnectionValidatorResult> ValidateAsync(string databaseProvider, string connectionString, string tablePrefix, string shellName);
 }

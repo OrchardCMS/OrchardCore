@@ -59,7 +59,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
 

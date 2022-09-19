@@ -25,15 +25,17 @@
     <input type="hidden" name="CorsSettings" id="CorsSettings" value='@Html.Raw(Json.Serialize(Model.Policies, settings))' />
     <div id="corsAdmin">
         <div v-if="!selectedPolicy">
-            <div class="card mb-3 position-sticky action-bar">
-                <div class="card-body bg-primary p-3">
-                    <div class="mb-0">
-                        <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
-                            <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
-                            <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+            <div class="card mb-3 bg-primary position-sticky action-bar">
+                <div class="card-body">
+                    <div class="row gx-3">
+                        <div class="col">
+                            <div class="has-search">
+                                <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
+                                <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                            </div>
                         </div>
-                        <div class="btn-group float-end">
-                            <button class="btn btn-sm btn-secondary" type="button" v-on:click="newPolicy">@T["Add a policy"]</button>
+                        <div class="col-auto">
+                            <button class="btn btn-secondary" type="button" v-on:click="newPolicy">@T["Add a policy"]</button>
                         </div>
                     </div>
                 </div>
@@ -66,8 +68,7 @@
         <h3>{{ policy.Name }}</h3>
         <div class="card mb-2">
             <div class="card-body">
-                <h5 class="card-title">
-                    @T["Details"]
+                <h5 class="card-title">@T["Details"]
                     <span class="hint dashed">@T["Provide policy details."]</span>
                 </h5>
                 <div class="mb-3">
@@ -83,8 +84,7 @@
         </div>
         <div class="card mb-2">
             <div class="card-body">
-                <h5 class="card-title">
-                    @T["Credentials"]
+                <h5 class="card-title">@T["Credentials"]
                     <span class="hint dashed">@T["Configure the credentials behavior."]</span>
                 </h5>
 
@@ -97,8 +97,7 @@
         </div>
         <div class="card mb-2">
             <div class="card-body">
-                <h5 class="card-title">
-                    @T["Origins"]
+                <h5 class="card-title">@T["Origins"]
                     <span class="hint dashed">@T["Configure the origins behavior."]</span>
                 </h5>
 
@@ -114,8 +113,7 @@
         </div>
         <div class="card mb-2">
             <div class="card-body">
-                <h5 class="card-title">
-                    @T["Headers"]
+                <h5 class="card-title">@T["Headers"]
                     <span class="hint dashed">@T["Allow certain or all headers to be used by the external client."]</span>
                 </h5>
 
@@ -131,8 +129,7 @@
         </div>
         <div class="card mb-2">
             <div class="card-body">
-                <h5 class="card-title">
-                    @T["Methods"]
+                <h5 class="card-title">@T["Methods"]
                     <span class="hint dashed">@T["Configure the methods behavior (POST, PUT, DELETE, GET, etc)."]</span>
                 </h5>
 

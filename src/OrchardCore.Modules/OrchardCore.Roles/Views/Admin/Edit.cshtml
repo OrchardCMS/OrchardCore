@@ -52,7 +52,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var permission in group.Value.OrderBy(x => x.Name))
+                    @foreach (var permission in group.Value.OrderBy(x => x.Description))
                     {
                         <tr data-text="@permission.Description">
                             <td class="col-10">

@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Taxonomies.Models;
@@ -83,7 +83,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
 
-            if (!contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
+            if (!contentTypeDefinition.IsDraftable())
             {
                 taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
             }
@@ -190,7 +190,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
 
-            if (!contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
+            if (!contentTypeDefinition.IsDraftable())
             {
                 taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
             }
@@ -259,7 +259,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
 
-            if (!contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
+            if (!contentTypeDefinition.IsDraftable())
             {
                 taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
             }
