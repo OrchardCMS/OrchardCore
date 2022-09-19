@@ -63,7 +63,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
                 context.ShellSettings["DatabaseProvider"],
                 context.ShellSettings["ConnectionString"],
                 context.ShellSettings["TablePrefix"],
-                isDefaultShell: false);
+                context.ShellSettings.Name);
 
             if (result != DbConnectionValidatorResult.DocumentTableFound)
             {
