@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -168,7 +168,12 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(((User)user).NormalizedUserName);
+            if (user is User su)
+            {
+                return Task.FromResult(su.NormalizedUserName);
+            }
+
+            return Task.FromResult<string>(null);
         }
 
         public Task<string> GetUserIdAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
@@ -456,7 +461,6 @@ namespace OrchardCore.Users.Services
             }
         }
 
-
         protected virtual Task AddToRoleAsync(User user, string normalizedRoleName, CancellationToken cancellationToken)
         {
             user.RoleNames.Add(normalizedRoleName);
@@ -571,7 +575,12 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult<IList<UserLoginInfo>>(((User)user).LoginInfos);
+            if (user is User su)
+            {
+                return Task.FromResult(su.LoginInfos);
+            }
+
+            return Task.FromResult<IList<UserLoginInfo>>(new List<UserLoginInfo>());
         }
 
         public Task RemoveLoginAsync(IUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
@@ -588,8 +597,8 @@ namespace OrchardCore.Users.Services
                 {
                     su.LoginInfos.Remove(item);
                 }
-
             }
+
             return Task.CompletedTask;
         }
 
@@ -656,6 +665,7 @@ namespace OrchardCore.Users.Services
             {
                 throw new ArgumentNullException(nameof(newClaim));
             }
+
             if (user is User su)
             {
                 foreach (var userClaim in su.UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type))
@@ -726,14 +736,13 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentException("The name cannot be null or empty.", nameof(name));
             }
 
-            string tokenValue = null;
             var userToken = GetUserToken(user, loginProvider, name);
             if (userToken != null)
             {
-                tokenValue = _dataProtectionProvider.CreateProtector(TokenProtector).Unprotect(userToken.Value);
+                return Task.FromResult(_dataProtectionProvider.CreateProtector(TokenProtector).Unprotect(userToken.Value));
             }
 
-            return Task.FromResult(tokenValue);
+            return Task.FromResult<string>(null);
         }
 
         public Task RemoveTokenAsync(IUser user, string loginProvider, string name, CancellationToken cancellationToken = default(CancellationToken))
@@ -823,7 +832,12 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(((User)user).AccessFailedCount);
+            if (user is User su)
+            {
+                return Task.FromResult(su.AccessFailedCount);
+            }
+
+            return Task.FromResult(0);
         }
 
         public Task<bool> GetLockoutEnabledAsync(IUser user, CancellationToken cancellationToken)
@@ -865,9 +879,7 @@ namespace OrchardCore.Users.Services
 
             if (user is User su)
             {
-                su.AccessFailedCount++;
-
-                Task.FromResult(su.AccessFailedCount);
+                return Task.FromResult(su.AccessFailedCount++);
             }
 
             return Task.FromResult(0);
