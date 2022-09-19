@@ -105,6 +105,7 @@ namespace OrchardCore.Setup.Services
                 if (context.Errors.Any())
                 {
                     context.ShellSettings.State = initialState;
+                    await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
                 }
 
                 return executionId;
@@ -112,6 +113,8 @@ namespace OrchardCore.Setup.Services
             catch
             {
                 context.ShellSettings.State = initialState;
+                await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
+
                 throw;
             }
         }
@@ -263,9 +266,6 @@ namespace OrchardCore.Setup.Services
 
             if (context.Errors.Any())
             {
-                // So that the new registered shell is reverted back to the 'Uninitialized' state.
-                context.ShellSettings = shellSettings;
-
                 return executionId;
             }
 
