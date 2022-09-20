@@ -241,13 +241,10 @@
                 "ContentTypePartSettings": {
                   "Position": "1"
                 },
-                "ContentIndexSettings": {
+                "LuceneContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                  "Keyword": false
                 },
                 "AutoroutePartSettings": {
                   "AllowCustomPath": true,
@@ -569,13 +566,10 @@
                   "DisplayName": "Banner Image",
                   "Position": "0"
                 },
-                "ContentIndexSettings": {
+                "LuceneContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                  "Keyword": false
                 },
                 "MediaFieldSettings": {
                   "Multiple": false,
@@ -607,13 +601,10 @@
                   "DisplayName": "Banner Image",
                   "Position": "1"
                 },
-                "ContentIndexSettings": {
+                "LuceneContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                  "Keyword": false
                 },
                 "MediaFieldSettings": {
                   "Multiple": false,
@@ -631,7 +622,6 @@
                   "DisplayMode": "Tags",
                   "Position": "2"
                 },
-                "ContentIndexSettings": {},
                 "TaxonomyFieldSettings": {
                   "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
                 },
@@ -646,7 +636,6 @@
                   "DisplayName": "Category",
                   "Position": "3"
                 },
-                "ContentIndexSettings": {},
                 "TaxonomyFieldSettings": {
                   "TaxonomyContentItemId": "[js: variables('categoriesContentItemId')]",
                   "Unique": true,
@@ -787,8 +776,7 @@
                 },
                 "TextFieldSettings": {
                   "Required": true
-                },
-                "ContentIndexSettings": {}
+                }
               }
             }
           ]

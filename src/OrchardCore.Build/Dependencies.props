@@ -41,6 +41,7 @@
     <PackageManagement Include="Moq" Version="4.18.2" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />
     <PackageManagement Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageManagement Include="NEST" Version="7.17.4" />
     <PackageManagement Include="NJsonSchema" Version="10.7.2" />
     <PackageManagement Include="NLog.Web.AspNetCore" Version="5.1.4" />
     <PackageManagement Include="NodaTime" Version="3.1.2" />
@@ -62,5 +63,4 @@
     <PackageManagement Include="YesSql.Filters.Query" Version="3.0.12" />
     <PackageManagement Include="ZString" Version="2.4.4" />
   </ItemGroup>
-
 </Project>

@@ -91,7 +91,7 @@ namespace OrchardCore.Tenants.Services
                     }
                 }
 
-                await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, errors, shellSettings?.IsDefaultShell() == true);
+                await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, errors, model.Name);
             }
             else
             {
@@ -100,16 +100,16 @@ namespace OrchardCore.Tenants.Services
                     // While the tenant is in Uninitialized state, we still are able to change the database settings.
                     // Let's validate the database for assurance.
 
-                    await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, errors, shellSettings?.IsDefaultShell() == true);
+                    await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, errors, model.Name);
                 }
             }
 
             return errors;
         }
 
-        private async Task AssertConnectionValidityAndApplyErrorsAsync(string databaseProvider, string connectionString, string tablePrefix, List<ModelError> errors, bool isDefaultShell)
+        private async Task AssertConnectionValidityAndApplyErrorsAsync(string databaseProvider, string connectionString, string tablePrefix, List<ModelError> errors, string shellName)
         {
-            switch (await _dbConnectionValidator.ValidateAsync(databaseProvider, connectionString, tablePrefix, isDefaultShell))
+            switch (await _dbConnectionValidator.ValidateAsync(databaseProvider, connectionString, tablePrefix, shellName))
             {
                 case DbConnectionValidatorResult.UnsupportedProvider:
                     errors.Add(new ModelError(nameof(TenantViewModel.DatabaseProvider), S["The provided database provider is not supported."]));
@@ -118,7 +118,15 @@ namespace OrchardCore.Tenants.Services
                     errors.Add(new ModelError(nameof(TenantViewModel.ConnectionString), S["The provided connection string is invalid or server is unreachable."]));
                     break;
                 case DbConnectionValidatorResult.DocumentTableFound:
-                    errors.Add(new ModelError(nameof(TenantViewModel.TablePrefix), S["The provided database and table prefix are already in use."]));
+                    if (databaseProvider == DatabaseProviderValue.Sqlite)
+                    {
+                        errors.Add(new ModelError(String.Empty, S["The related database file is already in use."]));
+                    }
+                    else
+                    {
+                        errors.Add(new ModelError(nameof(TenantViewModel.TablePrefix), S["The provided database and table prefix are already in use."]));
+                    }
+
                     break;
             }
         }

@@ -122,7 +122,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 : new ShellSettings();
 
             var connectionFactory = new Mock<IDbConnectionValidator>();
-            connectionFactory.Setup(l => l.ValidateAsync(shellSettings["ProviderName"], shellSettings["ConnectionName"], shellSettings["TablePrefix"], shellSettings.IsDefaultShell()));
+            connectionFactory.Setup(l => l.ValidateAsync(shellSettings["ProviderName"], shellSettings["ConnectionName"], shellSettings["TablePrefix"], shellSettings.Name));
 
             return new TenantValidator(
                 ShellHost,
