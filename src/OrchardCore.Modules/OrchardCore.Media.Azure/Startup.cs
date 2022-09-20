@@ -110,11 +110,11 @@ namespace OrchardCore.Media.Azure
                     var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
                     var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
-
                     var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 
-                    var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
-                        .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
+                    var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
+                        ?.Features.Get<ShellContextFeature>()
+                        ?.OriginalPathBase;
 
                     if (originalPathBase.HasValue)
                     {

@@ -102,14 +102,13 @@ public class Startup : Modules.StartupBase
                 var amazonS3Client = serviceProvider.GetService<IAmazonS3>();
 
                 var fileStore = new AwsFileStore(clock, storeOptions, amazonS3Client);
-
                 var mediaUrlBase = $"/{fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath)}";
 
                 var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
                     ?.Features.Get<ShellContextFeature>()
                     ?.OriginalPathBase;
 
-                if (originalPathBase.HasValue && !String.IsNullOrWhiteSpace(originalPathBase.Value))
+                if (originalPathBase.HasValue)
                 {
                     mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
                 }
