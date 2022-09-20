@@ -103,10 +103,7 @@ else
 
     @if (Model.ContentItems.Any())
     {
-        <ul class="list-group" @if (enableOrdering) {
- <text> id="ci-sortable" </text>
- }>
-
+        <ul class="list-group" id="ci-sortable">
             @foreach (var contentItem in Model.ContentItems)
             {
                 var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
@@ -114,11 +111,11 @@ else
                 {
                     await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
                 }
-                                                                                                                                                                                                                                                                <li class="list-group-item">
+                <li class="list-group-item">
                     @await DisplayAsync(contentItemSummary)
-                                                                                                                                                                                                                                                                </li>
+                </li>
             }
-                                                                                                                                                                        </ul>
+        </ul>
 
         @await DisplayAsync(Model.Pager)
         @if (enableOrdering)
