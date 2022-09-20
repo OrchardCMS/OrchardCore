@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Removing;
 
@@ -48,7 +49,7 @@ public class ShellWebRootRemovingHandler : IShellRemovingHandler
         catch (Exception ex) when (ex is DirectoryNotFoundException)
         {
         }
-        catch (Exception ex) when ((ex.HResult & 0x0000FFFF) == 0x20 || (ex.HResult & 0x0000FFFF) == 0x21)
+        catch (Exception ex) when (ex.IsFileSharingViolation())
         {
             // Sharing violation, may happen if multiple nodes share the same file system
             // without using a distributed lock, in that case let another node do the job.
