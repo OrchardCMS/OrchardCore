@@ -57,7 +57,7 @@ namespace OrchardCore.Users.Drivers
                         var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
                         model.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew);
                     })
-                    .Location($"Content:10#{contentTypeDefinition.DisplayName}")
+                    .Location($"Content:10%{contentTypeDefinition.DisplayName}")
                     .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}")
                     .RenderWhen(() => _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition))));
             }
