@@ -103,8 +103,7 @@ public class Startup : Modules.StartupBase
 
                 var fileStore = new AwsFileStore(clock, storeOptions, amazonS3Client);
 
-                var mediaUrlBase =
-                    $"/{fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath)}";
+                var mediaUrlBase = $"/{fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath)}";
 
                 var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
                     ?.Features.Get<ShellContextFeature>()
@@ -130,7 +129,5 @@ public class Startup : Modules.StartupBase
     }
 
     private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
-    {
-        return PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
-    }
+        => PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
 }

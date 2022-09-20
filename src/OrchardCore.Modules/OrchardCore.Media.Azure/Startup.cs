@@ -111,8 +111,6 @@ namespace OrchardCore.Media.Azure
 
                     var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
 
-                    var mediaPath = GetMediaPath(shellOptions.Value, shellSettings, mediaOptions.AssetsPath);
-
                     var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 
                     var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
@@ -132,15 +130,8 @@ namespace OrchardCore.Media.Azure
             }
         }
 
-        private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
-        {
-            return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
-        }
-
         private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
-        {
-            return PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
-        }
+            => PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
 
         private static bool CheckOptions(string connectionString, string containerName, ILogger logger)
         {
