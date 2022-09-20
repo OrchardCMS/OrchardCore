@@ -154,6 +154,7 @@ nav:
           - Indexing: docs/reference/modules/Indexing/README.md
           - SQL Indexing: docs/reference/modules/SQLIndexing/README.md
           - Lucene: docs/reference/modules/Lucene/README.md
+          - Elasticsearch: docs/reference/modules/Elasticsearch/README.md
           - Queries: docs/reference/modules/Queries/README.md
           - Media:
               - Media: docs/reference/modules/Media/README.md
