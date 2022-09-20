@@ -2,9 +2,6 @@
 
 In this article, we are going to see how easy it is to create a CMS Web application using the NuGet packages provided by Orchard Core.
 
-You can find the original blog post written by Chris Payne here:  
-<http://ideliverable.com/blog/getting-started-with-orchard-core-as-a-nuget-package>
-
 ## Create an Orchard Core CMS application
 
 In Visual Studio, create a new empty .NET Core web application. Ex: `Cms.Web`. Do not check "Place solution and project in the same directory", because later when you create modules and themes you will want them to live alongside the web application within the solution.
@@ -70,19 +67,13 @@ app.Run();
 Open `Startup.cs` file, then modify the `ConfigureServices` method by adding this line:
 
 ```csharp
-services.AddOrchardCms();
+builder.Services.AddOrchardCms();
 ```
 
-In the `Configure` method, replace this block:
+After the `app` initialization, replace this line:
 
 ```csharp
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapGet("/", async context =>
-    {
-        await context.Response.WriteAsync("Hello World!");
-    });
-});
+app.MapGet("/", () => "Hello World!");
 ```
 
 with this line:
