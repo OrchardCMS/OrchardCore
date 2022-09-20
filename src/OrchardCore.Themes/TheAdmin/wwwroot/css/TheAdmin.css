@@ -1,7 +1,7 @@
 @charset "UTF-8";
 html[data-theme=default] {
   /*!
-   * Bootstrap  v5.2.0 (https://getbootstrap.com/)
+   * Bootstrap  v5.2.1 (https://getbootstrap.com/)
    * Copyright 2011-2022 The Bootstrap Authors
    * Copyright 2011-2022 Twitter, Inc.
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
@@ -2686,6 +2686,7 @@ html[data-theme=default] .form-floating > label {
 }
 html[dir][data-theme=default] .form-floating > label {
   padding: 1rem 0.75rem;
+  text-align: start;
   border: 1px solid transparent;
 }
 html[dir=ltr][data-theme=default] .form-floating > label {
@@ -2762,14 +2763,14 @@ html[data-theme=default] .input-group > .form-floating {
 html[data-theme=default] .input-group > .form-control:focus,
 html[data-theme=default] .input-group > .form-select:focus,
 html[data-theme=default] .input-group > .form-floating:focus-within {
-  z-index: 3;
+  z-index: 5;
 }
 html[data-theme=default] .input-group .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .input-group .close, html[data-theme=default] .input-group .button, html[data-theme=default] .input-group .bootstrap-select .popover-header .close, html[data-theme=default] .bootstrap-select .popover-header .input-group .close {
   position: relative;
   z-index: 2;
 }
 html[data-theme=default] .input-group .btn:focus, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .input-group .close:focus, html[data-theme=default] .input-group .button:focus, html[data-theme=default] .input-group .bootstrap-select .popover-header .close:focus, html[data-theme=default] .bootstrap-select .popover-header .input-group .close:focus {
-  z-index: 3;
+  z-index: 5;
 }
 html[data-theme=default] .input-group-text {
   display: flex;
@@ -2837,13 +2838,21 @@ html[dir=rtl][data-theme=default] .input-group.has-validation > :nth-last-child(
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-html[dir=ltr][data-theme=default] .input-group > :not(:first-child):not(.dropdown-menu):not(.form-floating):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback), html[dir=ltr][data-theme=default] .input-group > .form-floating:not(:first-child) > .form-control, html[dir=ltr][data-theme=default] .input-group > .form-floating:not(:first-child) > .form-select {
+html[dir=ltr][data-theme=default] .input-group > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
   margin-left: -1px;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-html[dir=rtl][data-theme=default] .input-group > :not(:first-child):not(.dropdown-menu):not(.form-floating):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback), html[dir=rtl][data-theme=default] .input-group > .form-floating:not(:first-child) > .form-control, html[dir=rtl][data-theme=default] .input-group > .form-floating:not(:first-child) > .form-select {
+html[dir=rtl][data-theme=default] .input-group > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
   margin-right: -1px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+html[dir=ltr][data-theme=default] .input-group > .form-floating:not(:first-child) > .form-control, html[dir=ltr][data-theme=default] .input-group > .form-floating:not(:first-child) > .form-select {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+html[dir=rtl][data-theme=default] .input-group > .form-floating:not(:first-child) > .form-control, html[dir=rtl][data-theme=default] .input-group > .form-floating:not(:first-child) > .form-select {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
@@ -2942,14 +2951,11 @@ html[dir=ltr][data-theme=default] .form-check-inline .form-check-input ~ .valid-
 html[dir=rtl][data-theme=default] .form-check-inline .form-check-input ~ .valid-feedback {
   margin-right: 0.5em;
 }
-.was-validated html[data-theme=default] .input-group .form-control:valid, html[data-theme=default] .input-group .form-control.is-valid,
-.was-validated html[data-theme=default] .input-group .form-select:valid,
-html[data-theme=default] .input-group .form-select.is-valid {
-  z-index: 1;
-}
-.was-validated html[data-theme=default] .input-group .form-control:valid:focus, html[data-theme=default] .input-group .form-control.is-valid:focus,
-.was-validated html[data-theme=default] .input-group .form-select:valid:focus,
-html[data-theme=default] .input-group .form-select.is-valid:focus {
+.was-validated html[data-theme=default] .input-group > .form-control:not(:focus):valid, html[data-theme=default] .input-group > .form-control:not(:focus).is-valid,
+.was-validated html[data-theme=default] .input-group > .form-select:not(:focus):valid,
+html[data-theme=default] .input-group > .form-select:not(:focus).is-valid,
+.was-validated html[data-theme=default] .input-group > .form-floating:not(:focus-within):valid,
+html[data-theme=default] .input-group > .form-floating:not(:focus-within).is-valid {
   z-index: 3;
 }
 html[data-theme=default] .invalid-feedback {
@@ -3051,19 +3057,20 @@ html[dir=ltr][data-theme=default] .form-check-inline .form-check-input ~ .invali
 html[dir=rtl][data-theme=default] .form-check-inline .form-check-input ~ .invalid-feedback {
   margin-right: 0.5em;
 }
-.was-validated html[data-theme=default] .input-group .form-control:invalid, html[data-theme=default] .input-group .form-control.is-invalid, html[data-theme=default] .input-group .form-control.has-validation-error, html[data-theme=default] .input-group .form-control.input-validation-error,
-.was-validated html[data-theme=default] .input-group .form-select:invalid,
-html[data-theme=default] .input-group .form-select.is-invalid,
-html[data-theme=default] .input-group .form-select.has-validation-error,
-html[data-theme=default] .input-group .form-select.input-validation-error {
-  z-index: 2;
-}
-.was-validated html[data-theme=default] .input-group .form-control:invalid:focus, html[data-theme=default] .input-group .form-control.is-invalid:focus, html[data-theme=default] .input-group .form-control.has-validation-error:focus, html[data-theme=default] .input-group .form-control.input-validation-error:focus,
-.was-validated html[data-theme=default] .input-group .form-select:invalid:focus,
-html[data-theme=default] .input-group .form-select.is-invalid:focus,
-html[data-theme=default] .input-group .form-select.has-validation-error:focus,
-html[data-theme=default] .input-group .form-select.input-validation-error:focus {
-  z-index: 3;
+.was-validated html[data-theme=default] .input-group > .form-control:not(:focus):invalid, html[data-theme=default] .input-group > .form-control:not(:focus).is-invalid, html[data-theme=default] html[data-theme=darkmode] .input-group > .form-control.has-validation-error:not(:focus), html[data-theme=default] html[data-theme=darkmode] .input-group > .form-control.input-validation-error:not(:focus), html[data-theme=default] .input-group > .form-control.has-validation-error:not(:focus), html[data-theme=default] .input-group > .form-control.input-validation-error:not(:focus),
+.was-validated html[data-theme=default] .input-group > .form-select:not(:focus):invalid,
+html[data-theme=default] .input-group > .form-select:not(:focus).is-invalid,
+html[data-theme=default] html[data-theme=darkmode] .input-group > .form-select.has-validation-error:not(:focus),
+html[data-theme=default] html[data-theme=darkmode] .input-group > .form-select.input-validation-error:not(:focus),
+html[data-theme=default] .input-group > .form-select.has-validation-error:not(:focus),
+html[data-theme=default] .input-group > .form-select.input-validation-error:not(:focus),
+.was-validated html[data-theme=default] .input-group > .form-floating:not(:focus-within):invalid,
+html[data-theme=default] .input-group > .form-floating:not(:focus-within).is-invalid,
+html[data-theme=default] html[data-theme=darkmode] .input-group > .form-floating.has-validation-error:not(:focus-within),
+html[data-theme=default] html[data-theme=darkmode] .input-group > .form-floating.input-validation-error:not(:focus-within),
+html[data-theme=default] .input-group > .form-floating.has-validation-error:not(:focus-within),
+html[data-theme=default] .input-group > .form-floating.input-validation-error:not(:focus-within) {
+  z-index: 4;
 }
 html[data-theme=default] .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close, html[data-theme=default] .button, html[data-theme=default] .bootstrap-select .popover-header .close {
   --bs-btn-padding-x: 0.75rem;
@@ -3077,6 +3084,7 @@ html[data-theme=default] .btn, html[data-theme=darkmode] .bootstrap-select .popo
   --bs-btn-border-width: 1px;
   --bs-btn-border-color: transparent;
   --bs-btn-border-radius: 0.375rem;
+  --bs-btn-hover-border-color: transparent;
   --bs-btn-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 1px rgba(0, 0, 0, 0.075);
   --bs-btn-disabled-opacity: 0.65;
   --bs-btn-focus-box-shadow: 0 0 0 0.25rem rgba(var(--bs-btn-focus-shadow-rgb), .5);
@@ -3104,30 +3112,37 @@ html[dir][data-theme=default] .btn, html[dir][data-theme=darkmode] .bootstrap-se
     transition: none;
   }
 }
-html[data-theme=default] .btn:hover, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:hover, html[data-theme=default] .button:hover, html[data-theme=default] .bootstrap-select .popover-header .close:hover {
+:not(.btn-check) + html[data-theme=default] .btn:hover, html[data-theme=darkmode] .bootstrap-select .popover-header :not(.btn-check) + html[data-theme=default] .close:hover, :not(.btn-check) + html[data-theme=default] .button:hover, :not(.btn-check) + html[data-theme=default] .bootstrap-select .popover-header .close:hover, html[data-theme=default] .btn:first-child:hover, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:first-child:hover, html[data-theme=default] .button:first-child:hover, html[data-theme=default] .bootstrap-select .popover-header .close:first-child:hover {
   color: var(--bs-btn-hover-color);
 }
-html[dir][data-theme=default] .btn:hover, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:hover, html[dir][data-theme=default] .button:hover, html[dir][data-theme=default] .bootstrap-select .popover-header .close:hover {
+[dir] :not(.btn-check) + html[data-theme=default] .btn:hover, html[dir][data-theme=darkmode] .bootstrap-select .popover-header :not(.btn-check) + html[data-theme=default] .close:hover, [dir] :not(.btn-check) + html[data-theme=default] .button:hover, [dir] :not(.btn-check) + html[data-theme=default] .bootstrap-select .popover-header .close:hover, html[dir][data-theme=default] .btn:first-child:hover, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:first-child:hover, html[dir][data-theme=default] .button:first-child:hover, html[dir][data-theme=default] .bootstrap-select .popover-header .close:first-child:hover {
   background-color: var(--bs-btn-hover-bg);
   border-color: var(--bs-btn-hover-border-color);
 }
-.btn-check:focus + html[data-theme=default] .btn, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-check:focus + html[data-theme=default] .close, .btn-check:focus + html[data-theme=default] .button, .btn-check:focus + html[data-theme=default] .bootstrap-select .popover-header .close, html[data-theme=default] .btn:focus, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:focus, html[data-theme=default] .button:focus, html[data-theme=default] .bootstrap-select .popover-header .close:focus {
+html[data-theme=default] .btn:focus-visible, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:focus-visible, html[data-theme=default] .button:focus-visible, html[data-theme=default] .bootstrap-select .popover-header .close:focus-visible {
   color: var(--bs-btn-hover-color);
   outline: 0;
 }
-[dir] .btn-check:focus + html[data-theme=default] .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-check:focus + html[data-theme=default] .close, [dir] .btn-check:focus + html[data-theme=default] .button, [dir] .btn-check:focus + html[data-theme=default] .bootstrap-select .popover-header .close, html[dir][data-theme=default] .btn:focus, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:focus, html[dir][data-theme=default] .button:focus, html[dir][data-theme=default] .bootstrap-select .popover-header .close:focus {
+html[dir][data-theme=default] .btn:focus-visible, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:focus-visible, html[dir][data-theme=default] .button:focus-visible, html[dir][data-theme=default] .bootstrap-select .popover-header .close:focus-visible {
   background-color: var(--bs-btn-hover-bg);
   border-color: var(--bs-btn-hover-border-color);
   box-shadow: var(--bs-btn-focus-box-shadow);
 }
-.btn-check:checked + html[data-theme=default] .btn, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-check:checked + html[data-theme=default] .close, .btn-check:checked + html[data-theme=default] .button, .btn-check:checked + html[data-theme=default] .bootstrap-select .popover-header .close, .btn-check:active + html[data-theme=default] .btn, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-check:active + html[data-theme=default] .close, .btn-check:active + html[data-theme=default] .button, .btn-check:active + html[data-theme=default] .bootstrap-select .popover-header .close, html[data-theme=default] .btn:active, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:active, html[data-theme=default] .button:active, html[data-theme=default] .bootstrap-select .popover-header .close:active, html[data-theme=default] .btn.active, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .active.close, html[data-theme=default] .active.button, html[data-theme=default] .bootstrap-select .popover-header .active.close, html[data-theme=default] .btn.show, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .show.close, html[data-theme=default] .show.button, html[data-theme=default] .bootstrap-select .popover-header .show.close {
+.btn-check:focus-visible + html[data-theme=default] .btn, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-check:focus-visible + html[data-theme=default] .close, .btn-check:focus-visible + html[data-theme=default] .button, .btn-check:focus-visible + html[data-theme=default] .bootstrap-select .popover-header .close {
+  outline: 0;
+}
+[dir] .btn-check:focus-visible + html[data-theme=default] .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-check:focus-visible + html[data-theme=default] .close, [dir] .btn-check:focus-visible + html[data-theme=default] .button, [dir] .btn-check:focus-visible + html[data-theme=default] .bootstrap-select .popover-header .close {
+  border-color: var(--bs-btn-hover-border-color);
+  box-shadow: var(--bs-btn-focus-box-shadow);
+}
+.btn-check:checked + html[data-theme=default] .btn, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-check:checked + html[data-theme=default] .close, .btn-check:checked + html[data-theme=default] .button, .btn-check:checked + html[data-theme=default] .bootstrap-select .popover-header .close, :not(.btn-check) + html[data-theme=default] .btn:active, html[data-theme=darkmode] .bootstrap-select .popover-header :not(.btn-check) + html[data-theme=default] .close:active, :not(.btn-check) + html[data-theme=default] .button:active, :not(.btn-check) + html[data-theme=default] .bootstrap-select .popover-header .close:active, html[data-theme=default] .btn:first-child:active, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:first-child:active, html[data-theme=default] .button:first-child:active, html[data-theme=default] .bootstrap-select .popover-header .close:first-child:active, html[data-theme=default] .btn.active, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .active.close, html[data-theme=default] .active.button, html[data-theme=default] .bootstrap-select .popover-header .active.close, html[data-theme=default] .btn.show, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .show.close, html[data-theme=default] .show.button, html[data-theme=default] .bootstrap-select .popover-header .show.close {
   color: var(--bs-btn-active-color);
 }
-[dir] .btn-check:checked + html[data-theme=default] .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-check:checked + html[data-theme=default] .close, [dir] .btn-check:checked + html[data-theme=default] .button, [dir] .btn-check:checked + html[data-theme=default] .bootstrap-select .popover-header .close, [dir] .btn-check:active + html[data-theme=default] .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-check:active + html[data-theme=default] .close, [dir] .btn-check:active + html[data-theme=default] .button, [dir] .btn-check:active + html[data-theme=default] .bootstrap-select .popover-header .close, html[dir][data-theme=default] .btn:active, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:active, html[dir][data-theme=default] .button:active, html[dir][data-theme=default] .bootstrap-select .popover-header .close:active, html[dir][data-theme=default] .btn.active, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .active.close, html[dir][data-theme=default] .active.button, html[dir][data-theme=default] .bootstrap-select .popover-header .active.close, html[dir][data-theme=default] .btn.show, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .show.close, html[dir][data-theme=default] .show.button, html[dir][data-theme=default] .bootstrap-select .popover-header .show.close {
+[dir] .btn-check:checked + html[data-theme=default] .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-check:checked + html[data-theme=default] .close, [dir] .btn-check:checked + html[data-theme=default] .button, [dir] .btn-check:checked + html[data-theme=default] .bootstrap-select .popover-header .close, [dir] :not(.btn-check) + html[data-theme=default] .btn:active, html[dir][data-theme=darkmode] .bootstrap-select .popover-header :not(.btn-check) + html[data-theme=default] .close:active, [dir] :not(.btn-check) + html[data-theme=default] .button:active, [dir] :not(.btn-check) + html[data-theme=default] .bootstrap-select .popover-header .close:active, html[dir][data-theme=default] .btn:first-child:active, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:first-child:active, html[dir][data-theme=default] .button:first-child:active, html[dir][data-theme=default] .bootstrap-select .popover-header .close:first-child:active, html[dir][data-theme=default] .btn.active, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .active.close, html[dir][data-theme=default] .active.button, html[dir][data-theme=default] .bootstrap-select .popover-header .active.close, html[dir][data-theme=default] .btn.show, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .show.close, html[dir][data-theme=default] .show.button, html[dir][data-theme=default] .bootstrap-select .popover-header .show.close {
   background-color: var(--bs-btn-active-bg);
   border-color: var(--bs-btn-active-border-color);
 }
-[dir] .btn-check:checked + html[data-theme=default] .btn:focus, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-check:checked + html[data-theme=default] .close:focus, [dir] .btn-check:checked + html[data-theme=default] .button:focus, [dir] .btn-check:checked + html[data-theme=default] .bootstrap-select .popover-header .close:focus, [dir] .btn-check:active + html[data-theme=default] .btn:focus, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-check:active + html[data-theme=default] .close:focus, [dir] .btn-check:active + html[data-theme=default] .button:focus, [dir] .btn-check:active + html[data-theme=default] .bootstrap-select .popover-header .close:focus, html[dir][data-theme=default] .btn:active:focus, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:active:focus, html[dir][data-theme=default] .button:active:focus, html[dir][data-theme=default] .bootstrap-select .popover-header .close:active:focus, html[dir][data-theme=default] .btn.active:focus, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .active.close:focus, html[dir][data-theme=default] .active.button:focus, html[dir][data-theme=default] .bootstrap-select .popover-header .active.close:focus, html[dir][data-theme=default] .btn.show:focus, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .show.close:focus, html[dir][data-theme=default] .show.button:focus, html[dir][data-theme=default] .bootstrap-select .popover-header .show.close:focus {
+[dir] .btn-check:checked + html[data-theme=default] .btn:focus-visible, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-check:checked + html[data-theme=default] .close:focus-visible, [dir] .btn-check:checked + html[data-theme=default] .button:focus-visible, [dir] .btn-check:checked + html[data-theme=default] .bootstrap-select .popover-header .close:focus-visible, [dir] :not(.btn-check) + html[data-theme=default] .btn:active:focus-visible, html[dir][data-theme=darkmode] .bootstrap-select .popover-header :not(.btn-check) + html[data-theme=default] .close:active:focus-visible, [dir] :not(.btn-check) + html[data-theme=default] .button:active:focus-visible, [dir] :not(.btn-check) + html[data-theme=default] .bootstrap-select .popover-header .close:active:focus-visible, html[dir][data-theme=default] .btn:first-child:active:focus-visible, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:first-child:active:focus-visible, html[dir][data-theme=default] .button:first-child:active:focus-visible, html[dir][data-theme=default] .bootstrap-select .popover-header .close:first-child:active:focus-visible, html[dir][data-theme=default] .btn.active:focus-visible, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .active.close:focus-visible, html[dir][data-theme=default] .active.button:focus-visible, html[dir][data-theme=default] .bootstrap-select .popover-header .active.close:focus-visible, html[dir][data-theme=default] .btn.show:focus-visible, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .show.close:focus-visible, html[dir][data-theme=default] .show.button:focus-visible, html[dir][data-theme=default] .bootstrap-select .popover-header .show.close:focus-visible {
   box-shadow: var(--bs-btn-focus-box-shadow);
 }
 html[data-theme=default] .btn:disabled, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .close:disabled, html[data-theme=default] .button:disabled, html[data-theme=default] .bootstrap-select .popover-header .close:disabled, html[data-theme=default] .btn.disabled, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .disabled.close, html[data-theme=default] .disabled.button, html[data-theme=default] .bootstrap-select .popover-header .disabled.close, fieldset:disabled html[data-theme=default] .btn, html[data-theme=darkmode] .bootstrap-select .popover-header fieldset:disabled html[data-theme=default] .close, fieldset:disabled html[data-theme=default] .button, fieldset:disabled html[data-theme=default] .bootstrap-select .popover-header .close {
@@ -3410,7 +3425,7 @@ html[data-theme=default] .btn-link {
   --bs-btn-focus-shadow-rgb: 49, 132, 253;
   text-decoration: underline;
 }
-html[data-theme=default] .btn-link:focus {
+html[data-theme=default] .btn-link:focus-visible {
   color: var(--bs-btn-color);
 }
 html[data-theme=default] .btn-link:hover {
@@ -3499,6 +3514,7 @@ html[dir=rtl][data-theme=default] .dropdown-toggle:empty::after {
   margin-right: 0;
 }
 html[data-theme=default] .dropdown-menu {
+  --bs-dropdown-zindex: 1000;
   --bs-dropdown-min-width: 10rem;
   --bs-dropdown-padding-x: 0;
   --bs-dropdown-padding-y: 0.5rem;
@@ -3525,7 +3541,7 @@ html[data-theme=default] .dropdown-menu {
   --bs-dropdown-header-padding-x: 1rem;
   --bs-dropdown-header-padding-y: 0.5rem;
   position: absolute;
-  z-index: 1000;
+  z-index: var(--bs-dropdown-zindex);
   display: none;
   min-width: var(--bs-dropdown-min-width);
   font-size: var(--bs-dropdown-font-size);
@@ -3992,10 +4008,10 @@ html[data-theme=default] .btn-toolbar .input-group {
 html[dir][data-theme=default] .btn-group {
   border-radius: 0.375rem;
 }
-html[dir=ltr][data-theme=default] .btn-group > .btn:not(:first-child), html[dir=ltr][data-theme=default] html[data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:not(:first-child), html[dir=ltr][data-theme=default] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:not(:first-child), html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:first-child) {
+html[dir=ltr][data-theme=default] .btn-group > :not(.btn-check:first-child) + .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > :not(.btn-check:first-child) + .close, html[dir=ltr][data-theme=default] .btn-group > :not(.btn-check:first-child) + .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > :not(.btn-check:first-child) + .close, html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:first-child) {
   margin-left: -1px;
 }
-html[dir=rtl][data-theme=default] .btn-group > .btn:not(:first-child), html[dir=rtl][data-theme=default] html[data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:not(:first-child), html[dir=rtl][data-theme=default] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:not(:first-child), html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:first-child) {
+html[dir=rtl][data-theme=default] .btn-group > :not(.btn-check:first-child) + .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > :not(.btn-check:first-child) + .close, html[dir=rtl][data-theme=default] .btn-group > :not(.btn-check:first-child) + .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > :not(.btn-check:first-child) + .close, html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:first-child) {
   margin-right: -1px;
 }
 html[dir=ltr][data-theme=default] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] html[data-theme=darkmode] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group > .btn.dropdown-toggle-split:first-child, html[dir=ltr][data-theme=default] html[data-theme=darkmode] .btn-group > .dropdown-toggle-split.button:first-child, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .dropdown-toggle-split.close:first-child, html[dir=ltr][data-theme=default] .btn-group > .dropdown-toggle-split.button:first-child, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .dropdown-toggle-split.close:first-child, html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .btn-group:not(:last-child) > .close, html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:last-child) > .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .btn-group:not(:last-child) > .close {
@@ -4137,7 +4153,7 @@ html[dir][data-theme=default] .nav-tabs {
   border-bottom: var(--bs-nav-tabs-border-width) solid var(--bs-nav-tabs-border-color);
 }
 html[dir][data-theme=default] .nav-tabs .nav-link {
-  margin-bottom: calc(var(--bs-nav-tabs-border-width) * -1);
+  margin-bottom: calc(-1 * var(--bs-nav-tabs-border-width));
   background: none;
   border: var(--bs-nav-tabs-border-width) solid transparent;
 }
@@ -4171,7 +4187,7 @@ html[dir][data-theme=default] .nav-tabs .nav-link.active, html[dir][data-theme=d
   border-color: var(--bs-nav-tabs-link-active-border-color);
 }
 html[dir][data-theme=default] .nav-tabs .dropdown-menu {
-  margin-top: calc(var(--bs-nav-tabs-border-width) * -1);
+  margin-top: calc(-1 * var(--bs-nav-tabs-border-width));
 }
 html[dir=ltr][data-theme=default] .nav-tabs .dropdown-menu {
   border-top-left-radius: 0;
@@ -4989,7 +5005,7 @@ html[dir][data-theme=default] .card-group > .card {
   }
 }
 html[data-theme=default] .accordion {
-  --bs-accordion-color: #000;
+  --bs-accordion-color: var(--bs-body-color);
   --bs-accordion-bg: #fff;
   --bs-accordion-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, border-radius 0.15s ease;
   --bs-accordion-border-color: var(--bs-border-color);
@@ -5044,7 +5060,7 @@ html[data-theme=default] .accordion-button:not(.collapsed) {
 }
 html[dir][data-theme=default] .accordion-button:not(.collapsed) {
   background-color: var(--bs-accordion-active-bg);
-  box-shadow: inset 0 calc(var(--bs-accordion-border-width) * -1) 0 var(--bs-accordion-border-color);
+  box-shadow: inset 0 calc(-1 * var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color);
 }
 html[dir][data-theme=default] .accordion-button:not(.collapsed)::after {
   background-image: var(--bs-accordion-btn-active-icon);
@@ -5160,7 +5176,7 @@ html[dir][data-theme=default] .accordion-flush .accordion-item:first-child {
 html[dir][data-theme=default] .accordion-flush .accordion-item:last-child {
   border-bottom: 0;
 }
-html[dir][data-theme=default] .accordion-flush .accordion-item .accordion-button {
+html[dir][data-theme=default] .accordion-flush .accordion-item .accordion-button, html[dir][data-theme=default] .accordion-flush .accordion-item .accordion-button.collapsed {
   border-radius: 0;
 }
 html[data-theme=default] .breadcrumb {
@@ -5622,29 +5638,29 @@ html[dir][data-theme=default] .list-group-item.active {
   background-color: var(--bs-list-group-active-bg);
   border-color: var(--bs-list-group-active-border-color);
 }
-html[dir][data-theme=default] .list-group-item + html[data-theme=default] .list-group-item {
+html[dir][data-theme=default] .list-group-item + .list-group-item {
   border-top-width: 0;
 }
-html[dir][data-theme=default] .list-group-item + html[data-theme=default] .list-group-item.active {
-  margin-top: calc(var(--bs-list-group-border-width) * -1);
+html[dir][data-theme=default] .list-group-item + .list-group-item.active {
+  margin-top: calc(-1 * var(--bs-list-group-border-width));
   border-top-width: var(--bs-list-group-border-width);
 }
 html[data-theme=default] .list-group-horizontal {
   flex-direction: row;
 }
-html[dir=ltr][data-theme=default] .list-group-horizontal > .list-group-item:first-child {
+html[dir=ltr][data-theme=default] .list-group-horizontal > .list-group-item:first-child:not(:last-child) {
   border-bottom-left-radius: var(--bs-list-group-border-radius);
   border-top-right-radius: 0;
 }
-html[dir=rtl][data-theme=default] .list-group-horizontal > .list-group-item:first-child {
+html[dir=rtl][data-theme=default] .list-group-horizontal > .list-group-item:first-child:not(:last-child) {
   border-bottom-right-radius: var(--bs-list-group-border-radius);
   border-top-left-radius: 0;
 }
-html[dir=ltr][data-theme=default] .list-group-horizontal > .list-group-item:last-child {
+html[dir=ltr][data-theme=default] .list-group-horizontal > .list-group-item:last-child:not(:first-child) {
   border-top-right-radius: var(--bs-list-group-border-radius);
   border-bottom-left-radius: 0;
 }
-html[dir=rtl][data-theme=default] .list-group-horizontal > .list-group-item:last-child {
+html[dir=rtl][data-theme=default] .list-group-horizontal > .list-group-item:last-child:not(:first-child) {
   border-top-left-radius: var(--bs-list-group-border-radius);
   border-bottom-right-radius: 0;
 }
@@ -5661,30 +5677,30 @@ html[dir=rtl][data-theme=default] .list-group-horizontal > .list-group-item + .l
   border-right-width: 0;
 }
 html[dir=ltr][data-theme=default] .list-group-horizontal > .list-group-item + .list-group-item.active {
-  margin-left: calc(var(--bs-list-group-border-width) * -1);
+  margin-left: calc(-1 * var(--bs-list-group-border-width));
   border-left-width: var(--bs-list-group-border-width);
 }
 html[dir=rtl][data-theme=default] .list-group-horizontal > .list-group-item + .list-group-item.active {
-  margin-right: calc(var(--bs-list-group-border-width) * -1);
+  margin-right: calc(-1 * var(--bs-list-group-border-width));
   border-right-width: var(--bs-list-group-border-width);
 }
 @media (min-width: 576px) {
   html[data-theme=default] .list-group-horizontal-sm {
     flex-direction: row;
   }
-  html[dir=ltr][data-theme=default] .list-group-horizontal-sm > .list-group-item:first-child {
+  html[dir=ltr][data-theme=default] .list-group-horizontal-sm > .list-group-item:first-child:not(:last-child) {
     border-bottom-left-radius: var(--bs-list-group-border-radius);
     border-top-right-radius: 0;
   }
-  html[dir=rtl][data-theme=default] .list-group-horizontal-sm > .list-group-item:first-child {
+  html[dir=rtl][data-theme=default] .list-group-horizontal-sm > .list-group-item:first-child:not(:last-child) {
     border-bottom-right-radius: var(--bs-list-group-border-radius);
     border-top-left-radius: 0;
   }
-  html[dir=ltr][data-theme=default] .list-group-horizontal-sm > .list-group-item:last-child {
+  html[dir=ltr][data-theme=default] .list-group-horizontal-sm > .list-group-item:last-child:not(:first-child) {
     border-top-right-radius: var(--bs-list-group-border-radius);
     border-bottom-left-radius: 0;
   }
-  html[dir=rtl][data-theme=default] .list-group-horizontal-sm > .list-group-item:last-child {
+  html[dir=rtl][data-theme=default] .list-group-horizontal-sm > .list-group-item:last-child:not(:first-child) {
     border-top-left-radius: var(--bs-list-group-border-radius);
     border-bottom-right-radius: 0;
   }
@@ -5701,11 +5717,11 @@ html[dir=rtl][data-theme=default] .list-group-horizontal > .list-group-item + .l
     border-right-width: 0;
   }
   html[dir=ltr][data-theme=default] .list-group-horizontal-sm > .list-group-item + .list-group-item.active {
-    margin-left: calc(var(--bs-list-group-border-width) * -1);
+    margin-left: calc(-1 * var(--bs-list-group-border-width));
     border-left-width: var(--bs-list-group-border-width);
   }
   html[dir=rtl][data-theme=default] .list-group-horizontal-sm > .list-group-item + .list-group-item.active {
-    margin-right: calc(var(--bs-list-group-border-width) * -1);
+    margin-right: calc(-1 * var(--bs-list-group-border-width));
     border-right-width: var(--bs-list-group-border-width);
   }
 }
@@ -5713,19 +5729,19 @@ html[dir=rtl][data-theme=default] .list-group-horizontal > .list-group-item + .l
   html[data-theme=default] .list-group-horizontal-md {
     flex-direction: row;
   }
-  html[dir=ltr][data-theme=default] .list-group-horizontal-md > .list-group-item:first-child {
+  html[dir=ltr][data-theme=default] .list-group-horizontal-md > .list-group-item:first-child:not(:last-child) {
     border-bottom-left-radius: var(--bs-list-group-border-radius);
     border-top-right-radius: 0;
   }
-  html[dir=rtl][data-theme=default] .list-group-horizontal-md > .list-group-item:first-child {
+  html[dir=rtl][data-theme=default] .list-group-horizontal-md > .list-group-item:first-child:not(:last-child) {
     border-bottom-right-radius: var(--bs-list-group-border-radius);
     border-top-left-radius: 0;
   }
-  html[dir=ltr][data-theme=default] .list-group-horizontal-md > .list-group-item:last-child {
+  html[dir=ltr][data-theme=default] .list-group-horizontal-md > .list-group-item:last-child:not(:first-child) {
     border-top-right-radius: var(--bs-list-group-border-radius);
     border-bottom-left-radius: 0;
   }
-  html[dir=rtl][data-theme=default] .list-group-horizontal-md > .list-group-item:last-child {
+  html[dir=rtl][data-theme=default] .list-group-horizontal-md > .list-group-item:last-child:not(:first-child) {
     border-top-left-radius: var(--bs-list-group-border-radius);
     border-bottom-right-radius: 0;
   }
@@ -5742,11 +5758,11 @@ html[dir=rtl][data-theme=default] .list-group-horizontal > .list-group-item + .l
     border-right-width: 0;
   }
   html[dir=ltr][data-theme=default] .list-group-horizontal-md > .list-group-item + .list-group-item.active {
-    margin-left: calc(var(--bs-list-group-border-width) * -1);
+    margin-left: calc(-1 * var(--bs-list-group-border-width));
     border-left-width: var(--bs-list-group-border-width);
   }
   html[dir=rtl][data-theme=default] .list-group-horizontal-md > .list-group-item + .list-group-item.active {
-    margin-right: calc(var(--bs-list-group-border-width) * -1);
+    margin-right: calc(-1 * var(--bs-list-group-border-width));
     border-right-width: var(--bs-list-group-border-width);
   }
 }
@@ -5754,19 +5770,19 @@ html[dir=rtl][data-theme=default] .list-group-horizontal > .list-group-item + .l
   html[data-theme=default] .list-group-horizontal-lg {
     flex-direction: row;
   }
-  html[dir=ltr][data-theme=default] .list-group-horizontal-lg > .list-group-item:first-child {
+  html[dir=ltr][data-theme=default] .list-group-horizontal-lg > .list-group-item:first-child:not(:last-child) {
     border-bottom-left-radius: var(--bs-list-group-border-radius);
     border-top-right-radius: 0;
   }
-  html[dir=rtl][data-theme=default] .list-group-horizontal-lg > .list-group-item:first-child {
+  html[dir=rtl][data-theme=default] .list-group-horizontal-lg > .list-group-item:first-child:not(:last-child) {
     border-bottom-right-radius: var(--bs-list-group-border-radius);
     border-top-left-radius: 0;
   }
-  html[dir=ltr][data-theme=default] .list-group-horizontal-lg > .list-group-item:last-child {
+  html[dir=ltr][data-theme=default] .list-group-horizontal-lg > .list-group-item:last-child:not(:first-child) {
     border-top-right-radius: var(--bs-list-group-border-radius);
     border-bottom-left-radius: 0;
   }
-  html[dir=rtl][data-theme=default] .list-group-horizontal-lg > .list-group-item:last-child {
+  html[dir=rtl][data-theme=default] .list-group-horizontal-lg > .list-group-item:last-child:not(:first-child) {
     border-top-left-radius: var(--bs-list-group-border-radius);
     border-bottom-right-radius: 0;
   }
@@ -5783,11 +5799,11 @@ html[dir=rtl][data-theme=default] .list-group-horizontal > .list-group-item + .l
     border-right-width: 0;
   }
   html[dir=ltr][data-theme=default] .list-group-horizontal-lg > .list-group-item + .list-group-item.active {
-    margin-left: calc(var(--bs-list-group-border-width) * -1);
+    margin-left: calc(-1 * var(--bs-list-group-border-width));
     border-left-width: var(--bs-list-group-border-width);
   }
   html[dir=rtl][data-theme=default] .list-group-horizontal-lg > .list-group-item + .list-group-item.active {
-    margin-right: calc(var(--bs-list-group-border-width) * -1);
+    margin-right: calc(-1 * var(--bs-list-group-border-width));
     border-right-width: var(--bs-list-group-border-width);
   }
 }
@@ -5795,19 +5811,19 @@ html[dir=rtl][data-theme=default] .list-group-horizontal > .list-group-item + .l
   html[data-theme=default] .list-group-horizontal-xl {
     flex-direction: row;
   }
-  html[dir=ltr][data-theme=default] .list-group-horizontal-xl > .list-group-item:first-child {
+  html[dir=ltr][data-theme=default] .list-group-horizontal-xl > .list-group-item:first-child:not(:last-child) {
     border-bottom-left-radius: var(--bs-list-group-border-radius);
     border-top-right-radius: 0;
   }
-  html[dir=rtl][data-theme=default] .list-group-horizontal-xl > .list-group-item:first-child {
+  html[dir=rtl][data-theme=default] .list-group-horizontal-xl > .list-group-item:first-child:not(:last-child) {
     border-bottom-right-radius: var(--bs-list-group-border-radius);
     border-top-left-radius: 0;
   }
-  html[dir=ltr][data-theme=default] .list-group-horizontal-xl > .list-group-item:last-child {
+  html[dir=ltr][data-theme=default] .list-group-horizontal-xl > .list-group-item:last-child:not(:first-child) {
     border-top-right-radius: var(--bs-list-group-border-radius);
     border-bottom-left-radius: 0;
   }
-  html[dir=rtl][data-theme=default] .list-group-horizontal-xl > .list-group-item:last-child {
+  html[dir=rtl][data-theme=default] .list-group-horizontal-xl > .list-group-item:last-child:not(:first-child) {
     border-top-left-radius: var(--bs-list-group-border-radius);
     border-bottom-right-radius: 0;
   }
@@ -5824,11 +5840,11 @@ html[dir=rtl][data-theme=default] .list-group-horizontal > .list-group-item + .l
     border-right-width: 0;
   }
   html[dir=ltr][data-theme=default] .list-group-horizontal-xl > .list-group-item + .list-group-item.active {
-    margin-left: calc(var(--bs-list-group-border-width) * -1);
+    margin-left: calc(-1 * var(--bs-list-group-border-width));
     border-left-width: var(--bs-list-group-border-width);
   }
   html[dir=rtl][data-theme=default] .list-group-horizontal-xl > .list-group-item + .list-group-item.active {
-    margin-right: calc(var(--bs-list-group-border-width) * -1);
+    margin-right: calc(-1 * var(--bs-list-group-border-width));
     border-right-width: var(--bs-list-group-border-width);
   }
 }
@@ -5836,19 +5852,19 @@ html[dir=rtl][data-theme=default] .list-group-horizontal > .list-group-item + .l
   html[data-theme=default] .list-group-horizontal-xxl {
     flex-direction: row;
   }
-  html[dir=ltr][data-theme=default] .list-group-horizontal-xxl > .list-group-item:first-child {
+  html[dir=ltr][data-theme=default] .list-group-horizontal-xxl > .list-group-item:first-child:not(:last-child) {
     border-bottom-left-radius: var(--bs-list-group-border-radius);
     border-top-right-radius: 0;
   }
-  html[dir=rtl][data-theme=default] .list-group-horizontal-xxl > .list-group-item:first-child {
+  html[dir=rtl][data-theme=default] .list-group-horizontal-xxl > .list-group-item:first-child:not(:last-child) {
     border-bottom-right-radius: var(--bs-list-group-border-radius);
     border-top-left-radius: 0;
   }
-  html[dir=ltr][data-theme=default] .list-group-horizontal-xxl > .list-group-item:last-child {
+  html[dir=ltr][data-theme=default] .list-group-horizontal-xxl > .list-group-item:last-child:not(:first-child) {
     border-top-right-radius: var(--bs-list-group-border-radius);
     border-bottom-left-radius: 0;
   }
-  html[dir=rtl][data-theme=default] .list-group-horizontal-xxl > .list-group-item:last-child {
+  html[dir=rtl][data-theme=default] .list-group-horizontal-xxl > .list-group-item:last-child:not(:first-child) {
     border-top-left-radius: var(--bs-list-group-border-radius);
     border-bottom-right-radius: 0;
   }
@@ -5865,11 +5881,11 @@ html[dir=rtl][data-theme=default] .list-group-horizontal > .list-group-item + .l
     border-right-width: 0;
   }
   html[dir=ltr][data-theme=default] .list-group-horizontal-xxl > .list-group-item + .list-group-item.active {
-    margin-left: calc(var(--bs-list-group-border-width) * -1);
+    margin-left: calc(-1 * var(--bs-list-group-border-width));
     border-left-width: var(--bs-list-group-border-width);
   }
   html[dir=rtl][data-theme=default] .list-group-horizontal-xxl > .list-group-item + .list-group-item.active {
-    margin-right: calc(var(--bs-list-group-border-width) * -1);
+    margin-right: calc(-1 * var(--bs-list-group-border-width));
     border-right-width: var(--bs-list-group-border-width);
   }
 }
@@ -6068,6 +6084,7 @@ html[data-theme=default] .btn-close-white {
   filter: invert(1) grayscale(100%) brightness(200%);
 }
 html[data-theme=default] .toast {
+  --bs-toast-zindex: 1090;
   --bs-toast-padding-x: 0.75rem;
   --bs-toast-padding-y: 0.5rem;
   --bs-toast-spacing: 1.5rem;
@@ -6103,7 +6120,7 @@ html[data-theme=default] .toast:not(.show) {
 }
 html[data-theme=default] .toast-container {
   position: absolute;
-  z-index: 1090;
+  z-index: var(--bs-toast-zindex);
   width: max-content;
   max-width: 100%;
   pointer-events: none;
@@ -6131,11 +6148,11 @@ html[dir=rtl][data-theme=default] .toast-header {
   border-top-left-radius: calc(var(--bs-toast-border-radius) - var(--bs-toast-border-width));
 }
 html[dir=ltr][data-theme=default] .toast-header .btn-close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .toast-header .close, html[dir=ltr][data-theme=default] .toast-header .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .toast-header .close {
-  margin-right: calc(var(--bs-toast-padding-x) * -0.5);
+  margin-right: calc(-0.5 * var(--bs-toast-padding-x));
   margin-left: var(--bs-toast-padding-x);
 }
 html[dir=rtl][data-theme=default] .toast-header .btn-close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .toast-header .close, html[dir=rtl][data-theme=default] .toast-header .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .toast-header .close {
-  margin-left: calc(var(--bs-toast-padding-x) * -0.5);
+  margin-left: calc(-0.5 * var(--bs-toast-padding-x));
   margin-right: var(--bs-toast-padding-x);
 }
 html[data-theme=default] .toast-body {
@@ -6284,10 +6301,10 @@ html[dir][data-theme=default] .modal-header .btn-close, html[dir][data-theme=dar
   padding: calc(var(--bs-modal-header-padding-y) * 0.5) calc(var(--bs-modal-header-padding-x) * 0.5);
 }
 html[dir=ltr][data-theme=default] .modal-header .btn-close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .modal-header .close, html[dir=ltr][data-theme=default] .modal-header .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .modal-header .close {
-  margin: calc(var(--bs-modal-header-padding-y) * -0.5) calc(var(--bs-modal-header-padding-x) * -0.5) calc(var(--bs-modal-header-padding-y) * -0.5) auto;
+  margin: calc(-0.5 * var(--bs-modal-header-padding-y)) calc(-0.5 * var(--bs-modal-header-padding-x)) calc(-0.5 * var(--bs-modal-header-padding-y)) auto;
 }
 html[dir=rtl][data-theme=default] .modal-header .btn-close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .modal-header .close, html[dir=rtl][data-theme=default] .modal-header .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .modal-header .close {
-  margin: calc(var(--bs-modal-header-padding-y) * -0.5) auto calc(var(--bs-modal-header-padding-y) * -0.5) calc(var(--bs-modal-header-padding-x) * -0.5);
+  margin: calc(-0.5 * var(--bs-modal-header-padding-y)) auto calc(-0.5 * var(--bs-modal-header-padding-y)) calc(-0.5 * var(--bs-modal-header-padding-x));
 }
 html[data-theme=default] .modal-title {
   line-height: var(--bs-modal-title-line-height);
@@ -6633,7 +6650,7 @@ html[data-theme=default] .popover {
   --bs-popover-header-padding-x: 1rem;
   --bs-popover-header-padding-y: 0.5rem;
   --bs-popover-header-font-size: 1rem;
-  --bs-popover-header-color: var(--bs-heading-color);
+  --bs-popover-header-color: ;
   --bs-popover-header-bg: #f0f0f0;
   --bs-popover-body-padding-x: 1rem;
   --bs-popover-body-padding-y: 1rem;
@@ -6688,7 +6705,7 @@ html[dir][data-theme=default] .popover .popover-arrow::before, html[dir][data-th
   border-width: 0;
 }
 html[data-theme=default] .bs-popover-top > .popover-arrow, html[data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow, html[data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow {
-  bottom: calc(var(--bs-popover-arrow-height) * -1 - var(--bs-popover-border-width));
+  bottom: calc(-1 * (var(--bs-popover-arrow-height)) - var(--bs-popover-border-width));
 }
 html[dir][data-theme=default] .bs-popover-top > .popover-arrow::before, html[dir][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::before, html[dir][data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::before, html[dir][data-theme=default] .bs-popover-top > .popover-arrow::after, html[dir][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::after, html[dir][data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::after {
   border-width: var(--bs-popover-arrow-height) calc(var(--bs-popover-arrow-width) * 0.5) 0;
@@ -6710,10 +6727,10 @@ html[data-theme=default] .bs-popover-end > .popover-arrow, html[data-theme=defau
   height: var(--bs-popover-arrow-width);
 }
 html[dir=ltr][data-theme=default] .bs-popover-end > .popover-arrow, html[dir=ltr][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow {
-  left: calc(var(--bs-popover-arrow-height) * -1 - var(--bs-popover-border-width));
+  left: calc(-1 * (var(--bs-popover-arrow-height)) - var(--bs-popover-border-width));
 }
 html[dir=rtl][data-theme=default] .bs-popover-end > .popover-arrow, html[dir=rtl][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow, html[dir=rtl][data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow {
-  right: calc(var(--bs-popover-arrow-height) * -1 - var(--bs-popover-border-width));
+  right: calc(-1 * (var(--bs-popover-arrow-height)) - var(--bs-popover-border-width));
 }
 html[dir=ltr][data-theme=default] .bs-popover-end > .popover-arrow::before, html[dir=ltr][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::before, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::before, html[dir=ltr][data-theme=default] .bs-popover-end > .popover-arrow::after, html[dir=ltr][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::after, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::after {
   border-width: calc(var(--bs-popover-arrow-width) * 0.5) var(--bs-popover-arrow-height) calc(var(--bs-popover-arrow-width) * 0.5) 0;
@@ -6738,7 +6755,7 @@ html[dir=rtl][data-theme=default] .bs-popover-end > .popover-arrow::after, html[
   border-left-color: var(--bs-popover-bg);
 }
 html[data-theme=default] .bs-popover-bottom > .popover-arrow, html[data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow, html[data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow {
-  top: calc(var(--bs-popover-arrow-height) * -1 - var(--bs-popover-border-width));
+  top: calc(-1 * (var(--bs-popover-arrow-height)) - var(--bs-popover-border-width));
 }
 html[dir][data-theme=default] .bs-popover-bottom > .popover-arrow::before, html[dir][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::before, html[dir][data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::before, html[dir][data-theme=default] .bs-popover-bottom > .popover-arrow::after, html[dir][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::after, html[dir][data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::after {
   border-width: 0 calc(var(--bs-popover-arrow-width) * 0.5) var(--bs-popover-arrow-height);
@@ -6767,21 +6784,21 @@ html[dir][data-theme=default] .bs-popover-bottom .popover-header::before, html[d
 }
 html[dir=ltr][data-theme=default] .bs-popover-bottom .popover-header::before, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] .popover-header::before {
   left: 50%;
-  margin-left: calc(var(--bs-popover-arrow-width) * -0.5);
+  margin-left: calc(-0.5 * var(--bs-popover-arrow-width));
 }
 html[dir=rtl][data-theme=default] .bs-popover-bottom .popover-header::before, html[dir=rtl][data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] .popover-header::before {
   right: 50%;
-  margin-right: calc(var(--bs-popover-arrow-width) * -0.5);
+  margin-right: calc(-0.5 * var(--bs-popover-arrow-width));
 }
 html[data-theme=default] .bs-popover-start > .popover-arrow, html[data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow, html[data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
   width: var(--bs-popover-arrow-height);
   height: var(--bs-popover-arrow-width);
 }
 html[dir=ltr][data-theme=default] .bs-popover-start > .popover-arrow, html[dir=ltr][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
-  right: calc(var(--bs-popover-arrow-height) * -1 - var(--bs-popover-border-width));
+  right: calc(-1 * (var(--bs-popover-arrow-height)) - var(--bs-popover-border-width));
 }
 html[dir=rtl][data-theme=default] .bs-popover-start > .popover-arrow, html[dir=rtl][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow, html[dir=rtl][data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
-  left: calc(var(--bs-popover-arrow-height) * -1 - var(--bs-popover-border-width));
+  left: calc(-1 * (var(--bs-popover-arrow-height)) - var(--bs-popover-border-width));
 }
 html[dir=ltr][data-theme=default] .bs-popover-start > .popover-arrow::before, html[dir=ltr][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::before, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::before, html[dir=ltr][data-theme=default] .bs-popover-start > .popover-arrow::after, html[dir=ltr][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::after, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::after {
   border-width: calc(var(--bs-popover-arrow-width) * 0.5) 0 calc(var(--bs-popover-arrow-width) * 0.5) var(--bs-popover-arrow-height);
@@ -7150,6 +7167,7 @@ html[data-theme=default] .spinner-grow-sm {
   }
 }
 html[data-theme=default] .offcanvas, html[data-theme=default] .offcanvas-xxl, html[data-theme=default] .offcanvas-xl, html[data-theme=default] .offcanvas-lg, html[data-theme=default] .offcanvas-md, html[data-theme=default] .offcanvas-sm {
+  --bs-offcanvas-zindex: 1045;
   --bs-offcanvas-width: 400px;
   --bs-offcanvas-height: 30vh;
   --bs-offcanvas-padding-x: 1rem;
@@ -7164,7 +7182,7 @@ html[data-theme=default] .offcanvas, html[data-theme=default] .offcanvas-xxl, ht
   html[data-theme=default] .offcanvas-sm {
     position: fixed;
     bottom: 0;
-    z-index: 1045;
+    z-index: var(--bs-offcanvas-zindex);
     display: flex;
     flex-direction: column;
     max-width: 100%;
@@ -7287,7 +7305,7 @@ html[data-theme=default] .offcanvas, html[data-theme=default] .offcanvas-xxl, ht
   html[data-theme=default] .offcanvas-md {
     position: fixed;
     bottom: 0;
-    z-index: 1045;
+    z-index: var(--bs-offcanvas-zindex);
     display: flex;
     flex-direction: column;
     max-width: 100%;
@@ -7410,7 +7428,7 @@ html[data-theme=default] .offcanvas, html[data-theme=default] .offcanvas-xxl, ht
   html[data-theme=default] .offcanvas-lg {
     position: fixed;
     bottom: 0;
-    z-index: 1045;
+    z-index: var(--bs-offcanvas-zindex);
     display: flex;
     flex-direction: column;
     max-width: 100%;
@@ -7533,7 +7551,7 @@ html[data-theme=default] .offcanvas, html[data-theme=default] .offcanvas-xxl, ht
   html[data-theme=default] .offcanvas-xl {
     position: fixed;
     bottom: 0;
-    z-index: 1045;
+    z-index: var(--bs-offcanvas-zindex);
     display: flex;
     flex-direction: column;
     max-width: 100%;
@@ -7656,7 +7674,7 @@ html[data-theme=default] .offcanvas, html[data-theme=default] .offcanvas-xxl, ht
   html[data-theme=default] .offcanvas-xxl {
     position: fixed;
     bottom: 0;
-    z-index: 1045;
+    z-index: var(--bs-offcanvas-zindex);
     display: flex;
     flex-direction: column;
     max-width: 100%;
@@ -7778,7 +7796,7 @@ html[data-theme=default] .offcanvas, html[data-theme=default] .offcanvas-xxl, ht
 html[data-theme=default] .offcanvas {
   position: fixed;
   bottom: 0;
-  z-index: 1045;
+  z-index: var(--bs-offcanvas-zindex);
   display: flex;
   flex-direction: column;
   max-width: 100%;
@@ -7895,14 +7913,14 @@ html[dir][data-theme=default] .offcanvas-header {
 }
 html[dir][data-theme=default] .offcanvas-header .btn-close, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .offcanvas-header .close, html[dir][data-theme=default] .offcanvas-header .bootstrap-select .popover-header .close, html[dir][data-theme=default] .bootstrap-select .popover-header .offcanvas-header .close {
   padding: calc(var(--bs-offcanvas-padding-y) * 0.5) calc(var(--bs-offcanvas-padding-x) * 0.5);
-  margin-top: calc(var(--bs-offcanvas-padding-y) * -0.5);
-  margin-bottom: calc(var(--bs-offcanvas-padding-y) * -0.5);
+  margin-top: calc(-0.5 * var(--bs-offcanvas-padding-y));
+  margin-bottom: calc(-0.5 * var(--bs-offcanvas-padding-y));
 }
 html[dir=ltr][data-theme=default] .offcanvas-header .btn-close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .offcanvas-header .close, html[dir=ltr][data-theme=default] .offcanvas-header .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .offcanvas-header .close {
-  margin-right: calc(var(--bs-offcanvas-padding-x) * -0.5);
+  margin-right: calc(-0.5 * var(--bs-offcanvas-padding-x));
 }
 html[dir=rtl][data-theme=default] .offcanvas-header .btn-close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .offcanvas-header .close, html[dir=rtl][data-theme=default] .offcanvas-header .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .offcanvas-header .close {
-  margin-left: calc(var(--bs-offcanvas-padding-x) * -0.5);
+  margin-left: calc(-0.5 * var(--bs-offcanvas-padding-x));
 }
 html[data-theme=default] .offcanvas-title {
   line-height: 1.5;
@@ -29807,7 +29825,7 @@ html[dir=rtl][data-theme=default] .has-filter .form-control-feedback {
 
 html[data-theme=darkmode] {
   /*!
-   * Bootstrap  v5.2.0 (https://getbootstrap.com/)
+   * Bootstrap  v5.2.1 (https://getbootstrap.com/)
    * Copyright 2011-2022 The Bootstrap Authors
    * Copyright 2011-2022 Twitter, Inc.
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
@@ -32493,6 +32511,7 @@ html[data-theme=darkmode] .form-floating > label {
 }
 html[dir][data-theme=darkmode] .form-floating > label {
   padding: 1rem 0.75rem;
+  text-align: start;
   border: 1px solid transparent;
 }
 html[dir=ltr][data-theme=darkmode] .form-floating > label {
@@ -32569,14 +32588,14 @@ html[data-theme=darkmode] .input-group > .form-floating {
 html[data-theme=darkmode] .input-group > .form-control:focus,
 html[data-theme=darkmode] .input-group > .form-select:focus,
 html[data-theme=darkmode] .input-group > .form-floating:focus-within {
-  z-index: 3;
+  z-index: 5;
 }
 html[data-theme=darkmode] .input-group .btn, html[data-theme=darkmode] .input-group .button, html[data-theme=darkmode] .input-group .bootstrap-select .popover-header .close, html[data-theme=darkmode] .bootstrap-select .popover-header .input-group .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .input-group .close {
   position: relative;
   z-index: 2;
 }
 html[data-theme=darkmode] .input-group .btn:focus, html[data-theme=darkmode] .input-group .button:focus, html[data-theme=darkmode] .input-group .bootstrap-select .popover-header .close:focus, html[data-theme=darkmode] .bootstrap-select .popover-header .input-group .close:focus, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .input-group .close:focus {
-  z-index: 3;
+  z-index: 5;
 }
 html[data-theme=darkmode] .input-group-text {
   display: flex;
@@ -32644,13 +32663,21 @@ html[dir=rtl][data-theme=darkmode] .input-group.has-validation > :nth-last-child
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-html[dir=ltr][data-theme=darkmode] .input-group > :not(:first-child):not(.dropdown-menu):not(.form-floating):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback), html[dir=ltr][data-theme=darkmode] .input-group > .form-floating:not(:first-child) > .form-control, html[dir=ltr][data-theme=darkmode] .input-group > .form-floating:not(:first-child) > .form-select {
+html[dir=ltr][data-theme=darkmode] .input-group > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
   margin-left: -1px;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-html[dir=rtl][data-theme=darkmode] .input-group > :not(:first-child):not(.dropdown-menu):not(.form-floating):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback), html[dir=rtl][data-theme=darkmode] .input-group > .form-floating:not(:first-child) > .form-control, html[dir=rtl][data-theme=darkmode] .input-group > .form-floating:not(:first-child) > .form-select {
+html[dir=rtl][data-theme=darkmode] .input-group > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
   margin-right: -1px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+html[dir=ltr][data-theme=darkmode] .input-group > .form-floating:not(:first-child) > .form-control, html[dir=ltr][data-theme=darkmode] .input-group > .form-floating:not(:first-child) > .form-select {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+html[dir=rtl][data-theme=darkmode] .input-group > .form-floating:not(:first-child) > .form-control, html[dir=rtl][data-theme=darkmode] .input-group > .form-floating:not(:first-child) > .form-select {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
@@ -32749,14 +32776,11 @@ html[dir=ltr][data-theme=darkmode] .form-check-inline .form-check-input ~ .valid
 html[dir=rtl][data-theme=darkmode] .form-check-inline .form-check-input ~ .valid-feedback {
   margin-right: 0.5em;
 }
-.was-validated html[data-theme=darkmode] .input-group .form-control:valid, html[data-theme=darkmode] .input-group .form-control.is-valid,
-.was-validated html[data-theme=darkmode] .input-group .form-select:valid,
-html[data-theme=darkmode] .input-group .form-select.is-valid {
-  z-index: 1;
-}
-.was-validated html[data-theme=darkmode] .input-group .form-control:valid:focus, html[data-theme=darkmode] .input-group .form-control.is-valid:focus,
-.was-validated html[data-theme=darkmode] .input-group .form-select:valid:focus,
-html[data-theme=darkmode] .input-group .form-select.is-valid:focus {
+.was-validated html[data-theme=darkmode] .input-group > .form-control:not(:focus):valid, html[data-theme=darkmode] .input-group > .form-control:not(:focus).is-valid,
+.was-validated html[data-theme=darkmode] .input-group > .form-select:not(:focus):valid,
+html[data-theme=darkmode] .input-group > .form-select:not(:focus).is-valid,
+.was-validated html[data-theme=darkmode] .input-group > .form-floating:not(:focus-within):valid,
+html[data-theme=darkmode] .input-group > .form-floating:not(:focus-within).is-valid {
   z-index: 3;
 }
 html[data-theme=darkmode] .invalid-feedback {
@@ -32858,19 +32882,20 @@ html[dir=ltr][data-theme=darkmode] .form-check-inline .form-check-input ~ .inval
 html[dir=rtl][data-theme=darkmode] .form-check-inline .form-check-input ~ .invalid-feedback {
   margin-right: 0.5em;
 }
-.was-validated html[data-theme=darkmode] .input-group .form-control:invalid, html[data-theme=darkmode] .input-group .form-control.is-invalid, html[data-theme=darkmode] .input-group .form-control.has-validation-error, html[data-theme=darkmode] .input-group .form-control.input-validation-error,
-.was-validated html[data-theme=darkmode] .input-group .form-select:invalid,
-html[data-theme=darkmode] .input-group .form-select.is-invalid,
-html[data-theme=darkmode] .input-group .form-select.has-validation-error,
-html[data-theme=darkmode] .input-group .form-select.input-validation-error {
-  z-index: 2;
-}
-.was-validated html[data-theme=darkmode] .input-group .form-control:invalid:focus, html[data-theme=darkmode] .input-group .form-control.is-invalid:focus, html[data-theme=darkmode] .input-group .form-control.has-validation-error:focus, html[data-theme=darkmode] .input-group .form-control.input-validation-error:focus,
-.was-validated html[data-theme=darkmode] .input-group .form-select:invalid:focus,
-html[data-theme=darkmode] .input-group .form-select.is-invalid:focus,
-html[data-theme=darkmode] .input-group .form-select.has-validation-error:focus,
-html[data-theme=darkmode] .input-group .form-select.input-validation-error:focus {
-  z-index: 3;
+.was-validated html[data-theme=darkmode] .input-group > .form-control:not(:focus):invalid, html[data-theme=darkmode] .input-group > .form-control:not(:focus).is-invalid, html[data-theme=darkmode] .input-group > .form-control.has-validation-error:not(:focus), html[data-theme=darkmode] .input-group > .form-control.input-validation-error:not(:focus), html[data-theme=darkmode] html[data-theme=default] .input-group > .form-control.input-validation-error:not(:focus), html[data-theme=darkmode] html[data-theme=default] .input-group > .form-control.has-validation-error:not(:focus),
+.was-validated html[data-theme=darkmode] .input-group > .form-select:not(:focus):invalid,
+html[data-theme=darkmode] .input-group > .form-select:not(:focus).is-invalid,
+html[data-theme=darkmode] .input-group > .form-select.has-validation-error:not(:focus),
+html[data-theme=darkmode] .input-group > .form-select.input-validation-error:not(:focus),
+html[data-theme=darkmode] html[data-theme=default] .input-group > .form-select.input-validation-error:not(:focus),
+html[data-theme=darkmode] html[data-theme=default] .input-group > .form-select.has-validation-error:not(:focus),
+.was-validated html[data-theme=darkmode] .input-group > .form-floating:not(:focus-within):invalid,
+html[data-theme=darkmode] .input-group > .form-floating:not(:focus-within).is-invalid,
+html[data-theme=darkmode] .input-group > .form-floating.has-validation-error:not(:focus-within),
+html[data-theme=darkmode] .input-group > .form-floating.input-validation-error:not(:focus-within),
+html[data-theme=darkmode] html[data-theme=default] .input-group > .form-floating.input-validation-error:not(:focus-within),
+html[data-theme=darkmode] html[data-theme=default] .input-group > .form-floating.has-validation-error:not(:focus-within) {
+  z-index: 4;
 }
 html[data-theme=darkmode] .btn, html[data-theme=darkmode] .button, html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close {
   --bs-btn-padding-x: 0.75rem;
@@ -32884,6 +32909,7 @@ html[data-theme=darkmode] .btn, html[data-theme=darkmode] .button, html[data-the
   --bs-btn-border-width: 1px;
   --bs-btn-border-color: transparent;
   --bs-btn-border-radius: 0.375rem;
+  --bs-btn-hover-border-color: transparent;
   --bs-btn-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 1px rgba(0, 0, 0, 0.075);
   --bs-btn-disabled-opacity: 0.65;
   --bs-btn-focus-box-shadow: 0 0 0 0.25rem rgba(var(--bs-btn-focus-shadow-rgb), .5);
@@ -32911,30 +32937,37 @@ html[dir][data-theme=darkmode] .btn, html[dir][data-theme=darkmode] .button, htm
     transition: none;
   }
 }
-html[data-theme=darkmode] .btn:hover, html[data-theme=darkmode] .button:hover, html[data-theme=darkmode] .bootstrap-select .popover-header .close:hover, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:hover {
+:not(.btn-check) + html[data-theme=darkmode] .btn:hover, :not(.btn-check) + html[data-theme=darkmode] .button:hover, :not(.btn-check) + html[data-theme=darkmode] .bootstrap-select .popover-header .close:hover, html[data-theme=default] .bootstrap-select .popover-header :not(.btn-check) + html[data-theme=darkmode] .close:hover, html[data-theme=darkmode] .btn:first-child:hover, html[data-theme=darkmode] .button:first-child:hover, html[data-theme=darkmode] .bootstrap-select .popover-header .close:first-child:hover, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:first-child:hover {
   color: var(--bs-btn-hover-color);
 }
-html[dir][data-theme=darkmode] .btn:hover, html[dir][data-theme=darkmode] .button:hover, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .close:hover, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:hover {
+[dir] :not(.btn-check) + html[data-theme=darkmode] .btn:hover, [dir] :not(.btn-check) + html[data-theme=darkmode] .button:hover, [dir] :not(.btn-check) + html[data-theme=darkmode] .bootstrap-select .popover-header .close:hover, html[dir][data-theme=default] .bootstrap-select .popover-header :not(.btn-check) + html[data-theme=darkmode] .close:hover, html[dir][data-theme=darkmode] .btn:first-child:hover, html[dir][data-theme=darkmode] .button:first-child:hover, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .close:first-child:hover, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:first-child:hover {
   background-color: var(--bs-btn-hover-bg);
   border-color: var(--bs-btn-hover-border-color);
 }
-.btn-check:focus + html[data-theme=darkmode] .btn, .btn-check:focus + html[data-theme=darkmode] .button, .btn-check:focus + html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[data-theme=default] .bootstrap-select .popover-header .btn-check:focus + html[data-theme=darkmode] .close, html[data-theme=darkmode] .btn:focus, html[data-theme=darkmode] .button:focus, html[data-theme=darkmode] .bootstrap-select .popover-header .close:focus, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:focus {
+html[data-theme=darkmode] .btn:focus-visible, html[data-theme=darkmode] .button:focus-visible, html[data-theme=darkmode] .bootstrap-select .popover-header .close:focus-visible, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:focus-visible {
   color: var(--bs-btn-hover-color);
   outline: 0;
 }
-[dir] .btn-check:focus + html[data-theme=darkmode] .btn, [dir] .btn-check:focus + html[data-theme=darkmode] .button, [dir] .btn-check:focus + html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[dir][data-theme=default] .bootstrap-select .popover-header .btn-check:focus + html[data-theme=darkmode] .close, html[dir][data-theme=darkmode] .btn:focus, html[dir][data-theme=darkmode] .button:focus, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .close:focus, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:focus {
+html[dir][data-theme=darkmode] .btn:focus-visible, html[dir][data-theme=darkmode] .button:focus-visible, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .close:focus-visible, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:focus-visible {
   background-color: var(--bs-btn-hover-bg);
   border-color: var(--bs-btn-hover-border-color);
   box-shadow: var(--bs-btn-focus-box-shadow);
 }
-.btn-check:checked + html[data-theme=darkmode] .btn, .btn-check:checked + html[data-theme=darkmode] .button, .btn-check:checked + html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[data-theme=default] .bootstrap-select .popover-header .btn-check:checked + html[data-theme=darkmode] .close, .btn-check:active + html[data-theme=darkmode] .btn, .btn-check:active + html[data-theme=darkmode] .button, .btn-check:active + html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[data-theme=default] .bootstrap-select .popover-header .btn-check:active + html[data-theme=darkmode] .close, html[data-theme=darkmode] .btn:active, html[data-theme=darkmode] .button:active, html[data-theme=darkmode] .bootstrap-select .popover-header .close:active, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:active, html[data-theme=darkmode] .btn.active, html[data-theme=darkmode] .active.button, html[data-theme=darkmode] .bootstrap-select .popover-header .active.close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .active.close, html[data-theme=darkmode] .btn.show, html[data-theme=darkmode] .show.button, html[data-theme=darkmode] .bootstrap-select .popover-header .show.close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .show.close {
+.btn-check:focus-visible + html[data-theme=darkmode] .btn, .btn-check:focus-visible + html[data-theme=darkmode] .button, .btn-check:focus-visible + html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[data-theme=default] .bootstrap-select .popover-header .btn-check:focus-visible + html[data-theme=darkmode] .close {
+  outline: 0;
+}
+[dir] .btn-check:focus-visible + html[data-theme=darkmode] .btn, [dir] .btn-check:focus-visible + html[data-theme=darkmode] .button, [dir] .btn-check:focus-visible + html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[dir][data-theme=default] .bootstrap-select .popover-header .btn-check:focus-visible + html[data-theme=darkmode] .close {
+  border-color: var(--bs-btn-hover-border-color);
+  box-shadow: var(--bs-btn-focus-box-shadow);
+}
+.btn-check:checked + html[data-theme=darkmode] .btn, .btn-check:checked + html[data-theme=darkmode] .button, .btn-check:checked + html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[data-theme=default] .bootstrap-select .popover-header .btn-check:checked + html[data-theme=darkmode] .close, :not(.btn-check) + html[data-theme=darkmode] .btn:active, :not(.btn-check) + html[data-theme=darkmode] .button:active, :not(.btn-check) + html[data-theme=darkmode] .bootstrap-select .popover-header .close:active, html[data-theme=default] .bootstrap-select .popover-header :not(.btn-check) + html[data-theme=darkmode] .close:active, html[data-theme=darkmode] .btn:first-child:active, html[data-theme=darkmode] .button:first-child:active, html[data-theme=darkmode] .bootstrap-select .popover-header .close:first-child:active, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:first-child:active, html[data-theme=darkmode] .btn.active, html[data-theme=darkmode] .active.button, html[data-theme=darkmode] .bootstrap-select .popover-header .active.close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .active.close, html[data-theme=darkmode] .btn.show, html[data-theme=darkmode] .show.button, html[data-theme=darkmode] .bootstrap-select .popover-header .show.close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .show.close {
   color: var(--bs-btn-active-color);
 }
-[dir] .btn-check:checked + html[data-theme=darkmode] .btn, [dir] .btn-check:checked + html[data-theme=darkmode] .button, [dir] .btn-check:checked + html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[dir][data-theme=default] .bootstrap-select .popover-header .btn-check:checked + html[data-theme=darkmode] .close, [dir] .btn-check:active + html[data-theme=darkmode] .btn, [dir] .btn-check:active + html[data-theme=darkmode] .button, [dir] .btn-check:active + html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[dir][data-theme=default] .bootstrap-select .popover-header .btn-check:active + html[data-theme=darkmode] .close, html[dir][data-theme=darkmode] .btn:active, html[dir][data-theme=darkmode] .button:active, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .close:active, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:active, html[dir][data-theme=darkmode] .btn.active, html[dir][data-theme=darkmode] .active.button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .active.close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .active.close, html[dir][data-theme=darkmode] .btn.show, html[dir][data-theme=darkmode] .show.button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .show.close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .show.close {
+[dir] .btn-check:checked + html[data-theme=darkmode] .btn, [dir] .btn-check:checked + html[data-theme=darkmode] .button, [dir] .btn-check:checked + html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[dir][data-theme=default] .bootstrap-select .popover-header .btn-check:checked + html[data-theme=darkmode] .close, [dir] :not(.btn-check) + html[data-theme=darkmode] .btn:active, [dir] :not(.btn-check) + html[data-theme=darkmode] .button:active, [dir] :not(.btn-check) + html[data-theme=darkmode] .bootstrap-select .popover-header .close:active, html[dir][data-theme=default] .bootstrap-select .popover-header :not(.btn-check) + html[data-theme=darkmode] .close:active, html[dir][data-theme=darkmode] .btn:first-child:active, html[dir][data-theme=darkmode] .button:first-child:active, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .close:first-child:active, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:first-child:active, html[dir][data-theme=darkmode] .btn.active, html[dir][data-theme=darkmode] .active.button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .active.close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .active.close, html[dir][data-theme=darkmode] .btn.show, html[dir][data-theme=darkmode] .show.button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .show.close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .show.close {
   background-color: var(--bs-btn-active-bg);
   border-color: var(--bs-btn-active-border-color);
 }
-[dir] .btn-check:checked + html[data-theme=darkmode] .btn:focus, [dir] .btn-check:checked + html[data-theme=darkmode] .button:focus, [dir] .btn-check:checked + html[data-theme=darkmode] .bootstrap-select .popover-header .close:focus, html[dir][data-theme=default] .bootstrap-select .popover-header .btn-check:checked + html[data-theme=darkmode] .close:focus, [dir] .btn-check:active + html[data-theme=darkmode] .btn:focus, [dir] .btn-check:active + html[data-theme=darkmode] .button:focus, [dir] .btn-check:active + html[data-theme=darkmode] .bootstrap-select .popover-header .close:focus, html[dir][data-theme=default] .bootstrap-select .popover-header .btn-check:active + html[data-theme=darkmode] .close:focus, html[dir][data-theme=darkmode] .btn:active:focus, html[dir][data-theme=darkmode] .button:active:focus, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .close:active:focus, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:active:focus, html[dir][data-theme=darkmode] .btn.active:focus, html[dir][data-theme=darkmode] .active.button:focus, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .active.close:focus, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .active.close:focus, html[dir][data-theme=darkmode] .btn.show:focus, html[dir][data-theme=darkmode] .show.button:focus, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .show.close:focus, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .show.close:focus {
+[dir] .btn-check:checked + html[data-theme=darkmode] .btn:focus-visible, [dir] .btn-check:checked + html[data-theme=darkmode] .button:focus-visible, [dir] .btn-check:checked + html[data-theme=darkmode] .bootstrap-select .popover-header .close:focus-visible, html[dir][data-theme=default] .bootstrap-select .popover-header .btn-check:checked + html[data-theme=darkmode] .close:focus-visible, [dir] :not(.btn-check) + html[data-theme=darkmode] .btn:active:focus-visible, [dir] :not(.btn-check) + html[data-theme=darkmode] .button:active:focus-visible, [dir] :not(.btn-check) + html[data-theme=darkmode] .bootstrap-select .popover-header .close:active:focus-visible, html[dir][data-theme=default] .bootstrap-select .popover-header :not(.btn-check) + html[data-theme=darkmode] .close:active:focus-visible, html[dir][data-theme=darkmode] .btn:first-child:active:focus-visible, html[dir][data-theme=darkmode] .button:first-child:active:focus-visible, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .close:first-child:active:focus-visible, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:first-child:active:focus-visible, html[dir][data-theme=darkmode] .btn.active:focus-visible, html[dir][data-theme=darkmode] .active.button:focus-visible, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .active.close:focus-visible, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .active.close:focus-visible, html[dir][data-theme=darkmode] .btn.show:focus-visible, html[dir][data-theme=darkmode] .show.button:focus-visible, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .show.close:focus-visible, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .show.close:focus-visible {
   box-shadow: var(--bs-btn-focus-box-shadow);
 }
 html[data-theme=darkmode] .btn:disabled, html[data-theme=darkmode] .button:disabled, html[data-theme=darkmode] .bootstrap-select .popover-header .close:disabled, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .close:disabled, html[data-theme=darkmode] .btn.disabled, html[data-theme=darkmode] .disabled.button, html[data-theme=darkmode] .bootstrap-select .popover-header .disabled.close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .disabled.close, fieldset:disabled html[data-theme=darkmode] .btn, fieldset:disabled html[data-theme=darkmode] .button, fieldset:disabled html[data-theme=darkmode] .bootstrap-select .popover-header .close, html[data-theme=default] .bootstrap-select .popover-header fieldset:disabled html[data-theme=darkmode] .close {
@@ -33217,7 +33250,7 @@ html[data-theme=darkmode] .btn-link {
   --bs-btn-focus-shadow-rgb: 0, 105, 217;
   text-decoration: underline;
 }
-html[data-theme=darkmode] .btn-link:focus {
+html[data-theme=darkmode] .btn-link:focus-visible {
   color: var(--bs-btn-color);
 }
 html[data-theme=darkmode] .btn-link:hover {
@@ -33306,6 +33339,7 @@ html[dir=rtl][data-theme=darkmode] .dropdown-toggle:empty::after {
   margin-right: 0;
 }
 html[data-theme=darkmode] .dropdown-menu {
+  --bs-dropdown-zindex: 1000;
   --bs-dropdown-min-width: 10rem;
   --bs-dropdown-padding-x: 0;
   --bs-dropdown-padding-y: 0.5rem;
@@ -33332,7 +33366,7 @@ html[data-theme=darkmode] .dropdown-menu {
   --bs-dropdown-header-padding-x: 1rem;
   --bs-dropdown-header-padding-y: 0.5rem;
   position: absolute;
-  z-index: 1000;
+  z-index: var(--bs-dropdown-zindex);
   display: none;
   min-width: var(--bs-dropdown-min-width);
   font-size: var(--bs-dropdown-font-size);
@@ -33799,10 +33833,10 @@ html[data-theme=darkmode] .btn-toolbar .input-group {
 html[dir][data-theme=darkmode] .btn-group {
   border-radius: 0.375rem;
 }
-html[dir=ltr][data-theme=darkmode] .btn-group > .btn:not(:first-child), html[dir=ltr][data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:not(:first-child), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:not(:first-child), html[dir=ltr][data-theme=darkmode] html[data-theme=default] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) {
+html[dir=ltr][data-theme=darkmode] .btn-group > :not(.btn-check:first-child) + .btn, html[dir=ltr][data-theme=darkmode] .btn-group > :not(.btn-check:first-child) + .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > :not(.btn-check:first-child) + .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > :not(.btn-check:first-child) + .close, html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) {
   margin-left: -1px;
 }
-html[dir=rtl][data-theme=darkmode] .btn-group > .btn:not(:first-child), html[dir=rtl][data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:not(:first-child), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:not(:first-child), html[dir=rtl][data-theme=darkmode] html[data-theme=default] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) {
+html[dir=rtl][data-theme=darkmode] .btn-group > :not(.btn-check:first-child) + .btn, html[dir=rtl][data-theme=darkmode] .btn-group > :not(.btn-check:first-child) + .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > :not(.btn-check:first-child) + .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > :not(.btn-check:first-child) + .close, html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) {
   margin-right: -1px;
 }
 html[dir=ltr][data-theme=darkmode] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] html[data-theme=default] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group > .btn.dropdown-toggle-split:first-child, html[dir=ltr][data-theme=darkmode] .btn-group > .dropdown-toggle-split.button:first-child, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .dropdown-toggle-split.close:first-child, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .dropdown-toggle-split.close:first-child, html[dir=ltr][data-theme=darkmode] html[data-theme=default] .btn-group > .dropdown-toggle-split.button:first-child, html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .btn-group:not(:last-child) > .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .close {
@@ -33944,7 +33978,7 @@ html[dir][data-theme=darkmode] .nav-tabs {
   border-bottom: var(--bs-nav-tabs-border-width) solid var(--bs-nav-tabs-border-color);
 }
 html[dir][data-theme=darkmode] .nav-tabs .nav-link {
-  margin-bottom: calc(var(--bs-nav-tabs-border-width) * -1);
+  margin-bottom: calc(-1 * var(--bs-nav-tabs-border-width));
   background: none;
   border: var(--bs-nav-tabs-border-width) solid transparent;
 }
@@ -33978,7 +34012,7 @@ html[dir][data-theme=darkmode] .nav-tabs .nav-link.active, html[dir][data-theme=
   border-color: var(--bs-nav-tabs-link-active-border-color);
 }
 html[dir][data-theme=darkmode] .nav-tabs .dropdown-menu {
-  margin-top: calc(var(--bs-nav-tabs-border-width) * -1);
+  margin-top: calc(-1 * var(--bs-nav-tabs-border-width));
 }
 html[dir=ltr][data-theme=darkmode] .nav-tabs .dropdown-menu {
   border-top-left-radius: 0;
@@ -35017,7 +35051,7 @@ html[dir][data-theme=darkmode] .card-group > .card {
   }
 }
 html[data-theme=darkmode] .accordion {
-  --bs-accordion-color: #fff;
+  --bs-accordion-color: var(--bs-body-color);
   --bs-accordion-bg: #181a1b;
   --bs-accordion-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, border-radius 0.15s ease;
   --bs-accordion-border-color: var(--bs-border-color);
@@ -35072,7 +35106,7 @@ html[data-theme=darkmode] .accordion-button:not(.collapsed) {
 }
 html[dir][data-theme=darkmode] .accordion-button:not(.collapsed) {
   background-color: var(--bs-accordion-active-bg);
-  box-shadow: inset 0 calc(var(--bs-accordion-border-width) * -1) 0 var(--bs-accordion-border-color);
+  box-shadow: inset 0 calc(-1 * var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color);
 }
 html[dir][data-theme=darkmode] .accordion-button:not(.collapsed)::after {
   background-image: var(--bs-accordion-btn-active-icon);
@@ -35188,7 +35222,7 @@ html[dir][data-theme=darkmode] .accordion-flush .accordion-item:first-child {
 html[dir][data-theme=darkmode] .accordion-flush .accordion-item:last-child {
   border-bottom: 0;
 }
-html[dir][data-theme=darkmode] .accordion-flush .accordion-item .accordion-button {
+html[dir][data-theme=darkmode] .accordion-flush .accordion-item .accordion-button, html[dir][data-theme=darkmode] .accordion-flush .accordion-item .accordion-button.collapsed {
   border-radius: 0;
 }
 html[data-theme=darkmode] .breadcrumb {
@@ -35650,29 +35684,29 @@ html[dir][data-theme=darkmode] .list-group-item.active {
   background-color: var(--bs-list-group-active-bg);
   border-color: var(--bs-list-group-active-border-color);
 }
-html[dir][data-theme=darkmode] .list-group-item + html[data-theme=darkmode] .list-group-item {
+html[dir][data-theme=darkmode] .list-group-item + .list-group-item {
   border-top-width: 0;
 }
-html[dir][data-theme=darkmode] .list-group-item + html[data-theme=darkmode] .list-group-item.active {
-  margin-top: calc(var(--bs-list-group-border-width) * -1);
+html[dir][data-theme=darkmode] .list-group-item + .list-group-item.active {
+  margin-top: calc(-1 * var(--bs-list-group-border-width));
   border-top-width: var(--bs-list-group-border-width);
 }
 html[data-theme=darkmode] .list-group-horizontal {
   flex-direction: row;
 }
-html[dir=ltr][data-theme=darkmode] .list-group-horizontal > .list-group-item:first-child {
+html[dir=ltr][data-theme=darkmode] .list-group-horizontal > .list-group-item:first-child:not(:last-child) {
   border-bottom-left-radius: var(--bs-list-group-border-radius);
   border-top-right-radius: 0;
 }
-html[dir=rtl][data-theme=darkmode] .list-group-horizontal > .list-group-item:first-child {
+html[dir=rtl][data-theme=darkmode] .list-group-horizontal > .list-group-item:first-child:not(:last-child) {
   border-bottom-right-radius: var(--bs-list-group-border-radius);
   border-top-left-radius: 0;
 }
-html[dir=ltr][data-theme=darkmode] .list-group-horizontal > .list-group-item:last-child {
+html[dir=ltr][data-theme=darkmode] .list-group-horizontal > .list-group-item:last-child:not(:first-child) {
   border-top-right-radius: var(--bs-list-group-border-radius);
   border-bottom-left-radius: 0;
 }
-html[dir=rtl][data-theme=darkmode] .list-group-horizontal > .list-group-item:last-child {
+html[dir=rtl][data-theme=darkmode] .list-group-horizontal > .list-group-item:last-child:not(:first-child) {
   border-top-left-radius: var(--bs-list-group-border-radius);
   border-bottom-right-radius: 0;
 }
@@ -35689,30 +35723,30 @@ html[dir=rtl][data-theme=darkmode] .list-group-horizontal > .list-group-item + .
   border-right-width: 0;
 }
 html[dir=ltr][data-theme=darkmode] .list-group-horizontal > .list-group-item + .list-group-item.active {
-  margin-left: calc(var(--bs-list-group-border-width) * -1);
+  margin-left: calc(-1 * var(--bs-list-group-border-width));
   border-left-width: var(--bs-list-group-border-width);
 }
 html[dir=rtl][data-theme=darkmode] .list-group-horizontal > .list-group-item + .list-group-item.active {
-  margin-right: calc(var(--bs-list-group-border-width) * -1);
+  margin-right: calc(-1 * var(--bs-list-group-border-width));
   border-right-width: var(--bs-list-group-border-width);
 }
 @media (min-width: 576px) {
   html[data-theme=darkmode] .list-group-horizontal-sm {
     flex-direction: row;
   }
-  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-sm > .list-group-item:first-child {
+  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-sm > .list-group-item:first-child:not(:last-child) {
     border-bottom-left-radius: var(--bs-list-group-border-radius);
     border-top-right-radius: 0;
   }
-  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-sm > .list-group-item:first-child {
+  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-sm > .list-group-item:first-child:not(:last-child) {
     border-bottom-right-radius: var(--bs-list-group-border-radius);
     border-top-left-radius: 0;
   }
-  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-sm > .list-group-item:last-child {
+  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-sm > .list-group-item:last-child:not(:first-child) {
     border-top-right-radius: var(--bs-list-group-border-radius);
     border-bottom-left-radius: 0;
   }
-  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-sm > .list-group-item:last-child {
+  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-sm > .list-group-item:last-child:not(:first-child) {
     border-top-left-radius: var(--bs-list-group-border-radius);
     border-bottom-right-radius: 0;
   }
@@ -35729,11 +35763,11 @@ html[dir=rtl][data-theme=darkmode] .list-group-horizontal > .list-group-item + .
     border-right-width: 0;
   }
   html[dir=ltr][data-theme=darkmode] .list-group-horizontal-sm > .list-group-item + .list-group-item.active {
-    margin-left: calc(var(--bs-list-group-border-width) * -1);
+    margin-left: calc(-1 * var(--bs-list-group-border-width));
     border-left-width: var(--bs-list-group-border-width);
   }
   html[dir=rtl][data-theme=darkmode] .list-group-horizontal-sm > .list-group-item + .list-group-item.active {
-    margin-right: calc(var(--bs-list-group-border-width) * -1);
+    margin-right: calc(-1 * var(--bs-list-group-border-width));
     border-right-width: var(--bs-list-group-border-width);
   }
 }
@@ -35741,19 +35775,19 @@ html[dir=rtl][data-theme=darkmode] .list-group-horizontal > .list-group-item + .
   html[data-theme=darkmode] .list-group-horizontal-md {
     flex-direction: row;
   }
-  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-md > .list-group-item:first-child {
+  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-md > .list-group-item:first-child:not(:last-child) {
     border-bottom-left-radius: var(--bs-list-group-border-radius);
     border-top-right-radius: 0;
   }
-  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-md > .list-group-item:first-child {
+  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-md > .list-group-item:first-child:not(:last-child) {
     border-bottom-right-radius: var(--bs-list-group-border-radius);
     border-top-left-radius: 0;
   }
-  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-md > .list-group-item:last-child {
+  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-md > .list-group-item:last-child:not(:first-child) {
     border-top-right-radius: var(--bs-list-group-border-radius);
     border-bottom-left-radius: 0;
   }
-  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-md > .list-group-item:last-child {
+  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-md > .list-group-item:last-child:not(:first-child) {
     border-top-left-radius: var(--bs-list-group-border-radius);
     border-bottom-right-radius: 0;
   }
@@ -35770,11 +35804,11 @@ html[dir=rtl][data-theme=darkmode] .list-group-horizontal > .list-group-item + .
     border-right-width: 0;
   }
   html[dir=ltr][data-theme=darkmode] .list-group-horizontal-md > .list-group-item + .list-group-item.active {
-    margin-left: calc(var(--bs-list-group-border-width) * -1);
+    margin-left: calc(-1 * var(--bs-list-group-border-width));
     border-left-width: var(--bs-list-group-border-width);
   }
   html[dir=rtl][data-theme=darkmode] .list-group-horizontal-md > .list-group-item + .list-group-item.active {
-    margin-right: calc(var(--bs-list-group-border-width) * -1);
+    margin-right: calc(-1 * var(--bs-list-group-border-width));
     border-right-width: var(--bs-list-group-border-width);
   }
 }
@@ -35782,19 +35816,19 @@ html[dir=rtl][data-theme=darkmode] .list-group-horizontal > .list-group-item + .
   html[data-theme=darkmode] .list-group-horizontal-lg {
     flex-direction: row;
   }
-  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-lg > .list-group-item:first-child {
+  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-lg > .list-group-item:first-child:not(:last-child) {
     border-bottom-left-radius: var(--bs-list-group-border-radius);
     border-top-right-radius: 0;
   }
-  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-lg > .list-group-item:first-child {
+  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-lg > .list-group-item:first-child:not(:last-child) {
     border-bottom-right-radius: var(--bs-list-group-border-radius);
     border-top-left-radius: 0;
   }
-  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-lg > .list-group-item:last-child {
+  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-lg > .list-group-item:last-child:not(:first-child) {
     border-top-right-radius: var(--bs-list-group-border-radius);
     border-bottom-left-radius: 0;
   }
-  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-lg > .list-group-item:last-child {
+  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-lg > .list-group-item:last-child:not(:first-child) {
     border-top-left-radius: var(--bs-list-group-border-radius);
     border-bottom-right-radius: 0;
   }
@@ -35811,11 +35845,11 @@ html[dir=rtl][data-theme=darkmode] .list-group-horizontal > .list-group-item + .
     border-right-width: 0;
   }
   html[dir=ltr][data-theme=darkmode] .list-group-horizontal-lg > .list-group-item + .list-group-item.active {
-    margin-left: calc(var(--bs-list-group-border-width) * -1);
+    margin-left: calc(-1 * var(--bs-list-group-border-width));
     border-left-width: var(--bs-list-group-border-width);
   }
   html[dir=rtl][data-theme=darkmode] .list-group-horizontal-lg > .list-group-item + .list-group-item.active {
-    margin-right: calc(var(--bs-list-group-border-width) * -1);
+    margin-right: calc(-1 * var(--bs-list-group-border-width));
     border-right-width: var(--bs-list-group-border-width);
   }
 }
@@ -35823,19 +35857,19 @@ html[dir=rtl][data-theme=darkmode] .list-group-horizontal > .list-group-item + .
   html[data-theme=darkmode] .list-group-horizontal-xl {
     flex-direction: row;
   }
-  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-xl > .list-group-item:first-child {
+  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-xl > .list-group-item:first-child:not(:last-child) {
     border-bottom-left-radius: var(--bs-list-group-border-radius);
     border-top-right-radius: 0;
   }
-  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-xl > .list-group-item:first-child {
+  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-xl > .list-group-item:first-child:not(:last-child) {
     border-bottom-right-radius: var(--bs-list-group-border-radius);
     border-top-left-radius: 0;
   }
-  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-xl > .list-group-item:last-child {
+  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-xl > .list-group-item:last-child:not(:first-child) {
     border-top-right-radius: var(--bs-list-group-border-radius);
     border-bottom-left-radius: 0;
   }
-  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-xl > .list-group-item:last-child {
+  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-xl > .list-group-item:last-child:not(:first-child) {
     border-top-left-radius: var(--bs-list-group-border-radius);
     border-bottom-right-radius: 0;
   }
@@ -35852,11 +35886,11 @@ html[dir=rtl][data-theme=darkmode] .list-group-horizontal > .list-group-item + .
     border-right-width: 0;
   }
   html[dir=ltr][data-theme=darkmode] .list-group-horizontal-xl > .list-group-item + .list-group-item.active {
-    margin-left: calc(var(--bs-list-group-border-width) * -1);
+    margin-left: calc(-1 * var(--bs-list-group-border-width));
     border-left-width: var(--bs-list-group-border-width);
   }
   html[dir=rtl][data-theme=darkmode] .list-group-horizontal-xl > .list-group-item + .list-group-item.active {
-    margin-right: calc(var(--bs-list-group-border-width) * -1);
+    margin-right: calc(-1 * var(--bs-list-group-border-width));
     border-right-width: var(--bs-list-group-border-width);
   }
 }
@@ -35864,19 +35898,19 @@ html[dir=rtl][data-theme=darkmode] .list-group-horizontal > .list-group-item + .
   html[data-theme=darkmode] .list-group-horizontal-xxl {
     flex-direction: row;
   }
-  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-xxl > .list-group-item:first-child {
+  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-xxl > .list-group-item:first-child:not(:last-child) {
     border-bottom-left-radius: var(--bs-list-group-border-radius);
     border-top-right-radius: 0;
   }
-  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-xxl > .list-group-item:first-child {
+  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-xxl > .list-group-item:first-child:not(:last-child) {
     border-bottom-right-radius: var(--bs-list-group-border-radius);
     border-top-left-radius: 0;
   }
-  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-xxl > .list-group-item:last-child {
+  html[dir=ltr][data-theme=darkmode] .list-group-horizontal-xxl > .list-group-item:last-child:not(:first-child) {
     border-top-right-radius: var(--bs-list-group-border-radius);
     border-bottom-left-radius: 0;
   }
-  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-xxl > .list-group-item:last-child {
+  html[dir=rtl][data-theme=darkmode] .list-group-horizontal-xxl > .list-group-item:last-child:not(:first-child) {
     border-top-left-radius: var(--bs-list-group-border-radius);
     border-bottom-right-radius: 0;
   }
@@ -35893,11 +35927,11 @@ html[dir=rtl][data-theme=darkmode] .list-group-horizontal > .list-group-item + .
     border-right-width: 0;
   }
   html[dir=ltr][data-theme=darkmode] .list-group-horizontal-xxl > .list-group-item + .list-group-item.active {
-    margin-left: calc(var(--bs-list-group-border-width) * -1);
+    margin-left: calc(-1 * var(--bs-list-group-border-width));
     border-left-width: var(--bs-list-group-border-width);
   }
   html[dir=rtl][data-theme=darkmode] .list-group-horizontal-xxl > .list-group-item + .list-group-item.active {
-    margin-right: calc(var(--bs-list-group-border-width) * -1);
+    margin-right: calc(-1 * var(--bs-list-group-border-width));
     border-right-width: var(--bs-list-group-border-width);
   }
 }
@@ -36096,6 +36130,7 @@ html[data-theme=darkmode] .btn-close-white {
   filter: invert(1) grayscale(100%) brightness(200%);
 }
 html[data-theme=darkmode] .toast {
+  --bs-toast-zindex: 1090;
   --bs-toast-padding-x: 0.75rem;
   --bs-toast-padding-y: 0.5rem;
   --bs-toast-spacing: 1.5rem;
@@ -36131,7 +36166,7 @@ html[data-theme=darkmode] .toast:not(.show) {
 }
 html[data-theme=darkmode] .toast-container {
   position: absolute;
-  z-index: 1090;
+  z-index: var(--bs-toast-zindex);
   width: max-content;
   max-width: 100%;
   pointer-events: none;
@@ -36159,11 +36194,11 @@ html[dir=rtl][data-theme=darkmode] .toast-header {
   border-top-left-radius: calc(var(--bs-toast-border-radius) - var(--bs-toast-border-width));
 }
 html[dir=ltr][data-theme=darkmode] .toast-header .btn-close, html[dir=ltr][data-theme=darkmode] .toast-header .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .toast-header .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .toast-header .close {
-  margin-right: calc(var(--bs-toast-padding-x) * -0.5);
+  margin-right: calc(-0.5 * var(--bs-toast-padding-x));
   margin-left: var(--bs-toast-padding-x);
 }
 html[dir=rtl][data-theme=darkmode] .toast-header .btn-close, html[dir=rtl][data-theme=darkmode] .toast-header .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .toast-header .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .toast-header .close {
-  margin-left: calc(var(--bs-toast-padding-x) * -0.5);
+  margin-left: calc(-0.5 * var(--bs-toast-padding-x));
   margin-right: var(--bs-toast-padding-x);
 }
 html[data-theme=darkmode] .toast-body {
@@ -36312,10 +36347,10 @@ html[dir][data-theme=darkmode] .modal-header .btn-close, html[dir][data-theme=da
   padding: calc(var(--bs-modal-header-padding-y) * 0.5) calc(var(--bs-modal-header-padding-x) * 0.5);
 }
 html[dir=ltr][data-theme=darkmode] .modal-header .btn-close, html[dir=ltr][data-theme=darkmode] .modal-header .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .modal-header .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .modal-header .close {
-  margin: calc(var(--bs-modal-header-padding-y) * -0.5) calc(var(--bs-modal-header-padding-x) * -0.5) calc(var(--bs-modal-header-padding-y) * -0.5) auto;
+  margin: calc(-0.5 * var(--bs-modal-header-padding-y)) calc(-0.5 * var(--bs-modal-header-padding-x)) calc(-0.5 * var(--bs-modal-header-padding-y)) auto;
 }
 html[dir=rtl][data-theme=darkmode] .modal-header .btn-close, html[dir=rtl][data-theme=darkmode] .modal-header .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .modal-header .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .modal-header .close {
-  margin: calc(var(--bs-modal-header-padding-y) * -0.5) auto calc(var(--bs-modal-header-padding-y) * -0.5) calc(var(--bs-modal-header-padding-x) * -0.5);
+  margin: calc(-0.5 * var(--bs-modal-header-padding-y)) auto calc(-0.5 * var(--bs-modal-header-padding-y)) calc(-0.5 * var(--bs-modal-header-padding-x));
 }
 html[data-theme=darkmode] .modal-title {
   line-height: var(--bs-modal-title-line-height);
@@ -36661,7 +36696,7 @@ html[data-theme=darkmode] .popover {
   --bs-popover-header-padding-x: 1rem;
   --bs-popover-header-padding-y: 0.5rem;
   --bs-popover-header-font-size: 1rem;
-  --bs-popover-header-color: var(--bs-heading-color);
+  --bs-popover-header-color: ;
   --bs-popover-header-bg: rgba(140, 130, 115, 0.13);
   --bs-popover-body-padding-x: 1rem;
   --bs-popover-body-padding-y: 1rem;
@@ -36716,7 +36751,7 @@ html[dir][data-theme=darkmode] .popover .popover-arrow::before, html[dir][data-t
   border-width: 0;
 }
 html[data-theme=darkmode] .bs-popover-top > .popover-arrow, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow, html[data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow {
-  bottom: calc(var(--bs-popover-arrow-height) * -1 - var(--bs-popover-border-width));
+  bottom: calc(-1 * (var(--bs-popover-arrow-height)) - var(--bs-popover-border-width));
 }
 html[dir][data-theme=darkmode] .bs-popover-top > .popover-arrow::before, html[dir][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::before, html[dir][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::before, html[dir][data-theme=darkmode] .bs-popover-top > .popover-arrow::after, html[dir][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::after, html[dir][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::after {
   border-width: var(--bs-popover-arrow-height) calc(var(--bs-popover-arrow-width) * 0.5) 0;
@@ -36738,10 +36773,10 @@ html[data-theme=darkmode] .bs-popover-end > .popover-arrow, html[data-theme=dark
   height: var(--bs-popover-arrow-width);
 }
 html[dir=ltr][data-theme=darkmode] .bs-popover-end > .popover-arrow, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow, html[dir=ltr][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow {
-  left: calc(var(--bs-popover-arrow-height) * -1 - var(--bs-popover-border-width));
+  left: calc(-1 * (var(--bs-popover-arrow-height)) - var(--bs-popover-border-width));
 }
 html[dir=rtl][data-theme=darkmode] .bs-popover-end > .popover-arrow, html[dir=rtl][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow, html[dir=rtl][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow {
-  right: calc(var(--bs-popover-arrow-height) * -1 - var(--bs-popover-border-width));
+  right: calc(-1 * (var(--bs-popover-arrow-height)) - var(--bs-popover-border-width));
 }
 html[dir=ltr][data-theme=darkmode] .bs-popover-end > .popover-arrow::before, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::before, html[dir=ltr][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::before, html[dir=ltr][data-theme=darkmode] .bs-popover-end > .popover-arrow::after, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::after, html[dir=ltr][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::after {
   border-width: calc(var(--bs-popover-arrow-width) * 0.5) var(--bs-popover-arrow-height) calc(var(--bs-popover-arrow-width) * 0.5) 0;
@@ -36766,7 +36801,7 @@ html[dir=rtl][data-theme=darkmode] .bs-popover-end > .popover-arrow::after, html
   border-left-color: var(--bs-popover-bg);
 }
 html[data-theme=darkmode] .bs-popover-bottom > .popover-arrow, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow, html[data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow {
-  top: calc(var(--bs-popover-arrow-height) * -1 - var(--bs-popover-border-width));
+  top: calc(-1 * (var(--bs-popover-arrow-height)) - var(--bs-popover-border-width));
 }
 html[dir][data-theme=darkmode] .bs-popover-bottom > .popover-arrow::before, html[dir][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::before, html[dir][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::before, html[dir][data-theme=darkmode] .bs-popover-bottom > .popover-arrow::after, html[dir][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::after, html[dir][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::after {
   border-width: 0 calc(var(--bs-popover-arrow-width) * 0.5) var(--bs-popover-arrow-height);
@@ -36795,21 +36830,21 @@ html[dir][data-theme=darkmode] .bs-popover-bottom .popover-header::before, html[
 }
 html[dir=ltr][data-theme=darkmode] .bs-popover-bottom .popover-header::before, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] .popover-header::before {
   left: 50%;
-  margin-left: calc(var(--bs-popover-arrow-width) * -0.5);
+  margin-left: calc(-0.5 * var(--bs-popover-arrow-width));
 }
 html[dir=rtl][data-theme=darkmode] .bs-popover-bottom .popover-header::before, html[dir=rtl][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] .popover-header::before {
   right: 50%;
-  margin-right: calc(var(--bs-popover-arrow-width) * -0.5);
+  margin-right: calc(-0.5 * var(--bs-popover-arrow-width));
 }
 html[data-theme=darkmode] .bs-popover-start > .popover-arrow, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow, html[data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
   width: var(--bs-popover-arrow-height);
   height: var(--bs-popover-arrow-width);
 }
 html[dir=ltr][data-theme=darkmode] .bs-popover-start > .popover-arrow, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow, html[dir=ltr][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
-  right: calc(var(--bs-popover-arrow-height) * -1 - var(--bs-popover-border-width));
+  right: calc(-1 * (var(--bs-popover-arrow-height)) - var(--bs-popover-border-width));
 }
 html[dir=rtl][data-theme=darkmode] .bs-popover-start > .popover-arrow, html[dir=rtl][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow, html[dir=rtl][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
-  left: calc(var(--bs-popover-arrow-height) * -1 - var(--bs-popover-border-width));
+  left: calc(-1 * (var(--bs-popover-arrow-height)) - var(--bs-popover-border-width));
 }
 html[dir=ltr][data-theme=darkmode] .bs-popover-start > .popover-arrow::before, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::before, html[dir=ltr][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::before, html[dir=ltr][data-theme=darkmode] .bs-popover-start > .popover-arrow::after, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::after, html[dir=ltr][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::after {
   border-width: calc(var(--bs-popover-arrow-width) * 0.5) 0 calc(var(--bs-popover-arrow-width) * 0.5) var(--bs-popover-arrow-height);
@@ -37178,6 +37213,7 @@ html[data-theme=darkmode] .spinner-grow-sm {
   }
 }
 html[data-theme=darkmode] .offcanvas, html[data-theme=darkmode] .offcanvas-xxl, html[data-theme=darkmode] .offcanvas-xl, html[data-theme=darkmode] .offcanvas-lg, html[data-theme=darkmode] .offcanvas-md, html[data-theme=darkmode] .offcanvas-sm {
+  --bs-offcanvas-zindex: 1045;
   --bs-offcanvas-width: 400px;
   --bs-offcanvas-height: 30vh;
   --bs-offcanvas-padding-x: 1rem;
@@ -37192,7 +37228,7 @@ html[data-theme=darkmode] .offcanvas, html[data-theme=darkmode] .offcanvas-xxl, 
   html[data-theme=darkmode] .offcanvas-sm {
     position: fixed;
     bottom: 0;
-    z-index: 1045;
+    z-index: var(--bs-offcanvas-zindex);
     display: flex;
     flex-direction: column;
     max-width: 100%;
@@ -37315,7 +37351,7 @@ html[data-theme=darkmode] .offcanvas, html[data-theme=darkmode] .offcanvas-xxl, 
   html[data-theme=darkmode] .offcanvas-md {
     position: fixed;
     bottom: 0;
-    z-index: 1045;
+    z-index: var(--bs-offcanvas-zindex);
     display: flex;
     flex-direction: column;
     max-width: 100%;
@@ -37438,7 +37474,7 @@ html[data-theme=darkmode] .offcanvas, html[data-theme=darkmode] .offcanvas-xxl, 
   html[data-theme=darkmode] .offcanvas-lg {
     position: fixed;
     bottom: 0;
-    z-index: 1045;
+    z-index: var(--bs-offcanvas-zindex);
     display: flex;
     flex-direction: column;
     max-width: 100%;
@@ -37561,7 +37597,7 @@ html[data-theme=darkmode] .offcanvas, html[data-theme=darkmode] .offcanvas-xxl, 
   html[data-theme=darkmode] .offcanvas-xl {
     position: fixed;
     bottom: 0;
-    z-index: 1045;
+    z-index: var(--bs-offcanvas-zindex);
     display: flex;
     flex-direction: column;
     max-width: 100%;
@@ -37684,7 +37720,7 @@ html[data-theme=darkmode] .offcanvas, html[data-theme=darkmode] .offcanvas-xxl, 
   html[data-theme=darkmode] .offcanvas-xxl {
     position: fixed;
     bottom: 0;
-    z-index: 1045;
+    z-index: var(--bs-offcanvas-zindex);
     display: flex;
     flex-direction: column;
     max-width: 100%;
@@ -37806,7 +37842,7 @@ html[data-theme=darkmode] .offcanvas, html[data-theme=darkmode] .offcanvas-xxl, 
 html[data-theme=darkmode] .offcanvas {
   position: fixed;
   bottom: 0;
-  z-index: 1045;
+  z-index: var(--bs-offcanvas-zindex);
   display: flex;
   flex-direction: column;
   max-width: 100%;
@@ -37923,14 +37959,14 @@ html[dir][data-theme=darkmode] .offcanvas-header {
 }
 html[dir][data-theme=darkmode] .offcanvas-header .btn-close, html[dir][data-theme=darkmode] .offcanvas-header .bootstrap-select .popover-header .close, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .offcanvas-header .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .offcanvas-header .close {
   padding: calc(var(--bs-offcanvas-padding-y) * 0.5) calc(var(--bs-offcanvas-padding-x) * 0.5);
-  margin-top: calc(var(--bs-offcanvas-padding-y) * -0.5);
-  margin-bottom: calc(var(--bs-offcanvas-padding-y) * -0.5);
+  margin-top: calc(-0.5 * var(--bs-offcanvas-padding-y));
+  margin-bottom: calc(-0.5 * var(--bs-offcanvas-padding-y));
 }
 html[dir=ltr][data-theme=darkmode] .offcanvas-header .btn-close, html[dir=ltr][data-theme=darkmode] .offcanvas-header .bootstrap-select .popover-header .close, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .offcanvas-header .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .offcanvas-header .close {
-  margin-right: calc(var(--bs-offcanvas-padding-x) * -0.5);
+  margin-right: calc(-0.5 * var(--bs-offcanvas-padding-x));
 }
 html[dir=rtl][data-theme=darkmode] .offcanvas-header .btn-close, html[dir=rtl][data-theme=darkmode] .offcanvas-header .bootstrap-select .popover-header .close, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .offcanvas-header .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .offcanvas-header .close {
-  margin-left: calc(var(--bs-offcanvas-padding-x) * -0.5);
+  margin-left: calc(-0.5 * var(--bs-offcanvas-padding-x));
 }
 html[data-theme=darkmode] .offcanvas-title {
   line-height: 1.5;
