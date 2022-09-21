@@ -11,7 +11,7 @@
 <div class="mb-3">
     <label asp-for="Schema">@T["Schema"]</label>
     <textarea asp-for="Schema" hidden rows="12" class="form-control" style="text-align:left"></textarea>
-    <div id="@Html.IdFor(x=>x.Schema)_editor" style="min-height: 300px;" class="form-control"></div>
+    <div id="@Html.IdFor(x => x.Schema)_editor" style="min-height: 300px;" class="form-control"></div>
     <span class="hint">@T["The schema the GraphQL API will use to return results."] <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Queries/#graphql" target="_blank">@T["See documentation"]</a></span>
 </div>
 <script asp-name="monaco" depends-on="admin" at="Foot"></script>
