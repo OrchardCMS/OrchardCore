@@ -42,8 +42,12 @@ public class ScheduledPublishingBackgroundTask : IBackgroundTask
         foreach (var item in itemsToPublish)
         {
             var contentItem = await contentManager.GetAsync(item.ContentItemId);
+
             var part = contentItem.As<PublishLaterPart>();
-            part.ScheduledPublishUtc = null;
+            if (part != null)
+            {
+                part.ScheduledPublishUtc = null;
+            }
 
             _logger.LogDebug("Publishing scheduled content item {ContentItemId}.", contentItem.ContentItemId);
 
