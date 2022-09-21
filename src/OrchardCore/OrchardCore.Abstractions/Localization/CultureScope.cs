@@ -1,5 +1,8 @@
 using System;
 using System.Globalization;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Localization
 {
@@ -24,12 +27,11 @@ namespace OrchardCore.Localization
 
         public static CultureScope Create(string culture) => Create(culture, culture);
 
-        public static CultureScope Create(string culture, string uiCulture)
-            => Create(CultureInfo.GetCultureInfo(culture), CultureInfo.GetCultureInfo(uiCulture));
+        public static CultureScope Create(string culture, string uiCulture) => CreateInternal(culture, uiCulture);
 
         public static CultureScope Create(CultureInfo culture) => Create(culture, culture);
 
-        public static CultureScope Create(CultureInfo culture, CultureInfo uiCulture) => new CultureScope(culture, uiCulture);
+        public static CultureScope Create(CultureInfo culture, CultureInfo uiCulture) => CreateInternal(culture.Name, uiCulture.Name);
 
         public void Dispose()
         {
@@ -40,6 +42,17 @@ namespace OrchardCore.Localization
         {
             CultureInfo.CurrentCulture = culture;
             CultureInfo.CurrentUICulture = uiCulture;
+        }
+
+        private static CultureScope CreateInternal(string culture, string uiCulture)
+        {
+            using var scope = ShellScope.Current;
+            var cultureLocalizationOptions = scope.ServiceProvider.GetService<IOptions<CultureLocalizationOptions>>().Value;
+            var userSelectedCultureSettings = cultureLocalizationOptions.CultureSettings == CultureSettings.User;
+
+            return new CultureScope(
+                new CultureInfo(culture, userSelectedCultureSettings),
+                new CultureInfo(uiCulture, userSelectedCultureSettings));
         }
     }
 }
