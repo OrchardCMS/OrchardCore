@@ -8,8 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Lucene;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Search.Lucene;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -125,7 +125,7 @@ namespace OrchardCore.Tests.Apis.Context
 
                 var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync(indexName);
 
-                luceneIndexingService.ResetIndex(indexName);
+                luceneIndexingService.ResetIndexAsync(indexName);
                 await luceneIndexingService.ProcessContentItemsAsync(indexName);
             });
         }

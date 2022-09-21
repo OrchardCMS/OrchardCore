@@ -8,33 +8,36 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
 using OrchardCore.PublishLater.Drivers;
+using OrchardCore.PublishLater.Handlers;
 using OrchardCore.PublishLater.Indexes;
 using OrchardCore.PublishLater.Models;
 using OrchardCore.PublishLater.Services;
 using OrchardCore.PublishLater.ViewModels;
 
-namespace OrchardCore.PublishLater;
-
-public class Startup : StartupBase
+namespace OrchardCore.PublishLater
 {
-
-    public override void ConfigureServices(IServiceCollection services)
+    public class Startup : StartupBase
     {
-        services.Configure<TemplateOptions>(o =>
+
+        public override void ConfigureServices(IServiceCollection services)
         {
-            o.MemberAccessStrategy.Register<PublishLaterPartViewModel>();
-        });
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<PublishLaterPartViewModel>();
+            });
 
-        services
-            .AddContentPart<PublishLaterPart>()
-            .UseDisplayDriver<PublishLaterPartDisplayDriver>();
+            services
+                .AddContentPart<PublishLaterPart>()
+                .UseDisplayDriver<PublishLaterPartDisplayDriver>()
+                .AddHandler<PublishLaterPartHandler>();
 
-        services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
 
-        services.AddScoped<PublishLaterPartIndexProvider>();
-        services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<PublishLaterPartIndexProvider>());
-        services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<PublishLaterPartIndexProvider>());
+            services.AddScoped<PublishLaterPartIndexProvider>();
+            services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<PublishLaterPartIndexProvider>());
+            services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<PublishLaterPartIndexProvider>());
 
-        services.AddSingleton<IBackgroundTask, ScheduledPublishingBackgroundTask>();
+            services.AddSingleton<IBackgroundTask, ScheduledPublishingBackgroundTask>();
+        }
     }
 }

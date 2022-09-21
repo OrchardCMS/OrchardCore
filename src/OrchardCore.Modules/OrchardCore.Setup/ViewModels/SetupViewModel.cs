@@ -16,7 +16,7 @@ namespace OrchardCore.Setup.ViewModels
 
         public string Description { get; set; }
 
-        public DatabaseProviderName? DatabaseProvider { get; set; }
+        public string DatabaseProvider { get; set; }
 
         public string ConnectionString { get; set; }
 

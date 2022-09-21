@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.ViewModels;
 
 namespace OrchardCore.Contents.ViewComponents
@@ -21,7 +21,7 @@ namespace OrchardCore.Contents.ViewComponents
         {
             if (selectedContentTypes == null)
             {
-                selectedContentTypes = new string[0];
+                selectedContentTypes = Array.Empty<string>();
             }
 
             var contentTypes = ContentTypeSelection.Build(_contentDefinitionManager, selectedContentTypes);
@@ -29,7 +29,7 @@ namespace OrchardCore.Contents.ViewComponents
             if (!String.IsNullOrEmpty(stereotype))
             {
                 contentTypes = contentTypes
-                    .Where(x => x.ContentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype == stereotype)
+                    .Where(x => x.ContentTypeDefinition.GetStereotype() == stereotype)
                     .ToArray();
             }
 

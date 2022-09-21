@@ -57,7 +57,7 @@ namespace OrchardCore.Flows
 
             services.AddContentPart<FlowMetadata>();
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

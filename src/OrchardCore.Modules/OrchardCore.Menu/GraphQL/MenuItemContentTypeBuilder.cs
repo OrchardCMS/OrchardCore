@@ -3,7 +3,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Menu.Models;
 
 namespace OrchardCore.Menu.GraphQL
@@ -12,9 +11,10 @@ namespace OrchardCore.Menu.GraphQL
     {
         public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
-            var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
-
-            if (settings.Stereotype != "MenuItem") return;
+            if (contentTypeDefinition.GetStereotype() != "MenuItem")
+            {
+                return;
+            }
 
             contentItemType.Field<MenuItemsListQueryObjectType>(
                 nameof(MenuItemsListPart).ToFieldName(),
