@@ -15,6 +15,8 @@ namespace OrchardCore.Localization.ViewModels
         [BindNever]
         public CultureEntry[] Cultures { get; set; } = Array.Empty<CultureEntry>();
 
+        public CultureSettings CultureSettings { get; set; }
+
         /// <summary>
         /// Gets or sets all the supported cultures of the site. It also contains the default culture.
         /// </summary>

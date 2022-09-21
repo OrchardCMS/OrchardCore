@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.Services;
@@ -15,73 +14,64 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
-namespace OrchardCore.Localization
+namespace OrchardCore.Localization;
+
+/// <summary>
+/// Represents a localization module entry point.
+/// </summary>
+public class Startup : StartupBase
 {
-    /// <summary>
-    /// Represents a localization module entry point.
-    /// </summary>
-    public class Startup : StartupBase
+    public override int ConfigureOrder => -100;
+
+    /// <inheritdocs />
+    public override void ConfigureServices(IServiceCollection services)
     {
-        private readonly IShellConfiguration _shellConfiguration;
+        services.AddScoped<IDisplayDriver<ISite>, LocalizationSettingsDisplayDriver>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddScoped<ILocalizationService, LocalizationService>();
 
-        public Startup(IShellConfiguration shellConfiguration)
-        {
-            _shellConfiguration = shellConfiguration;
-        }
+        services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
+            AddDataAnnotationsPortableObjectLocalization();
 
-        public override int ConfigureOrder => -100;
-
-        /// <inheritdocs />
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IDisplayDriver<ISite>, LocalizationSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<ILocalizationService, LocalizationService>();
-
-            services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
-                AddDataAnnotationsPortableObjectLocalization();
-
-            services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
-
-            services.Configure<CultureLocalizationOptions>(_shellConfiguration.GetSection("OrchardCore_Localization"));
-        }
-
-        /// <inheritdocs />
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var localizationService = serviceProvider.GetService<ILocalizationService>();
-
-            var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
-            var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
-
-            var requestLocalizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-            var cultureLocalizationOptions = serviceProvider.GetService<IOptions<CultureLocalizationOptions>>().Value;
-
-            requestLocalizationOptions
-                .SetDefaultCulture(defaultCulture)
-                .AddSupportedCultures(supportedCultures, cultureLocalizationOptions.CultureSettings == CultureSettings.User)
-                .AddSupportedUICultures(supportedCultures, cultureLocalizationOptions.CultureSettings == CultureSettings.User);
-
-            app.UseRequestLocalization(requestLocalizationOptions);
-        }
+        services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
     }
 
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class LocalizationDeploymentStartup : StartupBase
+    /// <inheritdocs />
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSiteSettingsPropertyDeploymentStep<LocalizationSettings, LocalizationDeploymentStartup>(S => S["Culture settings"], S => S["Exports the culture settings."]);
-        }
-    }
+        var localizationService = serviceProvider.GetService<ILocalizationService>();
 
-    [Feature("OrchardCore.Localization.ContentLanguageHeader")]
-    public class ContentLanguageHeaderStartup : StartupBase
+        var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
+        var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
+        var useUserSelectedCultureSettings = localizationService.GetCultureSettingsAsync()
+            .GetAwaiter().GetResult() == CultureSettings.User;
+
+        var requestLocalizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
+
+        requestLocalizationOptions
+            .SetDefaultCulture(defaultCulture)
+            .AddSupportedCultures(supportedCultures, useUserSelectedCultureSettings)
+            .AddSupportedUICultures(supportedCultures, useUserSelectedCultureSettings);
+
+        app.UseRequestLocalization(requestLocalizationOptions);
+    }
+}
+
+[RequireFeatures("OrchardCore.Deployment")]
+public class LocalizationDeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.Configure<RequestLocalizationOptions>(options => options.ApplyCurrentCultureToResponseHeaders = true);
-        }
+        services.AddSiteSettingsPropertyDeploymentStep<LocalizationSettings, LocalizationDeploymentStartup>(S => S["Culture settings"], S => S["Exports the culture settings."]);
+    }
+}
+
+[Feature("OrchardCore.Localization.ContentLanguageHeader")]
+public class ContentLanguageHeaderStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<RequestLocalizationOptions>(options => options.ApplyCurrentCultureToResponseHeaders = true);
     }
 }
