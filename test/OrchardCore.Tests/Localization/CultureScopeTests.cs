@@ -6,6 +6,8 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Localization;
+using OrchardCore.Locking;
+using OrchardCore.Locking.Distributed;
 using Xunit;
 
 namespace OrchardCore.Tests.Localization;
@@ -108,6 +110,8 @@ public class CultureScopeTests
     {
         var services = new ServiceCollection();
 
+        services.AddLogging();
+        services.AddSingleton<IDistributedLock, LocalLock>();
         services.AddScoped<ILocalizationService, DefaultLocalizationService>();
 
         return services.BuildServiceProvider();
