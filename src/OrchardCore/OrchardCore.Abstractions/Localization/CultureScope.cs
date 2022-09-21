@@ -46,14 +46,8 @@ public sealed class CultureScope : IDisposable
     private static CultureScope CreateInternal(string culture, string uiCulture)
     {
         using var scope = ShellScope.Current;
-        var localizationService = scope.ServiceProvider.GetService<ILocalizationService>();
-
-        var useUserSelectedCultureSettings = false;
-        if (localizationService != null)
-        {
-            useUserSelectedCultureSettings = localizationService.GetCultureSettingsAsync()
-                .GetAwaiter().GetResult() == CultureSettings.User;
-        }
+        var useUserSelectedCultureSettings = scope.ServiceProvider.GetService<ILocalizationService>()
+            .GetCultureSettingsAsync().GetAwaiter().GetResult() == CultureSettings.User;
 
         return new CultureScope(
             new CultureInfo(culture, useUserSelectedCultureSettings),
