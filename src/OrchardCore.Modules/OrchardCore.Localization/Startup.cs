@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.Services;
@@ -21,6 +22,13 @@ namespace OrchardCore.Localization
     /// </summary>
     public class Startup : StartupBase
     {
+        private readonly IShellConfiguration _shellConfiguration;
+
+        public Startup(IShellConfiguration shellConfiguration)
+        {
+            _shellConfiguration = shellConfiguration;
+        }
+
         public override int ConfigureOrder => -100;
 
         /// <inheritdocs />
@@ -35,6 +43,8 @@ namespace OrchardCore.Localization
                 AddDataAnnotationsPortableObjectLocalization();
 
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
+
+            services.Configure<LocalizationOptions>(_shellConfiguration.GetSection("OrchardCore_Localization"));
         }
 
         /// <inheritdocs />
@@ -45,14 +55,15 @@ namespace OrchardCore.Localization
             var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
             var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
 
-            var options = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-            options.SetDefaultCulture(defaultCulture);
-            options
-                .AddSupportedCultures(supportedCultures)
-                .AddSupportedUICultures(supportedCultures)
-                ;
+            var requestLocalizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
+            var localizationOptions = serviceProvider.GetService<IOptions<LocalizationOptions>>().Value;
 
-            app.UseRequestLocalization(options);
+            requestLocalizationOptions
+                .SetDefaultCulture(defaultCulture)
+                .AddSupportedCultures(supportedCultures, localizationOptions.CultureSettings == CultureSettings.User)
+                .AddSupportedUICultures(supportedCultures, localizationOptions.CultureSettings == CultureSettings.User);
+
+            app.UseRequestLocalization(requestLocalizationOptions);
         }
     }
 
