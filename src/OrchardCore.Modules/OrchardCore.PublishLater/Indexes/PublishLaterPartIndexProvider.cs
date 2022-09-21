@@ -56,8 +56,8 @@ public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
             .When(contentItem => contentItem.Has<PublishLaterPart>() || _partRemoved.Contains(contentItem.ContentItemId))
             .Map(contentItem =>
             {
-                    // Remove index records of items that are already published or not the latest version.
-                    if (contentItem.Published || !contentItem.Latest)
+                // Remove index records of items that are already published or not the latest version.
+                if (contentItem.Published || !contentItem.Latest)
                 {
                     return null;
                 }

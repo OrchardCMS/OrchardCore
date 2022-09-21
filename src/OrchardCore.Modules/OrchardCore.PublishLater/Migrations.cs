@@ -70,10 +70,16 @@ public class Migrations : DataMigration
             table.AddColumn<string>(nameof(PublishLaterPartIndex.ContentItemId));
             table.AddColumn<bool>(nameof(PublishLaterPartIndex.Published));
             table.AddColumn<bool>(nameof(PublishLaterPartIndex.Latest));
+        });
 
+        SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table =>
+        {
             table.DropIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)}");
+        });
 
-            table.CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(ContentItemIndex.DocumentId)}",
+        SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table =>
+        {
+            table.CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)}",
                 "Id",
                 nameof(ContentItemIndex.DocumentId),
                 nameof(PublishLaterPartIndex.ContentItemId),
