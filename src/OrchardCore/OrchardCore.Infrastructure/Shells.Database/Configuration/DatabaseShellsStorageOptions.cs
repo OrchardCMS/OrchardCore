@@ -1,3 +1,5 @@
+using OrchardCore.Data;
+
 namespace OrchardCore.Shells.Database.Configuration
 {
     public class DatabaseShellsStorageOptions

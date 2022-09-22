@@ -631,23 +631,24 @@ namespace OrchardCore.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LinkExternalLogin(LinkExternalLoginViewModel model, string returnUrl = null)
         {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
             var info = await _signInManager.GetExternalLoginInfoAsync();
+
+            if (info == null)
+            {
+                _logger.LogWarning("Error loading external login info.");
+
+                return NotFound();
+            }
 
             var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
 
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (info == null)
-            {
-                _logger.LogWarning("Error loading external login info.");
-                return NotFound();
-            }
-
             if (user == null)
             {
                 _logger.LogWarning("Suspicious login detected from external provider. {provider} with key [{providerKey}] for {identity}",
                     info.LoginProvider, info.ProviderKey, info.Principal?.Identity?.Name);
+
                 return RedirectToAction(nameof(Login));
             }
 
@@ -674,6 +675,7 @@ namespace OrchardCore.Users.Controllers
                 }
                 AddIdentityErrors(identityResult);
             }
+
             return RedirectToAction(nameof(Login));
         }
 

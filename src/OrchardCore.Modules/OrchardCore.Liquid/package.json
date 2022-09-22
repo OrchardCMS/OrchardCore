@@ -2,6 +2,6 @@
   "name": "orchardcore.liquid",
   "version": "1.0.0",
   "dependencies": {
-    "monaco-editor": "0.33.0"
+    "monaco-editor": "0.34.0"
   }
 }

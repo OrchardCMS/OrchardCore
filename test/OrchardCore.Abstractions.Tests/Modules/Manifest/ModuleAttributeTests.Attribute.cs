@@ -123,65 +123,65 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, bool, bool)"/>,
+        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, bool, bool, bool)"/>,
         /// arguments in order,
-        /// <c>id, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type ModuleString7Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type ModuleString7Object3CtorClassifier(int index, object arg) =>
             index switch
             {
-                7 or 8 => typeof(object),
+                7 or 8 or 9 => typeof(object),
                 _ => typeof(string),
             };
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, bool, bool)"/>,
+        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
         /// arguments in order,
-        /// <c>id, name, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, name, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type ModuleString8Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type ModuleString8Object3CtorClassifier(int index, object arg) =>
             index switch
             {
-                8 or 9 => typeof(object),
+                8 or 9 or 10 => typeof(object),
                 _ => typeof(string),
             };
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, bool, bool)"/>,
+        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
         /// arguments in order,
-        /// <c>id, name, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, name, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type ModuleString10Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type ModuleString10Object3CtorClassifier(int index, object arg) =>
             index switch
             {
-                10 or 11 => typeof(object),
+                10 or 11 or 12 => typeof(object),
                 _ => typeof(string),
             };
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, string, bool, bool)"/>,
+        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
         /// arguments in order,
-        /// <c>id, name, type, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled</c>.
+        /// <c>id, name, type, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type ModuleString11Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type ModuleString11Object3CtorClassifier(int index, object arg) =>
             index switch
             {
-                11 or 12 => typeof(object),
+                11 or 12 or 13 => typeof(object),
                 _ => typeof(string),
             };
     }

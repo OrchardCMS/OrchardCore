@@ -23,6 +23,9 @@
             en: {
                 mention: 'Mention'
             },
+            by: {
+                mention: 'Згадаць'
+            },
             da: {
                 mention: 'Nævn'
             },

@@ -1,0 +1,9 @@
+[
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/scss/archive-later.scss"
+    ],
+    "output": "wwwroot/Styles/archive-later.css"
+  }
+]

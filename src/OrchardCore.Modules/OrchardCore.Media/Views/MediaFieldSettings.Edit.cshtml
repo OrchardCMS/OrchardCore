@@ -4,28 +4,28 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="Required" checked="@Model.Required">
         <label class="form-check-label" asp-for="Required">@T["Required"]</label>
-        <span class="hint">— @T["Whether a media is required."]</span>
+        <span class="hint dashed">@T["Whether a media is required."]</span>
     </div>
 </div>
 <div class="mb-3">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="Multiple" checked="@Model.Multiple">
         <label class="form-check-label" asp-for="Multiple">@T["Multiple"]</label>
-        <span class="hint">— @T["Whether multiple media can be selected."]</span>
+        <span class="hint dashed">@T["Whether multiple media can be selected."]</span>
     </div>
 </div>
 <div class="mb-3 ">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="AllowMediaText" checked="@Model.AllowMediaText">
         <label class="form-check-label" asp-for="AllowMediaText">@T["Allow media text"]</label>
-        <span class="hint">— @T["Whether media text editing is allowed."]</span>
+        <span class="hint dashed">@T["Whether media text editing is allowed."]</span>
     </div>
 </div>
 <div class="mb-3">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="AllowAnchors" checked="@Model.AllowAnchors">
         <label class="form-check-label" asp-for="AllowAnchors">@T["Allow anchors"]</label>
-        <span class="hint">— @T["Whether selecting an anchor point for resizing is allowed."]</span>
+        <span class="hint dashed">@T["Whether selecting an anchor point for resizing is allowed."]</span>
     </div>
 </div>
 <div class="mb-3">

@@ -29,7 +29,7 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
 
     public void Configure(AwsStorageOptions options)
     {
-        options.BindConfiguration(_shellConfiguration);
+        options.BindConfiguration(_shellConfiguration, _logger);
 
         var templateOptions = new TemplateOptions();
         var templateContext = new TemplateContext(templateOptions);

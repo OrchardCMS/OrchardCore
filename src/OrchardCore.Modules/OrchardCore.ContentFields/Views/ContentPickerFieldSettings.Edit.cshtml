@@ -1,18 +1,5 @@
-@model OrchardCore.ContentFields.Settings.ContentPickerFieldSettings
+@model OrchardCore.ContentFields.Settings.ContentPickerFieldSettingsViewModel
 @using OrchardCore.ContentManagement;
-
-@inject IEnumerable<IContentPickerResultProvider> ResultProviders
-
-@{
-    var resultProviderItems = ResultProviders.Select(p => new SelectListItem
-    {
-        Text = p.Name,
-        Value = p.Name
-    });
-}
-
-
-<script asp-name="vuejs" at="Foot"></script>
 
 <div class="mb-3">
     <div class="form-check">
@@ -30,19 +17,42 @@
     </div>
 </div>
 
-<div id="contentTypesVue" class="mb-3">
+<div class="mb-3">
+    <label asp-for="Source">@T["Contained Content Types"]</label>
+    <div class="w-sm-50" id="@Html.IdFor(x => x.Source)">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="Source" id="SourceAll" value="@ContentPickerSettingType.AllTypes" checked="@(Model.Source == ContentPickerSettingType.AllTypes)">
+            <label for="SourceAll">
+                @T["Display All Content Types"]
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="Source" id="SourceContentTypes" value="@ContentPickerSettingType.ContentTypes" checked="@(Model.Source == ContentPickerSettingType.ContentTypes)">
+            <label for="SourceContentTypes">
+                @T["Content Types"]
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="Source" id="SourceStereotypes" value="@ContentPickerSettingType.Stereotypes" checked="@(Model.Source == ContentPickerSettingType.Stereotypes)">
+            <label for="SourceStereotypes">
+                @T["Stereotype"] <span class="hint">@T["All content types of these Stereotypes"]</span>
+            </label>
+        </div>
+    </div>
+</div>
+
+<div class="mb-3" id="StereotypesContainer">
+    <div class="w-sm-50" id="@Html.IdFor(x => x.Source)">
+        <label asp-for="Stereotypes">@T["Stereotypes"]</label>
+        <input asp-for="Stereotypes" class="form-control medium" />
+        <span class="hint">@T["The Stereotypes of the content types that this field can contain. You may define multiple Stereotypes using the comma (,) as a separator"]</span>
+    </div>
+</div>
+
+<div class="mb-3" id="ContentTypesContainer">
     <label asp-for="DisplayedContentTypes">@T["Content Types"]</label>
     <span class="hint">@T["The content types to display. Choose at least one."]</span>
-
-    <div class="form-check">
-        <input asp-for="DisplayAllContentTypes" type="checkbox" class="form-check-input" v-model="displayAllContentTypes">
-        <label class="form-check-label" asp-for="DisplayAllContentTypes">@T["Display All Content Types"]</label>
-        <span class="hint dashed">@T["Whether to allow picker to display all content types."]</span>
-    </div>
-
-    <div v-show="!displayAllContentTypes">
-        @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.DisplayedContentTypes, htmlName = Html.NameFor(m => m.DisplayedContentTypes) })
-    </div>
+    @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.DisplayedContentTypes, htmlName = Html.NameFor(m => m.DisplayedContentTypes) })
 </div>
 
 <div class="mb-3">
@@ -53,19 +63,29 @@
     <span class="hint">@T["The hint text to display for this field on the editor."]</span>
 </div>
 
-@*<div class="mb-3">
-        <div class="w-sm-50">
-            <label asp-for="SearchResultProvider">@T["Search Result Provider"]</label>
-            <select asp-for="SearchResultProvider" asp-items="resultProviderItems" class="form-select"></select>
-        </div>
-        <span class="hint">@T["The search result provider to use when selecting content items."]</span>
-    </div>*@
-
-<script at="Foot" depends-on="vuejs">
-    var app = new Vue({
-        el: "#contentTypesVue",
-        data: {
-            displayAllContentTypes: @Model.DisplayAllContentTypes.ToString().ToLower()
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', function() {
+        var sources = document.getElementsByName('@Html.NameFor(x => x.Source)');
+        var contentTypesContainer = document.getElementById('ContentTypesContainer');
+        var stereotypeContainer = document.getElementById('StereotypesContainer');
+        for (var i = 0; i < sources.length; i++) {
+            var source = sources[i];
+            source.addEventListener('change', function(src) {
+                if (!src.target.checked) {
+                    return;
+                }
+                if (src.target.value == '@(ContentPickerSettingType.Stereotypes)') {
+                    contentTypesContainer.classList.add('d-none');
+                    stereotypeContainer.classList.remove('d-none');
+                } else if (src.target.value == '@(ContentPickerSettingType.ContentTypes)') {
+                    contentTypesContainer.classList.remove('d-none');
+                    stereotypeContainer.classList.add('d-none');
+                } else {
+                    contentTypesContainer.classList.add('d-none');
+                    stereotypeContainer.classList.add('d-none');
+                }
+            });
+            source.dispatchEvent(new Event('change'));
         }
     });
 </script>
