@@ -29209,6 +29209,9 @@ html[dir=ltr][data-theme=default] .has-search:not(.input-group) .form-control-fe
 html[dir=rtl][data-theme=default] .has-search:not(.input-group) .form-control-feedback, html[dir=rtl][data-theme=default] .has-filter:not(.input-group) .form-control-feedback {
   right: 1.75rem;
 }
+html[dir][data-theme=default] .has-filter .btn:not(.show), html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .has-filter .close:not(.show), html[dir][data-theme=default] .has-filter .bootstrap-select .popover-header .close:not(.show), html[dir][data-theme=default] .bootstrap-select .popover-header .has-filter .close:not(.show), html[dir][data-theme=default] .has-filter .button:not(.show) {
+  border-color: #ced4da !important;
+}
 
 html[data-theme=darkmode] {
   /*!
@@ -58700,6 +58703,9 @@ html[dir=ltr][data-theme=darkmode] .has-search:not(.input-group) .form-control-f
 }
 html[dir=rtl][data-theme=darkmode] .has-search:not(.input-group) .form-control-feedback, html[dir=rtl][data-theme=darkmode] .has-filter:not(.input-group) .form-control-feedback {
   right: 1.75rem;
+}
+html[dir][data-theme=darkmode] .has-filter .btn:not(.show), html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .has-filter .close:not(.show), html[dir][data-theme=darkmode] .has-filter .bootstrap-select .popover-header .close:not(.show), html[dir][data-theme=darkmode] .bootstrap-select .popover-header .has-filter .close:not(.show), html[dir][data-theme=darkmode] .has-filter .button:not(.show) {
+  border-color: #ced4da !important;
 }
 html[data-theme=darkmode] .input-group-addon {
   color: #fff;

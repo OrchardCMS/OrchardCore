@@ -99,3 +99,7 @@ input[type="password"]::-ms-clear {
     left: 1.75rem;
     top: 1.25rem;
 }
+
+.has-filter .btn:not(.show) {
+    border-color: $gray-400 !important;
+}
