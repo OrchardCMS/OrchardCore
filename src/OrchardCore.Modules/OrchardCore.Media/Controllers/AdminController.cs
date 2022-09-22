@@ -429,7 +429,8 @@ namespace OrchardCore.Media.Controllers
                 mediaPath = mediaFile.Path,
                 mime = contentType ?? "application/octet-stream",
                 mediaText = String.Empty,
-                anchor = new { x = 0.5f, y = 0.5f }
+                anchor = new { x = 0.5f, y = 0.5f },
+                attachedFileName = String.Empty
             };
         }
 
