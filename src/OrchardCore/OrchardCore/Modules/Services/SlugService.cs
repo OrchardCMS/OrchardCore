@@ -10,16 +10,19 @@ namespace OrchardCore.Modules.Services
         private const char Hyphen = '-';
         private const int MaxLength = 1000;
 
-        public string Slugify(string text) => Slugify(text, Hyphen);
-
         public string Slugify(string text, char separator)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string Slugify(string text)
         {
             if (String.IsNullOrEmpty(text))
             {
                 return text;
             }
 
-            var appendSeparator = false;
+            var appendHyphen = false;
             var normalizedText = text.Normalize(NormalizationForm.FormKD);
 
             using var slug = ZString.CreateStringBuilder();
@@ -37,14 +40,14 @@ namespace OrchardCore.Modules.Services
                 {
                     slug.Append(currentChar);
 
-                    appendSeparator = true;
+                    appendHyphen = true;
                 }
-                else if (currentChar == separator)
+                else if (currentChar is Hyphen)
                 {
-                    if (appendSeparator && i != normalizedText.Length - 1)
+                    if (appendHyphen && i != normalizedText.Length - 1)
                     {
                         slug.Append(currentChar);
-                        appendSeparator = false;
+                        appendHyphen = false;
                     }
                 }
                 else if (currentChar == '_' || currentChar == '~')
@@ -53,16 +56,34 @@ namespace OrchardCore.Modules.Services
                 }
                 else
                 {
-                    if (appendSeparator)
+                    if (appendHyphen)
                     {
-                        slug.Append(separator);
+                        slug.Append(Hyphen);
 
-                        appendSeparator = false;
+                        appendHyphen = false;
                     }
                 }
             }
 
-            return new string(slug.AsSpan()[..Math.Min(slug.Length, MaxLength)]).Normalize(NormalizationForm.FormC);
+            var length = Math.Min(slug.Length - GetTrailingHyphenCount(slug.AsSpan()), MaxLength);
+
+            return new string(slug.AsSpan()[..length]).Normalize(NormalizationForm.FormC);
+        }
+
+        private static int GetTrailingHyphenCount(ReadOnlySpan<char> input)
+        {
+            var hyphenCount = 0;
+            for (var i = input.Length - 1; i >= 0; i--)
+            {
+                if (input[i] != Hyphen)
+                {
+                    break;
+                }
+
+                ++hyphenCount;
+            }
+
+            return hyphenCount;
         }
     }
 }
