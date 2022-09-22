@@ -397,7 +397,11 @@ namespace OrchardCore.Autoroute.Handlers
                 _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
 
                 var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect());
-                using (CultureScope.Create(cultureAspect.Culture))
+
+                var localizationService = _serviceProvider.GetService<ILocalizationService>();
+                var cultureSettings = await localizationService.GetCultureSettingsAsync();
+
+                using (CultureScope.Create(cultureAspect.Culture, cultureSettings))
                 {
                     part.Path = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
                         new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });

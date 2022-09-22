@@ -17,6 +17,7 @@ namespace OrchardCore.Settings.Controllers
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly ILocalizationService _localizationService;
         private readonly IHtmlLocalizer H;
 
         public AdminController(
@@ -25,6 +26,7 @@ namespace OrchardCore.Settings.Controllers
             IAuthorizationService authorizationService,
             INotifier notifier,
             IHtmlLocalizer<AdminController> h,
+            ILocalizationService localizationService,
             IUpdateModelAccessor updateModelAccessor)
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
@@ -32,6 +34,7 @@ namespace OrchardCore.Settings.Controllers
             _notifier = notifier;
             _authorizationService = authorizationService;
             _updateModelAccessor = updateModelAccessor;
+            _localizationService = localizationService;
             H = h;
         }
 
@@ -80,8 +83,10 @@ namespace OrchardCore.Settings.Controllers
                     culture = settings.Value<string>("DefaultCulture");
                 }
 
+                var cultureSettings = await _localizationService.GetCultureSettingsAsync();
+
                 // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
-                using (culture != null ? CultureScope.Create(culture) : null)
+                using (culture != null ? CultureScope.Create(culture, cultureSettings) : null)
                 {
                     await _notifier.SuccessAsync(H["Site settings updated successfully."]);
                 }

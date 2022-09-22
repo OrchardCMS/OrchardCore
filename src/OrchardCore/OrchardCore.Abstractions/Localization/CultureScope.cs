@@ -1,7 +1,5 @@
 using System;
 using System.Globalization;
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Localization;
 
@@ -10,27 +8,32 @@ public sealed class CultureScope : IDisposable
     private readonly CultureInfo _originalCulture;
     private readonly CultureInfo _originalUICulture;
 
-    private CultureScope(CultureInfo culture, CultureInfo uiCulture)
+    private CultureScope(string culture, string uiCulture, CultureSettings cultureSettings)
     {
-        Culture = culture;
-        UICulture = uiCulture;
+        var useUserOveride = cultureSettings == CultureSettings.User;
+        Culture = new CultureInfo(culture, useUserOveride);
+        UICulture = new CultureInfo(uiCulture, useUserOveride);
         _originalCulture = CultureInfo.CurrentCulture;
         _originalUICulture = CultureInfo.CurrentUICulture;
 
-        SetCultures(culture, uiCulture);
+        SetCultures(Culture, UICulture);
     }
 
     public CultureInfo Culture { get; }
 
     public CultureInfo UICulture { get; }
 
-    public static CultureScope Create(string culture) => Create(culture, culture);
+    public static CultureScope Create(string culture, CultureSettings cultureSettings = CultureSettings.Default)
+        => Create(culture, culture, cultureSettings);
 
-    public static CultureScope Create(string culture, string uiCulture) => CreateInternal(culture, uiCulture);
+    public static CultureScope Create(string culture, string uiCulture, CultureSettings cultureSettings = CultureSettings.Default)
+        => new(culture, uiCulture, cultureSettings);
 
-    public static CultureScope Create(CultureInfo culture) => Create(culture, culture);
+    public static CultureScope Create(CultureInfo culture, CultureSettings cultureSettings = CultureSettings.Default)
+        => Create(culture, culture, cultureSettings);
 
-    public static CultureScope Create(CultureInfo culture, CultureInfo uiCulture) => CreateInternal(culture.Name, uiCulture.Name);
+    public static CultureScope Create(CultureInfo culture, CultureInfo uiCulture, CultureSettings cultureSettings = CultureSettings.Default)
+        => new(culture.Name, uiCulture.Name, cultureSettings);
 
     public void Dispose()
     {
@@ -41,15 +44,5 @@ public sealed class CultureScope : IDisposable
     {
         CultureInfo.CurrentCulture = culture;
         CultureInfo.CurrentUICulture = uiCulture;
-    }
-
-    private static CultureScope CreateInternal(string culture, string uiCulture)
-    {
-        var useUserSelectedCultureSettings = ShellScope.Services.GetService<ILocalizationService>()
-            .GetCultureSettingsAsync().GetAwaiter().GetResult() == CultureSettings.User;
-
-        return new CultureScope(
-            new CultureInfo(culture, useUserSelectedCultureSettings),
-            new CultureInfo(uiCulture, useUserSelectedCultureSettings));
     }
 }
