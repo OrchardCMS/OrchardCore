@@ -15,7 +15,7 @@ namespace OrchardCore.Spatial
                 .DefineScript("leaflet")
                 .SetUrl("/OrchardCore.Spatial/Scripts/leaflet/leaflet.js", "/OrchardCore.Spatial/Scripts/leaflet/leaflet-src.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.0/leaflet.min.js", "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.0/leaflet-src.js")
-                .SetCdnIntegrity("sha384-IUPQD2vWNSVvp1cjc2+27qNQMPjfL3WAWEOIG4Bp0VpxP3JnAV65h8Vw4VF+X7B1", "sha384-JZO8CJyT9g8yj13j0R/ssKw7jx+QYlck09EBe8l/UxI6bE8JDmTF/VbHAIQYXDTD")
+                .SetCdnIntegrity("sha384-yQhbJ10eE43LMul1CMgyQTRswwLBH94MQMO/Wq296rlHPUET+rznlxfQPtupouoX", "sha384-OpEbGD+GgOvGzqHl/VuP+X8cGvdUoPCw+F31C8ddag7seV0wOtUIChX0wCAoyZVD")
                 .SetVersion("1.9.0");
 
             _manifest
