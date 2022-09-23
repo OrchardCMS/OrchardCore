@@ -83,7 +83,6 @@ input[type="password"]::-ms-clear {
     line-height: 1rem;
     text-align: center;
     pointer-events: none;
-    color: #aaa;
 }
 
 .has-filter .form-control-feedback {
@@ -98,8 +97,4 @@ input[type="password"]::-ms-clear {
 .has-search:not(.input-group) .form-control-feedback, .has-filter:not(.input-group) .form-control-feedback {
     left: 1.75rem;
     top: 1.25rem;
-}
-
-.has-filter .btn:not(.show) {
-    border-color: $gray-400 !important;
 }
