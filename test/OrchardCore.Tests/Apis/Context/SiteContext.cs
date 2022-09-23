@@ -4,8 +4,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Client;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Services;
@@ -118,6 +120,9 @@ namespace OrchardCore.Tests.Apis.Context
         public async Task ResetLuceneIndiciesAsync(IShellHost shellHost, string indexName)
         {
             var shellScope = await shellHost.GetScopeAsync(TenantName);
+            var httpContextAccessor = shellScope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+            httpContextAccessor.HttpContext = shellScope.ShellContext.CreateHttpContext();
+
             await shellScope.UsingAsync(async scope =>
             {
                 var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();

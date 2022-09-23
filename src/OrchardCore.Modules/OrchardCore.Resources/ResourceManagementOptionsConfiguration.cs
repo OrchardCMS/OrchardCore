@@ -25,7 +25,7 @@ namespace OrchardCore.Resources
         {
             _resourceOptions = resourceOptions.Value;
             _env = env;
-            _pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? "";
+            _pathBase = httpContextAccessor.HttpContext.Request.PathBase;
         }
 
         ResourceManifest BuildManifest()
