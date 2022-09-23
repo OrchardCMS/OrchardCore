@@ -57,24 +57,10 @@ namespace OrchardCore.ContentTypes
             var adminControllerName = typeof(AdminController).ControllerName();
 
             routes.MapAreaControllerRoute(
-                name: "EditField",
-                areaName: "OrchardCore.ContentTypes",
-                pattern: _adminOptions.AdminUrlPrefix + "/ContentParts/{id}/Fields/{name}/Edit",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.EditField) }
-            );
-
-            routes.MapAreaControllerRoute(
                 name: "CreateType",
                 areaName: "OrchardCore.ContentTypes",
                 pattern: _adminOptions.AdminUrlPrefix + "/ContentTypes/Create",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "AddFieldsTo",
-                areaName: "OrchardCore.ContentTypes",
-                pattern: _adminOptions.AdminUrlPrefix + "/ContentTypes/AddFieldsTo/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.AddFieldTo) }
             );
 
             routes.MapAreaControllerRoute(
@@ -134,6 +120,44 @@ namespace OrchardCore.ContentTypes
             );
         }
     }
+
+    [RequireFeatures("OrchardCore.ContentFields", "OrchardCore.ContentTypes")]
+    public class ContentFieldsStartup : StartupBase
+    {
+        private readonly AdminOptions _adminOptions;
+
+        public ContentFieldsStartup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var fieldsControllerName = typeof(FieldsController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "EditField",
+                areaName: "OrchardCore.ContentTypes",
+                pattern: _adminOptions.AdminUrlPrefix + "/ContentParts/{id}/Fields/{name}/Edit",
+                defaults: new { controller = fieldsControllerName, action = nameof(FieldsController.EditField) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "RemoveField",
+                areaName: "OrchardCore.ContentTypes",
+                pattern: _adminOptions.AdminUrlPrefix + "/ContentParts/{id}/Fields/{name}/Remove",
+                defaults: new { controller = fieldsControllerName, action = "RemoveFieldFrom" }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "AddFieldsTo",
+                areaName: "OrchardCore.ContentTypes",
+                pattern: _adminOptions.AdminUrlPrefix + "/ContentTypes/AddFieldsTo/{id}",
+                defaults: new { controller = fieldsControllerName, action = nameof(FieldsController.AddFieldTo) }
+            );
+        }
+    }
+
 
     [RequireFeatures("OrchardCore.Deployment")]
     public class DeploymentStartup : StartupBase

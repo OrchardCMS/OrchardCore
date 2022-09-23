@@ -3,6 +3,7 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Mvc.Utilities
+@inject OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor ShellDescriptor
 
 @{
     var typePart = Model.TypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.Name, Model.TypeDefinition.Name, StringComparison.OrdinalIgnoreCase));
@@ -15,11 +16,6 @@
         })
         .OrderBy(x => x.Order)
         .Select(x => x.Part);
-
-    var orderedFields = typePart == null ? Enumerable.Empty<ContentPartFieldDefinition>() : typePart.PartDefinition.Fields
-        .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
-        .OrderBy(x => x.Order)
-        .Select(x => x.Field);
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Type - {0}", Model.TypeDefinition.DisplayName])</h1></zone>
@@ -38,40 +34,48 @@
 
     @await DisplayAsync(Model.Editor)
 
-    <div class="mb-3">
-        <h3>@T["Fields"]</h3>
+    @if (ShellDescriptor.Features.Any(x => x.Id.Equals("OrchardCore.ContentFields", StringComparison.OrdinalIgnoreCase)))
+    {
+        var orderedFields = typePart == null ? Enumerable.Empty<ContentPartFieldDefinition>() : typePart.PartDefinition.Fields
+        .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
+        .OrderBy(x => x.Order)
+        .Select(x => x.Field);
 
-        <ul class="list-group sortable" id="fields">
-            @if (typePart != null)
-            {
-                @foreach (var field in orderedFields)
+        <div class="mb-3">
+            <h3>@T["Fields"]</h3>
+
+            <ul class="list-group sortable" id="fields">
+                @if (typePart != null)
                 {
-                    <li class="list-group-item" style="cursor: move;">
-                        <div class="w-100">
-                            <div class="float-end">
-                                <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
-                            </div>
-                            @field.DisplayName() <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
+                    @foreach (var field in orderedFields)
+                    {
+                        <li class="list-group-item" style="cursor: move;">
+                            <div class="w-100">
+                                <div class="float-end">
+                                    <a asp-controller="Fields" asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                                    <a asp-controller="Fields" asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                </div>
+                                @field.DisplayName() <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
 
-                            @if (!string.IsNullOrEmpty(field.DisplayMode()))
-                            {
-                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info" aria-hidden="true"></i> @field.DisplayMode()</span>
-                            }
-                            @if (!string.IsNullOrEmpty(field.Editor()))
-                            {
-                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info" aria-hidden="true"></i> @field.Editor()</span>
-                            }
-                        </div>
-                        <input type="hidden" asp-for="OrderedFieldNames" value="@field.Name" />
-                    </li>
+                                @if (!string.IsNullOrEmpty(field.DisplayMode()))
+                                {
+                                    <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info" aria-hidden="true"></i> @field.DisplayMode()</span>
+                                }
+                                @if (!string.IsNullOrEmpty(field.Editor()))
+                                {
+                                    <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info" aria-hidden="true"></i> @field.Editor()</span>
+                                }
+                            </div>
+                            <input type="hidden" asp-for="OrderedFieldNames" value="@field.Name" />
+                        </li>
+                    }
                 }
-            }
-        </ul>
-    </div>
-    <div class="mb-3">
-        <a asp-route-action="AddFieldTo" asp-route-id="@Model.TypeDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
-    </div>
+            </ul>
+        </div>
+        <div class="mb-3">
+            <a asp-controller="Fields" asp-route-action="AddFieldTo" asp-route-id="@Model.TypeDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
+        </div>
+    }
     <div class="mb-3">
         <h3>@T["Parts"]</h3>
 
@@ -131,5 +135,5 @@
         Sortable.create(document.getElementById("fields"));
         Sortable.create(document.getElementById("parts"));
     })
-    //]]>
+                                            //]]>
 </script>
