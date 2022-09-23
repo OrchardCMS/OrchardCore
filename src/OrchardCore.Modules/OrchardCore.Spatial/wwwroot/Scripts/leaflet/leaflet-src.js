@@ -1,5 +1,5 @@
 /* @preserve
- * Leaflet 1.9.0+main.a7e1bbc, a JS library for interactive maps. https://leafletjs.com
+ * Leaflet 1.9.1, a JS library for interactive maps. https://leafletjs.com
  * (c) 2010-2022 Vladimir Agafonkin, (c) 2010-2011 CloudMade
  */
 
@@ -9,7 +9,7 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.leaflet = {}));
 })(this, (function (exports) { 'use strict';
 
-  var version = "1.9.0+main.a7e1bbcb";
+  var version = "1.9.1";
 
   /*
    * @namespace Util
@@ -626,15 +626,17 @@
   			console.warn('"string" type argument expected');
   		}
 
+  		// we don't overwrite the input `fn` value, because we need to use it for propagation
+  		var _fn = fn;
   		if (typeof fn !== 'function') {
   			propagate = !!fn;
-  			fn = undefined;
+  			_fn = undefined;
   			context = undefined;
   		}
 
   		var listeners = this._events && this._events[type];
   		if (listeners && listeners.length) {
-  			if (this._listens(type, fn, context) !== false) {
+  			if (this._listens(type, _fn, context) !== false) {
   				return true;
   			}
   		}

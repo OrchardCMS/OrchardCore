@@ -14,16 +14,16 @@ namespace OrchardCore.Spatial
             _manifest
                 .DefineScript("leaflet")
                 .SetUrl("/OrchardCore.Spatial/Scripts/leaflet/leaflet.js", "/OrchardCore.Spatial/Scripts/leaflet/leaflet-src.js")
-                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.0/leaflet.min.js", "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.0/leaflet-src.js")
-                .SetCdnIntegrity("sha384-yQhbJ10eE43LMul1CMgyQTRswwLBH94MQMO/Wq296rlHPUET+rznlxfQPtupouoX", "sha384-OpEbGD+GgOvGzqHl/VuP+X8cGvdUoPCw+F31C8ddag7seV0wOtUIChX0wCAoyZVD")
-                .SetVersion("1.9.0");
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.1/leaflet.js", "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.1/leaflet-src.js")
+                .SetCdnIntegrity("sha384-mvgACVzya0zhB/4CbnTX8JiDAJXE6NGoGD70xNLLwtv0ON8la+5S7Xnyf+0nOqF8", "sha384-ZcEzfKHsDIOeASjXefEE7Pi3sgfbuTkHOhyiVrfNh3sXdDTpZ23OStxbY4YWEl9V")
+                .SetVersion("1.9.1");
 
             _manifest
                 .DefineStyle("leaflet")
                 .SetUrl("/OrchardCore.Spatial/Styles/leaflet.min.css", "/OrchardCore.Spatial/Styles/leaflet.css")
-                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.0/leaflet.min.css", "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.0/leaflet.css")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.1/leaflet.min.css", "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.1/leaflet.css")
                 .SetCdnIntegrity("sha384-oPNdwszLJvgXV8sIi6zYKJBYI/ST8rVoT8MyjqxOZ+W/nStKywI3wKguIB8D95pi", "sha384-kxXhFDZB0L84bBV/apPOb8zGC+fsQ1dBPpKXPUXc1zRymi4BaueVyC27iDDPdssp")
-                .SetVersion("1.9.0");
+                .SetVersion("1.9.1");
         }
 
         public void Configure(ResourceManagementOptions options)
