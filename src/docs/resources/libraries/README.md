@@ -74,7 +74,7 @@ The below table lists the different Client side libraries:
 | [Gulp](https://github.com/gulpjs/gulp-cli) | Command Line Interface for gulp. | 2.3.0 | [MIT](https://github.com/gulpjs/gulp-cli/blob/master/LICENSE) |
 | [jQuery-File-Upload](https://github.com/blueimp/jQuery-File-Upload) | File Upload widget for jQuery. | 10.32.0 | [MIT](https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt) |
 | [jsPlumb](https://github.com/jsplumb/jsplumb) | Visual connectivity for webapps. | 2.15.6 | [MIT and GPLv2](https://github.com/jsplumb/jsplumb/blob/master/jsPlumb-LICENSE.txt) |
-| [Leaflet](https://github.com/Leaflet/Leaflet) | JavaScript library for mobile-friendly interactive maps. |1.8.0 | [BSD-2-Clause License](https://github.com/Leaflet/Leaflet/blob/main/LICENSE) |
+| [Leaflet](https://github.com/Leaflet/Leaflet) | JavaScript library for mobile-friendly interactive maps. |1.9.0 | [BSD-2-Clause License](https://github.com/Leaflet/Leaflet/blob/main/LICENSE) |
 | [React](https://github.com/facebook/react) | JavaScript library for building user interface. | 17.0.2 | [MIT](https://github.com/facebook/react/blob/master/LICENSE) |
 | [TypeScript](https://github.com/microsoft/TypeScript) | Superset of JavaScript that compiles to clean JavaScript output. | 4.5.2 | [Apache-2.0](https://github.com/microsoft/TypeScript/blob/master/LICENSE.txt) |
 | [Vue](https://github.com/vuejs/vue) | JavaScript framework for building UI on the web. | 2.6.14 | [MIT](https://github.com/vuejs/vue/blob/dev/LICENSE) |
