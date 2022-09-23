@@ -141,7 +141,7 @@ namespace OrchardCore.ResourceManagement
         {
             if (!System.Version.TryParse(version, out _))
             {
-                throw new FormatException();
+                throw new FormatException("The resource version should be in the form of major.minor[.build[.revision]].");
             }
 
             Version = version;
