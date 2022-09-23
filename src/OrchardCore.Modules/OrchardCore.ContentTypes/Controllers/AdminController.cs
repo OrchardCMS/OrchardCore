@@ -94,7 +94,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
-            viewModel.Name ??= String.Empty;
+            viewModel.Name = viewModel.Name ?? String.Empty;
 
             if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
             {

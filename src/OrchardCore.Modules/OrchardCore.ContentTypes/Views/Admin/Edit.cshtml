@@ -37,9 +37,9 @@
     @if (ShellDescriptor.Features.Any(x => x.Id.Equals("OrchardCore.ContentFields", StringComparison.OrdinalIgnoreCase)))
     {
         var orderedFields = typePart == null ? Enumerable.Empty<ContentPartFieldDefinition>() : typePart.PartDefinition.Fields
-        .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
-        .OrderBy(x => x.Order)
-        .Select(x => x.Field);
+            .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
+            .OrderBy(x => x.Order)
+            .Select(x => x.Field);
 
         <div class="mb-3">
             <h3>@T["Fields"]</h3>
@@ -130,10 +130,8 @@
 </form>
 
 <script at="Foot">
-    //<![CDATA[
     $(function () {
         Sortable.create(document.getElementById("fields"));
         Sortable.create(document.getElementById("parts"));
     })
-                                            //]]>
 </script>
