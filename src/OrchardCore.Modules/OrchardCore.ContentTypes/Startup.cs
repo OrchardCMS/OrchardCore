@@ -158,7 +158,6 @@ namespace OrchardCore.ContentTypes
         }
     }
 
-
     [RequireFeatures("OrchardCore.Deployment")]
     public class DeploymentStartup : StartupBase
     {
