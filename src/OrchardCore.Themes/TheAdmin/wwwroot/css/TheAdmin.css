@@ -57109,6 +57109,12 @@ html[dir][data-theme=darkmode] div.editor-widget.find-widget .button.codicon:act
 html[dir][data-theme=darkmode] .has-filter .btn:not(.show), html[dir][data-theme=darkmode] .has-filter .button:not(.show), html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .has-filter .close:not(.show), html[dir][data-theme=darkmode] .has-filter .bootstrap-select .popover-header .close:not(.show), html[dir][data-theme=darkmode] .bootstrap-select .popover-header .has-filter .close:not(.show) {
   border-color: #3C4144 !important;
 }
+html[data-theme=darkmode] .has-filter .form-control-feedback, html[data-theme=darkmode] .has-search .form-control-feedback {
+  color: #aaa;
+}
+html[data-theme=darkmode] .has-filter .form-control, html[data-theme=darkmode] .has-search .form-control {
+  color: #aaa;
+}
 html[data-theme=darkmode] body {
   --bs-blue: #007bff;
   --bs-indigo: #6610f2;
