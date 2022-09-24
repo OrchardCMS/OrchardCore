@@ -30,7 +30,7 @@ public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, Loc
     private readonly ShellSettings _shellSettings;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly CultureLocalizationOptions _cultureLocalizationOptions;
+    private readonly CultureOptions _cultureOptions;
     private readonly IHtmlLocalizer H;
     private readonly IStringLocalizer S;
 
@@ -40,7 +40,7 @@ public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, Loc
         ShellSettings shellSettings,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IOptions<CultureLocalizationOptions> cultureLocalizationOptions,
+        IOptions<CultureOptions> cultureOptions,
         IHtmlLocalizer<LocalizationSettingsDisplayDriver> h,
         IStringLocalizer<LocalizationSettingsDisplayDriver> s
     )
@@ -50,7 +50,7 @@ public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, Loc
         _shellSettings = shellSettings;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _cultureLocalizationOptions = cultureLocalizationOptions.Value;
+        _cultureOptions = cultureOptions.Value;
         H = h;
         S = s;
     }
@@ -124,7 +124,7 @@ public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, Loc
                 await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
                 // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
-                using (CultureScope.Create(section.DefaultCulture, _cultureLocalizationOptions.CultureSettings))
+                using (CultureScope.Create(section.DefaultCulture, useUserOverride: !_cultureOptions.IgnoreSystemSettings))
                 {
                     await _notifier.WarningAsync(H["The site has been restarted for the settings to take effect."]);
                 }

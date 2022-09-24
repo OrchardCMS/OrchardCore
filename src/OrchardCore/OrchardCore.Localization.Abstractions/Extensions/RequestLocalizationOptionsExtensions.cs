@@ -14,12 +14,12 @@ public static class RequestLocalizationOptionsExtensions
     /// </summary>
     /// <param name="requestLocalizationOptions">The <see cref="RequestLocalizationOptions"/>.</param>
     /// <param name="cultures">The cultures to be added.</param>
-    /// <param name="userUserSelectedCultureSettings">Whether to use the user-selected culture settings or not. Default to <c>false</c> which uses the default culture settings.</param>
+    /// <param name="useUserSelectedCultureSettings">Whether to use the user-selected culture settings or default culture settings. Default to <c>true</c>.</param>
     /// <returns>The <see cref="RequestLocalizationOptions"/>.</returns>
     public static RequestLocalizationOptions AddSupportedCultures(
         this RequestLocalizationOptions requestLocalizationOptions,
         string[] cultures,
-        bool userUserSelectedCultureSettings = false)
+        bool useUserSelectedCultureSettings = true)
     {
         if (requestLocalizationOptions == null)
         {
@@ -35,7 +35,7 @@ public static class RequestLocalizationOptionsExtensions
 
         foreach (var culture in cultures)
         {
-            supportedCultures.Add(new CultureInfo(culture, userUserSelectedCultureSettings));
+            supportedCultures.Add(new CultureInfo(culture, useUserSelectedCultureSettings));
         }
 
         requestLocalizationOptions.SupportedCultures = supportedCultures;
@@ -48,12 +48,12 @@ public static class RequestLocalizationOptionsExtensions
     /// </summary>
     /// <param name="requestLocalizationOptions">The <see cref="RequestLocalizationOptions"/>.</param>
     /// <param name="cultures">The cultures to be added.</param>
-    /// <param name="userUserSelectedCultureSettings">Whether to use the user-selected culture settings or not. Default to <c>false</c> which uses the default culture settings.</param>
+    /// <param name="useUserSelectedCultureSettings">Whether to use the user-selected culture settings or default culture settings. Default to <c>true</c>.</param>
     /// <returns>The <see cref="RequestLocalizationOptions"/>.</returns>
     public static RequestLocalizationOptions AddSupportedUICultures(
         this RequestLocalizationOptions requestLocalizationOptions,
         string[] cultures,
-        bool userUserSelectedCultureSettings = false)
+        bool useUserSelectedCultureSettings = true)
     {
         if (requestLocalizationOptions == null)
         {
@@ -69,7 +69,7 @@ public static class RequestLocalizationOptionsExtensions
 
         foreach (var culture in cultures)
         {
-            supportedUICultures.Add(new CultureInfo(culture, userUserSelectedCultureSettings));
+            supportedUICultures.Add(new CultureInfo(culture, useUserSelectedCultureSettings));
         }
 
         requestLocalizationOptions.SupportedUICultures = supportedUICultures;

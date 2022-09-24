@@ -44,7 +44,7 @@ namespace OrchardCore.Localization
 
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
 
-            services.Configure<CultureLocalizationOptions>(_shellConfiguration.GetSection("OrchardCore_Localization"));
+            services.Configure<CultureOptions>(_shellConfiguration.GetSection("OrchardCore_Localization"));
         }
 
         /// <inheritdocs />
@@ -58,13 +58,12 @@ namespace OrchardCore.Localization
             //    .GetAwaiter().GetResult() == CultureSettings.User;
 
             var requestLocalizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-            var cultureLocalizationOptions = serviceProvider.GetService<IOptions<CultureLocalizationOptions>>().Value;
-            var useUserSelectedCultureSettings = cultureLocalizationOptions.CultureSettings == CultureSettings.User;
+            var cultureOptions = serviceProvider.GetService<IOptions<CultureOptions>>().Value;
 
             requestLocalizationOptions
                 .SetDefaultCulture(defaultCulture)
-                .AddSupportedCultures(supportedCultures, useUserSelectedCultureSettings)
-                .AddSupportedUICultures(supportedCultures, useUserSelectedCultureSettings);
+                .AddSupportedCultures(supportedCultures, useUserSelectedCultureSettings: !cultureOptions.IgnoreSystemSettings)
+                .AddSupportedUICultures(supportedCultures, useUserSelectedCultureSettings: !cultureOptions.IgnoreSystemSettings);
 
             app.UseRequestLocalization(requestLocalizationOptions);
         }

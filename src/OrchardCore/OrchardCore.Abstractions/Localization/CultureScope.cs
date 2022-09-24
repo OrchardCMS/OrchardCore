@@ -8,11 +8,10 @@ namespace OrchardCore.Localization
         private readonly CultureInfo _originalCulture;
         private readonly CultureInfo _originalUICulture;
 
-        private CultureScope(string culture, string uiCulture, CultureSettings cultureSettings)
+        private CultureScope(string culture, string uiCulture, bool useUserOverride)
         {
-            var useUserOveride = cultureSettings == CultureSettings.User;
-            Culture = new CultureInfo(culture, useUserOveride);
-            UICulture = new CultureInfo(uiCulture, useUserOveride);
+            Culture = new CultureInfo(culture, useUserOverride);
+            UICulture = new CultureInfo(uiCulture, useUserOverride);
             _originalCulture = CultureInfo.CurrentCulture;
             _originalUICulture = CultureInfo.CurrentUICulture;
 
@@ -23,17 +22,17 @@ namespace OrchardCore.Localization
 
         public CultureInfo UICulture { get; }
 
-        public static CultureScope Create(string culture, CultureSettings cultureSettings = CultureSettings.Default)
-            => Create(culture, culture, cultureSettings);
+        public static CultureScope Create(string culture, bool useUserOverride = true)
+            => Create(culture, culture, useUserOverride);
 
-        public static CultureScope Create(string culture, string uiCulture, CultureSettings cultureSettings = CultureSettings.Default)
-            => new(culture, uiCulture, cultureSettings);
+        public static CultureScope Create(string culture, string uiCulture, bool useUserOverride = true)
+            => new(culture, uiCulture, useUserOverride);
 
-        public static CultureScope Create(CultureInfo culture, CultureSettings cultureSettings = CultureSettings.Default)
-            => Create(culture, culture, cultureSettings);
+        public static CultureScope Create(CultureInfo culture, bool useUserOverride = true)
+            => Create(culture, culture, useUserOverride);
 
-        public static CultureScope Create(CultureInfo culture, CultureInfo uiCulture, CultureSettings cultureSettings = CultureSettings.Default)
-            => new(culture.Name, uiCulture.Name, cultureSettings);
+        public static CultureScope Create(CultureInfo culture, CultureInfo uiCulture, bool useUserOverride = true)
+            => new(culture.Name, uiCulture.Name, useUserOverride);
 
         public void Dispose()
         {
