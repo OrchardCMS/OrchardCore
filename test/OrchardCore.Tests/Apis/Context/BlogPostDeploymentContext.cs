@@ -27,7 +27,7 @@ namespace OrchardCore.Tests.Apis.Context
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
-            await RunRecipeAsync(ShellHost, BlogContext.luceneRecipeName, BlogContext.luceneRecipePath);
+            await RunRecipeAsync(BlogContext.luceneRecipeName, BlogContext.luceneRecipePath);
 
             var result = await GraphQLClient
                 .Content
@@ -43,8 +43,7 @@ namespace OrchardCore.Tests.Apis.Context
             OriginalBlogPost = await content.Content.ReadAsAsync<ContentItem>();
             OriginalBlogPostVersionId = OriginalBlogPost.ContentItemVersionId;
 
-            var shellScope = await GetTenantScopeAsync();
-            await shellScope.UsingAsync(async scope =>
+            await UsingTenantScopeAsync(async scope =>
             {
                 var remoteClientService = scope.ServiceProvider.GetRequiredService<RemoteClientService>();
 

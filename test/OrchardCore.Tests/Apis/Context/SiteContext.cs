@@ -94,18 +94,19 @@ namespace OrchardCore.Tests.Apis.Context
             GraphQLClient = new OrchardGraphQLClient(Client);
         }
 
-        public async Task<ShellScope> GetTenantScopeAsync()
+        public async Task UsingTenantScopeAsync(Func<ShellScope, Task> execute, bool activateShell = true)
         {
+            // Ensure 'HttpContext' is not null as in a backgroun task.
             var shellScope = await ShellHost.GetScopeAsync(TenantName);
             var httpContextAccessor = shellScope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
             httpContextAccessor.HttpContext = shellScope.ShellContext.CreateHttpContext();
-            return shellScope;
+
+            await shellScope.UsingAsync(execute, activateShell);
         }
 
-        public async Task RunRecipeAsync(IShellHost shellHost, string recipeName, string recipePath)
+        public async Task RunRecipeAsync(string recipeName, string recipePath)
         {
-            var shellScope = await GetTenantScopeAsync();
-            await shellScope.UsingAsync(async scope =>
+            await UsingTenantScopeAsync(async scope =>
             {
                 var shellFeaturesManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
                 var recipeHarvesters = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeHarvester>>();
@@ -128,10 +129,9 @@ namespace OrchardCore.Tests.Apis.Context
             });
         }
 
-        public async Task ResetLuceneIndiciesAsync(IShellHost shellHost, string indexName)
+        public async Task ResetLuceneIndiciesAsync(string indexName)
         {
-            var shellScope = await GetTenantScopeAsync();
-            await shellScope.UsingAsync(async scope =>
+            await UsingTenantScopeAsync(async scope =>
             {
                 var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
                 var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();

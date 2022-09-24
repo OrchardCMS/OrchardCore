@@ -31,8 +31,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                     await context.PostRecipeAsync(recipe);
 
                     // Test
-                    var shellScope = await context.GetTenantScopeAsync();
-                    await shellScope.UsingAsync(async scope =>
+                    await context.UsingTenantScopeAsync(async scope =>
                     {
                         var session = scope.ServiceProvider.GetRequiredService<ISession>();
                         var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
@@ -72,8 +71,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                     await context.PostRecipeAsync(recipe);
 
                     // Test
-                    var shellScope = await context.GetTenantScopeAsync();
-                    await shellScope.UsingAsync(async scope =>
+                    await context.UsingTenantScopeAsync(async scope =>
                     {
                         var session = scope.ServiceProvider.GetRequiredService<ISession>();
                         var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>

@@ -1,6 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -19,8 +17,8 @@ namespace OrchardCore.Tests.Apis.Context
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
-            await RunRecipeAsync(ShellHost, luceneRecipeName, luceneRecipePath);
-            await ResetLuceneIndiciesAsync(ShellHost, luceneIndexName);
+            await RunRecipeAsync(luceneRecipeName, luceneRecipePath);
+            await ResetLuceneIndiciesAsync(luceneIndexName);
 
             var result = await GraphQLClient
                 .Content
