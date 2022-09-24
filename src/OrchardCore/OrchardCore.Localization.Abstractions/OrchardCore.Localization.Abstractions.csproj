@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <RootNamespace>OrchardCore.Localization</RootNamespace>
@@ -13,6 +13,10 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -29,7 +30,7 @@ public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, Loc
     private readonly ShellSettings _shellSettings;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly ILocalizationService _localizationService;
+    private readonly CultureLocalizationOptions _cultureLocalizationOptions;
     private readonly IHtmlLocalizer H;
     private readonly IStringLocalizer S;
 
@@ -39,7 +40,7 @@ public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, Loc
         ShellSettings shellSettings,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        ILocalizationService localizationService,
+        IOptions<CultureLocalizationOptions> cultureLocalizationOptions,
         IHtmlLocalizer<LocalizationSettingsDisplayDriver> h,
         IStringLocalizer<LocalizationSettingsDisplayDriver> s
     )
@@ -49,7 +50,7 @@ public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, Loc
         _shellSettings = shellSettings;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _localizationService = localizationService;
+        _cultureLocalizationOptions = cultureLocalizationOptions.Value;
         H = h;
         S = s;
     }
@@ -122,10 +123,8 @@ public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, Loc
                 // We always release the tenant for the default culture and also supported cultures to take effect
                 await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
-                var cultureSettings = await _localizationService.GetCultureSettingsAsync();
-
                 // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
-                using (CultureScope.Create(section.DefaultCulture, cultureSettings))
+                using (CultureScope.Create(section.DefaultCulture, _cultureLocalizationOptions.CultureSettings))
                 {
                     await _notifier.WarningAsync(H["The site has been restarted for the settings to take effect."]);
                 }

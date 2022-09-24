@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.Services;
@@ -21,6 +22,13 @@ namespace OrchardCore.Localization
     /// </summary>
     public class Startup : StartupBase
     {
+        private readonly IShellConfiguration _shellConfiguration;
+
+        public Startup(IShellConfiguration shellConfiguration)
+        {
+            _shellConfiguration = shellConfiguration;
+        }
+
         public override int ConfigureOrder => -100;
 
         /// <inheritdocs />
@@ -35,6 +43,8 @@ namespace OrchardCore.Localization
                 AddDataAnnotationsPortableObjectLocalization();
 
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
+
+            services.Configure<CultureLocalizationOptions>(_shellConfiguration.GetSection("OrchardCore_Localization"));
         }
 
         /// <inheritdocs />
@@ -44,10 +54,12 @@ namespace OrchardCore.Localization
 
             var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
             var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
-            var useUserSelectedCultureSettings = localizationService.GetCultureSettingsAsync()
-                .GetAwaiter().GetResult() == CultureSettings.User;
+            //var useUserSelectedCultureSettings = localizationService.GetCultureSettingsAsync()
+            //    .GetAwaiter().GetResult() == CultureSettings.User;
 
             var requestLocalizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
+            var cultureLocalizationOptions = serviceProvider.GetService<IOptions<CultureLocalizationOptions>>().Value;
+            var useUserSelectedCultureSettings = cultureLocalizationOptions.CultureSettings == CultureSettings.User;
 
             requestLocalizationOptions
                 .SetDefaultCulture(defaultCulture)
