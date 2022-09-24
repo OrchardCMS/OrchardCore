@@ -1,0 +1,7 @@
+.has-filter .btn:not(.show) {
+    border-color: $gray-400 !important;
+}
+
+.has-filter .form-control-feedback, .has-search .form-control-feedback {
+    color: #aaa;
+}
