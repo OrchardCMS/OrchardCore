@@ -60,7 +60,7 @@ namespace OrchardCore.Settings.Drivers
                         context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be greater than zero."]);
                     }
 
-                    if (site.MaxPageSize > 0 && site.MaxPageSize > model.PageSize.Value)
+                    if (site.MaxPageSize > 0 && model.PageSize.Value > site.MaxPageSize)
                     {
                         context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be less than or equal to {0}.", site.MaxPageSize]);
                     }
