@@ -63,27 +63,27 @@
         range: {
             'min': @min,
             'max': @max
-                                            }
+        }
     });
 
     slider.noUiSlider.set("@Model.Value");
 
     slider.noUiSlider.on('change', function () {
         let value = slider.noUiSlider.get();
-    @if (javascriptDecimalSeparator != serverDecimalSeparator)
-    {
+        @if (javascriptDecimalSeparator != serverDecimalSeparator)
+        {
         <text>value = value.replace('@(javascriptDecimalSeparator)', serverDecimalSeparator); </text>
-    }
-            $('#@(id)').val(value);
+        }
+        $('#@(id)').val(value);
     });
 
     $('#@(id)').on('keyup', function () {
         let value = this.value;
-    @if (javascriptDecimalSeparator != serverDecimalSeparator)
-    {
+        @if (javascriptDecimalSeparator != serverDecimalSeparator)
+        {
         <text>value = value.replace(serverDecimalSeparator, '@(javascriptDecimalSeparator)'); </text>
-    }
-            slider.noUiSlider.set(Number(value) || 0);
+        }
+        slider.noUiSlider.set(Number(value) || 0);
     });
 
 </script>
