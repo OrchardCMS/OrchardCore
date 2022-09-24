@@ -16,6 +16,14 @@
         })
         .OrderBy(x => x.Order)
         .Select(x => x.Part);
+
+    var orderedFields = ((typePart?.PartDefinition?.Fields) ?? Enumerable.Empty<ContentPartFieldDefinition>())
+        .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
+        .OrderBy(x => x.Order)
+        .Select(x => x.Field)
+        .ToList();
+
+    var fields = ContentDefinitionService.GetFields().ToList();
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Type - {0}", Model.TypeDefinition.DisplayName])</h1></zone>
@@ -34,13 +42,8 @@
 
     @await DisplayAsync(Model.Editor)
 
-    @if (ContentDefinitionService.GetFields().Any())
+    @if (orderedFields.Count > 0 || fields.Count > 0)
     {
-        var orderedFields = ((typePart?.PartDefinition?.Fields) ?? Enumerable.Empty<ContentPartFieldDefinition>())
-        .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
-        .OrderBy(x => x.Order)
-        .Select(x => x.Field);
-
         <div class="mb-3">
             <h3>@T["Fields"]</h3>
 
@@ -50,7 +53,10 @@
                     <li class="list-group-item" style="cursor: move;">
                         <div class="w-100">
                             <div class="float-end">
-                                <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                                @if (fields.Any(x => x.Name.Equals(field.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                                }
                                 <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
                             @field.DisplayName() <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
@@ -69,9 +75,13 @@
                 }
             </ul>
         </div>
-        <div class="mb-3">
-            <a asp-route-action="AddFieldTo" asp-route-id="@Model.TypeDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
-        </div>
+
+        @if (fields.Count > 0)
+        {
+            <div class="mb-3">
+                <a asp-route-action="AddFieldTo" asp-route-id="@Model.TypeDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
+            </div>
+        }
     }
     <div class="mb-3">
         <h3>@T["Parts"]</h3>
