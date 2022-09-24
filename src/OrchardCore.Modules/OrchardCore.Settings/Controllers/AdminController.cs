@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -17,7 +18,7 @@ namespace OrchardCore.Settings.Controllers
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly ILocalizationService _localizationService;
+        private readonly CultureOptions _cultureOptions;
         private readonly IHtmlLocalizer H;
 
         public AdminController(
@@ -26,7 +27,7 @@ namespace OrchardCore.Settings.Controllers
             IAuthorizationService authorizationService,
             INotifier notifier,
             IHtmlLocalizer<AdminController> h,
-            ILocalizationService localizationService,
+            IOptions<CultureOptions> cultureOptions,
             IUpdateModelAccessor updateModelAccessor)
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
@@ -34,7 +35,7 @@ namespace OrchardCore.Settings.Controllers
             _notifier = notifier;
             _authorizationService = authorizationService;
             _updateModelAccessor = updateModelAccessor;
-            _localizationService = localizationService;
+            _cultureOptions = cultureOptions.Value;
             H = h;
         }
 
@@ -82,11 +83,8 @@ namespace OrchardCore.Settings.Controllers
                 {
                     culture = settings.Value<string>("DefaultCulture");
                 }
-
-                var cultureSettings = await _localizationService.GetCultureSettingsAsync();
-
                 // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
-                using (culture != null ? CultureScope.Create(culture, cultureSettings) : null)
+                using (culture != null ? CultureScope.Create(culture, useUserOverride: !_cultureOptions.IgnoreSystemSettings) : null)
                 {
                     await _notifier.SuccessAsync(H["Site settings updated successfully."]);
                 }
