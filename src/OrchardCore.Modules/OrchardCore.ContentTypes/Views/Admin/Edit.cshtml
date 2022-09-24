@@ -1,12 +1,13 @@
 @model EditTypeViewModel
-@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Mvc.Utilities
 
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+@inject OrchardCore.ContentTypes.Services.IContentDefinitionService ContentDefinitionService
+
 @{
     var typePart = Model.TypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.Name, Model.TypeDefinition.Name, StringComparison.OrdinalIgnoreCase));
-
     var orderedParts = Model.TypeDefinition.Parts
         .Select(part =>
         {
@@ -15,11 +16,6 @@
         })
         .OrderBy(x => x.Order)
         .Select(x => x.Part);
-
-    var orderedFields = typePart == null ? Enumerable.Empty<ContentPartFieldDefinition>() : typePart.PartDefinition.Fields
-        .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
-        .OrderBy(x => x.Order)
-        .Select(x => x.Field);
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Type - {0}", Model.TypeDefinition.DisplayName])</h1></zone>
@@ -38,12 +34,17 @@
 
     @await DisplayAsync(Model.Editor)
 
-    <div class="mb-3">
-        <h3>@T["Fields"]</h3>
+    @if (ContentDefinitionService.GetFields().Any())
+    {
+        var orderedFields = ((typePart?.PartDefinition?.Fields) ?? Enumerable.Empty<ContentPartFieldDefinition>())
+        .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
+        .OrderBy(x => x.Order)
+        .Select(x => x.Field);
 
-        <ul class="list-group sortable" id="fields">
-            @if (typePart != null)
-            {
+        <div class="mb-3">
+            <h3>@T["Fields"]</h3>
+
+            <ul class="list-group sortable" id="fields">
                 @foreach (var field in orderedFields)
                 {
                     <li class="list-group-item" style="cursor: move;">
@@ -54,11 +55,11 @@
                             </div>
                             @field.DisplayName() <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
 
-                            @if (!string.IsNullOrEmpty(field.DisplayMode()))
+                            @if (!String.IsNullOrEmpty(field.DisplayMode()))
                             {
                                 <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info" aria-hidden="true"></i> @field.DisplayMode()</span>
                             }
-                            @if (!string.IsNullOrEmpty(field.Editor()))
+                            @if (!String.IsNullOrEmpty(field.Editor()))
                             {
                                 <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info" aria-hidden="true"></i> @field.Editor()</span>
                             }
@@ -66,12 +67,12 @@
                         <input type="hidden" asp-for="OrderedFieldNames" value="@field.Name" />
                     </li>
                 }
-            }
-        </ul>
-    </div>
-    <div class="mb-3">
-        <a asp-route-action="AddFieldTo" asp-route-id="@Model.TypeDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
-    </div>
+            </ul>
+        </div>
+        <div class="mb-3">
+            <a asp-route-action="AddFieldTo" asp-route-id="@Model.TypeDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
+        </div>
+    }
     <div class="mb-3">
         <h3>@T["Parts"]</h3>
 
@@ -99,11 +100,11 @@
                             <span class="hint dashed">@T["Contains the fields for the current type"]</span>
                         }
 
-                        @if (!string.IsNullOrEmpty(part.DisplayMode()))
+                        @if (!String.IsNullOrEmpty(part.DisplayMode()))
                         {
                             <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info" aria-hidden="true"></i> @part.DisplayMode()</span>
                         }
-                        @if (!string.IsNullOrEmpty(part.Editor()))
+                        @if (!String.IsNullOrEmpty(part.Editor()))
                         {
                             <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info" aria-hidden="true"></i> @part.Editor()</span>
                         }
@@ -126,10 +127,8 @@
 </form>
 
 <script at="Foot">
-    //<![CDATA[
     $(function () {
         Sortable.create(document.getElementById("fields"));
         Sortable.create(document.getElementById("parts"));
     })
-    //]]>
 </script>

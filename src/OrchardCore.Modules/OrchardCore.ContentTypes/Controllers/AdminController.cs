@@ -347,7 +347,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
-            viewModel.Name = viewModel.Name ?? String.Empty;
+            viewModel.Name ??= String.Empty;
 
             if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
             {
@@ -585,6 +585,15 @@ namespace OrchardCore.ContentTypes.Controllers
                 return Forbid();
             }
 
+            var fields = _contentDefinitionService.GetFields().ToList();
+
+            if (!fields.Any())
+            {
+                await _notifier.WarningAsync(H["There are no fields."]);
+
+                return RedirectToAction(nameof(List));
+            }
+
             var partViewModel = _contentDefinitionService.LoadPart(id);
 
             if (partViewModel == null)
@@ -595,7 +604,7 @@ namespace OrchardCore.ContentTypes.Controllers
             var viewModel = new AddFieldViewModel
             {
                 Part = partViewModel.PartDefinition,
-                Fields = _contentDefinitionService.GetFields().Select(x => x.Name).OrderBy(x => x).ToList()
+                Fields = fields.Select(x => x.Name).OrderBy(x => x).ToList()
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -617,10 +626,17 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
+            var fields = _contentDefinitionService.GetFields().ToList();
+
+            if (!fields.Any(x => x.Name.Equals(viewModel.FieldTypeName, StringComparison.OrdinalIgnoreCase)))
+            {
+                return NotFound();
+            }
+
             var partDefinition = partViewModel.PartDefinition;
 
             viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
-            viewModel.Name = viewModel.Name ?? String.Empty;
+            viewModel.Name ??= String.Empty;
 
             if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
             {
@@ -693,7 +709,8 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var partFieldDefinition = partViewModel.PartDefinition.Fields.FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
-            if (partFieldDefinition == null)
+            if (partFieldDefinition?.FieldDefinition?.Name == null
+                || !_contentDefinitionService.GetFields().Any(x => x.Name.Equals(partFieldDefinition.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 return NotFound();
             }
