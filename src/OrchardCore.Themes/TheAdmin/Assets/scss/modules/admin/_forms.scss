@@ -60,10 +60,6 @@ label .field-validation-error::before {
     display: none;
 }
 
-select[multiple] {
-    min-height: 300px;
-}
-
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
     display: none;
