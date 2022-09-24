@@ -10,6 +10,7 @@ using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Lucene;
 
@@ -19,6 +20,7 @@ namespace OrchardCore.Tests.Apis.Context
     {
         private static readonly TablePrefixGenerator TablePrefixGenerator = new TablePrefixGenerator();
         public static OrchardTestFixture<SiteStartup> Site { get; }
+        public static IShellHost ShellHost { get; private set; }
         public static HttpClient DefaultTenantClient { get; }
 
         public string RecipeName { get; set; } = "Blog";
@@ -33,6 +35,7 @@ namespace OrchardCore.Tests.Apis.Context
         static SiteContext()
         {
             Site = new OrchardTestFixture<SiteStartup>();
+            ShellHost = Site.Services.GetRequiredService<IShellHost>();
             DefaultTenantClient = Site.CreateDefaultClient();
         }
 
@@ -91,9 +94,17 @@ namespace OrchardCore.Tests.Apis.Context
             GraphQLClient = new OrchardGraphQLClient(Client);
         }
 
+        public async Task<ShellScope> GetTenantScopeAsync()
+        {
+            var shellScope = await ShellHost.GetScopeAsync(TenantName);
+            var httpContextAccessor = shellScope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+            httpContextAccessor.HttpContext = shellScope.ShellContext.CreateHttpContext();
+            return shellScope;
+        }
+
         public async Task RunRecipeAsync(IShellHost shellHost, string recipeName, string recipePath)
         {
-            var shellScope = await shellHost.GetScopeAsync(TenantName);
+            var shellScope = await GetTenantScopeAsync();
             await shellScope.UsingAsync(async scope =>
             {
                 var shellFeaturesManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
@@ -119,10 +130,7 @@ namespace OrchardCore.Tests.Apis.Context
 
         public async Task ResetLuceneIndiciesAsync(IShellHost shellHost, string indexName)
         {
-            var shellScope = await shellHost.GetScopeAsync(TenantName);
-            var httpContextAccessor = shellScope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-            httpContextAccessor.HttpContext = shellScope.ShellContext.CreateHttpContext();
-
+            var shellScope = await GetTenantScopeAsync();
             await shellScope.UsingAsync(async scope =>
             {
                 var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();

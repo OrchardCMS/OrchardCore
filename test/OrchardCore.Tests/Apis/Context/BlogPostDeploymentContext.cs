@@ -9,7 +9,6 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -17,15 +16,12 @@ namespace OrchardCore.Tests.Apis.Context
     {
         public const string RemoteDeploymentClientName = "testserver";
         public const string RemoteDeploymentApiKey = "testkey";
-        public static IShellHost ShellHost { get; }
-
         public string BlogPostContentItemId { get; private set; }
         public ContentItem OriginalBlogPost { get; private set; }
         public string OriginalBlogPostVersionId { get; private set; }
 
         static BlogPostDeploymentContext()
         {
-            ShellHost = Site.Services.GetRequiredService<IShellHost>();
         }
 
         public override async Task InitializeAsync()
@@ -47,7 +43,7 @@ namespace OrchardCore.Tests.Apis.Context
             OriginalBlogPost = await content.Content.ReadAsAsync<ContentItem>();
             OriginalBlogPostVersionId = OriginalBlogPost.ContentItemVersionId;
 
-            var shellScope = await ShellHost.GetScopeAsync(TenantName);
+            var shellScope = await GetTenantScopeAsync();
             await shellScope.UsingAsync(async scope =>
             {
                 var remoteClientService = scope.ServiceProvider.GetRequiredService<RemoteClientService>();

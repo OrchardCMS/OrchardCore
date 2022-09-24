@@ -5,7 +5,6 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
 using YesSql;
@@ -32,7 +31,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.PostRecipeAsync(recipe);
 
                 // Test
-                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
+                var shellScope = await context.GetTenantScopeAsync();
                 await shellScope.UsingAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
@@ -74,7 +73,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.PostRecipeAsync(recipe);
 
                 // Test
-                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
+                var shellScope = await context.GetTenantScopeAsync();
                 await shellScope.UsingAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
@@ -120,7 +119,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.PostRecipeAsync(recipe);
 
                 // Test
-                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
+                var shellScope = await context.GetTenantScopeAsync();
                 await shellScope.UsingAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
@@ -165,7 +164,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.PostRecipeAsync(recipe);
 
                 // Test
-                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
+                var shellScope = await context.GetTenantScopeAsync();
                 await shellScope.UsingAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
@@ -211,7 +210,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.PostRecipeAsync(firstRecipe);
 
                 // Test
-                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
+                var shellScope = await context.GetTenantScopeAsync();
                 await shellScope.UsingAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
