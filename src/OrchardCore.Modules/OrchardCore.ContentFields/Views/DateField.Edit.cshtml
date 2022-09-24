@@ -2,7 +2,7 @@
 @using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<DateFieldSettings>();
-    var fieldName = Model.PartFieldDefinition.Name;
+    var fieldName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
 <script asp-name="jQuery-ui-i18n" at="Foot"></script>

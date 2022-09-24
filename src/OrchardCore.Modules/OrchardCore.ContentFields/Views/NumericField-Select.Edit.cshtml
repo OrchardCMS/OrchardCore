@@ -6,7 +6,7 @@
     decimal step = (decimal)Math.Pow(10, 0 - settings.Scale);
     decimal from = settings.Minimum.HasValue ? settings.Minimum.Value : 0;
     decimal to = settings.Maximum.HasValue ? settings.Maximum.Value : 10;
-    var fieldName = Model.PartFieldDefinition.Name;
+    var fieldName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
 <div class="mb-3 field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x.Value)_FieldWrapper">

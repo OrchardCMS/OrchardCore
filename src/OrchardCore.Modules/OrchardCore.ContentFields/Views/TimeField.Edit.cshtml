@@ -2,7 +2,7 @@
 @using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<TimeFieldSettings>();
-    var fieldName = Model.PartFieldDefinition.Name;
+    var fieldName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
 <div class="mb-3 field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x.Value)_FieldWrapper">

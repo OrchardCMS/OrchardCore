@@ -10,7 +10,7 @@
     var tagsSettings = Model.PartFieldDefinition.GetSettings<TaxonomyFieldTagsEditorSettings>();
 
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
-    var fieldName = Model.PartFieldDefinition.Name;
+    var fieldName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 
     var createTagUrl = Url.Action("Create", "Tag", new { area = "OrchardCore.Taxonomies" });
 

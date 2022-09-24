@@ -6,7 +6,7 @@
     var isTextRequired = settings.LinkTextMode == LinkTextMode.Required && String.IsNullOrWhiteSpace(settings.DefaultText);
     var urlClass = settings.Required ? "required" : null;
     var textClass = settings.LinkTextMode == LinkTextMode.Required ? "required" : null;
-    var fieldName = Model.PartFieldDefinition.Name;
+    var fieldName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
     var useFormFloating = String.IsNullOrWhiteSpace(settings.UrlPlaceholder) || String.IsNullOrWhiteSpace(settings.TextPlaceholder);
 }
 

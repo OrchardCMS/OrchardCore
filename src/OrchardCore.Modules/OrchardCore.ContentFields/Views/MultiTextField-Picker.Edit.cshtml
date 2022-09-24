@@ -17,7 +17,7 @@
     var jOptions = JsonConvert.SerializeObject(settings.Options.Select(o => new { value = o.Value, name = o.Name }));
 
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
-    var fieldName = Model.PartFieldDefinition.Name;
+    var fieldName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 
     var vueElementId = $"MultiTextField-Picker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
 

@@ -10,7 +10,7 @@
 
         options.Add(new SelectListItem { Text = option.Name, Value = option.Value, Selected = isSelected });
     }
-    var fieldName = Model.PartFieldDefinition.Name;
+    var fieldName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
 <div class="mb-3 field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x.Values)_FieldWrapper">

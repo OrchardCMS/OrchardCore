@@ -4,7 +4,7 @@
 @model EditGeoPointFieldViewModel
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<GeoPointFieldSettings>();
-    var fieldName = Model.PartFieldDefinition.Name;
+    var fieldName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
 <div class="form-row field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x)_FieldWrapper">
