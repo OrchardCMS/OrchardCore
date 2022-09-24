@@ -96,8 +96,9 @@ namespace OrchardCore.Tests.Apis.Context
 
         public async Task UsingTenantScopeAsync(Func<ShellScope, Task> execute, bool activateShell = true)
         {
-            // Ensure 'HttpContext' is not null as in a backgroun task.
             var shellScope = await ShellHost.GetScopeAsync(TenantName);
+
+            // Ensure that 'HttpContext' is not null, as done in a background task.
             var httpContextAccessor = shellScope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
             httpContextAccessor.HttpContext = shellScope.ShellContext.CreateHttpContext();
 
