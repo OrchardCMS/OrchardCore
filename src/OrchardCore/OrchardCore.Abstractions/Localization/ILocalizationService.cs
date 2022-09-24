@@ -8,11 +8,6 @@ namespace OrchardCore.Localization
     public interface ILocalizationService
     {
         /// <summary>
-        /// Returns the culture settings of the site.
-        /// </summary>
-        Task<CultureSettings> GetCultureSettingsAsync();
-
-        /// <summary>
         /// Returns the default culture of the site.
         /// </summary>
         Task<string> GetDefaultCultureAsync();

@@ -19,19 +19,6 @@
     initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(supportedCultures), '@defaultCulture', '@selectedCulture', @Html.Raw(allCultures));
 </script>
 
-<div class="mb-3">
-    <label asp-for="CultureSettings">@T["Culture settings"]</label>
-    <select asp-for="CultureSettings" class="form-select">
-        <option value="@CultureSettings.Default" selected="@(CultureSettings.Default == Model.CultureSettings)">
-            @T["Default"]
-        </option>
-        <option value="@CultureSettings.User" selected="@(CultureSettings.User == Model.CultureSettings)">
-            @T["User"]
-        </option>
-    </select>
-    <span class="hint">@T["Use User settings if you want to override the culture settings, otherwise Default."]</span>
-</div>
-
 <script type="text/x-template" id="options-table">
     <div class="mb-3">
         <table class="table border-bottom">

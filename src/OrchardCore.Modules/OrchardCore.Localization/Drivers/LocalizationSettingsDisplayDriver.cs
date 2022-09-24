@@ -17,120 +17,120 @@ using OrchardCore.Localization.Models;
 using OrchardCore.Localization.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Localization.Drivers;
-
-/// <summary>
-/// Represents a <see cref="SectionDisplayDriver{TModel,TSection}"/> for the localization settings section in the admin site.
-/// </summary>
-public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, LocalizationSettings>
+namespace OrchardCore.Localization.Drivers
 {
-    public const string GroupId = "localization";
-    private readonly INotifier _notifier;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IAuthorizationService _authorizationService;
-    private readonly CultureOptions _cultureOptions;
-    private readonly IHtmlLocalizer H;
-    private readonly IStringLocalizer S;
-
-    public LocalizationSettingsDisplayDriver(
-        INotifier notifier,
-        IShellHost shellHost,
-        ShellSettings shellSettings,
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService,
-        IOptions<CultureOptions> cultureOptions,
-        IHtmlLocalizer<LocalizationSettingsDisplayDriver> h,
-        IStringLocalizer<LocalizationSettingsDisplayDriver> s
-    )
+    /// <summary>
+    /// Represents a <see cref="SectionDisplayDriver{TModel,TSection}"/> for the localization settings section in the admin site.
+    /// </summary>
+    public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, LocalizationSettings>
     {
-        _notifier = notifier;
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
-        _httpContextAccessor = httpContextAccessor;
-        _authorizationService = authorizationService;
-        _cultureOptions = cultureOptions.Value;
-        H = h;
-        S = s;
-    }
+        public const string GroupId = "localization";
+        private readonly INotifier _notifier;
+        private readonly IShellHost _shellHost;
+        private readonly ShellSettings _shellSettings;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly CultureOptions _cultureOptions;
+        private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
 
-    /// <inheritdocs />
-    public override async Task<IDisplayResult> EditAsync(LocalizationSettings settings, BuildEditorContext context)
-    {
-        var user = _httpContextAccessor.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
+        public LocalizationSettingsDisplayDriver(
+            INotifier notifier,
+            IShellHost shellHost,
+            ShellSettings shellSettings,
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService,
+            IOptions<CultureOptions> cultureOptions,
+            IHtmlLocalizer<LocalizationSettingsDisplayDriver> h,
+            IStringLocalizer<LocalizationSettingsDisplayDriver> s
+        )
         {
-            return null;
+            _notifier = notifier;
+            _shellHost = shellHost;
+            _shellSettings = shellSettings;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
+            _cultureOptions = cultureOptions.Value;
+            H = h;
+            S = s;
         }
 
-        return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
+        /// <inheritdocs />
+        public override async Task<IDisplayResult> EditAsync(LocalizationSettings settings, BuildEditorContext context)
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
             {
-                model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                    .Select(cultureInfo =>
-                    {
-                        return new CultureEntry
+                return null;
+            }
+
+            return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
+                {
+                    model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
+                        .Select(cultureInfo =>
                         {
-                            Supported = settings.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
-                            CultureInfo = cultureInfo,
-                            IsDefault = String.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
-                        };
-                    }).ToArray();
+                            return new CultureEntry
+                            {
+                                Supported = settings.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
+                                CultureInfo = cultureInfo,
+                                IsDefault = String.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
+                            };
+                        }).ToArray();
 
-                if (!model.Cultures.Any(x => x.IsDefault))
-                {
-                    model.Cultures[0].IsDefault = true;
-                }
-            }).Location("Content:2").OnGroup(GroupId);
-    }
-
-    /// <inheritdocs />
-    public override async Task<IDisplayResult> UpdateAsync(LocalizationSettings section, BuildEditorContext context)
-    {
-        var user = _httpContextAccessor.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
-        {
-            return null;
+                    if (!model.Cultures.Any(x => x.IsDefault))
+                    {
+                        model.Cultures[0].IsDefault = true;
+                    }
+                }).Location("Content:2").OnGroup(GroupId);
         }
 
-        if (context.GroupId == GroupId)
+        /// <inheritdocs />
+        public override async Task<IDisplayResult> UpdateAsync(LocalizationSettings section, BuildEditorContext context)
         {
-            var model = new LocalizationSettingsViewModel();
+            var user = _httpContextAccessor.HttpContext?.User;
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-            var supportedCulture = JsonConvert.DeserializeObject<string[]>(model.SupportedCultures);
-
-            if (!supportedCulture.Any())
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
             {
-                context.Updater.ModelState.AddModelError("SupportedCultures", S["A culture is required"]);
+                return null;
             }
 
-            if (context.Updater.ModelState.IsValid)
+            if (context.GroupId == GroupId)
             {
-                section.CultureSettings = model.CultureSettings;
-                // Invariant culture name is empty so a null value is bound.
-                section.DefaultCulture = model.DefaultCulture ?? "";
-                section.SupportedCultures = supportedCulture;
+                var model = new LocalizationSettingsViewModel();
 
-                if (!section.SupportedCultures.Contains(section.DefaultCulture))
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+                var supportedCulture = JsonConvert.DeserializeObject<string[]>(model.SupportedCultures);
+
+                if (!supportedCulture.Any())
                 {
-                    section.DefaultCulture = section.SupportedCultures[0];
+                    context.Updater.ModelState.AddModelError("SupportedCultures", S["A culture is required"]);
                 }
 
-                // We always release the tenant for the default culture and also supported cultures to take effect
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
-
-                // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
-                using (CultureScope.Create(section.DefaultCulture, useUserOverride: !_cultureOptions.IgnoreSystemSettings))
+                if (context.Updater.ModelState.IsValid)
                 {
-                    await _notifier.WarningAsync(H["The site has been restarted for the settings to take effect."]);
+                    // Invariant culture name is empty so a null value is bound.
+                    section.DefaultCulture = model.DefaultCulture ?? "";
+                    section.SupportedCultures = supportedCulture;
+
+                    if (!section.SupportedCultures.Contains(section.DefaultCulture))
+                    {
+                        section.DefaultCulture = section.SupportedCultures[0];
+                    }
+
+                    // We always release the tenant for the default culture and also supported cultures to take effect
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
+
+                    // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
+                    using (CultureScope.Create(section.DefaultCulture, useUserOverride: !_cultureOptions.IgnoreSystemSettings))
+                    {
+                        await _notifier.WarningAsync(H["The site has been restarted for the settings to take effect."]);
+                    }
                 }
             }
+
+            return await EditAsync(section, context);
         }
-
-        return await EditAsync(section, context);
     }
 }

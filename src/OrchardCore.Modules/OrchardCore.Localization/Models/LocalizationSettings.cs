@@ -14,15 +14,9 @@ namespace OrchardCore.Localization.Models
         /// </summary>
         public LocalizationSettings()
         {
-            CultureSettings = CultureSettings.Default;
             DefaultCulture = CultureInfo.InstalledUICulture.Name;
             SupportedCultures = DefaultSupportedCultures;
         }
-
-        /// <summary>
-        /// Gets or sets the culture settings of the site.
-        /// </summary>
-        public CultureSettings CultureSettings { get; set; }
 
         /// <summary>
         /// Gets or sets the default culture of the site.

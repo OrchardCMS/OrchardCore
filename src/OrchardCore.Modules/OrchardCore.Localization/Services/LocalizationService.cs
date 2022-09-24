@@ -28,14 +28,6 @@ namespace OrchardCore.Localization.Services
         }
 
         /// <inheritdocs />
-        public async Task<CultureSettings> GetCultureSettingsAsync()
-        {
-            await InitializeLocalizationSettingsAsync();
-
-            return _localizationSettings.CultureSettings;
-        }
-
-        /// <inheritdocs />
         public async Task<string> GetDefaultCultureAsync()
         {
             await InitializeLocalizationSettingsAsync();
