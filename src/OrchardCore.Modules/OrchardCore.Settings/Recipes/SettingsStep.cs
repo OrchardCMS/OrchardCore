@@ -18,6 +18,7 @@ namespace OrchardCore.Settings.Recipes
         {
             _siteService = siteService;
         }
+        public int Order => 0;
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {

@@ -41,6 +41,26 @@
       "site": "TheTheme"
     },
     {
+      "name": "Roles",
+      "Roles": [
+        {
+          "Name": "Anonymous",
+          "Description": "Anonymous",
+          "Permissions": []
+        },
+        {
+          "Name": "Authenticated",
+          "Description": "Authenticated",
+          "Permissions": []
+        },
+        {
+          "Name": "Administrator",
+          "Description": "Administrator",
+          "Permissions": []
+        }
+      ]
+    },
+    {
       "name": "settings",
       "HomeRoute": {
         "Action": "Index",

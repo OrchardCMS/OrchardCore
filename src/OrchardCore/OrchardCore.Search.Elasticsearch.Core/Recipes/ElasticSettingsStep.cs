@@ -12,16 +12,13 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
     public class ElasticSettingsStep : IRecipeStepHandler
     {
         private readonly ElasticIndexingService _elasticIndexingService;
-        private readonly ElasticIndexManager _elasticIndexManager;
 
-        public ElasticSettingsStep(
-            ElasticIndexingService elasticIndexingService,
-            ElasticIndexManager elasticIndexManager
-            )
+        public ElasticSettingsStep(ElasticIndexingService elasticIndexingService)
         {
-            _elasticIndexManager = elasticIndexManager;
             _elasticIndexingService = elasticIndexingService;
         }
+
+        public int Order => 0;
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {

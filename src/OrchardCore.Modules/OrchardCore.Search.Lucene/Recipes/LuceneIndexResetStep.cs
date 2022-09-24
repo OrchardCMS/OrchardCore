@@ -13,6 +13,8 @@ namespace OrchardCore.Search.Lucene.Recipes
     /// </summary>
     public class LuceneIndexResetStep : IRecipeStepHandler
     {
+        public int Order => 0;
+
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "lucene-index-reset", StringComparison.OrdinalIgnoreCase))
@@ -24,7 +26,8 @@ namespace OrchardCore.Search.Lucene.Recipes
 
             if (model.IncludeAll || model.Indices.Length > 0)
             {
-                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("lucene-index-reset", async (scope) => {
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("lucene-index-reset", async (scope) =>
+                {
                     var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
                     var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
                     var luceneIndexManager = scope.ServiceProvider.GetRequiredService<LuceneIndexManager>();

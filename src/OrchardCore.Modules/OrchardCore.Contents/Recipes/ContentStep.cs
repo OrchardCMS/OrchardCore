@@ -14,6 +14,8 @@ namespace OrchardCore.Contents.Recipes
     /// </summary>
     public class ContentStep : IRecipeStepHandler
     {
+        public int Order => 0;
+
         public Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))

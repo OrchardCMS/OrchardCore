@@ -77,11 +77,10 @@ namespace OrchardCore.Roles.Services
                     {
                         if (_logger.IsEnabled(LogLevel.Information))
                         {
-                            _logger.LogInformation("Defining new role '{RoleName}' for permission stereotype", stereotype.Name);
+                            _logger.LogInformation("The role '{RoleName}' does not exists.", stereotype.Name);
                         }
 
-                        role = new Role { RoleName = stereotype.Name, RoleDescription = stereotype.Name + " role" };
-                        await _roleManager.CreateAsync(role);
+                        continue;
                     }
 
                     // and merge the stereotypical permissions into that role

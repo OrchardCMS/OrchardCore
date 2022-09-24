@@ -20,6 +20,8 @@ namespace OrchardCore.Placements.Recipes
             _placementsManager = placementsManager;
         }
 
+        public int Order => 0;
+
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "Placements", StringComparison.OrdinalIgnoreCase))

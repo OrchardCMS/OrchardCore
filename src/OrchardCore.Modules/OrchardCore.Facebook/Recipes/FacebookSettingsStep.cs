@@ -17,6 +17,7 @@ namespace OrchardCore.Facebook.Recipes
         {
             _facebookService = loginService;
         }
+        public int Order => 0;
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {

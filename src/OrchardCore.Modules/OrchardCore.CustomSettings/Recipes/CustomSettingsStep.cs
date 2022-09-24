@@ -19,6 +19,8 @@ namespace OrchardCore.CustomSettings.Recipes
             _siteService = siteService;
         }
 
+        public int Order => 0;
+
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "custom-settings", StringComparison.OrdinalIgnoreCase))

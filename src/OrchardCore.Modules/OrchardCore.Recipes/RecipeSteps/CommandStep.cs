@@ -29,6 +29,7 @@ namespace OrchardCore.Recipes.RecipeSteps
             _commandParameterParser = commandParameterParser;
             _logger = logger;
         }
+        public int Order => 0;
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {

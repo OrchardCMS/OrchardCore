@@ -26,6 +26,8 @@ namespace OrchardCore.Sitemaps.Recipes
             _sitemapManager = sitemapManager;
         }
 
+        public int Order => 0;
+
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "Sitemaps", StringComparison.OrdinalIgnoreCase))

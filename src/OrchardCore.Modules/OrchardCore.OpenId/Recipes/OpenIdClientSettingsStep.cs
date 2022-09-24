@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -19,6 +18,7 @@ namespace OrchardCore.OpenId.Recipes
         {
             _clientService = clientService;
         }
+        public int Order => 0;
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {

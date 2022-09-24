@@ -31,6 +31,7 @@ namespace OrchardCore.Media.Recipes
             _allowedFileExtensions = options.Value.AllowedFileExtensions;
             _logger = logger;
         }
+        public int Order => 0;
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {

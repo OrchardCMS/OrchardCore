@@ -20,6 +20,8 @@ namespace OrchardCore.Templates.Recipes
             _templatesManager = templatesManager;
         }
 
+        public int Order => 0;
+
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "Templates", StringComparison.OrdinalIgnoreCase))

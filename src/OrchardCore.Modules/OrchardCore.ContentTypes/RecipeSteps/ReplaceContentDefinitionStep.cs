@@ -19,6 +19,8 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             _contentDefinitionManager = contentDefinitionManager;
         }
 
+        public int Order => 50;
+
         public Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "ReplaceContentDefinition", StringComparison.OrdinalIgnoreCase))

@@ -18,6 +18,11 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             _contentDefinitionManager = contentDefinitionManager;
         }
 
+        /// <summary>
+        /// Delete content should be executed as the last content definition step.
+        /// </summary>
+        public int Order => 100;
+
         public Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "DeleteContentDefinition", StringComparison.OrdinalIgnoreCase))

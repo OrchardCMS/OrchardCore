@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using OpenIddict.Abstractions;
-using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -20,6 +18,7 @@ namespace OrchardCore.OpenId.Recipes
         {
             _applicationManager = applicationManager;
         }
+        public int Order => 0;
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {

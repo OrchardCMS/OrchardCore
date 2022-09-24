@@ -19,6 +19,8 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
             _microsoftAccountService = microsoftAccountService;
         }
 
+        public int Order => 0;
+
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, nameof(MicrosoftAccountSettings), StringComparison.OrdinalIgnoreCase))

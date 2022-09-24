@@ -19,6 +19,7 @@ namespace OrchardCore.Media.Recipes
         {
             _mediaProfilesManager = mediaProfilesManager;
         }
+        public int Order => 0;
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {

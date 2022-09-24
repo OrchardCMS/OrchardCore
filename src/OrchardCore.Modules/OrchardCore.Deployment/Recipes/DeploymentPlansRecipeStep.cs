@@ -25,6 +25,8 @@ namespace OrchardCore.Deployment.Recipes
             _deploymentPlanService = deploymentPlanService;
         }
 
+        public int Order => 0;
+
         public Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "deployment", StringComparison.OrdinalIgnoreCase))

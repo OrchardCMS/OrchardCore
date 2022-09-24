@@ -23,6 +23,8 @@ namespace OrchardCore.Themes.Recipes
             _siteThemeService = siteThemeService;
         }
 
+        public int Order => 0;
+
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "Themes", StringComparison.OrdinalIgnoreCase))

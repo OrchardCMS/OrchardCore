@@ -19,6 +19,8 @@ namespace OrchardCore.Facebook.Login.Recipes
             _loginService = loginService;
         }
 
+        public int Order => 0;
+
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, nameof(FacebookLoginSettings), StringComparison.OrdinalIgnoreCase))

@@ -18,6 +18,7 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
         {
             _azureADService = azureADService;
         }
+        public int Order => 0;
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {

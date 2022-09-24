@@ -18,6 +18,7 @@ namespace OrchardCore.Features.Recipes.Executors
         {
             _shellFeaturesManager = shellFeaturesManager;
         }
+        public int Order => 0;
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {

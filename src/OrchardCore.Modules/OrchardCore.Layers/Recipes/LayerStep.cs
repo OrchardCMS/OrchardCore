@@ -38,6 +38,7 @@ namespace OrchardCore.Layers.Recipes
             _conditionIdGenerator = conditionIdGenerator;
             _factories = factories;
         }
+        public int Order => 0;
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {

@@ -15,6 +15,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
     /// </summary>
     public class ElasticIndexRebuildStep : IRecipeStepHandler
     {
+        public int Order => 0;
+
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "elastic-index-rebuild", StringComparison.OrdinalIgnoreCase))
@@ -26,7 +28,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
 
             if (model != null && (model.IncludeAll || model.Indices.Length > 0))
             {
-                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-rebuild", async scope => {
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-rebuild", async scope =>
+                {
 
                     var elasticIndexingService = scope.ServiceProvider.GetService<ElasticIndexingService>();
                     var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticIndexSettingsService>();

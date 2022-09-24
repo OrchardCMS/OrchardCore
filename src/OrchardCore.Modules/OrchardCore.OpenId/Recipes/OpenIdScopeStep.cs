@@ -19,9 +19,11 @@ namespace OrchardCore.OpenId.Recipes
             _scopeManager = scopeManager;
         }
 
+        public int Order => 0;
+
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, "OpenIdScope", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, "OpenIdScope", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -41,7 +43,7 @@ namespace OrchardCore.OpenId.Recipes
             descriptor.Name = model.ScopeName;
             descriptor.DisplayName = model.DisplayName;
 
-            if (!string.IsNullOrEmpty(model.Resources))
+            if (!String.IsNullOrEmpty(model.Resources))
             {
                 descriptor.Resources.Clear();
                 descriptor.Resources.UnionWith(

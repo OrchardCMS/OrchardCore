@@ -18,6 +18,8 @@ namespace OrchardCore.OpenId.Recipes
         public OpenIdServerSettingsStep(IOpenIdServerService serverService)
             => _serverService = serverService;
 
+        public int Order => 0;
+
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, nameof(OpenIdServerSettings), StringComparison.OrdinalIgnoreCase))

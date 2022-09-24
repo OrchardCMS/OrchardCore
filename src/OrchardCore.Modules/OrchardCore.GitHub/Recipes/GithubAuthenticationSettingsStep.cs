@@ -18,6 +18,7 @@ namespace OrchardCore.GitHub.Recipes
         {
             _githubAuthenticationService = githubLoginService;
         }
+        public int Order => 0;
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {

@@ -26,6 +26,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
             _elasticIndexingService = elasticIndexingService;
         }
 
+        public int Order => 0;
+
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "ElasticIndexSettings", StringComparison.OrdinalIgnoreCase))

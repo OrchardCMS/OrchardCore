@@ -19,6 +19,7 @@ namespace OrchardCore.Tenants.Recipes
         {
             _featureProfilesManager = featureProfilesManager;
         }
+        public int Order => 0;
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {

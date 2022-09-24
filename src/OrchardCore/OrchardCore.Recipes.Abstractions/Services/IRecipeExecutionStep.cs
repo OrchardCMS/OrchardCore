@@ -10,6 +10,11 @@ namespace OrchardCore.Recipes.Services
     public interface IRecipeStepHandler
     {
         /// <summary>
+        /// The execution order of the recipe
+        /// </summary>
+        int Order { get; }
+
+        /// <summary>
         /// Processes a recipe step.
         /// </summary>
         /// <param name="context">The context object representing the processed step.</param>

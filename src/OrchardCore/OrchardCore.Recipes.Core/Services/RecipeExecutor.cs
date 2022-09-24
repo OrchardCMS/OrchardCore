@@ -158,7 +158,7 @@ namespace OrchardCore.Recipes.Services
 
             await shellScope.UsingAsync(async scope =>
             {
-                var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
+                var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>().OrderBy(x => x.Order);
                 var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
 
                 // Substitutes the script elements by their actual values
@@ -171,10 +171,7 @@ namespace OrchardCore.Recipes.Services
 
                 await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutingAsync(recipeStep), recipeStep, _logger);
 
-                foreach (var recipeStepHandler in recipeStepHandlers)
-                {
-                    await recipeStepHandler.ExecuteAsync(recipeStep);
-                }
+                await recipeStepHandlers.InvokeAsync((handler, recipeStep) => handler.ExecuteAsync(recipeStep), recipeStep, _logger);
 
                 await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutedAsync(recipeStep), recipeStep, _logger);
 

@@ -20,6 +20,8 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             _contentDefinitionManager = contentDefinitionManager;
         }
 
+        public int Order => 0;
+
         public Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "ContentDefinition", StringComparison.OrdinalIgnoreCase))
