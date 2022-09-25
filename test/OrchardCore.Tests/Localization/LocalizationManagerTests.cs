@@ -8,10 +8,11 @@ namespace OrchardCore.Tests.Localization
 {
     public class LocalizationManagerTests
     {
+        private readonly Mock<IPluralRuleProvider> _pluralRuleProvider;
+        private readonly Mock<ITranslationProvider> _translationProvider;
+        private readonly IMemoryCache _memoryCache;
+
         private PluralizationRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
-        private Mock<IPluralRuleProvider> _pluralRuleProvider;
-        private Mock<ITranslationProvider> _translationProvider;
-        private IMemoryCache _memoryCache;
 
         public LocalizationManagerTests()
         {
@@ -30,6 +31,7 @@ namespace OrchardCore.Tests.Localization
                 It.Is<string>(culture => culture == "cs"),
                 It.IsAny<CultureDictionary>())
             );
+
             var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
 
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
@@ -45,6 +47,7 @@ namespace OrchardCore.Tests.Localization
             _translationProvider
                 .Setup(o => o.LoadTranslations(It.Is<string>(culture => culture == "cs"), It.IsAny<CultureDictionary>()))
                 .Callback<string, CultureDictionary>((culture, dictioanry) => dictioanry.MergeTranslations(new[] { dictionaryRecord }));
+
             var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
 
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
@@ -68,6 +71,7 @@ namespace OrchardCore.Tests.Localization
                 It.Is<string>(culture => culture == "cs"),
                 It.IsAny<CultureDictionary>())
             );
+
             var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object, highPriorityRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
 
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
