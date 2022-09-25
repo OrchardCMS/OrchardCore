@@ -21,10 +21,6 @@ namespace OrchardCore.Tests.Localization
 {
     public class PortableObjectStringLocalizerTests
     {
-        private static readonly PluralizationRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
-        private static readonly PluralizationRuleDelegate _enPluralRule = n => (n == 1) ? 0 : 1;
-        private static readonly PluralizationRuleDelegate _arPluralRule = n => (n == 0 ? 0 : n == 1 ? 1 : n == 2 ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5);
-
         private readonly Mock<ILocalizationManager> _localizationManager;
         private readonly Mock<ILogger> _logger;
 
@@ -280,9 +276,10 @@ namespace OrchardCore.Tests.Localization
         [InlineData("2 balls", 2)]
         public void LocalizerReturnsCorrectPluralFormIfMultiplePluraflFormsAreSpecified(string expected, int count)
         {
-            SetupDictionary("en", new CultureDictionaryRecord[] {
+            SetupDictionary("en", new CultureDictionaryRecord[]
+            {
                 new CultureDictionaryRecord("míč", "ball", "{0} balls")
-            }, _enPluralRule);
+            }, PluralizationRule.English);
 
             var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
             using (CultureScope.Create("en"))
@@ -298,11 +295,12 @@ namespace OrchardCore.Tests.Localization
         [InlineData(true, "hello", "مرحبا")]
         public void LocalizerFallBackToParentCultureIfFallBackToParentUICulturesIsTrue(bool fallBackToParentCulture, string resourceKey, string expected)
         {
-            SetupDictionary("ar", new CultureDictionaryRecord[] {
+            SetupDictionary("ar", new CultureDictionaryRecord[]
+            {
                 new CultureDictionaryRecord("hello", "مرحبا")
-            }, _arPluralRule);
+            }, PluralizationRule.Arabic);
 
-            SetupDictionary("ar-YE", Array.Empty<CultureDictionaryRecord>(), _arPluralRule);
+            SetupDictionary("ar-YE", Array.Empty<CultureDictionaryRecord>(), PluralizationRule.Arabic);
 
             var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, fallBackToParentCulture, _logger.Object);
             using (CultureScope.Create("ar-YE"))
@@ -318,17 +316,19 @@ namespace OrchardCore.Tests.Localization
         [InlineData(true, new[] { "مدونة", "منتج", "قائمة", "صفحة", "مقالة" })]
         public void LocalizerReturnsGetAllStrings(bool includeParentCultures, string[] expected)
         {
-            SetupDictionary("ar", new CultureDictionaryRecord[] {
+            SetupDictionary("ar", new CultureDictionaryRecord[]
+            {
                 new CultureDictionaryRecord("Blog", "مدونة"),
                 new CultureDictionaryRecord("Menu", "قائمة"),
                 new CultureDictionaryRecord("Page", "صفحة"),
                 new CultureDictionaryRecord("Article", "مقالة")
-            }, _arPluralRule);
+            }, PluralizationRule.Arabic);
 
-            SetupDictionary("ar-YE", new CultureDictionaryRecord[] {
+            SetupDictionary("ar-YE", new CultureDictionaryRecord[]
+            {
                 new CultureDictionaryRecord("Blog", "مدونة"),
                 new CultureDictionaryRecord("Product", "منتج")
-            }, _arPluralRule);
+            }, PluralizationRule.Arabic);
 
             var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, false, _logger.Object);
             using (CultureScope.Create("ar-YE"))
@@ -369,7 +369,7 @@ namespace OrchardCore.Tests.Localization
             => ((IPluralRuleProvider)new DefaultPluralRuleProvider()).TryGetRule(culture, out rule);
 
         private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records)
-            => SetupDictionary(cultureName, records, _csPluralRule);
+            => SetupDictionary(cultureName, records, PluralizationRule.Czech);
 
         private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records, PluralizationRuleDelegate pluralRule)
         {
