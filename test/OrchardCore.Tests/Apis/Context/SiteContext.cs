@@ -10,6 +10,7 @@ using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Lucene;
@@ -21,6 +22,7 @@ namespace OrchardCore.Tests.Apis.Context
         private static readonly TablePrefixGenerator TablePrefixGenerator = new TablePrefixGenerator();
         public static OrchardTestFixture<SiteStartup> Site { get; }
         public static IShellHost ShellHost { get; private set; }
+        public static IHttpContextAccessor HttpContextAccessor { get; }
         public static HttpClient DefaultTenantClient { get; }
 
         public string RecipeName { get; set; } = "Blog";
@@ -36,6 +38,7 @@ namespace OrchardCore.Tests.Apis.Context
         {
             Site = new OrchardTestFixture<SiteStartup>();
             ShellHost = Site.Services.GetRequiredService<IShellHost>();
+            HttpContextAccessor = Site.Services.GetRequiredService<IHttpContextAccessor>();
             DefaultTenantClient = Site.CreateDefaultClient();
         }
 
@@ -96,12 +99,9 @@ namespace OrchardCore.Tests.Apis.Context
 
         public async Task UsingTenantScopeAsync(Func<ShellScope, Task> execute, bool activateShell = true)
         {
+            // Ensure that 'HttpContext' is not null before using a 'ShellScope'.
             var shellScope = await ShellHost.GetScopeAsync(TenantName);
-
-            // Ensure that 'HttpContext' is not null, as done in a background task.
-            var httpContextAccessor = shellScope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-            httpContextAccessor.HttpContext = shellScope.ShellContext.CreateHttpContext();
-
+            HttpContextAccessor.HttpContext = shellScope.ShellContext.CreateHttpContext();
             await shellScope.UsingAsync(execute, activateShell);
         }
 
