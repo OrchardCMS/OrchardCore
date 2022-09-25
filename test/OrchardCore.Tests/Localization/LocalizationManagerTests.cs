@@ -12,13 +12,13 @@ namespace OrchardCore.Tests.Localization
         private readonly Mock<ITranslationProvider> _translationProvider;
         private readonly IMemoryCache _memoryCache;
 
-        private PluralizationRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
-
         public LocalizationManagerTests()
         {
+            PluralizationRuleDelegate pluralizationRule;
+
             _pluralRuleProvider = new Mock<IPluralRuleProvider>();
             _pluralRuleProvider.SetupGet(o => o.Order).Returns(0);
-            _pluralRuleProvider.Setup(o => o.TryGetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"), out _csPluralRule)).Returns(true);
+            _pluralRuleProvider.Setup(o => o.TryGetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"), out pluralizationRule)).Returns(true);
 
             _translationProvider = new Mock<ITranslationProvider>();
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
@@ -37,7 +37,7 @@ namespace OrchardCore.Tests.Localization
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
 
             Assert.Equal("cs", dictionary.CultureName);
-            Assert.Equal(_csPluralRule, dictionary.PluralRule);
+            Assert.Equal(PluralizationRule.Czech, dictionary.PluralRule);
         }
 
         [Fact]
