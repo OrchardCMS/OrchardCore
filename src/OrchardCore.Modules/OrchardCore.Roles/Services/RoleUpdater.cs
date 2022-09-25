@@ -72,8 +72,7 @@ namespace OrchardCore.Roles.Services
                 foreach (var stereotype in stereotypes)
                 {
                     // turn those stereotypes into roles
-                    var role = await _roleManager.FindByNameAsync(stereotype.Name);
-                    if (role == null)
+                    if (await _roleManager.FindByNameAsync(stereotype.Name) is not Role role)
                     {
                         if (_logger.IsEnabled(LogLevel.Information))
                         {
@@ -84,8 +83,8 @@ namespace OrchardCore.Roles.Services
                     }
 
                     // and merge the stereotypical permissions into that role
-                    var stereotypePermissionNames = (stereotype.Permissions ?? Enumerable.Empty<Permission>()).Select(x => x.Name);
-                    var currentPermissionNames = ((Role)role).RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue);
+                    var stereotypePermissionNames = stereotype.Permissions?.Select(x => x.Name) ?? Enumerable.Empty<string>();
+                    var currentPermissionNames = role.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue);
 
                     var distinctPermissionNames = currentPermissionNames
                         .Union(stereotypePermissionNames)
@@ -94,17 +93,14 @@ namespace OrchardCore.Roles.Services
                     // update role if set of permissions has increased
                     var additionalPermissionNames = distinctPermissionNames.Except(currentPermissionNames);
 
-                    if (additionalPermissionNames.Any())
+                    foreach (var permissionName in additionalPermissionNames)
                     {
-                        foreach (var permissionName in additionalPermissionNames)
+                        if (_logger.IsEnabled(LogLevel.Debug))
                         {
-                            if (_logger.IsEnabled(LogLevel.Debug))
-                            {
-                                _logger.LogDebug("Default role '{Role}' granted permission '{Permission}'", stereotype.Name, permissionName);
-                            }
-
-                            await _roleManager.AddClaimAsync(role, new Claim(Permission.ClaimType, permissionName));
+                            _logger.LogDebug("Default role '{Role}' granted permission '{Permission}'", stereotype.Name, permissionName);
                         }
+
+                        await _roleManager.AddClaimAsync(role, new Claim(Permission.ClaimType, permissionName));
                     }
                 }
             }
