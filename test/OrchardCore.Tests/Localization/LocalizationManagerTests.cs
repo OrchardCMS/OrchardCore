@@ -14,11 +14,10 @@ namespace OrchardCore.Tests.Localization
 
         public LocalizationManagerTests()
         {
-            PluralizationRuleDelegate pluralizationRule;
-
+            var csPluralRule = PluralizationRule.Czech;
             _pluralRuleProvider = new Mock<IPluralRuleProvider>();
             _pluralRuleProvider.SetupGet(o => o.Order).Returns(0);
-            _pluralRuleProvider.Setup(o => o.TryGetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"), out pluralizationRule)).Returns(true);
+            _pluralRuleProvider.Setup(o => o.TryGetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"), out csPluralRule)).Returns(true);
 
             _translationProvider = new Mock<ITranslationProvider>();
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
