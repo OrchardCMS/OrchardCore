@@ -44,7 +44,7 @@ namespace OrchardCore.Localization
 
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
 
-            services.Configure<CultureOptions>(_shellConfiguration.GetSection("OrchardCore_Localization"));
+            services.Configure<CultureOptions>(_shellConfiguration.GetSection("OrchardCore_Localization_CultureOptions"));
         }
 
         /// <inheritdocs />
