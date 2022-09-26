@@ -42,6 +42,7 @@ namespace OrchardCore.Roles
             services.AddRecipeExecutionStep<RolesStep>();
 
             services.AddScoped<IFeatureEventHandler, RoleUpdater>();
+            services.AddScoped<IModularTenantEvents, RoleUpdater>();
             services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
