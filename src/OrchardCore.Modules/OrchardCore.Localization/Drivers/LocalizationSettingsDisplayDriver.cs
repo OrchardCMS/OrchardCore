@@ -123,7 +123,7 @@ namespace OrchardCore.Localization.Drivers
                     await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
                     // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
-                    using (CultureScope.Create(section.DefaultCulture, useUserOverride: !_cultureOptions.IgnoreSystemSettings))
+                    using (CultureScope.Create(section.DefaultCulture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings))
                     {
                         await _notifier.WarningAsync(H["The site has been restarted for the settings to take effect."]);
                     }

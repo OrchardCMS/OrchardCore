@@ -400,7 +400,7 @@ namespace OrchardCore.Autoroute.Handlers
 
                 var cultureOptions = _serviceProvider.GetService<IOptions<CultureOptions>>().Value;
 
-                using (CultureScope.Create(cultureAspect.Culture, useUserOverride: !cultureOptions.IgnoreSystemSettings))
+                using (CultureScope.Create(cultureAspect.Culture, ignoreSystemSettings: cultureOptions.IgnoreSystemSettings))
                 {
                     part.Path = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
                         new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });

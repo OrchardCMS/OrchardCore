@@ -60,8 +60,8 @@ namespace OrchardCore.Localization
 
             requestLocalizationOptions
                 .SetDefaultCulture(defaultCulture)
-                .AddSupportedCultures(supportedCultures, useUserSelectedCultureSettings: !cultureOptions.IgnoreSystemSettings)
-                .AddSupportedUICultures(supportedCultures, useUserSelectedCultureSettings: !cultureOptions.IgnoreSystemSettings);
+                .AddSupportedCultures(supportedCultures, ignoreSystemSettings: cultureOptions.IgnoreSystemSettings)
+                .AddSupportedUICultures(supportedCultures, ignoreSystemSettings: cultureOptions.IgnoreSystemSettings);
 
             app.UseRequestLocalization(requestLocalizationOptions);
         }

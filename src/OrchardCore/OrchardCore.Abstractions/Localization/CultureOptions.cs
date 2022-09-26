@@ -6,7 +6,7 @@ namespace OrchardCore.Localization;
 public class CultureOptions
 {
     /// <summary>
-    /// Gets or sets whether to use default culture settings or not. Defaults to <c>false</c>.
+    /// Gets or sets whether to ignore the system culture settings or not.
     /// </summary>
     public bool IgnoreSystemSettings { get; set; }
 }

@@ -11,10 +11,10 @@ namespace OrchardCore.Localization
         private readonly CultureInfo _originalCulture;
         private readonly CultureInfo _originalUICulture;
 
-        private CultureScope(string culture, string uiCulture, bool useUserOverride)
+        private CultureScope(string culture, string uiCulture, bool ignoreSystemSettings)
         {
-            Culture = new CultureInfo(culture, useUserOverride);
-            UICulture = new CultureInfo(uiCulture, useUserOverride);
+            Culture = new CultureInfo(culture, !ignoreSystemSettings);
+            UICulture = new CultureInfo(uiCulture, !ignoreSystemSettings);
             _originalCulture = CultureInfo.CurrentCulture;
             _originalUICulture = CultureInfo.CurrentUICulture;
 
@@ -35,35 +35,35 @@ namespace OrchardCore.Localization
         /// Creates a scope with a given culture.
         /// </summary>
         /// <param name="culture">The culture that will be used within the scope.</param>
-        /// <param name="useUserOverride">Whether to use a user-selected culture settings or use the default system culture settings. Defaults to <c>true</c>.</param>
-        public static CultureScope Create(string culture, bool useUserOverride = true)
-            => Create(culture, culture, useUserOverride);
+        /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
+        public static CultureScope Create(string culture, bool ignoreSystemSettings = false)
+            => Create(culture, culture, ignoreSystemSettings);
 
         /// <summary>
         /// Creates a scope with a given culture.
         /// </summary>
         /// <param name="culture">The culture that will be used within the scope.</param>
         /// <param name="uiCulture">The UI culture that will be used within the scope.</param>
-        /// <param name="useUserOverride">Whether to use a user-selected culture settings or use the default system culture settings. Defaults to <c>true</c>.</param>
-        public static CultureScope Create(string culture, string uiCulture, bool useUserOverride = true)
-            => new(culture, uiCulture, useUserOverride);
+        /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
+        public static CultureScope Create(string culture, string uiCulture, bool ignoreSystemSettings = false)
+            => new(culture, uiCulture, ignoreSystemSettings);
 
         /// <summary>
         /// Creates a scope with a given culture.
         /// </summary>
         /// <param name="culture">The culture that will be used within the scope.</param>
-        /// <param name="useUserOverride">Whether to use a user-selected culture settings or use the default system culture settings. Defaults to <c>true</c>.</param>
-        public static CultureScope Create(CultureInfo culture, bool useUserOverride = true)
-            => Create(culture, culture, useUserOverride);
+        /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
+        public static CultureScope Create(CultureInfo culture, bool ignoreSystemSettings = false)
+            => Create(culture, culture, ignoreSystemSettings);
 
         /// <summary>
         /// Creates a scope with a given culture.
         /// </summary>
         /// <param name="culture">The culture that will be used within the scope.</param>
         /// <param name="uiCulture">The UI culture that will be used within the scope.</param>
-        /// <param name="useUserOverride">Whether to use a user-selected culture settings or use the default system culture settings. Defaults to <c>true</c>.</param>
-        public static CultureScope Create(CultureInfo culture, CultureInfo uiCulture, bool useUserOverride = true)
-            => new(culture.Name, uiCulture.Name, useUserOverride);
+        /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
+        public static CultureScope Create(CultureInfo culture, CultureInfo uiCulture, bool ignoreSystemSettings = false)
+            => new(culture.Name, uiCulture.Name, ignoreSystemSettings);
 
         /// <inheritdoc/>
         public void Dispose()
