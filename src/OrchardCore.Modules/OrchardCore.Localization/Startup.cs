@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.Services;
@@ -22,13 +21,6 @@ namespace OrchardCore.Localization
     /// </summary>
     public class Startup : StartupBase
     {
-        private readonly IShellConfiguration _shellConfiguration;
-
-        public Startup(IShellConfiguration shellConfiguration)
-        {
-            _shellConfiguration = shellConfiguration;
-        }
-
         public override int ConfigureOrder => -100;
 
         /// <inheritdocs />
@@ -43,8 +35,6 @@ namespace OrchardCore.Localization
                 AddDataAnnotationsPortableObjectLocalization();
 
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
-
-            services.Configure<CultureOptions>(_shellConfiguration.GetSection("OrchardCore_Localization_CultureOptions"));
         }
 
         /// <inheritdocs />

@@ -126,6 +126,15 @@ namespace Microsoft.Extensions.DependencyInjection
                 s.AddSingleton<LocalLock>();
                 s.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
                 s.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
+                s.AddSingleton<CultureOptions>(sp =>
+                {
+                    var shellConfiguration = sp.GetService<IShellConfiguration>();
+                    var cultureOptions = shellConfiguration
+                        .GetSection("OrchardCore_Localization_CultureOptions")
+                        .Get<CultureOptions>();
+
+                    return cultureOptions;
+                });
             });
         }
 
