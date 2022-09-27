@@ -50,6 +50,8 @@
     "gulp-print": "5.0.2",
     "gulp-rename": "2.0.0",
     "gulp-sourcemaps": "^3.0.0",
+    "gulp-svgmin": "4.1.0",
+    "gulp-svgstore": "9.0.0",
     "gulp-terser": "2.1.0",
     "gulp-typescript": "^6.0.0-alpha.1",
     "gulp-util": "^1.0.0",

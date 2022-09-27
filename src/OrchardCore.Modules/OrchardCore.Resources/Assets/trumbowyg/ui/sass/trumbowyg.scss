@@ -7,6 +7,8 @@ $modal-reset-color: #EEE !default;
 $transition-duration: 150ms !default;
 $slow-transition-duration: 300ms !default;
 
+$modal-label-width: 150px;
+
 #trumbowyg-icons {
     overflow: hidden;
     visibility: hidden;
@@ -347,80 +349,89 @@ $slow-transition-duration: 300ms !default;
         }
     }
 
-    label {
-        display: block;
-        position: relative;
-        margin: 15px 12px;
-        height: 29px;
-        line-height: 29px;
-        overflow: hidden;
+    .trumbowyg-input {
+        &-row {
+            position: relative;
+            margin: 15px 12px;
+            border: 1px solid #DEDEDE;
+            overflow: hidden;
+        }
 
-        .trumbowyg-input-infos {
-            display: block;
+        &-infos {
             text-align: left;
-            height: 25px;
-            line-height: 25px;
             transition: all 150ms;
+            width: $modal-label-width;
+            border-right: 1px solid #DEDEDE;
+            padding: 0 7px;
+            background-color: lighten($light-color, 5%);
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
 
-            span {
-                display: block;
+            label {
                 color: darken($light-color, 45%);
-                background-color: lighten($light-color, 5%);
-                border: 1px solid #DEDEDE;
-                padding: 0 7px;
-                width: 150px;
+                overflow: hidden;
+                height: 27px;
+                line-height: 27px;
+
+              &, span {
+                display: block;
+                height: 27px;
+                line-height: 27px;
+                transition: all $transition-duration;
+              }
             }
-            span.trumbowyg-msg-error {
+
+            .trumbowyg-msg-error {
                 color: #e74c3c;
             }
         }
 
-        &.trumbowyg-input-error {
-            input,
-            textarea {
-                border: 1px solid #e74c3c;
+        &-html {
+            padding: 1px 1px 1px $modal-label-width + 2px;
+
+            &, input, textarea, select {
+                font-size: 14px;
             }
 
-            .trumbowyg-input-infos {
-                margin-top: -27px;
+            input, textarea, select {
+                transition: all $transition-duration;
+                height: 27px;
+                line-height: 27px;
+                border:0;
+                width: 100%;
+                padding: 0 7px;
+
+                &:hover,
+                &:focus {
+                  outline: 1px solid #95a5a6;
+                }
+                &:focus {
+                    background: lighten($light-color, 5%);
+                }
+            }
+
+            input[type="checkbox"] {
+              width: 16px;
+              height: 16px;
+              padding: 0;
+            }
+
+            &-with-checkbox {
+              text-align: left;
+              padding: 3px 1px 1px 3px;
             }
         }
 
-        input {
-            position: absolute;
-            top: 0;
-            right: 0;
-            height: 27px;
-            line-height: 27px;
-            border: 1px solid #DEDEDE;
-            background: #fff;
-            font-size: 14px;
-            max-width: 330px;
-            width: 70%;
-            padding: 0 7px;
-            transition: all $transition-duration;
+        &-error {
+          input, select, textarea {
+            outline: 1px solid #e74c3c;
+          }
 
-            &:hover,
-            &:focus {
-                outline: none;
-                border: 1px solid #95a5a6;
-            }
-            &:focus {
-                background: lighten($light-color, 5%);
-            }
-        }
-
-        input[type="checkbox"]{
-            left: 6px;
-            top: 6px;
-            right: auto;
-            height: 16px;
-            width: 16px;
-
-            + .trumbowyg-input-infos span{
-                width: auto;
-                padding-left: 25px;
-            }
+          .trumbowyg-input-infos label span:first-child {
+            margin-top: -27px;
+          }
         }
     }
 

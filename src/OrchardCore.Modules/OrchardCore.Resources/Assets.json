@@ -195,13 +195,23 @@
   },
   {
     "inputs": [
-      "Assets/trumbowyg/js/trumbowyg.shortcodes.js"
+      "Assets/trumbowyg/ui/icons/**.svg", 
+      "Assets/trumbowyg/js/*/ui/icons/**.svg",
+      "Assets/trumbowyg/plugins/*/ui/icons/**.svg"
+    ],
+    "prefix": "trumbowyg-",
+    "output": "wwwroot/Styles/trumbowyg-icons.svg"
+  },
+  {
+    "inputs": [
+      "Assets/trumbowyg/js/shortcode/*.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg.shortcodes.js"
   },
   {
     "inputs": [
-      "Assets/trumbowyg/plugins/*/*.js"
+      "Assets/trumbowyg/plugins/*/*.js",
+      "Assets/trumbowyg/langs/*.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg-plugins.js"
   },

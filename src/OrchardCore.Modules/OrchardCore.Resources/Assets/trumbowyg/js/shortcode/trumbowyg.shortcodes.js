@@ -23,7 +23,8 @@
                                 trumbowyg.$c.focus();   
                             });
                         },    
-                        hasIcon: true
+                        hasIcon: true,
+                        ico: 'shortcode'
                     };
                     trumbowyg.addBtnDef('insertShortcode', btnDef);
                 }

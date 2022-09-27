@@ -21,7 +21,9 @@ var fs = require("graceful-fs"),
     util = require('gulp-util'),
     postcss = require('gulp-postcss'),
     rtl = require('postcss-rtl'),
-    babel = require('gulp-babel');
+    babel = require('gulp-babel'),
+    svgmin = require("gulp-svgmin"),
+    svgstore = require("gulp-svgstore");
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
@@ -126,6 +128,8 @@ function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
     assetGroup.outputPath = path.resolve(path.join(assetGroup.basePath, assetGroup.output)).replace(/\\/g, '/');
     assetGroup.outputDir = path.dirname(assetGroup.outputPath);
     assetGroup.outputFileName = path.basename(assetGroup.output);
+
+    console.log("DEBUG input path: "+ assetGroup.inputPaths);
     // Uncomment to copy assets to wwwroot
     //assetGroup.webroot = path.join("./src/OrchardCore.Cms.Web/wwwroot/", path.basename(assetGroup.basePath), path.dirname(assetGroup.output));
 }
@@ -149,6 +153,8 @@ function createAssetGroupTask(assetGroup, doRebuild) {
                 return buildCssPipeline(assetGroup, doConcat, doRebuild);
             case ".js":
                 return buildJsPipeline(assetGroup, doConcat, doRebuild);
+            case ".svg":
+                return buildSvgPipeline(assetGroup);
         }
     }
 }
@@ -315,3 +321,17 @@ function buildCopyPipeline(assetGroup, doRebuild) {
 
     return stream;
 }
+
+function buildSvgPipeline(assetGroup) {
+    if(!assetGroup.prefix)
+        	assetGroup.prefix = "";
+
+    var renameFile = assetGroup.outputFileName != "@";
+
+    return gulp.src(assetGroup.inputPaths)
+        .pipe(rename({prefix: assetGroup.prefix}))
+        .pipe(svgmin())
+        .pipe(svgstore({inlineSvg: true}))
+        .pipe(gulpif(renameFile, rename(assetGroup.outputFileName)))
+        .pipe(gulp.dest(assetGroup.outputDir));
+};
