@@ -8,6 +8,9 @@
 
 jQuery.trumbowyg.langs.it = {
     viewHTML: 'Mostra HTML',
+    
+    undo: 'Annulla',
+    redo: 'Ripeti',
 
     formatting: 'Formattazione',
     p: 'Paragrafo',

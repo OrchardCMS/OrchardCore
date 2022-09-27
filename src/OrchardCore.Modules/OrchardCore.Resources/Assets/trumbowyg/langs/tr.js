@@ -57,5 +57,7 @@ jQuery.trumbowyg.langs.tr = {
     text: 'Metin',
     
     undo: 'Geri al',
-    redo: 'İleri al'
+    redo: 'İleri al',
+    
+    removeformat:"Biçimlendirmeyi temizle"
 };

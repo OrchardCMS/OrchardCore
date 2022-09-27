@@ -9,6 +9,9 @@
 jQuery.trumbowyg.langs.cs = {
     viewHTML: 'Zobrazit HTML',
 
+    redo: 'Vpřed',
+    undo: 'Zpět',
+
     formatting: 'Formátování',
     p: 'Odstavec',
     blockquote: 'Citace',
@@ -22,7 +25,10 @@ jQuery.trumbowyg.langs.cs = {
 
     strong: 'Tučné',
     em: 'Zvýraznit',
-    del: 'Smazat',
+    del: 'Přeškrtnuté',
+
+    superscript: 'Horní index',
+    subscript: 'Dolní index',
 
     unorderedList: 'Netříděný seznam',
     orderedList: 'Tříděný seznam',
@@ -40,6 +46,8 @@ jQuery.trumbowyg.langs.cs = {
 
     horizontalRule: 'Vložit vodorovnou čáru',
 
+
+    removeformat: 'Vymazat formátování',
     fullscreen: 'Režim celé obrazovky',
 
     close: 'Zavřít',
@@ -50,5 +58,6 @@ jQuery.trumbowyg.langs.cs = {
     required: 'Povinné',
     description: 'Popis',
     title: 'Nadpis',
-    text: 'Text'
+    text: 'Text',
+    target: 'Cíl'
 };

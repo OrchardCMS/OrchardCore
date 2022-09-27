@@ -1,0 +1,14 @@
+.trumbowyg-highlight-form-group {
+  margin: 15px 10px;
+
+  .trumbowyg-highlight-form-control {
+    width: 100%;
+    border: 1px solid #DEDEDE;
+    font-size: 14px;
+    padding: 7px;
+
+    &.code {
+      height: 200px;
+    }
+  }
+}
