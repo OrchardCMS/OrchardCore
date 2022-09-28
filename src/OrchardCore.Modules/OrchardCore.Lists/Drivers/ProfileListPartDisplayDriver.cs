@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -22,11 +21,6 @@ public class ProfileListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
 
     public override IDisplayResult Display(ListPart part, BuildPartDisplayContext context)
     {
-        if (!String.Equals("DetailAdmin", context.DisplayType, StringComparison.OrdinalIgnoreCase))
-        {
-            return null;
-        }
-
         return Initialize<ProfileHeaderViewModel>("ProfileHeader", model =>
         {
             var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
@@ -34,7 +28,7 @@ public class ProfileListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             model.ContainerContentItem = part.ContentItem;
             model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
             model.EnableOrdering = settings.EnableOrdering;
-        }).Location("Content:1");
+        }).Location("DetailAdmin", "Content:1");
     }
 
     public override IDisplayResult Edit(ListPart part, BuildPartEditorContext context)
