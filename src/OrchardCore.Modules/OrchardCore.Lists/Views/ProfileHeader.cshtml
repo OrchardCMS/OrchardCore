@@ -1,12 +1,7 @@
 @model OrchardCore.Lists.ViewModels.ProfileHeaderViewModel
-@using Microsoft.AspNetCore.Authorization
-@using OrchardCore.Contents
-@inject Microsoft.AspNetCore.Authorization.IAuthorizationService AuthorizationService
-@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor UpdateModelAccessor
 @{
-    var definition = ContentDefinitionManager.GetTypeDefinition(Model.ContainerContentItem.ContentType);
     var profileShape = await ContentItemDisplayManager.BuildDisplayAsync(Model.ContainerContentItem, UpdateModelAccessor.ModelUpdater, "Profile");
 }
 <div class="card bg-light mb-3">
