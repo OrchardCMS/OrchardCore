@@ -1,0 +1,16 @@
+@{
+    var paths = Model.ContentItem.Content.ContentProfile?.Photo?.Paths?.ToObject<string[]>();
+}
+
+<div class="row">
+    <div class="col-auto">
+        @if (paths != null && paths.Length > 0)
+        {
+            <img src="~/media/@paths[0]" class="img-thumbnail" style="max-height: 15rem; max-width: 15rem;" />
+        }
+    </div>
+    <div class="col">
+        <h1 class="fs-5">@Model.ContentItem</h1>
+        <p>@(Model.ContentItem.Content.ContentProfile?.About?.Text)</p>
+    </div>
+</div>
