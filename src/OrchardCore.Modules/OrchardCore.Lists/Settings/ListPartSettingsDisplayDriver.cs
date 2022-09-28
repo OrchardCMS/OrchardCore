@@ -64,6 +64,7 @@ namespace OrchardCore.Lists.Settings
                     PageSize = model.PageSize,
                     EnableOrdering = model.EnableOrdering,
                     ContainedContentTypes = model.ContainedContentTypes,
+                    ContainerContentType = contentTypePartDefinition.ContentTypeDefinition.Name,
                 });
 
                 // Update order of existing content if enable ordering has been turned on

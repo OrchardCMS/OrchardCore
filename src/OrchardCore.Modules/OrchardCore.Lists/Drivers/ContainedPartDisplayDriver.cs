@@ -32,33 +32,6 @@ namespace OrchardCore.Lists.Drivers
             _containerService = containerService;
         }
 
-        public override Task<IDisplayResult> DisplayAsync(ContentItem model, BuildDisplayContext context)
-        {
-            if (!String.Equals("DetailAdmin", context.DisplayType, StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.FromResult<IDisplayResult>(null);
-            }
-
-            var containedPart = model.As<ContainedPart>();
-
-            if (containedPart != null && containedPart.ListContentType != null)
-            {
-                var definition = _contentDefinitionManager.GetTypeDefinition(containedPart.ListContentType);
-
-                if (definition != null)
-                {
-                    var listPartTypePartDefinition = definition.Parts.FirstOrDefault(x => x.PartDefinition.Name == nameof(ListPart));
-
-                    if (String.Equals(listPartTypePartDefinition?.Editor(), "Profile", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return Task.FromResult(GetProfileShapeResult(containedPart.ListContentItemId, listPartTypePartDefinition.GetSettings<ListPartSettings>()));
-                    }
-                }
-            }
-
-            return Task.FromResult<IDisplayResult>(null);
-        }
-
         public override async Task<IDisplayResult> EditAsync(ContentItem model, BuildEditorContext context)
         {
             // This method can get called when a new content item is created, at that point
@@ -69,7 +42,7 @@ namespace OrchardCore.Lists.Drivers
 
             if (containedPart != null)
             {
-                return BuildViewModel(containedPart.ListContentItemId, containedPart.ListContentType, model.ContentType);
+                return BuildViewModel(context, containedPart.ListContentItemId, containedPart.ListContentType, model.ContentType);
             }
 
             var viewModel = new EditContainedPartViewModel();
@@ -82,7 +55,7 @@ namespace OrchardCore.Lists.Drivers
                 // The content type must be included to prevent any contained items,
                 // such as widgets, from also having a ContainedPart shape built for them.
 
-                return BuildViewModel(viewModel.ContainerId, viewModel.ContainerContentType, model.ContentType, viewModel.EnableOrdering);
+                return BuildViewModel(context, viewModel.ContainerId, viewModel.ContainerContentType, model.ContentType, viewModel.EnableOrdering);
             }
 
             return null;
@@ -113,7 +86,7 @@ namespace OrchardCore.Lists.Drivers
             return await EditAsync(model, updater);
         }
 
-        private IDisplayResult BuildViewModel(string containerId, string containerContentType, string contentType, bool enableOrdering = false)
+        private IDisplayResult BuildViewModel(BuildShapeContext context, string containerId, string containerContentType, string contentType, bool enableOrdering = false)
         {
             var results = new List<IDisplayResult>()
             {
@@ -134,10 +107,25 @@ namespace OrchardCore.Lists.Drivers
                 if (definition != null)
                 {
                     var listPart = definition.Parts.FirstOrDefault(x => x.PartDefinition.Name == nameof(ListPart));
+                    var settings = listPart?.GetSettings<ListPartSettings>();
 
-                    if (String.Equals(listPart?.Editor(), "Profile", StringComparison.OrdinalIgnoreCase))
+                    if (settings != null)
                     {
-                        results.Add(GetProfileShapeResult(containerId, listPart.GetSettings<ListPartSettings>()));
+                        results.Add(Initialize<ListPartNavigationViewModel>("ListPartNavigation", model =>
+                        {
+                            model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
+                            model.ContainerId = containerId;
+                            model.EnableOrdering = settings.EnableOrdering;
+                            if (settings.ContainerContentType != null)
+                            {
+                                model.ContainerContentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(settings.ContainerContentType);
+                            }
+                        }).Location("Content:1.5"));
+
+                        if (String.Equals(listPart?.Editor(), "Profile", StringComparison.OrdinalIgnoreCase))
+                        {
+                            results.Add(GetProfileShapeResult(containerId, settings));
+                        }
                     }
                 }
             }

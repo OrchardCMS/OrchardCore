@@ -4,7 +4,6 @@
 @inject Microsoft.AspNetCore.Authorization.IAuthorizationService AuthorizationService
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
-@inject OrchardCore.ContentManagement.IContentManager ContentManager
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor UpdateModelAccessor
 @{
     var definition = ContentDefinitionManager.GetTypeDefinition(Model.ContainerContentItem.ContentType);
@@ -15,72 +14,3 @@
         @await DisplayAsync(profileShape)
     </div>
 </div>
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light border mb-3 rounded-1" style="z-index: 1100;">
-    <div class="container-fluid">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#profileNavigation" aria-controls="profileNavigation" aria-expanded="false" aria-label="@T["Toggle navigation"]">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="profileNavigation">
-            <ul class="navbar-nav">
-                @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent))
-                {
-                    <li class="nav-item">
-                        <a class="nav-link" asp-action="Edit" asp-controller="Admin" asp-route-contentItemId="@Model.ContainerContentItem.ContentItemId" asp-route-area="OrchardCore.Contents">
-                            @if (definition != null)
-                            {
-                                @T["Edit {0}", definition.DisplayName]
-                            }
-                            else
-                            {
-                                @T["Edit"]
-                            }
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" admin-for="@Model.ContainerContentItem">@T["Manage Content"]</a>
-                    </li>
-                    @if (Model.ContainedContentTypeDefinitions.Length == 1)
-                    {
-                        var contentTypeDefinition = Model.ContainedContentTypeDefinitions[0];
-
-                        var dummyContent = ContentManager.NewAsync(contentTypeDefinition.Name);
-
-                        if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, dummyContent))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ContainerContentItem.ContentItemId" asp-route-ListPart.ContainerContentType="@Model.ContainerContentItem.ContentType" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
-                                    @T["Create {0}", contentTypeDefinition.DisplayName]
-                                </a>
-                            </li>
-                        }
-                    }
-                    else if (Model.ContainedContentTypeDefinitions.Length > 1)
-                    {
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                @T["New"]
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                @foreach (var containedContentTypeDefinition in Model.ContainedContentTypeDefinitions)
-                                {
-                                    var dummyContent = ContentManager.NewAsync(containedContentTypeDefinition.Name);
-                                    if (!await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, dummyContent))
-                                    {
-                                        continue;
-                                    }
-
-                                    <a class="nav-link" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ContainerContentItem.ContentItemId" asp-route-ListPart.ContainerContentType="@Model.ContainerContentItem.ContentType" asp-route-ListPart.ContentType="@containedContentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
-                                        @containedContentTypeDefinition.DisplayName
-                                    </a>
-                                }
-                            </ul>
-                        </li>
-                    }
-
-                }
-            </ul>
-        </div>
-    </div>
-</nav>
