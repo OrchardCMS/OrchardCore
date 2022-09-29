@@ -9,10 +9,10 @@
                     Value = option.Value,
                     Selected = Model.Values.Contains(option.Value)
                 }).ToList();
-    var fieldName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
+    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="mb-3 field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x.Values)_FieldWrapper">
+<div class="mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Values)_FieldWrapper">
     <label>@Model.PartFieldDefinition.DisplayName()</label>
     @for (int i = 0; i < options.Count; i++)
     {

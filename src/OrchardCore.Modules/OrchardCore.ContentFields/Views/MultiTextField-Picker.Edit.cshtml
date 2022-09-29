@@ -17,7 +17,8 @@
     var jOptions = JsonConvert.SerializeObject(settings.Options.Select(o => new { value = o.Value, name = o.Name }));
 
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
-    var fieldName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
+    var fieldName = Model.PartFieldDefinition.Name;
+    var uniqeName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 
     var vueElementId = $"MultiTextField-Picker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
 
@@ -27,7 +28,7 @@
 <script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.js" asp-name="multitextfieldpicker" at="Foot" depends-on="vuejs, vue-multiselect"></script>
 <style asp-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-multitextfieldpicker.min.css" debug-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-multitextfieldpicker.css" asp-name="multitextfieldpicker" depends-on="vue-multiselect"></style>
 
-<div class="mb-3 field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x.Values)_FieldWrapper">
+<div class="mb-3 field-wrapper field-wrapper-@uniqeName.HtmlClassify()" id="@Html.IdFor(x => x.Values)_FieldWrapper">
     <label>@Model.PartFieldDefinition.DisplayName()</label>
     <div id="@vueElementId" class="multitextfieldpicker" data-selectedvalues="@jSelectedValues" data-options="@jOptions" data-valueskey="@valuesKey">
         <div class="w-xl-50">

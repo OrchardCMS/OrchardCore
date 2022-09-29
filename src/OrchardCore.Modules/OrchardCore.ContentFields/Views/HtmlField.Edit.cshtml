@@ -3,10 +3,10 @@
 @{
     var settings = Model.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
-    var fieldName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
+    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="mb-3 field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x.Html)_FieldWrapper">
+<div class="mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Html)_FieldWrapper">
     @await DisplayAsync(await New.ShortcodeModal())
 
     <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
@@ -30,7 +30,7 @@
     $(function () {
         var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Html)');
     @* When the field is rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
-            if (optionsTextArea) {
+                if (optionsTextArea) {
             var editor = CodeMirror.fromTextArea(optionsTextArea, {
                 autoCloseTags: true,
                 autoRefresh: true,
