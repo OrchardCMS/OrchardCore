@@ -29159,9 +29159,6 @@ html[data-theme=default] label .field-validation-error::before {
 html[data-theme=default] .field-validation-valid {
   display: none;
 }
-html[data-theme=default] select[multiple] {
-  min-height: 300px;
-}
 html[data-theme=default] input[type=password]::-ms-reveal,
 html[data-theme=default] input[type=password]::-ms-clear {
   display: none;
@@ -58733,9 +58730,6 @@ html[data-theme=darkmode] label .field-validation-error::before {
 }
 html[data-theme=darkmode] .field-validation-valid {
   display: none;
-}
-html[data-theme=darkmode] select[multiple] {
-  min-height: 300px;
 }
 html[data-theme=darkmode] input[type=password]::-ms-reveal,
 html[data-theme=darkmode] input[type=password]::-ms-clear {
