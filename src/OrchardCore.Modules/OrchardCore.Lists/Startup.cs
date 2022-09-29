@@ -65,8 +65,7 @@ namespace OrchardCore.Lists
             // List Part
             services.AddContentPart<ListPart>()
                 .UseDisplayDriver<ListPartDisplayDriver>()
-                .ForDisplayMode<ProfileListPartDisplayDriver>(displayMode => "Profile".Equals(displayMode, StringComparison.OrdinalIgnoreCase))
-                .ForEditor<ProfileListPartDisplayDriver>(editor => "Profile".Equals(editor, StringComparison.OrdinalIgnoreCase))
+                .ForDisplayMode<ProfileListPartDisplayDriver>(displayMode => String.Equals("Profile", displayMode, StringComparison.OrdinalIgnoreCase))
                 .AddHandler<ListPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();
