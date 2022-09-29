@@ -40,10 +40,7 @@ namespace OrchardCore.Lists.Drivers
                 model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
                 model.ContainerId = part.ContentItem.ContentItemId;
                 model.EnableOrdering = settings.EnableOrdering;
-                if (settings.ContainerContentType != null)
-                {
-                    model.ContainerContentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(settings.ContainerContentType);
-                }
+                model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
             })
             .Location("Content:1.5");
         }
@@ -99,10 +96,7 @@ namespace OrchardCore.Lists.Drivers
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
                         model.ContainerId = listPart.ContentItem.ContentItemId;
                         model.EnableOrdering = settings.EnableOrdering;
-                        if (settings.ContainerContentType != null)
-                        {
-                            model.ContainerContentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(settings.ContainerContentType);
-                        }
+                        model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
                     })
                     .Location("DetailAdmin", "Content:1.5"),
                     Initialize<ContentItemViewModel>("ListPartSummaryAdmin", model => model.ContentItem = listPart.ContentItem)
