@@ -48,6 +48,7 @@ html[data-theme='darkmode'] {
     @import "modules/admin/_jquery-ui.scss";
     @import "modules/admin/_monaco.scss";
     @import "modules/theme/darkmode/_forms.scss";
+    @import "modules/theme/darkmode/_navbar.scss";
 
     @import "modules/theme/darkmode/_bootswatch.scss";
 }

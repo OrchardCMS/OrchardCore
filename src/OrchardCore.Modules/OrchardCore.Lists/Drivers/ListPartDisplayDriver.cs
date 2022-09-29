@@ -32,6 +32,19 @@ namespace OrchardCore.Lists.Drivers
             _updateModelAccessor = updateModelAccessor;
         }
 
+        public override IDisplayResult Edit(ListPart part, BuildPartEditorContext context)
+        {
+            return Initialize<ListPartNavigationViewModel>("ListPartNavigation", model =>
+            {
+                var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
+                model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
+                model.ContainerId = part.ContentItem.ContentItemId;
+                model.EnableOrdering = settings.EnableOrdering;
+                model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
+            })
+            .Location("Content:1.5");
+        }
+
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {
             return
@@ -47,7 +60,7 @@ namespace OrchardCore.Lists.Drivers
                             pager,
                             containedItemOptions)).ToArray();
 
-                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(context);
+                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings);
                         model.Context = context;
                         model.Pager = await context.New.PagerSlim(pager);
                     })
@@ -71,18 +84,27 @@ namespace OrchardCore.Lists.Drivers
                             pager,
                             containedItemOptions)).ToArray();
 
-                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(context);
+                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings);
                         model.Context = context;
                         model.EnableOrdering = settings.EnableOrdering;
                         model.Pager = await context.New.PagerSlim(pager);
                     })
                     .Location("DetailAdmin", "Content:10"),
+                    Initialize<ListPartNavigationViewModel>("ListPartNavigation", model =>
+                    {
+                        var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
+                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
+                        model.ContainerId = listPart.ContentItem.ContentItemId;
+                        model.EnableOrdering = settings.EnableOrdering;
+                        model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
+                    })
+                    .Location("DetailAdmin", "Content:1.5"),
                     Initialize<ContentItemViewModel>("ListPartSummaryAdmin", model => model.ContentItem = listPart.ContentItem)
                     .Location("SummaryAdmin", "Actions:4")
                 );
         }
 
-        private async Task<PagerSlim> GetPagerSlimAsync(BuildPartDisplayContext context)
+        private static async Task<PagerSlim> GetPagerSlimAsync(BuildPartDisplayContext context)
         {
             var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
             var pagerParameters = new PagerSlimParameters();
@@ -93,10 +115,10 @@ namespace OrchardCore.Lists.Drivers
             return pager;
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(BuildPartDisplayContext context)
+        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPartSettings settings)
         {
-            var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
             var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
+
             return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
         }
     }
