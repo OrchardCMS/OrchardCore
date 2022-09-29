@@ -42,7 +42,7 @@ namespace OrchardCore.Lists.Drivers
 
             if (containedPart != null)
             {
-                return BuildViewModel(context, containedPart.ListContentItemId, containedPart.ListContentType, model.ContentType);
+                return BuildViewModel(containedPart.ListContentItemId, containedPart.ListContentType, model.ContentType);
             }
 
             var viewModel = new EditContainedPartViewModel();
@@ -55,7 +55,7 @@ namespace OrchardCore.Lists.Drivers
                 // The content type must be included to prevent any contained items,
                 // such as widgets, from also having a ContainedPart shape built for them.
 
-                return BuildViewModel(context, viewModel.ContainerId, viewModel.ContainerContentType, model.ContentType, viewModel.EnableOrdering);
+                return BuildViewModel(viewModel.ContainerId, viewModel.ContainerContentType, model.ContentType, viewModel.EnableOrdering);
             }
 
             return null;
@@ -86,7 +86,7 @@ namespace OrchardCore.Lists.Drivers
             return await EditAsync(model, updater);
         }
 
-        private IDisplayResult BuildViewModel(BuildShapeContext context, string containerId, string containerContentType, string contentType, bool enableOrdering = false)
+        private IDisplayResult BuildViewModel(string containerId, string containerContentType, string contentType, bool enableOrdering = false)
         {
             var results = new List<IDisplayResult>()
             {
@@ -100,7 +100,7 @@ namespace OrchardCore.Lists.Drivers
                 .Location("Content")
             };
 
-            if (containerContentType != null)
+            if (!String.IsNullOrEmpty(containerContentType))
             {
                 var definition = _contentDefinitionManager.GetTypeDefinition(containerContentType);
 
@@ -111,20 +111,19 @@ namespace OrchardCore.Lists.Drivers
 
                     if (settings != null)
                     {
+                        // Add list part navigation
                         results.Add(Initialize<ListPartNavigationViewModel>("ListPartNavigation", model =>
                         {
                             model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
                             model.ContainerId = containerId;
                             model.EnableOrdering = settings.EnableOrdering;
-                            if (settings.ContainerContentType != null)
-                            {
-                                model.ContainerContentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(settings.ContainerContentType);
-                            }
+                            model.ContainerContentTypeDefinition = definition;
                         }).Location("Content:1.5"));
 
-                        if (String.Equals(listPart?.Editor(), "Profile", StringComparison.OrdinalIgnoreCase))
+                        if (String.Equals(listPart?.DisplayMode(), "Profile", StringComparison.OrdinalIgnoreCase))
                         {
-                            results.Add(GetProfileShapeResult(containerId, settings));
+                            // Add profile header
+                            results.Add(GetProfileHeader(containerId, settings));
                         }
                     }
                 }
@@ -133,7 +132,7 @@ namespace OrchardCore.Lists.Drivers
             return Combine(results);
         }
 
-        private IDisplayResult GetProfileShapeResult(string containerId, ListPartSettings listPartSettings)
+        private IDisplayResult GetProfileHeader(string containerId, ListPartSettings listPartSettings)
         {
             return Initialize<ProfileHeaderViewModel>("ProfileHeader", async model =>
             {
