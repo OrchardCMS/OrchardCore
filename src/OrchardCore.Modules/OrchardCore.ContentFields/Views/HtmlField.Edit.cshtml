@@ -30,7 +30,7 @@
     $(function () {
         var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Html)');
     @* When the field is rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
-                if (optionsTextArea) {
+        if (optionsTextArea) {
             var editor = CodeMirror.fromTextArea(optionsTextArea, {
                 autoCloseTags: true,
                 autoRefresh: true,
