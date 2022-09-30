@@ -35,7 +35,7 @@ public static class RequestLocalizationOptionsExtensions
 
         foreach (var culture in cultures)
         {
-            supportedCultures.Add(new CultureInfo(culture, !ignoreSystemSettings));
+            supportedCultures.Add(new CultureInfo(culture, ignoreSystemSettings));
         }
 
         requestLocalizationOptions.SupportedCultures = supportedCultures;
@@ -69,7 +69,7 @@ public static class RequestLocalizationOptionsExtensions
 
         foreach (var culture in cultures)
         {
-            supportedUICultures.Add(new CultureInfo(culture, !ignoreSystemSettings));
+            supportedUICultures.Add(new CultureInfo(culture, ignoreSystemSettings));
         }
 
         requestLocalizationOptions.SupportedUICultures = supportedUICultures;

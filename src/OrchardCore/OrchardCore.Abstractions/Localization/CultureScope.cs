@@ -13,8 +13,8 @@ namespace OrchardCore.Localization
 
         private CultureScope(string culture, string uiCulture, bool ignoreSystemSettings)
         {
-            Culture = new CultureInfo(culture, !ignoreSystemSettings);
-            UICulture = new CultureInfo(uiCulture, !ignoreSystemSettings);
+            Culture = new CultureInfo(culture, ignoreSystemSettings);
+            UICulture = new CultureInfo(uiCulture, ignoreSystemSettings);
             _originalCulture = CultureInfo.CurrentCulture;
             _originalUICulture = CultureInfo.CurrentUICulture;
 
