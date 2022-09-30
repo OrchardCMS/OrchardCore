@@ -10,7 +10,7 @@ namespace OrchardCore.Localization;
 /// </summary>
 public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
 {
-    private readonly bool _ignoreSystemSettings;
+    private readonly bool _useUserOverride;
 
     /// <summary>
     /// Creates a new <see cref="OrchardCoreRequestLocalizationOptions"/> with adefault values.
@@ -26,7 +26,7 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
     /// </summary>
     public OrchardCoreRequestLocalizationOptions(bool ignoreSystemSettings) : base()
     {
-        _ignoreSystemSettings = ignoreSystemSettings;
+        _useUserOverride = !ignoreSystemSettings;
     }
 
     /// <inheritdoc/>
@@ -36,7 +36,7 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
 
         foreach (var culture in cultures)
         {
-            supportedCultures.Add(new CultureInfo(culture, useUserOverride: _ignoreSystemSettings));
+            supportedCultures.Add(new CultureInfo(culture, _useUserOverride));
         }
 
         SupportedCultures = supportedCultures;
@@ -50,7 +50,7 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
         var supportedUICultures = new List<CultureInfo>();
         foreach (var culture in uiCultures)
         {
-            supportedUICultures.Add(new CultureInfo(culture, useUserOverride: _ignoreSystemSettings));
+            supportedUICultures.Add(new CultureInfo(culture, _useUserOverride));
         }
 
         SupportedUICultures = supportedUICultures;
@@ -61,7 +61,7 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
     /// <inheritdoc/>
     public new RequestLocalizationOptions SetDefaultCulture(string defaultCulture)
     {
-        DefaultRequestCulture = new RequestCulture(new CultureInfo(defaultCulture, useUserOverride: _ignoreSystemSettings));
+        DefaultRequestCulture = new RequestCulture(new CultureInfo(defaultCulture, _useUserOverride));
         
         return this;
     } 
