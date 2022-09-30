@@ -4,7 +4,7 @@ using System.Globalization;
 namespace OrchardCore.Localization
 {
     /// <summary>
-    /// 
+    /// Represents a scope that you can change the current culture within.
     /// </summary>
     public sealed class CultureScope : IDisposable
     {
