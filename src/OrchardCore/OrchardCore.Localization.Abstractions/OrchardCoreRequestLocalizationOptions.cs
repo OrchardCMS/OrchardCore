@@ -15,7 +15,7 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
     /// <summary>
     /// Creates a new <see cref="OrchardCoreRequestLocalizationOptions"/> with adefault values.
     /// </summary>
-    public OrchardCoreRequestLocalizationOptions() : this(ignoreSystemSettings = false)
+    public OrchardCoreRequestLocalizationOptions() : this(ignoreSystemSettings: false)
     {
 
     }
