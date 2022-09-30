@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Localization;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -74,6 +75,29 @@ public static class RequestLocalizationOptionsExtensions
 
         requestLocalizationOptions.SupportedUICultures = supportedUICultures;
 
+        return requestLocalizationOptions;
+    }
+
+    /// <summary>
+    /// Set the default culture which is used by the application when a supported culture could not be determined by
+    /// one of the configured <see cref="IRequestCultureProvider"/>s.
+    /// </summary>
+    /// <param name="requestLocalizationOptions">The <see cref="RequestLocalizationOptions"/>.</param>
+    /// <param name="defaultCulture">The default culture to be set.</param>
+    /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
+    /// <returns>The <see cref="RequestLocalizationOptions"/>.</returns>
+    public static RequestLocalizationOptions SetDefaultCulture(
+        this RequestLocalizationOptions requestLocalizationOptions,
+        string defaultCulture,
+        bool ignoreSystemSettings = false)
+    {
+        if (requestLocalizationOptions == null)
+        {
+            throw new ArgumentNullException(nameof(requestLocalizationOptions));
+        }
+
+        requestLocalizationOptions.DefaultRequestCulture = new RequestCulture(new CultureInfo(defaultCulture, ignoreSystemSettings));
+        
         return requestLocalizationOptions;
     }
 }
