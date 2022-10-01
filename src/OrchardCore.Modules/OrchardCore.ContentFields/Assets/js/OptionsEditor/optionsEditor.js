@@ -18,7 +18,7 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
         },
         getOptionsFormattedList: function () {
             if (this.debug) { console.log('getOptionsFormattedList triggered') };
-            return JSON.stringify(this.state.options.filter(function (x) { return !IsNullOrWhiteSpace(x.name) }));
+            return JSON.stringify(this.state.options);
         }
     }
 

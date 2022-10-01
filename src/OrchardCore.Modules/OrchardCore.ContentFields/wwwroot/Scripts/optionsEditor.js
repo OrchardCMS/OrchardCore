@@ -36,9 +36,7 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
       }
 
       ;
-      return JSON.stringify(this.state.options.filter(function (x) {
-        return !IsNullOrWhiteSpace(x.name);
-      }));
+      return JSON.stringify(this.state.options);
     }
   };
   var optionsTable = {
