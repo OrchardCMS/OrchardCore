@@ -76,6 +76,12 @@ namespace OrchardCore.AutoSetup.Options
         public string RequestUrlPrefix { get; set; }
 
         /// <summary>
+        /// Gets or sets the name of the Feature Profile applied to the tenant. May be null or empty for no Profile
+        /// being selected.
+        /// </summary>
+        public string FeatureProfile { get; set; }
+
+        /// <summary>
         /// Gets the Flag which indicates a Default/Root shell/tenant.
         /// </summary>
         public bool IsDefault => ShellName == ShellHelper.DefaultShellName;

@@ -26,6 +26,7 @@
         "OrchardCore.Security",
         "OrchardCore.Settings",
         "OrchardCore.Tenants",
+        "OrchardCore.Tenants.FeatureProfiles",
         "OrchardCore.Themes",
         "OrchardCore.Users",
 
@@ -46,6 +47,35 @@
         "Action": "Index",
         "Controller": "Home",
         "Area": "TheTheme"
+      }
+    },
+    {
+      "name": "FeatureProfiles",
+      "FeatureProfiles": {
+        "limited-tenant": {
+          "FeatureRules": [
+            {
+              "Rule": "Exclude",
+              "Expression": "OrchardCore.Contents.FileContentDefinition"
+            },
+            {
+              "Rule": "Exclude",
+              "Expression": "OrchardCore.MiniProfiler"
+            },
+            {
+              "Rule": "Exclude",
+              "Expression": "OrchardCore.Placements.FileStorage"
+            },
+            {
+              "Rule": "Exclude",
+              "Expression": "OrchardCore.Tenants.FileProvider"
+            },
+            {
+              "Rule": "Exclude",
+              "Expression": "OrchardCore.Workflows.Session"
+            }
+          ]
+        }
       }
     }
   ]
