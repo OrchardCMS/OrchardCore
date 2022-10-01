@@ -13,14 +13,14 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
     private readonly bool _useUserOverride;
 
     /// <summary>
-    /// Creates a new <see cref="OrchardCoreRequestLocalizationOptions"/> with adefault values.
+    /// Creates a new <see cref="OrchardCoreRequestLocalizationOptions"/> with default values.
     /// </summary>
     public OrchardCoreRequestLocalizationOptions() : this(ignoreSystemSettings: false)
     {
     }
 
     /// <summary>
-    /// Creates a new <see cref="OrchardCoreRequestLocalizationOptions"/> with adefault values and ability to ignore system settings.
+    /// Creates a new <see cref="OrchardCoreRequestLocalizationOptions"/> with default values and ability to ignore system settings.
     /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not.</param>
     /// </summary>
     public OrchardCoreRequestLocalizationOptions(bool ignoreSystemSettings) : base()
