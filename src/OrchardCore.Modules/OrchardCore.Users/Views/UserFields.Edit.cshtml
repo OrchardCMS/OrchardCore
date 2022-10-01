@@ -4,7 +4,13 @@
 @using Microsoft.Extensions.Options
 @using Microsoft.AspNetCore.Identity
 @inject IOptions<IdentityOptions> IdentityOptions
-
+@{
+    var uniqeId = Guid.NewGuid().ToString("n");
+    var generatePasswordId = $"GeneratePassword_{uniqeId}";
+    var passwordConfirmationToggleId = $"PasswordConfirmationToggle_{uniqeId}";
+    var passwordToggleId = $"PasswordToggle_{uniqeId}";
+    var copyPasswordId = $"CopyPassword_{uniqeId}";
+}
 @if (Site.As<RegistrationSettings>().UsersMustValidateEmail)
 {
     <div class="mb-3">
@@ -28,7 +34,7 @@
     <div class="mb-1">
         <label asp-for="Password">@T["Password"]</label>
         <div class="input-group col-md-4">
-            <span class="input-group-text" id="passwordToggle"><span class="toggle-icon fas fa-eye prefix"></span></span>
+            <span class="input-group-text" id="@passwordToggleId"><span class="toggle-icon fas fa-eye prefix"></span></span>
             <input asp-for="Password" type="password" class="form-control" placeholder="@T["Password"]" />
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
@@ -37,13 +43,13 @@
     <div class="mb-3">
         <label asp-for="PasswordConfirmation" class="sr-only">@T["Password Confirmation"]</label>
         <div class="input-group col-md-4">
-            <span class="input-group-text" id="passwordConfirmationToggle"><span class="toggle-icon fas fa-eye prefix"></span></span>
+            <span class="input-group-text" id="@passwordConfirmationToggleId"><span class="toggle-icon fas fa-eye prefix"></span></span>
             <input asp-for="PasswordConfirmation" type="password" class="form-control" placeholder="@T["Password confirmation"]" />
             <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
         </div>
 
         <div class="mt-2">
-            <div class="btn btn-warning btn-sm" id="generatePassword"
+            <div class="btn btn-warning btn-sm" id="@generatePasswordId"
              data-password-length="@IdentityOptions.Value.Password.RequiredLength"
              data-password-requireUppercase="@IdentityOptions.Value.Password.RequireUppercase.ToString().ToLowerInvariant()"
              data-password-requireLowercase="@IdentityOptions.Value.Password.RequireLowercase.ToString().ToLowerInvariant()"
@@ -52,17 +58,17 @@
              data-password-requiredUniqueChars="@IdentityOptions.Value.Password.RequiredUniqueChars">
                 @T["Generate password"]
             </div>
-            <div class="btn btn-info btn-sm" id="copyPassword">@T["Copy password"]</div>
+            <div class="btn btn-info btn-sm" id="@copyPasswordId">@T["Copy password"]</div>
         </div>
     </div>
     <script at="Foot" asp-name="userFieldsPassword" depends-on="password-generator">
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             let password = document.getElementById('@Html.IdFor(p => p.Password)');
             let passwordConfirmation = document.getElementById('@Html.IdFor(p => p.PasswordConfirmation)');
-            let passwordToggle = document.getElementById('passwordToggle');
-            let passwordConfirmationToggle = document.getElementById('passwordConfirmationToggle');
-            let generate = document.getElementById('generatePassword');
-            let copy = document.getElementById('copyPassword');
+            let passwordToggle = document.getElementById('@passwordToggleId');
+            let passwordConfirmationToggle = document.getElementById('@passwordConfirmationToggleId');
+            let generate = document.getElementById('@generatePasswordId');
+            let copy = document.getElementById('@copyPasswordId');
 
             const toggetIcons = (element) => {
                 if (element.classList.contains('fa-eye')) {
@@ -93,7 +99,7 @@
                 toggetIcons(passwordConfirmationToggle.querySelector('.toggle-icon'));
             }
 
-            generate.addEventListener('click', function() {
+            generate.addEventListener('click', function () {
                 const requiredPasswordLength = parseInt(generate.getAttribute('data-password-length'));
                 const requireUppercase = generate.getAttribute('data-password-requireUppercase') === 'true';
                 const requireLowercase = generate.getAttribute('data-password-requireLowercase') === 'true';
@@ -106,7 +112,7 @@
                 passwordConfirmation.value = newPassword;
             });
 
-            copy.addEventListener('click', function() {
+            copy.addEventListener('click', function () {
                 passwordManager.copyPassword(password.value);
             });
 
