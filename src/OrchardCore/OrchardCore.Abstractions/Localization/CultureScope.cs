@@ -6,7 +6,10 @@ namespace OrchardCore.Localization
     /// <summary>
     /// Represents a scope that you can change the current culture within.
     /// </summary>
-    /// <remarks>The scope disallow the current culture depends on local computer settings by default. For more information refer to https://github.com/OrchardCMS/OrchardCore/issues/11228</remarks>
+    /// <remarks>
+    /// The scope disallow the current culture depends on local computer settings by default.
+    /// For more information refer to https://github.com/OrchardCMS/OrchardCore/issues/11228
+    /// </remarks>
     public sealed class CultureScope : IDisposable
     {
         private readonly CultureInfo _originalCulture;
