@@ -17,7 +17,6 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
     /// </summary>
     public OrchardCoreRequestLocalizationOptions() : this(ignoreSystemSettings: false)
     {
-
     }
 
     /// <summary>
