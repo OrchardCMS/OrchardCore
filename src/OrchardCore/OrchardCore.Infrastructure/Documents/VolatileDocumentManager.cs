@@ -15,7 +15,8 @@ namespace OrchardCore.Documents
     /// <summary>
     /// A <see cref="DocumentManager{TDocument}"/> using a multi level cache but without any persistent storage.
     /// </summary>
-    public class VolatileDocumentManager<TDocument> : DocumentManager<TDocument>, IVolatileDocumentManager<TDocument> where TDocument : class, IDocument, new()
+    public class VolatileDocumentManager<TDocument> : DocumentManager<TDocument>, IVolatileDocumentManager<TDocument>
+        where TDocument : class, IDocument, new()
     {
         private readonly IDistributedLock _distributedLock;
         private readonly ILogger _logger;
@@ -49,7 +50,7 @@ namespace OrchardCore.Documents
                     await DocumentStore.CancelAsync();
 
                     _logger.LogError("Can't update the '{DocumentName}' if not able to access the distributed cache", typeof(TDocument).Name);
-                    
+
                     throw;
                 }
             }
@@ -105,11 +106,11 @@ namespace OrchardCore.Documents
             });
         }
 
-        private class UpdateDelegates
+        private sealed class UpdateDelegates
         {
             public UpdateDelegate UpdateDelegateAsync;
             public AfterUpdateDelegate AfterUpdateDelegateAsync;
-            public HashSet<object> Targets = new HashSet<object>();
+            public HashSet<object> Targets = new();
         }
     }
 }
