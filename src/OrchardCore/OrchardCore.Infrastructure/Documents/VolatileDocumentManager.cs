@@ -92,6 +92,11 @@ namespace OrchardCore.Documents
                     document = await ((UpdateDelegate)d)();
                 }
 
+                if (document == null)
+                {
+                    return;
+                }
+
                 document.Identifier ??= IdGenerator.GenerateId();
 
                 await SetInternalAsync(document);
