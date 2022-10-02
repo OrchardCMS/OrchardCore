@@ -121,11 +121,15 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
 
-            builder.ConfigureServices(s =>
+            builder.ConfigureServices((services, serviceProvider) =>
             {
-                s.AddSingleton<LocalLock>();
-                s.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
-                s.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
+                services.AddSingleton<LocalLock>();
+                services.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
+                services.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
+
+                var configuration = serviceProvider.GetService<IShellConfiguration>();
+
+                services.Configure<CultureOptions>(configuration.GetSection("OrchardCore_Localization_CultureOptions"));
             });
         }
 
