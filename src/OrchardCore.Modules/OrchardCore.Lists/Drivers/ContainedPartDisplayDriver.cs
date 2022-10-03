@@ -119,10 +119,9 @@ namespace OrchardCore.Lists.Drivers
                             model.ContainerContentTypeDefinition = definition;
                         }).Location("Content:1.5"));
 
-                        if (String.Equals(listPart?.DisplayMode(), "Profile", StringComparison.OrdinalIgnoreCase))
+                        if (settings.ShowHeader)
                         {
-                            // Add profile header
-                            results.Add(GetProfileHeader(containerId, settings));
+                            results.Add(GetListPartHeader(containerId, settings));
                         }
                     }
                 }
@@ -131,9 +130,9 @@ namespace OrchardCore.Lists.Drivers
             return Combine(results);
         }
 
-        private IDisplayResult GetProfileHeader(string containerId, ListPartSettings listPartSettings)
+        private IDisplayResult GetListPartHeader(string containerId, ListPartSettings listPartSettings)
         {
-            return Initialize<ProfileHeaderViewModel>("ProfileHeader", async model =>
+            return Initialize<ListPartHeaderViewModel>("ListPartHeader", async model =>
             {
                 var container = await _contentManager.GetAsync(containerId, VersionOptions.Published);
 

@@ -4,7 +4,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.Lists.ViewModels;
 
-public class ProfileHeaderViewModel
+public class ListPartHeaderViewModel
 {
     public ContentItem ContainerContentItem { get; set; }
 

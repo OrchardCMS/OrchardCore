@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
@@ -10,42 +11,39 @@ using OrchardCore.Lists.ViewModels;
 
 namespace OrchardCore.Lists.Drivers;
 
-public class ProfileListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
+public class ListPartHeaderDisplayDriver : ContentPartDisplayDriver<ListPart>
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
-    public ProfileListPartDisplayDriver(IContentDefinitionManager contentDefinitionManager)
+    public ListPartHeaderDisplayDriver(IContentDefinitionManager contentDefinitionManager)
     {
         _contentDefinitionManager = contentDefinitionManager;
     }
 
     public override IDisplayResult Display(ListPart part, BuildPartDisplayContext context)
     {
-        return Initialize<ProfileHeaderViewModel>("ProfileHeader", model =>
-        {
-            var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
+        var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
 
+        return Initialize<ListPartHeaderViewModel>("ListPartHeader", model =>
+        {
             model.ContainerContentItem = part.ContentItem;
             model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
             model.EnableOrdering = settings.EnableOrdering;
-        }).Location("DetailAdmin", "Content:1");
+        }).Location("DetailAdmin", "Content:1")
+        .RenderWhen(() => Task.FromResult(settings.ShowHeader));
     }
 
     public override IDisplayResult Edit(ListPart part, BuildPartEditorContext context)
     {
-        if (context.IsNew)
-        {
-            return null;
-        }
+        var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
 
-        return Initialize<ProfileHeaderViewModel>("ProfileHeader", model =>
+        return Initialize<ListPartHeaderViewModel>("ListPartHeader", model =>
         {
-            var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
-
             model.ContainerContentItem = part.ContentItem;
             model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
             model.EnableOrdering = settings.EnableOrdering;
-        }).Location("Content:1");
+        }).Location("Content:1")
+        .RenderWhen(() => Task.FromResult(context.IsNew && settings.ShowHeader));
     }
 
     private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPartSettings settings)
