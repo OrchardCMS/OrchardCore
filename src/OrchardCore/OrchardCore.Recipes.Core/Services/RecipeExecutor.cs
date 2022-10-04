@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Abstractions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
@@ -158,7 +159,9 @@ namespace OrchardCore.Recipes.Services
 
             await shellScope.UsingAsync(async scope =>
             {
-                var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
+                var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>()
+                .OrderBy(handler => handler is IDefineOrder defineOrder ? defineOrder.Order : default);
+
                 var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
 
                 // Substitutes the script elements by their actual values

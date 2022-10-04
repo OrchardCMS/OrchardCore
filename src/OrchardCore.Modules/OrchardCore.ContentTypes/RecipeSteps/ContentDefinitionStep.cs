@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using OrchardCore.Abstractions;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
@@ -11,9 +12,11 @@ namespace OrchardCore.ContentTypes.RecipeSteps
     /// <summary>
     /// This recipe step creates content definitions.
     /// </summary>
-    public class ContentDefinitionStep : IRecipeStepHandler
+    public class ContentDefinitionStep : IRecipeStepHandler, IDefineOrder
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+
+        public int Order => -25;
 
         public ContentDefinitionStep(IContentDefinitionManager contentDefinitionManager)
         {

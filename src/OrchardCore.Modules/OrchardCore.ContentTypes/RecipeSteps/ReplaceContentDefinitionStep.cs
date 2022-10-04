@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using OrchardCore.Abstractions;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Recipes.Models;
@@ -10,9 +11,11 @@ namespace OrchardCore.ContentTypes.RecipeSteps
     /// <summary>
     /// This recipe step replaces content definition records.
     /// </summary>
-    public class ReplaceContentDefinitionStep : IRecipeStepHandler
+    public class ReplaceContentDefinitionStep : IRecipeStepHandler, IDefineOrder
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+
+        public int Order => 75;
 
         public ReplaceContentDefinitionStep(IContentDefinitionManager contentDefinitionManager)
         {

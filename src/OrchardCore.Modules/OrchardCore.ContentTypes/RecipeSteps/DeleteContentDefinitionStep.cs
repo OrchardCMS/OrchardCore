@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using OrchardCore.Abstractions;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -9,7 +10,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
     /// <summary>
     /// This recipe step deletes content definition records.
     /// </summary>
-    public class DeleteContentDefinitionStep : IRecipeStepHandler
+    public class DeleteContentDefinitionStep : IRecipeStepHandler, IDefineOrder
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -17,6 +18,8 @@ namespace OrchardCore.ContentTypes.RecipeSteps
         {
             _contentDefinitionManager = contentDefinitionManager;
         }
+
+        public int Order => 100;
 
         public Task ExecuteAsync(RecipeExecutionContext context)
         {

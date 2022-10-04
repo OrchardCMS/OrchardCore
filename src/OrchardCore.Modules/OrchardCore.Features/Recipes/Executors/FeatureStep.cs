@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Abstractions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -10,7 +11,7 @@ namespace OrchardCore.Features.Recipes.Executors
     /// <summary>
     /// This recipe step enables or disables a set of features.
     /// </summary>
-    public class FeatureStep : IRecipeStepHandler
+    public class FeatureStep : IRecipeStepHandler, IDefineOrder
     {
         private readonly IShellFeaturesManager _shellFeaturesManager;
 
@@ -18,6 +19,8 @@ namespace OrchardCore.Features.Recipes.Executors
         {
             _shellFeaturesManager = shellFeaturesManager;
         }
+
+        public int Order => -100;
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
