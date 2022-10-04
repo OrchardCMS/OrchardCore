@@ -42,7 +42,8 @@ namespace OrchardCore.Lists.Drivers
                 model.EnableOrdering = settings.EnableOrdering;
                 model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
             })
-            .Location("Content:1.5");
+            .Location("Content:1.5")
+            .RenderWhen(() => Task.FromResult(!context.IsNew));
         }
 
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)

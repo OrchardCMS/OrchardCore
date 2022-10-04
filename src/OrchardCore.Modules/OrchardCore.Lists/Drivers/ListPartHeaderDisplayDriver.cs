@@ -43,7 +43,7 @@ public class ListPartHeaderDisplayDriver : ContentPartDisplayDriver<ListPart>
             model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
             model.EnableOrdering = settings.EnableOrdering;
         }).Location("Content:1")
-        .RenderWhen(() => Task.FromResult(context.IsNew && settings.ShowHeader));
+        .RenderWhen(() => Task.FromResult(!context.IsNew && settings.ShowHeader));
     }
 
     private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPartSettings settings)
