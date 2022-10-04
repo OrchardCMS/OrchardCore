@@ -56,7 +56,7 @@ The below table lists the different libraries used as Resources:
 | [Material icons](https://github.com/marella/material-icons) | Latest icon fonts and CSS for self-hosting material design icons. | 1.12.0 | [Apache-2.0](https://github.com/marella/material-icons/blob/main/LICENSE) |
 | [Monaco Editor](https://microsoft.github.io/monaco-editor) | Lightweight source code editor | 0.34.0 | [MIT](https://github.com/microsoft/monaco-editor/blob/main/LICENSE.md) |
 | [noUiSlider](https://github.com/leongersen/noUiSlider) | noUiSlider is a lightweight JavaScript range slider. | 15.6.1 | [MIT](https://github.com/leongersen/noUiSlider/blob/master/LICENSE.md) |
-| [Popper](https://github.com/popperjs/popper-core) | Positioning tooltips and popovers. | 2.11.5 | [MIT](https://github.com/popperjs/popper-core/blob/master/LICENSE.md) |
+| [Popper](https://github.com/popperjs/popper-core) | Positioning tooltips and popovers. | 2.11.6 | [MIT](https://github.com/popperjs/popper-core/blob/master/LICENSE.md) |
 | [Sortable](https://github.com/SortableJS/sortablejs) | Create and reorder lists with drag-and-drop. | 1.15.0 | [MIT](https://github.com/SortableJS/sortablejs/blob/master/LICENSE) |
 | [Trumbowyg](https://github.com/Alex-D/Trumbowyg) | A lightweight and amazing WYSIWYG JavaScript editor. | 2.25.2 | [MIT](https://github.com/Alex-D/Trumbowyg/blob/develop/LICENSE) |
 | [vue-multiselect](https://github.com/shentao/vue-multiselect) | Universal select/multiselect/tagging component for Vue.js. | 2.1.6 | [MIT](https://github.com/shentao/vue-multiselect/blob/master/LICENSE) |
