@@ -1,9 +1,9 @@
 /* @preserve
- * Leaflet 1.9.1, a JS library for interactive maps. https://leafletjs.com
+ * Leaflet 1.9.2, a JS library for interactive maps. https://leafletjs.com
  * (c) 2010-2022 Vladimir Agafonkin, (c) 2010-2011 CloudMade
  */
 
-var version = "1.9.1";
+var version = "1.9.2";
 
 /*
  * @namespace Util
@@ -1161,8 +1161,8 @@ Bounds.prototype = {
 	},
 
 
-	// @method equals(otherBounds: Bounds, maxMargin?: Number): Boolean
-	// Returns `true` if the rectangle is equivalent (within a small margin of error) to the given bounds. The margin of error can be overridden by setting `maxMargin` to a small number.
+	// @method equals(otherBounds: Bounds): Boolean
+	// Returns `true` if the rectangle is equivalent to the given bounds.
 	equals: function (bounds) {
 		if (!bounds) { return false; }
 
@@ -10431,7 +10431,8 @@ Layer.include({
 	// @method openPopup(latlng?: LatLng): this
 	// Opens the bound popup at the specified `latlng` or at the default popup anchor if no `latlng` is passed.
 	openPopup: function (latlng) {
-		if (this._popup && this._popup._prepareOpen(latlng)) {
+		if (this._popup && this._popup._prepareOpen(latlng || this._latlng)) {
+
 			// open the popup on the map
 			this._popup.openOn(this._map);
 		}
@@ -10891,15 +10892,21 @@ Layer.include({
 	},
 
 	_addFocusListenersOnLayer: function (layer) {
-		on(layer.getElement(), 'focus', function () {
-			this._tooltip._source = layer;
-			this.openTooltip();
-		}, this);
-		on(layer.getElement(), 'blur', this.closeTooltip, this);
+		var el = layer.getElement();
+		if (el) {
+			on(el, 'focus', function () {
+				this._tooltip._source = layer;
+				this.openTooltip();
+			}, this);
+			on(el, 'blur', this.closeTooltip, this);
+		}
 	},
 
 	_setAriaDescribedByOnLayer: function (layer) {
-		layer.getElement().setAttribute('aria-describedby', this._tooltip._container.id);
+		var el = layer.getElement();
+		if (el) {
+			el.setAttribute('aria-describedby', this._tooltip._container.id);
+		}
 	},
 
 
@@ -14305,108 +14312,5 @@ Map.ScrollWheelZoom = ScrollWheelZoom;
 Map.TapHold = TapHold;
 Map.TouchZoom = TouchZoom;
 
-var L$1 = {
-  __proto__: null,
-  version: version,
-  Control: Control,
-  control: control,
-  Class: Class,
-  Handler: Handler,
-  extend: extend,
-  bind: bind,
-  stamp: stamp,
-  setOptions: setOptions,
-  Browser: Browser,
-  Evented: Evented,
-  Mixin: Mixin,
-  Util: Util,
-  PosAnimation: PosAnimation,
-  Draggable: Draggable,
-  DomEvent: DomEvent,
-  DomUtil: DomUtil,
-  Point: Point,
-  point: toPoint,
-  Bounds: Bounds,
-  bounds: toBounds,
-  Transformation: Transformation,
-  transformation: toTransformation,
-  LineUtil: LineUtil,
-  PolyUtil: PolyUtil,
-  LatLng: LatLng,
-  latLng: toLatLng,
-  LatLngBounds: LatLngBounds,
-  latLngBounds: toLatLngBounds,
-  CRS: CRS,
-  Projection: index,
-  Layer: Layer,
-  LayerGroup: LayerGroup,
-  layerGroup: layerGroup,
-  FeatureGroup: FeatureGroup,
-  featureGroup: featureGroup,
-  ImageOverlay: ImageOverlay,
-  imageOverlay: imageOverlay,
-  VideoOverlay: VideoOverlay,
-  videoOverlay: videoOverlay,
-  SVGOverlay: SVGOverlay,
-  svgOverlay: svgOverlay,
-  DivOverlay: DivOverlay,
-  Popup: Popup,
-  popup: popup,
-  Tooltip: Tooltip,
-  tooltip: tooltip,
-  icon: icon,
-  DivIcon: DivIcon,
-  divIcon: divIcon,
-  Marker: Marker,
-  marker: marker,
-  Icon: Icon,
-  GridLayer: GridLayer,
-  gridLayer: gridLayer,
-  TileLayer: TileLayer,
-  tileLayer: tileLayer,
-  Renderer: Renderer,
-  Canvas: Canvas,
-  canvas: canvas,
-  Path: Path,
-  CircleMarker: CircleMarker,
-  circleMarker: circleMarker,
-  Circle: Circle,
-  circle: circle,
-  Polyline: Polyline,
-  polyline: polyline,
-  Polygon: Polygon,
-  polygon: polygon,
-  Rectangle: Rectangle,
-  rectangle: rectangle,
-  SVG: SVG,
-  svg: svg,
-  GeoJSON: GeoJSON,
-  geoJSON: geoJSON,
-  geoJson: geoJson,
-  Map: Map,
-  map: createMap
-};
-
-var globalL = extend(L$1, {noConflict: noConflict});
-
-var globalObject = getGlobalObject();
-var oldL = globalObject.L;
-
-globalObject.L = globalL;
-
-function noConflict() {
-	globalObject.L = oldL;
-	return globalL;
-}
-
-function getGlobalObject() {
-	if (typeof globalThis !== 'undefined') { return globalThis; }
-	if (typeof self !== 'undefined') { return self; }
-	if (typeof window !== 'undefined') { return window; }
-	if (typeof global !== 'undefined') { return global; }
-
-	throw new Error('Unable to locate global object.');
-}
-
-export { Bounds, Browser, CRS, Canvas, Circle, CircleMarker, Class, Control, DivIcon, DivOverlay, DomEvent, DomUtil, Draggable, Evented, FeatureGroup, GeoJSON, GridLayer, Handler, Icon, ImageOverlay, LatLng, LatLngBounds, Layer, LayerGroup, LineUtil, Map, Marker, Mixin, Path, Point, PolyUtil, Polygon, Polyline, Popup, PosAnimation, index as Projection, Rectangle, Renderer, SVG, SVGOverlay, TileLayer, Tooltip, Transformation, Util, VideoOverlay, bind, toBounds as bounds, canvas, circle, circleMarker, control, globalL as default, divIcon, extend, featureGroup, geoJSON, geoJson, gridLayer, icon, imageOverlay, toLatLng as latLng, toLatLngBounds as latLngBounds, layerGroup, createMap as map, marker, noConflict, toPoint as point, polygon, polyline, popup, rectangle, setOptions, stamp, svg, svgOverlay, tileLayer, tooltip, toTransformation as transformation, version, videoOverlay };
+export { Bounds, Browser, CRS, Canvas, Circle, CircleMarker, Class, Control, DivIcon, DivOverlay, DomEvent, DomUtil, Draggable, Evented, FeatureGroup, GeoJSON, GridLayer, Handler, Icon, ImageOverlay, LatLng, LatLngBounds, Layer, LayerGroup, LineUtil, Map, Marker, Mixin, Path, Point, PolyUtil, Polygon, Polyline, Popup, PosAnimation, index as Projection, Rectangle, Renderer, SVG, SVGOverlay, TileLayer, Tooltip, Transformation, Util, VideoOverlay, bind, toBounds as bounds, canvas, circle, circleMarker, control, divIcon, extend, featureGroup, geoJSON, geoJson, gridLayer, icon, imageOverlay, toLatLng as latLng, toLatLngBounds as latLngBounds, layerGroup, createMap as map, marker, toPoint as point, polygon, polyline, popup, rectangle, setOptions, stamp, svg, svgOverlay, tileLayer, tooltip, toTransformation as transformation, version, videoOverlay };
 //# sourceMappingURL=leaflet-src.esm.js.map
