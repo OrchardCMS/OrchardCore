@@ -42,7 +42,7 @@ namespace OrchardCore.AdminDashboard
 
             services.AddScoped<IContentDisplayDriver, DashboardContentDisplayDriver>();
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

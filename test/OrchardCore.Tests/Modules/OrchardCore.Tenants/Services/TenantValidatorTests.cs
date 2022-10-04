@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Moq;
 using OrchardCore.Data;
@@ -17,11 +16,8 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
 {
     public class TenantValidatorTests : SiteContext
     {
-        public static IShellHost ShellHost { get; }
-
         static TenantValidatorTests()
         {
-            ShellHost = Site.Services.GetRequiredService<IShellHost>();
         }
 
         [Theory]
@@ -122,7 +118,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 : new ShellSettings();
 
             var connectionFactory = new Mock<IDbConnectionValidator>();
-            connectionFactory.Setup(l => l.ValidateAsync(shellSettings["ProviderName"], shellSettings["ConnectionName"], shellSettings["TablePrefix"], shellSettings.IsDefaultShell()));
+            connectionFactory.Setup(l => l.ValidateAsync(shellSettings["ProviderName"], shellSettings["ConnectionName"], shellSettings["TablePrefix"], shellSettings.Name));
 
             return new TenantValidator(
                 ShellHost,

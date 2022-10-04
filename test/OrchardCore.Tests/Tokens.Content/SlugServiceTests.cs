@@ -36,6 +36,16 @@ namespace OrchardCore.Tests.Tokens.Content
             Assert.Equal("a-d", slug);
         }
 
+        [Theory]
+        [InlineData("Smith, John B.")]
+        [InlineData("Smith, John B...")]
+        public void ShouldRemoveHyphansFromEnd(string input)
+        {
+            // Act
+            var slug = _slugService.Slugify(input);
+            Assert.Equal("smith-john-b", slug);
+        }
+
         [Fact]
         public void ShouldMakeSureFunkycharactersAndHyphansOnlyReturnSingleHyphan()
         {

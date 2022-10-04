@@ -28302,6 +28302,12 @@ html[dir][data-theme=default] div.editor-widget.find-widget .button.codicon:acti
   background-color: transparent;
   border-color: transparent;
 }
+html[dir][data-theme=default] .has-filter .btn:not(.show), html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .has-filter .close:not(.show), html[dir][data-theme=default] .has-filter .button:not(.show), html[dir][data-theme=default] .has-filter .bootstrap-select .popover-header .close:not(.show), html[dir][data-theme=default] .bootstrap-select .popover-header .has-filter .close:not(.show) {
+  border-color: #ced4da !important;
+}
+html[data-theme=default] .has-filter .form-control-feedback, html[data-theme=default] .has-search .form-control-feedback {
+  color: #aaa;
+}
 html[data-theme=default] body {
   --bs-blue: #0d6efd;
   --bs-indigo: #6610f2;
@@ -29741,6 +29747,9 @@ html[dir][data-theme=default] .bg-primary {
 html[data-theme=default] .bootstrap-select .popover-header .close {
   color: black;
 }
+html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
+  color: #212529 !important;
+}
 html[data-theme=default] .hint {
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -29786,9 +29795,6 @@ html[data-theme=default] label .field-validation-error::before {
 html[data-theme=default] .field-validation-valid {
   display: none;
 }
-html[data-theme=default] select[multiple] {
-  min-height: 300px;
-}
 html[data-theme=default] input[type=password]::-ms-reveal,
 html[data-theme=default] input[type=password]::-ms-clear {
   display: none;
@@ -29807,28 +29813,39 @@ html[data-theme=default] .has-filter .form-control-feedback, html[data-theme=def
   height: 2rem;
   line-height: 1rem;
   pointer-events: none;
-  color: #aaa;
 }
 html[dir][data-theme=default] .has-filter .form-control-feedback, html[dir][data-theme=default] .has-search .form-control-feedback {
   text-align: center;
 }
 html[dir=ltr][data-theme=default] .has-filter .form-control-feedback, html[dir=ltr][data-theme=default] .has-search .form-control-feedback {
-  left: 10px;
+  left: 1.75rem;
 }
 html[dir=rtl][data-theme=default] .has-filter .form-control-feedback, html[dir=rtl][data-theme=default] .has-search .form-control-feedback {
-  right: 10px;
+  right: 1.75rem;
 }
-html[dir=ltr][data-theme=default] .has-search .form-control-feedback {
-  left: 10px;
-}
-html[dir=rtl][data-theme=default] .has-search .form-control-feedback {
-  right: 10px;
+html[data-theme=default] .has-filter .form-control-feedback {
+  top: 0.25rem;
 }
 html[dir=ltr][data-theme=default] .has-filter .form-control-feedback {
-  left: 55px;
+  left: 4.25rem;
 }
 html[dir=rtl][data-theme=default] .has-filter .form-control-feedback {
-  right: 55px;
+  right: 4.25rem;
+}
+html[dir=ltr][data-theme=default] .has-search .form-control-feedback {
+  left: 1.75rem;
+}
+html[dir=rtl][data-theme=default] .has-search .form-control-feedback {
+  right: 1.75rem;
+}
+html[data-theme=default] .has-search:not(.input-group) .form-control-feedback, html[data-theme=default] .has-filter:not(.input-group) .form-control-feedback {
+  top: 1.25rem;
+}
+html[dir=ltr][data-theme=default] .has-search:not(.input-group) .form-control-feedback, html[dir=ltr][data-theme=default] .has-filter:not(.input-group) .form-control-feedback {
+  left: 1.75rem;
+}
+html[dir=rtl][data-theme=default] .has-search:not(.input-group) .form-control-feedback, html[dir=rtl][data-theme=default] .has-filter:not(.input-group) .form-control-feedback {
+  right: 1.75rem;
 }
 
 html[data-theme=darkmode] {
@@ -58356,6 +58373,15 @@ html[dir][data-theme=darkmode] div.editor-widget.find-widget .button.codicon:act
   background-color: transparent;
   border-color: transparent;
 }
+html[dir][data-theme=darkmode] .has-filter .btn:not(.show), html[dir][data-theme=darkmode] .has-filter .button:not(.show), html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .has-filter .close:not(.show), html[dir][data-theme=darkmode] .has-filter .bootstrap-select .popover-header .close:not(.show), html[dir][data-theme=darkmode] .bootstrap-select .popover-header .has-filter .close:not(.show) {
+  border-color: #3C4144 !important;
+}
+html[data-theme=darkmode] .has-filter .form-control-feedback, html[data-theme=darkmode] .has-search .form-control-feedback {
+  color: #aaa;
+}
+html[data-theme=darkmode] .has-filter .form-control, html[data-theme=darkmode] .has-search .form-control {
+  color: #aaa;
+}
 html[data-theme=darkmode] body {
   --bs-blue: #007bff;
   --bs-indigo: #6610f2;
@@ -59792,6 +59818,9 @@ html[dir][data-theme=darkmode] .bg-primary {
 html[dir][data-theme=darkmode] #mediaApp {
   background-color: #181a1b;
 }
+html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
+  color: #fff !important;
+}
 html[data-theme=darkmode] .blockquote-footer {
   color: #888;
 }
@@ -59898,9 +59927,6 @@ html[data-theme=darkmode] label .field-validation-error::before {
 html[data-theme=darkmode] .field-validation-valid {
   display: none;
 }
-html[data-theme=darkmode] select[multiple] {
-  min-height: 300px;
-}
 html[data-theme=darkmode] input[type=password]::-ms-reveal,
 html[data-theme=darkmode] input[type=password]::-ms-clear {
   display: none;
@@ -59919,28 +59945,39 @@ html[data-theme=darkmode] .has-filter .form-control-feedback, html[data-theme=da
   height: 2rem;
   line-height: 1rem;
   pointer-events: none;
-  color: #aaa;
 }
 html[dir][data-theme=darkmode] .has-filter .form-control-feedback, html[dir][data-theme=darkmode] .has-search .form-control-feedback {
   text-align: center;
 }
 html[dir=ltr][data-theme=darkmode] .has-filter .form-control-feedback, html[dir=ltr][data-theme=darkmode] .has-search .form-control-feedback {
-  left: 10px;
+  left: 1.75rem;
 }
 html[dir=rtl][data-theme=darkmode] .has-filter .form-control-feedback, html[dir=rtl][data-theme=darkmode] .has-search .form-control-feedback {
-  right: 10px;
+  right: 1.75rem;
 }
-html[dir=ltr][data-theme=darkmode] .has-search .form-control-feedback {
-  left: 10px;
-}
-html[dir=rtl][data-theme=darkmode] .has-search .form-control-feedback {
-  right: 10px;
+html[data-theme=darkmode] .has-filter .form-control-feedback {
+  top: 0.25rem;
 }
 html[dir=ltr][data-theme=darkmode] .has-filter .form-control-feedback {
-  left: 55px;
+  left: 4.25rem;
 }
 html[dir=rtl][data-theme=darkmode] .has-filter .form-control-feedback {
-  right: 55px;
+  right: 4.25rem;
+}
+html[dir=ltr][data-theme=darkmode] .has-search .form-control-feedback {
+  left: 1.75rem;
+}
+html[dir=rtl][data-theme=darkmode] .has-search .form-control-feedback {
+  right: 1.75rem;
+}
+html[data-theme=darkmode] .has-search:not(.input-group) .form-control-feedback, html[data-theme=darkmode] .has-filter:not(.input-group) .form-control-feedback {
+  top: 1.25rem;
+}
+html[dir=ltr][data-theme=darkmode] .has-search:not(.input-group) .form-control-feedback, html[dir=ltr][data-theme=darkmode] .has-filter:not(.input-group) .form-control-feedback {
+  left: 1.75rem;
+}
+html[dir=rtl][data-theme=darkmode] .has-search:not(.input-group) .form-control-feedback, html[dir=rtl][data-theme=darkmode] .has-filter:not(.input-group) .form-control-feedback {
+  right: 1.75rem;
 }
 html[data-theme=darkmode] .input-group-addon {
   color: #fff;

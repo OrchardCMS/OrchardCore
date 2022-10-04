@@ -198,13 +198,9 @@ namespace OrchardCore.Setup.Controllers
             if (!String.IsNullOrEmpty(_shellSettings["DatabaseProvider"]))
             {
                 model.DatabaseConfigurationPreset = true;
-                if (Enum.TryParse(_shellSettings["DatabaseProvider"], out DatabaseProviderName providerName))
-                {
-                    model.DatabaseProvider = providerName;
-                }
+                model.DatabaseProvider = _shellSettings["DatabaseProvider"];
             }
-
-            if (!model.DatabaseProvider.HasValue)
+            else
             {
                 model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
             }

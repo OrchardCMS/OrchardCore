@@ -54,7 +54,7 @@ A good way to model this filter in JSON is like this:
 {
 	"size": 10,
 	"query": {
- 	  "term": { "Content.ContentItem.ContentType" : "BlogPost" }
+ 	  "term": { "Content.ContentItem.ContentType.keyword" : "BlogPost" }
 	}
 }
 ```
@@ -79,7 +79,7 @@ To create that logic, we can do this:
 {% if categories or tags %}
 
 {% else %}
-  	"term": { "Content.ContentItem.ContentType" : "BlogPost" }
+  	"term": { "Content.ContentItem.ContentType.keyword" : "BlogPost" }
 {% endif %}
 	}
 }
@@ -165,7 +165,7 @@ Finally, gluing it all together into a usable query:
     		],
 		}
     {% else %}
-      "term": { "Content.ContentItem.ContentType" : "BlogPost" }
+      "term": { "Content.ContentItem.ContentType.keyword" : "BlogPost" }
     {% endif %}
 	}
 }

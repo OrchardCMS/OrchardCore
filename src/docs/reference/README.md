@@ -133,5 +133,6 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 
 - [SQL](modules/SQLIndexing/README.md)
 - [Lucene](modules/Lucene/README.md)
+- [Elasticsearch](modules/Elasticsearch/README.md)
 - [Queries](modules/Queries/README.md)
 - [Indexing](modules/Indexing/README.md)

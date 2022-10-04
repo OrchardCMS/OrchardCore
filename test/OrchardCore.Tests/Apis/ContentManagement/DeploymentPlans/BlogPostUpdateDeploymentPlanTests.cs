@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
 using YesSql;
@@ -29,8 +28,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.PostRecipeAsync(recipe);
 
                 // Test
-                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
-                await shellScope.UsingAsync(async scope =>
+                await context.UsingTenantScopeAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
                     var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
@@ -63,8 +61,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.PostRecipeAsync(recipe);
 
                 // Test
-                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
-                await shellScope.UsingAsync(async scope =>
+                await context.UsingTenantScopeAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
                     var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
@@ -105,8 +102,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.PostRecipeAsync(recipe);
 
                 // Test
-                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
-                await shellScope.UsingAsync(async scope =>
+                await context.UsingTenantScopeAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
                     var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>

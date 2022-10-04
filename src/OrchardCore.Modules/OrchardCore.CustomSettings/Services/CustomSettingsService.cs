@@ -8,7 +8,6 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Settings;
 
 namespace OrchardCore.CustomSettings.Services
@@ -37,7 +36,7 @@ namespace OrchardCore.CustomSettings.Services
             _settingsTypes = new Lazy<IDictionary<string, ContentTypeDefinition>>(
                 () => _contentDefinitionManager
                      .ListTypeDefinitions()
-                     .Where(x => x.GetSettings<ContentTypeSettings>().Stereotype == "CustomSettings")
+                     .Where(x => x.GetStereotype() == "CustomSettings")
                      .ToDictionary(x => x.Name));
         }
 
