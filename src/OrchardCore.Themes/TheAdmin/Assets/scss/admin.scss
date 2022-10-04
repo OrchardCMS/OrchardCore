@@ -1,5 +1,5 @@
 @use 'sass:math';
- 
+
 html[data-theme='default'] {
     @import "modules/theme/default/_variables.scss";
     @import "../../node_modules/bootstrap/scss/bootstrap";
@@ -11,7 +11,7 @@ html[data-theme='default'] {
     @import "mixins/_sizes.scss";
     @import "mixins/_cursors.scss";
     @import "mixins/_word-wrap.scss";
-  
+
     @import "modules/admin/_messages.scss";
     @import "modules/admin/_pager.scss";
     @import "modules/admin/_grid.scss";
@@ -21,6 +21,7 @@ html[data-theme='default'] {
     @import "modules/admin/_trumbowyg.scss";
     @import "modules/admin/_jquery-ui.scss";
     @import "modules/admin/_monaco.scss";
+    @import "modules/theme/default/_forms.scss";
 
     @import "modules/theme/default/_bootswatch.scss";
 }
@@ -46,15 +47,15 @@ html[data-theme='darkmode'] {
     @import "modules/admin/_trumbowyg.scss";
     @import "modules/admin/_jquery-ui.scss";
     @import "modules/admin/_monaco.scss";
+    @import "modules/theme/darkmode/_forms.scss";
 
     @import "modules/theme/darkmode/_bootswatch.scss";
-} 
+}
 
 @import "modules/admin/_nouislider.scss";
 
 // needs to be fixed in bootstrap-select repository
-html[dir="rtl"] .bootstrap-select .bs-ok-default:after
-{
+html[dir="rtl"] .bootstrap-select .bs-ok-default:after {
     border-width: 0 0.26em 0.26em 0 !important;
     transform: rotate(45deg) !important;
 }

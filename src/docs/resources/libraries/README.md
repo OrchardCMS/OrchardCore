@@ -21,7 +21,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Lorem.NET for netstandard](https://github.com/trichards57/Lorem.Universal.NET) | A .NET library for all things random! | 4.0.80 | [MIT](https://github.com/trichards57/Lorem.Universal.NET/blob/master/license.md) |
 | [Lucene.Net](https://github.com/apache/lucenenet) | .NET full-text search engine. | 4.8.0-beta00016 | [Apache-2.0](https://github.com/apache/lucenenet/blob/master/LICENSE.txt) |
 | [MailKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 3.4.1 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
-| [Markdig](https://github.com/lunet-io/markdig) | .NET Markdown engine. | 0.30.3 | [BSD-2-Clause](https://github.com/lunet-io/markdig/blob/master/license.txt) |
+| [Markdig](https://github.com/lunet-io/markdig) | .NET Markdown engine. | 0.30.4 | [BSD-2-Clause](https://github.com/lunet-io/markdig/blob/master/license.txt) |
 | [MessagePack](https://github.com/neuecc/MessagePack-CSharp) | Extremely Fast MessagePack Serializer for C# | 2.2.60 | [MIT](https://github.com/neuecc/MessagePack-CSharp/blob/master/LICENSE) |
 | [Microsoft.SourceLink.GitHub](https://github.com/dotnet/sourcelink) | Source Link enables a great source debugging experience. | 1.1.1 | [MIT](https://github.com/dotnet/sourcelink/blob/main/License.txt) |
 | [MimeKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 3.4.1 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
@@ -31,7 +31,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [NLog.Web.AspNetCore](https://github.com/NLog/NLog.Web/tree/master/src/NLog.Web.AspNetCore) | NLog integration for ASP.NET. | 5.1.4 | [BSD-3-Clause](https://github.com/NLog/NLog.Web/blob/master/LICENSE) |
 | [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) | Json.NET is a popular high-performance JSON framework for .NET | 13.0.1 | [MIT](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md) |
 | [NJsonSchema](https://github.com/RicoSuter/NJsonSchema) | JSON Schema reader, generator and validator for .NET | 10.8.0 | [MIT](https://github.com/RicoSuter/NJsonSchema/blob/master/LICENSE.md) |
-| [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 3.1.2 | [Apache-2.0](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
+| [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 3.1.3 | [Apache-2.0](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
 | [OpenIddict](https://github.com/openiddict/openiddict-core) | Versatile OpenID Connect stack for ASP.NET Core. | 3.1.1 | [Apache-2.0](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
 | [PdfPig](https://github.com/UglyToad/PdfPig/) | Library to read and extract text and other content from PDF files. | 0.1.6 | [Apache-2.0](https://github.com/UglyToad/PdfPig/blob/master/LICENSE) |
 | [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore) | Serilog integration for ASP.NET Core. | 6.0.1 | [Apache-2.0](https://github.com/serilog/serilog-aspnetcore/blob/dev/LICENSE) |
@@ -53,7 +53,7 @@ The below table lists the different libraries used as Resources:
 | [jQuery Easing](https://github.com/gdsmith/jquery.easing) | jQuery Easing Plugin. | 1.4.1 | [MIT](https://github.com/gdsmith/jquery.easing/blob/master/LICENSE-BSD-3-Clause.txt) |
 | [jquery-resizable-dom](https://github.com/RickStrahl/jquery-resizable) | jQuery plug-in to make DOM components resizable. | 0.35.0 | [MIT](https://github.com/RickStrahl/jquery-resizable/blob/master/LICENSE.md) |
 | [js-cookie](https://github.com/js-cookie/js-cookie) | A simple, lightweight JavaScript API for handling browser cookies. | 3.0.1 | [MIT](https://github.com/js-cookie/js-cookie/blob/master/LICENSE) |
-| [Material icons](https://github.com/marella/material-icons) | Latest icon fonts and CSS for self-hosting material design icons. | 1.11.0 | [Apache-2.0](https://github.com/marella/material-icons/blob/main/LICENSE) |
+| [Material icons](https://github.com/marella/material-icons) | Latest icon fonts and CSS for self-hosting material design icons. | 1.12.0 | [Apache-2.0](https://github.com/marella/material-icons/blob/main/LICENSE) |
 | [Monaco Editor](https://microsoft.github.io/monaco-editor) | Lightweight source code editor | 0.34.0 | [MIT](https://github.com/microsoft/monaco-editor/blob/main/LICENSE.md) |
 | [noUiSlider](https://github.com/leongersen/noUiSlider) | noUiSlider is a lightweight JavaScript range slider. | 15.6.1 | [MIT](https://github.com/leongersen/noUiSlider/blob/master/LICENSE.md) |
 | [Popper](https://github.com/popperjs/popper-core) | Positioning tooltips and popovers. | 2.11.5 | [MIT](https://github.com/popperjs/popper-core/blob/master/LICENSE.md) |
@@ -88,7 +88,7 @@ The below table lists the different Tests libraries:
 | [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) | Powerful .NET library for benchmarking. | 0.13.2 | [MIT](https://github.com/dotnet/BenchmarkDotNet/blob/master/LICENSE.md) |
 | [Cypress](https://github.com/cypress-io/cypress) | Fast, easy and reliable testing for anything that runs in a browser. | 9.6.1 | [MIT](https://github.com/cypress-io/cypress/blob/develop/LICENSE) |
 | [Cypress Orchard](https://www.npmjs.com/package/cypress-orchardcore) | A collection of cypress commands for Orchard Core. | 0.4.5 | MIT |
-| [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 17.3.1 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
+| [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 17.3.2 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
 | [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.4.2 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |
 | [xUnit Analyzers](https://github.com/xunit/xunit.analyzers) | Roslyn analyzers for xUnit.net. | 1.0.0 | [MIT](https://github.com/xunit/xunit.analyzers/blob/main/LICENSE) |
 | [xUnit VS runner](https://github.com/xunit/visualstudio.xunit) | VSTest runner for xUnit.net. | 2.4.5 | [MIT](https://github.com/xunit/visualstudio.xunit/blob/main/License.txt) |

@@ -9,7 +9,7 @@
 
 <div class="form-row field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x)_FieldWrapper">
     <div class="mb-3 col-md-4">
-        <label asp-for="Latitude">Latitude</label>
+        <label asp-for="Latitude">@T["Latitude"]</label>
         <input asp-for="Latitude" type="number" min="-90.000000" max="90.000000" step=".000001" placeholder="00.000000" class="form-control content-preview-text" required="@settings.Required" />
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
@@ -17,7 +17,7 @@
         }
     </div>
     <div class="mb-3 col-md-4">
-        <label asp-for="Longitude">Longitude</label>
+        <label asp-for="Longitude">@T["Longitude"]</label>
         <input asp-for="Longitude" type="number" min="-180.000000" max="180.000000" step=".000001" placeholder="00.000000" class="form-control content-preview-text" required="@settings.Required" />
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
