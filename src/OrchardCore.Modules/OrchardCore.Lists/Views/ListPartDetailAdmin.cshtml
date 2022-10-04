@@ -54,7 +54,7 @@ else
         <div class="card bg-primary mb-3 position-sticky action-bar">
             <div class="card-body">
                 <div class="row gx-3">
-                    <div class="col">
+                    <div class="col" style="min-width: 40%;">
                         <div class="input-group has-filter">
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa fa-filter" title="@T["Filters"]" aria-hidden="true"></i>
@@ -71,17 +71,17 @@ else
                         </div>
                     </div>
                     <div class="col-auto">
-                        <a class="btn btn-sm btn-primary" edit-for="@Model.ListPart.ContentItem" asp-route-returnUrl="@FullRequestPath">
+                        <a class="btn btn-primary" edit-for="@Model.ListPart.ContentItem" asp-route-returnUrl="@FullRequestPath">
                             @T["Edit {0}", @Model.ListPart.ContentItem.DisplayText]
                         </a>
-                        @if (authorizedContentTypeDefinitions.Count() == 1)
+                        @if (authorizedContentTypeDefinitions.Count == 1)
                         {
                             var contentTypeDefinition = authorizedContentTypeDefinitions.FirstOrDefault();
-                            <a class="btn btn-sm btn-success" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
+                            <a class="btn btn-success" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
                                 @T["Create {0}", contentTypeDefinition.DisplayName]
                             </a>
                         }
-                        else if (authorizedContentTypeDefinitions.Count() > 1)
+                        else if (authorizedContentTypeDefinitions.Count > 1)
                         {
                             <button class="btn btn-sm btn-success dropdown-toggle" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @T["Create"]
@@ -103,10 +103,7 @@ else
 
     @if (Model.ContentItems.Any())
     {
-        <ul class="list-group" @if (enableOrdering) {
- <text> id="ci-sortable" </text>
- }>
-
+        <ul class="list-group" id="ci-sortable">
             @foreach (var contentItem in Model.ContentItems)
             {
                 var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
@@ -114,11 +111,11 @@ else
                 {
                     await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
                 }
-                                                                                        <li class="list-group-item">
+                <li class="list-group-item">
                     @await DisplayAsync(contentItemSummary)
-                                                                                        </li>
+                </li>
             }
-                                                        </ul>
+        </ul>
 
         @await DisplayAsync(Model.Pager)
         @if (enableOrdering)

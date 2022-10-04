@@ -7,7 +7,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.BackgroundTasks;
 
-internal static class ShellContextExtensions
+public static class ShellContextExtensions
 {
     private const string Localhost = "localhost";
 
