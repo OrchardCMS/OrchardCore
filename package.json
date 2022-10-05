@@ -29,7 +29,7 @@
     "@babel/core": "^7.19.1",
     "@babel/preset-env": "^7.19.1",
     "@babel/preset-flow": "7.18.6",
-    "all-contributors-cli": "^6.22.0",
+    "all-contributors-cli": "^6.23.0",
     "es6-promise": "4.2.8",
     "glob": "^8.0.3",
     "graceful-fs": "4.2.10",
