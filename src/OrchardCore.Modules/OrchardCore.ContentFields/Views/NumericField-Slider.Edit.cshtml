@@ -10,12 +10,12 @@
     string id = Html.IdFor(m => m.Value);
     string javascriptDecimalSeparator = CultureInfo.InvariantCulture.NumberFormat.NumberDecimalSeparator;
     string serverDecimalSeparator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
-    var fieldName = Model.PartFieldDefinition.Name;
+    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
 <script asp-name="nouislider" at="Foot"></script>
 
-<div class="mb-3 field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x.Value)_FieldWrapper">
+<div class="mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Value)_FieldWrapper">
     <div class="row">
         <div class="col-md-6 col-lg-4">
             <label asp-for="Value">@name</label>
@@ -63,12 +63,12 @@
         range: {
             'min': @min,
             'max': @max
-                                        }
+            }
     });
 
     slider.noUiSlider.set("@Model.Value");
 
-    slider.noUiSlider.on('change', function() {
+    slider.noUiSlider.on('change', function () {
         let value = slider.noUiSlider.get();
     @if (javascriptDecimalSeparator != serverDecimalSeparator)
     {
@@ -77,7 +77,7 @@
             $('#@(id)').val(value);
     });
 
-    $('#@(id)').on('keyup', function() {
+    $('#@(id)').on('keyup', function () {
         let value = this.value;
         @if (javascriptDecimalSeparator != serverDecimalSeparator)
         {
