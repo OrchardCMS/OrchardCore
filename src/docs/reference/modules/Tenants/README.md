@@ -119,36 +119,13 @@ By using the `FeatureProfiles` recipe step, you can define profiles from recipes
 1. Create a Feature Profile.
 2. Go to the _Configuration -> Tenants_ menu.
 3. Edit the tenant.
-4 Select a feature profile from the dropdown.
+4. Select a feature profile from the dropdown.
 
 The _Feature Profile_ drop down will only be available if at least one Feature Profile has been configured.
 
 A feature profile can also be set when creating a tenant via the web API.
 
-If you use [Auto Setup](../AutoSetup/README.md), you can specify the `FeatureProfile` property for tenants as well (see the Auto Setup documentation for more information):
-
-```json
-"OrchardCore_AutoSetup": {
-  "AutoSetupPath": "",
-  "Tenants": [
-    {
-      "ShellName": "AutoSetupTenant",
-      "SiteName": "AutoSetup Tenant",
-      "SiteTimeZone": "Europe/Amsterdam",
-      "AdminUsername": "tenantadmin",
-      "AdminEmail": "tenant@orchardproject.net",
-      "AdminPassword": "OrchardCoreRules1!",
-      "DatabaseProvider": "Sqlite",
-      "DatabaseConnectionString": "",
-      "DatabaseTablePrefix": "tenant",
-      "RecipeName": "Agency",
-      "RequestUrlHost": "",
-      "RequestUrlPrefix": "tenant",
-      "FeatureProfile": "my-profile"
-    }
-  ]
-}
-```
+If you use [Auto Setup](../AutoSetup/README.md), you can specify the `FeatureProfile` property for tenants as well; see the Auto Setup documentation for more information.
 
 ## Video
 
