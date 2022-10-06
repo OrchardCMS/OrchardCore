@@ -78,6 +78,42 @@ In this example we exclude all Features starting with `MyModules.Custom.`, and t
 
 Rules are processed in the order they are supplied, so reversing the order of the above will cause the last rule, i.e. the `Exclude` rule to be applied, negating the `Include` rule.
 
+#### Defining Feature Profiles in Recipes
+
+By using the `FeatureProfiles` recipe step, you can define profiles from recipes as well (don't forget to also enable the `OrchardCore.Tenants.FeatureProfiles` feature in the recipe too):
+
+```json
+{
+  "name": "FeatureProfiles",
+  "FeatureProfiles": {
+    "my-profile": {
+      "FeatureRules": [
+        {
+          "Rule": "Exclude",
+          "Expression": "OrchardCore.Contents.FileContentDefinition"
+        },
+        {
+          "Rule": "Exclude",
+          "Expression": "OrchardCore.MiniProfiler"
+        },
+        {
+          "Rule": "Exclude",
+          "Expression": "OrchardCore.Placements.FileStorage"
+        },
+        {
+          "Rule": "Exclude",
+          "Expression": "OrchardCore.Tenants.FileProvider"
+        },
+        {
+          "Rule": "Exclude",
+          "Expression": "OrchardCore.Workflows.Session"
+        }
+      ]
+    }
+  }
+}
+```
+
 ### Selecting a feature profile
 
 1. Create a Feature Profile.
@@ -88,6 +124,31 @@ Rules are processed in the order they are supplied, so reversing the order of th
 The _Feature Profile_ drop down will only be available if at least one Feature Profile has been configured.
 
 A feature profile can also be set when creating a tenant via the web API.
+
+If you use [Auto Setup](../AutoSetup/README.md), you can specify the `FeatureProfile` property for tenants as well (see the Auto Setup documentation for more information):
+
+```json
+"OrchardCore_AutoSetup": {
+  "AutoSetupPath": "",
+  "Tenants": [
+    {
+      "ShellName": "AutoSetupTenant",
+      "SiteName": "AutoSetup Tenant",
+      "SiteTimeZone": "Europe/Amsterdam",
+      "AdminUsername": "tenantadmin",
+      "AdminEmail": "tenant@orchardproject.net",
+      "AdminPassword": "OrchardCoreRules1!",
+      "DatabaseProvider": "Sqlite",
+      "DatabaseConnectionString": "",
+      "DatabaseTablePrefix": "tenant",
+      "RecipeName": "Agency",
+      "RequestUrlHost": "",
+      "RequestUrlPrefix": "tenant",
+      "FeatureProfile": "my-profile"
+    }
+  ]
+}
+```
 
 ## Video
 
