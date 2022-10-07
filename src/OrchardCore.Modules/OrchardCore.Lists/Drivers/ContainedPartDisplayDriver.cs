@@ -111,10 +111,10 @@ namespace OrchardCore.Lists.Drivers
                     if (settings != null)
                     {
                         // Add list part navigation
-                        results.Add(Initialize<ListPartNavigationViewModel>("ListPartNavigation", model =>
+                        results.Add(Initialize<ListPartNavigationViewModel>("ListPartNavigation", async model =>
                         {
                             model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
-                            model.ContainerId = containerId;
+                            model.Container = await _contentManager.GetAsync(containerId);
                             model.EnableOrdering = settings.EnableOrdering;
                             model.ContainerContentTypeDefinition = definition;
                         }).Location("Content:1.5"));

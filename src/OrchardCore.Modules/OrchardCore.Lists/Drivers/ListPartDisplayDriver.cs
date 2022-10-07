@@ -37,8 +37,8 @@ namespace OrchardCore.Lists.Drivers
             return Initialize<ListPartNavigationViewModel>("ListPartNavigation", model =>
             {
                 var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
+                model.Container = part.ContentItem;
                 model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
-                model.ContainerId = part.ContentItem.ContentItemId;
                 model.EnableOrdering = settings.EnableOrdering;
                 model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
             })
@@ -95,7 +95,7 @@ namespace OrchardCore.Lists.Drivers
                     {
                         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
-                        model.ContainerId = listPart.ContentItem.ContentItemId;
+                        model.Container = listPart.ContentItem;
                         model.EnableOrdering = settings.EnableOrdering;
                         model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
                     })

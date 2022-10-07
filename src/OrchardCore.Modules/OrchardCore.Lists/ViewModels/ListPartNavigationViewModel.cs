@@ -1,11 +1,12 @@
 using System;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.Lists.ViewModels;
 
 public class ListPartNavigationViewModel
 {
-    public string ContainerId { get; set; }
+    public ContentItem Container { get; set; }
 
     public ContentTypeDefinition ContainerContentTypeDefinition { get; set; }
 
