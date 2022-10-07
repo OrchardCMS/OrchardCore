@@ -19,7 +19,7 @@ See the [`Microsoft.Data.Sqlite` documentation](https://docs.microsoft.com/en-us
 ```json
 {
     "OrchardCore_Data_Sqlite": {
-        "PoolConnections": false
+        "UseConnectionPooling": false
     }
 }
 ```
