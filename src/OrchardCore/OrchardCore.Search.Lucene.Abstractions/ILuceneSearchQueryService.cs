@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Lucene.Net.Search;
 
-namespace OrchardCore.Search.Lucene
+namespace OrchardCore.Search.Lucene.Abstractions
 {
-    public interface ISearchQueryService
+    public interface ILuceneSearchQueryService
     {
         /// <summary>
         /// Provides a way to execute a search request in Lucene based on a Lucene Query.
