@@ -31,6 +31,7 @@ namespace OrchardCore.Queries.Sql
             var OVER = ToTerm("OVER");
             var UNION = ToTerm("UNION");
             var ALL = ToTerm("ALL");
+            var WITH = ToTerm("WITH");
 
             //Non-terminals
             var Id = new NonTerminal("Id");
@@ -88,6 +89,10 @@ namespace OrchardCore.Queries.Sql
             var unionStatementList = new NonTerminal("unionStmtList");
             var unionStatement = new NonTerminal("unionStmt");
             var unionClauseOpt = new NonTerminal("unionClauseOpt");
+            var withClauseOpt = new NonTerminal("withClauseOpt");
+            var cteList = new NonTerminal("cteList");
+            var cte = new NonTerminal("cte");
+            var cteColumnListOpt = new NonTerminal("cteColumnListOpt");
 
             //BNF Rules
             this.Root = statementList;
@@ -99,7 +104,12 @@ namespace OrchardCore.Queries.Sql
             optionalSemicolon.Rule = Empty | ";";
             statementList.Rule = MakePlusRule(statementList, statementLine);
 
-            statement.Rule = selectStatement;
+            cteColumnListOpt.Rule = Empty | "(" + MakePlusRule(cteColumnListOpt, comma, Id_simple) + ")";
+            cte.Rule = Id_simple + cteColumnListOpt + AS + "(" + unionStatementList + ")";
+            cteList.Rule = MakePlusRule(cteList, comma, cte);
+            withClauseOpt.Rule = Empty | WITH + cteList;
+
+            statement.Rule = withClauseOpt + selectStatement;
 
             Id.Rule = MakePlusRule(Id, dot, Id_simple);
 
@@ -183,7 +193,7 @@ namespace OrchardCore.Queries.Sql
             // Transient non-terminals cannot have more than one non-punctuation child nodes.
             // Instead, we set flag InheritPrecedence on binOp , so that it inherits precedence value from it's children, and this precedence is used
             // in conflict resolution when binOp node is sitting on the stack
-            base.MarkTransient(statement, term, asOpt, aliasOpt, statementLine, expression, unOp, tuple);
+            base.MarkTransient(term, asOpt, aliasOpt, statementLine, expression, unOp, tuple);
             binOp.SetFlag(TermFlags.InheritPrecedence);
         }
     }

@@ -219,5 +219,16 @@ namespace OrchardCore.Tests.OrchardCore.Queries
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
+
+        [Theory]
+        [InlineData("WITH cte as (select a from t) select * from cte", "WITH cte AS (SELECT [a] FROM [tp_t]) SELECT * FROM [cte];")]
+        [InlineData("WITH cte as (select a from t), cte2 as (select b from t) select * from cte2", "WITH cte AS (SELECT [a] FROM [tp_t]), cte2 AS (SELECT [b] FROM [tp_t]) SELECT * FROM [cte2];")]
+        [InlineData("WITH cte as (select a from t union all select b from t) select * from cte", "WITH cte AS (SELECT [a] FROM [tp_t] UNION ALL SELECT [b] FROM [tp_t]) SELECT * FROM [cte];")]
+        public void ShouldParseCte(string sql, string expectedSql)
+        {
+            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            Assert.True(result);
+            Assert.Equal(expectedSql, FormatSql(rawQuery));
+        }
     }
 }
