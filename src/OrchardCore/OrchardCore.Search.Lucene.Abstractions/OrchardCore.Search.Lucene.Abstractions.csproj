@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>OrchardCore.Search.Lucene.Abstractions</RootNamespace>
+    <RootNamespace>OrchardCore.Search.Lucene</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Lucene Abstractions</Title>
     <Description>$(OCCMSDescription)
