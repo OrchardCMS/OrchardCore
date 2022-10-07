@@ -384,7 +384,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/MZole"><img src="https://avatars.githubusercontent.com/u/99020631?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Zoltán Máté</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=MZole" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/vahpetr"><img src="https://avatars.githubusercontent.com/u/10128393?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Vasilev Pyotr</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=vahpetr" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/aderderian"><img src="https://avatars.githubusercontent.com/u/868165?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Arra Derderian</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=aderderian" title="Code">💻</a></td>
-    <td align="center"><a href="https://www.crestapps.com/"><img src="https://avatars.githubusercontent.com/u/24724371?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mike Alhayek</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=MikeAlhayek" title="Code">💻</a></td>
+    <td align="center"><a href="https://www.crestapps.com/"><img src="https://avatars.githubusercontent.com/u/24724371?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mike Alhayek</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=MikeAlhayek" title="Code">💻</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=MikeAlhayek" title="Documentation">📖</a></td>
   </tr>
 </table>
 
