@@ -9,7 +9,6 @@ using OrchardCore.Autoroute.Core.Services;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Lists.Models;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Tests.Apis.Context;
@@ -75,8 +74,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                 await context.Client.PostAsJsonAsync("api/content", context.BlogPost);
 
                 // Test
-                var shellScope = await BlogPostApiControllerContext.ShellHost.GetScopeAsync(context.TenantName);
-                await shellScope.UsingAsync(async scope =>
+                await context.UsingTenantScopeAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
                     var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
@@ -253,8 +251,8 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                 // Test
                 Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
                 Assert.Contains("Your permalink is already in use.", problemDetails.Detail);
-                var shellScope = await BlogPostApiControllerContext.ShellHost.GetScopeAsync(context.TenantName);
-                await shellScope.UsingAsync(async scope =>
+
+                await context.UsingTenantScopeAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
                     var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
@@ -308,14 +306,13 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                 var publishedContentItem = await content.Content.ReadAsAsync<ContentItem>();
 
                 // Test
-                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
                 var blogPostContentItemIds = new List<string>
                     {
                         context.BlogPost.ContentItemId,
                         publishedContentItem.ContentItemId
                     };
 
-                await shellScope.UsingAsync(async scope =>
+                await context.UsingTenantScopeAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
                     var newAutoroutePartIndex = await session

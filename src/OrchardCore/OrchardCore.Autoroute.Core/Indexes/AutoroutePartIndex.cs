@@ -55,8 +55,8 @@ namespace OrchardCore.Autoroute.Core.Indexes
     public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<ContentItem> _itemRemoved = new HashSet<ContentItem>();
-        private readonly HashSet<string> _partRemoved = new HashSet<string>();
+        private readonly HashSet<ContentItem> _itemRemoved = new();
+        private readonly HashSet<string> _partRemoved = new();
         private IContentDefinitionManager _contentDefinitionManager;
         private IContentManager _contentManager;
 
@@ -93,7 +93,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
 
                 // Search for this part.
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-                if (!contentTypeDefinition.Parts.Any(ctpd => ctpd.Name == nameof(AutoroutePart)))
+                if (contentTypeDefinition != null && !contentTypeDefinition.Parts.Any(ctpd => ctpd.Name == nameof(AutoroutePart)))
                 {
                     context.ContentItem.Remove<AutoroutePart>();
                     _partRemoved.Add(context.ContentItem.ContentItemId);
@@ -126,7 +126,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
                     var partRemoved = _partRemoved.Contains(contentItem.ContentItemId);
 
                     var part = contentItem.As<AutoroutePart>();
-                    if (!partRemoved && (part == null || String.IsNullOrEmpty(part.Path)))
+                    if (!partRemoved && String.IsNullOrEmpty(part?.Path))
                     {
                         return null;
                     }
