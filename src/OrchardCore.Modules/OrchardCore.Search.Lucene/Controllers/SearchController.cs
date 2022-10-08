@@ -30,7 +30,7 @@ namespace OrchardCore.Search.Lucene.Controllers
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
-        private readonly ILuceneSearchQueryService _searchQueryService;
+        private readonly Abstractions.ILuceneSearchQueryService _searchQueryService;
         private readonly ISession _session;
         private readonly IStringLocalizer S;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
@@ -44,7 +44,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             LuceneIndexingService luceneIndexingService,
             LuceneIndexSettingsService luceneIndexSettingsService,
             LuceneAnalyzerManager luceneAnalyzerManager,
-            ILuceneSearchQueryService searchQueryService,
+            Abstractions.ILuceneSearchQueryService searchQueryService,
             ISession session,
             IStringLocalizer<SearchController> stringLocalizer,
             IEnumerable<IPermissionProvider> permissionProviders,
