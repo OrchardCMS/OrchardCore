@@ -17,7 +17,6 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -255,8 +254,6 @@ namespace OrchardCore.Setup.Services
                 {
                     context.Errors[key] = message;
                 }
-
-                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("JobTest", scope => Task.CompletedTask);
 
                 // Invoke modules to react to the setup event
                 var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();

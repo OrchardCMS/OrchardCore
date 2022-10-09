@@ -1,7 +1,10 @@
 @model AdminIndexViewModel
 @using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.Options
 @using OrchardCore.Environment.Shell
 @using OrchardCore.Environment.Shell.Models
+
+@inject IOptions<TenantsOptions> TenantsOptions
 
 @{
     var originalPathBase = Context.Features.Get<ShellContextFeature>().OriginalPathBase;
@@ -165,7 +168,7 @@
                                 {
                                     <a class="btn btn-info btn-sm setup" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)">@T["Setup"]</a>
                                 }
-                                @if (entry.ShellSettings.State == TenantState.Disabled || entry.ShellSettings.State == TenantState.Uninitialized)
+                                @if (TenantsOptions.Value.TenantRemovalAllowed && (entry.ShellSettings.State == TenantState.Disabled || entry.ShellSettings.State == TenantState.Uninitialized))
                                 {
                                     <a asp-action="Remove" asp-route-id="@entry.Name" class="btn btn-danger btn-sm remove" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Remove"]" data-message="@T["Are you sure you want to remove this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Remove"]</a>
                                 }
