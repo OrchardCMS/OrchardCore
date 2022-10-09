@@ -6,41 +6,47 @@ env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 jobs:
-  build_test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    name: Build & Test
+  windows-latest:
+    name: windows-latest
+    runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: "15"
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
-        include-prerelease: true
-    - name: Build
-      run: |
-        dotnet build --configuration Release --framework net6.0
-    - name: Unit Tests
-      run: |
-        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
-    - name: Functional Tests
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        cd test/OrchardCore.Tests.Functional
-        npm install
-        npm run cms:test
-        npm run mvc:test
-    - uses: actions/upload-artifact@v2
-      if: matrix.os == 'ubuntu-latest' && failure()
-      with:
-        name: functional-test-failure
-        path: |
-          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
-  
+      - uses: actions/checkout@v2
+      - name: Cache .nuke/temp, ~/.nuget/packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            .nuke/temp
+            ~/.nuget/packages
+          key: ${{ runner.os }}-${{ hashFiles('global.json', 'src/**/*.csproj', 'src/**/package.json') }}
+      - name: Run './build.cmd Compile Test Pack'
+        run: ./build.cmd Compile Test Pack
+      - uses: actions/upload-artifact@v1
+        with:
+          name: artifacts
+          path: artifacts
+  ubuntu-latest:
+    name: ubuntu-latest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache .nuke/temp, ~/.nuget/packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            .nuke/temp
+            ~/.nuget/packages
+          key: ${{ runner.os }}-${{ hashFiles('global.json', 'src/**/*.csproj', 'src/**/package.json') }}
+      - name: Run './build.cmd Compile Test Pack'
+        run: ./build.cmd Compile Test Pack
+      - uses: actions/upload-artifact@v1
+        with:
+          name: artifacts
+          path: artifacts
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: functional-test-failure
+          path: |
+            test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
+            src/OrchardCore.Cms.Web/App_Data/logs
+

@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31710.8
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -482,12 +482,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ArchiveLater", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search", "src\OrchardCore.Modules\OrchardCore.Search\OrchardCore.Search.csproj", "{7BDF280B-70B7-4AFC-A6F7-B5759DCA2A2C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{A688C3C5-933E-4E44-8291-42299BD7D5A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A688C3C5-933E-4E44-8291-42299BD7D5A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A688C3C5-933E-4E44-8291-42299BD7D5A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D78FE2C-4179-47F6-B28A-034868280197}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9D78FE2C-4179-47F6-B28A-034868280197}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D78FE2C-4179-47F6-B28A-034868280197}.Release|Any CPU.ActiveCfg = Release|Any CPU
