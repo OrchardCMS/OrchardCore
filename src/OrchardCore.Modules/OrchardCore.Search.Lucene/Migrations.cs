@@ -183,6 +183,18 @@ namespace OrchardCore.Search.Lucene
 
                             await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
 
+                            updateCmd = $"UPDATE {dialect.QuoteForTableName(table)} SET Content = REPLACE(content, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneSettingsDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneSettingsDeploymentStep, OrchardCore.Search.Lucene\"') WHERE [Type] = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
+
+                            await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
+
+                            updateCmd = $"UPDATE {dialect.QuoteForTableName(table)} SET Content = REPLACE(content, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneIndexResetDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneIndexResetDeploymentStep, OrchardCore.Search.Lucene\"') WHERE [Type] = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
+
+                            await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
+
+                            updateCmd = $"UPDATE {dialect.QuoteForTableName(table)} SET Content = REPLACE(content, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneIndexRebuildDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneIndexRebuildDeploymentStep, OrchardCore.Search.Lucene\"') WHERE [Type] = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
+
+                            await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
+
                             updateCmd = $"UPDATE {dialect.QuoteForTableName(table)} SET [Type] = 'OrchardCore.Search.Lucene.Model.LuceneIndexSettingsDocument, OrchardCore.Search.Lucene' WHERE [Type] = 'OrchardCore.Lucene.Model.LuceneIndexSettingsDocument, OrchardCore.Lucene'";
 
                             await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
