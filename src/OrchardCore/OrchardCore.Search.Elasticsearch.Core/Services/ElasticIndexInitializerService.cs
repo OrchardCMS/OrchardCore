@@ -71,14 +71,11 @@ namespace OrchardCore.Search.Elasticsearch
                 var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
                 foreach (var settings in elasticIndexSettings)
                 {
-                    if (await _elasticIndexManager.Exists(settings.IndexName))
+                    var result = await _elasticIndexManager.DeleteIndex(settings.IndexName);
+                    if (!result)
                     {
-                        var result = await _elasticIndexManager.DeleteIndex(settings.IndexName);
-                        if (!result)
-                        {
-                            _logger.LogError("Failed to remove the Elasticsearch index {IndexName}", settings.IndexName);
-                            context.ErrorMessage = S["Failed to remove the Elasticsearch index '{0}'.", settings.IndexName];
-                        }
+                        _logger.LogError("Failed to remove the Elasticsearch index {IndexName}", settings.IndexName);
+                        context.ErrorMessage = S["Failed to remove the Elasticsearch index '{0}'.", settings.IndexName];
                     }
                 }
             }
