@@ -161,7 +161,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (shellSettings.State != TenantState.Running)
             {
-                return BadRequest(S["You can only disable an Enabled tenant."]);
+                return BadRequest(S["You can only disable a Running tenant."]);
             }
 
             shellSettings.State = TenantState.Disabled;
