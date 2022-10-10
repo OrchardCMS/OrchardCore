@@ -135,106 +135,58 @@ internal class ShellDbTablesInfo : ISchemaBuilder
 
     public void RemoveMapIndexTables()
     {
-        try
+        foreach (var index in MapIndexTables)
         {
-            foreach (var index in MapIndexTables)
-            {
-                var indexTypeName = index.Type.Name;
-                var indexTable = TableNameConvention.GetIndexTable(index.Type, index.Collection);
+            var indexTypeName = index.Type.Name;
+            var indexTable = TableNameConvention.GetIndexTable(index.Type, index.Collection);
 
-                if (String.IsNullOrEmpty(Dialect.CascadeConstraintsString))
-                {
-                    DropForeignKey(indexTable, "FK_" + (index.Collection ?? "") + indexTypeName);
-                }
-
-                RemoveTable(indexTable);
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ThrowOnError)
+            if (String.IsNullOrEmpty(Dialect.CascadeConstraintsString))
             {
-                throw;
+                DropForeignKey(indexTable, "FK_" + (index.Collection ?? "") + indexTypeName);
             }
 
-            _logger.LogError(ex, "Failed to remove 'MapIndexTables'.");
+            RemoveTable(indexTable);
         }
     }
 
     public void RemoveReduceIndexTables()
     {
-        try
+        foreach (var index in ReduceIndexTables)
         {
-            foreach (var index in ReduceIndexTables)
-            {
-                var indexTable = TableNameConvention.GetIndexTable(index.Type, index.Collection);
-                var documentTable = TableNameConvention.GetDocumentTable(index.Collection);
+            var indexTable = TableNameConvention.GetIndexTable(index.Type, index.Collection);
+            var documentTable = TableNameConvention.GetDocumentTable(index.Collection);
 
-                var bridgeTable = indexTable + "_" + documentTable;
-                if (String.IsNullOrEmpty(Dialect.CascadeConstraintsString))
-                {
-                    DropForeignKey(bridgeTable, "FK_" + bridgeTable + "_Id");
-                    DropForeignKey(bridgeTable, "FK_" + bridgeTable + "_DocumentId");
-                }
-
-                RemoveTable(bridgeTable);
-                RemoveTable(indexTable);
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ThrowOnError)
+            var bridgeTable = indexTable + "_" + documentTable;
+            if (String.IsNullOrEmpty(Dialect.CascadeConstraintsString))
             {
-                throw;
+                DropForeignKey(bridgeTable, "FK_" + bridgeTable + "_Id");
+                DropForeignKey(bridgeTable, "FK_" + bridgeTable + "_DocumentId");
             }
 
-            _logger.LogError(ex, "Failed to remove 'ReduceIndexTables'.");
+            RemoveTable(bridgeTable);
+            RemoveTable(indexTable);
         }
     }
 
     public void RemoveDocumentTables()
     {
-        try
+        // Always try to remove the main 'Document' table that may have been
+        // auto created on 'YesSql' side, even if no document was persisted.
+        DocumentTables.Add(TableNameConvention.GetDocumentTable(String.Empty));
+
+        foreach (var name in DocumentTables)
         {
-            // Always try to remove the main 'Document' table that may have been
-            // auto created on 'YesSql' side, even if no document was persisted.
-            DocumentTables.Add(TableNameConvention.GetDocumentTable(String.Empty));
-
-            foreach (var name in DocumentTables)
-            {
-                RemoveTable(name);
-            }
-
-            RemoveTable(DbBlockIdGenerator.TableName);
+            RemoveTable(name);
         }
-        catch (Exception ex)
-        {
-            if (ThrowOnError)
-            {
-                throw;
-            }
 
-            _logger.LogError(ex, "Failed to remove 'DocumentTables'.");
-        }
+        RemoveTable(DbBlockIdGenerator.TableName);
     }
 
     public void RemoveTables()
     {
-        try
+        foreach (var name in Tables)
         {
-            foreach (var name in Tables)
-            {
-                RemoveTable(name);
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ThrowOnError)
-            {
-                throw;
-            }
-
-            _logger.LogError(ex, "Failed to remove 'Tables'.");
+            RemoveTable(name);
         }
     }
 
