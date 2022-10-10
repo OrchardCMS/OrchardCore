@@ -221,9 +221,11 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         }
 
         [Theory]
-        [InlineData("WITH cte as (select a from t) select * from cte", "WITH cte AS (SELECT [a] FROM [tp_t]) SELECT * FROM [cte];")]
-        [InlineData("WITH cte as (select a from t), cte2 as (select b from t) select * from cte2", "WITH cte AS (SELECT [a] FROM [tp_t]), cte2 AS (SELECT [b] FROM [tp_t]) SELECT * FROM [cte2];")]
-        [InlineData("WITH cte as (select a from t union all select b from t) select * from cte", "WITH cte AS (SELECT [a] FROM [tp_t] UNION ALL SELECT [b] FROM [tp_t]) SELECT * FROM [cte];")]
+        [InlineData("with cte as (select a from t) select * from cte", "WITH cte AS (SELECT [a] FROM [tp_t]) SELECT * FROM [cte];")]
+        [InlineData("with cte as (select a from t), cte2 as (select b from t) select * from cte2", "WITH cte AS (SELECT [a] FROM [tp_t]), cte2 AS (SELECT [b] FROM [tp_t]) SELECT * FROM [cte2];")]
+        [InlineData("with cte as (select a from t union all select b from t) select * from cte", "WITH cte AS (SELECT [a] FROM [tp_t] UNION ALL SELECT [b] FROM [tp_t]) SELECT * FROM [cte];")]
+        [InlineData("with cte1(abc, def) as (select id as abc, id as def from t), cte2(ghi,jkl) as (select abc as ghi, def as jkl from cte1) select ghi, jkl from cte2", "WITH cte1(abc, def) AS (SELECT [id] AS abc, [id] AS def FROM [tp_t]), cte2(ghi, jkl) AS (SELECT [abc] AS ghi, [def] AS jkl FROM [cte1]) SELECT [ghi], [jkl] FROM [cte2];")]
+        [InlineData("with test(test) as (select a as test from t) select test from test", "WITH test(test) AS (SELECT [a] AS test FROM [tp_t]) SELECT [test] FROM [test];")]
         public void ShouldParseCte(string sql, string expectedSql)
         {
             var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);

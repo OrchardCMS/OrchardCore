@@ -13,7 +13,7 @@ namespace OrchardCore.Queries.Sql
         private IDictionary<string, object> _parameters;
         private ISqlDialect _dialect;
         private string _tablePrefix;
-        private HashSet<string> _aliases;
+        private HashSet<string> _tableAliases;
         private HashSet<string> _ctes;
         private ParseTree _tree;
         private static LanguageData language = new LanguageData(new SqlGrammar());
@@ -80,6 +80,7 @@ namespace OrchardCore.Queries.Sql
         private string Evaluate()
         {
             PopulateAliases(_tree);
+            PopulateCteNames(_tree);
             var statementList = _tree.Root;
 
             var statementsBuilder = new StringBuilder();
@@ -119,23 +120,26 @@ namespace OrchardCore.Queries.Sql
             // In order to determine if an Id is a table name or an alias, we
             // analyze every Alias and store the value.
 
-            _aliases = new HashSet<string>();
+            _tableAliases = new HashSet<string>();
+
+            for (var i = 0; i < tree.Tokens.Count; i++)
+            {
+                if (tree.Tokens[i].Terminal.Name == "TableAlias")
+                {
+                    _tableAliases.Add(tree.Tokens[i].ValueString);
+                }
+            }
+        }
+
+        private void PopulateCteNames(ParseTree tree)
+        {
             _ctes = new HashSet<string>();
 
             for (var i = 0; i < tree.Tokens.Count; i++)
             {
-                if (tree.Tokens[i].Terminal.Name == "AS")
+                if (tree.Tokens[i].Terminal.Name == "CTE")
                 {
-                    var alias = tree.Tokens[i + 1].ValueString;
-                    if (alias != "(")
-                    {
-                        _aliases.Add(tree.Tokens[i + 1].ValueString);
-                    }
-                    else
-                    {
-                        var cte = tree.Tokens[i - 1].ValueString;
-                        _ctes.Add(cte);
-                    }
+                    _ctes.Add(tree.Tokens[i].ValueString);
                 }
             }
         }
@@ -672,7 +676,7 @@ namespace OrchardCore.Queries.Sql
         {
             for (var i = 0; i < id.ChildNodes.Count; i++)
             {
-                if (i == 0 && id.ChildNodes.Count > 1 && !_aliases.Contains(id.ChildNodes[i].Token.ValueString))
+                if (i == 0 && id.ChildNodes.Count > 1 && !_tableAliases.Contains(id.ChildNodes[i].Token.ValueString))
                 {
                     _builder.Append(_dialect.QuoteForTableName(_tablePrefix + id.ChildNodes[i].Token.ValueString));
                 }
@@ -683,7 +687,7 @@ namespace OrchardCore.Queries.Sql
                         _builder.Append(".");
                     }
 
-                    if (_aliases.Contains(id.ChildNodes[i].Token.ValueString))
+                    if (_tableAliases.Contains(id.ChildNodes[i].Token.ValueString))
                     {
                         _builder.Append(id.ChildNodes[i].Token.ValueString);
                     }
@@ -699,7 +703,7 @@ namespace OrchardCore.Queries.Sql
         {
             for (var i = 0; i < id.ChildNodes.Count; i++)
             {
-                if (i == 0 && !_aliases.Contains(id.ChildNodes[i].Token.ValueString) && !_ctes.Contains(id.ChildNodes[i].Token.ValueString))
+                if (i == 0 && !_tableAliases.Contains(id.ChildNodes[i].Token.ValueString) && !_ctes.Contains(id.ChildNodes[i].Token.ValueString))
                 {
                     _builder.Append(_dialect.QuoteForTableName(_tablePrefix + id.ChildNodes[i].Token.ValueString));
                 }
@@ -800,19 +804,26 @@ namespace OrchardCore.Queries.Sql
             builder.Append("WITH ");
             for (var i = 0; i < cteStatement.ChildNodes[1].ChildNodes.Count; i++)
             {
+                var cte = cteStatement.ChildNodes[1].ChildNodes[i];
                 if (i > 0)
                 {
                     builder.Append(", ");
                 }
-                var cte = cteStatement.ChildNodes[1].ChildNodes[i];
+                
                 var expressionName = cte.ChildNodes[0].Token.ValueString;
+                var optionalColumns = cte.ChildNodes[1];
                 builder.Append(expressionName);
-                if (cte.ChildNodes[1].ChildNodes.Count > 0)
+                if (optionalColumns.ChildNodes.Count > 0)
                 {
+                    var columns = optionalColumns.ChildNodes[0].ChildNodes;
                     builder.Append("(");
-                    foreach (var column in cte.ChildNodes[1].ChildNodes)
+                    for (var j = 0; j < columns.Count; j++)
                     {
-                        builder.Append(column.Token.ValueString);
+                        if (j > 0)
+                        {
+                            builder.Append(", ");
+                        }
+                        builder.Append(columns[j].Token.ValueString);
                     }
                     builder.Append(")");
                 }
@@ -824,13 +835,13 @@ namespace OrchardCore.Queries.Sql
                     var unionClauseOpt = unionStatement.ChildNodes[1];
                     builder.Append(EvaluateSelectStatement(selectStatement));
 
-                    for (var j = 0; j < unionClauseOpt.ChildNodes.Count; j++)
+                    for (var k = 0; k < unionClauseOpt.ChildNodes.Count; k++)
                     {
-                        if (j == 0)
+                        if (k == 0)
                         {
                             builder.Append(" ");
                         }
-                        var term = unionClauseOpt.ChildNodes[j].Term;
+                        var term = unionClauseOpt.ChildNodes[k].Term;
                         builder.Append(term).Append(" ");
                     }
                 }

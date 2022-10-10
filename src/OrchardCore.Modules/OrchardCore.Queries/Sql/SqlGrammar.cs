@@ -32,14 +32,17 @@ namespace OrchardCore.Queries.Sql
             var UNION = ToTerm("UNION");
             var ALL = ToTerm("ALL");
             var WITH = ToTerm("WITH");
+            var CTE = TerminalFactory.CreateSqlExtIdentifier(this, "CTE");
+            var ColumnAlias = TerminalFactory.CreateSqlExtIdentifier(this, "ColumnAlias");
+            var TableAlias = TerminalFactory.CreateSqlExtIdentifier(this, "TableAlias");
 
             //Non-terminals
             var Id = new NonTerminal("Id");
             var statement = new NonTerminal("stmt");
             var selectStatement = new NonTerminal("selectStatement");
             var idlist = new NonTerminal("idlist");
-            var aliaslist = new NonTerminal("aliaslist");
-            var aliasItem = new NonTerminal("aliasItem");
+            var tableAliasList = new NonTerminal("tableAliasList");
+            var tableAliasItem = new NonTerminal("tableAliasItem");
             var orderList = new NonTerminal("orderList");
             var orderMember = new NonTerminal("orderMember");
             var orderDirOptional = new NonTerminal("orderDirOpt");
@@ -58,7 +61,7 @@ namespace OrchardCore.Queries.Sql
             var columnItem = new NonTerminal("columnItem");
             var columnSource = new NonTerminal("columnSource");
             var asOpt = new NonTerminal("asOpt");
-            var aliasOpt = new NonTerminal("aliasOpt");
+            var tableAliasOpt = new NonTerminal("tableAliasOpt");
             var tuple = new NonTerminal("tuple");
             var joinChainOpt = new NonTerminal("joinChainOpt");
             var joinStatement = new NonTerminal("joinStatement");
@@ -93,6 +96,10 @@ namespace OrchardCore.Queries.Sql
             var cteList = new NonTerminal("cteList");
             var cte = new NonTerminal("cte");
             var cteColumnListOpt = new NonTerminal("cteColumnListOpt");
+            var columnNames = new NonTerminal("columnNames");
+            var IdColumn = new NonTerminal("IdColumn");
+            var columnAliasOpt = new NonTerminal("columnAliasOpt");
+            var IdTable = new NonTerminal("IdTable");
 
             //BNF Rules
             this.Root = statementList;
@@ -104,22 +111,27 @@ namespace OrchardCore.Queries.Sql
             optionalSemicolon.Rule = Empty | ";";
             statementList.Rule = MakePlusRule(statementList, statementLine);
 
-            cteColumnListOpt.Rule = Empty | "(" + MakePlusRule(cteColumnListOpt, comma, Id_simple) + ")";
-            cte.Rule = Id_simple + cteColumnListOpt + AS + "(" + unionStatementList + ")";
+            columnNames.Rule = MakePlusRule(columnNames, comma, Id_simple);
+            cteColumnListOpt.Rule = Empty | "(" + columnNames + ")";
+            cte.Rule = CTE + cteColumnListOpt + AS + "(" + unionStatementList + ")";
             cteList.Rule = MakePlusRule(cteList, comma, cte);
             withClauseOpt.Rule = Empty | WITH + cteList;
 
             statement.Rule = withClauseOpt + selectStatement;
 
             Id.Rule = MakePlusRule(Id, dot, Id_simple);
+            IdTable.Rule = MakePlusRule(IdTable, dot, TableAlias);
 
-            aliasOpt.Rule = Empty | asOpt + Id;
+            tableAliasOpt.Rule = Empty | asOpt + IdTable;
+            IdColumn.Rule = MakePlusRule(IdColumn, dot, ColumnAlias);
+            columnAliasOpt.Rule = Empty | asOpt + IdColumn;
+
             asOpt.Rule = Empty | AS;
 
             idlist.Rule = MakePlusRule(idlist, comma, columnSource);
 
-            aliaslist.Rule = MakePlusRule(aliaslist, comma, aliasItem);
-            aliasItem.Rule = Id + aliasOpt;
+            tableAliasList.Rule = MakePlusRule(tableAliasList, comma, tableAliasItem);
+            tableAliasItem.Rule = Id + tableAliasOpt;
 
             //Create Index
             orderList.Rule = MakePlusRule(orderList, comma, orderMember);
@@ -132,13 +144,13 @@ namespace OrchardCore.Queries.Sql
             optionalSelectRestriction.Rule = Empty | "ALL" | "DISTINCT";
             selectorList.Rule = columnItemList | "*";
             columnItemList.Rule = MakePlusRule(columnItemList, comma, columnItem);
-            columnItem.Rule = columnSource + aliasOpt;
+            columnItem.Rule = columnSource + columnAliasOpt;
 
             columnSource.Rule = funCall + overClauseOpt | Id;
-            fromClauseOpt.Rule = Empty | FROM + aliaslist + joinChainOpt;
+            fromClauseOpt.Rule = Empty | FROM + tableAliasList + joinChainOpt;
 
             joinChainOpt.Rule = MakeStarRule(joinChainOpt, joinStatement);
-            joinStatement.Rule = joinKindOpt + JOIN + aliaslist + ON + joinConditions;
+            joinStatement.Rule = joinKindOpt + JOIN + tableAliasList + ON + joinConditions;
             joinConditions.Rule = MakePlusRule(joinConditions, AND, joinCondition);
             joinCondition.Rule = joinConditionArgument + "=" + joinConditionArgument;
             joinConditionArgument.Rule = Id | boolean | string_literal | number | parameter;
@@ -193,7 +205,7 @@ namespace OrchardCore.Queries.Sql
             // Transient non-terminals cannot have more than one non-punctuation child nodes.
             // Instead, we set flag InheritPrecedence on binOp , so that it inherits precedence value from it's children, and this precedence is used
             // in conflict resolution when binOp node is sitting on the stack
-            base.MarkTransient(term, asOpt, aliasOpt, statementLine, expression, unOp, tuple);
+            base.MarkTransient(term, asOpt, tableAliasOpt, columnAliasOpt, statementLine, expression, unOp, tuple);
             binOp.SetFlag(TermFlags.InheritPrecedence);
         }
     }
