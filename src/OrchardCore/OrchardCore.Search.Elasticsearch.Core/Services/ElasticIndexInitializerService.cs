@@ -69,7 +69,6 @@ namespace OrchardCore.Search.Elasticsearch
             try
             {
                 var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
-
                 foreach (var settings in elasticIndexSettings)
                 {
                     if (await _elasticIndexManager.Exists(settings.IndexName))
