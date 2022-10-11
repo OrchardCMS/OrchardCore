@@ -48,6 +48,7 @@ public class ScheduledArchivingBackgroundTask : IBackgroundTask
             if (part != null)
             {
                 part.ScheduledArchiveUtc = null;
+                part.Apply();
             }
 
             _logger.LogDebug("Archiving scheduled content item {ContentItemId}.", contentItem.ContentItemId);

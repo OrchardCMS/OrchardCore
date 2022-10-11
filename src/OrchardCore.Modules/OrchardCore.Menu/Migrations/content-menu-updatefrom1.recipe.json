@@ -57,8 +57,7 @@
                   "Required": true,
                   "DisplayAllContentTypes": true,
                   "DisplayedContentTypes": []
-                },
-                "ContentIndexSettings": {}
+                }
               }
             }
           ]

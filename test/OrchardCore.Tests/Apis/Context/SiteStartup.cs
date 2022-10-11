@@ -57,7 +57,7 @@ namespace OrchardCore.Tests.Apis.Context
 
             public ModuleNamesProvider()
             {
-                var assembly = Assembly.Load(new AssemblyName(typeof(Cms.Web.Startup).Assembly.GetName().Name));
+                var assembly = Assembly.Load(new AssemblyName(typeof(Program).Assembly.GetName().Name));
                 _moduleNames = assembly.GetCustomAttributes<ModuleNameAttribute>().Select(m => m.Name).ToArray();
             }
 

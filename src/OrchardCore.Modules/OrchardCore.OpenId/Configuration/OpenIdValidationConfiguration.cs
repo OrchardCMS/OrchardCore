@@ -105,6 +105,7 @@ namespace OrchardCore.OpenId.Configuration
             if (settings.Authority != null)
             {
                 options.Issuer = settings.Authority;
+                options.MetadataAddress = settings.MetadataAddress;
                 options.Audiences.Add(settings.Audience);
 
                 // Note: OpenIddict 3.0 only accepts tokens issued with a non-empty token type (e.g "at+jwt")
