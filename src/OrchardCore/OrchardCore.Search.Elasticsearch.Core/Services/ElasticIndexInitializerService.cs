@@ -79,7 +79,7 @@ namespace OrchardCore.Search.Elasticsearch
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
                 _logger.LogError(ex, "Failed to remove Elasticsearch indices");
                 context.ErrorMessage = S["Failed to remove Elasticsearch indices."];
