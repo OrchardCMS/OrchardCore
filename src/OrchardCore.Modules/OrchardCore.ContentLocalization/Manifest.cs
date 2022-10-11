@@ -13,7 +13,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.ContentLocalization",
     Name = "Content Localization",
     Description = "Provides a part that allows to localize content items.",
-    Dependencies = new[] { "OrchardCore.ContentTypes", "OrchardCore.Localization" },
+    Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Localization" },
     Category = "Internationalization"
 )]
 

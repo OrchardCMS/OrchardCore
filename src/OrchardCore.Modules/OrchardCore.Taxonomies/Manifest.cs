@@ -11,7 +11,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Taxonomies",
     Name = "Taxonomies",
     Description = "The taxonomies module provides a way to categorize content items.",
-    Dependencies = new[] { "OrchardCore.ContentTypes" },
+    Dependencies = new[] { "OrchardCore.Contents" },
     Category = "Content Management"
 )]
 

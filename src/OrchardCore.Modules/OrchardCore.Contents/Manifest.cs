@@ -13,6 +13,7 @@ using OrchardCore.Modules.Manifest;
     Description = "The contents module enables the edition and rendering of content items.",
     Dependencies = new[]
     {
+        "OrchardCore.ContentTypes",
         "OrchardCore.Settings",
         "OrchardCore.Liquid"
     },

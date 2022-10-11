@@ -2,8 +2,11 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentTypes.Controllers;
 using OrchardCore.ContentTypes.Deployment;
 using OrchardCore.ContentTypes.Editors;
@@ -33,6 +36,8 @@ namespace OrchardCore.ContentTypes
         {
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+            services.TryAddScoped<IContentDefinitionManager, ContentDefinitionManager>();
+            services.TryAddScoped<IContentDefinitionStore, DatabaseContentDefinitionStore>();
             services.AddScoped<IContentDefinitionService, ContentDefinitionService>();
             services.AddScoped<IStereotypesProvider, DefaultStereotypesProvider>();
             services.AddScoped<IStereotypeService, StereotypeService>();

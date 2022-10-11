@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentManagement.Cache;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Cache;
@@ -15,8 +14,6 @@ namespace OrchardCore.ContentManagement
         public static IServiceCollection AddContentManagement(this IServiceCollection services)
         {
             services.AddScoped<ICacheContextProvider, ContentDefinitionCacheContextProvider>();
-            services.TryAddScoped<IContentDefinitionManager, ContentDefinitionManager>();
-            services.TryAddScoped<IContentDefinitionStore, DatabaseContentDefinitionStore>();
             services.TryAddScoped<IContentManager, DefaultContentManager>();
             services.TryAddScoped<IContentManagerSession, DefaultContentManagerSession>();
             services.AddSingleton<IIndexProvider, ContentItemIndexProvider>();
