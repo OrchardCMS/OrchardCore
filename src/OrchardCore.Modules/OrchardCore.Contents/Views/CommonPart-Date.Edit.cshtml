@@ -6,7 +6,7 @@
     <label asp-for="LocalDateTime" class="@Orchard.GetLabelCssClasses()">@T["Created"]</label>
     <div class="@Orchard.GetEndCssClasses()">
         <div class="row">
-            <div class="@Orchard.GetControledWithCssClasses()">
+            <div class="@Orchard.GetLimitedWidthCssClasses()">
                 <input asp-for="LocalDateTime" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control" type="datetime-local" />
                 <span asp-validation-for="LocalDateTime"></span>
             </div>

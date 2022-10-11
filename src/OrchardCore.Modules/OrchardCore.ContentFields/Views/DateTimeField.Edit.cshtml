@@ -9,7 +9,7 @@
     <label asp-for="LocalDateTime" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         <div class="row">
-            <div class="@Orchard.GetControledWithCssClasses()">
+            <div class="@Orchard.GetLimitedWidthCssClasses()">
                 <input asp-for="LocalDateTime" type="datetime-local" class="form-control content-preview-select" required="@settings.Required" />
             </div>
         </div>

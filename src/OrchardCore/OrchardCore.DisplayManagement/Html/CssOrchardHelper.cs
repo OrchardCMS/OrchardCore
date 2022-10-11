@@ -5,16 +5,46 @@ namespace OrchardCore;
 
 public static class CssOrchardHelper
 {
-    public static IList<string> GetLabelCssClassList(this IOrchardHelper helper, params string[] additionalClasses)
+    public static string GetLimitedWidthCssClasses(this IOrchardHelper _, params string[] additionalClasses)
     {
-        return new List<string>(helper.GetStartCssClassList(additionalClasses))
+        return String.Join(' ', GetLimitedWidthCssClassList(additionalClasses));
+    }
+
+    public static string GetLabelCssClasses(this IOrchardHelper _, params string[] additionalClasses)
+    {
+        return String.Join(' ', GetLabelCssClassList(additionalClasses));
+    }
+
+    public static string GetStartCssClasses(this IOrchardHelper _, params string[] additionalClasses)
+    {
+        return String.Join(' ', GetStartCssClassList(additionalClasses));
+    }
+
+    public static string GetEndCssClasses(this IOrchardHelper _, params string[] additionalClasses)
+    {
+        return String.Join(' ', GetEndCssClassList(additionalClasses));
+    }
+
+    public static string GetEndCssClasses(this IOrchardHelper _, bool withOffset, params string[] additionalClasses)
+    {
+        return String.Join(' ', GetEndCssClassList(withOffset, additionalClasses));
+    }
+
+    public static string GetOffsetCssClasses(this IOrchardHelper _, params string[] additionalClasses)
+    {
+        return String.Join(' ', GetOffsetCssClassList(additionalClasses));
+    }
+
+    private static List<string> GetLabelCssClassList(params string[] additionalClasses)
+    {
+        return new List<string>(GetStartCssClassList(additionalClasses))
         {
             "col-form-label",
             "text-lg-end",
         };
     }
 
-    public static IList<string> GetControledWithCssClassList(this IOrchardHelper helper, params string[] additionalClasses)
+    private static List<string> GetLimitedWidthCssClassList(params string[] additionalClasses)
     {
         return new List<string>(additionalClasses)
         {
@@ -24,7 +54,7 @@ public static class CssOrchardHelper
         };
     }
 
-    public static IList<string> GetStartCssClassList(this IOrchardHelper _, params string[] additionalClasses)
+    private static List<string> GetStartCssClassList(params string[] additionalClasses)
     {
         return new List<string>(additionalClasses)
         {
@@ -33,7 +63,7 @@ public static class CssOrchardHelper
         };
     }
 
-    public static IList<string> GetEndCssClassList(this IOrchardHelper _, params string[] additionalClasses)
+    private static List<string> GetEndCssClassList(params string[] additionalClasses)
     {
         return new List<string>(additionalClasses)
         {
@@ -42,67 +72,24 @@ public static class CssOrchardHelper
         };
     }
 
-    public static IList<string> GetEndCssClassList(this IOrchardHelper helper, bool withOffset, params string[] additionalClasses)
+    private static List<string> GetEndCssClassList(bool withOffset, params string[] additionalClasses)
     {
-        var values = new List<string>(helper.GetEndCssClassList(additionalClasses));
+        var values = GetEndCssClassList(additionalClasses);
 
         if (withOffset)
         {
-            values.AddRange(helper.GetOffsetCssClassList());
+            values.AddRange(GetOffsetCssClassList());
         }
 
-        return helper.GetEndCssClassList(values.ToArray());
+        return values;
     }
 
-    public static IList<string> GetOffsetCssClassList(this IOrchardHelper _, params string[] additionalClasses)
+    private static List<string> GetOffsetCssClassList(params string[] additionalClasses)
     {
         return new List<string>(additionalClasses)
         {
             "offset-lg-2",
             "offset-xl-3"
         };
-    }
-
-    public static IList<string> GetValidationErrorCssClassList(this IOrchardHelper _, params string[] additionalClasses)
-    {
-        return new List<string>(additionalClasses)
-        {
-            "has-validation-error"
-        };
-    }
-
-    public static string GetControledWithCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
-    {
-        return String.Join(' ', helper.GetControledWithCssClassList(additionalClasses));
-    }
-
-    public static string GetLabelCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
-    {
-        return String.Join(' ', helper.GetLabelCssClassList(additionalClasses));
-    }
-
-    public static string GetStartCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
-    {
-        return String.Join(' ', helper.GetStartCssClassList(additionalClasses));
-    }
-
-    public static string GetEndCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
-    {
-        return String.Join(' ', helper.GetEndCssClassList(additionalClasses));
-    }
-
-    public static string GetEndCssClasses(this IOrchardHelper helper, bool withOffset, params string[] additionalClasses)
-    {
-        return String.Join(' ', helper.GetEndCssClassList(withOffset, additionalClasses));
-    }
-
-    public static string GetOffsetCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
-    {
-        return String.Join(' ', helper.GetOffsetCssClassList(additionalClasses));
-    }
-
-    public static string GetValidationErrorCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
-    {
-        return String.Join(' ', helper.GetValidationErrorCssClassList(additionalClasses));
     }
 }

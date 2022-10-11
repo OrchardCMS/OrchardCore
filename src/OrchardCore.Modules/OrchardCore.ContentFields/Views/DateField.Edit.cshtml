@@ -10,7 +10,7 @@
     <label asp-for="Value" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         <div class="row">
-            <div class="@Orchard.GetControledWithCssClasses()">
+            <div class="@Orchard.GetLimitedWidthCssClasses()">
                 <input asp-for="Value" type="date" class="form-control content-preview-select" required="@settings.Required" />
             </div>
         </div>

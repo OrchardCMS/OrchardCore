@@ -12,7 +12,7 @@
     <label asp-for="Value" class="@Orchard.GetLabelCssClasses()">@name</label>
     <div class="@Orchard.GetEndCssClasses()">
         <div class="row">
-            <div class="@Orchard.GetControledWithCssClasses()">
+            <div class="@Orchard.GetLimitedWidthCssClasses()">
                 <div class="input-group">
                     @if (settings.Minimum.HasValue)
                     {
