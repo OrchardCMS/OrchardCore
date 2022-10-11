@@ -114,13 +114,13 @@
                                         {
                                             @if (feature.IsEnabled)
                                             {
-                                                <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automaticlly enabled based on dependency and cannot be manually disabled."]">
+                                                <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automatically enabled based on dependency and cannot be manually disabled."]">
                                                     <button class="btn btn-danger btn-sm" disabled>@T["Disable"]</button>
                                                 </div>
                                             }
                                             else
                                             {
-                                                <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automaticlly disabled based on dependency and cannot be manually enabled."]">
+                                                <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automatically disabled based on dependency and cannot be manually enabled."]">
                                                     <button class="btn btn-primary btn-sm" disabled>@T["Enable"]</button>
                                                 </div>
                                             }
