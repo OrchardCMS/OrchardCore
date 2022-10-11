@@ -46,7 +46,7 @@
         {
             <div id="@vueElementId" class="tags" data-taxonomy-content-item-id="@Model.Taxonomy.ContentItemId" data-open="@open.ToString().ToLower()" data-leaves-only="@taxonomySettings.LeavesOnly.ToString().ToLower()" data-create-tag-error-message="@T["Error creating tag"]" data-all-tag-terms="@Model.TagTermEntries" data-create-tag-url="@createTagUrl">
 
-                <div class="w-lg-75 w-xxl-50">
+                <div class="w-100">
                     <input asp-for="TermContentItemIds" type="hidden" v-model="selectedTagTermsIds" />
 
                     <vue-multiselect v-model="selectedTagTerms"

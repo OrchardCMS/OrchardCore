@@ -10,8 +10,8 @@
 <div class="row mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Text)_FieldWrapper">
     <label asp-for="Text" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
-        <div id="@Html.IdFor(x => x.Text)_editor" asp-for="Text" dir="@culture.GetLanguageDirection()"></div>
-        <textarea asp-for="Text" style="min-height: 400px;" class="form-control" hidden>@Html.Raw(Model.Text)</textarea>
+        <div id="@Html.IdFor(x => x.Text)_editor" asp-for="Text" style="min-height: 400px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
+        <textarea asp-for="Text" hidden>@Html.Raw(Model.Text)</textarea>
         @if (!String.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
