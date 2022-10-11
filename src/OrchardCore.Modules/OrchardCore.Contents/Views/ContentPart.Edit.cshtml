@@ -1,26 +1,43 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.ContentManagement
+@using OrchardCore
 
 @{
     ContentPart contentPart = Model.ContentPart;
     ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
     var description = typePartDefinition.Description();
     var namedPart = typePartDefinition.PartDefinition.IsReusable() && typePartDefinition.Name != typePartDefinition.PartDefinition.Name;
+    var name = typePartDefinition.PartDefinition.Name.HtmlClassify();
 }
 
-@if (namedPart)
+@if (namedPart || typePartDefinition.Name == "BagPart" || typePartDefinition.Name == "FlowPart" || typePartDefinition.Name == "WidgetsListPart")
 {
-    <h5>
-        @typePartDefinition.DisplayName()
+    <div class="row content-part-wrapper content-part-wrapper-@name">
+        <div class="@Orchard.GetLabelCssClasses()">
+            @typePartDefinition.DisplayName()
 
-        @if (!String.IsNullOrEmpty(description))
+            @if (!String.IsNullOrEmpty(description))
+            {
+                <small class="form-text text-muted">@description</small>
+            }
+        </div>
+
+        <div class="@Orchard.GetEndCssClasses()">
+            @foreach (var shape in Model)
+            {
+                @await DisplayAsync(shape)
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="content-part-wrapper content-part-wrapper-@name">
+        @foreach (var shape in Model)
         {
-            <span class="hint dashed">@description</span>
+            @await DisplayAsync(shape)
+
         }
-    </h5>
-}
-@foreach (var shape in Model)
-{
-    @await DisplayAsync(shape)
+    </div>
 }
