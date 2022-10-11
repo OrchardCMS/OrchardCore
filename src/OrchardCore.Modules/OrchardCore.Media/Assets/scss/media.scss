@@ -1,18 +1,15 @@
-:root[data-theme='default'] {
+:root:not([data-theme='darkmode']) {
     // media variables
     @import "variables.scss";
-
-    // main basic layout 
+    // main basic layout
     @import "main-layout.scss";
-
     // vuejs components
     @import "upload-component.scss";
     @import "upload-list-component.scss";
     @import "media-items-grid-component.scss";
     @import "media-items-table-component.scss";
-    @import "pager-component.scss";  
-
-    // others   
+    @import "pager-component.scss";
+    // others
     @import "_navbar.scss";
     @import "treeview.scss";
     @import "drop-zone.scss";
@@ -20,22 +17,19 @@
     @import "modal-view.scss";
     @import "utils.scss";
 }
- 
+
 :root[data-theme='darkmode'] {
     // media variables
     @import "variables_dark.scss";
-
-    // main basic layout 
+    // main basic layout
     @import "main-layout.scss";
-
     // vuejs components
     @import "upload-component.scss";
     @import "upload-list-component.scss";
     @import "media-items-grid-component.scss";
     @import "media-items-table-component.scss";
-    @import "pager-component.scss";  
-
-    // others   
+    @import "pager-component.scss";
+    // others
     @import "_navbar.scss";
     @import "treeview.scss";
     @import "drop-zone.scss";
@@ -44,7 +38,7 @@
     @import "utils.scss";
 }
 
-[dir="rtl"]:root[data-theme='default'] #mediaApp, [dir="rtl"]:root[data-theme='darkmode'] #mediaApp {
+[dir="rtl"]:root:not([data-theme='darkmode']) #mediaApp, [dir="rtl"]:root[data-theme='darkmode'] #mediaApp {
     left: 0;
     right: 259px;
 }

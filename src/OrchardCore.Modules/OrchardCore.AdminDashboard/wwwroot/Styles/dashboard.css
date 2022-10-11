@@ -55,10 +55,10 @@
   padding-top: 12px;
 }
 
-:root[data-theme=default] .dashboard-wrapper .card .card-header {
+:root:not([data-theme=darkmode]) .dashboard-wrapper .card .card-header {
   background-color: #fff !important;
 }
-:root[data-theme=default] .dashboard-wrapper .card .card-footer {
+:root:not([data-theme=darkmode]) .dashboard-wrapper .card .card-footer {
   background-color: #fff !important;
 }
 

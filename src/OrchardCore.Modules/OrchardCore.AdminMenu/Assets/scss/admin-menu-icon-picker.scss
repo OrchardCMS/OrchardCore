@@ -1,4 +1,4 @@
-:root[data-theme='default'] {
+:root:not([data-theme='darkmode']) {
 
     @import "../../../../OrchardCore.Themes/TheAdmin/Assets/scss/modules/theme/default/_variables.scss";
     @import "../../node_modules/bootstrap/scss/functions";
@@ -10,16 +10,16 @@
             width: 100%;
             border: none;
         }
-    
+
         .iconpicker-items {
             min-height: 258px;
         }
-    
+
         .iconpicker-item {
             background-color: $body-bg;
         }
     }
-    
+
     .remove-icon, .sample-icon {
         width: 40px;
     }
@@ -39,16 +39,16 @@
             width: 100%;
             border: none;
         }
-    
+
         .iconpicker-items {
             min-height: 258px;
         }
-    
+
         .iconpicker-item {
             background-color: $body-bg;
         }
     }
-    
+
     .remove-icon, .sample-icon {
         width: 40px;
     }

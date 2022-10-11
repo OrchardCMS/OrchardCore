@@ -1,8 +1,8 @@
-:root[data-theme=default] pre, .audittrail-comment {
+:root:not([data-theme=darkmode]) pre, .audittrail-comment {
   font-family: var(--bs-font-sans-serif);
   white-space: pre-wrap;
   word-break: normal;
-}[dir]:root[data-theme=default] pre, [dir] .audittrail-comment {
+}[dir]:root:not([data-theme=darkmode]) pre, [dir] .audittrail-comment {
   margin-bottom: 0;
 }
 
