@@ -125,6 +125,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             string defaultTableAlias = query.GetTypeAlias(typeof(ContentItemIndex));
 
             IPredicateQuery predicateQuery = new PredicateQuery(
+                yesSqlConfiguration: session.Store.Configuration,
                 dialect: session.Store.Configuration.SqlDialect,
                 shellSettings: fieldContext.RequestServices.GetService<ShellSettings>(),
                 propertyProviders: fieldContext.RequestServices.GetServices<IIndexPropertyProvider>());
