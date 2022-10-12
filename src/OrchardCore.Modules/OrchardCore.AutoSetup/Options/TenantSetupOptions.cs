@@ -76,7 +76,7 @@ namespace OrchardCore.AutoSetup.Options
         public string RequestUrlPrefix { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the Feature Profile applied to the tenant. May be null or empty for no Profile
+        /// Gets or sets the name of the feature profile applied to the tenant. May be null or empty for no profile
         /// being selected.
         /// </summary>
         public string FeatureProfile { get; set; }

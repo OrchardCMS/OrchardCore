@@ -125,7 +125,7 @@ The _Feature Profile_ drop down will only be available if at least one Feature P
 
 A feature profile can also be set when creating a tenant via the web API.
 
-If you use [Auto Setup](../AutoSetup/README.md), you can specify the `FeatureProfile` property for tenants as well; see the Auto Setup documentation for more information.
+If you're using [Auto Setup](../AutoSetup/README.md), you can specify the `FeatureProfile` property for tenants as well; see the Auto Setup documentation for more information.
 
 ## Video
 
