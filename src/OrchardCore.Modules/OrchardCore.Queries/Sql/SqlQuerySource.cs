@@ -50,7 +50,7 @@ namespace OrchardCore.Queries.Sql
             var connection = _dbConnectionAccessor.CreateConnection();
             var dialect = _session.Store.Configuration.SqlDialect;
 
-            if (!SqlParser.TryParse(tokenizedQuery, dialect, _session.Store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
+            if (!SqlParser.TryParse(tokenizedQuery, _session.Store.Configuration, dialect, _session.Store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
                 sqlQueryResults.Items = new object[0];
                 connection.Dispose();

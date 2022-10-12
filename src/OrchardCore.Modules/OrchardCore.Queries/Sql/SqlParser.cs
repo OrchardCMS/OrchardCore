@@ -31,12 +31,13 @@ namespace OrchardCore.Queries.Sql
 
         private SqlParser(
             ParseTree tree,
-            IConfiguration _yesSqlConfiguration,
+            IConfiguration yesSqlConfiguration,
             ISqlDialect dialect,
             string tablePrefix,
             IDictionary<string, object> parameters)
         {
             _tree = tree;
+            _yesSqlConfiguration = yesSqlConfiguration;
             _dialect = dialect;
             _tablePrefix = tablePrefix;
             _parameters = parameters;
