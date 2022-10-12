@@ -19,4 +19,6 @@ public class YesSqlOptions
     public IContentSerializer ContentSerializer { get; set; }
 
     public string TablePrefixSeparator { get; set; } = "_";
+
+    public bool UseLegacyIdentityColumn { get; set; } = true;
 }
