@@ -85,7 +85,7 @@ namespace OrchardCore.Indexing.Services
             return Task.CompletedTask;
         }
 
-        private static async Task FlushAsync(ShellScope scope, IEnumerable<IndexingTask> tasks)
+        private async Task FlushAsync(ShellScope scope, IEnumerable<IndexingTask> tasks)
         {
             var localQueue = new List<IndexingTask>(tasks);
 
@@ -135,7 +135,7 @@ namespace OrchardCore.Indexing.Services
                         // Page delete statements to prevent the limits from IN sql statements
                         var pageSize = 100;
 
-                        var deleteCmd = $"delete from {dialect.QuoteForTableName(table)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
+                        var deleteCmd = $"delete from {dialect.QuoteForTableName(table, _store.Configuration.Schema)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
 
                         do
                         {
@@ -148,7 +148,7 @@ namespace OrchardCore.Indexing.Services
                             }
                         } while (ids.Any());
 
-                        var insertCmd = $"insert into {dialect.QuoteForTableName(table)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
+                        var insertCmd = $"insert into {dialect.QuoteForTableName(table, _store.Configuration.Schema)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
                         await transaction.Connection.ExecuteAsync(insertCmd, localQueue, transaction);
 
                         transaction.Commit();
@@ -176,7 +176,7 @@ namespace OrchardCore.Indexing.Services
                     var sqlBuilder = dialect.CreateBuilder(_store.Configuration.TablePrefix);
 
                     sqlBuilder.Select();
-                    sqlBuilder.Table(nameof(IndexingTask));
+                    sqlBuilder.Table(nameof(IndexingTask), alias: null, _store.Configuration.Schema);
                     sqlBuilder.Selector("*");
 
                     if (count > 0)
