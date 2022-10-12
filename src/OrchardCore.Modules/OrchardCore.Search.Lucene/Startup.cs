@@ -60,7 +60,7 @@ namespace OrchardCore.Search.Lucene
             services.AddSingleton<LuceneAnalyzerManager>();
             services.AddScoped<LuceneIndexingService>();
             services.AddScoped<IModularTenantEvents, LuceneIndexInitializerService>();
-            services.AddScoped<Abstractions.ILuceneSearchQueryService, LuceneSearchQueryService>();
+            services.AddScoped<ILuceneSearchQueryService, LuceneSearchQueryService>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
 

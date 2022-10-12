@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Lucene.Net.Search;
 
-namespace OrchardCore.Search.Lucene.Abstractions
+namespace OrchardCore.Search.Lucene
 {
     public interface ILuceneSearchQueryService
     {
