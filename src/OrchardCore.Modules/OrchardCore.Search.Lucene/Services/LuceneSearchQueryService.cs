@@ -4,7 +4,7 @@ using Lucene.Net.Search;
 
 namespace OrchardCore.Search.Lucene.Services
 {
-    public class LuceneSearchQueryService : ILuceneSearchQueryService
+    public class LuceneSearchQueryService : Abstractions.ILuceneSearchQueryService
     {
         private readonly LuceneIndexManager _luceneIndexManager;
 
