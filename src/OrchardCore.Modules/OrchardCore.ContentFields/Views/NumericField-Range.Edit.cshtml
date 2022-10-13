@@ -10,10 +10,10 @@
     string id = Html.IdFor(m => m.Value);
     string javascriptDecimalSeparator = CultureInfo.InvariantCulture.NumberFormat.NumberDecimalSeparator;
     string serverDecimalSeparator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
-    var fieldName = Model.PartFieldDefinition.Name;
+    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="mb-3 field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x.Value)_FieldWrapper">
+<div class="mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Value)_FieldWrapper">
     <div class="row">
         <div class="col-md-6 col-lg-4">
             <label asp-for="Value">@name</label>
@@ -43,7 +43,7 @@
         {
         <text>value = value.replace('@(javascriptDecimalSeparator)', '@(serverDecimalSeparator)'); </text>
         }
-            $('#' + id).val(value);
+        $('#' + id).val(value);
     }
 
     function numericFieldRangeSync(id, value) {
