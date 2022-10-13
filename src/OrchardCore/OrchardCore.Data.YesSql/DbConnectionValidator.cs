@@ -26,20 +26,17 @@ public class DbConnectionValidator : IDbConnectionValidator
     private static readonly string _shellDescriptorTypeColumnValue = new TypeService()[typeof(ShellDescriptor)];
 
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
-    private readonly IConfiguration _yesSqlConfiguration;
     private readonly YesSqlOptions _yesSqlOptions;
     private readonly SqliteOptions _sqliteOptions;
     private readonly ShellOptions _shellOptions;
 
     public DbConnectionValidator(
         IEnumerable<DatabaseProvider> databaseProviders,
-        IConfiguration yesSqlConfiguration,
         IOptions<YesSqlOptions> yesSqlOptions,
         IOptions<SqliteOptions> sqliteOptions,
         IOptions<ShellOptions> shellOptions)
     {
         _databaseProviders = databaseProviders;
-        _yesSqlConfiguration = yesSqlConfiguration;
         _yesSqlOptions = yesSqlOptions.Value;
         _sqliteOptions = sqliteOptions.Value;
         _shellOptions = shellOptions.Value;
@@ -148,7 +145,7 @@ public class DbConnectionValidator : IDbConnectionValidator
 
         selectBuilder.Select();
         selectBuilder.Selector("*");
-        selectBuilder.Table(_yesSqlOptions.TableNameConvention.GetDocumentTable(), alias: null, _yesSqlConfiguration.Schema);
+        selectBuilder.Table(_yesSqlOptions.TableNameConvention.GetDocumentTable(), alias: null, schema: null);
         selectBuilder.Take("1");
 
         return selectBuilder;
@@ -160,7 +157,7 @@ public class DbConnectionValidator : IDbConnectionValidator
 
         selectBuilder.Select();
         selectBuilder.Selector("*");
-        selectBuilder.Table(_yesSqlOptions.TableNameConvention.GetDocumentTable(), alias: null, _yesSqlConfiguration.Schema);
+        selectBuilder.Table(_yesSqlOptions.TableNameConvention.GetDocumentTable(), alias: null, schema: null);
         selectBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
         selectBuilder.Take("1");
 
