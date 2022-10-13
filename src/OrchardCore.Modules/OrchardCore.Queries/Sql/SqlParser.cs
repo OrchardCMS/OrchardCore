@@ -9,7 +9,7 @@ namespace OrchardCore.Queries.Sql
 {
     public class SqlParser
     {
-        private readonly IConfiguration _yesSqlConfiguration;
+        private readonly string _schema;
 
         private StringBuilder _builder;
         private IDictionary<string, object> _parameters;
@@ -31,13 +31,13 @@ namespace OrchardCore.Queries.Sql
 
         private SqlParser(
             ParseTree tree,
-            IConfiguration yesSqlConfiguration,
+            string schema,
             ISqlDialect dialect,
             string tablePrefix,
             IDictionary<string, object> parameters)
         {
             _tree = tree;
-            _yesSqlConfiguration = yesSqlConfiguration;
+            _schema = schema;
             _dialect = dialect;
             _tablePrefix = tablePrefix;
             _parameters = parameters;
@@ -45,7 +45,7 @@ namespace OrchardCore.Queries.Sql
             _modes = new Stack<FormattingModes>();
         }
 
-        public static bool TryParse(string sql, IConfiguration yesSqlConfiguration, ISqlDialect dialect, string tablePrefix, IDictionary<string, object> parameters, out string query, out IEnumerable<string> messages)
+        public static bool TryParse(string sql, string schema, ISqlDialect dialect, string tablePrefix, IDictionary<string, object> parameters, out string query, out IEnumerable<string> messages)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace OrchardCore.Queries.Sql
                     return false;
                 }
 
-                var sqlParser = new SqlParser(tree, yesSqlConfiguration, dialect, tablePrefix, parameters);
+                var sqlParser = new SqlParser(tree, schema, dialect, tablePrefix, parameters);
                 query = sqlParser.Evaluate();
 
                 messages = Array.Empty<string>();

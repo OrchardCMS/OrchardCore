@@ -12,16 +12,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         private readonly HashSet<string> _usedAliases = new HashSet<string>();
         private readonly Dictionary<string, string> _aliases = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _tableAliases = new Dictionary<string, string>();
-        private readonly IConfiguration _yesSqlConfiguration;
 
         public PredicateQuery(
             ISqlDialect dialect,
-            IConfiguration yesSqlConfiguration,
             ShellSettings shellSettings,
             IEnumerable<IIndexPropertyProvider> propertyProviders)
         {
             Dialect = dialect;
-            _yesSqlConfiguration = yesSqlConfiguration;
             _propertyProviders = propertyProviders;
         }
 
@@ -127,7 +124,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                     {
                         // Switch the given alias in the path with the mapped alias.
                         // aliasPart.alias -> AliasPartIndex.Alias
-                        return Dialect.QuoteForTableName($"{tableAlias}", _yesSqlConfiguration.Schema) + "." + Dialect.QuoteForColumnName(columnName);
+                        return Dialect.QuoteForTableName($"{tableAlias}", schema: null) + "." + Dialect.QuoteForColumnName(columnName);
                     }
                 }
                 else
@@ -135,7 +132,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                     // no property provider exists; hope sql is case-insensitive (will break postgres; property providers must be supplied for postgres)
                     // Switch the given alias in the path with the mapped alias.
                     // aliasPart.Alias -> AliasPartIndex.alias
-                    return Dialect.QuoteForTableName($"{tableAlias}", _yesSqlConfiguration.Schema) + "." + Dialect.QuoteForColumnName(values[1]);
+                    return Dialect.QuoteForTableName($"{tableAlias}", schema: null) + "." + Dialect.QuoteForColumnName(values[1]);
                 }
             }
 

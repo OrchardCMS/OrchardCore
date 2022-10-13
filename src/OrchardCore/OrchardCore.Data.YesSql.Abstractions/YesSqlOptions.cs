@@ -20,5 +20,5 @@ public class YesSqlOptions
 
     public string TablePrefixSeparator { get; set; } = "_";
 
-    public bool UseLegacyIdentityColumn { get; set; } = true;
+    public IdentityColumnSize IdentityColumnType { get; set; } = IdentityColumnSize.Int32;
 }
