@@ -665,7 +665,7 @@ namespace OrchardCore.Queries.Sql
             {
                 if (i == 0 && id.ChildNodes.Count > 1 && !_aliases.Contains(id.ChildNodes[i].Token.ValueString))
                 {
-                    _builder.Append(_dialect.QuoteForTableName(_tablePrefix + id.ChildNodes[i].Token.ValueString, _yesSqlConfiguration.Schema));
+                    _builder.Append(_dialect.QuoteForTableName(_tablePrefix + id.ChildNodes[i].Token.ValueString, _schema));
                 }
                 else
                 {
@@ -692,7 +692,7 @@ namespace OrchardCore.Queries.Sql
             {
                 if (i == 0 && !_aliases.Contains(id.ChildNodes[i].Token.ValueString))
                 {
-                    _builder.Append(_dialect.QuoteForTableName(_tablePrefix + id.ChildNodes[i].Token.ValueString, _yesSqlConfiguration.Schema));
+                    _builder.Append(_dialect.QuoteForTableName(_tablePrefix + id.ChildNodes[i].Token.ValueString, _schema));
                 }
                 else
                 {
