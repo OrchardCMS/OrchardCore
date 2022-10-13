@@ -165,8 +165,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 CommandsPageSize = yesSqlOptions.CommandsPageSize,
                 QueryGatingEnabled = yesSqlOptions.QueryGatingEnabled,
                 ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
-                TableNameConvention = yesSqlOptions.TableNameConvention,
-                IdentityColumnSize = yesSqlOptions.IdentityColumnType
+                TableNameConvention = yesSqlOptions.TableNameConvention
             };
 
             if (yesSqlOptions.IdGenerator != null)
