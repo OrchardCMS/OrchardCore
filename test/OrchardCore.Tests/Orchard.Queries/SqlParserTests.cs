@@ -229,7 +229,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("with test(test) as (select a as test from t) select test from test", "WITH test(test) AS (SELECT [a] AS test FROM [tp_t]) SELECT [test] FROM [test];")]
         public void ShouldParseCte(string sql, string expectedSql)
         {
-            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
