@@ -134,7 +134,7 @@ namespace OrchardCore.Lists.Drivers
         {
             return Initialize<ListPartHeaderViewModel>("ListPartHeader", async model =>
             {
-                var container = await _contentManager.GetAsync(containerId, VersionOptions.Published);
+                var container = await _contentManager.GetAsync(containerId);
 
                 if (container == null)
                 {
