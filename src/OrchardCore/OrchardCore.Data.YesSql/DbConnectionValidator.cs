@@ -145,7 +145,7 @@ public class DbConnectionValidator : IDbConnectionValidator
 
         selectBuilder.Select();
         selectBuilder.Selector("*");
-        selectBuilder.Table(_yesSqlOptions.TableNameConvention.GetDocumentTable());
+        selectBuilder.Table(_yesSqlOptions.TableNameConvention.GetDocumentTable(), alias: null, schema: null);
         selectBuilder.Take("1");
 
         return selectBuilder;
@@ -157,7 +157,7 @@ public class DbConnectionValidator : IDbConnectionValidator
 
         selectBuilder.Select();
         selectBuilder.Selector("*");
-        selectBuilder.Table(_yesSqlOptions.TableNameConvention.GetDocumentTable());
+        selectBuilder.Table(_yesSqlOptions.TableNameConvention.GetDocumentTable(), alias: null, schema: null);
         selectBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
         selectBuilder.Take("1");
 
