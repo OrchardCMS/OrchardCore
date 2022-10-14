@@ -39,23 +39,8 @@ namespace OrchardCore.Lists.Drivers
 
             return
                 Combine(
-                    Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", model =>
-                    {
-                        model.Container = part.ContentItem;
-                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
-                        model.EnableOrdering = settings.EnableOrdering;
-                        model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
-                    })
-                    .Location("Content:1.5")
-                    .RenderWhen(() => Task.FromResult(!context.IsNew)),
-
-                    Initialize<ListPartHeaderAdminViewModel>("ListPartHeaderAdmin", model =>
-                    {
-                        model.ContainerContentItem = part.ContentItem;
-                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
-                        model.EnableOrdering = settings.EnableOrdering;
-                    }).Location("Content:1")
-                    .RenderWhen(() => Task.FromResult(!context.IsNew && settings.ShowHeader))
+                    InitilizeEditListPartNavigationAdmin(part, context, settings),
+                    InitilizeEditListPartHeaderAdmin(part, context, settings)
                );
         }
 
@@ -65,32 +50,58 @@ namespace OrchardCore.Lists.Drivers
 
             return
                 Combine(
-                    InitilizeListPartDisplayShape(listPart, context),
-                    InitilizeListPartDetailAdminShape(listPart, context),
-                    InitilizeListPartNavigationAdminShape(listPart, context, settings),
-                    InitilizeListPartHeaderAdminShape(listPart, settings),
-                    InitilizeListPartSummaryAdmin(listPart)
+                    InitilizeDisplayListPartDisplayShape(listPart, context),
+                    InitilizeDisplayListPartDetailAdminShape(listPart, context),
+                    InitilizeDisplayListPartNavigationAdminShape(listPart, context, settings),
+                    InitilizeDisplayListPartHeaderAdminShape(listPart, settings),
+                    InitilizeDisplayListPartSummaryAdmin(listPart)
                 );
         }
 
-        private ShapeResult InitilizeListPartSummaryAdmin(ListPart listPart)
+        private ShapeResult InitilizeEditListPartHeaderAdmin(ListPart part, BuildPartEditorContext context, ListPartSettings settings)
+        {
+            return Initialize("ListPartHeaderAdmin", (Action<ListPartHeaderAdminViewModel>)(model =>
+            {
+                model.ContainerContentItem = part.ContentItem;
+                model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
+                model.EnableOrdering = settings.EnableOrdering;
+            }))
+                .Location("Content:1")
+                .RenderWhen(() => Task.FromResult(!context.IsNew && settings.ShowHeader));
+        }
+
+        private ShapeResult InitilizeEditListPartNavigationAdmin(ListPart part, BuildPartEditorContext context, ListPartSettings settings)
+        {
+            return Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", model =>
+            {
+                model.Container = part.ContentItem;
+                model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
+                model.EnableOrdering = settings.EnableOrdering;
+                model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
+            })
+                .Location("Content:1.5")
+                .RenderWhen(() => Task.FromResult(!context.IsNew));
+        }
+
+        private ShapeResult InitilizeDisplayListPartSummaryAdmin(ListPart listPart)
         {
             return Initialize("ListPartSummaryAdmin", (Action<ContentItemViewModel>)(model => model.ContentItem = listPart.ContentItem))
                 .Location("SummaryAdmin", "Actions:4");
         }
 
-        private ShapeResult InitilizeListPartHeaderAdminShape(ListPart listPart, ListPartSettings settings)
+        private ShapeResult InitilizeDisplayListPartHeaderAdminShape(ListPart listPart, ListPartSettings settings)
         {
             return Initialize("ListPartHeaderAdmin", (Action<ListPartHeaderAdminViewModel>)(model =>
             {
                 model.ContainerContentItem = listPart.ContentItem;
                 model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
                 model.EnableOrdering = settings.EnableOrdering;
-            })).Location("DetailAdmin", "Content:1")
-            .RenderWhen(() => Task.FromResult(settings.ShowHeader));
+            }))
+                .Location("DetailAdmin", "Content:1")
+                .RenderWhen(() => Task.FromResult(settings.ShowHeader));
         }
 
-        private ShapeResult InitilizeListPartNavigationAdminShape(ListPart listPart, BuildPartDisplayContext context, ListPartSettings settings)
+        private ShapeResult InitilizeDisplayListPartNavigationAdminShape(ListPart listPart, BuildPartDisplayContext context, ListPartSettings settings)
         {
             return Initialize("ListPartNavigationAdmin", (Action<ListPartNavigationAdminViewModel>)(model =>
             {
@@ -102,7 +113,7 @@ namespace OrchardCore.Lists.Drivers
                 .Location("DetailAdmin", "Content:1.5");
         }
 
-        private ShapeResult InitilizeListPartDetailAdminShape(ListPart listPart, BuildPartDisplayContext context)
+        private ShapeResult InitilizeDisplayListPartDetailAdminShape(ListPart listPart, BuildPartDisplayContext context)
         {
             return Initialize("ListPartDetailAdmin", (Func<ListPartViewModel, ValueTask>)(async model =>
             {
@@ -131,7 +142,7 @@ namespace OrchardCore.Lists.Drivers
                 .Location("DetailAdmin", "Content:10");
         }
 
-        private ShapeResult InitilizeListPartDisplayShape(ListPart listPart, BuildPartDisplayContext context)
+        private ShapeResult InitilizeDisplayListPartDisplayShape(ListPart listPart, BuildPartDisplayContext context)
         {
             return Initialize<ListPartViewModel>(GetDisplayShapeType(context), async model =>
             {
