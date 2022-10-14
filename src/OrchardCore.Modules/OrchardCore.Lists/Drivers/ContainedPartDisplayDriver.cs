@@ -111,7 +111,7 @@ namespace OrchardCore.Lists.Drivers
                     if (settings != null)
                     {
                         // Add list part navigation
-                        results.Add(Initialize<ListPartNavigationViewModel>("ListPartNavigation", async model =>
+                        results.Add(Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", async model =>
                         {
                             model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
                             model.Container = await _contentManager.GetAsync(containerId);
@@ -132,7 +132,7 @@ namespace OrchardCore.Lists.Drivers
 
         private IDisplayResult GetListPartHeader(string containerId, ListPartSettings listPartSettings)
         {
-            return Initialize<ListPartHeaderViewModel>("ListPartHeader", async model =>
+            return Initialize<ListPartHeaderAdminViewModel>("ListPartHeaderAdmin", async model =>
             {
                 var container = await _contentManager.GetAsync(containerId);
 

@@ -7,7 +7,16 @@ namespace OrchardCore.Lists.Indexes
     public class ContainedPartIndex : MapIndex
     {
         public string ListContentItemId { get; set; }
+
         public int Order { get; set; }
+
+        public string ListContentType { get; set; }
+
+        public bool Published { get; set; }
+
+        public bool Latest { get; set; }
+
+        public string DisplayText { get; set; }
     }
 
     public class ContainedPartIndexProvider : IndexProvider<ContentItem>
@@ -27,7 +36,11 @@ namespace OrchardCore.Lists.Indexes
                     return new ContainedPartIndex
                     {
                         ListContentItemId = containedPart.ListContentItemId,
-                        Order = containedPart.Order
+                        Order = containedPart.Order,
+                        ListContentType = containedPart.ListContentType,
+                        DisplayText = contentItem.DisplayText,
+                        Published = contentItem.Published,
+                        Latest = contentItem.Latest,
                     };
                 });
         }

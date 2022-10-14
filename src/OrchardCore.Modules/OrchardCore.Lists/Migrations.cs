@@ -9,7 +9,7 @@ namespace OrchardCore.Lists
 {
     public class Migrations : DataMigration
     {
-        private IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
@@ -52,6 +52,39 @@ namespace OrchardCore.Lists
             );
 
             return 3;
+        }
+
+        public int UpdateFrom3()
+        {
+            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+                .AddColumn<string>("ListContentType")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+                .AddColumn<bool>("Published")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+                .AddColumn<bool>("Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+                .AddColumn<string>("DisplayText")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+                .DropIndex("IDX_ContainedPartIndex_DocumentId")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+                .CreateIndex("IDX_ContainedPartIndex_DocumentId",
+                    "DocumentId",
+                    "ListContentItemId",
+                    "Order",
+                    "ListContentType")
+            );
+
+            return 4;
         }
     }
 }

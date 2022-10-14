@@ -65,7 +65,6 @@ namespace OrchardCore.Lists
             // List Part
             services.AddContentPart<ListPart>()
                 .UseDisplayDriver<ListPartDisplayDriver>()
-                .UseDisplayDriver<ListPartHeaderDisplayDriver>()
                 .AddHandler<ListPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();

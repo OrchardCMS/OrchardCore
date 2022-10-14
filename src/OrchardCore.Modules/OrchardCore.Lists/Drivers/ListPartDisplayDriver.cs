@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,75 +35,120 @@ namespace OrchardCore.Lists.Drivers
 
         public override IDisplayResult Edit(ListPart part, BuildPartEditorContext context)
         {
-            return Initialize<ListPartNavigationViewModel>("ListPartNavigation", model =>
-            {
-                var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
-                model.Container = part.ContentItem;
-                model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
-                model.EnableOrdering = settings.EnableOrdering;
-                model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
-            })
-            .Location("Content:1.5")
-            .RenderWhen(() => Task.FromResult(!context.IsNew));
+            var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
+
+            return
+                Combine(
+                    Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", model =>
+                    {
+                        model.Container = part.ContentItem;
+                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
+                        model.EnableOrdering = settings.EnableOrdering;
+                        model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
+                    })
+                    .Location("Content:1.5")
+                    .RenderWhen(() => Task.FromResult(!context.IsNew)),
+
+                    Initialize<ListPartHeaderAdminViewModel>("ListPartHeaderAdmin", model =>
+                    {
+                        model.ContainerContentItem = part.ContentItem;
+                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
+                        model.EnableOrdering = settings.EnableOrdering;
+                    }).Location("Content:1")
+                    .RenderWhen(() => Task.FromResult(!context.IsNew && settings.ShowHeader))
+               );
         }
 
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {
+            var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
+
             return
                 Combine(
-                    Initialize<ListPartViewModel>(GetDisplayShapeType(context), async model =>
-                    {
-                        var pager = await GetPagerSlimAsync(context);
-                        var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
-                        var containedItemOptions = new ContainedItemOptions();
-                        model.ContentItems = (await _containerService.QueryContainedItemsAsync(
-                            listPart.ContentItem.ContentItemId,
-                            settings.EnableOrdering,
-                            pager,
-                            containedItemOptions)).ToArray();
-
-                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings);
-                        model.Context = context;
-                        model.Pager = await context.New.PagerSlim(pager);
-                    })
-                    .Location("Detail", "Content:10"),
-                    Initialize<ListPartViewModel>("ListPartDetailAdmin", async model =>
-                    {
-                        var pager = await GetPagerSlimAsync(context);
-                        var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
-                        var listPartFilterViewModel = new ListPartFilterViewModel();
-                        var containedItemOptions = new ContainedItemOptions();
-
-                        await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listPartFilterViewModel, Prefix);
-                        model.ListPart = listPart;
-                        containedItemOptions.DisplayText = listPartFilterViewModel.DisplayText;
-                        containedItemOptions.Status = listPartFilterViewModel.Status;
-                        model.ListPartFilterViewModel = listPartFilterViewModel;
-
-                        model.ContentItems = (await _containerService.QueryContainedItemsAsync(
-                            listPart.ContentItem.ContentItemId,
-                            settings.EnableOrdering,
-                            pager,
-                            containedItemOptions)).ToArray();
-
-                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings);
-                        model.Context = context;
-                        model.EnableOrdering = settings.EnableOrdering;
-                        model.Pager = await context.New.PagerSlim(pager);
-                    })
-                    .Location("DetailAdmin", "Content:10"),
-                    Initialize<ListPartNavigationViewModel>("ListPartNavigation", model =>
-                    {
-                        var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
-                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
-                        model.Container = listPart.ContentItem;
-                        model.EnableOrdering = settings.EnableOrdering;
-                        model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
-                    })
-                    .Location("DetailAdmin", "Content:1.5"),
-                    Initialize<ContentItemViewModel>("ListPartSummaryAdmin", model => model.ContentItem = listPart.ContentItem)
-                    .Location("SummaryAdmin", "Actions:4")
+                    InitilizeListPartDisplayShape(listPart, context),
+                    InitilizeListPartDetailAdminShape(listPart, context),
+                    InitilizeListPartNavigationAdminShape(listPart, context, settings),
+                    InitilizeListPartHeaderAdminShape(listPart, settings),
+                    InitilizeListPartSummaryAdmin(listPart)
                 );
+        }
+
+        private ShapeResult InitilizeListPartSummaryAdmin(ListPart listPart)
+        {
+            return Initialize("ListPartSummaryAdmin", (Action<ContentItemViewModel>)(model => model.ContentItem = listPart.ContentItem))
+                .Location("SummaryAdmin", "Actions:4");
+        }
+
+        private ShapeResult InitilizeListPartHeaderAdminShape(ListPart listPart, ListPartSettings settings)
+        {
+            return Initialize("ListPartHeaderAdmin", (Action<ListPartHeaderAdminViewModel>)(model =>
+            {
+                model.ContainerContentItem = listPart.ContentItem;
+                model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
+                model.EnableOrdering = settings.EnableOrdering;
+            })).Location("DetailAdmin", "Content:1")
+            .RenderWhen(() => Task.FromResult(settings.ShowHeader));
+        }
+
+        private ShapeResult InitilizeListPartNavigationAdminShape(ListPart listPart, BuildPartDisplayContext context, ListPartSettings settings)
+        {
+            return Initialize("ListPartNavigationAdmin", (Action<ListPartNavigationAdminViewModel>)(model =>
+            {
+                model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
+                model.Container = listPart.ContentItem;
+                model.EnableOrdering = settings.EnableOrdering;
+                model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
+            }))
+                .Location("DetailAdmin", "Content:1.5");
+        }
+
+        private ShapeResult InitilizeListPartDetailAdminShape(ListPart listPart, BuildPartDisplayContext context)
+        {
+            return Initialize("ListPartDetailAdmin", (Func<ListPartViewModel, ValueTask>)(async model =>
+            {
+                var pager = await GetPagerSlimAsync(context);
+                var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
+                var listPartFilterViewModel = new ListPartFilterViewModel();
+                var containedItemOptions = new ContainedItemOptions();
+
+                await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listPartFilterViewModel, Prefix);
+                model.ListPart = listPart;
+                containedItemOptions.DisplayText = listPartFilterViewModel.DisplayText;
+                containedItemOptions.Status = listPartFilterViewModel.Status;
+                model.ListPartFilterViewModel = listPartFilterViewModel;
+
+                model.ContentItems = (await _containerService.QueryContainedItemsAsync(
+                    listPart.ContentItem.ContentItemId,
+                    settings.EnableOrdering,
+                    pager,
+                    containedItemOptions)).ToArray();
+
+                model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings);
+                model.Context = context;
+                model.EnableOrdering = settings.EnableOrdering;
+                model.Pager = await context.New.PagerSlim(pager);
+            }))
+                .Location("DetailAdmin", "Content:10");
+        }
+
+        private ShapeResult InitilizeListPartDisplayShape(ListPart listPart, BuildPartDisplayContext context)
+        {
+            return Initialize<ListPartViewModel>(GetDisplayShapeType(context), async model =>
+            {
+                var pager = await GetPagerSlimAsync(context);
+                var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
+                var containedItemOptions = new ContainedItemOptions();
+                model.ContentItems = (await _containerService.QueryContainedItemsAsync(
+                    listPart.ContentItem.ContentItemId,
+                    settings.EnableOrdering,
+                    pager,
+                    containedItemOptions)).ToArray();
+
+                model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings);
+                model.Context = context;
+                model.Pager = await context.New.PagerSlim(pager);
+            })
+                .Location("Detail", "Content:10");
         }
 
         private static async Task<PagerSlim> GetPagerSlimAsync(BuildPartDisplayContext context)
