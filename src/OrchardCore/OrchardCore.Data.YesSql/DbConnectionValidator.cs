@@ -70,8 +70,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             return DbConnectionValidatorResult.InvalidConnection;
         }
 
-        var (factory, dialect) = GetConnectionFactoryAndSqlDialect(providerName, connectionString);
-        var factory = GetFactory(databaseProvider, connectionString);
+        var (factory, dialect) = GetConnectionFactoryAndSqlDialect(databaseProvider, connectionString);
 
         using var connection = factory.CreateConnection();
 
@@ -92,9 +91,8 @@ public class DbConnectionValidator : IDbConnectionValidator
         var selectBuilder = GetDocumentTableSelectBuilder(
             tablePrefix,
             _yesSqlOptions.TablePrefixSeparator,
-            _tableNameConvention.GetDocumentTable(),
+            _yesSqlOptions.TableNameConvention.GetDocumentTable(),
             dialect);
-        var selectBuilder = GetSelectBuilderForDocumentTable(tablePrefix, databaseProvider);
         try
         {
             var selectCommand = connection.CreateCommand();
@@ -124,12 +122,13 @@ public class DbConnectionValidator : IDbConnectionValidator
             return DbConnectionValidatorResult.DocumentTableNotFound;
         }
 
-        selectBuilder = GetDocumentTableSelectBuilder(tablePrefix,
+        selectBuilder = GetDocumentTableSelectBuilder(
+            tablePrefix,
             _yesSqlOptions.TablePrefixSeparator,
-            _tableNameConvention.GetDocumentTable(),
+            _yesSqlOptions.TableNameConvention.GetDocumentTable(),
             dialect,
             isShellDescriptorDocument: true);
-        selectBuilder = GetSelectBuilderForShellDescriptorDocument(tablePrefix, databaseProvider);
+
         try
         {
             var selectCommand = connection.CreateCommand();
@@ -150,25 +149,25 @@ public class DbConnectionValidator : IDbConnectionValidator
         return DbConnectionValidatorResult.DocumentTableFound;
     }
 
-    private static (IConnectionFactory, ISqlDialect) GetConnectionFactoryAndSqlDialect(DatabaseProviderName providerName, string connectionString)
+    private static (IConnectionFactory, ISqlDialect) GetConnectionFactoryAndSqlDialect(string providerName, string connectionString)
     {
         IConnectionFactory factory;
         ISqlDialect dialect;
         switch (providerName)
         {
-            case DatabaseProviderName.SqlConnection:
+            case DatabaseProviderValue.SqlConnection:
                 factory = new DbConnectionFactory<SqlConnection>(connectionString);
                 dialect = new SqlServerDialect();
                 break;
-            case DatabaseProviderName.Sqlite:
+            case DatabaseProviderValue.Sqlite:
                 factory = new DbConnectionFactory<SqliteConnection>(connectionString);
                 dialect = new SqliteDialect();
                 break;
-            case DatabaseProviderName.MySql:
+            case DatabaseProviderValue.MySql:
                 factory = new DbConnectionFactory<MySqlConnection>(connectionString);
                 dialect = new MySqlDialect();
                 break;
-            case DatabaseProviderName.Postgres:
+            case DatabaseProviderValue.Postgres:
                 factory = new DbConnectionFactory<NpgsqlConnection>(connectionString);
                 dialect = new PostgreSqlDialect();
                 break;
@@ -182,65 +181,15 @@ public class DbConnectionValidator : IDbConnectionValidator
     private static ISqlBuilder GetDocumentTableSelectBuilder(string tablePrefix, string tablePrefixSeparator, string documentTable, ISqlDialect dialect, bool isShellDescriptorDocument = false)
     {
         var prefix = String.Empty;
-    private ISqlBuilder GetSelectBuilderForDocumentTable(string tablePrefix, string databaseProvider)
-    {
-        var selectBuilder = GetSqlBuilder(databaseProvider, tablePrefix);
-
-        selectBuilder.Select();
-        selectBuilder.Selector("*");
-        selectBuilder.Table(_yesSqlOptions.TableNameConvention.GetDocumentTable(), alias: null, schema: null);
-        selectBuilder.Take("1");
-
-        return selectBuilder;
-    }
-
-    private ISqlBuilder GetSelectBuilderForShellDescriptorDocument(string tablePrefix, string databaseProvider)
-    {
-        var selectBuilder = GetSqlBuilder(databaseProvider, tablePrefix);
-
-        selectBuilder.Select();
-        selectBuilder.Selector("*");
-        selectBuilder.Table(_yesSqlOptions.TableNameConvention.GetDocumentTable(), alias: null, schema: null);
-        selectBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
-        selectBuilder.Take("1");
-
-        return selectBuilder;
-    }
-
-    private static IConnectionFactory GetFactory(string databaseProvider, string connectionString)
-    {
-        return databaseProvider switch
-        {
-            DatabaseProviderValue.SqlConnection => new DbConnectionFactory<SqlConnection>(connectionString),
-            DatabaseProviderValue.MySql => new DbConnectionFactory<MySqlConnection>(connectionString),
-            DatabaseProviderValue.Sqlite => new DbConnectionFactory<SqliteConnection>(connectionString),
-            DatabaseProviderValue.Postgres => new DbConnectionFactory<NpgsqlConnection>(connectionString),
-            _ => throw new ArgumentOutOfRangeException(nameof(databaseProvider), "Unsupported database provider"),
-        };
-    }
-
-    private ISqlBuilder GetSqlBuilder(string databaseProvider, string tablePrefix)
-    {
-        ISqlDialect dialect = databaseProvider switch
-        {
-            DatabaseProviderValue.SqlConnection => new SqlServerDialect(),
-            DatabaseProviderValue.MySql => new MySqlDialect(),
-            DatabaseProviderValue.Sqlite => new SqliteDialect(),
-            DatabaseProviderValue.Postgres => new PostgreSqlDialect(),
-            _ => throw new ArgumentOutOfRangeException(nameof(databaseProvider), "Unsupported database provider"),
-        };
-
-        var prefix = String.Empty;
-        if (!String.IsNullOrWhiteSpace(tablePrefix))
+        if (!String.IsNullOrEmpty(tablePrefix))
         {
             prefix = tablePrefix.Trim() + (tablePrefixSeparator ?? String.Empty);
-            prefix = tablePrefix.Trim() + _yesSqlOptions.TablePrefixSeparator;
         }
 
         var selectBuilder = new SqlBuilder(prefix, dialect);
         selectBuilder.Select();
         selectBuilder.Selector("*");
-        selectBuilder.Table(documentTable);
+        selectBuilder.Table(documentTable, alias: null, schema: null);
 
         if (isShellDescriptorDocument)
         {
