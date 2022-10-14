@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.Notifications</RootNamespace>
+
+     <!-- NuGet properties-->
+    <Title>OrchardCore Notifications Core</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Core Implementation for Notifications.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Email.Abstractions\OrchardCore.Email.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Notifications.Abstractions\OrchardCore.Notifications.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Users.Core\OrchardCore.Users.Core.csproj" />
+  </ItemGroup>
+
+
+</Project>
