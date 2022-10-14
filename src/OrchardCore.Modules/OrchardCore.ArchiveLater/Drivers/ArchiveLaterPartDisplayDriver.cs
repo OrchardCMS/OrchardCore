@@ -49,7 +49,7 @@ public class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<ArchiveLat
 
             await updater.TryUpdateModelAsync(viewModel, Prefix);
 
-            if (viewModel.ScheduledArchiveLocalDateTime == null || httpContext.Request.Form["submit.Save"] == "submit.CancelArchiveLater")
+            if (viewModel.ScheduledArchiveLocalDateTime == null || httpContext.Request.Form["submit.Publish"] == "submit.CancelArchiveLater")
             {
                 part.ScheduledArchiveUtc = null;
             }

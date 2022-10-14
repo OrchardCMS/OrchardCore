@@ -8,7 +8,7 @@ namespace OrchardCore.ContentFields.Indexing
     {
         public override Task BuildIndexAsync(UserPickerField field, BuildFieldIndexContext context)
         {
-            var options = DocumentIndexOptions.Store;
+            var options = DocumentIndexOptions.Keyword | DocumentIndexOptions.Store;
 
             if (field.UserIds.Length > 0)
             {

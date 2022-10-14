@@ -30,3 +30,8 @@
 {{ Model.Content.MarkdownBodyPart | shape_render }}
 {{ Model.Content.BlogPost-Category | shape_render }}
 {{ Model.Content.BlogPost-Tags | shape_render }}
+
+{% assign recentBlogPosts = Queries.RecentBlogPosts | query %}
+{% for item in recentBlogPosts %}
+{{ item | display_text }}
+{% endfor %}

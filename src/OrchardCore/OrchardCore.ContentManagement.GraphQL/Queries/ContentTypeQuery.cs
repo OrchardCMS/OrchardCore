@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Types;
@@ -10,7 +9,7 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries
@@ -71,10 +70,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     builder.Build(query, typeDefinition, typeType);
                 }
 
-                var settings = typeDefinition.GetSettings<ContentTypeSettings>();
-
                 // Only add queries over standard content types
-                if (settings == null || String.IsNullOrWhiteSpace(settings.Stereotype))
+                if (!typeDefinition.HasStereotype())
                 {
                     schema.Query.AddField(query);
                 }

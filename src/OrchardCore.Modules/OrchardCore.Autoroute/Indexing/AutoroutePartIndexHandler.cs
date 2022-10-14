@@ -10,7 +10,6 @@ namespace OrchardCore.Autoroute.Indexing
         {
             var options = context.Settings.ToOptions()
                 & ~DocumentIndexOptions.Sanitize
-                & ~DocumentIndexOptions.Analyze
                 ;
 
             foreach (var key in context.Keys)

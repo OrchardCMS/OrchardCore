@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Liquid;
+using OrchardCore.Modules.Services;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Sitemaps.Models;
 

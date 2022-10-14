@@ -214,9 +214,10 @@ namespace OrchardCore.AutoSetup
 
             shellSettings["ConnectionString"] = setupOptions.DatabaseConnectionString;
             shellSettings["TablePrefix"] = setupOptions.DatabaseTablePrefix;
-            shellSettings["DatabaseProvider"] = setupOptions.DatabaseProvider.ToString();
+            shellSettings["DatabaseProvider"] = setupOptions.DatabaseProvider;
             shellSettings["Secret"] = Guid.NewGuid().ToString();
             shellSettings["RecipeName"] = setupOptions.RecipeName;
+            shellSettings["FeatureProfile"] = setupOptions.FeatureProfile;
 
             await _shellHost.UpdateShellSettingsAsync(shellSettings);
 

@@ -1,4 +1,4 @@
-# Lucene (`OrchardCore.Lucene`)
+# Lucene (`OrchardCore.Search.Lucene`)
 
 The Lucene module allows you to manage Lucene indices.
 
@@ -66,7 +66,7 @@ Verbs: `POST` and `GET`
 | `query` | `{ "query": { "match_all": {} } }` | A JSON object representing the query. |
 | `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
 
-## Lucene Worker (`OrchardCore.Lucene.Worker`)
+## Lucene Worker (`OrchardCore.Search.Lucene.Worker`)
 
 This feature creates a background task that will keep the local file system index synchronized with
 other instances that could have their own local index.  
@@ -105,7 +105,7 @@ With a must query in the bool Query. "finding specific content type(s)"
   "query": {
     "bool": {
       "must" : {
-          "term" : { "Content.ContentItem.ContentType" : "Menu" }
+          "term" : { "Content.ContentItem.ContentType.keyword" : "Menu" }
       },
       "filter": [
         { "term": { "Content.ContentItem.Published" : "true" }},
@@ -178,6 +178,10 @@ So you can use:
 
 See ElasticSearch documentation for more details: 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html
+
+## Automatic mapping
+
+Starting from OC version 1.5 the Lucene module will automatically map text fields with a  `.keyword` suffix as a `stored` value in the index unless the document is already set to be `stored` explicitly. It will ignore any value that has a length higher than 256 chars. This way, any TextField can be used as a technical value and searched by using a term query.
 
 ## Video
 

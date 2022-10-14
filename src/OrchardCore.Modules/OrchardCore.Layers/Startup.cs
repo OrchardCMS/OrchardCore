@@ -60,7 +60,7 @@ namespace OrchardCore.Layers
             services.AddScoped<ILayerService, LayerService>();
             services.AddScoped<IContentHandler, LayerMetadataHandler>();
             services.AddSingleton<IIndexProvider, LayerMetadataIndexProvider>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddRecipeExecutionStep<LayerStep>();
 
