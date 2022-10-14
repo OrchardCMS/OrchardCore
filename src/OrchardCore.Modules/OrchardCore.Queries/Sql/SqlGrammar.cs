@@ -100,6 +100,9 @@ namespace OrchardCore.Queries.Sql
             var IdColumn = new NonTerminal("IdColumn");
             var columnAliasOpt = new NonTerminal("columnAliasOpt");
             var IdTable = new NonTerminal("IdTable");
+            var subQuery = new NonTerminal("subQuery");
+            var tableAliasItemOrSubQuery = new NonTerminal("tableAliasItemOrSubQuery");
+            var tableAliasOrSubQueryList = new NonTerminal("tableAliasOrSubQueryList");
 
             //BNF Rules
             this.Root = statementList;
@@ -133,6 +136,10 @@ namespace OrchardCore.Queries.Sql
             tableAliasList.Rule = MakePlusRule(tableAliasList, comma, tableAliasItem);
             tableAliasItem.Rule = Id + tableAliasOpt;
 
+            subQuery.Rule = "(" + unionStatementList + ")" + AS + TableAlias;
+            tableAliasOrSubQueryList.Rule = MakePlusRule(tableAliasOrSubQueryList, comma, tableAliasItemOrSubQuery);
+            tableAliasItemOrSubQuery.Rule = tableAliasItem | subQuery;
+
             //Create Index
             orderList.Rule = MakePlusRule(orderList, comma, orderMember);
             orderMember.Rule = Id + orderDirOptional;
@@ -147,7 +154,7 @@ namespace OrchardCore.Queries.Sql
             columnItem.Rule = columnSource + columnAliasOpt;
 
             columnSource.Rule = funCall + overClauseOpt | Id;
-            fromClauseOpt.Rule = Empty | FROM + tableAliasList + joinChainOpt;
+            fromClauseOpt.Rule = Empty | FROM + tableAliasOrSubQueryList + joinChainOpt;
 
             joinChainOpt.Rule = MakeStarRule(joinChainOpt, joinStatement);
             joinStatement.Rule = joinKindOpt + JOIN + tableAliasList + ON + joinConditions;
@@ -205,7 +212,7 @@ namespace OrchardCore.Queries.Sql
             // Transient non-terminals cannot have more than one non-punctuation child nodes.
             // Instead, we set flag InheritPrecedence on binOp , so that it inherits precedence value from it's children, and this precedence is used
             // in conflict resolution when binOp node is sitting on the stack
-            base.MarkTransient(term, asOpt, tableAliasOpt, columnAliasOpt, statementLine, expression, unOp, tuple);
+            base.MarkTransient(tableAliasItemOrSubQuery, term, asOpt, tableAliasOpt, columnAliasOpt, statementLine, expression, unOp, tuple);
             binOp.SetFlag(TermFlags.InheritPrecedence);
         }
     }

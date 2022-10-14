@@ -233,5 +233,20 @@ namespace OrchardCore.Tests.OrchardCore.Queries
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
+
+        [Theory]
+        [InlineData("select * from (select * from t) as b", "SELECT * FROM (SELECT * FROM [tp_t]) AS b;")]
+        [InlineData("select b.a from (select a from t) as b where b.a = b.a", "SELECT b.[a] FROM (SELECT [a] FROM [tp_t]) AS b WHERE b.[a] = b.[a];")]
+        [InlineData("select c.b from (select a as b from t) as c", "SELECT c.[b] FROM (SELECT [a] AS b FROM [tp_t]) AS c;")]
+        [InlineData("select b.a from (select a from t where [a] = 1) as b where b.a = 1", "SELECT b.[a] FROM (SELECT [a] FROM [tp_t] WHERE [a] = 1) AS b WHERE b.[a] = 1;")]
+        [InlineData("select b.a from (select a from t where [a] = 1 union all select a from t where [a] = 2) as b", "SELECT b.[a] FROM (SELECT [a] FROM [tp_t] WHERE [a] = 1 UNION ALL SELECT [a] FROM [tp_t] WHERE [a] = 2) AS b;")]
+        [InlineData("select d.b, g.b from (select a as b from c) as d, (select e as b from f) as g", "SELECT d.[b], g.[b] FROM (SELECT [a] AS b FROM [tp_c]) AS d, (SELECT [e] AS b FROM [tp_f]) AS g;")]
+        [InlineData("select * from (select d as e from (select c as d from (select b as c from (select a as b from t) as l4) as l3) as l2) as l1", "SELECT * FROM (SELECT [d] AS e FROM (SELECT [c] AS d FROM (SELECT [b] AS c FROM (SELECT [a] AS b FROM [tp_t]) AS l4) AS l3) AS l2) AS l1;")]
+        public void ShouldParseSubquery(string sql, string expectedSql)
+        {
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            Assert.True(result);
+            Assert.Equal(expectedSql, FormatSql(rawQuery));
+        }
     }
 }

@@ -95,28 +95,7 @@ namespace OrchardCore.Queries.Sql
 
             foreach (var unionStatementList in statementList.ChildNodes)
             {
-                foreach (var unionStatement in unionStatementList.ChildNodes)
-                {
-                    var statement = unionStatement.ChildNodes[0];
-                    var cte = statement.ChildNodes[0];
-                    var selectStatement = statement.ChildNodes[1];
-                    var unionClauseOpt = unionStatement.ChildNodes[1];
-                    if (cte.ChildNodes.Count > 0)
-                    {
-                        statementsBuilder.Append(EvaluateCteStatement(cte));
-                    }
-                    statementsBuilder.Append(EvaluateSelectStatement(selectStatement));
-
-                    for (var i = 0; i < unionClauseOpt.ChildNodes.Count; i++)
-                    {
-                        if (i == 0)
-                        {
-                            statementsBuilder.Append(" ");
-                        }
-                        var term = unionClauseOpt.ChildNodes[i].Term;
-                        statementsBuilder.Append(term).Append(" ");
-                    }
-                }
+                EvaluateStatementList(statementsBuilder, unionStatementList, true);
             }
             statementsBuilder.Append(';');
 
@@ -154,14 +133,7 @@ namespace OrchardCore.Queries.Sql
 
         private string EvaluateSelectStatement(ParseTreeNode selectStatement)
         {
-            _limit = null;
-            _offset = null;
-            _select = null;
-            _from = null;
-            _where = null;
-            _having = null;
-            _groupBy = null;
-            _orderBy = null;
+            ClearSelectStatement();
 
             var previousContent = _builder.Length > 0 ? _builder.ToString() : null;
             _builder.Clear();
@@ -228,6 +200,8 @@ namespace OrchardCore.Queries.Sql
                 _builder.Clear();
                 _builder.Append(new StringBuilder(previousContent));
             }
+
+            ClearSelectStatement();
 
             return sqlBuilder.ToSqlString();
         }
@@ -549,7 +523,7 @@ namespace OrchardCore.Queries.Sql
             var aliasList = parseTreeNode.ChildNodes[1];
 
             _modes.Push(FormattingModes.FromClause);
-            EvaluateAliasList(aliasList);
+            EvaluateAliasOrSubQueryList(aliasList);
             _modes.Pop();
 
             var joins = parseTreeNode.ChildNodes[2];
@@ -611,6 +585,36 @@ namespace OrchardCore.Queries.Sql
                 if (aliasItem.ChildNodes.Count > 1)
                 {
                     EvaluateAliasOptional(aliasItem.ChildNodes[1]);
+                }
+            }
+        }
+
+        private void EvaluateAliasOrSubQueryList(ParseTreeNode aliasList)
+        {
+            for (var i = 0; i < aliasList.ChildNodes.Count; i++)
+            {
+                var aliasItemOrSubQuery = aliasList.ChildNodes[i];
+
+                if (i > 0)
+                {
+                    _builder.Append(", ");
+                }
+
+                if (aliasItemOrSubQuery.Term.Name == "tableAliasItem")
+                {
+                    EvaluateId(aliasItemOrSubQuery.ChildNodes[0]);
+
+                    if (aliasItemOrSubQuery.ChildNodes.Count > 1)
+                    {
+                        EvaluateAliasOptional(aliasItemOrSubQuery.ChildNodes[1]);
+                    }
+                }
+                else if (aliasItemOrSubQuery.Term.Name == "subQuery")
+                {
+                    _builder.Append("(");
+                    EvaluateStatementList(_builder, aliasItemOrSubQuery.ChildNodes[0], false);
+                    _builder.Append(") AS ");
+                    _builder.Append(aliasItemOrSubQuery.ChildNodes[2].Token.ValueString);
                 }
             }
         }
@@ -687,6 +691,10 @@ namespace OrchardCore.Queries.Sql
                 if (i == 0 && id.ChildNodes.Count > 1 && !_tableAliases.Contains(id.ChildNodes[i].Token.ValueString))
                 {
                     _builder.Append(_dialect.QuoteForTableName(_tablePrefix + id.ChildNodes[i].Token.ValueString, _schema));
+                }
+                else if (i == 0 && id.ChildNodes.Count == 1)
+                {
+                    _builder.Append(_dialect.QuoteForColumnName(id.ChildNodes[i].Token.ValueString));
                 }
                 else
                 {
@@ -835,33 +843,58 @@ namespace OrchardCore.Queries.Sql
                     _builder.Append(")");
                 }
                 _builder.Append(" AS (");
-                foreach (var unionStatement in cte.ChildNodes[3].ChildNodes)
-                {
-                    var statement = unionStatement.ChildNodes[0];
-                    var selectStatement = statement.ChildNodes[1];
-                    var unionClauseOpt = unionStatement.ChildNodes[1];
-                    _builder.Append(EvaluateSelectStatement(selectStatement));
-
-                    for (var k = 0; k < unionClauseOpt.ChildNodes.Count; k++)
-                    {
-                        if (k == 0)
-                        {
-                            _builder.Append(" ");
-                        }
-                        var term = unionClauseOpt.ChildNodes[k].Term;
-                        _builder.Append(term).Append(" ");
-                    }
-                }
+                EvaluateStatementList(_builder, cte.ChildNodes[3], false);
                 _builder.Append(")");
             }
             _builder.Append(" ");
             return _builder.ToString();
         }
 
+        private void EvaluateStatementList(StringBuilder builder, ParseTreeNode unionStatementList, bool isCteAllowed)
+        {
+            foreach (var unionStatement in unionStatementList.ChildNodes)
+            {
+                var statement = unionStatement.ChildNodes[0];
+                var selectStatement = statement.ChildNodes[1];
+                var unionClauseOpt = unionStatement.ChildNodes[1];
+                if (isCteAllowed)
+                {
+                    var cte = statement.ChildNodes[0];
+                    if (cte.ChildNodes.Count > 0)
+                    {
+                        builder.Append(EvaluateCteStatement(cte));
+                    }
+                }
+                builder.Append(EvaluateSelectStatement(selectStatement));
+
+                for (var i = 0; i < unionClauseOpt.ChildNodes.Count; i++)
+                {
+                    if (i == 0)
+                    {
+                        builder.Append(" ");
+                    }
+                    var term = unionClauseOpt.ChildNodes[i].Term;
+                    builder.Append(term).Append(" ");
+                }
+            }
+        }
+
         private enum FormattingModes
         {
             SelectClause,
             FromClause
+        }
+
+        private void ClearSelectStatement()
+        {
+            _limit = null;
+            _offset = null;
+            _select = null;
+            _from = null;
+            _where = null;
+            _having = null;
+            _groupBy = null;
+            _orderBy = null;
         }
     }
 }
