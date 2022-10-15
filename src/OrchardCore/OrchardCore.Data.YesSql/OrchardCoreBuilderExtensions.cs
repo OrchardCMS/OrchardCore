@@ -3,7 +3,6 @@ using System.Buffers;
 using System.Data;
 using System.IO;
 using System.Linq;
-using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Data.Documents;
@@ -40,15 +39,13 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
                 services.AddTransient<IConfigureOptions<SqliteOptions>, SqliteOptionsConfiguration>();
+                services.AddTransient<IConfigureNamedOptions<YesSqlOptions>, YesSqlOptionsConfiguration>();
 
                 // Adding supported databases
                 services.TryAddDataProvider(name: "Sql Server", value: DatabaseProviderValue.SqlConnection, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
                 services.TryAddDataProvider(name: "Sqlite", value: DatabaseProviderValue.Sqlite, hasConnectionString: false, hasTablePrefix: false, isDefault: true);
                 services.TryAddDataProvider(name: "MySql", value: DatabaseProviderValue.MySql, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
                 services.TryAddDataProvider(name: "Postgres", value: DatabaseProviderValue.Postgres, hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
-
-                // Ensure a non null 'TableNameConvention' to be always used for `YesSql.Configuration` and then in sync with it.
-                services.PostConfigure<YesSqlOptions>(o => o.TableNameConvention ??= new YesSql.Configuration().TableNameConvention);
 
                 // Configuring data access
                 services.AddSingleton(sp =>
@@ -61,7 +58,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         return null;
                     }
 
-                    var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
+                    var yesSqlOptions = sp.GetService<IOptionsSnapshot<YesSqlOptions>>().Get(shellSettings.Name);
                     var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions);
 
                     switch (shellSettings["DatabaseProvider"])
@@ -165,7 +162,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 CommandsPageSize = yesSqlOptions.CommandsPageSize,
                 QueryGatingEnabled = yesSqlOptions.QueryGatingEnabled,
                 ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
-                TableNameConvention = yesSqlOptions.TableNameConvention
+                TableNameConvention = yesSqlOptions.TableNameConvention,
             };
 
             if (yesSqlOptions.IdGenerator != null)

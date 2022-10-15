@@ -38,13 +38,37 @@ OrchardCore uses the `YesSql` library to interact with the configured database p
 | `ContentSerializer` | You can provide your own content serializer. |
 | `TablePrefixSeparator` | Gets or sets the prefix used to seperate database prefix and the table name. |
 
-For example, you can change the default table prefix seperator from `_` to `__` by adding the following code to your startup code.
+Custom settings should be provided by named options and not rely on a module feature, this to be able to check a database connection before a tenant is built.
+
+For example, if you know by advance the tenant names, you can change their default table prefix seperator from `_` to `__` by adding the following code to your startup code.
 
 ```C#
-services.Configure<YesSqlOptions>(options =>
-{
-    options.TablePrefixSeparator = "__";
-});
+builder.Services
+    .AddOrchardCms()
+    .AddSetupFeatures("OrchardCore.AutoSetup")
+    .ConfigureServices(tenantServices =>
+    {
+        tenantServices.Configure<YesSqlOptions>("Default", options =>
+        {
+            options.TablePrefixSeparator = "__";
+        });
+        tenantServices.Configure<YesSqlOptions>("MyTenant1", options =>
+        {
+            options.TablePrefixSeparator = "__";
+        });
+    });
+```
+
+For example, if you don't know by advance the tenant names, you can register a global options configuration using custom rules based on tenant names.
+
+```C#
+builder.Services
+    .AddOrchardCms()
+    .AddSetupFeatures("OrchardCore.AutoSetup")
+    .ConfigureServices(tenantServices =>
+    {
+        services.AddTransient<IConfigureNamedOptions<YesSqlOptions>, CustomYesSqlOptionsConfiguration>();
+    });
 ```
 
 ## Running SQL queries

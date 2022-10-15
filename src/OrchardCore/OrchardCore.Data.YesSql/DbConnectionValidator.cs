@@ -26,24 +26,26 @@ public class DbConnectionValidator : IDbConnectionValidator
     private static readonly string _shellDescriptorTypeColumnValue = new TypeService()[typeof(ShellDescriptor)];
 
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
-    private readonly YesSqlOptions _yesSqlOptions;
+    private readonly IOptionsSnapshot<YesSqlOptions> _yesSqlOptions;
     private readonly SqliteOptions _sqliteOptions;
     private readonly ShellOptions _shellOptions;
 
     public DbConnectionValidator(
         IEnumerable<DatabaseProvider> databaseProviders,
-        IOptions<YesSqlOptions> yesSqlOptions,
+        IOptionsSnapshot<YesSqlOptions> yesSqlOptions,
         IOptions<SqliteOptions> sqliteOptions,
         IOptions<ShellOptions> shellOptions)
     {
         _databaseProviders = databaseProviders;
-        _yesSqlOptions = yesSqlOptions.Value;
+        _yesSqlOptions = yesSqlOptions;
         _sqliteOptions = sqliteOptions.Value;
         _shellOptions = shellOptions.Value;
     }
 
     public async Task<DbConnectionValidatorResult> ValidateAsync(string databaseProvider, string connectionString, string tablePrefix, string shellName)
     {
+        var yesSqlOptions = _yesSqlOptions.Get(shellName);
+
         if (String.IsNullOrWhiteSpace(databaseProvider))
         {
             return DbConnectionValidatorResult.NoProvider;
@@ -88,7 +90,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             return DbConnectionValidatorResult.DocumentTableNotFound;
         }
 
-        var selectBuilder = GetSelectBuilderForDocumentTable(tablePrefix, databaseProvider);
+        var selectBuilder = GetSelectBuilderForDocumentTable(tablePrefix, databaseProvider, yesSqlOptions);
         try
         {
             var selectCommand = connection.CreateCommand();
@@ -118,7 +120,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             return DbConnectionValidatorResult.DocumentTableNotFound;
         }
 
-        selectBuilder = GetSelectBuilderForShellDescriptorDocument(tablePrefix, databaseProvider);
+        selectBuilder = GetSelectBuilderForShellDescriptorDocument(tablePrefix, databaseProvider, yesSqlOptions);
         try
         {
             var selectCommand = connection.CreateCommand();
@@ -139,25 +141,25 @@ public class DbConnectionValidator : IDbConnectionValidator
         return DbConnectionValidatorResult.DocumentTableFound;
     }
 
-    private ISqlBuilder GetSelectBuilderForDocumentTable(string tablePrefix, string databaseProvider)
+    private static ISqlBuilder GetSelectBuilderForDocumentTable(string tablePrefix, string databaseProvider, YesSqlOptions yesSqlOptions)
     {
-        var selectBuilder = GetSqlBuilder(databaseProvider, tablePrefix);
+        var selectBuilder = GetSqlBuilder(databaseProvider, tablePrefix, yesSqlOptions);
 
         selectBuilder.Select();
         selectBuilder.Selector("*");
-        selectBuilder.Table(_yesSqlOptions.TableNameConvention.GetDocumentTable(), alias: null, schema: null);
+        selectBuilder.Table(yesSqlOptions.TableNameConvention.GetDocumentTable(), alias: null, schema: null);
         selectBuilder.Take("1");
 
         return selectBuilder;
     }
 
-    private ISqlBuilder GetSelectBuilderForShellDescriptorDocument(string tablePrefix, string databaseProvider)
+    private static ISqlBuilder GetSelectBuilderForShellDescriptorDocument(string tablePrefix, string databaseProvider, YesSqlOptions yesSqlOptions)
     {
-        var selectBuilder = GetSqlBuilder(databaseProvider, tablePrefix);
+        var selectBuilder = GetSqlBuilder(databaseProvider, tablePrefix, yesSqlOptions);
 
         selectBuilder.Select();
         selectBuilder.Selector("*");
-        selectBuilder.Table(_yesSqlOptions.TableNameConvention.GetDocumentTable(), alias: null, schema: null);
+        selectBuilder.Table(yesSqlOptions.TableNameConvention.GetDocumentTable(), alias: null, schema: null);
         selectBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
         selectBuilder.Take("1");
 
@@ -176,7 +178,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         };
     }
 
-    private ISqlBuilder GetSqlBuilder(string databaseProvider, string tablePrefix)
+    private static ISqlBuilder GetSqlBuilder(string databaseProvider, string tablePrefix, YesSqlOptions yesSqlOptions)
     {
         ISqlDialect dialect = databaseProvider switch
         {
@@ -190,7 +192,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         var prefix = String.Empty;
         if (!String.IsNullOrWhiteSpace(tablePrefix))
         {
-            prefix = tablePrefix.Trim() + _yesSqlOptions.TablePrefixSeparator;
+            prefix = tablePrefix.Trim() + yesSqlOptions.TablePrefixSeparator;
         }
 
         return new SqlBuilder(prefix, dialect);
