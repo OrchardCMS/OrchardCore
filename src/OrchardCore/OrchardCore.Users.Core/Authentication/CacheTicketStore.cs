@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Runtime.Serialization;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -16,98 +15,96 @@ namespace OrchardCore.Users.Authentication;
 public class CacheTicketStore : ITicketStore
 {
     private const string _keyPrefix = "ocauth-ticket";
-    private readonly IHttpContextAccessor _accessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private IDataProtector _dataProtector;
 
-    public CacheTicketStore(IHttpContextAccessor accessor)
+    public CacheTicketStore(IHttpContextAccessor httpContextAccessor)
     {
-        _accessor = accessor;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task RemoveAsync(string key)
     {
-        var cache = _accessor.HttpContext.RequestServices.GetService<IDistributedCache>();
-        var bytes = await cache.GetAsync($"{_keyPrefix}-{key}");
-        if (bytes != null && bytes.Length > 0)
-        {
-            await cache.RemoveAsync($"{_keyPrefix}-{key}");
-        }
+        var cacheKey = String.Concat(_keyPrefix, "-", key);
+        var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
+        await cache.RemoveAsync(cacheKey);
     }
 
     public async Task RenewAsync(string key, AuthenticationTicket ticket)
     {
-        var cache = _accessor.HttpContext.RequestServices.GetService<IDistributedCache>();
-        var dataProtector = _accessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
+        var cacheKey = String.Concat(_keyPrefix, "-", key);
+        var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
+        _dataProtector ??= _httpContextAccessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
                                 .CreateProtector($"{nameof(CacheTicketStore)}_{IdentityConstants.ApplicationScheme}");
-        var bytes = await cache.GetAsync($"{_keyPrefix}-{key}");
-        if (bytes != null && bytes.Length > 0)
-        {
-            var ticketValue = dataProtector.Protect(SerializeTicket(ticket));
-            var expiresUtc = ticket.Properties.ExpiresUtc;
 
-            var data = Deserialize(bytes);
-            // Update Last Activity Time
-            data.LastActivityUtc = DateTime.UtcNow;
-            data.ExpiresUtc = expiresUtc;
-            data.Value = ticketValue;
-            bytes = Serialize(data);
-            await cache.SetAsync($"{_keyPrefix}-{key}", bytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = expiresUtc.Value });
+        var userId = string.Empty;
+        var userName = string.Empty;
+        if (ticket.AuthenticationScheme == IdentityConstants.ApplicationScheme)
+        {
+            userId = ticket.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            userName = ticket.Principal.FindFirst(ClaimTypes.Name)?.Value ?? ticket.Principal.FindFirst("name")?.Value;
         }
+
+        var protectedBytes = _dataProtector.Protect(SerializeTicket(ticket));
+        var data = new TicketRecord
+        {
+            Key = key,
+            UserId = userId,
+            Username = userName,
+            LastActivity = DateTime.UtcNow,
+            Value = protectedBytes,
+            Expires = ticket.Properties.ExpiresUtc.Value.UtcDateTime,
+        };
+        var bytes = Serialize(data);
+        await cache.SetAsync(cacheKey, bytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc.Value });
     }
     public async Task<AuthenticationTicket> RetrieveAsync(string key)
     {
-        var cache = _accessor.HttpContext.RequestServices.GetService<IDistributedCache>();
-        var bytes = await cache.GetAsync($"{_keyPrefix}-{key}");
-
+        var cacheKey = String.Concat(_keyPrefix, "-", key);
+        var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
+        var bytes = await cache.GetAsync(cacheKey);
         if (bytes == null || bytes.Length == 0)
             return null;
+
         var data = Deserialize(bytes);
-        // Update Last Activity Time
-        data.LastActivityUtc = DateTime.UtcNow;
-        bytes = Serialize(data);
-        await cache.SetAsync($"{_keyPrefix}-{key}", bytes);
-
-        var dataProtector = _accessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
+        _dataProtector ??= _httpContextAccessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
                                 .CreateProtector($"{nameof(CacheTicketStore)}_{IdentityConstants.ApplicationScheme}");
+        var ticket = DeserializeTicket(_dataProtector.Unprotect(data.Value));
 
-        var ticket = DeserializeTicket(dataProtector.Unprotect(data.Value));
         return ticket;
     }
 
     public async Task<string> StoreAsync(AuthenticationTicket ticket)
     {
         var key = Guid.NewGuid().ToString();
+        var cacheKey = String.Concat(_keyPrefix, "-", key);
 
         var userId = string.Empty;
         var userName = string.Empty;
 
-        var nameIdentifierClaim = ticket.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var nameClaim = ticket.Principal.FindFirst(ClaimTypes.Name)?.Value ?? ticket.Principal.FindFirst("name")?.Value;
-
         if (ticket.AuthenticationScheme == IdentityConstants.ApplicationScheme)
         {
-            userId = nameIdentifierClaim;
-            userName = nameClaim;
+            userId = ticket.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value; ;
+            userName = ticket.Principal.FindFirst(ClaimTypes.Name)?.Value ?? ticket.Principal.FindFirst("name")?.Value;
         }
 
-        var dataProtector = _accessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
+        _dataProtector ??= _httpContextAccessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
                                 .CreateProtector($"{nameof(CacheTicketStore)}_{IdentityConstants.ApplicationScheme}");
 
-        var ticketValue = dataProtector.Protect(SerializeTicket(ticket));
-        var expiresUtc = ticket.Properties.ExpiresUtc;
-
+        var protectedBytes = _dataProtector.Protect(SerializeTicket(ticket));
         var data = new TicketRecord
         {
             Key = key,
             UserId = userId,
             Username = userName,
-            LastActivityUtc = DateTime.UtcNow,
-            Value = ticketValue,
-            ExpiresUtc = expiresUtc,
+            LastActivity = DateTime.UtcNow,
+            Value = protectedBytes,
+            Expires = ticket.Properties.ExpiresUtc.Value.UtcDateTime,
         };
 
-        var cache = _accessor.HttpContext.RequestServices.GetService<IDistributedCache>();
-        var bytes = Serialize(data);
-        await cache.SetAsync($"{_keyPrefix}-{key}", bytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = expiresUtc.Value });
+        var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
+        var ticketBytes = Serialize(data);
+        await cache.SetAsync(cacheKey, ticketBytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc.Value });
 
         return key;
     }
@@ -120,36 +117,46 @@ public class CacheTicketStore : ITicketStore
 
     private byte[] Serialize(TicketRecord m)
     {
-        using (var ms = new MemoryStream())
-        {
-            (new DataContractSerializer(typeof(TicketRecord))).WriteObject(ms, m);
-            return ms.ToArray();
-        }
+        using var ms = new MemoryStream();
+
+        using var writer = new BinaryWriter(ms);
+        writer.Write(m.Key);
+        writer.Write(m.UserId);
+        writer.Write(m.Username);
+        writer.Write7BitEncodedInt64(m.LastActivity.Ticks);
+        writer.Write7BitEncodedInt(m.Value.Length);
+        writer.Write(m.Value);
+        writer.Write7BitEncodedInt64(m.Expires.Value.Ticks);
+
+        return ms.ToArray();
     }
 
     private TicketRecord Deserialize(byte[] byteArray)
     {
-        using (var ms = new MemoryStream(byteArray))
-        {
-            return (TicketRecord)(new DataContractSerializer(typeof(TicketRecord))).ReadObject(ms);
-        }
+        using var ms = new MemoryStream(byteArray);
+        using var reader = new BinaryReader(ms);
+        var ticket = new TicketRecord();
+        ticket.Key = reader.ReadString();
+        ticket.UserId = reader.ReadString();
+        ticket.Username = reader.ReadString();
+        var activityTicks = reader.Read7BitEncodedInt64();
+        ticket.LastActivity = new DateTime(activityTicks, DateTimeKind.Utc);
+        var bytesLength = reader.Read7BitEncodedInt();
+        ticket.Value = reader.ReadBytes(bytesLength);
+        var expireTicks = reader.Read7BitEncodedInt64();
+        ticket.Expires = new DateTime(expireTicks, DateTimeKind.Utc);
+
+        return ticket;        
     }
 }
 
-[Serializable]
-[DataContract]
+
 public record class TicketRecord
 {
-    [DataMember]
     public string Key { get; set; }
-    [DataMember]
     public string UserId { get; set; }
-    [DataMember]
     public string Username { get; set; }
-    [DataMember]
-    public DateTime LastActivityUtc { get; set; }
-    [DataMember]
+    public DateTime LastActivity { get; set; }
     public byte[] Value { get; set; }
-    [DataMember]
-    public DateTimeOffset? ExpiresUtc { get; set; }
+    public DateTime? Expires { get; set; }
 }
