@@ -3,7 +3,7 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Notifications.Models;
 
-public class WebNotificationMessagePart : ContentPart
+public class WebNotificationPart : ContentPart
 {
     public bool IsRead { get; set; }
 
@@ -12,4 +12,6 @@ public class WebNotificationMessagePart : ContentPart
     public string Subject { get; set; }
 
     public string Body { get; set; }
+
+    public bool IsHtmlBody { get; set; }
 }

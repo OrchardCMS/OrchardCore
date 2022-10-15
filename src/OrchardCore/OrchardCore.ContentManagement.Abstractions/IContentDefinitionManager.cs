@@ -152,5 +152,15 @@ namespace OrchardCore.ContentManagement.Metadata
                 });
             }
         }
+
+        public static ContentTypeDefinition GetTypeDefinitionOrNamed(this IContentDefinitionManager manager, string type)
+        {
+            if (String.IsNullOrEmpty(type))
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            return manager.GetTypeDefinition(type) ?? new ContentTypeDefinitionBuilder().Named(type).Build();
+        }
     }
 }

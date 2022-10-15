@@ -1,8 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Modules;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Users;
@@ -14,25 +12,19 @@ namespace OrchardCore.Notifications.Services;
 public class WebNotificationProvider : INotificationMethodProvider
 {
     private readonly IStringLocalizer<WebNotificationProvider> S;
-    private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IContentManager _contentManager;
     private readonly IClock _clock;
     private readonly ISession _session;
-    private readonly ILogger _logger;
 
     public WebNotificationProvider(IStringLocalizer<WebNotificationProvider> stringLocalizer,
-        IContentDefinitionManager contentDefinitionManager,
         IContentManager contentManager,
         IClock clock,
-        ISession session,
-        ILogger<WebNotificationProvider> logger)
+        ISession session)
     {
         S = stringLocalizer;
-        _contentDefinitionManager = contentDefinitionManager;
         _contentManager = contentManager;
         _clock = clock;
         _session = session;
-        _logger = logger;
     }
 
     public string Method => "Web";
@@ -46,15 +38,16 @@ public class WebNotificationProvider : INotificationMethodProvider
             return false;
         }
 
-        var notificationMessage = await _contentManager.NewAsync(NotificationConstants.WebNotificationMessageContentType);
+        var notificationMessage = await _contentManager.NewAsync(NotificationConstants.WebNotificationContentType);
         notificationMessage.CreatedUtc = _clock.UtcNow;
         notificationMessage.Author = su.UserName;
         notificationMessage.Owner = su.UserId;
         notificationMessage.Latest = true;
-        notificationMessage.Alter<WebNotificationMessagePart>(part =>
+        notificationMessage.Alter<WebNotificationPart>(part =>
         {
             part.Subject = message.Subject;
             part.Body = message.Body;
+            part.IsHtmlBody = message is HtmlNotificationMessage nm && nm.BodyContainsHtml;
         });
 
         _session.Save(notificationMessage);

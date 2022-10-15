@@ -1,0 +1,88 @@
+@using OrchardCore.ContentManagement
+@using Microsoft.AspNetCore.Html
+@using OrchardCore.Notifications.Models
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var infoPart = contentItem.As<WebNotificationPart>();
+
+    if (infoPart == null)
+    {
+        return;
+    }
+}
+
+<div data-message-id="@contentItem.ContentItemId" data-is-read="@infoPart.IsRead.ToString().ToLowerInvariant()" class="list-group-item mark-notification-as-read p-3@(infoPart.IsRead ? " notification-is-read": " notification-is-unread")">
+    <div class="row">
+        <div class="col-lg col-12 title d-flex">
+            <div class="summary d-flex flex-column flex-md-row">
+                <div class="contentitem me-2">
+
+                    <h5 class="mb-0">@infoPart.Subject</h5>
+
+                    @if (!String.IsNullOrWhiteSpace(infoPart.Body))
+                    {
+                        <p class="mb-0 mt-2">
+                            @if (infoPart.IsHtmlBody)
+                            {
+                                @Html.Raw(infoPart.Body)
+                            }
+                            else
+                            {
+                                @infoPart.Body
+                            }
+                        </p>
+                    }
+
+                </div>
+                @if (Model.Header != null)
+                {
+                    <div class="header me-1">
+                        @await DisplayAsync(Model.Header)
+                    </div>
+                }
+                @if (Model.Tags != null)
+                {
+                    <div class="tags me-1">
+                        @await DisplayAsync(Model.Tags)
+                    </div>
+                }
+                @if (Model.Meta != null)
+                {
+                    <div class="metadata me-1">
+                        @await DisplayAsync(Model.Meta)
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-lg-auto col-12 d-flex justify-content-end">
+            <div class="actions">
+                @if (Model.Actions != null)
+                {
+                    @await DisplayAsync(Model.Actions)
+                }
+
+                @if (Model.ActionsMenu != null && Model.ActionsMenu.HasItems)
+                {
+                    <div class="btn-group" title="@T["Actions"]">
+                        <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span>@T["Actions"]</span>
+                        </button>
+                        <div class="actions-menu dropdown-menu dropdown-menu-end">
+                            @await DisplayAsync(Model.ActionsMenu)
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Content != null)
+{
+    <div class="row">
+        <div class="col primary">
+            @await DisplayAsync(Model.Content)
+        </div>
+    </div>
+}

@@ -85,7 +85,7 @@ namespace OrchardCore.Contents.TagHelpers
                 contentItem = DisplayFor;
                 var previewAspect = await _contentManager.PopulateAspectAsync<PreviewAspect>(contentItem);
 
-                if (!string.IsNullOrEmpty(previewAspect.PreviewUrl))
+                if (!String.IsNullOrEmpty(previewAspect.PreviewUrl))
                 {
                     var previewUrl = previewAspect.PreviewUrl;
                     if (!previewUrl.StartsWith("~/", StringComparison.OrdinalIgnoreCase))
@@ -176,13 +176,13 @@ namespace OrchardCore.Contents.TagHelpers
             if (output.TagMode == TagMode.SelfClosing && metadata != null)
             {
                 output.TagMode = TagMode.StartTagAndEndTag;
-                if (!string.IsNullOrEmpty(contentItem.DisplayText))
+                if (!String.IsNullOrEmpty(contentItem.DisplayText))
                 {
                     output.Content.Append(contentItem.DisplayText);
                 }
                 else
                 {
-                    var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                    var typeDefinition = _contentDefinitionManager.GetTypeDefinitionOrNamed(contentItem.ContentType);
                     output.Content.Append(typeDefinition.ToString());
                 }
             }
@@ -190,7 +190,7 @@ namespace OrchardCore.Contents.TagHelpers
             return;
         }
 
-        private void ApplyRouteValues(TagHelperContext tagHelperContext, RouteValueDictionary route)
+        private static void ApplyRouteValues(TagHelperContext tagHelperContext, RouteValueDictionary route)
         {
             foreach (var attribute in tagHelperContext.AllAttributes)
             {

@@ -59,10 +59,9 @@ public class WebNotificationStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<INotificationMethodProvider, WebNotificationProvider>();
-        services.AddContentPart<NotificationListPart>();
-        services.AddContentPart<WebNotificationMessagePart>();
+        services.AddContentPart<WebNotificationPart>();
         services.AddDataMigration<NotificationMigrations>();
-        services.AddSingleton<IIndexProvider, WebNotificationMessageIndexProvider>();
+        services.AddSingleton<IIndexProvider, WebNotificationIndexProvider>();
         services.AddScoped<IPermissionProvider, WebNotificationPermissionProvider>();
 
         services.Configure<MvcOptions>((options) =>
@@ -77,7 +76,7 @@ public class WebNotificationStartup : StartupBase
             name: "ListWebNotifications",
             areaName: "OrchardCore.Notifications",
             pattern: "notifications",
-            defaults: new { controller = typeof(WebNotificationsController).ControllerName(), action = nameof(WebNotificationsController.Index) }
+            defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.List) }
         );
     }
 }

@@ -1,0 +1,32 @@
+@model ListNotificationsViewModel
+
+<div class="list-group notification-container">
+    @if (Model.Notifications.Any())
+    {
+        @foreach (var notification in Model.Notifications)
+        {
+            @await DisplayAsync(notification)
+        }
+    }
+    else
+    {
+        <div class="list-group-item">
+            <div class="alert alert-info mb-0">
+                @T["No results found."]
+            </div>
+        </div>
+    }
+</div>
+
+@await DisplayAsync(Model.Pager)
+
+<style at="Head">
+    .notification-container .notification-is-unread {
+        color: #664d03 !important;
+        background-color: #fff3cd !important;
+    }
+
+        .notification-container .notification-is-unread:hover {
+            cursor: pointer !important;
+        }
+</style>

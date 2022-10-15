@@ -71,6 +71,8 @@ public abstract class NotifyUserTaskActivity : TaskActivity
             return Outcomes("Failed: user not found");
         }
 
+        workflowContext.Input.TryAdd("Owner", user);
+
         if (user is User su && !su.IsEnabled)
         {
             return Outcomes("Failed: disabled User");
