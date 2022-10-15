@@ -97,6 +97,7 @@ namespace OrchardCore.Queries.Sql
             {
                 EvaluateStatementList(statementsBuilder, unionStatementList, true);
             }
+
             statementsBuilder.Append(';');
 
             return statementsBuilder.ToString();
@@ -523,7 +524,9 @@ namespace OrchardCore.Queries.Sql
             var aliasList = parseTreeNode.ChildNodes[1];
 
             _modes.Push(FormattingModes.FromClause);
+
             EvaluateAliasOrSubQueryList(aliasList);
+
             _modes.Pop();
 
             var joins = parseTreeNode.ChildNodes[2];
@@ -612,7 +615,9 @@ namespace OrchardCore.Queries.Sql
                 else if (aliasItemOrSubQuery.Term.Name == "subQuery")
                 {
                     _builder.Append("(");
+
                     EvaluateStatementList(_builder, aliasItemOrSubQuery.ChildNodes[0], false);
+
                     _builder.Append(") AS ");
                     _builder.Append(aliasItemOrSubQuery.ChildNodes[2].Token.ValueString);
                 }
@@ -817,6 +822,7 @@ namespace OrchardCore.Queries.Sql
         private string EvaluateCteStatement(ParseTreeNode cteStatement)
         {
             _builder.Append("WITH ");
+
             for (var i = 0; i < cteStatement.ChildNodes[1].ChildNodes.Count; i++)
             {
                 var cte = cteStatement.ChildNodes[1].ChildNodes[i];
@@ -828,6 +834,7 @@ namespace OrchardCore.Queries.Sql
                 var expressionName = cte.ChildNodes[0].Token.ValueString;
                 var optionalColumns = cte.ChildNodes[1];
                 _builder.Append(expressionName);
+
                 if (optionalColumns.ChildNodes.Count > 0)
                 {
                     var columns = optionalColumns.ChildNodes[0].ChildNodes;
@@ -838,15 +845,19 @@ namespace OrchardCore.Queries.Sql
                         {
                             _builder.Append(", ");
                         }
+
                         _builder.Append(columns[j].Token.ValueString);
                     }
                     _builder.Append(")");
                 }
+
                 _builder.Append(" AS (");
                 EvaluateStatementList(_builder, cte.ChildNodes[3], false);
                 _builder.Append(")");
             }
+
             _builder.Append(" ");
+
             return _builder.ToString();
         }
 
@@ -865,6 +876,7 @@ namespace OrchardCore.Queries.Sql
                         builder.Append(EvaluateCteStatement(cte));
                     }
                 }
+
                 builder.Append(EvaluateSelectStatement(selectStatement));
 
                 for (var i = 0; i < unionClauseOpt.ChildNodes.Count; i++)
@@ -873,7 +885,9 @@ namespace OrchardCore.Queries.Sql
                     {
                         builder.Append(" ");
                     }
+
                     var term = unionClauseOpt.ChildNodes[i].Term;
+
                     builder.Append(term).Append(" ");
                 }
             }
