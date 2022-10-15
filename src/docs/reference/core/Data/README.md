@@ -59,7 +59,7 @@ builder.Services
     });
 ```
 
-For example, if you don't know by advance the tenant names, you can register a global options configuration using custom rules based on tenant names.
+For example, if you don't know by advance the tenant names, you can register a global configuration implementing `IConfigureNamedOptions<YesSqlOptions>` to provide options based on tenant names.
 
 ```C#
 builder.Services
@@ -67,7 +67,7 @@ builder.Services
     .AddSetupFeatures("OrchardCore.AutoSetup")
     .ConfigureServices(tenantServices =>
     {
-        services.AddTransient<IConfigureNamedOptions<YesSqlOptions>, CustomYesSqlOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<YesSqlOptions>, CustomYesSqlOptionsConfiguration>();
     });
 ```
 
