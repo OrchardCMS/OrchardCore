@@ -1,0 +1,75 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@model ShapeViewModel<UserWebNotificationViewModel>
+
+<div class="dropdown me-3">
+    <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+        @if (Model.Value.TotalUnread > 0)
+        {
+            var notifications = T.Plural(Model.Value.TotalUnread, "notification", "notifications");
+            LocalizedHtmlString title;
+            if (Model.Value.TotalUnread > 10)
+            {
+                title = T["You have more than {0} unread {1}", 10, notifications];
+            }
+            else
+            {
+                title = T["You have {0} unread {1}", Model.Value.TotalUnread, notifications];
+            }
+
+            <i class="fa fa-bell" aria-hidden="true" data-bs-toggle="tooltip" data-bs-original-title="@title"></i>
+        }
+        else
+        {
+            <i class="fa fa-bell-o" aria-hidden="true" data-bs-toggle="tooltip" data-bs-original-title="@T["You have no unread notifications"]"></i>
+        }
+    </a>
+    <ul class="dropdown-menu">
+        @if (Model.Value.Notifications.Count() > 0)
+        {
+            @foreach (var notification in Model.Value.Notifications)
+            {
+                <li data-message-id="@notification.MessageId" class="dropdown-item mark-notification-as-read fw-bold">
+                    <span aria-hidden="false" data-bs-toggle="tooltip" data-bs-original-title="@notification.Body">@notification.Subject</span>
+                </li>
+            }
+        }
+
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" asp-action="Index" asp-controller="WebNotifications" asp-area="OrchardCore.Notifications">View all</a></li>
+    </ul>
+</div>
+
+<script at="Foot">
+    (function () {
+        var elements = document.getElementsByClassName('mark-notification-as-read');
+        for (let i = 0; i < elements.length; i++) {
+
+            let element = elements[i];
+
+            element.addEventListener('click', (e) => {
+                var messageId = element.getAttribute('data-message-id');
+
+                if (!messageId) {
+                    return;
+                }
+                let formData = new FormData();
+                formData.append('messageId', messageId);
+
+                fetch('@Url.Action("Read", "WebNotificationApi", new { area = "OrchardCore.Notifications" })', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData
+                }).then(response => response.json())
+                    .then(result => {
+                        if (result.updated) {
+                            element.classList.remove('fw-bold');
+                            console.log('notification was read!');
+                        }
+                    });
+            });
+        }
+    })();
+</script>

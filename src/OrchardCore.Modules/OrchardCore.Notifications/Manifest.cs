@@ -15,6 +15,17 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
+    Id = "OrchardCore.Notifications.Web",
+    Name = "Web Notifications",
+    Description = "Provides a way to sent Web Notifications to users.",
+    Category = "Notifications",
+    Dependencies = new[]
+    {
+        "OrchardCore.Notifications"
+    }
+)]
+
+[assembly: Feature(
     Id = "OrchardCore.Notifications.Email",
     Name = "Email Notifications",
     Description = "Provides a way to sent Email Notifications to users.",

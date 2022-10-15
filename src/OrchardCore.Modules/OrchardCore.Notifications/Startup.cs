@@ -1,13 +1,25 @@
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ContentManagement;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Notifications.Activities;
+using OrchardCore.Notifications.Controllers;
 using OrchardCore.Notifications.Drivers;
+using OrchardCore.Notifications.Filters;
+using OrchardCore.Notifications.Indexes;
 using OrchardCore.Notifications.Migrations;
+using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.Services;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
+using YesSql.Indexes;
 
 namespace OrchardCore.Notifications;
 
@@ -38,6 +50,35 @@ public class UsersStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddActivity<NotifyContentOwnerTask, NotifyContentOwnerTaskDisplayDriver>();
+    }
+}
+
+[Feature("OrchardCore.Notifications.Web")]
+public class WebNotificationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<INotificationMethodProvider, WebNotificationProvider>();
+        services.AddContentPart<NotificationListPart>();
+        services.AddContentPart<WebNotificationMessagePart>();
+        services.AddDataMigration<NotificationMigrations>();
+        services.AddSingleton<IIndexProvider, WebNotificationMessageIndexProvider>();
+        services.AddScoped<IPermissionProvider, WebNotificationPermissionProvider>();
+
+        services.Configure<MvcOptions>((options) =>
+        {
+            options.Filters.Add(typeof(WebNotificationResultFilter));
+        });
+    }
+
+    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.MapAreaControllerRoute(
+            name: "ListWebNotifications",
+            areaName: "OrchardCore.Notifications",
+            pattern: "notifications",
+            defaults: new { controller = typeof(WebNotificationsController).ControllerName(), action = nameof(WebNotificationsController.Index) }
+        );
     }
 }
 

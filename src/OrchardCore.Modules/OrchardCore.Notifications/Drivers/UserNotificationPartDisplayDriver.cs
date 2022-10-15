@@ -8,6 +8,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Notifications.Models;
+using OrchardCore.Notifications.ViewModels;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Notifications.Drivers;
@@ -28,6 +29,12 @@ public class UserNotificationPartDisplayDriver : SectionDisplayDriver<User, User
             var selectedTypes = new List<string>(part.Methods ?? Array.Empty<string>());
             viewModel.Methods = selectedTypes.ToArray();
             viewModel.Strategy = part.Strategy;
+
+            viewModel.Strategies = new List<SelectListItem>()
+            {
+                new SelectListItem("Notify all methods", UserNotificationStrategy.AllMethods.ToString()),
+                new SelectListItem("Notify until the first success", UserNotificationStrategy.UntilFirstSuccess.ToString()),
+            };
 
             viewModel.AvailableMethods = _notificationMethodProviders
                 .Select(provider => new SelectListItem(provider.Name, provider.Method))

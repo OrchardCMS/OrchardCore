@@ -1,15 +1,22 @@
 @model UserNotificationViewModel
+@{
+    var methodsHtmlId = Html.IdFor(x => x.Methods);
+}
 
+<div class="mb-3">
+    <label asp-for="Strategy">@T["Notification Strategy"]</label>
+    <select asp-for="Strategy" asp-items="@Model.Strategies" class="form-select"></select>
+</div>
 <div class="mb-3">
     <label asp-for="Methods">@T["Notification Methods"]</label>
 
     <span class="hint">
         @T["Select all notification methods to receive."]
     </span>
-    <ul class="list-group" id="@Html.IdFor(x => x.Methods)">
+    <ul class="list-group" id="@methodsHtmlId">
         @foreach (var option in Model.AvailableMethods)
         {
-            var htmlId = $"Notification_Method_{option.Value}";
+            var htmlId = $"{methodsHtmlId}_Method_{option.Value}";
 
             <li class="list-group-item">
                 <div class="form-check">
@@ -28,7 +35,7 @@
 </div>
 
 <script at="Foot">
-    const list = document.getElementById('@Html.IdFor(x => x.Methods)')
+    const list = document.getElementById('@methodsHtmlId')
 
     const getMouseOffset = (evt) => {
         const targetRect = evt.target.getBoundingClientRect()

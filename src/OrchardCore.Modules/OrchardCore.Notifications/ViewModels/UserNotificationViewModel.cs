@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Notifications.Models;
@@ -13,4 +13,7 @@ public class UserNotificationViewModel
 
     [BindNever]
     public IEnumerable<SelectListItem> AvailableMethods { get; set; }
+
+    [BindNever]
+    public IEnumerable<SelectListItem> Strategies { get; set; }
 }
