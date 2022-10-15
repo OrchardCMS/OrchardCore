@@ -43,6 +43,10 @@
             "VSCode"
           ]
         },
+        "IncludeFunctionalTests": {
+          "type": "boolean",
+          "description": "Whether to run functional tests, defaults to true when running on Linux platfrom"
+        },
         "NoLogo": {
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"

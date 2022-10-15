@@ -26,6 +26,9 @@ partial class Build : NukeBuild
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
+    [Parameter("Whether to run functional tests, defaults to true when running on Linux platfrom")]
+    readonly bool IncludeFunctionalTests = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+
     [Solution] readonly Solution Solution;
 
     AbsolutePath SourceDirectory => RootDirectory / "src";
@@ -79,7 +82,7 @@ partial class Build : NukeBuild
 
     Target FunctionalTest => _ => _
         .After(Compile)
-        .OnlyWhenDynamic(() => RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        .OnlyWhenDynamic(() => IncludeFunctionalTests)
         .Produces(RootDirectory / "test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots/*.*", RootDirectory / "src/OrchardCore.Cms.Web/App_Data/logs/*.*")
         .Executes(() =>
         {
