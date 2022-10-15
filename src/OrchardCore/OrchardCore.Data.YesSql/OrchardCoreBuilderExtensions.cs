@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
                 services.AddTransient<IConfigureOptions<SqliteOptions>, SqliteOptionsConfiguration>();
-                services.AddTransient<IConfigureNamedOptions<YesSqlOptions>, YesSqlOptionsConfiguration>();
+                services.AddTransient<IConfigureOptions<YesSqlOptions>, YesSqlOptionsConfiguration>();
 
                 // Adding supported databases
                 services.TryAddDataProvider(name: "Sql Server", value: DatabaseProviderValue.SqlConnection, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
@@ -58,7 +58,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         return null;
                     }
 
-                    var yesSqlOptions = sp.GetService<IOptionsSnapshot<YesSqlOptions>>().Get(shellSettings.Name);
+                    var yesSqlOptions = sp.GetService<IOptionsMonitor<YesSqlOptions>>().Get(shellSettings.Name);
                     var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions);
 
                     switch (shellSettings["DatabaseProvider"])

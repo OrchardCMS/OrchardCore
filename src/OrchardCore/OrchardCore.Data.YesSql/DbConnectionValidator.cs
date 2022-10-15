@@ -26,13 +26,13 @@ public class DbConnectionValidator : IDbConnectionValidator
     private static readonly string _shellDescriptorTypeColumnValue = new TypeService()[typeof(ShellDescriptor)];
 
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
-    private readonly IOptionsSnapshot<YesSqlOptions> _yesSqlOptions;
+    private readonly IOptionsMonitor<YesSqlOptions> _yesSqlOptions;
     private readonly SqliteOptions _sqliteOptions;
     private readonly ShellOptions _shellOptions;
 
     public DbConnectionValidator(
         IEnumerable<DatabaseProvider> databaseProviders,
-        IOptionsSnapshot<YesSqlOptions> yesSqlOptions,
+        IOptionsMonitor<YesSqlOptions> yesSqlOptions,
         IOptions<SqliteOptions> sqliteOptions,
         IOptions<ShellOptions> shellOptions)
     {
