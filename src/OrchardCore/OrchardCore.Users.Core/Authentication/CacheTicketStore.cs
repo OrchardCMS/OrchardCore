@@ -146,7 +146,7 @@ public class CacheTicketStore : ITicketStore
         var expireTicks = reader.Read7BitEncodedInt64();
         ticket.Expires = new DateTime(expireTicks, DateTimeKind.Utc);
 
-        return ticket;        
+        return ticket;
     }
 }
 
