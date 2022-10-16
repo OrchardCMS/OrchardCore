@@ -42,7 +42,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         _shellOptions = shellOptions.Value;
     }
 
-    public async Task<DbConnectionValidatorResult> ValidateAsync(string databaseProvider, string connectionString, string tablePrefix, string shellName)
+    public async Task<DbConnectionValidatorResult> ValidateAsync(string databaseProvider, string connectionString, string tablePrefix, string schema, string shellName)
     {
         var yesSqlOptions = _yesSqlOptions.Get(shellName);
 
@@ -90,7 +90,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             return DbConnectionValidatorResult.DocumentTableNotFound;
         }
 
-        var selectBuilder = GetSelectBuilderForDocumentTable(tablePrefix, databaseProvider, yesSqlOptions);
+        var selectBuilder = GetSelectBuilderForDocumentTable(tablePrefix, schema, databaseProvider, yesSqlOptions);
         try
         {
             var selectCommand = connection.CreateCommand();
@@ -120,7 +120,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             return DbConnectionValidatorResult.DocumentTableNotFound;
         }
 
-        selectBuilder = GetSelectBuilderForShellDescriptorDocument(tablePrefix, databaseProvider, yesSqlOptions);
+        selectBuilder = GetSelectBuilderForShellDescriptorDocument(tablePrefix, schema, databaseProvider, yesSqlOptions);
         try
         {
             var selectCommand = connection.CreateCommand();
@@ -141,25 +141,25 @@ public class DbConnectionValidator : IDbConnectionValidator
         return DbConnectionValidatorResult.DocumentTableFound;
     }
 
-    private static ISqlBuilder GetSelectBuilderForDocumentTable(string tablePrefix, string databaseProvider, YesSqlOptions yesSqlOptions)
+    private static ISqlBuilder GetSelectBuilderForDocumentTable(string tablePrefix, string schema, string databaseProvider, YesSqlOptions yesSqlOptions)
     {
         var selectBuilder = GetSqlBuilder(databaseProvider, tablePrefix, yesSqlOptions);
 
         selectBuilder.Select();
         selectBuilder.Selector("*");
-        selectBuilder.Table(yesSqlOptions.TableNameConvention.GetDocumentTable(), alias: null, schema: null);
+        selectBuilder.Table(yesSqlOptions.TableNameConvention.GetDocumentTable(), alias: null, schema);
         selectBuilder.Take("1");
 
         return selectBuilder;
     }
 
-    private static ISqlBuilder GetSelectBuilderForShellDescriptorDocument(string tablePrefix, string databaseProvider, YesSqlOptions yesSqlOptions)
+    private static ISqlBuilder GetSelectBuilderForShellDescriptorDocument(string tablePrefix, string schema, string databaseProvider, YesSqlOptions yesSqlOptions)
     {
         var selectBuilder = GetSqlBuilder(databaseProvider, tablePrefix, yesSqlOptions);
 
         selectBuilder.Select();
         selectBuilder.Selector("*");
-        selectBuilder.Table(yesSqlOptions.TableNameConvention.GetDocumentTable(), alias: null, schema: null);
+        selectBuilder.Table(yesSqlOptions.TableNameConvention.GetDocumentTable(), alias: null, schema);
         selectBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
         selectBuilder.Take("1");
 

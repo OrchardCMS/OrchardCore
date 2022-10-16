@@ -91,7 +91,7 @@ namespace OrchardCore.Tenants.Services
                     }
                 }
 
-                await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, errors, model.Name);
+                await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, schema: null, errors, model.Name);
             }
             else
             {
@@ -100,16 +100,16 @@ namespace OrchardCore.Tenants.Services
                     // While the tenant is in Uninitialized state, we still are able to change the database settings.
                     // Let's validate the database for assurance.
 
-                    await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, errors, model.Name);
+                    await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, schema: null, errors, model.Name);
                 }
             }
 
             return errors;
         }
 
-        private async Task AssertConnectionValidityAndApplyErrorsAsync(string databaseProvider, string connectionString, string tablePrefix, List<ModelError> errors, string shellName)
+        private async Task AssertConnectionValidityAndApplyErrorsAsync(string databaseProvider, string connectionString, string tablePrefix, string schema, List<ModelError> errors, string shellName)
         {
-            switch (await _dbConnectionValidator.ValidateAsync(databaseProvider, connectionString, tablePrefix, shellName))
+            switch (await _dbConnectionValidator.ValidateAsync(databaseProvider, connectionString, tablePrefix, schema, shellName))
             {
                 case DbConnectionValidatorResult.UnsupportedProvider:
                     errors.Add(new ModelError(nameof(TenantViewModel.DatabaseProvider), S["The provided database provider is not supported."]));

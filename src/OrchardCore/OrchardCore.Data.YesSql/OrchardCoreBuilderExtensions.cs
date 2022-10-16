@@ -100,6 +100,11 @@ namespace Microsoft.Extensions.DependencyInjection
                         storeConfiguration = storeConfiguration.SetTablePrefix(tablePrefix);
                     }
 
+                    if (!String.IsNullOrWhiteSpace(shellSettings["Schema"]))
+                    {
+                        storeConfiguration.Schema = shellSettings["Schema"].Trim();
+                    }
+
                     var store = StoreFactory.CreateAndInitializeAsync(storeConfiguration).GetAwaiter().GetResult();
                     var options = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
                     foreach (var collection in options.Collections)
