@@ -62,7 +62,7 @@ public class WebNotificationStartup : StartupBase
         services.AddContentPart<WebNotificationPart>();
         services.AddDataMigration<NotificationMigrations>();
         services.AddSingleton<IIndexProvider, WebNotificationIndexProvider>();
-        services.AddScoped<IPermissionProvider, WebNotificationPermissionProvider>();
+        services.AddScoped<IPermissionProvider, WebNotificationPermissionsProvider>();
 
         services.Configure<MvcOptions>((options) =>
         {

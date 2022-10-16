@@ -8,8 +8,8 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Feature(
     Id = "OrchardCore.Notifications",
-    Name = "Notifications Infrastructure",
-    Description = "Provides notification infrastructure.",
+    Name = "Notifications Core Services",
+    Description = "Provides notification core services.",
     Category = "Notifications",
     EnabledByDependencyOnly = true
 )]
@@ -17,7 +17,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Notifications.Web",
     Name = "Web Notifications",
-    Description = "Provides a way to sent Web Notifications to users.",
+    Description = "Provides a way to sent Web notifications to users.",
     Category = "Notifications",
     Dependencies = new[]
     {
@@ -28,7 +28,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Notifications.Email",
     Name = "Email Notifications",
-    Description = "Provides a way to sent Email Notifications to users.",
+    Description = "Provides a way to sent Email notifications to users.",
     Category = "Notifications",
     Dependencies = new[]
     {

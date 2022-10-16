@@ -43,7 +43,7 @@ public class WebNotificationResultFilter : IAsyncResultFilter
             return;
         }
 
-        if (!await _authorizationService.AuthorizeAsync(context.HttpContext.User, WebNotificationPermission.ManageOwnNotifications))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext.User, WebNotificationPermissions.ManageWebNotifications))
         {
             await next();
 

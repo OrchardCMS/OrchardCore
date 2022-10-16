@@ -39,7 +39,7 @@ public class WebNotificationController : Controller
             return BadRequest();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, WebNotificationPermission.ManageOwnNotifications))
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, WebNotificationPermissions.ManageWebNotifications))
         {
             return Forbid();
         }

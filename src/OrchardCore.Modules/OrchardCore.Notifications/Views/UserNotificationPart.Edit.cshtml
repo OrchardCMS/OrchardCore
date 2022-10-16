@@ -104,7 +104,6 @@
             rootEl.removeEventListener('dragover', _onDragOver, false);
             rootEl.removeEventListener('dragend', _onDragEnd, false);
 
-
             // Notification about the end of sorting
             onUpdate(dragEl);
         }
@@ -117,12 +116,9 @@
             evt.dataTransfer.effectAllowed = 'move';
             evt.dataTransfer.setData('Text', dragEl.textContent);
 
-
             // Subscribing to the events at dnd
             rootEl.addEventListener('dragover', _onDragOver, false);
             rootEl.addEventListener('dragend', _onDragEnd, false);
-
-
             setTimeout(function () {
                 // If this action is performed without setTimeout, then
                 // the moved object will be of this class.

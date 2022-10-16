@@ -23,7 +23,6 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity> : ActivityDisplayDri
         })).Location("Content");
     }
 
-
     public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
     {
         var viewModel = new NotifyUserTaskActivityViewModel();

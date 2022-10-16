@@ -45,7 +45,7 @@ public class AdminController : Controller, IUpdateModel
 
     public async Task<IActionResult> List(PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, WebNotificationPermission.ManageOwnNotifications))
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, WebNotificationPermissions.ManageWebNotifications))
         {
             return Forbid();
         }
