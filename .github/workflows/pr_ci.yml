@@ -14,12 +14,15 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     name: Build & Test
     steps:
+
     - uses: actions/checkout@v3
       name: Checkout source code
+
 #    - name: Setup .NET 6.0
 #      uses: actions/setup-dotnet@v3
 #      with:
 #        dotnet-version: 6.0.x
+
     # https://github.com/actions/cache/blob/main/workarounds.md#improving-cache-restore-performance-on-windowsusing-cross-os-caching
     - if: ${{ runner.os == 'Windows' }}
       name: Use GNU tar
@@ -27,9 +30,11 @@ jobs:
       run: |
         echo "Adding GNU tar to PATH"
         echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+
+    # caching all generated nuget items so we don't need to call restore
     - uses: actions/cache@v3
       id: cache-nuget
-      name: Cache NuGet packages and generated restore targets
+      name: Cached NuGet artifacts
       with:
          path: |
            ~/.nuget/packages
@@ -40,16 +45,21 @@ jobs:
          key: ${{ runner.os }}-nuget-${{ hashFiles('**/Dependencies*.props', '**/Directory.Packages.props') }}
          restore-keys: |
             ${{ runner.os }}-nuget-
+
+    # we can restore just OrchardCore.Cms.Web.csproj because it links to full dependency file, with Directory.Packages.props should use solution
     - name: Restore
-      if: steps.cache-nugets.outputs.cache-hit != 'true'
+      if: steps.cache-nuget.outputs.cache-hit != 'true'
       run: |
-        dotnet restore --verbosity normal /p:DisableImplicitNuGetFallbackFolder=true /p:DisableImplicitLibraryPacksFolder
+        dotnet restore --verbosity normal /p:DisableImplicitNuGetFallbackFolder=true /p:DisableImplicitLibraryPacksFolder src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj
+
     - name: Build
       run: |
         dotnet build -c Release --no-restore --framework net6.0 /p:CreateHardLinksForCopyLocalIfPossible=true /p:CreateHardLinksForCopyFilesToOutputDirectoryIfPossible=true /p:CreateHardLinksForPublishFilesIfPossible=true
+
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-restore --no-build  --framework net6.0 ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
+
     - name: Functional Tests
       if: matrix.os == 'ubuntu-latest'
       run: |
@@ -57,6 +67,7 @@ jobs:
         npm install
         npm run cms:test
         npm run mvc:test
+
     - uses: actions/upload-artifact@v3
       if: matrix.os == 'ubuntu-latest' && failure()
       with:
