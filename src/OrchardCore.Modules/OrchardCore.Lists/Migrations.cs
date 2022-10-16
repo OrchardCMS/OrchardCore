@@ -23,16 +23,26 @@ namespace OrchardCore.Lists
                 .WithDescription("Add a list behavior."));
 
             SchemaBuilder.CreateMapIndexTable<ContainedPartIndex>(table => table
-                .Column<string>("ListContentItemId", c => c.WithLength(26))
+                .Column<string>("ListContentItemId", column => column.WithLength(26))
                 .Column<int>("Order")
+                .Column<string>("ContainedContentItemId", column => column.WithLength(26))
+                .Column<string>("ListContentType")
+                .Column<bool>("Published")
+                .Column<bool>("Latest")
+                .Column<string>("DisplayText")
             );
 
             SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
-                .CreateIndex("IDX_ContainedPartIndex_DocumentId", "DocumentId", "ListContentItemId", "Order")
+                .CreateIndex("IDX_ContainedPartIndex_DocumentId",
+                    "DocumentId",
+                    "ListContentItemId",
+                    "ContainedContentItemId",
+                    "Order",
+                    "ListContentType")
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 3;
+            return 4;
         }
 
         // Migrate PartSettings. This only needs to run on old content definition schemas.
@@ -54,8 +64,13 @@ namespace OrchardCore.Lists
             return 3;
         }
 
+        // This code can be removed in a later version.
         public int UpdateFrom3()
         {
+            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+                .AddColumn<string>("ContainedContentItemId", column => column.WithLength(26))
+            );
+
             SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
                 .AddColumn<string>("ListContentType")
             );
@@ -80,6 +95,7 @@ namespace OrchardCore.Lists
                 .CreateIndex("IDX_ContainedPartIndex_DocumentId",
                     "DocumentId",
                     "ListContentItemId",
+                    "ContainedContentItemId",
                     "Order",
                     "ListContentType")
             );
