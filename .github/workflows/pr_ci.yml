@@ -19,6 +19,13 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
+    # https://github.com/actions/cache/blob/main/workarounds.md#improving-cache-restore-performance-on-windowsusing-cross-os-caching
+    - if: ${{ runner.os == 'Windows' }}
+      name: Use GNU tar
+      shell: cmd
+      run: |
+        echo "Adding GNU tar to PATH"
+        echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
     - uses: actions/cache@v3
       with:
          path: ~/.nuget/packages
@@ -27,7 +34,7 @@ jobs:
             ${{ runner.os }}-nuget-
     - name: Restore
       run: |
-        dotnet restore --configuration Release --verbosity normal
+        dotnet restore --verbosity normal
     - name: Build
       run: |
         dotnet build --no-restore --configuration Release --framework net6.0 /p:CreateHardLinksForCopyLocalIfPossible=true /p:CreateHardLinksForCopyFilesToOutputDirectoryIfPossible=true /p:CreateHardLinksForPublishFilesIfPossible=true /p:CreateHardLinksForAdditionalFilesIfPossible=true /p:CreateHardLinksForCopyAdditionalFilesIfPossible=true
