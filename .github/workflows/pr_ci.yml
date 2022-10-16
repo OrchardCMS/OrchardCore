@@ -43,10 +43,10 @@ jobs:
     - name: Restore
       if: steps.cache-nugets.outputs.cache-hit != 'true'
       run: |
-        dotnet restore --verbosity normal
+        dotnet restore --verbosity normal /p:DisableImplicitNuGetFallbackFolder=true /p:DisableImplicitLibraryPacksFolder
     - name: Build
       run: |
-        dotnet build -c Release --no-restore --framework net6.0 /p:DisableImplicitNuGetFallbackFolder=true /p:DisableImplicitLibraryPacksFolder /p:CreateHardLinksForCopyLocalIfPossible=true /p:CreateHardLinksForCopyFilesToOutputDirectoryIfPossible=true /p:CreateHardLinksForPublishFilesIfPossible=true
+        dotnet build -c Release --no-restore --framework net6.0 /p:CreateHardLinksForCopyLocalIfPossible=true /p:CreateHardLinksForCopyFilesToOutputDirectoryIfPossible=true /p:CreateHardLinksForPublishFilesIfPossible=true
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-restore --no-build  --framework net6.0 ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
