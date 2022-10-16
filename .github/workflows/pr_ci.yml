@@ -34,7 +34,7 @@ jobs:
             ${{ runner.os }}-nuget-
     - name: Restore
       run: |
-        dotnet restore --verbosity normal
+        dotnet restore
     - name: Build
       run: |
         dotnet build --no-restore --configuration Release --framework net6.0 /p:CreateHardLinksForCopyLocalIfPossible=true /p:CreateHardLinksForCopyFilesToOutputDirectoryIfPossible=true /p:CreateHardLinksForPublishFilesIfPossible=true
