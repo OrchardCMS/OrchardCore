@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net6.0": {
+      "GraphQL": {
+        "type": "Direct",
+        "requested": "[4.8.0, )",
+        "resolved": "4.8.0",
+        "contentHash": "kbF9KjvB4n1Ym/p7L4/+hhCHGhevBmAinjz0iZw1ThZ5WSUWmycYUneC0NBSDYpLcA6dToXL0cnDJjW6BxT13Q==",
+        "dependencies": {
+          "GraphQL-Parser": "[7.2.0, 8.0.0)",
+          "Microsoft.CSharp": "4.7.0",
+          "System.ComponentModel.Annotations": "4.7.0"
+        }
+      },
+      "GraphQL.DataLoader": {
+        "type": "Direct",
+        "requested": "[4.8.0, )",
+        "resolved": "4.8.0",
+        "contentHash": "WGSvZnoIZnzpz3d+njBrtvqcFycqbqdfmdeWmlR5KQbW9DXxYIB6oHb9npZO5s5iV8ct8s28IUvI8p9b2SrGkQ==",
+        "dependencies": {
+          "GraphQL": "4.8.0"
+        }
+      },
+      "Microsoft.SourceLink.GitHub": {
+        "type": "Direct",
+        "requested": "[1.1.1, )",
+        "resolved": "1.1.1",
+        "contentHash": "IaJGnOv/M7UQjRJks7B6p7pbPnOwisYGOIzqCz5ilGFTApZ3ktOR+6zJ12ZRPInulBmdAf1SrGdDG2MU8g6XTw==",
+        "dependencies": {
+          "Microsoft.Build.Tasks.Git": "1.1.1",
+          "Microsoft.SourceLink.Common": "1.1.1"
+        }
+      },
+      "GraphQL-Parser": {
+        "type": "Transitive",
+        "resolved": "7.2.0",
+        "contentHash": "38qDxnwdUHK5zkWL28UhkmytkSSwDvX+dBhOVN1USgpZg7E2PUVNixbyG8JKEuRw/vqnhBWhk4JwkqA6jvHaFA=="
+      },
+      "Microsoft.Build.Tasks.Git": {
+        "type": "Transitive",
+        "resolved": "1.1.1",
+        "contentHash": "AT3HlgTjsqHnWpBHSNeR0KxbLZD7bztlZVj7I8vgeYG9SYqbeFGh0TM/KVtC6fg53nrWHl3VfZFvb5BiQFcY6Q=="
+      },
+      "Microsoft.CSharp": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA=="
+      },
+      "Microsoft.SourceLink.Common": {
+        "type": "Transitive",
+        "resolved": "1.1.1",
+        "contentHash": "WMcGpWKrmJmzrNeuaEb23bEMnbtR/vLmvZtkAP5qWu7vQsY59GqfRJd65sFpBszbd2k/bQ8cs8eWawQKAabkVg=="
+      },
+      "Newtonsoft.Json": {
+        "type": "Transitive",
+        "resolved": "13.0.1",
+        "contentHash": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A=="
+      },
+      "System.ComponentModel.Annotations": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "0YFqjhp/mYkDGpU0Ye1GjE53HMp9UVfGN7seGpAMttAC0C40v5gw598jCgpbBLMmCo0E5YRLBv5Z2doypO49ZQ=="
+      },
+      "System.Memory": {
+        "type": "Transitive",
+        "resolved": "4.5.3",
+        "contentHash": "3oDzvc/zzetpTKWMShs1AADwZjQ/36HnsufHRPcOjyRAAMLDlu2iD33MBI2opxnezcVUtXyqDXXjoFMOU9c7SA=="
+      },
+      "ZString": {
+        "type": "Transitive",
+        "resolved": "2.4.4",
+        "contentHash": "3ETG/AE0wR+Uo1CPwzSIYLMvDak5i8stKR/DdxOTyj8EKD9bKPTbftv/YhMbbjfR04gA2xK0PX3mPj7BRGDlew==",
+        "dependencies": {
+          "System.Memory": "4.5.3"
+        }
+      },
+      "orchardcore.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Newtonsoft.Json": "[13.0.1, )",
+          "ZString": "[2.4.4, )"
+        }
+      },
+      "orchardcore.data.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "OrchardCore.Queries.Abstractions": "[1.5.0-preview, )"
+        }
+      },
+      "orchardcore.displaymanagement.abstractions": {
+        "type": "Project"
+      },
+      "orchardcore.infrastructure.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "OrchardCore.Abstractions": "[1.5.0-preview, )",
+          "OrchardCore.Data.Abstractions": "[1.5.0-preview, )",
+          "OrchardCore.ResourceManagement.Abstractions": "[1.5.0-preview, )"
+        }
+      },
+      "orchardcore.queries.abstractions": {
+        "type": "Project"
+      },
+      "orchardcore.resourcemanagement.abstractions": {
+        "type": "Project"
+      }
+    }
+  }
+}

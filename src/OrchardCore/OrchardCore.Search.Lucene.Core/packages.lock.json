@@ -1,0 +1,180 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net6.0": {
+      "Lucene.Net.QueryParser": {
+        "type": "Direct",
+        "requested": "[4.8.0-beta00016, )",
+        "resolved": "4.8.0-beta00016",
+        "contentHash": "5dVvjXmzPaK8GD/eblJopTJMQmO6c6fvVPfBIOw46+jyZR+yESkUnWF1LtLoLXZQNrl4Dx8LKdes5G1QAM7eGA==",
+        "dependencies": {
+          "Lucene.Net.Analysis.Common": "4.8.0-beta00016",
+          "Lucene.Net.Queries": "4.8.0-beta00016",
+          "Lucene.Net.Sandbox": "4.8.0-beta00016"
+        }
+      },
+      "Lucene.Net.Spatial": {
+        "type": "Direct",
+        "requested": "[4.8.0-beta00016, )",
+        "resolved": "4.8.0-beta00016",
+        "contentHash": "a7GGT1M+nYMGV5AQZ1nt8MmnZq/0atO9jw6FK9HuU9a9/JuYt/ZY/0BitAkNXFcsed0fWorNmpYU2j9Eg3luFA==",
+        "dependencies": {
+          "Lucene.Net": "4.8.0-beta00016",
+          "Lucene.Net.Queries": "4.8.0-beta00016",
+          "Spatial4n": "0.4.1.1"
+        }
+      },
+      "Microsoft.SourceLink.GitHub": {
+        "type": "Direct",
+        "requested": "[1.1.1, )",
+        "resolved": "1.1.1",
+        "contentHash": "IaJGnOv/M7UQjRJks7B6p7pbPnOwisYGOIzqCz5ilGFTApZ3ktOR+6zJ12ZRPInulBmdAf1SrGdDG2MU8g6XTw==",
+        "dependencies": {
+          "Microsoft.Build.Tasks.Git": "1.1.1",
+          "Microsoft.SourceLink.Common": "1.1.1"
+        }
+      },
+      "GeoAPI": {
+        "type": "Transitive",
+        "resolved": "1.7.5",
+        "contentHash": "LAHPEztEGuR3LGtnNYOqg2JvUaw449gcACYqmy1pr129R2cWaV+Q9Lne8YgEwCnksHCVoXyQmuKY+CvsgPYmng==",
+        "dependencies": {
+          "GeoAPI.CoordinateSystems": "1.7.5",
+          "GeoAPI.Core": "1.7.5"
+        }
+      },
+      "GeoAPI.CoordinateSystems": {
+        "type": "Transitive",
+        "resolved": "1.7.5",
+        "contentHash": "JBcvkeQFjCW9NTfkII5WiJNmnv0ZtYA/VTVljbIqDFWBJ8kHwu2UHd2MVStD/VVHVnLoyNcDIapsuTENdlyF3g==",
+        "dependencies": {
+          "GeoAPI.Core": "1.7.5"
+        }
+      },
+      "GeoAPI.Core": {
+        "type": "Transitive",
+        "resolved": "1.7.5",
+        "contentHash": "Dy/YkgZ1szgx+xbVWqMi+4++Fm6v3szbVdei1LKPRZ3meSvgNSMZxqhar5IAeaTj5LcUHLtLGdfyUtkjnYbg3A=="
+      },
+      "J2N": {
+        "type": "Transitive",
+        "resolved": "2.0.0",
+        "contentHash": "M5bwDajAARZiyqupU+rHQJnsVLxNBOHJ8vKYHd8LcLIb1FgLfzzcJvc31Qo5Xz/GEHFjDF9ScjKL/ks/zRTXuA=="
+      },
+      "Lucene.Net": {
+        "type": "Transitive",
+        "resolved": "4.8.0-beta00016",
+        "contentHash": "DCtUbE/NIrisNI7hRwU+UKS3Cr6S2vH1XB9wvEHHI3anu5OUpX1Fkr/PDC7oFCaol/QCvzVLbLZVizAT1aTLpA==",
+        "dependencies": {
+          "J2N": "2.0.0",
+          "Microsoft.Extensions.Configuration.Abstractions": "2.0.0"
+        }
+      },
+      "Lucene.Net.Analysis.Common": {
+        "type": "Transitive",
+        "resolved": "4.8.0-beta00016",
+        "contentHash": "7pjEAIliWdih6E3I0hCE8hKcKKRx1LLzeQBslF1fhvzE1Sal4NyHd8RFJHV1Z+yHlBw4gCyyVIDZADiIoyqwxg==",
+        "dependencies": {
+          "Lucene.Net": "4.8.0-beta00016"
+        }
+      },
+      "Lucene.Net.Queries": {
+        "type": "Transitive",
+        "resolved": "4.8.0-beta00016",
+        "contentHash": "XBzdMDlan68V2ZlhAlP8Fd+Xx2Le8ec7cEN1kFF45Sipa3Q8L/tilJfwS9VHvMTvGkwPM/yj62eGbfGBgIMR8Q==",
+        "dependencies": {
+          "Lucene.Net": "4.8.0-beta00016"
+        }
+      },
+      "Lucene.Net.Sandbox": {
+        "type": "Transitive",
+        "resolved": "4.8.0-beta00016",
+        "contentHash": "wMsRZtbNx0wvX3mtNjpOwQmKx3Ij4UGHWIYHbvnzMWlPUTgtOpYSj02REL4hOxI71WBZylpGB5EWfQ2eEld63g==",
+        "dependencies": {
+          "Lucene.Net": "4.8.0-beta00016"
+        }
+      },
+      "Microsoft.Build.Tasks.Git": {
+        "type": "Transitive",
+        "resolved": "1.1.1",
+        "contentHash": "AT3HlgTjsqHnWpBHSNeR0KxbLZD7bztlZVj7I8vgeYG9SYqbeFGh0TM/KVtC6fg53nrWHl3VfZFvb5BiQFcY6Q=="
+      },
+      "Microsoft.Extensions.Configuration.Abstractions": {
+        "type": "Transitive",
+        "resolved": "2.0.0",
+        "contentHash": "rHFrXqMIvQNq51H8RYTO4IWmDOYh8NUzyqGlh0xHWTP6XYnKk7Ryinys2uDs+Vu88b3AMlM3gBBSs78m6OQpYQ==",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "2.0.0"
+        }
+      },
+      "Microsoft.Extensions.Primitives": {
+        "type": "Transitive",
+        "resolved": "2.0.0",
+        "contentHash": "ukg53qNlqTrK38WA30b5qhw0GD7y3jdI9PHHASjdKyTcBHTevFM2o23tyk3pWCgAV27Bbkm+CPQ2zUe1ZOuYSA==",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "4.4.0"
+        }
+      },
+      "Microsoft.SourceLink.Common": {
+        "type": "Transitive",
+        "resolved": "1.1.1",
+        "contentHash": "WMcGpWKrmJmzrNeuaEb23bEMnbtR/vLmvZtkAP5qWu7vQsY59GqfRJd65sFpBszbd2k/bQ8cs8eWawQKAabkVg=="
+      },
+      "NetTopologySuite": {
+        "type": "Transitive",
+        "resolved": "1.15.0",
+        "contentHash": "UMqlZgOdR9w24BaBh2K70LRK9KMVeuUPQv/70O93Kcta9XPpKSfN8bDCmXMXsQLQfDpRPimLe0asFEp1Mm7h0A==",
+        "dependencies": {
+          "NetTopologySuite.CoordinateSystems": "1.15.0",
+          "NetTopologySuite.Core": "1.15.0"
+        }
+      },
+      "NetTopologySuite.CoordinateSystems": {
+        "type": "Transitive",
+        "resolved": "1.15.0",
+        "contentHash": "p9AiFHHPcpSW+JzN+/t4L/45l1h3e9Tnsb/7TzGVkoIABd8CwfbGfg/xPxRmjhiXTUvDr/ERQK77/abthL0UcQ==",
+        "dependencies": {
+          "GeoAPI.CoordinateSystems": "1.7.5"
+        }
+      },
+      "NetTopologySuite.Core": {
+        "type": "Transitive",
+        "resolved": "1.15.0",
+        "contentHash": "SMhtTQYfpgHq9+0X9cwcLfUZlUWkmzK2OODHLMjX5KbSLP99xvCAF95CfZ4hnsI7K6qvezOQXbIKJpYdr7yKmg==",
+        "dependencies": {
+          "GeoAPI.Core": "1.7.5"
+        }
+      },
+      "Newtonsoft.Json": {
+        "type": "Transitive",
+        "resolved": "13.0.1",
+        "contentHash": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A=="
+      },
+      "Spatial4n": {
+        "type": "Transitive",
+        "resolved": "0.4.1.1",
+        "contentHash": "lDFTOtyOJVgYsi9AEBOWVuRyzkj4cZGd3DRiRFgQcOAIceOWGTTHCMPKbqhtwdQ+y9gf7FOe4TnahWPStpT6ZA==",
+        "dependencies": {
+          "GeoAPI": "1.7.5",
+          "NetTopologySuite": "1.15.0"
+        }
+      },
+      "System.Runtime.CompilerServices.Unsafe": {
+        "type": "Transitive",
+        "resolved": "4.4.0",
+        "contentHash": "9dLLuBxr5GNmOfl2jSMcsHuteEg32BEfUotmmUkmZjpR3RpVHE8YQwt0ow3p6prwA1ME8WqDVZqrr8z6H8G+Kw=="
+      },
+      "orchardcore.queries.abstractions": {
+        "type": "Project"
+      },
+      "orchardcore.search.lucene.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Lucene.Net": "[4.8.0-beta00016, )",
+          "Newtonsoft.Json": "[13.0.1, )",
+          "OrchardCore.Queries.Abstractions": "[1.5.0-preview, )"
+        }
+      }
+    }
+  }
+}
