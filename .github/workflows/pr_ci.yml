@@ -27,17 +27,19 @@ jobs:
         echo "Adding GNU tar to PATH"
         echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
     - uses: actions/cache@v3
+      id: cache-nuget
       with:
          path: |
            ~/.nuget/packages
            **/obj/project.assets.json
            **/obj/project.nuget.cache
-           **/*.csproj.nuget.g.targets.
+           **/*.csproj.nuget.g.targets
            **/packages.lock.json
          key: ${{ runner.os }}-nuget-${{ hashFiles('**/Dependencies*.props', '**/Directory.Packages.props') }}
          restore-keys: |
             ${{ runner.os }}-nuget-
     - name: Restore
+      if: steps.cache-nugets.outputs.cache-hit != 'true'
       run: |
         dotnet restore --verbosity normal
     - name: Build
