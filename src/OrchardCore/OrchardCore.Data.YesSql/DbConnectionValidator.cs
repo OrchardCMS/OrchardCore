@@ -44,8 +44,6 @@ public class DbConnectionValidator : IDbConnectionValidator
 
     public async Task<DbConnectionValidatorResult> ValidateAsync(string databaseProvider, string connectionString, string tablePrefix, string schema, string shellName)
     {
-        var yesSqlOptions = _yesSqlOptions.Get(shellName);
-
         if (String.IsNullOrWhiteSpace(databaseProvider))
         {
             return DbConnectionValidatorResult.NoProvider;
@@ -89,6 +87,8 @@ public class DbConnectionValidator : IDbConnectionValidator
 
             return DbConnectionValidatorResult.DocumentTableNotFound;
         }
+
+        var yesSqlOptions = _yesSqlOptions.Get(shellName);
 
         var selectBuilder = GetSelectBuilderForDocumentTable(tablePrefix, schema, databaseProvider, yesSqlOptions);
         try
