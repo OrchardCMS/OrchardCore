@@ -33,7 +33,7 @@ jobs:
            **/obj/project.assets.json
            **/obj/project.nuget.cache
            **/**/packages.lock.json
-         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.props') }}
+         key: ${{ runner.os }}-nuget-${{ hashFiles('**/Dependencies*.props', '**/Directory.Packages.props') }}
          restore-keys: |
             ${{ runner.os }}-nuget-
     - name: Restore
