@@ -59,3 +59,4 @@ jobs:
         path: |
           test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
+
