@@ -16,7 +16,9 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</RestoreLockedMode>
 
     <!-- Common NuGet properties-->
     <OCFrameworkDescription>Orchard Core Framework is an application framework for building modular, multi-tenant applications on ASP.NET Core.</OCFrameworkDescription>
