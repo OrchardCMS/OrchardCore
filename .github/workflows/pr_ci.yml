@@ -32,7 +32,8 @@ jobs:
            ~/.nuget/packages
            **/obj/project.assets.json
            **/obj/project.nuget.cache
-         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.props') }}
+           **/packages.lock.json
+         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
          restore-keys: |
             ${{ runner.os }}-nuget-
     - name: Restore
@@ -40,7 +41,7 @@ jobs:
         dotnet restore --verbosity normal
     - name: Build
       run: |
-        dotnet build -c Release --no-restore --framework net6.0 /p:CreateHardLinksForCopyLocalIfPossible=true /p:CreateHardLinksForCopyFilesToOutputDirectoryIfPossible=true /p:CreateHardLinksForPublishFilesIfPossible=true
+        dotnet build -c Release --no-restore --framework net6.0 /p:RestorePackagesWithLockFile /p:DisableImplicitNuGetFallbackFolder=true /p:DisableImplicitLibraryPacksFolder /p:CreateHardLinksForCopyLocalIfPossible=true /p:CreateHardLinksForCopyFilesToOutputDirectoryIfPossible=true /p:CreateHardLinksForPublishFilesIfPossible=true
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-restore --no-build  --framework net6.0 ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
