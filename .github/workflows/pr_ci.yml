@@ -37,7 +37,7 @@ jobs:
         dotnet restore --verbosity normal
     - name: Build
       run: |
-        dotnet build --no-restore --configuration Release --framework net6.0 /p:CreateHardLinksForCopyLocalIfPossible=true /p:CreateHardLinksForCopyFilesToOutputDirectoryIfPossible=true /p:CreateHardLinksForPublishFilesIfPossible=true /p:CreateHardLinksForAdditionalFilesIfPossible=true /p:CreateHardLinksForCopyAdditionalFilesIfPossible=true
+        dotnet build --no-restore --configuration Release --framework net6.0 /p:CreateHardLinksForCopyLocalIfPossible=true /p:CreateHardLinksForCopyFilesToOutputDirectoryIfPossible=true /p:CreateHardLinksForPublishFilesIfPossible=true
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
@@ -55,4 +55,3 @@ jobs:
         path: |
           test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
-
