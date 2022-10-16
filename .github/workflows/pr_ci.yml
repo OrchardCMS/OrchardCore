@@ -15,6 +15,7 @@ jobs:
     name: Build & Test
     steps:
     - uses: actions/checkout@v3
+      name: Checkout source code
 #    - name: Setup .NET 6.0
 #      uses: actions/setup-dotnet@v3
 #      with:
@@ -28,6 +29,7 @@ jobs:
         echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
     - uses: actions/cache@v3
       id: cache-nuget
+      name: Cache NuGet packages and generated restore targets
       with:
          path: |
            ~/.nuget/packages
