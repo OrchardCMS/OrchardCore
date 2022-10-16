@@ -31,21 +31,22 @@ OrchardCore uses the `YesSql` library to interact with the configured database p
 | Setting | Description |
 | --- | --- |
 | `CommandsPageSize` | Gets or sets the command page size. If you have to many queries in one command, `YesSql` will split the large command into multiple commands. |
-| `ContentTypeOptions` | Gets or sets the `QueryGatingEnabled` option in `YesSql`. |
-| `TableNameConvention` | You can provide your own implementation for generating ids. |
+| `QueryGatingEnabled` | Gets or sets the `QueryGatingEnabled` option in `YesSql`. |
+| `TableNameConvention` | You can provide your own implementation for generating table names. |
 | `IdentifierAccessorFactory` | You can provide your own value accessor factory. |
 | `VersionAccessorFactory` | You can provide your own version accessor factory. |
 | `ContentSerializer` | You can provide your own content serializer. |
 | `TablePrefixSeparator` | Gets or sets the prefix used to seperate database prefix and the table name. |
+| `IdentityColumnSize` | Gets or sets the identity column size, `Int32` or `Int64` size, by default `Int32` size. |
 
-Custom settings should be provided by named options and not rely on a module feature, this to be able to check a database connection before a tenant is built.
+!!! warning
+    Custom settings should be provided by named options and not rely on a module feature, this to be able to check a database connection before a tenant is built.
 
-For example, if you know by advance the tenant names, you can change their default table prefix seperator from `_` to `__` by adding the following code to your startup code.
+If you know by advance the tenant names, you can change their default table prefix seperator from `_` to `__` by adding the following code to your startup code.
 
 ```C#
 builder.Services
     .AddOrchardCms()
-    .AddSetupFeatures("OrchardCore.AutoSetup")
     .ConfigureServices(tenantServices =>
     {
         tenantServices.Configure<YesSqlOptions>("Default", options =>
@@ -59,15 +60,28 @@ builder.Services
     });
 ```
 
-For example, if you don't know by advance the tenant names, you can register a global configuration implementing `IConfigureNamedOptions<YesSqlOptions>` to provide options based on tenant names.
+To apply the same customization indifferently to all tenants, you can do the following.
 
 ```C#
 builder.Services
     .AddOrchardCms()
-    .AddSetupFeatures("OrchardCore.AutoSetup")
     .ConfigureServices(tenantServices =>
     {
-        services.AddTransient<IConfigureOptions<YesSqlOptions>, CustomYesSqlOptionsConfiguration>();
+        tenantServices.ConfigureAll<YesSqlOptions>(options =>
+        {
+            options.TablePrefixSeparator = "__";
+        });
+    });
+```
+
+If you don't know by advance the tenant names, you can register a custom configuration that should implement `IConfigureNamedOptions<YesSqlOptions>` to provide options based on tenant names.
+
+```C#
+builder.Services
+    .AddOrchardCms()
+    .ConfigureServices(tenantServices =>
+    {
+        services.AddTransient<IConfigureOptions<YesSqlOptions>, CustomYesSqlNamedOptionsConfiguration>();
     });
 ```
 
