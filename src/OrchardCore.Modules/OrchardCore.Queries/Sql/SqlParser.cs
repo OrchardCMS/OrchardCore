@@ -839,6 +839,7 @@ namespace OrchardCore.Queries.Sql
                 {
                     var columns = optionalColumns.ChildNodes[0].ChildNodes;
                     _builder.Append("(");
+
                     for (var j = 0; j < columns.Count; j++)
                     {
                         if (j > 0)
@@ -848,6 +849,7 @@ namespace OrchardCore.Queries.Sql
 
                         _builder.Append(columns[j].Token.ValueString);
                     }
+
                     _builder.Append(")");
                 }
 
