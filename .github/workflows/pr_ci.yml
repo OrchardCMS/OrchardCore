@@ -28,8 +28,11 @@ jobs:
         echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
     - uses: actions/cache@v3
       with:
-         path: ~/.nuget/packages
-         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+         path: |
+           ~/.nuget/packages
+           **/obj/project.assets.json
+           **/obj/project.nuget.cache
+         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.props') }}
          restore-keys: |
             ${{ runner.os }}-nuget-
     - name: Restore
