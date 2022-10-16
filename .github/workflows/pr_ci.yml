@@ -50,7 +50,7 @@ jobs:
     - name: Restore
       if: steps.cache-nuget.outputs.cache-hit != 'true'
       run: |
-        dotnet restore --verbosity normal /p:DisableImplicitNuGetFallbackFolder=true /p:DisableImplicitLibraryPacksFolder src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj
+        dotnet restore /p:DisableImplicitNuGetFallbackFolder=true /p:DisableImplicitLibraryPacksFolder src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj
 
     # for CI build we can use Deterministic = false to enable restore
     - name: Build

@@ -63,5 +63,4 @@
     <PackageManagement Include="YesSql.Filters.Query" Version="3.2.0" />
     <PackageManagement Include="ZString" Version="2.4.4" />
   </ItemGroup>
-  
 </Project>
