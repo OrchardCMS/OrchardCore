@@ -49,8 +49,8 @@ namespace OrchardCore.Tests.UI.Tests
 
         private static bool IsValidBrowserLogEntry(LogEntry logEntry)
         {
-            return OrchardCoreUITestExecutorConfiguration.IsValidBrowserLogMessage(logEntry) &&
-                !logEntry.IsNotFoundMessage("/");
+            return OrchardCoreUITestExecutorConfiguration.IsValidBrowserLogEntry(logEntry) &&
+                !logEntry.IsNotFoundLogEntry("/");
         }
     }
 }
