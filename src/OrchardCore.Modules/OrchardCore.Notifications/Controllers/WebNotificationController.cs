@@ -42,7 +42,7 @@ public class WebNotificationController : Controller
             return Forbid();
         }
 
-        var notification = await _session.Query<WebNotification, WebNotificationIndex>(x => x.ContentItemId == viewModel.MessageId && x.UserId == CurrentUserId(), collection: WebNotification.Collection).FirstOrDefaultAsync();
+        var notification = await _session.Query<WebNotification, WebNotificationIndex>(x => x.ContentItemId == viewModel.MessageId && x.UserId == CurrentUserId(), collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
 
         if (notification == null)
         {
@@ -57,7 +57,7 @@ public class WebNotificationController : Controller
             notification.IsRead = true;
 
             updated = true;
-            _session.Save(notification, collection: WebNotification.Collection);
+            _session.Save(notification, collection: NotificationConstants.NotificationCollection);
         }
 
         return Ok(new

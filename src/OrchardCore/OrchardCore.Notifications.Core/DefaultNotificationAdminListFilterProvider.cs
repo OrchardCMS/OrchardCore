@@ -16,7 +16,77 @@ public class DefaultNotificationAdminListFilterProvider : INotificationAdminList
     public void Build(QueryEngineBuilder<WebNotification> builder)
     {
         builder
-            .WithDefaultTerm("own", builder => builder
+            .WithNamedTerm("status", builder => builder
+                .OneCondition((val, query, ctx) =>
+                {
+                    if (Enum.TryParse<NotificationStatus>(val, true, out var status))
+                    {
+                        switch (status)
+                        {
+                            case NotificationStatus.Read:
+                                query.With<WebNotificationIndex>(x => x.IsRead);
+                                break;
+                            case NotificationStatus.Unread:
+                                query.With<WebNotificationIndex>(x => !x.IsRead);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    return new ValueTask<IQuery<WebNotification>>(query);
+                })
+                .MapTo<ListNotificationOptions>((val, model) =>
+                {
+                    if (Enum.TryParse<NotificationStatus>(val, true, out var status))
+                    {
+                        model.Status = status;
+                    }
+                })
+                .MapFrom<ListNotificationOptions>((model) =>
+                {
+                    if (model.Status.HasValue)
+                    {
+                        return (true, model.Status.ToString());
+                    }
+
+                    return (false, String.Empty);
+                })
+                .AlwaysRun()
+             )
+            .WithNamedTerm("sort", builder => builder
+                .OneCondition((val, query, ctx) =>
+                {
+                    if (Enum.TryParse<NotificationOrder>(val, true, out var sort))
+                    {
+                        return new ValueTask<IQuery<WebNotification>>(sort switch
+                        {
+                            NotificationOrder.Oldest => query.With<WebNotificationIndex>().OrderBy(x => x.CreatedAtUtc),
+                            _ => query.With<WebNotificationIndex>().OrderByDescending(x => x.CreatedAtUtc)
+                        });
+                    }
+
+                    return new ValueTask<IQuery<WebNotification>>(query.With<WebNotificationIndex>().OrderBy(x => x.CreatedAtUtc));
+                })
+                .MapTo<ListNotificationOptions>((val, model) =>
+                {
+                    if (Enum.TryParse<NotificationOrder>(val, true, out var sort))
+                    {
+                        model.OrderBy = sort;
+                    }
+                })
+                .MapFrom<ListNotificationOptions>((model) =>
+                {
+                    if (model.OrderBy.HasValue)
+                    {
+                        return (true, model.OrderBy.ToString());
+                    }
+
+                    return (false, String.Empty);
+                })
+                .AlwaysRun()
+            )
+            .WithDefaultTerm("owner", builder => builder
                 .OneCondition((val, query, ctx) =>
                 {
                     var context = (WebNotificationQueryContext)ctx;
@@ -24,85 +94,20 @@ public class DefaultNotificationAdminListFilterProvider : INotificationAdminList
 
                     var userId = httpAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                    query.With<WebNotificationIndex>(t => t.UserId == userId);
-
-                    return new ValueTask<IQuery<WebNotification>>(query);
+                    return new ValueTask<IQuery<WebNotification>>(query.With<WebNotificationIndex>(t => t.UserId == userId));
+                })
+                .MapFrom<ListNotificationOptions>((model) =>
+                {
+                    return (false, String.Empty);
                 })
                 .AlwaysRun()
             )
-            .WithNamedTerm("status", builder => builder
-                    .OneCondition((val, query, ctx) =>
-                    {
-                        if (Enum.TryParse<NotificationStatus>(val, true, out var status))
-                        {
-                            switch (status)
-                            {
-                                case NotificationStatus.Read:
-                                    query.With<WebNotificationIndex>(x => x.IsRead);
-                                    break;
-                                case NotificationStatus.Unread:
-                                    query.With<WebNotificationIndex>(x => !x.IsRead);
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-
-                        return new ValueTask<IQuery<WebNotification>>(query);
-                    })
-                    .MapTo<ListNotificationOptions>((val, model) =>
-                    {
-                        if (Enum.TryParse<NotificationStatus>(val, true, out var status))
-                        {
-                            model.Status = status;
-                        }
-                    })
-                    .MapFrom<ListNotificationOptions>((model) =>
-                    {
-                        if (model.Status.HasValue)
-                        {
-                            return (true, model.Status.ToString());
-                        }
-
-                        return (false, String.Empty);
-                    })
-                    .AlwaysRun()
-             )
-            .WithNamedTerm("sort", builder => builder
-                    .OneCondition((val, query, ctx) =>
-                    {
-                        if (Enum.TryParse<NotificationOrder>(val, true, out var sort))
-                        {
-                            switch (sort)
-                            {
-                                case NotificationOrder.Latest:
-                                    query.With<WebNotificationIndex>().OrderByDescending(x => x.CreatedAtUtc);
-                                    break;
-                                default:
-                                    query.With<WebNotificationIndex>().OrderBy(x => x.CreatedAtUtc);
-                                    break;
-                            }
-                        }
-
-                        return new ValueTask<IQuery<WebNotification>>(query);
-                    })
-                    .MapTo<ListNotificationOptions>((val, model) =>
-                    {
-                        if (Enum.TryParse<NotificationOrder>(val, true, out var sort))
-                        {
-                            model.Sort = sort;
-                        }
-                    })
-                    .MapFrom<ListNotificationOptions>((model) =>
-                    {
-                        if (model.Sort.HasValue)
-                        {
-                            return (true, model.Sort.ToString());
-                        }
-
-                        return (false, String.Empty);
-                    })
-                    .AlwaysRun()
-            );
+            // .WithDefaultTerm("text", builder => builder
+            //         .ManyCondition(
+            //             (val, query) => query.With<WebNotificationIndex>(x => x.Subject.Contains(val) || x.Body.Contains(val)),
+            //             (val, query) => query.With<WebNotificationIndex>(x => x.Subject.NotContains(val) && x.Body.NotContains(val))
+            //         )
+            //     )
+            ;
     }
 }

@@ -34,10 +34,8 @@ public class WebNotificationFilterEngineModelBinder : IModelBinder
 
         bindingContext.ModelState.SetModelValue(modelName, valueProviderResult);
 
-        var value = valueProviderResult.FirstValue;
-
         // When value is null or empty the parser returns an empty result.
-        bindingContext.Result = ModelBindingResult.Success(_parser.Parse(value));
+        bindingContext.Result = ModelBindingResult.Success(_parser.Parse(valueProviderResult.FirstValue));
 
         return Task.CompletedTask;
     }

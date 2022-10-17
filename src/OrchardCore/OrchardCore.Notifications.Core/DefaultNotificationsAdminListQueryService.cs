@@ -20,12 +20,26 @@ public class DefaultNotificationsAdminListQueryService : INotificationsAdminList
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<IQuery<WebNotification>> QueryAsync(ListNotificationOptions options, IUpdateModel updater)
+    public async Task<WebNotificationQueryResult> QueryAsync(int page, int pageSize, ListNotificationOptions options, IUpdateModel updater)
     {
-        var query = _session.Query<WebNotification>(collection: WebNotification.Collection);
+        var query = _session.Query<WebNotification>(collection: NotificationConstants.NotificationCollection);
 
         query = await options.FilterResult.ExecuteAsync(new WebNotificationQueryContext(_serviceProvider, query));
 
-        return query;
+        if (pageSize > 0)
+        {
+            if (page > 1)
+            {
+                query = query.Skip((page - 1) * pageSize);
+            }
+
+            query = query.Take(pageSize);
+        }
+
+        return new WebNotificationQueryResult()
+        {
+            Notifications = await query.ListAsync(),
+            TotalCount = await query.CountAsync(),
+        };
     }
 }

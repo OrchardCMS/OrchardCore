@@ -9,5 +9,13 @@ public enum NotificationStatus
 public enum NotificationOrder
 {
     Latest,
-    Oldest
+    Oldest,
+}
+
+public enum NotificationBulkAction
+{
+    None,
+    Read,
+    Unread,
+    Remove,
 }

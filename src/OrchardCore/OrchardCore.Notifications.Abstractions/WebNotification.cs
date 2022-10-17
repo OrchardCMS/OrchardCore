@@ -6,11 +6,6 @@ namespace OrchardCore.Notifications;
 public class WebNotification : Entity
 {
     /// <summary>
-    /// The name of the collection that is used for this type.
-    /// </summary>
-    public const string Collection = "Notification";
-
-    /// <summary>
     /// The ID of the notification.
     /// </summary>
     public string NotificationId { get; set; }

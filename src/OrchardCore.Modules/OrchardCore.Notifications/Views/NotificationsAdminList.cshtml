@@ -1,5 +1,10 @@
 @model ListNotificationsViewModel
 
+<!-- Hidden submit button do not remove -->
+<input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
+<input type="submit" name="submit.BulkAction" class="visually-hidden" />
+@Html.HiddenFor(o => o.Options.BulkAction)
+
 @if (Model.Header != null && Model.Header.Search != null)
 {
     <div class="card bg-primary mb-3 position-sticky action-bar">
@@ -8,12 +13,15 @@
                 <div class="col">
                     @await DisplayAsync(Model.Header.Search)
                 </div>
+                <div class="col-auto">
+                    @await DisplayAsync(Model.Header.ActionBarButtons)
+                </div>
             </div>
         </div>
     </div>
 }
 
-<div class="list-group with-checkbox notification-container">
+<div class="list-group notification-container">
     @if (Model.Header != null && (Model.Header.Summary != null || Model.Header.Actions != null))
     {
         <div class="list-group-item bg-primary">
@@ -63,6 +71,7 @@
         }
 </style>
 
+<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
 
 <script at="Foot">
     $(function () {
@@ -73,20 +82,20 @@
         var selectedItems = $("#selected-items");
         var itemsCheckboxes = $(":checkbox[name='itemIds']");
 
-    @* This applies to all filter selectpickers on page. Add .nosubmit to not submit *@
-            $('.selectpicker:not(.nosubmit)').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-                $("[name='submit.Filter']").click();
-            });
+        // This applies to all filter selectpickers on page. Add .nosubmit to not submit
+        $('.selectpicker:not(.nosubmit)').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            $("[name='submit.Filter']").click();
+        });
 
         $(".dropdown-menu .dropdown-item").filter(function () {
             return $(this).data("action");
         }).on("click", function () {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+            if ($(":checkbox[name='itemIds']:checked").length > 0) {
                 var $this = $(this);
                 confirmDialog({
                     ...$this.data(), callback: function (r) {
                         if (r) {
-                            $("[name='Options.BulkAction']").val($this.data("action"));
+                            $("#@Html.IdFor(o => o.Options.BulkAction)").val($this.data("action"));
                             $("[name='submit.BulkAction']").click();
                         }
                     }
@@ -94,7 +103,7 @@
             }
         });
         function displayActionsOrFilters() {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+            if ($(":checkbox[name='itemIds']:checked").length > 0) {
                 actions.show();
                 filters.hide();
                 selectedItems.show();

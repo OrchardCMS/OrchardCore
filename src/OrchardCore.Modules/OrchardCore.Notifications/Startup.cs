@@ -3,18 +3,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.ContentManagement;
-using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
-using OrchardCore.Navigation.Core;
 using OrchardCore.Notifications.Activities;
 using OrchardCore.Notifications.Controllers;
 using OrchardCore.Notifications.Drivers;
 using OrchardCore.Notifications.Filters;
-using OrchardCore.Notifications.Indexes;
 using OrchardCore.Notifications.Migrations;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.Services;
@@ -22,7 +18,6 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
 using YesSql.Filters.Query;
-using YesSql.Indexes;
 
 namespace OrchardCore.Notifications;
 
@@ -61,16 +56,11 @@ public class WebNotificationStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INotificationMethodProvider, WebNotificationProvider>();
-        services.AddContentPart<WebNotificationPart>();
-        services.AddDataMigration<NotificationMigrations>();
-        services.AddSingleton<IIndexProvider, WebNotificationIndexProvider>();
+        services.AddWebNotifications();
+
         services.AddScoped<IPermissionProvider, WebNotificationPermissionsProvider>();
         services.AddScoped<IDisplayDriver<ListNotificationOptions>, NotificationOptionsDisplayDriver>();
-        services.AddScoped<INotificationsAdminListQueryService, DefaultNotificationsAdminListQueryService>();
-
         services.AddTransient<INotificationAdminListFilterProvider, DefaultNotificationAdminListFilterProvider>();
-        services.Configure<StoreCollectionOptions>(o => o.Collections.Add(WebNotification.Collection));
 
         services.AddSingleton<INotificationAdminListFilterParser>(sp =>
         {

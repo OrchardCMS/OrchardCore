@@ -48,7 +48,7 @@ public class WebNotificationProvider : INotificationMethodProvider
             IsHtmlBody = message is HtmlNotificationMessage nm && nm.BodyContainsHtml
         };
 
-        _session.Save(notification, collection: WebNotification.Collection);
+        _session.Save(notification, collection: NotificationConstants.NotificationCollection);
 
         return Task.FromResult(true);
     }

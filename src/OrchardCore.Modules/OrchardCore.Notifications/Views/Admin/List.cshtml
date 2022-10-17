@@ -2,4 +2,6 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Manage Notifications"])</h1></zone>
 
-@await DisplayAsync(Model)
+<form asp-action="List" asp-controller="Admin" method="post" id="items-form" autocomplete="off">
+    @await DisplayAsync(Model)
+</form>

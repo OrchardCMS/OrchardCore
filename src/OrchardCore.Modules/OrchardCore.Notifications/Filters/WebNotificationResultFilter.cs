@@ -34,21 +34,17 @@ public class WebNotificationResultFilter : IAsyncResultFilter
 
     public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
     {
-        if (context.Result is not (ViewResult or PageResult))
+        if (context.Result is not (ViewResult or PageResult)
+            || !await _authorizationService.AuthorizeAsync(context.HttpContext.User, WebNotificationPermissions.ManageWebNotifications)
+            || context.HttpContext.Features.Get<WebNotificationFeature>() != null)
         {
             await next();
 
             return;
         }
 
-        if (!await _authorizationService.AuthorizeAsync(context.HttpContext.User, WebNotificationPermissions.ManageWebNotifications))
-        {
-            await next();
-
-            return;
-        }
         var userId = context.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var notifications = await _session.Query<WebNotification, WebNotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: WebNotification.Collection)
+        var notifications = await _session.Query<WebNotification, WebNotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
             .OrderByDescending(x => x.CreatedAtUtc)
             .Take(MaxVisibleNotifications + 1)
             .ListAsync();

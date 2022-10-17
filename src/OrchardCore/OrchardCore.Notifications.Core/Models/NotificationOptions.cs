@@ -15,7 +15,9 @@ public class ListNotificationOptions
 
     public NotificationStatus? Status { get; set; }
 
-    public NotificationOrder? Sort { get; set; }
+    public NotificationOrder? OrderBy { get; set; }
+
+    public NotificationBulkAction? BulkAction { get; set; }
 
     public int EndIndex { get; set; }
 
@@ -23,7 +25,7 @@ public class ListNotificationOptions
     public int StartIndex { get; set; }
 
     [BindNever]
-    public int ContentItemsCount { get; set; }
+    public int NotficationsItemsCount { get; set; }
 
     [BindNever]
     public int TotalItemCount { get; set; }
@@ -32,7 +34,15 @@ public class ListNotificationOptions
     public QueryFilterResult<WebNotification> FilterResult { get; set; }
 
     [BindNever]
-    public List<SelectListItem> ContentsBulkAction { get; set; }
+    public List<SelectListItem> BulkActions { get; set; }
+
+
+    [BindNever]
+    public List<SelectListItem> Statuses { get; set; }
+
+
+    [BindNever]
+    public List<SelectListItem> Sorts { get; set; }
 
     [BindNever]
     public RouteValueDictionary RouteValues { get; set; } = new RouteValueDictionary();
