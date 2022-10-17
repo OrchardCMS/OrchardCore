@@ -8,8 +8,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove=".htmlvalidate.json" />
+    <None Remove="Recipes\Agency.Tests.recipe.json" />
     <None Remove="Recipes\Blog.Tests.recipe.json" />
+    <None Remove="Recipes\ComingSoon.Tests.recipe.json" />
+    <None Remove="Recipes\Configuration.Tests.recipe.json" />
+    <None Remove="Recipes\SaaS.Tests.recipe.json" />
     <None Remove="xunit.runner.json" />
+    <Content Include=".htmlvalidate.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Recipes\Agency.Tests.recipe.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Recipes\ComingSoon.Tests.recipe.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Recipes\SaaS.Tests.recipe.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Recipes\Configuration.Tests.recipe.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Recipes\Blog.Tests.recipe.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

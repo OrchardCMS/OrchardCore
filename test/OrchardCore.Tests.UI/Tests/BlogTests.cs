@@ -8,15 +8,15 @@ using Xunit.Abstractions;
 
 namespace OrchardCore.Tests.UI.Tests
 {
-    public class BasicOrchardFeaturesTests : UITestBase
+    public class BlogTests : UITestBase
     {
-        public BasicOrchardFeaturesTests(ITestOutputHelper testOutputHelper)
+        public BlogTests(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
         {
         }
 
         [Theory, Chrome]
-        public Task BasicOrchardFeaturesShouldWork(Browser browser) =>
+        public Task BasicOrchardFeaturesShouldWorkWithBlog(Browser browser) =>
             ExecuteTestAsync(
                 context => context.TestBasicOrchardFeaturesAsync("Blog.Tests"),
                 browser,

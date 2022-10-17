@@ -1,20 +1,20 @@
 {
-  "name": "Blog.Tests",
-  "displayName": "Blog Tests",
-  "description": "Setup recipe for automated UI test execution using the Blog recipe.",
+  "name": "ComingSoon.Tests",
+  "displayName": "Coming Soon Tests",
+  "description": "Setup recipe for automated UI test execution using the Coming Soon recipe.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",
   "issetuprecipe": true,
   "categories": [ "test" ],
-  "tags": [ "blog", "test" ],
+  "tags": [ "comingsoon", "test" ],
   "steps": [
     {
       "name": "recipes",
       "Values": [
         {
           "executionid": "OrchardCore.Tests.UI",
-          "name": "Blog"
+          "name": "ComingSoon"
         },
         {
           "executionid": "OrchardCore.Tests.UI",

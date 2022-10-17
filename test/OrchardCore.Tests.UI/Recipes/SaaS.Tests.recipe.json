@@ -1,20 +1,20 @@
 {
-  "name": "Blog.Tests",
-  "displayName": "Blog Tests",
-  "description": "Setup recipe for automated UI test execution using the Blog recipe.",
+  "name": "SaaS.Tests",
+  "displayName": "SaaS Tests",
+  "description": "Setup recipe for automated UI test execution using the SaaS recipe.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",
   "issetuprecipe": true,
   "categories": [ "test" ],
-  "tags": [ "blog", "test" ],
+  "tags": [ "developer", "test" ],
   "steps": [
     {
       "name": "recipes",
       "Values": [
         {
           "executionid": "OrchardCore.Tests.UI",
-          "name": "Blog"
+          "name": "SaaS"
         },
         {
           "executionid": "OrchardCore.Tests.UI",

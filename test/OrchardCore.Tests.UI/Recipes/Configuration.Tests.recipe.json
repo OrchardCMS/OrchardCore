@@ -1,0 +1,49 @@
+{
+  "name": "Configuration.Tests",
+  "displayName": "Configuration Tests",
+  "description": "Common configuration necessary for UI tests.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "test" ],
+  "tags": [ "blog", "test" ],
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.Users.Registration"
+      ]
+    },
+    {
+      "name": "settings",
+      "UseCdn": false,
+      "SmtpSettings": {
+        "DefaultSender": "sender@example.com"
+      },
+      "LocalizationSettings": {
+        "DefaultCulture": "en-US",
+        "SupportedCultures": [
+          "en-US"
+        ]
+      },
+      "RegistrationSettings": {
+        "UsersCanRegister": 1,
+        "UsersMustValidateEmail": false,
+        "UsersAreModerated": false
+      }
+    },
+    {
+      "name": "Roles",
+      "Roles": [
+        {
+          "Name": "Anonymous",
+          "Description": "Anonymous role",
+          "Permissions": [
+            "ViewContent"
+          ]
+        }
+      ]
+    }
+  ]
+}
