@@ -89,6 +89,11 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
                             @foreach (var item in Model.Options.TenantsBulkAction)
                             {
+                                @if (item.Value == nameof(TenantsBulkAction.Remove) && !TenantsOptions.Value.TenantRemovalAllowed)
+                                {
+                                    continue;
+                                }
+
                                 <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
                             }
                         </ul>

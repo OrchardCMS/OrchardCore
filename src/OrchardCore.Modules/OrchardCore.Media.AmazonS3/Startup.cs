@@ -123,7 +123,7 @@ public class Startup : Modules.StartupBase
 
             services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
 
-            services.AddScoped<IModularTenantEvents, CreateMediaS3BucketEvent>();
+            services.AddScoped<IModularTenantEvents, MediaS3BucketTenantEvents>();
         }
     }
 

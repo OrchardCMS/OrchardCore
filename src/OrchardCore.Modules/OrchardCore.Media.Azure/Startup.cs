@@ -126,7 +126,7 @@ namespace OrchardCore.Media.Azure
 
                 services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
 
-                services.AddScoped<IModularTenantEvents, CreateMediaBlobContainerEvent>();
+                services.AddScoped<IModularTenantEvents, MediaBlobContainerTenantEvents>();
             }
         }
 

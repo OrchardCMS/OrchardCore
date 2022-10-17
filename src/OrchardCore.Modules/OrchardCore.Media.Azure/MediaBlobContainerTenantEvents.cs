@@ -12,18 +12,18 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Azure
 {
-    public class CreateMediaBlobContainerEvent : ModularTenantEvents
+    public class MediaBlobContainerTenantEvents : ModularTenantEvents
     {
         private readonly MediaBlobStorageOptions _options;
         private readonly ShellSettings _shellSettings;
         private readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
-        public CreateMediaBlobContainerEvent(
+        public MediaBlobContainerTenantEvents(
             IOptions<MediaBlobStorageOptions> options,
             ShellSettings shellSettings,
-            IStringLocalizer<CreateMediaBlobContainerEvent> localizer,
-            ILogger<CreateMediaBlobContainerEvent> logger
+            IStringLocalizer<MediaBlobContainerTenantEvents> localizer,
+            ILogger<MediaBlobContainerTenantEvents> logger
             )
         {
             _options = options.Value;

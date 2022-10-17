@@ -87,7 +87,6 @@ namespace OrchardCore.Tenants.Controllers
             New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
-            _logger = logger;
         }
 
         public async Task<IActionResult> Index(TenantIndexOptions options, PagerParameters pagerParameters)
@@ -291,7 +290,7 @@ namespace OrchardCore.Tenants.Controllers
 
                         break;
 
-                    case "Remove":
+                    case nameof(TenantsBulkAction.Remove):
                         if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
                         {
                             await _notifier.WarningAsync(H["You cannot remove the default tenant."]);
@@ -597,6 +596,7 @@ namespace OrchardCore.Tenants.Controllers
             if (shellSettings.State != TenantState.Disabled)
             {
                 await _notifier.ErrorAsync(H["You can only enable a Disabled tenant."]);
+
                 return RedirectToAction(nameof(Index));
             }
 

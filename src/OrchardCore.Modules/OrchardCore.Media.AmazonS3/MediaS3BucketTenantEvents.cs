@@ -13,7 +13,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Media.AmazonS3;
 
-public class CreateMediaS3BucketEvent : ModularTenantEvents
+public class MediaS3BucketTenantEvents : ModularTenantEvents
 {
     private readonly ShellSettings _shellSettings;
     private readonly AwsStorageOptions _options;
@@ -21,12 +21,12 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
     private readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
-    public CreateMediaS3BucketEvent(
+    public MediaS3BucketTenantEvents(
         ShellSettings shellSettings,
         IAmazonS3 amazonS3Client,
         IOptions<AwsStorageOptions> options,
-        IStringLocalizer<CreateMediaS3BucketEvent> localizer,
-        ILogger<CreateMediaS3BucketEvent> logger)
+        IStringLocalizer<MediaS3BucketTenantEvents> localizer,
+        ILogger<MediaS3BucketTenantEvents> logger)
     {
         _shellSettings = shellSettings;
         _amazonS3Client = amazonS3Client;
@@ -52,6 +52,7 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
             if (bucketExists)
             {
                 _logger.LogInformation("Amazon S3 Bucket {BucketName} already exists.", _options.BucketName);
+
                 return;
             }
 
@@ -67,6 +68,7 @@ public class CreateMediaS3BucketEvent : ModularTenantEvents
             if (!response.IsSuccessful())
             {
                 _logger.LogError("Unable to create Amazon S3 Bucket {BucketName}", _options.BucketName);
+
                 return;
             }
 

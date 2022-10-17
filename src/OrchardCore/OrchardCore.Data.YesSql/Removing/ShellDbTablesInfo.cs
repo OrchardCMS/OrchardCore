@@ -230,6 +230,8 @@ internal class ShellDbTablesInfo : ISchemaBuilder
         return this;
     }
 
+    public ISchemaBuilder CreateSchema(string schema) => this;
+
     private void Execute(IEnumerable<string> statements)
     {
         foreach (var statement in statements)
