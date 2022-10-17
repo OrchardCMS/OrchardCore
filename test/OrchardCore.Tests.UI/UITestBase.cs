@@ -1,18 +1,14 @@
 using System;
 using System.Threading.Tasks;
 using Lombiq.Tests.UI;
-using Lombiq.Tests.UI.Helpers;
 using Lombiq.Tests.UI.Services;
 using OrchardCore.Tests.UI.Helpers;
 using Xunit.Abstractions;
 
 namespace OrchardCore.Tests.UI
 {
-    public class UITestBase : OrchardCoreUITestBase
+    public class UITestBase : OrchardCoreUITestBase<Program>
     {
-        protected override string AppAssemblyPath => WebAppConfigHelper
-            .GetAbsoluteApplicationAssemblyPath("OrchardCore.Cms.Web", "net6.0");
-
         protected UITestBase(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
         {

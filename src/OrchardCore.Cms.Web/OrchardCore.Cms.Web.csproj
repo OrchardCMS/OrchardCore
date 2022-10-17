@@ -45,7 +45,6 @@
   <Import Project="..\OrchardCore.Build\OrchardCore.Commons.targets" />
   
   <ItemGroup>
-    <PackageReference Include="Lombiq.Tests.UI.AppExtensions" />
     <PackageReference Include="Lombiq.Tests.UI.Shortcuts" />
   </ItemGroup>
 

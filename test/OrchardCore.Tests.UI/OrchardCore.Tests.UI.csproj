@@ -20,6 +20,10 @@
     <PackageReference Include="xunit.runner.visualstudio" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj" />
+  </ItemGroup>
+
   <Import Project="..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
 
 </Project>
