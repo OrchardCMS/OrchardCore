@@ -3,8 +3,6 @@ using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
-using OrchardCore.Tests.UI.Extensions;
-using OrchardCore.Tests.UI.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -20,7 +18,7 @@ namespace OrchardCore.Tests.UI.Tests
         [Theory, Chrome]
         public Task BasicOrchardFeaturesShouldWork(Browser browser) =>
             ExecuteTestAsync(
-                context => context.TestBasicOrchardFeaturesExceptRegistrationInternalAsync(SetupHelpers.RecipeId),
+                context => context.TestBasicOrchardFeaturesAsync("Blog.Tests"),
                 browser,
                 configuration =>
                 {
