@@ -19,3 +19,13 @@ runs:
         name: ui-test-failure-${{ inputs.os-name }}
         path: |
           test/OrchardCore.Tests.UI/bin/Release/*/FailureDumps
+    - name: MVC UI Tests
+      shell: bash
+      run: |
+        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests.UI.Mvc/OrchardCore.Tests.UI.Mvc.csproj
+    - uses: actions/upload-artifact@v2
+      if: failure() && hashFiles('test/OrchardCore.Tests.UI.Mvc/bin/Release/*/FailureDumps')
+      with:
+        name: mvc-ui-test-failure-${{ inputs.os-name }}
+        path: |
+          test/OrchardCore.Tests.UI.Mvc/bin/Release/*/FailureDumps
