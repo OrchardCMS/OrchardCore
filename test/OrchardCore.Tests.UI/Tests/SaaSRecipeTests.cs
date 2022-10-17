@@ -10,12 +10,12 @@ using Xunit.Abstractions;
 
 namespace OrchardCore.Tests.UI.Tests
 {
-    public class SaaSTests : UITestBase
+    public class SaaSRecipeTests : UITestBase
     {
         private const string TestTenantUrlPrefix = "test";
         private const string TestTenantDisplayName = "Test Tenant";
 
-        public SaaSTests(ITestOutputHelper testOutputHelper)
+        public SaaSRecipeTests(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
         {
         }

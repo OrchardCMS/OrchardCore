@@ -8,9 +8,9 @@ using Xunit.Abstractions;
 
 namespace OrchardCore.Tests.UI.Tests
 {
-    public class BlogTests : UITestBase
+    public class BlogRecipeTests : UITestBase
     {
-        public BlogTests(ITestOutputHelper testOutputHelper)
+        public BlogRecipeTests(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
         {
         }
