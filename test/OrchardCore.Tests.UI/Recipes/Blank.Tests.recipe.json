@@ -1,0 +1,26 @@
+{
+  "name": "Blank.Tests",
+  "displayName": "Blank Tests",
+  "description": "Setup recipe for automated UI test execution using the Blank recipe.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": true,
+  "categories": [ "test" ],
+  "tags": [ "agency", "test" ],
+  "steps": [
+    {
+      "name": "recipes",
+      "Values": [
+        {
+          "executionid": "OrchardCore.Tests.UI",
+          "name": "Blank"
+        },
+        {
+          "executionid": "OrchardCore.Tests.UI",
+          "name": "Configuration.Tests"
+        }
+      ]
+    }
+  ]
+}
