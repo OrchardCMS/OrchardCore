@@ -31,6 +31,8 @@ namespace OrchardCore.Tests.UI
                 setupOperation,
                 async configuration =>
                 {
+                    configuration.AccessibilityCheckingConfiguration.RunAccessibilityCheckingAssertionOnAllPageChanges = true;
+
                     if (changeConfigurationAsync != null) await changeConfigurationAsync(configuration);
                 });
     }

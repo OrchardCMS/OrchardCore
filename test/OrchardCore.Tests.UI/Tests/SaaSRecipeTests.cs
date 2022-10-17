@@ -38,12 +38,7 @@ namespace OrchardCore.Tests.UI.Tests
                     await context.TestTurningFeatureOnAndOffAsync();
                     await context.TestLogoutAsync();
                 },
-                browser,
-                configuration =>
-                {
-                    configuration.AccessibilityCheckingConfiguration.RunAccessibilityCheckingAssertionOnAllPageChanges = true;
-                    return Task.CompletedTask;
-                });
+                browser);
 
         [Theory, Chrome]
         public Task CreatingTenantShouldWork(Browser browser) =>
@@ -69,7 +64,6 @@ namespace OrchardCore.Tests.UI.Tests
                 browser,
                 configuration =>
                 {
-                    configuration.AccessibilityCheckingConfiguration.RunAccessibilityCheckingAssertionOnAllPageChanges = true;
                     configuration.AccessibilityCheckingConfiguration.AxeBuilderConfigurator += axeBuilder =>
                         AccessibilityCheckingConfiguration
                             .ConfigureWcag21aa(axeBuilder)

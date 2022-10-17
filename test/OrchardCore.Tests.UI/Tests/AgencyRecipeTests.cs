@@ -62,7 +62,6 @@ namespace OrchardCore.Tests.UI.Tests
                 browser,
                 configuration =>
                 {
-                    configuration.AccessibilityCheckingConfiguration.RunAccessibilityCheckingAssertionOnAllPageChanges = true;
                     configuration.AccessibilityCheckingConfiguration.AxeBuilderConfigurator += axeBuilder =>
                         AccessibilityCheckingConfiguration
                             .ConfigureWcag21aa(axeBuilder)
