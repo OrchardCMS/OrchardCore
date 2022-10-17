@@ -12,6 +12,7 @@
     {
       "name": "feature",
       "enable": [
+        "OrchardCore.Localization",
         "OrchardCore.Users.Registration"
       ]
     },
