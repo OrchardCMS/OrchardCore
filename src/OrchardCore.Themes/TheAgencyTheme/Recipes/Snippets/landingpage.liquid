@@ -118,17 +118,17 @@
                     <h4>{{ member.DisplayText }}</h4>
                     <p class="text-muted">{{ member.TeamMember.Occupation.Text }}</p>
                     {% if member.TeamMember.Twitter.Text.size > 0 %}
-                    <a class="btn btn-dark btn-social mx-2" href="https://www.twitter.com/{{ member.TeamMember.Twitter.Text }}">
+                    <a class="btn btn-dark btn-social mx-2" href="https://www.twitter.com/{{ member.TeamMember.Twitter.Text }}" aria-label="Twitter profile">
                         <i class="fab fa-twitter"></i>
                     </a>
                     {% endif %}
                     {% if member.TeamMember.Facebook.Text.size > 0 %}
-                    <a class="btn btn-dark btn-social mx-2" href="https://www.facebook.com/{{ member.TeamMember.Facebook.Text }}">
+                    <a class="btn btn-dark btn-social mx-2" href="https://www.facebook.com/{{ member.TeamMember.Facebook.Text }}" aria-label="Facebook profile">
                         <i class="fab fa-facebook"></i>
                     </a>
                     {% endif %}
                     {% if member.TeamMember.LinkedIn.Text.size > 0 %}
-                    <a class="btn btn-dark btn-social mx-2" href="https://www.linkedin.com/in/{{ member.TeamMember.LinkedIn.Text }}">
+                    <a class="btn btn-dark btn-social mx-2" href="https://www.linkedin.com/in/{{ member.TeamMember.LinkedIn.Text }}" aria-label="LinkedIn profile">
                         <i class="fab fa-linkedin"></i>
                     </a>
                     {% endif %}
@@ -152,8 +152,8 @@
         <div class="row align-items-center">
             {% for client in Model.ContentItem.Content.Clients.ContentItems %}
             <div class="col-md-3 col-sm-6 my-3">
-                <a href="{{ client.Client.Url.Text }}">
-                    <img class="img-fluid img-brand d-block mx-auto" src="{{ client.Client.Logo.Paths.first | asset_url }}" alt="">
+                <a href="{{ client.Client.Url.Text }}" aria-label="{{ client.DisplayText }}">
+                    <img class="img-fluid img-brand d-block mx-auto" src="{{ client.Client.Logo.Paths.first | asset_url }}" alt="{{ client.DisplayText }} logo">
                 </a>
             </div>
             {% endfor %}
