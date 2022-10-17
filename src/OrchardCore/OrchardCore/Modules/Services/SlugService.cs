@@ -2,11 +2,9 @@ using System;
 using System.Globalization;
 using System.Text;
 using Cysharp.Text;
-using OrchardCore.Modules.Services;
 
-namespace OrchardCore.Liquid.Services
+namespace OrchardCore.Modules.Services
 {
-    [Obsolete("This class has been deprecated and will be removed in the next major release, please use OrchardCore.Modules.Services instead.", false)]
     public class SlugService : ISlugService
     {
         private const char Hyphen = '-';

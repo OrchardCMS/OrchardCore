@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Routing;
 
-namespace OrchardCore.Autoroute.Services
+namespace OrchardCore.Autoroute.Core.Services
 {
     public class AutorouteHandleProvider : IContentHandleProvider
     {
