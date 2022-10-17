@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Conversion;
+using GraphQL.SystemTextJson;
 using GraphQL.Types;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Authorization;
@@ -38,7 +39,10 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             var executionResult = await executer.ExecuteAsync(options);
 
             Assert.Null(executionResult.Errors);
-            var result = JObject.FromObject(executionResult);
+
+            var writer = new DocumentWriter();
+            var result = JObject.Parse(await writer.WriteToStringAsync(executionResult));
+
             Assert.Equal("Fantastic Fox Hates Permissions", result["data"]["test"]["noPermissions"].ToString());
         }
 
@@ -59,7 +63,10 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             var executionResult = await executer.ExecuteAsync(options);
 
             Assert.Null(executionResult.Errors);
-            var result = JObject.FromObject(executionResult);
+
+            var writer = new DocumentWriter();
+            var result = JObject.Parse(await writer.WriteToStringAsync(executionResult));
+
             Assert.Equal(expectedFieldValue, result["data"]["test"][fieldName].ToString());
         }
 
@@ -94,17 +101,20 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             var executionResult = await executer.ExecuteAsync(options);
 
             Assert.Null(executionResult.Errors);
-            var result = JObject.FromObject(executionResult);
+
+            var writer = new DocumentWriter();
+            var result = JObject.Parse(await writer.WriteToStringAsync(executionResult));
+
             Assert.Equal("Fantastic Fox Loves Multiple Permissions", result["data"]["test"]["permissionMultiple"].ToString());
         }
 
         private ExecutionOptions BuildExecutionOptions(string query, PermissionsContext permissionsContext)
         {
             var services = new ServiceCollection();
-
             services.AddAuthorization();
             services.AddLogging();
             services.AddOptions();
+            services.AddLocalization();
 
             services.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(x =>
             {
@@ -112,19 +122,18 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             });
 
             services.AddScoped<IValidationRule, RequiresPermissionValidationRule>();
-
+            services.AddLocalization();
             var serviceProvider = services.BuildServiceProvider();
 
             return new ExecutionOptions
             {
                 Query = query,
                 Schema = new ValidationSchema(),
-                UserContext = new GraphQLContext
+                UserContext = new GraphQLUserContext
                 {
-                    ServiceProvider = serviceProvider,
                     User = new ClaimsPrincipal(new StubIdentity())
                 },
-                ValidationRules = DocumentValidator.CoreRules().Concat(serviceProvider.GetServices<IValidationRule>())
+                ValidationRules = DocumentValidator.CoreRules.Concat(serviceProvider.GetServices<IValidationRule>())
             };
         }
 
@@ -132,9 +141,9 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
         {
             public ValidationSchema()
             {
-                RegisterType<TestField>();
+                RegisterType(typeof(TestField));
                 Query = new ValidationQueryRoot { Name = "Query" };
-                FieldNameConverter = new CamelCaseFieldNameConverter();
+                NameConverter = new CamelCaseNameConverter();
             }
         }
 

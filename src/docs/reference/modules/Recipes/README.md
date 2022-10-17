@@ -148,6 +148,55 @@ You can also set the default Lucene Settings.
     }
 ```
 
+### Reset Lucene Search Index Step
+
+This Reset Lucene Index Step resets a lucene index.
+Restarts the indexing process from the beginning in order to update current content items.
+It doesn't delete existing entries from the index.
+
+The `includeAll` property indicates whether to include all available Lucene indices. When set to `true`, the `Indices` property can be omitted.
+
+```json
+    {
+      "name": "lucene-index-reset",
+      "includeAll": false,
+      "Indices": [
+        "IndexName1", "IndexName2"
+      ]
+    }
+```
+
+```json
+    {
+      "name": "lucene-index-reset",
+      "includeAll": true
+    }
+```
+
+### Rebuild Lucene Search Index Step
+
+This Rebuild Lucene Index Step rebuilds a lucene index.
+Deletes and recreates the full index content.
+
+The `includeAll` property indicates whether to include all available Lucene indices. When set to `true`, the `Indices` property can be omitted.
+
+```json
+    {
+      "name": "lucene-index-rebuild",
+      "includeAll": false,
+      "Indices": [
+        "IndexName1", "IndexName2"
+      ]
+    }
+```
+
+```json
+    {
+      "name": "lucene-index-rebuild",
+      "includeAll": true
+    }
+```
+
 ### Content Step
 
 The Content step allows you to create content items.
@@ -164,6 +213,9 @@ The Content step allows you to create content items.
       ]
     }
 ```
+
+!!! note
+    There is also `QueryBasedContentDeploymentStep` which produces exactly the same output as the Content Step, but based on a provided Query.
 
 ### Media Step
 

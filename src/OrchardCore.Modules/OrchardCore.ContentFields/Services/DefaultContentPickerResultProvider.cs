@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
 using YesSql;
 using YesSql.Services;
@@ -32,7 +32,7 @@ namespace OrchardCore.ContentFields.Services
             {
                 contentTypes = _contentDefinitionManager
                     .ListTypeDefinitions()
-                    .Where(x => string.IsNullOrEmpty(x.GetSettings<ContentTypeSettings>().Stereotype))
+                    .Where(x => !x.HasStereotype())
                     .Select(x => x.Name)
                     .AsEnumerable();
             }

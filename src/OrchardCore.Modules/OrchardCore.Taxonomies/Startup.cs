@@ -59,7 +59,7 @@ namespace OrchardCore.Taxonomies
             .AddLiquidFilter<InheritedTermsFilter>("inherited_terms")
             .AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IShapeTableProvider, TermShapes>();
             services.AddScoped<IPermissionProvider, Permissions>();
 

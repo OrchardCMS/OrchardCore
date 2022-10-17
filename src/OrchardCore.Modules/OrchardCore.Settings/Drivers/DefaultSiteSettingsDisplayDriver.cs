@@ -13,19 +13,17 @@ namespace OrchardCore.Settings.Drivers
     {
         public const string GroupId = "general";
 
+        private readonly IStringLocalizer S;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly IStringLocalizer S;
 
-        public DefaultSiteSettingsDisplayDriver(
+        public DefaultSiteSettingsDisplayDriver(IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer,
             IShellHost shellHost,
-            ShellSettings shellSettings,
-            IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer
-            )
+            ShellSettings shellSettings)
         {
+            S = stringLocalizer;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            S = stringLocalizer;
         }
 
         public override IDisplayResult Edit(ISite site)
@@ -57,17 +55,27 @@ namespace OrchardCore.Settings.Drivers
                     site.PageTitleFormat = model.PageTitleFormat;
                     site.BaseUrl = model.BaseUrl;
                     site.TimeZoneId = model.TimeZone;
-                    site.PageSize = model.PageSize;
+                    site.PageSize = model.PageSize.Value;
                     site.UseCdn = model.UseCdn;
                     site.CdnBaseUrl = model.CdnBaseUrl;
                     site.ResourceDebugMode = model.ResourceDebugMode;
                     site.AppendVersion = model.AppendVersion;
                     site.CacheMode = model.CacheMode;
+
+                    if (model.PageSize.Value < 1)
+                    {
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be greater than zero."]);
+                    }
+
+                    if (site.MaxPageSize > 0 && model.PageSize.Value > site.MaxPageSize)
+                    {
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be less than or equal to {0}.", site.MaxPageSize]);
+                    }
                 }
 
-                if (!String.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out var baseUrl))
+                if (!String.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out _))
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(site.BaseUrl), S["The Base url must be a fully qualified URL."]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
                 }
 
                 if (context.Updater.ModelState.IsValid)

@@ -288,7 +288,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
 
             // Load the latest version first if any
@@ -296,14 +296,14 @@ namespace OrchardCore.Layers.Controllers
 
             if (contentItem == null)
             {
-                return StatusCode(404);
+                return NotFound();
             }
 
             var layerMetadata = contentItem.As<LayerMetadata>();
 
             if (layerMetadata == null)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             layerMetadata.Position = position;
@@ -324,7 +324,7 @@ namespace OrchardCore.Layers.Controllers
 
                     if (layerMetadata == null)
                     {
-                        return StatusCode(403);
+                        return Forbid();
                     }
 
                     layerMetadata.Position = position;
@@ -341,7 +341,7 @@ namespace OrchardCore.Layers.Controllers
 
             if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
-                return StatusCode(200);
+                return Ok();
             }
             else
             {

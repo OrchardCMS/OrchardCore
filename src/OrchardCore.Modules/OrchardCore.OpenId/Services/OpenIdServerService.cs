@@ -69,7 +69,7 @@ namespace OrchardCore.OpenId.Services
             }
 
             // If the OpenID server settings haven't been populated yet, the authorization,
-            // logout, token and userinfo endpoints are assumed to be enabled by default.
+            // logout, token, userinfo, introspection and revocation endpoints are assumed to be enabled by default.
             // In this case, only the authorization code and refresh token flows are used.
             return new OpenIdServerSettings
             {
@@ -78,7 +78,9 @@ namespace OrchardCore.OpenId.Services
                 AuthorizationEndpointPath = "/connect/authorize",
                 LogoutEndpointPath = "/connect/logout",
                 TokenEndpointPath = "/connect/token",
-                UserinfoEndpointPath = "/connect/userinfo"
+                UserinfoEndpointPath = "/connect/userinfo",
+                IntrospectionEndpointPath = "/connect/introspect",
+                RevocationEndpointPath = "/connect/revoke"
             };
         }
 

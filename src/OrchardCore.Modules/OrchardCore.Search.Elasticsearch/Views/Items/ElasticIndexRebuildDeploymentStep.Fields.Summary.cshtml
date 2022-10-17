@@ -1,0 +1,27 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Search.Elasticsearch.Core.Deployment
+
+@model ShapeViewModel<ElasticIndexRebuildDeploymentStep>
+
+@{
+    var includeAll = Model.Value.IncludeAll;
+    var indices = Model.Value.Indices;
+}
+
+<h5>@T["Rebuild Elasticsearch Indices"]</h5>
+
+@if (includeAll)
+{
+    <span class="badge bg-success">@T["All"]</span>
+}
+else if (indices?.Length > 0)
+{
+    foreach (var indexName in indices)
+    {
+        <span class="badge ta-badge">@indexName</span>
+    }
+}
+else
+{
+    <span class="badge bg-warning">@T["No index selected."]</span>
+}
