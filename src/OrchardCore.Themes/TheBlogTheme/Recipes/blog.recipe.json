@@ -60,7 +60,6 @@
         "OrchardCore.Indexing",
         "OrchardCore.Layers",
         "OrchardCore.Lists",
-        "OrchardCore.Localization",
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
@@ -95,12 +94,6 @@
       },
       "LayerSettings": {
         "Zones": [ "Content", "Footer" ]
-      },
-      "LocalizationSettings": {
-        "DefaultCulture": "en-US",
-        "SupportedCultures": [
-          "en-US"
-        ]
       }
     },
     {
