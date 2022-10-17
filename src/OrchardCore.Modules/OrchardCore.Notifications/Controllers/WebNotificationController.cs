@@ -3,10 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
 using OrchardCore.Notifications.Indexes;
-using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.ViewModels;
 using YesSql;
 
@@ -44,29 +42,22 @@ public class WebNotificationController : Controller
             return Forbid();
         }
 
-        var notificationContentItem = await _session.Query<ContentItem, WebNotificationIndex>(x => x.ContentItemId == viewModel.MessageId && x.UserId == CurrentUserId()).FirstOrDefaultAsync();
+        var notification = await _session.Query<WebNotification, WebNotificationIndex>(x => x.ContentItemId == viewModel.MessageId && x.UserId == CurrentUserId(), collection: WebNotification.Collection).FirstOrDefaultAsync();
 
-        if (notificationContentItem == null)
+        if (notification == null)
         {
             return NotFound();
         }
 
         var updated = false;
 
-        notificationContentItem.Alter<WebNotificationPart>(part =>
+        if (!notification.IsRead)
         {
-            if (!part.IsRead)
-            {
-                updated = true;
+            notification.ReadAtUtc = _clock.UtcNow;
+            notification.IsRead = true;
 
-                part.IsRead = true;
-                part.ReadAtUtc = _clock.UtcNow;
-            }
-        });
-
-        if (updated)
-        {
-            _session.Save(notificationContentItem);
+            updated = true;
+            _session.Save(notification, collection: WebNotification.Collection);
         }
 
         return Ok(new

@@ -5,12 +5,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Notifications.Indexes;
-using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.ViewModels;
 using YesSql;
 
@@ -50,7 +48,7 @@ public class WebNotificationResultFilter : IAsyncResultFilter
             return;
         }
         var userId = context.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var notifications = await _session.Query<ContentItem, WebNotificationIndex>(x => x.UserId == userId && !x.IsRead)
+        var notifications = await _session.Query<WebNotification, WebNotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: WebNotification.Collection)
             .OrderByDescending(x => x.CreatedAtUtc)
             .Take(MaxVisibleNotifications + 1)
             .ListAsync();
@@ -59,19 +57,13 @@ public class WebNotificationResultFilter : IAsyncResultFilter
         {
             TotalUnread = notifications.Count(),
             MaxVisibleNotifications = MaxVisibleNotifications,
-            Notifications = notifications.Where(x => x.Has<WebNotificationPart>()).Select(x =>
+            Notifications = notifications.Select(x => new UserWebNotificationMessageViewModel()
             {
-                var infoPart = x.As<WebNotificationPart>();
-
-                var model = new UserWebNotificationMessageViewModel()
-                {
-                    MessageId = x.ContentItemId,
-                    IsRead = infoPart?.IsRead ?? false,
-                    Subject = infoPart?.Subject,
-                    Body = infoPart?.Body,
-                    IsHtmlBody = infoPart?.IsHtmlBody ?? false,
-                };
-                return model;
+                NotificationId = x.NotificationId,
+                IsRead = x.IsRead,
+                Subject = x.Subject,
+                Body = x.Body,
+                IsHtmlBody = x.IsHtmlBody,
             }).ToList(),
         };
 

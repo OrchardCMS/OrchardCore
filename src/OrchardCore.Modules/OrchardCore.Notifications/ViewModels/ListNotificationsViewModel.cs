@@ -9,5 +9,8 @@ public class ListNotificationsViewModel
     public IEnumerable<dynamic> Notifications { get; set; }
 
     [BindNever]
+    public dynamic Header { get; set; }
+
+    [BindNever]
     public dynamic Pager { get; set; }
 }

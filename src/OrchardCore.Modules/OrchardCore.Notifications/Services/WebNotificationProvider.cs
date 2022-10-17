@@ -31,27 +31,25 @@ public class WebNotificationProvider : INotificationMethodProvider
 
     public LocalizedString Name => S["Web Notifications"];
 
-    public async Task<bool> TrySendAsync(IUser user, INotificationMessage message)
+    public Task<bool> TrySendAsync(IUser user, INotificationMessage message)
     {
         if (user is not User su)
         {
-            return false;
+            return Task.FromResult(false);
         }
 
-        var notificationMessage = await _contentManager.NewAsync(NotificationConstants.WebNotificationContentType);
-        notificationMessage.CreatedUtc = _clock.UtcNow;
-        notificationMessage.Author = su.UserName;
-        notificationMessage.Owner = su.UserId;
-        notificationMessage.Latest = true;
-        notificationMessage.Alter<WebNotificationPart>(part =>
+        var notification = new WebNotification()
         {
-            part.Subject = message.Subject;
-            part.Body = message.Body;
-            part.IsHtmlBody = message is HtmlNotificationMessage nm && nm.BodyContainsHtml;
-        });
+            NotificationId = IdGenerator.GenerateId(),
+            CreatedUtc = _clock.UtcNow,
+            UserId = su.UserId,
+            Subject = message.Subject,
+            Body = message.Body,
+            IsHtmlBody = message is HtmlNotificationMessage nm && nm.BodyContainsHtml
+        };
 
-        _session.Save(notificationMessage);
+        _session.Save(notification, collection: WebNotification.Collection);
 
-        return true;
+        return Task.FromResult(true);
     }
 }

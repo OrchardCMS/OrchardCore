@@ -15,6 +15,7 @@ public class NotificationMigrations : DataMigration
             .Column<bool>("IsRead")
             .Column<DateTime>("ReadAtUtc")
             .Column<DateTime>("CreatedAtUtc")
+            , collection: WebNotification.Collection
         );
 
         SchemaBuilder.AlterIndexTable<WebNotificationIndex>(table => table
@@ -23,7 +24,8 @@ public class NotificationMigrations : DataMigration
                 "ContentItemId",
                 "UserId",
                 "IsRead",
-                "CreatedAtUtc")
+                "CreatedAtUtc"),
+                collection: WebNotification.Collection
         );
 
         return 1;

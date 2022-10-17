@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Navigation.Core;
 using OrchardCore.Notifications.Activities;
 using OrchardCore.Notifications.Controllers;
 using OrchardCore.Notifications.Drivers;
@@ -19,6 +21,7 @@ using OrchardCore.Notifications.Services;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
+using YesSql.Filters.Query;
 using YesSql.Indexes;
 
 namespace OrchardCore.Notifications;
@@ -63,6 +66,25 @@ public class WebNotificationStartup : StartupBase
         services.AddDataMigration<NotificationMigrations>();
         services.AddSingleton<IIndexProvider, WebNotificationIndexProvider>();
         services.AddScoped<IPermissionProvider, WebNotificationPermissionsProvider>();
+        services.AddScoped<IDisplayDriver<ListNotificationOptions>, NotificationOptionsDisplayDriver>();
+        services.AddScoped<INotificationsAdminListQueryService, DefaultNotificationsAdminListQueryService>();
+
+        services.AddTransient<INotificationAdminListFilterProvider, DefaultNotificationAdminListFilterProvider>();
+        services.Configure<StoreCollectionOptions>(o => o.Collections.Add(WebNotification.Collection));
+
+        services.AddSingleton<INotificationAdminListFilterParser>(sp =>
+        {
+            var filterProviders = sp.GetServices<INotificationAdminListFilterProvider>();
+            var builder = new QueryEngineBuilder<WebNotification>();
+            foreach (var provider in filterProviders)
+            {
+                provider.Build(builder);
+            }
+
+            var parser = builder.Build();
+
+            return new DefaultNotificationAdminListFilterParser(parser);
+        });
 
         services.Configure<MvcOptions>((options) =>
         {
@@ -72,11 +94,20 @@ public class WebNotificationStartup : StartupBase
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
+        var adminControllerName = typeof(AdminController).ControllerName();
+
         routes.MapAreaControllerRoute(
             name: "ListWebNotifications",
             areaName: "OrchardCore.Notifications",
             pattern: "notifications",
-            defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.List) }
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.List) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ReadAllWebNotifications",
+            areaName: "OrchardCore.Notifications",
+            pattern: "notifications/read-all",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.ReadAll) }
         );
     }
 }

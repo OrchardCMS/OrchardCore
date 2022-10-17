@@ -32,7 +32,7 @@
                 @for (int i = 0; i < maxCount; i++)
                 {
                     var notification = Model.Value.Notifications[i];
-                    <div data-message-id="@notification.MessageId" data-is-read="@notification.IsRead.ToString().ToLowerInvariant()" class="dropdown-item mark-notification-as-read lh-sm text-wrap p-2@(i < maxCount - 1 ? " border-bottom" : String.Empty)@(notification.IsRead ? " notification-is-read": " notification-is-unread")">
+                    <div data-message-id="@notification.NotificationId" data-is-read="@notification.IsRead.ToString().ToLowerInvariant()" class="dropdown-item mark-notification-as-read lh-sm text-wrap p-2@(i < maxCount - 1 ? " border-bottom" : String.Empty)@(notification.IsRead ? " notification-is-read": " notification-is-unread")">
 
                         @if (notification.HasBody())
                         {

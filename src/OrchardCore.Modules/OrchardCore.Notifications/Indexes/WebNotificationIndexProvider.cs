@@ -1,42 +1,26 @@
-using System;
-using OrchardCore.ContentManagement;
-using OrchardCore.Modules;
-using OrchardCore.Notifications.Models;
 using YesSql.Indexes;
 
 namespace OrchardCore.Notifications.Indexes;
 
-public class WebNotificationIndexProvider : IndexProvider<ContentItem>
+public class WebNotificationIndexProvider : IndexProvider<WebNotification>
 {
-    private readonly IClock _clock;
-
-    public WebNotificationIndexProvider(IClock clock)
+    public WebNotificationIndexProvider()
     {
-        _clock = clock;
+        CollectionName = WebNotification.Collection;
     }
-
-    public override void Describe(DescribeContext<ContentItem> context)
+    public override void Describe(DescribeContext<WebNotification> context)
     {
         context.For<WebNotificationIndex>()
-            .Map(contentItem =>
+            .Map(webNotification =>
             {
-                if (!String.Equals(contentItem.ContentType, NotificationConstants.WebNotificationContentType))
-                {
-                    return null;
-                }
-
-                var infoPart = contentItem.As<WebNotificationPart>();
-
                 return new WebNotificationIndex()
                 {
-                    ContentItemId = contentItem.ContentItemId,
-                    UserId = contentItem.Owner,
-                    IsRead = infoPart?.IsRead ?? false,
-                    ReadAtUtc = infoPart?.ReadAtUtc,
-                    CreatedAtUtc = contentItem.CreatedUtc ?? _clock.UtcNow,
+                    ContentItemId = webNotification.NotificationId,
+                    UserId = webNotification.UserId,
+                    IsRead = webNotification.IsRead,
+                    ReadAtUtc = webNotification.ReadAtUtc,
+                    CreatedAtUtc = webNotification.CreatedUtc,
                 };
             });
     }
 }
-
-

@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Contents.Core\OrchardCore.Contents.Core.csproj" />
     <ProjectReference Include="..\OrchardCore.Email.Abstractions\OrchardCore.Email.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Notifications.Abstractions\OrchardCore.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Users.Core\OrchardCore.Users.Core.csproj" />

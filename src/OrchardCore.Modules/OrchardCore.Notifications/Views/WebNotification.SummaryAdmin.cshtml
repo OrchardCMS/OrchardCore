@@ -3,33 +3,46 @@
 @using OrchardCore.Notifications.Models
 
 @{
-    ContentItem contentItem = Model.ContentItem;
-    var infoPart = contentItem.As<WebNotificationPart>();
+    WebNotification notification = Model.WebNotification;
 
-    if (infoPart == null)
+    if (notification == null)
     {
         return;
     }
 }
 
-<div data-message-id="@contentItem.ContentItemId" data-is-read="@infoPart.IsRead.ToString().ToLowerInvariant()" class="list-group-item mark-notification-as-read p-3@(infoPart.IsRead ? " notification-is-read": " notification-is-unread")">
+<div data-message-id="@notification.NotificationId" data-is-read="@notification.IsRead.ToString().ToLowerInvariant()" class="list-group-item mark-notification-as-read p-3@(notification.IsRead ? " notification-is-read": " notification-is-unread")">
     <div class="row">
         <div class="col-lg col-12 title d-flex">
+
+            <div class="selectors-container d-flex">
+                @if (Model.Selectors != null)
+                {
+                    <div class="selectors cursor-pointer">
+                        @await DisplayAsync(Model.Selectors)
+                    </div>
+                }
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" value="@notification.NotificationId" name="itemIds" id="itemIds-@notification.NotificationId">
+                    <label class="form-check-label" for="itemIds-@notification.NotificationId"></label>
+                </div>
+            </div>
+
             <div class="summary d-flex flex-column flex-md-row">
                 <div class="contentitem me-2">
 
-                    <h5 class="mb-0">@infoPart.Subject</h5>
+                    <h5 class="mb-0">@notification.Subject</h5>
 
-                    @if (!String.IsNullOrWhiteSpace(infoPart.Body))
+                    @if (!String.IsNullOrWhiteSpace(notification.Body))
                     {
                         <p class="mb-0 mt-2">
-                            @if (infoPart.IsHtmlBody)
+                            @if (notification.IsHtmlBody)
                             {
-                                @Html.Raw(infoPart.Body)
+                                @Html.Raw(notification.Body)
                             }
                             else
                             {
-                                @infoPart.Body
+                                @notification.Body
                             }
                         </p>
                     }

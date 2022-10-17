@@ -14,7 +14,7 @@ public class UserWebNotificationViewModel
 
 public class UserWebNotificationMessageViewModel
 {
-    public string MessageId { get; set; }
+    public string NotificationId { get; set; }
 
     public bool IsRead { get; set; }
 
