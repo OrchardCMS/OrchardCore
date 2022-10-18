@@ -45,21 +45,18 @@ namespace OrchardCore.Tests.UI.Tests
             ExecuteTestAfterSetupAsync(
                 async context =>
                 {
-                    // Taken from https://github.com/Lombiq/UI-Testing-Toolbox/blob/6eb53a55c991f9f3764660791e649783973236d1/Lombiq.Tests.UI.Samples/Tests/TenantTests.cs
-                    const string tenantAdminName = "tenantAdmin";
-                    await context.SignInDirectlyAsync();
-
                     await context.CreateAndEnterTenantAsync(
-                        TestTenantDisplayName,
+                        TestTenantUrlPrefix,
                         TestTenantUrlPrefix,
                         "Blog.Tests",
-                        new CreateTenant { UserName = tenantAdminName });
+                        new TenantSetupParameters
+                        {
+                            SiteName = TestTenantDisplayName,
+                        });
 
                     Assert.Equal(TestTenantDisplayName, context.Get(By.ClassName("navbar-brand")).Text);
 
-                    await context.SignInDirectlyAsync(tenantAdminName);
-                    Assert.Equal(tenantAdminName, await context.GetCurrentUserNameAsync());
-                    Assert.StartsWith($"/{TestTenantUrlPrefix}", context.GetCurrentUri().AbsolutePath);
+                    await context.TestBasicOrchardFeaturesExceptSetupAsync();
                 },
                 browser,
                 configuration =>
