@@ -41,7 +41,7 @@ namespace OrchardCore.Tests.UI.Tests
                 browser);
 
         [Theory, Chrome]
-        public Task CreatingTenantShouldWork(Browser browser) =>
+        public Task BasicOrchardFeaturesShouldWorkWithNewTenant(Browser browser) =>
             ExecuteTestAfterSetupAsync(
                 async context =>
                 {
