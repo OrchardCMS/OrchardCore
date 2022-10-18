@@ -12,8 +12,8 @@ jobs:
     container:
       image: cypress/included:9.6.1
     steps:
-    - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
       with:
         node-version: "15"
     - name: Setup .NET 6.0
@@ -41,7 +41,7 @@ jobs:
     container:
       image: cypress/included:9.6.1
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v1
       with:
@@ -85,7 +85,7 @@ jobs:
       OrchardCore__ConnectionString: "User ID=postgres;Password=admin;Host=postgres;Port=5432;Database=app;"
       OrchardCore__DatabaseProvider: "Postgres"
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v1
       with:
@@ -125,7 +125,7 @@ jobs:
       OrchardCore__ConnectionString: "server=mariadb;uid=root;pwd=test123;database=test"
       OrchardCore__DatabaseProvider: "MySql"
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v1
       with:
@@ -164,7 +164,7 @@ jobs:
       OrchardCore__ConnectionString: "Server=mssql;Database=tempdb;User Id=sa;Password=Password12!"
       OrchardCore__DatabaseProvider: "SqlConnection"
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v1
       with:
