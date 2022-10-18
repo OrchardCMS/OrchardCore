@@ -83,6 +83,13 @@ public class DefaultNotificationAdminListFilterProvider : INotificationAdminList
                 })
                 .AlwaysRun()
             )
+            .WithDefaultTerm("text", builder => builder
+                .ManyCondition(
+                        (val, query) => query.With<WebNotificationIndex>(x => x.Content.Contains(val)),
+                        (val, query) => query.With<WebNotificationIndex>(x => x.Content.NotContains(val))
+                )
+            )
+            // Always filter by owner to ensure we only query notification that belong to the current user.
             .WithDefaultTerm("owner", builder => builder
                 .OneCondition((val, query, ctx) =>
                 {
@@ -94,12 +101,6 @@ public class DefaultNotificationAdminListFilterProvider : INotificationAdminList
                     return new ValueTask<IQuery<WebNotification>>(query.With<WebNotificationIndex>(t => t.UserId == userId));
                 })
                 .AlwaysRun()
-            )
-            .WithDefaultTerm("text", builder => builder
-                .ManyCondition(
-                        (val, query) => query.With<WebNotificationIndex>(x => x.Content.Contains(val)),
-                        (val, query) => query.With<WebNotificationIndex>(x => x.Content.NotContains(val))
-                )
             );
     }
 }

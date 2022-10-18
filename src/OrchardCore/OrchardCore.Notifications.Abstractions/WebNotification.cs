@@ -6,7 +6,7 @@ namespace OrchardCore.Notifications;
 public class WebNotification : Entity
 {
     /// <summary>
-    /// The ID of the notification.
+    /// The Id of the notification.
     /// </summary>
     public string NotificationId { get; set; }
 

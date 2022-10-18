@@ -11,6 +11,10 @@ public class UserNotificationViewModel
 
     public string[] Methods { get; set; }
 
+    public string[] SortedMethods { get; set; }
+
+    public string[] Optout { get; internal set; }
+
     [BindNever]
     public IEnumerable<SelectListItem> AvailableMethods { get; set; }
 

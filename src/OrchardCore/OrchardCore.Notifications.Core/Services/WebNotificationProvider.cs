@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Users;
@@ -12,17 +11,14 @@ namespace OrchardCore.Notifications.Services;
 public class WebNotificationProvider : INotificationMethodProvider
 {
     private readonly IStringLocalizer<WebNotificationProvider> S;
-    private readonly IContentManager _contentManager;
     private readonly IClock _clock;
     private readonly ISession _session;
 
     public WebNotificationProvider(IStringLocalizer<WebNotificationProvider> stringLocalizer,
-        IContentManager contentManager,
         IClock clock,
         ISession session)
     {
         S = stringLocalizer;
-        _contentManager = contentManager;
         _clock = clock;
         _session = session;
     }

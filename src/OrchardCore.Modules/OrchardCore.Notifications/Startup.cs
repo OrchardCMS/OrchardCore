@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -12,7 +11,6 @@ using OrchardCore.Notifications.Activities;
 using OrchardCore.Notifications.Controllers;
 using OrchardCore.Notifications.Drivers;
 using OrchardCore.Notifications.Filters;
-using OrchardCore.Notifications.Migrations;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.Services;
 using OrchardCore.ResourceManagement;
@@ -28,7 +26,6 @@ public class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<INotificationManager, NotificationManager>();
-        services.AddScoped<IDataMigration, UserMigrations>();
         services.AddScoped<IDisplayDriver<User>, UserNotificationPartDisplayDriver>();
     }
 }

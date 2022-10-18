@@ -8,12 +8,10 @@ public class WebNotificationViewModel : ShapeViewModel
 
     public WebNotificationViewModel()
     {
-
     }
 
     public WebNotificationViewModel(WebNotification notification)
     {
         Notification = notification;
     }
-
 }
