@@ -34,11 +34,15 @@ namespace OrchardCore.Lists
 
             SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
                 .CreateIndex("IDX_ContainedPartIndex_DocumentId",
+                    "Id",
                     "DocumentId",
                     "ListContentItemId",
                     "ContainedContentItemId",
+                    "ListContentType",
                     "Order",
-                    "ListContentType")
+                    "Published",
+                    "Latest",
+                    "DisplayText")
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -93,11 +97,15 @@ namespace OrchardCore.Lists
 
             SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
                 .CreateIndex("IDX_ContainedPartIndex_DocumentId",
+                    "Id",
                     "DocumentId",
                     "ListContentItemId",
                     "ContainedContentItemId",
+                    "ListContentType",
                     "Order",
-                    "ListContentType")
+                    "Published",
+                    "Latest",
+                    "DisplayText")
             );
 
             return 4;
