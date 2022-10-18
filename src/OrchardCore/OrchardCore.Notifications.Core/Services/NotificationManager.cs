@@ -80,7 +80,7 @@ public class NotificationManager : INotificationManager
             IsHtmlBody = message is HtmlNotificationMessage nm && nm.BodyContainsHtml
         };
 
-        if (message is ContentManagement contentMessage)
+        if (message is ContentNotificationMessage contentMessage)
         {
             if (!String.IsNullOrEmpty(contentMessage.ContentItemId))
             {
