@@ -21,7 +21,7 @@
     </div>
 }
 
-<div class="list-group notification-container">
+<div class="list-group with-checkbox notification-container">
     @if (Model.Header != null && (Model.Header.Summary != null || Model.Header.Actions != null))
     {
         <div class="list-group-item bg-primary">
@@ -60,19 +60,6 @@
 
 @await DisplayAsync(Model.Pager)
 
-<style at="Head">
-    .notification-container .notification-is-unread {
-        color: #664d03 !important;
-        background-color: #fff3cd !important;
-    }
-
-        .notification-container .notification-is-unread:hover {
-            cursor: pointer !important;
-        }
-</style>
-
-<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
-
 <script at="Foot">
     $(function () {
         var actions = $("#actions");
@@ -90,7 +77,7 @@
         $(".dropdown-menu .dropdown-item").filter(function () {
             return $(this).data("action");
         }).on("click", function () {
-            if ($(":checkbox[name='itemIds']:checked").length > 0) {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);
                 confirmDialog({
                     ...$this.data(), callback: function (r) {
@@ -103,7 +90,7 @@
             }
         });
         function displayActionsOrFilters() {
-            if ($(":checkbox[name='itemIds']:checked").length > 0) {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 actions.show();
                 filters.hide();
                 selectedItems.show();

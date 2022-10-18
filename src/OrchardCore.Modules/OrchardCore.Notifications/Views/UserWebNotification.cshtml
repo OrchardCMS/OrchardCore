@@ -58,37 +58,9 @@
     </div>
 </div>
 
-<script at="Foot">
+<script at="Foot" asp-name="notification-manager-initializes" depends-on="notification-manager">
     (function () {
-        var elements = document.getElementsByClassName('mark-notification-as-read');
-        for (let i = 0; i < elements.length; i++) {
-            let element = elements[i];
-            element.addEventListener('click', (e) => {
-
-                if (element.getAttribute('data-is-read') != "false") {
-                    return;
-                }
-                var messageId = element.getAttribute('data-message-id');
-
-                if (!messageId) {
-                    return;
-                }
-
-                fetch('@Url.Action("Read", "WebNotification", new { area = "OrchardCore.Notifications" })', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ messageId: messageId })
-                }).then(response => response.json())
-                    .then(result => {
-                        if (result.updated) {
-                            element.classList.remove('notification-is-unread');
-                            element.classList.add('notification-is-read');
-                        }
-                    });
-            });
-        }
+        notificationManager.initializeContainer('@Url.Action("Read", "WebNotification", new { area = "OrchardCore.Notifications" })')
     })();
 </script>
 

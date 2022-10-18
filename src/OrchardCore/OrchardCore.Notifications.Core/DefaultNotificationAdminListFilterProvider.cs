@@ -8,6 +8,7 @@ using OrchardCore.Notifications.Indexes;
 using OrchardCore.Notifications.Models;
 using YesSql;
 using YesSql.Filters.Query;
+using YesSql.Services;
 
 namespace OrchardCore.Notifications;
 
@@ -57,16 +58,12 @@ public class DefaultNotificationAdminListFilterProvider : INotificationAdminList
             .WithNamedTerm("sort", builder => builder
                 .OneCondition((val, query, ctx) =>
                 {
-                    if (Enum.TryParse<NotificationOrder>(val, true, out var sort))
+                    if (Enum.TryParse<NotificationOrder>(val, true, out var sort) && sort == NotificationOrder.Oldest)
                     {
-                        return new ValueTask<IQuery<WebNotification>>(sort switch
-                        {
-                            NotificationOrder.Oldest => query.With<WebNotificationIndex>().OrderBy(x => x.CreatedAtUtc),
-                            _ => query.With<WebNotificationIndex>().OrderByDescending(x => x.CreatedAtUtc)
-                        });
+                        return new ValueTask<IQuery<WebNotification>>(query.With<WebNotificationIndex>().OrderBy(x => x.CreatedAtUtc));
                     }
 
-                    return new ValueTask<IQuery<WebNotification>>(query.With<WebNotificationIndex>().OrderBy(x => x.CreatedAtUtc));
+                    return new ValueTask<IQuery<WebNotification>>(query.With<WebNotificationIndex>().OrderByDescending(x => x.CreatedAtUtc));
                 })
                 .MapTo<ListNotificationOptions>((val, model) =>
                 {
@@ -96,18 +93,13 @@ public class DefaultNotificationAdminListFilterProvider : INotificationAdminList
 
                     return new ValueTask<IQuery<WebNotification>>(query.With<WebNotificationIndex>(t => t.UserId == userId));
                 })
-                .MapFrom<ListNotificationOptions>((model) =>
-                {
-                    return (false, String.Empty);
-                })
                 .AlwaysRun()
             )
-            // .WithDefaultTerm("text", builder => builder
-            //         .ManyCondition(
-            //             (val, query) => query.With<WebNotificationIndex>(x => x.Subject.Contains(val) || x.Body.Contains(val)),
-            //             (val, query) => query.With<WebNotificationIndex>(x => x.Subject.NotContains(val) && x.Body.NotContains(val))
-            //         )
-            //     )
-            ;
+            .WithDefaultTerm("text", builder => builder
+                .ManyCondition(
+                        (val, query) => query.With<WebNotificationIndex>(x => x.Content.Contains(val)),
+                        (val, query) => query.With<WebNotificationIndex>(x => x.Content.NotContains(val))
+                )
+            );
     }
 }

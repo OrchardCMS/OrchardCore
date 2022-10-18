@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -43,7 +44,11 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity
             && obj is ContentItem contentItem
             && !String.IsNullOrEmpty(contentItem.Owner))
         {
-            return await _session.Query<User, UserIndex>(x => x.UserId == contentItem.Owner).FirstOrDefaultAsync();
+            var owner = await _session.Query<User, UserIndex>(x => x.UserId == contentItem.Owner).FirstOrDefaultAsync();
+
+            workflowContext.Input.TryAdd("Owner", owner);
+
+            return owner;
         }
 
         return null;

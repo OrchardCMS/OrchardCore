@@ -16,11 +16,11 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddWebNotifications(this IServiceCollection services)
     {
-        services.TryAddScoped<INotificationMethodProvider, WebNotificationProvider>();
+        services.AddScoped<INotificationMethodProvider, WebNotificationProvider>();
         services.AddContentPart<WebNotificationPart>();
         services.AddDataMigration<NotificationMigrations>();
-        services.TryAddSingleton<IIndexProvider, WebNotificationIndexProvider>();
-        services.TryAddScoped<INotificationsAdminListQueryService, DefaultNotificationsAdminListQueryService>();
+        services.AddSingleton<IIndexProvider, WebNotificationIndexProvider>();
+        services.AddScoped<INotificationsAdminListQueryService, DefaultNotificationsAdminListQueryService>();
         services.Configure<StoreCollectionOptions>(o => o.Collections.Add(NotificationConstants.NotificationCollection));
 
         return services;

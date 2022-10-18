@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
@@ -14,6 +15,7 @@ using OrchardCore.Notifications.Filters;
 using OrchardCore.Notifications.Migrations;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.Services;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
@@ -60,8 +62,9 @@ public class WebNotificationStartup : StartupBase
 
         services.AddScoped<IPermissionProvider, WebNotificationPermissionsProvider>();
         services.AddScoped<IDisplayDriver<ListNotificationOptions>, NotificationOptionsDisplayDriver>();
+        services.AddScoped<IDisplayDriver<WebNotification>, WebNotificationDisplayDriver>();
         services.AddTransient<INotificationAdminListFilterProvider, DefaultNotificationAdminListFilterProvider>();
-
+        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, NotificationOptionsConfiguration>();
         services.AddSingleton<INotificationAdminListFilterParser>(sp =>
         {
             var filterProviders = sp.GetServices<INotificationAdminListFilterProvider>();

@@ -166,7 +166,7 @@ public class AdminController : Controller, IUpdateModel
     {
         if (itemIds?.Count() > 0)
         {
-            var checkedNotifications = await _session.Query<WebNotification, WebNotificationIndex>(x => x.UserId == CurrentUserId() && x.ContentItemId.IsIn(itemIds), collection: NotificationConstants.NotificationCollection).ListAsync();
+            var checkedNotifications = await _session.Query<WebNotification, WebNotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId.IsIn(itemIds), collection: NotificationConstants.NotificationCollection).ListAsync();
             var utcNow = _clock.UtcNow;
 
             switch (options.BulkAction)
@@ -230,7 +230,64 @@ public class AdminController : Controller, IUpdateModel
             _session.Save(record, collection: NotificationConstants.NotificationCollection);
         }
 
-        return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
+        return RedirectTo(returnUrl);
+    }
+
+    public async Task<IActionResult> Toggle(string notificationId, bool markAsRead, string returnUrl)
+    {
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, WebNotificationPermissions.ManageWebNotifications))
+        {
+            return Forbid();
+        }
+
+        if (!String.IsNullOrWhiteSpace(notificationId))
+        {
+            var notification = await _session.Query<WebNotification, WebNotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId && x.IsRead != markAsRead, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
+
+            if (notification != null)
+            {
+                if (markAsRead)
+                {
+                    notification.IsRead = true;
+                    notification.ReadAtUtc = _clock.UtcNow;
+                }
+                else
+                {
+                    notification.IsRead = false;
+                    notification.ReadAtUtc = null;
+                }
+
+                _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+            }
+        }
+
+        return RedirectTo(returnUrl);
+    }
+
+    public async Task<IActionResult> Delete(string notificationId, string returnUrl)
+    {
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, WebNotificationPermissions.ManageWebNotifications))
+        {
+            return Forbid();
+        }
+
+        if (!String.IsNullOrWhiteSpace(notificationId))
+        {
+            var notification = await _session.Query<WebNotification, WebNotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
+
+            if (notification != null)
+            {
+                _session.Delete(notification, collection: NotificationConstants.NotificationCollection);
+            }
+        }
+
+        return RedirectTo(returnUrl);
+    }
+
+
+    private IActionResult RedirectTo(string returnUrl)
+    {
+        return !String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
     }
 
     private string CurrentUserId()
