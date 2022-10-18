@@ -1,8 +1,8 @@
-@model WebNotificationViewModel
+@model NotificationViewModel
 
 @if (!Model.Notification.IsRead)
 {
-    <a asp-action="Toggle" asp-controller="Admin" asp-route-area="OrchardCore.Notifications" asp-route-markAsRead="@(!Model.Notification.IsRead)" asp-route-notificationId="@Model.Notification.NotificationId" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-primary">
+    <a asp-action="Toggle" asp-controller="Admin" asp-route-area="OrchardCore.Notifications" asp-route-markAsRead="true" asp-route-notificationId="@Model.Notification.NotificationId" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-primary">
         @(Model.Notification.IsRead ? @T["Mark as unread"] : @T["Mark as read"])
     </a>
 }

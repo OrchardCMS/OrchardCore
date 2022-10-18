@@ -6,5 +6,5 @@ namespace OrchardCore.Navigation.Core;
 
 public interface INotificationsAdminListQueryService
 {
-    Task<WebNotificationQueryResult> QueryAsync(int page, int pageSize, ListNotificationOptions options, IUpdateModel updater);
+    Task<NotificationQueryResult> QueryAsync(int page, int pageSize, ListNotificationOptions options, IUpdateModel updater);
 }

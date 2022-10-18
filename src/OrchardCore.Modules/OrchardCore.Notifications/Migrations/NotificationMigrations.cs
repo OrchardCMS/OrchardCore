@@ -9,24 +9,26 @@ public class NotificationMigrations : DataMigration
 {
     public int Create()
     {
-        SchemaBuilder.CreateMapIndexTable<WebNotificationIndex>(table => table
-            .Column<string>("NotificationId")
-            .Column<string>("UserId")
+        SchemaBuilder.CreateMapIndexTable<NotificationIndex>(table => table
+            .Column<string>("NotificationId", column => column.WithLength(26))
+            .Column<string>("UserId", column => column.WithLength(26))
             .Column<bool>("IsRead")
             .Column<DateTime>("ReadAtUtc")
             .Column<DateTime>("CreatedAtUtc")
-            .Column<string>("Content", column => column.WithLength(NotificationConstants.WebNotificationIndexContentLength))
+            .Column<string>("ContentItemId", column => column.WithLength(26))
+            .Column<string>("Content", column => column.WithLength(NotificationConstants.NotificationIndexContentLength))
             , collection: NotificationConstants.NotificationCollection
         );
 
-        SchemaBuilder.AlterIndexTable<WebNotificationIndex>(table => table
+        SchemaBuilder.AlterIndexTable<NotificationIndex>(table => table
             .CreateIndex("IDX_WebNotificationIndex_DocumentId",
                 "DocumentId",
                 "NotificationId",
                 "UserId",
                 "IsRead",
                 "CreatedAtUtc",
-                "Content"),
+                "Content",
+                "ContentItemId"),
                 collection: NotificationConstants.NotificationCollection
         );
 

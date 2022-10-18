@@ -10,8 +10,8 @@ using YesSql;
 
 namespace OrchardCore.Notifications.Controllers;
 
-[Feature("OrchardCore.Notifications.Web")]
-[Route("api/web-notifications")]
+[Feature("OrchardCore.Notifications")]
+[Route("api/notifications")]
 [ApiController]
 public class WebNotificationController : Controller
 {
@@ -42,7 +42,7 @@ public class WebNotificationController : Controller
             return Forbid();
         }
 
-        var notification = await _session.Query<WebNotification, WebNotificationIndex>(x => x.NotificationId == viewModel.MessageId && x.UserId == CurrentUserId(), collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
+        var notification = await _session.Query<Notification, NotificationIndex>(x => x.NotificationId == viewModel.MessageId && x.UserId == CurrentUserId(), collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
 
         if (notification == null)
         {

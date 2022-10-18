@@ -35,8 +35,7 @@ public class WebNotificationResultFilter : IAsyncResultFilter
     public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
     {
         if (context.Result is not (ViewResult or PageResult)
-            || !await _authorizationService.AuthorizeAsync(context.HttpContext.User, WebNotificationPermissions.ManageWebNotifications)
-            || context.HttpContext.Features.Get<WebNotificationFeature>() != null)
+            || !await _authorizationService.AuthorizeAsync(context.HttpContext.User, WebNotificationPermissions.ManageWebNotifications))
         {
             await next();
 
@@ -44,16 +43,16 @@ public class WebNotificationResultFilter : IAsyncResultFilter
         }
 
         var userId = context.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var notifications = await _session.Query<WebNotification, WebNotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
+        var notifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
             .OrderByDescending(x => x.CreatedAtUtc)
             .Take(MaxVisibleNotifications + 1)
             .ListAsync();
 
-        var viewModel = new UserWebNotificationViewModel()
+        var viewModel = new UserNotificationCollectionViewModel()
         {
             TotalUnread = notifications.Count(),
             MaxVisibleNotifications = MaxVisibleNotifications,
-            Notifications = notifications.Select(x => new UserWebNotificationMessageViewModel()
+            Notifications = notifications.Select(x => new UserNotificationMessageViewModel()
             {
                 NotificationId = x.NotificationId,
                 IsRead = x.IsRead,
@@ -66,7 +65,7 @@ public class WebNotificationResultFilter : IAsyncResultFilter
         var layout = await _layoutAccessor.GetLayoutAsync();
         var contentZone = layout.Zones["NavbarTop"];
 
-        await contentZone.AddAsync(new ShapeViewModel<UserWebNotificationViewModel>("UserWebNotification", viewModel));
+        await contentZone.AddAsync(new ShapeViewModel<UserNotificationCollectionViewModel>("UserNotificationCollection", viewModel));
 
         await next();
     }

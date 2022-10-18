@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace OrchardCore.Notifications.Models;
+namespace OrchardCore.Notifications.Services;
 
 public class WebNotificationFilterEngineModelBinder : IModelBinder
 {

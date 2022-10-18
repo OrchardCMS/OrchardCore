@@ -18,6 +18,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Navigation.Core;
 using OrchardCore.Notifications.Indexes;
 using OrchardCore.Notifications.Models;
+using OrchardCore.Notifications.Services;
 using OrchardCore.Notifications.ViewModels;
 using OrchardCore.Routing;
 using YesSql;
@@ -26,13 +27,13 @@ using YesSql.Services;
 
 namespace OrchardCore.Notifications.Controllers;
 
-[Feature("OrchardCore.Notifications.Web")]
+[Feature("OrchardCore.Notifications")]
 public class AdminController : Controller, IUpdateModel
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
     private readonly dynamic New;
-    private readonly IDisplayManager<WebNotification> _webNoticiationDisplayManager;
+    private readonly IDisplayManager<Notification> _webNoticiationDisplayManager;
     private readonly INotificationsAdminListQueryService _notificationsAdminListQueryService;
     private readonly IDisplayManager<ListNotificationOptions> _notificationOptionsDisplayManager;
     private readonly INotifier _notifier;
@@ -47,7 +48,7 @@ public class AdminController : Controller, IUpdateModel
         ISession session,
         IShapeFactory shapeFactory,
         IOptions<PagerOptions> pagerOptions,
-        IDisplayManager<WebNotification> webNoticiationDisplayManager,
+        IDisplayManager<Notification> webNoticiationDisplayManager,
         INotificationsAdminListQueryService notificationsAdminListQueryService,
         IDisplayManager<ListNotificationOptions> notificationOptionsDisplayManager,
         INotifier notifier,
@@ -70,7 +71,7 @@ public class AdminController : Controller, IUpdateModel
     }
 
     public async Task<IActionResult> List(
-        [ModelBinder(BinderType = typeof(WebNotificationFilterEngineModelBinder), Name = "q")] QueryFilterResult<WebNotification> queryFilterResult,
+        [ModelBinder(BinderType = typeof(WebNotificationFilterEngineModelBinder), Name = "q")] QueryFilterResult<Notification> queryFilterResult,
         PagerParameters pagerParameters,
         ListNotificationOptions options)
     {
@@ -78,7 +79,6 @@ public class AdminController : Controller, IUpdateModel
         {
             return Forbid();
         }
-        HttpContext.Features.Set(new WebNotificationFeature());
 
         options.FilterResult = queryFilterResult;
 
@@ -117,7 +117,7 @@ public class AdminController : Controller, IUpdateModel
         foreach (var notificaiton in queryResult.Notifications)
         {
             dynamic shape = await _webNoticiationDisplayManager.BuildDisplayAsync(notificaiton, this, "SummaryAdmin");
-            shape.WebNotification = notificaiton;
+            shape.Notification = notificaiton;
 
             notificationSummaries.Add(shape);
         }
@@ -166,7 +166,7 @@ public class AdminController : Controller, IUpdateModel
     {
         if (itemIds?.Count() > 0)
         {
-            var checkedNotifications = await _session.Query<WebNotification, WebNotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId.IsIn(itemIds), collection: NotificationConstants.NotificationCollection).ListAsync();
+            var checkedNotifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId.IsIn(itemIds), collection: NotificationConstants.NotificationCollection).ListAsync();
             var utcNow = _clock.UtcNow;
 
             switch (options.BulkAction)
@@ -220,7 +220,7 @@ public class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        var records = await _session.Query<WebNotification, WebNotificationIndex>(x => x.UserId == CurrentUserId() && !x.IsRead, collection: NotificationConstants.NotificationCollection).ListAsync();
+        var records = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && !x.IsRead, collection: NotificationConstants.NotificationCollection).ListAsync();
         var utcNow = _clock.UtcNow;
         foreach (var record in records)
         {
@@ -242,7 +242,7 @@ public class AdminController : Controller, IUpdateModel
 
         if (!String.IsNullOrWhiteSpace(notificationId))
         {
-            var notification = await _session.Query<WebNotification, WebNotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId && x.IsRead != markAsRead, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
+            var notification = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId && x.IsRead != markAsRead, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
 
             if (notification != null)
             {
@@ -273,7 +273,7 @@ public class AdminController : Controller, IUpdateModel
 
         if (!String.IsNullOrWhiteSpace(notificationId))
         {
-            var notification = await _session.Query<WebNotification, WebNotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
+            var notification = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
 
             if (notification != null)
             {

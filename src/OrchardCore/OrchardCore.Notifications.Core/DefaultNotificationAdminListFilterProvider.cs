@@ -14,7 +14,7 @@ namespace OrchardCore.Notifications;
 
 public class DefaultNotificationAdminListFilterProvider : INotificationAdminListFilterProvider
 {
-    public void Build(QueryEngineBuilder<WebNotification> builder)
+    public void Build(QueryEngineBuilder<Notification> builder)
     {
         builder
             .WithNamedTerm("status", builder => builder
@@ -25,17 +25,17 @@ public class DefaultNotificationAdminListFilterProvider : INotificationAdminList
                         switch (status)
                         {
                             case NotificationStatus.Read:
-                                query.With<WebNotificationIndex>(x => x.IsRead);
+                                query.With<NotificationIndex>(x => x.IsRead);
                                 break;
                             case NotificationStatus.Unread:
-                                query.With<WebNotificationIndex>(x => !x.IsRead);
+                                query.With<NotificationIndex>(x => !x.IsRead);
                                 break;
                             default:
                                 break;
                         }
                     }
 
-                    return new ValueTask<IQuery<WebNotification>>(query);
+                    return new ValueTask<IQuery<Notification>>(query);
                 })
                 .MapTo<ListNotificationOptions>((val, model) =>
                 {
@@ -60,10 +60,10 @@ public class DefaultNotificationAdminListFilterProvider : INotificationAdminList
                 {
                     if (Enum.TryParse<NotificationOrder>(val, true, out var sort) && sort == NotificationOrder.Oldest)
                     {
-                        return new ValueTask<IQuery<WebNotification>>(query.With<WebNotificationIndex>().OrderBy(x => x.CreatedAtUtc));
+                        return new ValueTask<IQuery<Notification>>(query.With<NotificationIndex>().OrderBy(x => x.CreatedAtUtc));
                     }
 
-                    return new ValueTask<IQuery<WebNotification>>(query.With<WebNotificationIndex>().OrderByDescending(x => x.CreatedAtUtc));
+                    return new ValueTask<IQuery<Notification>>(query.With<NotificationIndex>().OrderByDescending(x => x.CreatedAtUtc));
                 })
                 .MapTo<ListNotificationOptions>((val, model) =>
                 {
@@ -85,20 +85,20 @@ public class DefaultNotificationAdminListFilterProvider : INotificationAdminList
             )
             .WithDefaultTerm("text", builder => builder
                 .ManyCondition(
-                        (val, query) => query.With<WebNotificationIndex>(x => x.Content.Contains(val)),
-                        (val, query) => query.With<WebNotificationIndex>(x => x.Content.NotContains(val))
+                        (val, query) => query.With<NotificationIndex>(x => x.Content.Contains(val)),
+                        (val, query) => query.With<NotificationIndex>(x => x.Content.NotContains(val))
                 )
             )
             // Always filter by owner to ensure we only query notification that belong to the current user.
             .WithDefaultTerm("owner", builder => builder
                 .OneCondition((val, query, ctx) =>
                 {
-                    var context = (WebNotificationQueryContext)ctx;
+                    var context = (NotificationQueryContext)ctx;
                     var httpAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
 
                     var userId = httpAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                    return new ValueTask<IQuery<WebNotification>>(query.With<WebNotificationIndex>(t => t.UserId == userId));
+                    return new ValueTask<IQuery<Notification>>(query.With<NotificationIndex>(t => t.UserId == userId));
                 })
                 .AlwaysRun()
             );

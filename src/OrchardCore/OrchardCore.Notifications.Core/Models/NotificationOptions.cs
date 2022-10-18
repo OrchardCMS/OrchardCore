@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Notifications.Services;
 using YesSql.Filters.Query;
 
 namespace OrchardCore.Notifications.Models;
@@ -31,7 +32,7 @@ public class ListNotificationOptions
     public int TotalItemCount { get; set; }
 
     [ModelBinder(BinderType = typeof(WebNotificationFilterEngineModelBinder), Name = nameof(SearchText))]
-    public QueryFilterResult<WebNotification> FilterResult { get; set; }
+    public QueryFilterResult<Notification> FilterResult { get; set; }
 
     [BindNever]
     public List<SelectListItem> BulkActions { get; set; }

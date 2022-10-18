@@ -1,0 +1,40 @@
+@model NotifyContentOwnerActivityViewModel
+@{
+    var options = new List<SelectListItem>()
+    {
+        new SelectListItem(T["No link"].Value, String.Empty),
+        new SelectListItem(T["View Content"].Value, "content"),
+        new SelectListItem(T["Custom Url"].Value, "url"),
+    };
+}
+<div class="wrapper">
+    <div class="mb-3" asp-validation-class-for="LinkType">
+        <label asp-for="LinkType">@T["Link Type"]</label>
+        <select asp-for="LinkType" asp-items="options" class="form-select"></select>
+        <span asp-validation-for="LinkType"></span>
+        <div class="hint">@T["When a link is used, the web notification will become clickable and the Body will be ignored."]</div>
+    </div>
+
+    <div class="mb-3 custom-url-input-wrapper" asp-validation-class-for="Url">
+        <label asp-for="Url">@T["Url"]</label>
+        <input type="text" asp-for="Url" class="form-control" />
+        <span asp-validation-for="Url"></span>
+    </div>
+</div>
+
+<script at="Foot">
+    (function () {
+        let linkType = document.getElementById('@Html.IdFor(x => x.LinkType)');
+
+        linkType.addEventListener('change', function (e) {
+
+            if (event.target.value == 'url') {
+                linkType.closest('.wrapper').querySelector('.custom-url-input-wrapper').classList.remove('d-none');
+            } else {
+                linkType.closest('.wrapper').querySelector('.custom-url-input-wrapper').classList.add('d-none');
+            }
+        });
+
+        linkType.dispatchEvent(new Event('change'));
+    })();
+</script>

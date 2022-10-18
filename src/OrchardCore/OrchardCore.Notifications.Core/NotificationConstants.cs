@@ -5,7 +5,7 @@ public class NotificationConstants
     public const string NotificationCollection = "Notification";
 
     /// <summary>
-    /// If this number is increased after the site is setup, you must alter the <see cref="WebNotification" /> using migration
+    /// If this number is increased after the site is setup, you must alter the <see cref="Notification" /> using migration
     /// </summary>
-    public const int WebNotificationIndexContentLength = 2500;
+    public const int NotificationIndexContentLength = 2500;
 }

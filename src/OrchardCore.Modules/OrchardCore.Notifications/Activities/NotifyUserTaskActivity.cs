@@ -76,12 +76,7 @@ public abstract class NotifyUserTaskActivity : TaskActivity
             return Outcomes("Failed: disabled User");
         }
 
-        var message = new HtmlNotificationMessage()
-        {
-            Subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, _htmlEncoder),
-            Body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, _htmlEncoder),
-            BodyContainsHtml = IsHtmlBody
-        };
+        var message = await GetMessageAsync(workflowContext);
 
         var result = await _notificationCoordinator.SendAsync(user, message);
         workflowContext.LastResult = result;
@@ -92,6 +87,16 @@ public abstract class NotifyUserTaskActivity : TaskActivity
         }
 
         return Outcomes("Done");
+    }
+
+    protected virtual async Task<INotificationMessage> GetMessageAsync(WorkflowExecutionContext workflowContext)
+    {
+        return new HtmlNotificationMessage()
+        {
+            Subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, _htmlEncoder),
+            Body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, _htmlEncoder),
+            BodyContainsHtml = IsHtmlBody
+        };
     }
 
     abstract public override string Name { get; }

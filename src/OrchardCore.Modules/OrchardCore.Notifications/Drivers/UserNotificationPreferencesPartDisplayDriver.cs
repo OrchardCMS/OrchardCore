@@ -13,18 +13,18 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Notifications.Drivers;
 
-public class UserNotificationPartDisplayDriver : SectionDisplayDriver<User, UserNotificationPart>
+public class UserNotificationPreferencesPartDisplayDriver : SectionDisplayDriver<User, UserNotificationPreferencesPart>
 {
     private readonly IEnumerable<INotificationMethodProvider> _notificationMethodProviders;
 
-    public UserNotificationPartDisplayDriver(IEnumerable<INotificationMethodProvider> notificationMethodProviders)
+    public UserNotificationPreferencesPartDisplayDriver(IEnumerable<INotificationMethodProvider> notificationMethodProviders)
     {
         _notificationMethodProviders = notificationMethodProviders;
     }
 
-    public override Task<IDisplayResult> EditAsync(User user, UserNotificationPart part, BuildEditorContext context)
+    public override Task<IDisplayResult> EditAsync(User user, UserNotificationPreferencesPart part, BuildEditorContext context)
     {
-        var result = Initialize<UserNotificationViewModel>("UserNotificationPart_Edit", model =>
+        var result = Initialize<UserNotificationViewModel>("UserNotificationPreferencesPart_Edit", model =>
         {
             var sortedMethods = new List<string>(part.Methods ?? Array.Empty<string>());
             var optout = part.Optout ?? Array.Empty<string>();
@@ -56,12 +56,13 @@ public class UserNotificationPartDisplayDriver : SectionDisplayDriver<User, User
                 model.AvailableMethods = availableItems.OrderBy(x => x.Text);
             }
 
-        }).Location("Content:11");
+        }).Location("Content:11")
+        .RenderWhen(() => Task.FromResult(_notificationMethodProviders.Any()));
 
         return Task.FromResult<IDisplayResult>(result);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(User user, UserNotificationPart part, IUpdateModel updater, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(User user, UserNotificationPreferencesPart part, IUpdateModel updater, BuildEditorContext context)
     {
         var model = new UserNotificationViewModel();
 

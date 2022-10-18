@@ -5,9 +5,9 @@ using YesSql.Filters.Query.Services;
 
 namespace OrchardCore.Navigation.Core;
 
-public class WebNotificationQueryContext : QueryExecutionContext<WebNotification>
+public class NotificationQueryContext : QueryExecutionContext<Notification>
 {
-    public WebNotificationQueryContext(IServiceProvider serviceProvider, IQuery<WebNotification> query) : base(query)
+    public NotificationQueryContext(IServiceProvider serviceProvider, IQuery<Notification> query) : base(query)
     {
         ServiceProvider = serviceProvider;
     }

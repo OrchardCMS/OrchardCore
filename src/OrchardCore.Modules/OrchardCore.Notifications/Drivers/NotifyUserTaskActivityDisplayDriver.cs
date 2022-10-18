@@ -10,14 +10,15 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Notifications.Drivers;
 
-public class NotifyUserTaskActivityDisplayDriver<TActivity> : ActivityDisplayDriver<TActivity>
+public class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : ActivityDisplayDriver<TActivity, TEditViewModel>
     where TActivity : NotifyUserTaskActivity
+    where TEditViewModel : NotifyUserTaskActivityViewModel, new()
 {
-    private static readonly string EditShapeType = $"{typeof(NotifyUserTaskActivity).Name}_Fields_Edit";
+    protected virtual string EditShapeType => $"{typeof(NotifyUserTaskActivity).Name}_Fields_Edit";
 
     public override IDisplayResult Edit(TActivity model)
     {
-        return Initialize(EditShapeType, (Func<NotifyUserTaskActivityViewModel, ValueTask>)(viewModel =>
+        return Initialize(EditShapeType, (Func<TEditViewModel, ValueTask>)(viewModel =>
         {
             return EditActivityAsync(model, viewModel);
         })).Location("Content");
@@ -25,7 +26,7 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity> : ActivityDisplayDri
 
     public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
     {
-        var viewModel = new NotifyUserTaskActivityViewModel();
+        var viewModel = new TEditViewModel();
         if (await updater.TryUpdateModelAsync(viewModel, Prefix))
         {
             await UpdateActivityAsync(viewModel, model);
@@ -37,7 +38,7 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity> : ActivityDisplayDri
     /// <summary>
     /// Edit the view model before it's used in the editor.
     /// </summary>
-    protected virtual ValueTask EditActivityAsync(TActivity activity, NotifyUserTaskActivityViewModel model)
+    protected override ValueTask EditActivityAsync(TActivity activity, TEditViewModel model)
     {
         EditActivity(activity, model);
 
@@ -47,7 +48,7 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity> : ActivityDisplayDri
     /// <summary>
     /// Edit the view model before it's used in the editor.
     /// </summary>
-    protected virtual void EditActivity(TActivity activity, NotifyUserTaskActivityViewModel model)
+    protected override void EditActivity(TActivity activity, TEditViewModel model)
     {
         model.Subject = activity.Subject.Expression;
         model.Body = activity.Body.Expression;
@@ -57,7 +58,7 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity> : ActivityDisplayDri
     /// <summary>
     /// Updates the activity when the view model is validated.
     /// </summary>
-    protected virtual Task UpdateActivityAsync(NotifyUserTaskActivityViewModel model, TActivity activity)
+    protected override Task UpdateActivityAsync(TEditViewModel model, TActivity activity)
     {
         UpdateActivity(model, activity);
 
@@ -67,7 +68,7 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity> : ActivityDisplayDri
     /// <summary>
     /// Updates the activity when the view model is validated.
     /// </summary>
-    protected virtual void UpdateActivity(NotifyUserTaskActivityViewModel model, TActivity activity)
+    protected override void UpdateActivity(TEditViewModel model, TActivity activity)
     {
         activity.Subject = new WorkflowExpression<string>(model.Subject);
         activity.Body = new WorkflowExpression<string>(model.Body);
@@ -81,4 +82,9 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity> : ActivityDisplayDri
             Shape($"{typeof(TActivity).Name}_Fields_Design", new ActivityViewModel<TActivity>(activity)).Location("Design", "Content")
         );
     }
+}
+
+public class NotifyUserTaskActivityDisplayDriver<TActivity> : NotifyUserTaskActivityDisplayDriver<TActivity, NotifyUserTaskActivityViewModel>
+        where TActivity : NotifyUserTaskActivity
+{
 }

@@ -4,5 +4,5 @@ namespace OrchardCore.Notifications;
 
 public interface INotificationAdminListFilterProvider
 {
-    void Build(QueryEngineBuilder<WebNotification> builder);
+    void Build(QueryEngineBuilder<Notification> builder);
 }

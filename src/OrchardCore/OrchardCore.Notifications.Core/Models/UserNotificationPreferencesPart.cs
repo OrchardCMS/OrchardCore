@@ -2,7 +2,7 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Notifications.Models;
 
-public class UserNotificationPart : ContentPart
+public class UserNotificationPreferencesPart : ContentPart
 {
     public UserNotificationStrategy Strategy { get; set; }
 

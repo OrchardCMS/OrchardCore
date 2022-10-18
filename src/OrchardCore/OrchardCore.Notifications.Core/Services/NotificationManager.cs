@@ -2,21 +2,28 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AngleSharp.Text;
 using OrchardCore.Entities;
+using OrchardCore.Modules;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
+using YesSql;
 
 namespace OrchardCore.Notifications.Services;
 
 public class NotificationManager : INotificationManager
 {
     private readonly IEnumerable<INotificationMethodProvider> _notificationMethodProviders;
+    private readonly ISession _session;
+    private readonly IClock _clock;
 
-    public NotificationManager(IEnumerable<INotificationMethodProvider> notificationMethodProviders)
+    public NotificationManager(IEnumerable<INotificationMethodProvider> notificationMethodProviders,
+        ISession session,
+        IClock clock)
     {
         _notificationMethodProviders = notificationMethodProviders;
+        _session = session;
+        _clock = clock;
     }
 
     public async Task<int> SendAsync(IUser user, INotificationMessage message)
@@ -25,7 +32,9 @@ public class NotificationManager : INotificationManager
 
         if (user is User su)
         {
-            var notificationPart = su.As<UserNotificationPart>();
+            SaveNotification(message, su);
+
+            var notificationPart = su.As<UserNotificationPreferencesPart>();
 
             var selectedMethods = ((notificationPart?.Methods) ?? Array.Empty<string>()).ToList();
             var optout = notificationPart.Optout ?? Array.Empty<string>();
@@ -57,5 +66,31 @@ public class NotificationManager : INotificationManager
         }
 
         return totalSent;
+    }
+
+    private void SaveNotification(INotificationMessage message, User su)
+    {
+        var notification = new Notification()
+        {
+            NotificationId = IdGenerator.GenerateId(),
+            CreatedUtc = _clock.UtcNow,
+            UserId = su.UserId,
+            Subject = message.Subject,
+            Body = message.Body,
+            IsHtmlBody = message is HtmlNotificationMessage nm && nm.BodyContainsHtml
+        };
+
+        if (message is ContentManagement contentMessage)
+        {
+            if (!String.IsNullOrEmpty(contentMessage.ContentItemId))
+            {
+                notification.ContentItemId = contentMessage.ContentItemId;
+            }
+            else if (!String.IsNullOrWhiteSpace(contentMessage.Url))
+            {
+                notification.Url = contentMessage.Url;
+            }
+        }
+        _session.Save(notification, collection: NotificationConstants.NotificationCollection);
     }
 }

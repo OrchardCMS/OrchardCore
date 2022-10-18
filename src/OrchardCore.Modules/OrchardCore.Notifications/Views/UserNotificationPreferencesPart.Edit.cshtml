@@ -1,13 +1,15 @@
 @model UserNotificationViewModel
 @{
     var methodsHtmlId = Html.IdFor(x => x.Methods);
-    var index = 0;
+    var totalMethods = Model.AvailableMethods.Count();
 }
-
-<div class="mb-3">
-    <label asp-for="Strategy">@T["Notification Strategy"]</label>
-    <select asp-for="Strategy" asp-items="@Model.Strategies" class="form-select"></select>
-</div>
+@if (totalMethods > 1)
+{
+    <div class="mb-3">
+        <label asp-for="Strategy">@T["Notification Strategy"]</label>
+        <select asp-for="Strategy" asp-items="@Model.Strategies" class="form-select"></select>
+    </div>
+}
 <div class="mb-3">
     <label asp-for="Methods">@T["Notification Methods"]</label>
 
@@ -28,11 +30,9 @@
                     </label>
                 </div>
             </li>
-
-            index++;
         }
     </ul>
-    @if (Model.AvailableMethods.Count() > 1)
+    @if (totalMethods > 1)
     {
         <span class="hint">@T["From the list above, you can sort the notification priority where the most important method is on the top."]</span>
     }

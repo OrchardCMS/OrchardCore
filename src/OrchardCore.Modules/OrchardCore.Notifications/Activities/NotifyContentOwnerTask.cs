@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.Notifications.Models;
 using OrchardCore.Users;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
@@ -38,6 +39,18 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity
 
     public override LocalizedString DisplayText => S["Notify Content's Owner Task"];
 
+    public WorkflowExpression<string> LinkType
+    {
+        get => GetProperty(() => new WorkflowExpression<string>());
+        set => SetProperty(value);
+    }
+
+    public WorkflowExpression<string> Url
+    {
+        get => GetProperty(() => new WorkflowExpression<string>());
+        set => SetProperty(value);
+    }
+
     protected override async Task<IUser> GetUserAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         if (workflowContext.Input.TryGetValue("ContentItem", out var obj)
@@ -52,5 +65,29 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity
         }
 
         return null;
+    }
+
+    protected override async Task<INotificationMessage> GetMessageAsync(WorkflowExecutionContext workflowContext)
+    {
+        var message = new ContentNotificationMessage()
+        {
+            Subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, _htmlEncoder),
+        };
+
+        if (LinkType.Expression == "content" && workflowContext.Input.TryGetValue("ContentItem", out var obj) && obj is ContentItem contentItem)
+        {
+            message.ContentItemId = contentItem.ContentItemId;
+        }
+        else if (LinkType.Expression == "url" && !String.IsNullOrWhiteSpace(Url.Expression))
+        {
+            message.Url = Url.Expression;
+        }
+        else
+        {
+            message.Body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, _htmlEncoder);
+            message.BodyContainsHtml = IsHtmlBody;
+        }
+
+        return message;
     }
 }

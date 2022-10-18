@@ -3,7 +3,7 @@ using OrchardCore.Entities;
 
 namespace OrchardCore.Notifications;
 
-public class WebNotification : Entity
+public class Notification : Entity
 {
     /// <summary>
     /// The Id of the notification.
@@ -24,6 +24,16 @@ public class WebNotification : Entity
     /// Whether or not the body is an HTML
     /// </summary>
     public bool IsHtmlBody { get; set; }
+
+    /// <summary>
+    /// ContentItemId this notification is linked to.
+    /// </summary>
+    public string ContentItemId { get; set; }
+
+    /// <summary>
+    /// Custom URL this URL should be linked to.
+    /// </summary>
+    public string Url { get; set; }
 
     /// <summary>
     /// Whether or not the notification is read.

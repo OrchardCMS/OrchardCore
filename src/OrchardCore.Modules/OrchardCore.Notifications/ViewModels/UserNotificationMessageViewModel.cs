@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
 namespace OrchardCore.Notifications.ViewModels;
 
-public class UserWebNotificationMessageViewModel
+public class UserNotificationMessageViewModel
 {
     public string NotificationId { get; set; }
 
