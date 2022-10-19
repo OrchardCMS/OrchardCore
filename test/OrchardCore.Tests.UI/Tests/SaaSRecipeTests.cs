@@ -1,10 +1,8 @@
 using System.Threading.Tasks;
 using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
-using Lombiq.Tests.UI.Models;
 using Lombiq.Tests.UI.Pages;
 using Lombiq.Tests.UI.Services;
-using OpenQA.Selenium;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,9 +10,6 @@ namespace OrchardCore.Tests.UI.Tests
 {
     public class SaaSRecipeTests : UITestBase
     {
-        private const string TestTenantUrlPrefix = "test";
-        private const string TestTenantDisplayName = "Test Tenant";
-
         public SaaSRecipeTests(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
         {
@@ -45,16 +40,17 @@ namespace OrchardCore.Tests.UI.Tests
             ExecuteTestAfterSetupAsync(
                 async context =>
                 {
-                    await context.CreateAndEnterTenantAsync(
-                        TestTenantUrlPrefix,
-                        TestTenantUrlPrefix,
-                        "Blog.Tests",
-                        new TenantSetupParameters
-                        {
-                            SiteName = TestTenantDisplayName,
-                        });
+                    await context.SignInDirectlyAsync();
 
-                    Assert.Equal(TestTenantDisplayName, context.Get(By.ClassName("navbar-brand")).Text);
+                    await context.CreateAndEnterTenantManuallyAsync("test", "test");
+
+                    await context.GoToSetupPageAndSetupOrchardCoreAsync(
+                        new OrchardCoreSetupParameters(context)
+                        {
+                            SiteName = "Test Tenant",
+                            RecipeId = "Blog.Tests",
+                            RunSetupOnCurrentPage = true,
+                        });
 
                     await context.TestBasicOrchardFeaturesExceptSetupAsync();
                 },
