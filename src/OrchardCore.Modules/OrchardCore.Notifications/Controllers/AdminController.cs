@@ -166,41 +166,41 @@ public class AdminController : Controller, IUpdateModel
     {
         if (itemIds?.Count() > 0)
         {
-            var checkedNotifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId.IsIn(itemIds), collection: NotificationConstants.NotificationCollection).ListAsync();
+            var notifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId.IsIn(itemIds)).ListAsync();
             var utcNow = _clock.UtcNow;
 
             switch (options.BulkAction)
             {
                 case NotificationBulkAction.Unread:
-                    foreach (var item in checkedNotifications)
+                    foreach (var notification in notifications)
                     {
-                        if (item.IsRead)
+                        if (notification.IsRead)
                         {
-                            item.IsRead = false;
-                            item.ReadAtUtc = null;
+                            notification.IsRead = false;
+                            notification.ReadAtUtc = null;
 
-                            _session.Save(item, collection: NotificationConstants.NotificationCollection);
+                            _session.Save(notification, collection: NotificationConstants.NotificationCollection);
                         }
                     }
                     await _notifier.SuccessAsync(H["Notifications were unread successfully."]);
                     break;
                 case NotificationBulkAction.Read:
-                    foreach (var item in checkedNotifications)
+                    foreach (var notification in notifications)
                     {
-                        if (!item.IsRead)
+                        if (!notification.IsRead)
                         {
-                            item.IsRead = true;
-                            item.ReadAtUtc = null;
+                            notification.IsRead = true;
+                            notification.ReadAtUtc = null;
 
-                            _session.Save(item, collection: NotificationConstants.NotificationCollection);
+                            _session.Save(notification, collection: NotificationConstants.NotificationCollection);
                         }
                     }
                     await _notifier.SuccessAsync(H["Notifications were read successfully."]);
                     break;
                 case NotificationBulkAction.Remove:
-                    foreach (var item in checkedNotifications)
+                    foreach (var notification in notifications)
                     {
-                        _session.Delete(item, collection: NotificationConstants.NotificationCollection);
+                        _session.Delete(notification, collection: NotificationConstants.NotificationCollection);
                     }
                     await _notifier.SuccessAsync(H["Notifications removed successfully."]);
 
@@ -220,14 +220,15 @@ public class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        var records = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && !x.IsRead, collection: NotificationConstants.NotificationCollection).ListAsync();
-        var utcNow = _clock.UtcNow;
-        foreach (var record in records)
-        {
-            record.IsRead = true;
-            record.ReadAtUtc = utcNow;
+        var notifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && !x.IsRead, collection: NotificationConstants.NotificationCollection).ListAsync();
 
-            _session.Save(record, collection: NotificationConstants.NotificationCollection);
+        var utcNow = _clock.UtcNow;
+        foreach (var notification in notifications)
+        {
+            notification.IsRead = true;
+            notification.ReadAtUtc = utcNow;
+
+            _session.Save(notification, collection: NotificationConstants.NotificationCollection);
         }
 
         return RedirectTo(returnUrl);
@@ -283,7 +284,6 @@ public class AdminController : Controller, IUpdateModel
 
         return RedirectTo(returnUrl);
     }
-
 
     private IActionResult RedirectTo(string returnUrl)
     {

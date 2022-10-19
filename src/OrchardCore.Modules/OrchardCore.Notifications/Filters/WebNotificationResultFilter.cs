@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -5,12 +6,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Notifications.Indexes;
 using OrchardCore.Notifications.ViewModels;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Notifications.Filters;
 
@@ -48,6 +52,11 @@ public class WebNotificationResultFilter : IAsyncResultFilter
             .Take(MaxVisibleNotifications + 1)
             .ListAsync();
 
+        var contentItemIds = notifications.Where(x => !String.IsNullOrEmpty(x.ContentItemId)).Select(x => x.ContentItemId)
+            .Take(MaxVisibleNotifications);
+
+        var contentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemId.IsIn(contentItemIds) && x.Published).ListAsync();
+
         var viewModel = new UserNotificationCollectionViewModel()
         {
             TotalUnread = notifications.Count(),
@@ -58,6 +67,8 @@ public class WebNotificationResultFilter : IAsyncResultFilter
                 IsRead = x.IsRead,
                 Subject = x.Subject,
                 Body = x.Body,
+                ContentItem = contentItems.FirstOrDefault(y => y.ContentItemId == x.ContentItemId),
+                Url = x.Url,
                 IsHtmlBody = x.IsHtmlBody,
             }).ToList(),
         };

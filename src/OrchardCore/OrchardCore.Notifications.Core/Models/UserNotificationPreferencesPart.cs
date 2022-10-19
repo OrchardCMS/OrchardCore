@@ -4,8 +4,6 @@ namespace OrchardCore.Notifications.Models;
 
 public class UserNotificationPreferencesPart : ContentPart
 {
-    public UserNotificationStrategy Strategy { get; set; }
-
     /// <summary>
     /// Sorted methods.
     /// </summary>

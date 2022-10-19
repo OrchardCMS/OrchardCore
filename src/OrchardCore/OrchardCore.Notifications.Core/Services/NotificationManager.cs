@@ -1,96 +1,96 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Entities;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
-using OrchardCore.Notifications.Models;
 using OrchardCore.Users;
-using OrchardCore.Users.Models;
 using YesSql;
 
 namespace OrchardCore.Notifications.Services;
 
 public class NotificationManager : INotificationManager
 {
-    private readonly IEnumerable<INotificationMethodProvider> _notificationMethodProviders;
+    private readonly INotificationMethodProviderAccessor _notificationMethodProviderAccessor;
+    private readonly IEnumerable<INotificationEvents> _notificationEvents;
+    private readonly ILogger<NotificationManager> _logger;
     private readonly ISession _session;
     private readonly IClock _clock;
 
-    public NotificationManager(IEnumerable<INotificationMethodProvider> notificationMethodProviders,
+    public NotificationManager(INotificationMethodProviderAccessor notificationMethodProviderAccessor,
+        IEnumerable<INotificationEvents> notificationEvents,
+        ILogger<NotificationManager> logger,
         ISession session,
         IClock clock)
     {
-        _notificationMethodProviders = notificationMethodProviders;
+        _notificationMethodProviderAccessor = notificationMethodProviderAccessor;
+        _notificationEvents = notificationEvents;
+        _logger = logger;
         _session = session;
         _clock = clock;
     }
 
     public async Task<int> SendAsync(IUser user, INotificationMessage message)
     {
+        var providers = await _notificationMethodProviderAccessor.GetProvidersAsync(user);
+
+        var notification = await CreateNotificationAsync(message, user);
+
+        var notificationContext = new NotificationContext()
+        {
+            NotificationMessage = message,
+            User = user,
+            Notification = notification,
+        };
+
+        await _notificationEvents.InvokeAsync((handler, context) => handler.SendingAsync(context), notificationContext, _logger);
+
         var totalSent = 0;
 
-        if (user is User su)
+        foreach (var provider in providers)
         {
-            SaveNotification(message, su);
+            await _notificationEvents.InvokeAsync((handler, service, context) => handler.SendingAsync(service, notificationContext), provider, notificationContext, _logger);
 
-            var notificationPart = su.As<UserNotificationPreferencesPart>();
-
-            var selectedMethods = ((notificationPart?.Methods) ?? Array.Empty<string>()).ToList();
-            var optout = notificationPart.Optout ?? Array.Empty<string>();
-
-            var allowedProviders = _notificationMethodProviders.Where(provider => !optout.Contains(provider.Method, StringComparer.OrdinalIgnoreCase))
-                    .OrderBy(provider => provider.Name);
-
-            if (selectedMethods.Count > 0)
+            if (await provider.TrySendAsync(user, message))
             {
-                allowedProviders = _notificationMethodProviders.Where(provider => !optout.Contains(provider.Method, StringComparer.OrdinalIgnoreCase))
-                    // Priority matters to horor user preferences.
-                    .OrderBy(provider => selectedMethods.IndexOf(provider.Method))
-                    .ThenBy(provider => provider.Name);
-            }
+                await _notificationEvents.InvokeAsync((handler, service, context) => handler.SentAsync(service, notificationContext), provider, notificationContext, _logger);
 
-            foreach (var allowedProvider in allowedProviders)
+                totalSent++;
+            }
+            else
             {
-                if (await allowedProvider.TrySendAsync(user, message))
-                {
-                    totalSent++;
-
-                    if (notificationPart.Strategy == UserNotificationStrategy.UntilFirstSuccess)
-                    {
-                        // Since one notification was sent, we no longer need to send using other services.
-                        break;
-                    }
-                }
+                await _notificationEvents.InvokeAsync((handler, service, context) => handler.FailedAsync(service, notificationContext), provider, notificationContext, _logger);
             }
+        }
+
+        if (totalSent > 0)
+        {
+            await _notificationEvents.InvokeAsync((handler, context) => handler.SentAsync(context), notificationContext, _logger);
         }
 
         return totalSent;
     }
 
-    private void SaveNotification(INotificationMessage message, User su)
+    private async Task<Notification> CreateNotificationAsync(INotificationMessage message, IUser user)
     {
         var notification = new Notification()
         {
             NotificationId = IdGenerator.GenerateId(),
             CreatedUtc = _clock.UtcNow,
-            UserId = su.UserId,
+            UserId = user.UserName,
             Subject = message.Subject,
             Body = message.Body,
-            IsHtmlBody = message is HtmlNotificationMessage nm && nm.BodyContainsHtml
         };
 
-        if (message is ContentNotificationMessage contentMessage)
+        var context = new NotificationContext()
         {
-            if (!String.IsNullOrEmpty(contentMessage.ContentItemId))
-            {
-                notification.ContentItemId = contentMessage.ContentItemId;
-            }
-            else if (!String.IsNullOrWhiteSpace(contentMessage.Url))
-            {
-                notification.Url = contentMessage.Url;
-            }
-        }
+            Notification = notification,
+            NotificationMessage = message,
+            User = user,
+        };
+
+        await _notificationEvents.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
         _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+        await _notificationEvents.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
+
+        return notification;
     }
 }

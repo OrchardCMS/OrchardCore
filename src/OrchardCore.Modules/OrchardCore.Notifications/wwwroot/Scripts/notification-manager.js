@@ -49,6 +49,12 @@ notificationManager = function () {
               element.classList.add('notification-is-read');
             }
           }
+
+          var targetUrl = element.getAttribute('data-target-url');
+
+          if (targetUrl) {
+            window.location.href = targetUrl;
+          }
         });
       });
     };

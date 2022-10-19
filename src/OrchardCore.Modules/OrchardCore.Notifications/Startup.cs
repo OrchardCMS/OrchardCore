@@ -15,6 +15,7 @@ using OrchardCore.Notifications.Activities;
 using OrchardCore.Notifications.Controllers;
 using OrchardCore.Notifications.Drivers;
 using OrchardCore.Notifications.Filters;
+using OrchardCore.Notifications.Handlers;
 using OrchardCore.Notifications.Indexes;
 using OrchardCore.Notifications.Migrations;
 using OrchardCore.Notifications.Models;
@@ -40,11 +41,14 @@ public class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<INotificationManager, NotificationManager>();
+        services.AddScoped<INotificationMethodProviderAccessor, NotificationMethodProviderAccessor>();
+
         services.AddScoped<IDisplayDriver<User>, UserNotificationPreferencesPartDisplayDriver>();
         services.AddDataMigration<NotificationMigrations>();
         services.AddSingleton<IIndexProvider, NotificationIndexProvider>();
         services.AddScoped<INotificationsAdminListQueryService, DefaultNotificationsAdminListQueryService>();
         services.Configure<StoreCollectionOptions>(o => o.Collections.Add(NotificationConstants.NotificationCollection));
+        services.AddScoped<INotificationEvents, CoreNotificationEventsHandler>();
 
         services.AddScoped<IPermissionProvider, WebNotificationPermissionsProvider>();
         services.AddScoped<IDisplayDriver<ListNotificationOptions>, NotificationOptionsDisplayDriver>();
@@ -95,8 +99,8 @@ public class WorkflowsStartup : StartupBase
 }
 
 [Feature("OrchardCore.Notifications")]
-[RequireFeatures("OrchardCore.Workflows", "OrchardCore.Users")]
-public class UsersStartup : StartupBase
+[RequireFeatures("OrchardCore.Workflows", "OrchardCore.Users", "OrchardCore.Contents")]
+public class UsersWorkflowStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {

@@ -33,13 +33,6 @@ public class UserNotificationPreferencesPartDisplayDriver : SectionDisplayDriver
             model.Methods = _notificationMethodProviders.Select(x => x.Method).Except(optout, StringComparer.OrdinalIgnoreCase).ToArray();
 
             model.Optout = optout;
-            model.Strategy = part.Strategy;
-
-            model.Strategies = new List<SelectListItem>()
-            {
-                new SelectListItem("Notify all methods", UserNotificationStrategy.AllMethods.ToString()),
-                new SelectListItem("Notify until the first success", UserNotificationStrategy.UntilFirstSuccess.ToString()),
-            };
 
             var availableItems = _notificationMethodProviders
                 .Select(provider => new SelectListItem(provider.Name, provider.Method));
@@ -93,8 +86,6 @@ public class UserNotificationPreferencesPartDisplayDriver : SectionDisplayDriver
             part.Optout = _notificationMethodProviders.Where(provider => !selectedMethods.Contains(provider.Method, StringComparer.OrdinalIgnoreCase))
                 .Select(provider => provider.Method)
                 .ToArray();
-
-            part.Strategy = model.Strategy;
         }
 
         return await EditAsync(user, part, context);

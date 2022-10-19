@@ -1,4 +1,5 @@
 using System;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Notifications.ViewModels;
 
@@ -13,6 +14,10 @@ public class UserNotificationMessageViewModel
     public string Body { get; set; }
 
     public bool IsHtmlBody { get; set; }
+
+    public ContentItem ContentItem { get; set; }
+
+    public string Url { get; set; }
 
     public bool HasBody() => !String.IsNullOrWhiteSpace(Body);
 }
