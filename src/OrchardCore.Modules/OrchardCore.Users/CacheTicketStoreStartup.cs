@@ -15,8 +15,6 @@ namespace OrchardCore.Users.Authentication
             services.ConfigureOptions<CookieAuthenticationOptionsConfigure>();
         }
     }
-
-
     public class CookieAuthenticationOptionsConfigure : IConfigureNamedOptions<CookieAuthenticationOptions>
     {
         private readonly IHttpContextAccessor _accessor;
@@ -25,10 +23,8 @@ namespace OrchardCore.Users.Authentication
         {
             _accessor = accessor;
         }
-
         public void Configure(string name, CookieAuthenticationOptions options)
         {
-
             if (name == IdentityConstants.ApplicationScheme)
             {
                 options.SessionStore = new CacheTicketStore(_accessor);
@@ -36,7 +32,6 @@ namespace OrchardCore.Users.Authentication
         }
         public void Configure(CookieAuthenticationOptions options)
         {
-
         }
     }
 }

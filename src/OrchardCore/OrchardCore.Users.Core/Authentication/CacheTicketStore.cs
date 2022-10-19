@@ -150,13 +150,17 @@ public class CacheTicketStore : ITicketStore
     }
 }
 
-
 public record class TicketRecord
 {
     public string Key { get; set; }
+
     public string UserId { get; set; }
+
     public string Username { get; set; }
+
     public DateTime LastActivity { get; set; }
+
     public byte[] Value { get; set; }
+
     public DateTime? Expires { get; set; }
 }
