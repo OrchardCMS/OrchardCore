@@ -37,9 +37,9 @@ namespace OrchardCore.Lists
                     "Id",
                     "DocumentId",
                     "ListContentItemId",
+                    "Order",
                     "ContainedContentItemId",
                     "ListContentType",
-                    "Order",
                     "Published",
                     "Latest",
                     "DisplayText")
@@ -100,9 +100,9 @@ namespace OrchardCore.Lists
                     "Id",
                     "DocumentId",
                     "ListContentItemId",
+                    "Order",
                     "ContainedContentItemId",
                     "ListContentType",
-                    "Order",
                     "Published",
                     "Latest",
                     "DisplayText")
