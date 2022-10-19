@@ -23,26 +23,27 @@ namespace OrchardCore.Lists
                 .WithDescription("Add a list behavior."));
 
             SchemaBuilder.CreateMapIndexTable<ContainedPartIndex>(table => table
+                .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ListContentItemId", column => column.WithLength(26))
+                .Column<string>("DisplayText")
                 .Column<int>("Order")
-                .Column<string>("ContainedContentItemId", column => column.WithLength(26))
                 .Column<string>("ListContentType")
                 .Column<bool>("Published")
                 .Column<bool>("Latest")
-                .Column<string>("DisplayText")
+
             );
 
             SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
                 .CreateIndex("IDX_ContainedPartIndex_DocumentId",
                     "Id",
                     "DocumentId",
+                    "ContentItemId",
                     "ListContentItemId",
+                    "DisplayText",
                     "Order",
-                    "ContainedContentItemId",
                     "ListContentType",
                     "Published",
-                    "Latest",
-                    "DisplayText")
+                    "Latest")
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -72,11 +73,15 @@ namespace OrchardCore.Lists
         public int UpdateFrom3()
         {
             SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
-                .AddColumn<string>("ContainedContentItemId", column => column.WithLength(26))
+                .AddColumn<string>("ContentItemId", column => column.WithLength(26))
             );
 
             SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
                 .AddColumn<string>("ListContentType")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+                .AddColumn<string>("DisplayText")
             );
 
             SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
@@ -86,11 +91,6 @@ namespace OrchardCore.Lists
             SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
                 .AddColumn<bool>("Latest")
             );
-
-            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
-                .AddColumn<string>("DisplayText")
-            );
-
             SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
                 .DropIndex("IDX_ContainedPartIndex_DocumentId")
             );
@@ -99,13 +99,13 @@ namespace OrchardCore.Lists
                 .CreateIndex("IDX_ContainedPartIndex_DocumentId",
                     "Id",
                     "DocumentId",
+                    "ContentItemId",
                     "ListContentItemId",
+                    "DisplayText",
                     "Order",
-                    "ContainedContentItemId",
                     "ListContentType",
                     "Published",
-                    "Latest",
-                    "DisplayText")
+                    "Latest")
             );
 
             return 4;

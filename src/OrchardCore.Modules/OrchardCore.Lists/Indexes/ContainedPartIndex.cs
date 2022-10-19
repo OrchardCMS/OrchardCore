@@ -10,7 +10,7 @@ namespace OrchardCore.Lists.Indexes
 
         public int Order { get; set; }
 
-        public string ContainedContentItemId { get; set; }
+        public string ContentItemId { get; set; }
 
         public string ListContentType { get; set; }
 
@@ -42,7 +42,7 @@ namespace OrchardCore.Lists.Indexes
 
                     return new ContainedPartIndex
                     {
-                        ContainedContentItemId = contentItem.ContentItemId,
+                        ContentItemId = contentItem.ContentItemId,
                         ListContentType = containedPart.ListContentType,
                         ListContentItemId = containedPart.ListContentItemId,
                         Order = containedPart.Order,
