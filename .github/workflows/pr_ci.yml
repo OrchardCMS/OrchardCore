@@ -1,10 +1,13 @@
 name: PR - CI
+
 on: 
   pull_request:
     branches: [ main, release/** ]
+
 env:
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+
 jobs:
   build_test:
     runs-on: ${{ matrix.os }}
@@ -18,10 +21,14 @@ jobs:
     - uses: actions/checkout@v3
       name: Checkout source code
 
-#    - name: Setup .NET 6.0
-#      uses: actions/setup-dotnet@v3
-#      with:
-#        dotnet-version: 6.0.x
+   - name: Setup .NET 6.0
+     uses: actions/setup-dotnet@v3
+     with:
+       dotnet-version: 6.0.x
+	   
+    - uses: actions/setup-node@v3
+      with:
+        node-version: "16"
 
     # https://github.com/actions/cache/blob/main/workarounds.md#improving-cache-restore-performance-on-windowsusing-cross-os-caching
     - if: ${{ runner.os == 'Windows' }}
@@ -55,7 +62,7 @@ jobs:
     # for CI build we can use Deterministic = false to enable restore
     - name: Build
       run: |
-        dotnet build -c Release --no-restore --framework net6.0 /p:Deterministic=false /p:CreateHardLinksForCopyLocalIfPossible=true /p:CreateHardLinksForCopyFilesToOutputDirectoryIfPossible=true /p:CreateHardLinksForPublishFilesIfPossible=true
+        dotnet build -c Release --no-restore --framework net6.0 /IncludeSymbols=false / /p:Deterministic=false /p:CreateHardLinksForCopyLocalIfPossible=true /p:CreateHardLinksForCopyFilesToOutputDirectoryIfPossible=true /p:CreateHardLinksForPublishFilesIfPossible=true
 
     - name: Unit Tests
       run: |
