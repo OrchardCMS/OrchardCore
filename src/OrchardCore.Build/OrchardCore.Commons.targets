@@ -35,4 +35,18 @@
              File="$(MSBuildProjectFullPath)" />
   </Target>
 
+  <Target Name="SetAllProjectReferenceAsPublic"
+          AfterTargets="AssignProjectConfiguration"
+          BeforeTargets="ResolveProjectReferences"
+          Condition="'$(OutputType)' == 'Library' and '$(CopyLocalLockFileAssemblies)' != 'true' and $(MSBuildProjectDirectory.Contains('.Tests.')) == 'false' ">
+    <ItemGroup>
+      <ProjectReferenceWithConfiguration Update="@(ProjectReferenceWithConfiguration)">
+        <Private>false</Private>
+      </ProjectReferenceWithConfiguration>
+      <ProjectReference Update="@(ProjectReference)">
+        <Private>false</Private>
+      </ProjectReference>
+    </ItemGroup>
+  </Target>
+
 </Project>
