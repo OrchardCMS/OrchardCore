@@ -26,24 +26,10 @@ public class CacheTicketStore : ITicketStore
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public IDataProtector DataProtector
-    {
-        get
-        {
-            _dataProtector ??= _httpContextAccessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
+    public IDataProtector DataProtector => _dataProtector ??= _httpContextAccessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
                 .CreateProtector($"{nameof(CacheTicketStore)}_{IdentityConstants.ApplicationScheme}");
-            return _dataProtector;
-        }
-    }
 
-    public ILogger<CacheTicketStore> Logger
-    {
-        get
-        {
-            _logger ??= _httpContextAccessor.HttpContext.RequestServices.GetService<ILogger<CacheTicketStore>>();
-            return _logger;
-        }
-    }
+    public ILogger<CacheTicketStore> Logger => _logger ??= _httpContextAccessor.HttpContext.RequestServices.GetService<ILogger<CacheTicketStore>>();
 
     public async Task RemoveAsync(string key)
     {
@@ -65,7 +51,7 @@ public class CacheTicketStore : ITicketStore
         catch(Exception e)
         {
             // Data Protection Error
-            Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(RenewAsync) ,cacheKey);
+            Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(RenewAsync), cacheKey);
         }
     }
 
