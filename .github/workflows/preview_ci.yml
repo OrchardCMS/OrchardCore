@@ -18,12 +18,12 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
         node-version: "15"
     - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
         include-prerelease: true
