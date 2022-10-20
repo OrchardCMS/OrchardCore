@@ -46,10 +46,8 @@ jobs:
       with:
          path: |
            ~/.nuget/packages
-           **/obj/project.assets.json
-           **/obj/project.nuget.cache
-           **/*.csproj.nuget.g.targets
-           **/packages.lock.json
+           **/obj/project.*
+           **/obj/*.csproj.nuget.*
          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json', '**/Dependencies.props', '**/Dependencies.AspNetCore.props', '**/Directory.Packages.props') }}
          restore-keys: |
             ${{ runner.os }}-nuget-
