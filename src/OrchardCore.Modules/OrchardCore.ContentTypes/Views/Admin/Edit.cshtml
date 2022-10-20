@@ -16,12 +16,16 @@
         })
         .OrderBy(x => x.Order)
         .Select(x => x.Part);
-
-    var orderedFields = ((typePart?.PartDefinition?.Fields) ?? Enumerable.Empty<ContentPartFieldDefinition>())
-        .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
-        .OrderBy(x => x.Order)
-        .Select(x => x.Field)
-        .ToList();
+    var orderedFields = Enumerable.Empty<ContentPartFieldDefinition>();
+    
+    if(typePart?.PartDefinition?.Fields != null)
+    {
+        orderedFields = typePart.PartDefinition.Fields
+            .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
+            .OrderBy(x => x.Order)
+            .Select(x => x.Field)
+            .ToList();
+    }
 
     var fields = ContentDefinitionService.GetFields().ToList();
 }
@@ -53,7 +57,7 @@
                     <li class="list-group-item" style="cursor: move;">
                         <div class="w-100">
                             <div class="float-end">
-                                @if (fields.Any(field => String.Equals(field.Name, field.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
+                                @if (fields.Any(f => String.Equals(f.Name, field.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
                                 {
                                     <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
                                 }
