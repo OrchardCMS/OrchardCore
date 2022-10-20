@@ -25,14 +25,14 @@ public class CacheTicketStore : ITicketStore
 
     public async Task RemoveAsync(string key)
     {
-        var cacheKey = String.Concat(_keyPrefix, "-", key);
+        var cacheKey = $"{_keyPrefix}-{key}";
         var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
         await cache.RemoveAsync(cacheKey);
     }
 
     public async Task RenewAsync(string key, AuthenticationTicket ticket)
     {
-        var cacheKey = String.Concat(_keyPrefix, "-", key);
+        var cacheKey = $"{_keyPrefix}-{key}";
         var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
         _dataProtector ??= _httpContextAccessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
                                 .CreateProtector($"{nameof(CacheTicketStore)}_{IdentityConstants.ApplicationScheme}");
@@ -55,12 +55,13 @@ public class CacheTicketStore : ITicketStore
             Value = protectedBytes,
             Expires = ticket.Properties.ExpiresUtc.Value.UtcDateTime,
         };
+
         var bytes = Serialize(data);
         await cache.SetAsync(cacheKey, bytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc.Value });
     }
     public async Task<AuthenticationTicket> RetrieveAsync(string key)
     {
-        var cacheKey = String.Concat(_keyPrefix, "-", key);
+        var cacheKey = $"{_keyPrefix}-{key}";
         var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
         var bytes = await cache.GetAsync(cacheKey);
         if (bytes == null || bytes.Length == 0)
@@ -77,8 +78,7 @@ public class CacheTicketStore : ITicketStore
     public async Task<string> StoreAsync(AuthenticationTicket ticket)
     {
         var key = Guid.NewGuid().ToString();
-        var cacheKey = String.Concat(_keyPrefix, "-", key);
-
+        var cacheKey = $"{_keyPrefix}-{key}";
         var userId = string.Empty;
         var userName = string.Empty;
 

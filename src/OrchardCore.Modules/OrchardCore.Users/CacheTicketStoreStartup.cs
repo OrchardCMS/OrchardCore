@@ -15,21 +15,24 @@ namespace OrchardCore.Users.Authentication
             services.ConfigureOptions<CookieAuthenticationOptionsConfigure>();
         }
     }
+
     public class CookieAuthenticationOptionsConfigure : IConfigureNamedOptions<CookieAuthenticationOptions>
     {
-        private readonly IHttpContextAccessor _accessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CookieAuthenticationOptionsConfigure(IHttpContextAccessor accessor)
+        public CookieAuthenticationOptionsConfigure(IHttpContextAccessor httpContextAccessor)
         {
-            _accessor = accessor;
+            _httpContextAccessor = httpContextAccessor;
         }
+
         public void Configure(string name, CookieAuthenticationOptions options)
         {
             if (name == IdentityConstants.ApplicationScheme)
             {
-                options.SessionStore = new CacheTicketStore(_accessor);
+                options.SessionStore = new CacheTicketStore(_httpContextAccessor);
             }
         }
+
         public void Configure(CookieAuthenticationOptions options)
         {
         }
