@@ -53,7 +53,7 @@
                     <li class="list-group-item" style="cursor: move;">
                         <div class="w-100">
                             <div class="float-end">
-                                @if (fields.Any(x => x.Name.Equals(field.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
+                                @if (fields.Any(field => String.Equals(field.Name, field.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
                                 {
                                     <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
                                 }
