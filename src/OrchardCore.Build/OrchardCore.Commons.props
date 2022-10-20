@@ -17,8 +17,9 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
 
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</RestoreLockedMode>
+    <EnableLockFiles Condition="$(MSBuildProjectDirectory.Contains('.Tests.')) == false and $(MSBuildProjectDirectory.Contains('.Targets')) == false">true</EnableLockFiles>
+    <RestorePackagesWithLockFile Condition="$(EnableLockFiles) == 'true'">true</RestorePackagesWithLockFile>
+    <RestoreLockedMode Condition="$(EnableLockFiles) == 'true' and '$(ContinuousIntegrationBuild)' == 'true'">true</RestoreLockedMode>
 
     <!-- Common NuGet properties-->
     <OCFrameworkDescription>Orchard Core Framework is an application framework for building modular, multi-tenant applications on ASP.NET Core.</OCFrameworkDescription>
