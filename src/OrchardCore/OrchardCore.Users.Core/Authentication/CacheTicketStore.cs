@@ -75,7 +75,9 @@ public class CacheTicketStore : ITicketStore
         var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
         var bytes = await cache.GetAsync(cacheKey);
         if (bytes == null || bytes.Length == 0)
+        {
             return null;
+        }
 
        try
         {
