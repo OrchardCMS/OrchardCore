@@ -54,11 +54,10 @@ jobs:
          restore-keys: |
             ${{ runner.os }}-nuget-
 
-    # we can restore just OrchardCore.Cms.Web.csproj because it links to full dependency file, with Directory.Packages.props should use solution
     - name: Restore
       if: steps.cache-nuget.outputs.cache-hit != 'true'
       run: |
-        dotnet restore --force-evaluate /p:DisableImplicitNuGetFallbackFolder=true /p:DisableImplicitLibraryPacksFolder src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj
+        dotnet restore /p:DisableImplicitNuGetFallbackFolder=true /p:DisableImplicitLibraryPacksFolder
 
     # for CI build we can use Deterministic = false to enable restore
     - name: Build
