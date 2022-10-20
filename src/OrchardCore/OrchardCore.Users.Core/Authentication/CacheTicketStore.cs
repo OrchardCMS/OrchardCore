@@ -9,18 +9,41 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
 
 namespace OrchardCore.Users.Authentication;
 
 public class CacheTicketStore : ITicketStore
 {
     private const string _keyPrefix = "ocauth-ticket";
+
     private readonly IHttpContextAccessor _httpContextAccessor;
     private IDataProtector _dataProtector;
+    private ILogger<CacheTicketStore> _logger;
 
     public CacheTicketStore(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
+    }
+
+    public IDataProtector DataProtector
+    {
+        get
+        {
+            _dataProtector ??= _httpContextAccessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
+                .CreateProtector($"{nameof(CacheTicketStore)}_{IdentityConstants.ApplicationScheme}");
+            return _dataProtector;
+        }
+    }
+
+    public ILogger<CacheTicketStore> Logger
+    {
+        get
+        {
+            _logger ??= _httpContextAccessor.HttpContext.RequestServices.GetService<ILogger<CacheTicketStore>>();
+            return _logger;
+        }
     }
 
     public async Task RemoveAsync(string key)
@@ -34,31 +57,19 @@ public class CacheTicketStore : ITicketStore
     {
         var cacheKey = $"{_keyPrefix}-{key}";
         var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
-        _dataProtector ??= _httpContextAccessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
-                                .CreateProtector($"{nameof(CacheTicketStore)}_{IdentityConstants.ApplicationScheme}");
 
-        var userId = string.Empty;
-        var userName = string.Empty;
-        if (ticket.AuthenticationScheme == IdentityConstants.ApplicationScheme)
+        try
         {
-            userId = ticket.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            userName = ticket.Principal.FindFirst(ClaimTypes.Name)?.Value ?? ticket.Principal.FindFirst("name")?.Value;
+            var protectedBytes = DataProtector.Protect(SerializeTicket(ticket));
+            await cache.SetAsync(cacheKey, protectedBytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc.Value });
         }
-
-        var protectedBytes = _dataProtector.Protect(SerializeTicket(ticket));
-        var data = new TicketRecord
+        catch(Exception e)
         {
-            Key = key,
-            UserId = userId,
-            Username = userName,
-            LastActivity = DateTime.UtcNow,
-            Value = protectedBytes,
-            Expires = ticket.Properties.ExpiresUtc.Value.UtcDateTime,
-        };
-
-        var bytes = Serialize(data);
-        await cache.SetAsync(cacheKey, bytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc.Value });
+            // Data Protection Error
+            Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(RenewAsync) ,cacheKey);
+        }
     }
+
     public async Task<AuthenticationTicket> RetrieveAsync(string key)
     {
         var cacheKey = $"{_keyPrefix}-{key}";
@@ -67,46 +78,36 @@ public class CacheTicketStore : ITicketStore
         if (bytes == null || bytes.Length == 0)
             return null;
 
-        var data = Deserialize(bytes);
-        _dataProtector ??= _httpContextAccessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
-                                .CreateProtector($"{nameof(CacheTicketStore)}_{IdentityConstants.ApplicationScheme}");
-        var ticket = DeserializeTicket(_dataProtector.Unprotect(data.Value));
-
-        return ticket;
+       try
+        {
+            var ticket = DeserializeTicket(DataProtector.Unprotect(bytes));
+            return ticket;
+        }
+        catch(Exception e)
+        {
+            // Data Protection Error
+            Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(RetrieveAsync) ,cacheKey);
+            return null;
+        }
     }
 
     public async Task<string> StoreAsync(AuthenticationTicket ticket)
     {
         var key = Guid.NewGuid().ToString();
         var cacheKey = $"{_keyPrefix}-{key}";
-        var userId = string.Empty;
-        var userName = string.Empty;
-
-        if (ticket.AuthenticationScheme == IdentityConstants.ApplicationScheme)
-        {
-            userId = ticket.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value; ;
-            userName = ticket.Principal.FindFirst(ClaimTypes.Name)?.Value ?? ticket.Principal.FindFirst("name")?.Value;
-        }
-
-        _dataProtector ??= _httpContextAccessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
-                                .CreateProtector($"{nameof(CacheTicketStore)}_{IdentityConstants.ApplicationScheme}");
-
-        var protectedBytes = _dataProtector.Protect(SerializeTicket(ticket));
-        var data = new TicketRecord
-        {
-            Key = key,
-            UserId = userId,
-            Username = userName,
-            LastActivity = DateTime.UtcNow,
-            Value = protectedBytes,
-            Expires = ticket.Properties.ExpiresUtc.Value.UtcDateTime,
-        };
-
         var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
-        var ticketBytes = Serialize(data);
-        await cache.SetAsync(cacheKey, ticketBytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc.Value });
 
-        return key;
+        try
+        {
+            var protectedBytes = DataProtector.Protect(SerializeTicket(ticket));
+            await cache.SetAsync(cacheKey, protectedBytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc.Value });
+            return key;
+        }
+        catch(Exception e)
+        {
+            Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(StoreAsync) ,cacheKey);
+            return null;
+        }
     }
 
     private byte[] SerializeTicket(AuthenticationTicket source)
@@ -114,53 +115,4 @@ public class CacheTicketStore : ITicketStore
 
     private AuthenticationTicket DeserializeTicket(byte[] source)
         => source == null ? null : TicketSerializer.Default.Deserialize(source);
-
-    private byte[] Serialize(TicketRecord m)
-    {
-        using var ms = new MemoryStream();
-
-        using var writer = new BinaryWriter(ms);
-        writer.Write(m.Key);
-        writer.Write(m.UserId);
-        writer.Write(m.Username);
-        writer.Write7BitEncodedInt64(m.LastActivity.Ticks);
-        writer.Write7BitEncodedInt(m.Value.Length);
-        writer.Write(m.Value);
-        writer.Write7BitEncodedInt64(m.Expires.Value.Ticks);
-
-        return ms.ToArray();
-    }
-
-    private TicketRecord Deserialize(byte[] byteArray)
-    {
-        using var ms = new MemoryStream(byteArray);
-        using var reader = new BinaryReader(ms);
-        var ticket = new TicketRecord();
-        ticket.Key = reader.ReadString();
-        ticket.UserId = reader.ReadString();
-        ticket.Username = reader.ReadString();
-        var activityTicks = reader.Read7BitEncodedInt64();
-        ticket.LastActivity = new DateTime(activityTicks, DateTimeKind.Utc);
-        var bytesLength = reader.Read7BitEncodedInt();
-        ticket.Value = reader.ReadBytes(bytesLength);
-        var expireTicks = reader.Read7BitEncodedInt64();
-        ticket.Expires = new DateTime(expireTicks, DateTimeKind.Utc);
-
-        return ticket;
-    }
-}
-
-public record class TicketRecord
-{
-    public string Key { get; set; }
-
-    public string UserId { get; set; }
-
-    public string Username { get; set; }
-
-    public DateTime LastActivity { get; set; }
-
-    public byte[] Value { get; set; }
-
-    public DateTime? Expires { get; set; }
 }
