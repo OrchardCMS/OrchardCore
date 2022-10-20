@@ -8,7 +8,7 @@
 
 @{
     var typePart = Model.TypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.Name, Model.TypeDefinition.Name, StringComparison.OrdinalIgnoreCase));
-    var orderedParts = Model.TypeDefinition.Parts
+    var partDefinitions = Model.TypeDefinition.Parts
         .Select(part =>
         {
             var defaultPosition = ContentDefinitionManager.GetPartDefinition(part.PartDefinition.Name)?.DefaultPosition() ?? "5";
@@ -16,15 +16,16 @@
         })
         .OrderBy(x => x.Order)
         .Select(x => x.Part);
-    var orderedFields = Enumerable.Empty<ContentPartFieldDefinition>();
-    
-    if(typePart?.PartDefinition?.Fields != null)
+
+    var fieldDefintions = new List<ContentPartFieldDefinition>();
+
+    if (typePart?.PartDefinition?.Fields != null)
     {
-        orderedFields = typePart.PartDefinition.Fields
-            .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
-            .OrderBy(x => x.Order)
-            .Select(x => x.Field)
-            .ToList();
+        fieldDefintions = typePart.PartDefinition.Fields
+        .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
+        .OrderBy(x => x.Order)
+        .Select(x => x.Field)
+        .ToList();
     }
 
     var fields = ContentDefinitionService.GetFields().ToList();
@@ -46,35 +47,35 @@
 
     @await DisplayAsync(Model.Editor)
 
-    @if (orderedFields.Count > 0 || fields.Count > 0)
+    @if (fieldDefintions.Count > 0 || fields.Count > 0)
     {
         <div class="mb-3">
             <h3>@T["Fields"]</h3>
 
             <ul class="list-group sortable" id="fields">
-                @foreach (var field in orderedFields)
+                @foreach (var fieldDefintion in fieldDefintions)
                 {
                     <li class="list-group-item" style="cursor: move;">
                         <div class="w-100">
                             <div class="float-end">
-                                @if (fields.Any(f => String.Equals(f.Name, field.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
+                                @if (fields.Any(field => String.Equals(field.Name, fieldDefintion.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
                                 {
-                                    <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                                    <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefintion.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
                                 }
-                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefintion.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
-                            @field.DisplayName() <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
+                            @fieldDefintion.DisplayName() <span class="hint dashed">@fieldDefintion.FieldDefinition.Name.CamelFriendly()</span>
 
-                            @if (!String.IsNullOrEmpty(field.DisplayMode()))
+                            @if (!String.IsNullOrEmpty(fieldDefintion.DisplayMode()))
                             {
-                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info" aria-hidden="true"></i> @field.DisplayMode()</span>
+                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info" aria-hidden="true"></i> @fieldDefintion.DisplayMode()</span>
                             }
-                            @if (!String.IsNullOrEmpty(field.Editor()))
+                            @if (!String.IsNullOrEmpty(fieldDefintion.Editor()))
                             {
-                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info" aria-hidden="true"></i> @field.Editor()</span>
+                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info" aria-hidden="true"></i> @fieldDefintion.Editor()</span>
                             }
                         </div>
-                        <input type="hidden" asp-for="OrderedFieldNames" value="@field.Name" />
+                        <input type="hidden" asp-for="OrderedFieldNames" value="@fieldDefintion.Name" />
                     </li>
                 }
             </ul>
@@ -91,22 +92,22 @@
         <h3>@T["Parts"]</h3>
 
         <ul class="list-group sortable" id="parts">
-            @foreach (var part in orderedParts)
+            @foreach (var partDefinition in partDefinitions)
             {
-                <li class="list-group-item @(part == typePart ? " bg-faded" : null)" style="cursor: move;">
+                <li class="list-group-item @(partDefinition == typePart ? " bg-faded" : null)" style="cursor: move;">
                     <div class="w-100">
-                        @part.DisplayName()
+                        @partDefinition.DisplayName()
 
-                        @if (part != typePart)
+                        @if (partDefinition != typePart)
                         {
-                            @if (!String.IsNullOrEmpty(part.Description()))
+                            @if (!String.IsNullOrEmpty(partDefinition.Description()))
                             {
-                                <span class="hint dashed">@part.Description()</span>
+                                <span class="hint dashed">@partDefinition.Description()</span>
                             }
 
                             <div class="float-end">
-                                <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                                <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                                <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
                         }
                         else
@@ -114,16 +115,16 @@
                             <span class="hint dashed">@T["Contains the fields for the current type"]</span>
                         }
 
-                        @if (!String.IsNullOrEmpty(part.DisplayMode()))
+                        @if (!String.IsNullOrEmpty(partDefinition.DisplayMode()))
                         {
-                            <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info" aria-hidden="true"></i> @part.DisplayMode()</span>
+                            <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info" aria-hidden="true"></i> @partDefinition.DisplayMode()</span>
                         }
-                        @if (!String.IsNullOrEmpty(part.Editor()))
+                        @if (!String.IsNullOrEmpty(partDefinition.Editor()))
                         {
-                            <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info" aria-hidden="true"></i> @part.Editor()</span>
+                            <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info" aria-hidden="true"></i> @partDefinition.Editor()</span>
                         }
                     </div>
-                    <input type="hidden" asp-for="OrderedPartNames" value="@part.Name" />
+                    <input type="hidden" asp-for="OrderedPartNames" value="@partDefinition.Name" />
                 </li>
             }
         </ul>
