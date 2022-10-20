@@ -628,7 +628,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var fields = _contentDefinitionService.GetFields().ToList();
 
-            if (!fields.Any(x => x.Name.Equals(viewModel.FieldTypeName, StringComparison.OrdinalIgnoreCase)))
+            if (!fields.Any(field => String.Equals(field.Name, viewModel.FieldTypeName, StringComparison.OrdinalIgnoreCase)))
             {
                 return NotFound();
             }
