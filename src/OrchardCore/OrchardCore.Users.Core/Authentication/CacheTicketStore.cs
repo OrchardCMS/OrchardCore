@@ -11,7 +11,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-
 namespace OrchardCore.Users.Authentication;
 
 public class CacheTicketStore : ITicketStore
