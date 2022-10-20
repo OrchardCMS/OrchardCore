@@ -710,7 +710,7 @@ namespace OrchardCore.ContentTypes.Controllers
             var partFieldDefinition = partViewModel.PartDefinition.Fields.FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
             if (partFieldDefinition?.FieldDefinition?.Name == null
-                || !_contentDefinitionService.GetFields().Any(x => x.Name.Equals(partFieldDefinition.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
+                || !_contentDefinitionService.GetFields().Any(field => String.Equals(field.Name, partFieldDefinition.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 return NotFound();
             }
