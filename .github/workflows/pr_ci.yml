@@ -57,10 +57,9 @@ jobs:
       run: |
         dotnet restore /p:DisableImplicitNuGetFallbackFolder=true /p:DisableImplicitLibraryPacksFolder
 
-    # for CI build we can use Deterministic = false to enable restore
     - name: Build
       run: |
-        dotnet build -c Release --no-restore --framework net6.0 /p:IncludeSymbols=false /p:Deterministic=false /p:CreateHardLinksForCopyLocalIfPossible=true /p:CreateHardLinksForCopyFilesToOutputDirectoryIfPossible=true /p:CreateHardLinksForPublishFilesIfPossible=true
+        dotnet build -c Release --no-restore --framework net6.0 /p:IncludeSymbols=false /p:CreateHardLinksForCopyLocalIfPossible=true /p:CreateHardLinksForCopyFilesToOutputDirectoryIfPossible=true /p:CreateHardLinksForPublishFilesIfPossible=true
 
     - name: Unit Tests
       run: |
