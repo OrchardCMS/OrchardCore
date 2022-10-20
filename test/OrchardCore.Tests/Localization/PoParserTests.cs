@@ -53,8 +53,8 @@ namespace OrchardCore.Tests.Localization
             // msgstr "Error desconegut del sistema"
             var entries = ParseText("PoeditHeader");
 
-            Assert.True(entries.Count() == 1);
-            Assert.True(entries[0].Translations.Count() == 1);
+            Assert.True(entries.Length == 1);
+            Assert.True(entries[0].Translations.Length == 1);
         }
 
         [Fact]

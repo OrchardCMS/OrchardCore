@@ -21,6 +21,7 @@ html[data-theme='default'] {
     @import "modules/admin/_trumbowyg.scss";
     @import "modules/admin/_jquery-ui.scss";
     @import "modules/admin/_monaco.scss";
+    @import "modules/admin/_validations.scss";
     @import "modules/theme/default/_forms.scss";
 
     @import "modules/theme/default/_bootswatch.scss";
@@ -47,6 +48,7 @@ html[data-theme='darkmode'] {
     @import "modules/admin/_trumbowyg.scss";
     @import "modules/admin/_jquery-ui.scss";
     @import "modules/admin/_monaco.scss";
+    @import "modules/admin/_validations.scss";
     @import "modules/theme/darkmode/_forms.scss";
 
     @import "modules/theme/darkmode/_bootswatch.scss";

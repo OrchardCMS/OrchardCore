@@ -229,21 +229,24 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, ElasticIndexDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticIndexDeploymentStepDriver>();
+            if (services.Any(d => d.ImplementationType == typeof(ElasticSearchProvider)))
+            {
+                services.AddTransient<IDeploymentSource, ElasticIndexDeploymentSource>();
+                services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexDeploymentStep>());
+                services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticIndexDeploymentStepDriver>();
 
-            services.AddTransient<IDeploymentSource, ElasticSettingsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticSettingsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticSettingsDeploymentStepDriver>();
+                services.AddTransient<IDeploymentSource, ElasticSettingsDeploymentSource>();
+                services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticSettingsDeploymentStep>());
+                services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticSettingsDeploymentStepDriver>();
 
-            services.AddTransient<IDeploymentSource, ElasticIndexRebuildDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexRebuildDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticIndexRebuildDeploymentStepDriver>();
+                services.AddTransient<IDeploymentSource, ElasticIndexRebuildDeploymentSource>();
+                services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexRebuildDeploymentStep>());
+                services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticIndexRebuildDeploymentStepDriver>();
 
-            services.AddTransient<IDeploymentSource, ElasticIndexResetDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexResetDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticIndexResetDeploymentStepDriver>();
+                services.AddTransient<IDeploymentSource, ElasticIndexResetDeploymentSource>();
+                services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexResetDeploymentStep>());
+                services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticIndexResetDeploymentStepDriver>();
+            }
         }
     }
 
@@ -252,7 +255,10 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
+            if (services.Any(d => d.ImplementationType == typeof(ElasticSearchProvider)))
+            { 
+                services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
+            }
         }
     }
 
@@ -261,9 +267,12 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IContentPickerResultProvider, ElasticContentPickerResultProvider>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldElasticEditorSettingsDriver>();
-            services.AddShapeAttributes<ElasticContentPickerShapeProvider>();
+            if (services.Any(d => d.ImplementationType == typeof(ElasticSearchProvider)))
+            {
+                services.AddScoped<IContentPickerResultProvider, ElasticContentPickerResultProvider>();
+                services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldElasticEditorSettingsDriver>();
+                services.AddShapeAttributes<ElasticContentPickerShapeProvider>();
+            }
         }
     }
 }

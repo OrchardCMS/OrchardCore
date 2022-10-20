@@ -1,6 +1,6 @@
 using OrchardCore.Data.Documents;
 
-namespace OrchardCore.Autoroute.Services
+namespace OrchardCore.Autoroute.Core.Model
 {
     public class AutorouteStateDocument : Document
     {
