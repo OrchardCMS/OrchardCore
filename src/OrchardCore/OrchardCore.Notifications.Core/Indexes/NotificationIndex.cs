@@ -1,5 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
+using OrchardCore.Entities;
+using OrchardCore.Notifications.Models;
 using YesSql.Indexes;
 
 namespace OrchardCore.Notifications.Indexes;
@@ -20,8 +22,6 @@ public class NotificationIndex : MapIndex
     /// The Content column should only be used to search the content of a notification.
     /// </summary>
     public string Content { get; set; }
-
-    public string ContentItemId { get; set; }
 }
 
 public class NotificationIndexProvider : IndexProvider<Notification>
@@ -36,11 +36,13 @@ public class NotificationIndexProvider : IndexProvider<Notification>
         context.For<NotificationIndex>()
             .Map(notification =>
             {
-                var content = notification.Subject ?? String.Empty;
+                var content = notification.Summary ?? String.Empty;
 
-                if (!String.IsNullOrEmpty(notification.Body))
+                var bodyInfo = notification.As<NotificationBodyInfo>();
+
+                if (!String.IsNullOrEmpty(bodyInfo?.Body))
                 {
-                    content += $" {notification.Body}";
+                    content += $" {bodyInfo.Body}";
                 }
 
                 content = StripHTML(content);
@@ -50,14 +52,15 @@ public class NotificationIndexProvider : IndexProvider<Notification>
                     content = content[..NotificationConstants.NotificationIndexContentLength];
                 }
 
+                var readInfo = notification.As<NotificationReadInfo>();
+
                 return new NotificationIndex()
                 {
                     NotificationId = notification.NotificationId,
                     UserId = notification.UserId,
-                    IsRead = notification.IsRead,
-                    ReadAtUtc = notification.ReadAtUtc,
+                    IsRead = readInfo.IsRead,
+                    ReadAtUtc = readInfo.ReadAtUtc,
                     CreatedAtUtc = notification.CreatedUtc,
-                    ContentItemId = notification.ContentItemId,
                     Content = content,
                 };
             });

@@ -1,8 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email;
-using OrchardCore.Notifications.Models;
-using OrchardCore.Users;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Notifications.Services;
@@ -22,23 +20,25 @@ public class EmailNotificationProvider : INotificationMethodProvider
 
     public LocalizedString Name => S["Email Notifications"];
 
-    public async Task<bool> TrySendAsync(IUser user, INotificationMessage message)
+    public async Task<bool> TrySendAsync(object notify, INotificationMessage message)
     {
-        if (user is not User su)
+        var user = notify as User;
+
+        if (user == null)
         {
             return false;
         }
 
         var emailMessage = new MailMessage()
         {
-            To = su.Email,
-            Subject = message.Subject,
-            BodyText = message.Body,
+            To = user.Email,
+            Subject = message.Summary,
+            BodyText = message.Summary,
             IsBodyHtml = false,
             IsBodyText = true,
         };
 
-        if (message is HtmlNotificationMessage emailNotificationMessage && emailNotificationMessage.BodyContainsHtml)
+        if (message is INotificationBodyMessage emailNotificationMessage && emailNotificationMessage.IsHtmlBody)
         {
             emailMessage.Body = emailNotificationMessage.Body;
             emailMessage.BodyText = null;

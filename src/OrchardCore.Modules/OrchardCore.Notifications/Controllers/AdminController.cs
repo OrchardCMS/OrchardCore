@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Navigation.Core;
@@ -174,10 +175,13 @@ public class AdminController : Controller, IUpdateModel
                 case NotificationBulkAction.Unread:
                     foreach (var notification in notifications)
                     {
-                        if (notification.IsRead)
+                        var readPart = notification.As<NotificationReadInfo>();
+                        if (readPart.IsRead)
                         {
-                            notification.IsRead = false;
-                            notification.ReadAtUtc = null;
+                            readPart.IsRead = false;
+                            readPart.ReadAtUtc = null;
+
+                            notification.Put(readPart);
 
                             _session.Save(notification, collection: NotificationConstants.NotificationCollection);
                         }
@@ -187,10 +191,14 @@ public class AdminController : Controller, IUpdateModel
                 case NotificationBulkAction.Read:
                     foreach (var notification in notifications)
                     {
-                        if (!notification.IsRead)
+                        var readPart = notification.As<NotificationReadInfo>();
+
+                        if (!readPart.IsRead)
                         {
-                            notification.IsRead = true;
-                            notification.ReadAtUtc = null;
+                            readPart.IsRead = true;
+                            readPart.ReadAtUtc = null;
+
+                            notification.Put(readPart);
 
                             _session.Save(notification, collection: NotificationConstants.NotificationCollection);
                         }
@@ -225,9 +233,12 @@ public class AdminController : Controller, IUpdateModel
         var utcNow = _clock.UtcNow;
         foreach (var notification in notifications)
         {
-            notification.IsRead = true;
-            notification.ReadAtUtc = utcNow;
+            var readPart = notification.As<NotificationReadInfo>();
 
+            readPart.IsRead = true;
+            readPart.ReadAtUtc = utcNow;
+
+            notification.Put(readPart);
             _session.Save(notification, collection: NotificationConstants.NotificationCollection);
         }
 
@@ -247,16 +258,20 @@ public class AdminController : Controller, IUpdateModel
 
             if (notification != null)
             {
+                var readPart = notification.As<NotificationReadInfo>();
+
                 if (markAsRead)
                 {
-                    notification.IsRead = true;
-                    notification.ReadAtUtc = _clock.UtcNow;
+                    readPart.IsRead = true;
+                    readPart.ReadAtUtc = _clock.UtcNow;
                 }
                 else
                 {
-                    notification.IsRead = false;
-                    notification.ReadAtUtc = null;
+                    readPart.IsRead = false;
+                    readPart.ReadAtUtc = null;
                 }
+
+                notification.Put(readPart);
 
                 _session.Save(notification, collection: NotificationConstants.NotificationCollection);
             }

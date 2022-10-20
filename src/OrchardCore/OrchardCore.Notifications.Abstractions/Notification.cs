@@ -11,39 +11,9 @@ public class Notification : Entity
     public string NotificationId { get; set; }
 
     /// <summary>
-    /// The subject of the notification
+    /// The summary of the notification
     /// </summary>
-    public string Subject { get; set; }
-
-    /// <summary>
-    /// The body of the notification
-    /// </summary>
-    public string Body { get; set; }
-
-    /// <summary>
-    /// Whether or not the body is an HTML
-    /// </summary>
-    public bool IsHtmlBody { get; set; }
-
-    /// <summary>
-    /// ContentItemId this notification is linked to.
-    /// </summary>
-    public string ContentItemId { get; set; }
-
-    /// <summary>
-    /// Custom URL this URL should be linked to.
-    /// </summary>
-    public string Url { get; set; }
-
-    /// <summary>
-    /// Whether or not the notification is read.
-    /// </summary>
-    public bool IsRead { get; set; }
-
-    /// <summary>
-    /// The date and time when the notification was read.
-    /// </summary>
-    public DateTime? ReadAtUtc { get; set; }
+    public string Summary { get; set; }
 
     /// <summary>
     /// The user id of the user who caused the event to occur.

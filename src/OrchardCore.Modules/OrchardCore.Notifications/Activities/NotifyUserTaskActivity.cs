@@ -39,7 +39,7 @@ public abstract class NotifyUserTaskActivity : TaskActivity
 
     public override LocalizedString Category => S["Notifications"];
 
-    public WorkflowExpression<string> Subject
+    public WorkflowExpression<string> Summary
     {
         get => GetProperty(() => new WorkflowExpression<string>());
         set => SetProperty(value);
@@ -93,9 +93,9 @@ public abstract class NotifyUserTaskActivity : TaskActivity
     {
         return new HtmlNotificationMessage()
         {
-            Subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, _htmlEncoder),
+            Summary = await _expressionEvaluator.EvaluateAsync(Summary, workflowContext, _htmlEncoder),
             Body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, _htmlEncoder),
-            BodyContainsHtml = IsHtmlBody
+            IsHtmlBody = IsHtmlBody
         };
     }
 

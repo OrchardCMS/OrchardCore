@@ -1,16 +1,25 @@
 namespace OrchardCore.Notifications.Models;
 
-public class HtmlNotificationMessage : NotificationMessage
+public class HtmlNotificationMessage : NotificationMessage, INotificationBodyMessage
 {
-    public bool BodyContainsHtml { get; set; }
+    public string Body { get; set; }
+
+    public bool IsHtmlBody { get; set; }
 }
 
-
-public class ContentNotificationMessage : NotificationMessage
+public class ContentNotificationMessage : NotificationMessage, INotificationBodyMessage, INotificationContentMessage
 {
-    public bool BodyContainsHtml { get; set; }
+    public string Body { get; set; }
+
+    public bool IsHtmlBody { get; set; }
+
+    public NotificationLinkType LinkType { get; set; }
 
     public string ContentItemId { get; set; }
 
-    public string Url { get; set; }
+    public string CustomUrl { get; set; }
+
+    public string ContentType { get; set; }
+
+    public string ContentOwnerId { get; set; }
 }

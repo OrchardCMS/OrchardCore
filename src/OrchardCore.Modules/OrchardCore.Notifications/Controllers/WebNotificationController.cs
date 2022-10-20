@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Notifications.Indexes;
+using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.ViewModels;
 using YesSql;
 
@@ -50,13 +52,15 @@ public class WebNotificationController : Controller
         }
 
         var updated = false;
-
-        if (!notification.IsRead)
+        var readInfo = notification.As<NotificationReadInfo>();
+        if (!readInfo.IsRead)
         {
-            notification.ReadAtUtc = _clock.UtcNow;
-            notification.IsRead = true;
+            readInfo.ReadAtUtc = _clock.UtcNow;
+            readInfo.IsRead = true;
+            notification.Put(readInfo);
 
             updated = true;
+
             _session.Save(notification, collection: NotificationConstants.NotificationCollection);
         }
 

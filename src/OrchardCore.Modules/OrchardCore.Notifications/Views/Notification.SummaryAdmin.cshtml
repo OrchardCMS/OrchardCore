@@ -1,7 +1,7 @@
 @using OrchardCore.ContentManagement
 @using Microsoft.AspNetCore.Html
 @using OrchardCore.Notifications.Models
-
+@using OrchardCore.Entities
 @{
     Notification notification = Model.Notification;
 
@@ -9,9 +9,12 @@
     {
         return;
     }
+
+    var readInfo = notification.As<NotificationReadInfo>();
+    var bodyInfo = notification.As<NotificationBodyInfo>();
 }
 
-<div class="list-group-item notification-container-item p-3@(notification.IsRead ? " notification-is-read": " notification-is-unread")">
+<div class="list-group-item notification-container-item p-3@(readInfo.IsRead ? " notification-is-read": " notification-is-unread")">
     <div class="row">
         <div class="col-lg col-12 title d-flex">
 
@@ -29,20 +32,20 @@
             </div>
 
             <div class="summary d-flex flex-column flex-md-row">
-                <div class="contentitem me-2 mark-notification-as-read" data-message-id="@notification.NotificationId" data-is-read="@notification.IsRead.ToString().ToLowerInvariant()">
+                <div class="contentitem me-2 mark-notification-as-read" data-message-id="@notification.NotificationId" data-is-read="@readInfo.IsRead.ToString().ToLowerInvariant()">
 
-                    <h5 class="mb-0">@notification.Subject</h5>
+                    <h5 class="mb-0">@notification.Summary</h5>
 
-                    @if (!String.IsNullOrWhiteSpace(notification.Body))
+                    @if (!String.IsNullOrWhiteSpace(bodyInfo.Body))
                     {
                         <p class="mb-0 mt-2">
-                            @if (notification.IsHtmlBody)
+                            @if (bodyInfo.IsHtmlBody)
                             {
-                                @Html.Raw(notification.Body)
+                                @Html.Raw(bodyInfo.Body)
                             }
                             else
                             {
-                                @notification.Body
+                                @bodyInfo.Body
                             }
                         </p>
                     }
@@ -105,19 +108,6 @@
         color: #664d03 !important;
         background-color: #fff3cd !important;
     }
-        @*
-        .notification-container .notification-is-unread .mark-notification-as-read:hover {
-            cursor: pointer !important;
-        }
-        *@
 </style>
 
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
-
-@*
-<script at="Foot" asp-name="notification-manager-initializes" depends-on="notification-manager">
-    (function () {
-        notificationManager.initializeContainer('@Url.Action("Read", "WebNotification", new { area = "OrchardCore.Notifications" })', '.notification-container-item')
-    })();
-</script>
-*@

@@ -1,10 +1,6 @@
-@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Mvc.Localization
 
 @model ShapeViewModel<UserNotificationCollectionViewModel>
-
-@inject IContentManager ContentManager
-@inject IAuthorizationService AuthorizationService
 
 <div class="dropdown mx-3">
     <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
@@ -36,36 +32,9 @@
                 @for (int i = 0; i < maxCount; i++)
                 {
                     var notification = Model.Value.Notifications[i];
-                    var url = notification.Url;
 
-                    if (notification.ContentItem != null)
-                    {
-                        if (await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.EditContent, notification.ContentItem))
-                        {
-                            url = Url.Action("Edit", "Admin", new { area = "OrchardCore.Contents", notification.ContentItem.ContentItemId });
-                        }
-                        else if (await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.ViewContent, notification.ContentItem))
-                        {
-                            url = Url.Action("Display", "Admin", new { area = "OrchardCore.Contents", notification.ContentItem.ContentItemId });
-                        }
-                    }
-
-                    <div data-message-id="@notification.NotificationId" data-is-read="@notification.IsRead.ToString().ToLowerInvariant()" data-target-url="@url" class="dropdown-item mark-notification-as-read lh-sm text-wrap p-2@(i < maxCount - 1 ? " border-bottom" : String.Empty)@(notification.IsRead ? " notification-is-read": " notification-is-unread")">
-                        @if (notification.ContentItem != null && notification.HasBody())
-                        {
-                            if (notification.IsHtmlBody)
-                            {
-                                <span aria-hidden="false" data-bs-toggle="tooltip" data-bs-original-title="@notification.Subject">@Html.Raw(notification.Body)</span>
-                            }
-                            else
-                            {
-                                <span aria-hidden="false" data-bs-toggle="tooltip" data-bs-original-title="@notification.Subject">@notification.Body</span>
-                            }
-                        }
-                        else
-                        {
-                            <span aria-hidden="false">@notification.Subject</span>
-                        }
+                    <div class="@(i == maxCount - 1 ? String.Empty : "border-bottom")">
+                        @await DisplayAsync(notification)
                     </div>
                 }
             </div>

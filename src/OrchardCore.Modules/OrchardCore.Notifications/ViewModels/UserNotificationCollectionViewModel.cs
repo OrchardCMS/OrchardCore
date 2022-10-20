@@ -8,5 +8,5 @@ public class UserNotificationCollectionViewModel
 
     public int MaxVisibleNotifications { get; set; }
 
-    public List<UserNotificationMessageViewModel> Notifications { get; set; }
+    public List<dynamic> Notifications { get; set; }
 }

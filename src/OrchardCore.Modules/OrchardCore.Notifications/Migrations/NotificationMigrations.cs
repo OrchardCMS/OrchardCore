@@ -15,7 +15,6 @@ public class NotificationMigrations : DataMigration
             .Column<bool>("IsRead")
             .Column<DateTime>("ReadAtUtc")
             .Column<DateTime>("CreatedAtUtc")
-            .Column<string>("ContentItemId", column => column.WithLength(26))
             .Column<string>("Content", column => column.WithLength(NotificationConstants.NotificationIndexContentLength))
             , collection: NotificationConstants.NotificationCollection
         );
@@ -27,8 +26,7 @@ public class NotificationMigrations : DataMigration
                 "UserId",
                 "IsRead",
                 "CreatedAtUtc",
-                "Content",
-                "ContentItemId"),
+                "Content"),
                 collection: NotificationConstants.NotificationCollection
         );
 

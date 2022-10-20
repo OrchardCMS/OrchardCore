@@ -1,12 +1,16 @@
-using OrchardCore.Users;
-
 namespace OrchardCore.Notifications;
 
 public class NotificationContext
 {
     public Notification Notification { get; set; }
 
-    public INotificationMessage NotificationMessage { get; set; }
+    public INotificationMessage NotificationMessage { get; }
 
-    public IUser User { get; set; }
+    public object Notify { get; }
+
+    public NotificationContext(INotificationMessage notificationMessage, object notify)
+    {
+        NotificationMessage = notificationMessage;
+        Notify = notify;
+    }
 }

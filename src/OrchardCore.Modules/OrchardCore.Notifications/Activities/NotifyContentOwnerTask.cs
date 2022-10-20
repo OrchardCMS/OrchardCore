@@ -39,9 +39,9 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity
 
     public override LocalizedString DisplayText => S["Notify Content's Owner Task"];
 
-    public WorkflowExpression<string> LinkType
+    public NotificationLinkType LinkType
     {
-        get => GetProperty(() => new WorkflowExpression<string>());
+        get => GetProperty(() => NotificationLinkType.None);
         set => SetProperty(value);
     }
 
@@ -71,21 +71,24 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity
     {
         var message = new ContentNotificationMessage()
         {
-            Subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, _htmlEncoder),
+            Summary = await _expressionEvaluator.EvaluateAsync(Summary, workflowContext, _htmlEncoder),
+            Body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, _htmlEncoder),
+            IsHtmlBody = IsHtmlBody,
+            LinkType = NotificationLinkType.None,
         };
 
-        if (LinkType.Expression == "content" && workflowContext.Input.TryGetValue("ContentItem", out var obj) && obj is ContentItem contentItem)
+        if (LinkType == NotificationLinkType.Custom && !String.IsNullOrWhiteSpace(Url.Expression))
+        {
+            message.LinkType = NotificationLinkType.Custom;
+            message.CustomUrl = Url.Expression;
+        }
+
+        if (workflowContext.Input.TryGetValue("ContentItem", out var obj) && obj is ContentItem contentItem)
         {
             message.ContentItemId = contentItem.ContentItemId;
-        }
-        else if (LinkType.Expression == "url" && !String.IsNullOrWhiteSpace(Url.Expression))
-        {
-            message.Url = Url.Expression;
-        }
-        else
-        {
-            message.Body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, _htmlEncoder);
-            message.BodyContainsHtml = IsHtmlBody;
+            message.ContentOwnerId = contentItem.Owner;
+            message.ContentType = contentItem.ContentType;
+            message.LinkType = LinkType;
         }
 
         return message;

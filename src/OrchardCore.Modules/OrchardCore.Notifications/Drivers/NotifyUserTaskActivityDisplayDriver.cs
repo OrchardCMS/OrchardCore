@@ -50,7 +50,7 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : Ac
     /// </summary>
     protected override void EditActivity(TActivity activity, TEditViewModel model)
     {
-        model.Subject = activity.Subject.Expression;
+        model.Summary = activity.Summary.Expression;
         model.Body = activity.Body.Expression;
         model.IsHtmlBody = activity.IsHtmlBody;
     }
@@ -70,7 +70,7 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : Ac
     /// </summary>
     protected override void UpdateActivity(TEditViewModel model, TActivity activity)
     {
-        activity.Subject = new WorkflowExpression<string>(model.Subject);
+        activity.Summary = new WorkflowExpression<string>(model.Summary);
         activity.Body = new WorkflowExpression<string>(model.Body);
         activity.IsHtmlBody = model.IsHtmlBody;
     }

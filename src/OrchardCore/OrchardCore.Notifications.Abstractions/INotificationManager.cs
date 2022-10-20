@@ -1,15 +1,14 @@
 using System.Threading.Tasks;
-using OrchardCore.Users;
 
 namespace OrchardCore.Notifications;
 
 public interface INotificationManager
 {
     /// <summary>
-    /// Attempts to sent the given message to the given user.
+    /// Attempts to sent the given message to the given notifiable object.
     /// </summary>
-    /// <param name="user"></param>
+    /// <param name="notify"></param>
     /// <param name="message"></param>
     /// <returns>The number of messages that were successfully sent to the user.</returns>
-    Task<int> SendAsync(IUser user, INotificationMessage message);
+    Task<int> SendAsync(object notify, INotificationMessage message);
 }

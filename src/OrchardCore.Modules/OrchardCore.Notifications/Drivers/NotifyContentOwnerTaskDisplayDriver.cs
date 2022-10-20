@@ -27,7 +27,7 @@ public class NotifyContentOwnerTaskDisplayDriver : NotifyUserTaskActivityDisplay
     {
         base.EditActivity(activity, model);
 
-        model.LinkType = activity.LinkType.Expression;
+        model.LinkType = activity.LinkType;
         model.Body = activity.Body.Expression;
         model.IsHtmlBody = activity.IsHtmlBody;
     }
@@ -39,7 +39,7 @@ public class NotifyContentOwnerTaskDisplayDriver : NotifyUserTaskActivityDisplay
     {
         base.UpdateActivity(model, activity);
 
-        activity.LinkType = new WorkflowExpression<string>(model.LinkType);
+        activity.LinkType = model.LinkType;
         activity.Url = new WorkflowExpression<string>(model.Url);
     }
 }

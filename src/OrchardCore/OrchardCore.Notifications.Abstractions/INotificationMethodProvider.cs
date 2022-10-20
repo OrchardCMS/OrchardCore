@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Users;
 
 namespace OrchardCore.Notifications;
 
@@ -17,10 +16,10 @@ public interface INotificationMethodProvider
     LocalizedString Name { get; }
 
     /// <summary>
-    /// Attempts to sent the given message to the given user
+    /// Attempts to sent the given message to the given notifiable object
     /// </summary>
-    /// <param name="user"></param>
+    /// <param name="notify"></param>
     /// <param name="message"></param>
     /// <returns>true when the message was successfuly sent otherwise false</returns>
-    Task<bool> TrySendAsync(IUser user, INotificationMessage message);
+    Task<bool> TrySendAsync(object notify, INotificationMessage message);
 }

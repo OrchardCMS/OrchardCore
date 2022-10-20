@@ -1,5 +1,5 @@
-using System;
 using System.Threading.Tasks;
+using OrchardCore.Entities;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.Services;
 using OrchardCore.Users.Models;
@@ -10,26 +10,39 @@ public class CoreNotificationEventsHandler : NotificationEventsHandler
 {
     public override Task CreatingAsync(NotificationContext context)
     {
-        if (context.User is User su)
+        var user = context.Notify as User;
+
+        if (user != null)
         {
-            context.Notification.UserId = su.UserId;
+            context.Notification.UserId = user.UserId;
         }
 
-        if (context.NotificationMessage is ContentNotificationMessage contentMessage)
+        if (context.NotificationMessage is INotificationContentMessage contentMessage)
         {
-            if (!String.IsNullOrEmpty(contentMessage.ContentItemId))
+            var contentInfo = new NotificationContentInfo()
             {
-                context.Notification.ContentItemId = contentMessage.ContentItemId;
-            }
-            else if (!String.IsNullOrWhiteSpace(contentMessage.Url))
+                ContentItemId = contentMessage.ContentItemId,
+                ContentOwnerId = contentMessage.ContentOwnerId,
+                ContentType = contentMessage.ContentType,
+                LinkType = contentMessage.LinkType,
+            };
+
+            if (contentMessage.LinkType == NotificationLinkType.Custom)
             {
-                context.Notification.Url = contentMessage.Url;
+                contentInfo.CustomUrl = contentMessage.CustomUrl;
             }
+
+            context.Notification.Put(contentInfo);
         }
 
-        if (context.NotificationMessage is HtmlNotificationMessage nm)
+        if (context.NotificationMessage is INotificationBodyMessage nm)
         {
-            context.Notification.IsHtmlBody = nm.BodyContainsHtml;
+            var bodyPart = context.Notification.As<NotificationBodyInfo>();
+
+            bodyPart.IsHtmlBody = nm.IsHtmlBody;
+            bodyPart.Body = nm.Body;
+
+            context.Notification.Put(bodyPart);
         }
 
         return Task.CompletedTask;

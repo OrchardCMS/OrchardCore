@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Entities;
 using OrchardCore.Notifications.Models;
-using OrchardCore.Users;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Notifications.Services;
@@ -18,11 +17,12 @@ public class NotificationMethodProviderAccessor : INotificationMethodProviderAcc
         _notificationMethodProviders = notificationMethodProviders;
     }
 
-    public Task<IEnumerable<INotificationMethodProvider>> GetProvidersAsync(IUser user)
+    public Task<IEnumerable<INotificationMethodProvider>> GetProvidersAsync(object notify)
     {
-        if (user is User su)
+        var user = notify as User;
+        if (user != null)
         {
-            var notificationPart = su.As<UserNotificationPreferencesPart>();
+            var notificationPart = user.As<UserNotificationPreferencesPart>();
 
             var selectedMethods = ((notificationPart?.Methods) ?? Array.Empty<string>()).ToList();
             var optout = notificationPart.Optout ?? Array.Empty<string>();
