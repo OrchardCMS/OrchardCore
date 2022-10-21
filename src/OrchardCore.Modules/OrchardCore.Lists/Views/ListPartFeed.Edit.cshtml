@@ -1,5 +1,10 @@
-﻿@using OrchardCore.Lists.Feeds
+@using OrchardCore.Lists.Feeds
 @model ListFeedEditViewModel
+
+<div class="mb-3 form-check" asp-validation-class-for="EnableFeedProxyUrl">
+    <input type="checkbox" class="form-check-input" asp-for="EnableFeedProxyUrl">
+    <label class="form-check-label" asp-for="EnableFeedProxyUrl">@T["Enable feed proxy URL"]</label>
+</div>
 
 <div class="mb-3">
     <label asp-for="FeedProxyUrl">@T["Feed proxy Url"]</label>
@@ -13,3 +18,17 @@
     <input asp-for="FeedItemsCount" class="form-control" />
     <span class="hint">@T["The number of elements to display in the feed."]</span>
 </div>
+
+<script at="Foot">
+    $(function () {
+        function showFeedInfo() {
+            var feedUrl = $(@Html.Id("FeedProxyUrl"));
+            var feedItemsCount = $(@Html.Id("FeedItemsCount"));
+            
+            $(feedUrl).prop('disabled', !this.checked);
+            $(feedItemsCount).prop('disabled', !this.checked);
+        }
+
+        $("#@Html.IdFor(m => m.EnableFeedProxyUrl)").change(showFeedInfo);
+    });
+</script>
