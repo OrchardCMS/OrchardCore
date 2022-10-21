@@ -3,7 +3,6 @@ using System.Buffers;
 using System.Data;
 using System.IO;
 using System.Linq;
-using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Data.Documents;
@@ -39,6 +38,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
+                services.AddTransient<ITableNameConventionFactory, TableNameConventionFactory>();
                 services.AddTransient<IConfigureOptions<SqliteOptions>, SqliteOptionsConfiguration>();
 
                 // Adding supported databases
@@ -47,9 +47,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.TryAddDataProvider(name: "MySql", value: DatabaseProviderValue.MySql, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
                 services.TryAddDataProvider(name: "Postgres", value: DatabaseProviderValue.Postgres, hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
 
-                // Ensure a non null 'TableNameConvention' to be always used for `YesSql.Configuration` and then in sync with it.
-                services.PostConfigure<YesSqlOptions>(o => o.TableNameConvention ??= new YesSql.Configuration().TableNameConvention);
-
+                services.AddTransient<IConfigureOptions<DatabaseTableOptions>, ShellDatabaseTableOptionsConfiguration>();
                 // Configuring data access
                 services.AddSingleton(sp =>
                 {
@@ -62,7 +60,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
 
                     var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
-                    var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions);
+                    var databaseTableOptions = sp.GetService<IOptions<DatabaseTableOptions>>().Value;
+                    var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions, databaseTableOptions);
 
                     switch (shellSettings["DatabaseProvider"])
                     {
@@ -99,7 +98,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     if (!String.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
                     {
-                        var tablePrefix = shellSettings["TablePrefix"].Trim() + yesSqlOptions.TablePrefixSeparator;
+                        var tablePrefix = shellSettings["TablePrefix"].Trim() + databaseTableOptions.TablePrefixSeparator;
+
                         storeConfiguration = storeConfiguration.SetTablePrefix(tablePrefix);
                     }
 
@@ -151,21 +151,24 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.AddScoped<IDocumentStore, DocumentStore>();
                 services.AddSingleton<IFileDocumentStore, FileDocumentStore>();
-
                 services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
             });
 
             return builder;
         }
 
-        private static IConfiguration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions)
+        private static IConfiguration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)
         {
+            var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
+
             var storeConfiguration = new YesSql.Configuration
             {
                 CommandsPageSize = yesSqlOptions.CommandsPageSize,
                 QueryGatingEnabled = yesSqlOptions.QueryGatingEnabled,
                 ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
-                TableNameConvention = yesSqlOptions.TableNameConvention
+                TableNameConvention = tableNameFactory.Create(databaseTableOptions),
+                Schema = databaseTableOptions.Schema,
+                IdentityColumnSize = databaseTableOptions.IdentityColumnType,
             };
 
             if (yesSqlOptions.IdGenerator != null)

@@ -171,7 +171,15 @@ namespace OrchardCore.Setup.Services
                 shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix) ? databaseTablePrefix?.ToString() : String.Empty;
             }
 
-            switch (await _dbConnectionValidator.ValidateAsync(shellSettings["DatabaseProvider"], shellSettings["ConnectionString"], shellSettings["TablePrefix"], shellSettings.Name))
+            var validationContext = new DbConnectionValidatorContext(DatabaseTableOptions.Create(shellSettings))
+            {
+                DatabaseProvider = shellSettings["DatabaseProvider"],
+                ConnectionString = shellSettings["ConnectionString"],
+                TablePrefix = shellSettings["TablePrefix"],
+                ShellName = shellSettings.Name,
+            };
+
+            switch (await _dbConnectionValidator.ValidateAsync(validationContext))
             {
                 case DbConnectionValidatorResult.NoProvider:
                     context.Errors.Add(String.Empty, S["DatabaseProvider setting is required."]);

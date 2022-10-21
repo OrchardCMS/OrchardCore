@@ -82,6 +82,26 @@ namespace OrchardCore.AutoSetup.Options
         public string FeatureProfile { get; set; }
 
         /// <summary>
+        /// Gets or sets the database's schema.
+        /// </summary>
+        public string Schema { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database's identity column type.
+        /// </summary>
+        public string IdentityColumnType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database's document name.
+        /// </summary>
+        public string DocumentTable { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database's table prefix seperator.
+        /// </summary>
+        public string TablePrefixSeparator { get; set; }
+
+        /// <summary>
         /// Gets the Flag which indicates a Default/Root shell/tenant.
         /// </summary>
         public bool IsDefault => ShellName == ShellHelper.DefaultShellName;

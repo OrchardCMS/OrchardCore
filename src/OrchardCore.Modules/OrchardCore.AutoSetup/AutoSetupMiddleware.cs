@@ -218,6 +218,10 @@ namespace OrchardCore.AutoSetup
             shellSettings["Secret"] = Guid.NewGuid().ToString();
             shellSettings["RecipeName"] = setupOptions.RecipeName;
             shellSettings["FeatureProfile"] = setupOptions.FeatureProfile;
+            shellSettings["Schema"] = setupOptions.Schema?.Trim();
+            shellSettings["IdentityColumnType"] = setupOptions.IdentityColumnType;
+            shellSettings["DocumentTable"] = setupOptions.TablePrefixSeparator?.Trim() ?? "Document";
+            shellSettings["TablePrefixSeparator"] = setupOptions.TablePrefixSeparator?.Trim() ?? String.Empty;
 
             await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -252,6 +256,11 @@ namespace OrchardCore.AutoSetup
             setupContext.Properties[SetupConstants.DatabaseTablePrefix] = options.DatabaseTablePrefix;
             setupContext.Properties[SetupConstants.SiteName] = options.SiteName;
             setupContext.Properties[SetupConstants.SiteTimeZone] = options.SiteTimeZone;
+            setupContext.Properties[SetupConstants.FeatureProfile] = options.FeatureProfile;
+            setupContext.Properties[SetupConstants.Schema] = options.Schema;
+            setupContext.Properties[SetupConstants.IdentityColumnType] = options.IdentityColumnType;
+            setupContext.Properties[SetupConstants.DocumentTable] = options.DocumentTable;
+            setupContext.Properties[SetupConstants.TablePrefixSeparator] = options.TablePrefixSeparator;
 
             return setupContext;
         }

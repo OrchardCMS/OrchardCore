@@ -22,6 +22,7 @@ using OrchardCore.Recipes.Services;
 using OrchardCore.Routing;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
+using YesSql;
 
 namespace OrchardCore.Tenants.Controllers
 {
@@ -40,6 +41,7 @@ namespace OrchardCore.Tenants.Controllers
         private readonly ITenantValidator _tenantValidator;
         private readonly PagerOptions _pagerOptions;
         private readonly dynamic New;
+        private readonly DatabaseTableOptions _databaseTableOptions;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
 
@@ -57,6 +59,7 @@ namespace OrchardCore.Tenants.Controllers
             ITenantValidator tenantValidator,
             IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
+            IOptions<DatabaseTableOptions> databaseTableOptions,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
@@ -74,6 +77,7 @@ namespace OrchardCore.Tenants.Controllers
             _pagerOptions = pagerOptions.Value;
 
             New = shapeFactory;
+            _databaseTableOptions = databaseTableOptions.Value;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -281,7 +285,6 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
 
@@ -300,8 +303,13 @@ namespace OrchardCore.Tenants.Controllers
                 TablePrefix = shellSettings["TablePrefix"],
                 RecipeName = shellSettings["RecipeName"],
                 FeatureProfile = currentFeatureProfile,
-                FeatureProfiles = featureProfiles
+                FeatureProfiles = featureProfiles,
+                Schema = _databaseTableOptions.Schema,
+                TablePrefixSeparator = _databaseTableOptions.TablePrefixSeparator,
+                IdentityColumnType = _databaseTableOptions.IdentityColumnType,
+                DocumentTable = _databaseTableOptions.DocumentTable,
             };
+
             SetConfigurationShellValues(model);
 
             model.Recipes = recipes;
@@ -346,6 +354,12 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
                 shellSettings["FeatureProfile"] = model.FeatureProfile;
+                // To distinguish between null and empty string, never store null in the shellSettings for TablePrefixSeparator
+                // otherwise old tenants will have invalid table names.
+                shellSettings["TablePrefixSeparator"] = model.TablePrefixSeparator ?? String.Empty;
+                shellSettings["Schema"] = model.Schema?.Trim();
+                shellSettings["IdentityColumnType"] = model.IdentityColumnType.ToString();
+                shellSettings["DocumentTable"] = model.DocumentTable.Trim();
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -390,7 +404,7 @@ namespace OrchardCore.Tenants.Controllers
                 RequestUrlHost = shellSettings.RequestUrlHost,
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
                 FeatureProfile = currentFeatureProfile,
-                FeatureProfiles = featureProfiles
+                FeatureProfiles = featureProfiles,
             };
 
             // The user can change the 'preset' database information only if the
@@ -406,6 +420,15 @@ namespace OrchardCore.Tenants.Controllers
                 model.ConnectionString = shellSettings["ConnectionString"];
                 model.RecipeName = shellSettings["RecipeName"];
                 model.CanEditDatabasePresets = true;
+                model.Schema = shellSettings["Schema"];
+                model.TablePrefixSeparator = shellSettings["TablePrefixSeparator"];
+                model.DocumentTable = shellSettings["DocumentTable"];
+
+                if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnType"], out var columnType))
+                {
+                    model.IdentityColumnType = columnType;
+                }
+
                 SetConfigurationShellValues(model);
             }
 
@@ -453,12 +476,18 @@ namespace OrchardCore.Tenants.Controllers
                     shellSettings["ConnectionString"] = model.ConnectionString;
                     shellSettings["RecipeName"] = model.RecipeName;
                     shellSettings["Secret"] = Guid.NewGuid().ToString();
+                    shellSettings["Schema"] = model.Schema?.Trim();
+                    shellSettings["TablePrefixSeparator"] = model.TablePrefixSeparator?.Trim() ?? String.Empty;
+                    shellSettings["IdentityColumnType"] = model.IdentityColumnType.ToString();
+                    shellSettings["DocumentTable"] = model.DocumentTable.Trim();
                 }
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
                 return RedirectToAction(nameof(Index));
             }
+
+            // If we got this far, something failed, reinitialize the model and redisplay form
 
             // The user can change the 'preset' database information only if the
             // tenant has not been initialized yet
@@ -468,6 +497,13 @@ namespace OrchardCore.Tenants.Controllers
                 model.TablePrefix = shellSettings["TablePrefix"];
                 model.ConnectionString = shellSettings["ConnectionString"];
                 model.RecipeName = shellSettings["RecipeName"];
+                model.Schema = shellSettings["Schema"];
+                model.TablePrefixSeparator = shellSettings["TablePrefixSeparator"];
+                model.TablePrefixSeparator = shellSettings["DocumentTable"];
+                if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnType"], out var columnType))
+                {
+                    model.IdentityColumnType = columnType;
+                }
                 model.CanEditDatabasePresets = true;
                 SetConfigurationShellValues(model);
             }
@@ -477,7 +513,6 @@ namespace OrchardCore.Tenants.Controllers
             model.Recipes = recipes;
             model.FeatureProfiles = await GetFeatureProfilesAsync(model.FeatureProfile);
 
-            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
@@ -581,16 +616,28 @@ namespace OrchardCore.Tenants.Controllers
             var configurationShellConnectionString = shellSettings["ConnectionString"];
             var configurationDatabaseProvider = shellSettings["DatabaseProvider"];
 
-            model.DatabaseConfigurationPreset = !string.IsNullOrEmpty(configurationShellConnectionString) || !string.IsNullOrEmpty(configurationDatabaseProvider);
+            model.DatabaseConfigurationPreset = !String.IsNullOrEmpty(configurationShellConnectionString) || !String.IsNullOrEmpty(configurationDatabaseProvider);
 
-            if (!string.IsNullOrEmpty(configurationShellConnectionString))
+            if (!String.IsNullOrEmpty(configurationShellConnectionString))
             {
                 model.ConnectionString = configurationShellConnectionString;
             }
 
-            if (!string.IsNullOrEmpty(configurationDatabaseProvider))
+            if (!String.IsNullOrEmpty(configurationDatabaseProvider))
             {
                 model.DatabaseProvider = configurationDatabaseProvider;
+            }
+
+            if (model.DatabaseConfigurationPreset)
+            {
+                model.TablePrefixSeparator = shellSettings["TablePrefixSeparator"];
+                model.Schema = shellSettings["DatabaseProvider"];
+                model.DocumentTable = shellSettings["DocumentTable"];
+
+                if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnType"], out var columnType))
+                {
+                    model.IdentityColumnType = columnType;
+                }
             }
         }
 

@@ -31,19 +31,18 @@ OrchardCore uses the `YesSql` library to interact with the configured database p
 | Setting | Description |
 | --- | --- |
 | `CommandsPageSize` | Gets or sets the command page size. If you have to many queries in one command, `YesSql` will split the large command into multiple commands. |
-| `ContentTypeOptions` | Gets or sets the `QueryGatingEnabled` option in `YesSql`. |
-| `TableNameConvention` | You can provide your own implementation for generating ids. |
+| `QueryGatingEnabled` | Gets or sets the `QueryGatingEnabled` option in `YesSql`. |
+| `IdGenerator` | You can provide your own implementation for generating ids. |
 | `IdentifierAccessorFactory` | You can provide your own value accessor factory. |
 | `VersionAccessorFactory` | You can provide your own version accessor factory. |
 | `ContentSerializer` | You can provide your own content serializer. |
-| `TablePrefixSeparator` | Gets or sets the prefix used to seperate database prefix and the table name. |
 
-For example, you can change the default table prefix seperator from `_` to `__` by adding the following code to your startup code.
+For example, you can change the default command-page-size from `500` to `1000` by adding the following code to your startup code.
 
 ```C#
 services.Configure<YesSqlOptions>(options =>
 {
-    options.TablePrefixSeparator = "__";
+    options.CommandsPageSize = 1000;
 });
 ```
 

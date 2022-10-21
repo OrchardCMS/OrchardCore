@@ -77,6 +77,14 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
 
+            var options = new DatabaseTableOptions()
+            {
+                TablePrefixSeparator = model.TablePrefixSeparator,
+                DocumentTable = model.DocumentTable,
+                IdentityColumnType = model.IdentityColumnType,
+                Schema = model.Schema,
+            };
+
             if (model.IsNewTenant)
             {
                 if (shellSettings != null)
@@ -91,7 +99,7 @@ namespace OrchardCore.Tenants.Services
                     }
                 }
 
-                await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, errors, model.Name);
+                await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, errors, model.Name, options);
             }
             else
             {
@@ -100,16 +108,24 @@ namespace OrchardCore.Tenants.Services
                     // While the tenant is in Uninitialized state, we still are able to change the database settings.
                     // Let's validate the database for assurance.
 
-                    await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, errors, model.Name);
+                    await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, errors, model.Name, options);
                 }
             }
 
             return errors;
         }
 
-        private async Task AssertConnectionValidityAndApplyErrorsAsync(string databaseProvider, string connectionString, string tablePrefix, List<ModelError> errors, string shellName)
+        private async Task AssertConnectionValidityAndApplyErrorsAsync(string databaseProvider, string connectionString, string tablePrefix, List<ModelError> errors, string shellName, DatabaseTableOptions options)
         {
-            switch (await _dbConnectionValidator.ValidateAsync(databaseProvider, connectionString, tablePrefix, shellName))
+            var validationContext = new DbConnectionValidatorContext(options)
+            {
+                DatabaseProvider = databaseProvider,
+                ConnectionString = connectionString,
+                TablePrefix = tablePrefix,
+                ShellName = shellName,
+            };
+
+            switch (await _dbConnectionValidator.ValidateAsync(validationContext))
             {
                 case DbConnectionValidatorResult.UnsupportedProvider:
                     errors.Add(new ModelError(nameof(TenantViewModel.DatabaseProvider), S["The provided database provider is not supported."]));
