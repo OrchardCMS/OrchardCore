@@ -174,7 +174,7 @@ namespace OrchardCore.Lists.Services
                 }
                 else
                 {
-                    var beforeValue = new DateTime(long.Parse(pager.Before));
+                    var beforeValue = new DateTime(Int64.Parse(pager.Before));
                     query = _session.Query<ContentItem>()
                         .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId);
 
@@ -226,7 +226,7 @@ namespace OrchardCore.Lists.Services
             {
                 if (enableOrdering)
                 {
-                    var afterValue = int.Parse(pager.After);
+                    var afterValue = Int32.Parse(pager.After);
                     query = _session.Query<ContentItem>()
                         .With(CreateOrderedContainedPartIndexFilter(null, afterValue, contentItemId))
                         .OrderBy(x => x.Order);
@@ -352,7 +352,7 @@ namespace OrchardCore.Lists.Services
 
         private void ApplyContainedItemOptionsFilter(ContainedItemOptions containedItemOptions, IQuery<ContentItem> query)
         {
-            if (!string.IsNullOrEmpty(containedItemOptions.DisplayText))
+            if (!String.IsNullOrEmpty(containedItemOptions.DisplayText))
             {
                 query.With<ContentItemIndex>(i => i.DisplayText.Contains(containedItemOptions.DisplayText));
             }
@@ -373,7 +373,7 @@ namespace OrchardCore.Lists.Services
 
                     if (currentUserName != null)
                     {
-                        query.With<ContentItemIndex>(i => i.Owner == currentUserName);
+                        query.With<ContentItemIndex>(i => (i.Published || i.Latest) && i.Owner == currentUserName);
                     }
 
                     break;
