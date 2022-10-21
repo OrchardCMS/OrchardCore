@@ -34,10 +34,10 @@ Update the source so everything looks like on the new version.
 Make sure everything works all right.
 
 - [ ] Make sure that [OrchardCore.Samples works](https://github.com/OrchardCMS/OrchardCore.Samples).
-- [ ] Test the [guides](https://docs.orchardcore.net/en/dev/docs/guides/) with the NuGet packages from the Cloudsmith feed (branches under `release/` are automatically published too). Test at least the following guides:
-    - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/dev/docs/guides/create-modular-application-mvc/)
-    - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/dev/docs/guides/create-cms-application/)
-    - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/dev/docs/guides/decoupled-cms/)
+- [ ] Test the [guides](https://docs.orchardcore.net/en/latest/docs/guides/) with the NuGet packages from the Cloudsmith feed (branches under `release/` are automatically published too). Test at least the following guides:
+    - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/docs/guides/create-modular-application-mvc/)
+    - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/latest/docs/guides/create-cms-application/)
+    - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/docs/guides/decoupled-cms/)
 
 ### Prepare and publish Orchard Core Translations
 
@@ -76,7 +76,7 @@ Do the harder parts of making the release public. This should come after everyth
 Let the whole world know about our shiny new release. Savor this part! These steps will make the release public so only do them once everything else is ready.
 
 - [ ] Update the documentation to mention the version in all places where the latest version is referenced, for example, but not limited to (do a search for the package version string): [Status in the root README](https://docs.orchardcore.net/en/latest/#status), CLI templates, commands, the [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/docs/guides/decoupled-cms/) guide.
-- [ ] Update the tagged [release](https://github.com/OrchardCMS/OrchardCore/releases) on GitHub: Change its title to something more descriptive (e.g. "Orchard Core 1.0.0 RC 2"), add a link in its description to the release notes in the documentation (something like `For details on this version see the [release notes in the documentation](link here).`). Add a link to this release under [Status in the root README](https://docs.orchardcore.net/en/dev/#status).
+- [ ] Update the tagged [release](https://github.com/OrchardCMS/OrchardCore/releases) on GitHub: Change its title to something more descriptive (e.g. "Orchard Core 1.0.0 RC 2"), add a link in its description to the release notes in the documentation (something like `For details on this version see the [release notes in the documentation](link here).`). Add a link to this release under [Status in the root README](https://docs.orchardcore.net/en/latest/#status).
 - [ ] Publish a blog post on the website.
 - [ ] Ask to publish a blog post on [DevBlogs](https://devblogs.microsoft.com/).
 - [ ] Ask to publish a blog post on [.NET Foundation News](https://dotnetfoundation.org/news).
