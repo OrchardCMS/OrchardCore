@@ -1,95 +1,78 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement.Html;
 
 namespace OrchardCore;
 
 public static class CssOrchardHelper
 {
-    public static string GetLimitedWidthCssClasses(this IOrchardHelper _, params string[] additionalClasses)
+    private static TheAdminThemeOptions _options;
+
+
+    public static string GetLimitedWidthCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
     {
-        return String.Join(' ', GetLimitedWidthCssClassList(additionalClasses));
+        _options ??= GetThemeOptions(helper);
+
+        return String.Join(' ', Combine(_options.LimitedWidth, additionalClasses));
     }
 
-    public static string GetLabelCssClasses(this IOrchardHelper _, params string[] additionalClasses)
+    public static string GetLabelCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
     {
-        return String.Join(' ', GetLabelCssClassList(additionalClasses));
+        _options ??= GetThemeOptions(helper);
+
+        return String.Join(' ', Combine(_options.LabelClasses, additionalClasses));
     }
 
-    public static string GetStartCssClasses(this IOrchardHelper _, params string[] additionalClasses)
+    public static string GetStartCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
     {
-        return String.Join(' ', GetStartCssClassList(additionalClasses));
+        _options ??= GetThemeOptions(helper);
+
+        return String.Join(' ', Combine(_options.StartClasses, additionalClasses));
     }
 
-    public static string GetEndCssClasses(this IOrchardHelper _, params string[] additionalClasses)
+    public static string GetEndCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
     {
-        return String.Join(' ', GetEndCssClassList(additionalClasses));
+        _options ??= GetThemeOptions(helper);
+
+        return String.Join(' ', Combine(_options.EndClasses, additionalClasses));
     }
 
-    public static string GetEndCssClasses(this IOrchardHelper _, bool withOffset, params string[] additionalClasses)
+    public static string GetEndCssClasses(this IOrchardHelper helper, bool withOffset, params string[] additionalClasses)
     {
-        return String.Join(' ', GetEndCssClassList(withOffset, additionalClasses));
-    }
+        _options ??= GetThemeOptions(helper);
 
-    public static string GetOffsetCssClasses(this IOrchardHelper _, params string[] additionalClasses)
-    {
-        return String.Join(' ', GetOffsetCssClassList(additionalClasses));
-    }
-
-    private static List<string> GetLabelCssClassList(params string[] additionalClasses)
-    {
-        return new List<string>(GetStartCssClassList(additionalClasses))
+        if (withOffset && !String.IsNullOrEmpty(_options.OffsetClasses))
         {
-            "col-form-label",
-            "text-lg-end",
-        };
-    }
+            var cssClasses = new List<string>(additionalClasses)
+            {
+                _options.OffsetClasses
+            };
 
-    private static List<string> GetLimitedWidthCssClassList(params string[] additionalClasses)
-    {
-        return new List<string>(additionalClasses)
-        {
-            "col-md-6",
-            "col-lg-4",
-            "col-xxl-3",
-        };
-    }
-
-    private static List<string> GetStartCssClassList(params string[] additionalClasses)
-    {
-        return new List<string>(additionalClasses)
-        {
-            "col-lg-2",
-            "col-xl-3"
-        };
-    }
-
-    private static List<string> GetEndCssClassList(params string[] additionalClasses)
-    {
-        return new List<string>(additionalClasses)
-        {
-            "col-lg-10",
-            "col-xl-9"
-        };
-    }
-
-    private static List<string> GetEndCssClassList(bool withOffset, params string[] additionalClasses)
-    {
-        var values = GetEndCssClassList(additionalClasses);
-
-        if (withOffset)
-        {
-            values.AddRange(GetOffsetCssClassList());
+            return String.Join(' ', Combine(_options.EndClasses, cssClasses.ToArray()));
         }
 
-        return values;
+        return String.Join(' ', Combine(_options.EndClasses, additionalClasses.ToArray()));
     }
 
-    private static List<string> GetOffsetCssClassList(params string[] additionalClasses)
+    public static string GetOffsetCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
     {
-        return new List<string>(additionalClasses)
+        _options ??= GetThemeOptions(helper);
+
+        return String.Join(' ', Combine(_options.OffsetClasses, additionalClasses));
+    }
+
+    private static TheAdminThemeOptions GetThemeOptions(IOrchardHelper helper) => _options ??= helper.HttpContext.RequestServices.GetService<IOptions<TheAdminThemeOptions>>().Value;
+
+    private static IEnumerable<string> Combine(string optionClasses, string[] additionalClasses)
+    {
+        if (String.IsNullOrEmpty(optionClasses))
         {
-            "offset-lg-2",
-            "offset-xl-3"
-        };
+            return additionalClasses;
+        }
+
+        return additionalClasses.Concat(new[] { optionClasses });
     }
 }
