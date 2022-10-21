@@ -66,9 +66,9 @@ Do the harder parts of making the release public. This should come after everyth
     - Merge it as a merge commit, not squash merge.
 - [ ] Publish the Draft release.
 - [ ] Test the [guides](https://docs.orchardcore.net/en/latest/docs/guides/) with the packages now automatically published to NuGet. Test at least the following guides:
-    - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/dev/docs/guides/create-modular-application-mvc/)
-    - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/dev/docs/guides/create-cms-application/)
-    - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/dev/docs/guides/decoupled-cms/)
+    - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/docs/guides/create-modular-application-mvc/)
+    - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/latest/docs/guides/create-cms-application/)
+    - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/docs/guides/decoupled-cms/)
 - [ ] Update [Try Orchard Core](https://github.com/OrchardCMS/TryOrchardCore).
 
 ### Publicize the release
