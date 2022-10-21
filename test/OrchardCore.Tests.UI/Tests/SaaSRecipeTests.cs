@@ -42,13 +42,14 @@ namespace OrchardCore.Tests.UI.Tests
                 {
                     await context.SignInDirectlyAsync();
 
-                    await context.CreateAndEnterTenantManuallyAsync("test", "test");
+                    await context.CreateAndChangeToTenantManuallyAsync("test", "test");
 
                     await context.GoToSetupPageAndSetupOrchardCoreAsync(
                         new OrchardCoreSetupParameters(context)
                         {
                             SiteName = "Test Tenant",
                             RecipeId = "Blog.Tests",
+                            TablePrefix = "test",
                             RunSetupOnCurrentPage = true,
                         });
 
