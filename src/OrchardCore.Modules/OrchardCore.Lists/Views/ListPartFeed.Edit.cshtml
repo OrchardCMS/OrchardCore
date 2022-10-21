@@ -10,10 +10,7 @@
     <label asp-for="FeedProxyUrl">@T["Feed proxy Url"]</label>
     <input asp-for="FeedProxyUrl" class="form-control" />
     <span class="hint">@T["Provide a custom public url which will be used to proxy the local rss feed."]</span>
-    @if (Model.EnableFeedProxyUrl)
-    {
-        <span class="hint">@T["The current feed is available at <a href=\"{0}\" target=\"_blank\">{0}</a>.", Url.Action("Index", "Feed", new { area = "OrchardCore.Feeds", ContentItemId = Model.ContentItem.ContentItemId }, Context.Request.Scheme)]</span>
-    }
+    <span id="currentFeedPreview" class="hint">@T["The current feed is available at <a href=\"{0}\" target=\"_blank\">{0}</a>.", Url.Action("Index", "Feed", new { area = "OrchardCore.Feeds", ContentItemId = Model.ContentItem.ContentItemId }, Context.Request.Scheme)]</span>
 </div>
 
 <div class="mb-3">
@@ -24,14 +21,15 @@
 
 <script at="Foot">
     $(function () {
-        function showFeedInfo() {
-            var feedUrl = $(@Html.Id("FeedProxyUrl"));
-            var feedItemsCount = $(@Html.Id("FeedItemsCount"));
-            
-            $(feedUrl).prop('disabled', !this.checked);
-            $(feedItemsCount).prop('disabled', !this.checked);
-        }
+        var enableFeedElement = document.getElementById("@Html.IdFor(m => m.EnableFeedProxyUrl)");
+        enableFeedElement.addEventListener('change', toggleFeedInfo);
 
-        $("#@Html.IdFor(m => m.EnableFeedProxyUrl)").change(showFeedInfo);
+        toggleFeedInfo();
+        
+        function toggleFeedInfo() {
+            document.getElementById("@Html.IdFor(m => m.FeedProxyUrl)").disabled = !enableFeedElement.checked;
+            document.getElementById("@Html.IdFor(m => m.FeedItemsCount)").disabled = !enableFeedElement.checked;
+            document.getElementById("currentFeedPreview").style.display = enableFeedElement.checked ? 'block' : 'none';
+        }
     });
 </script>
