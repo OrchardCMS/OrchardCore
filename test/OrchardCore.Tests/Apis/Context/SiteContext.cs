@@ -10,7 +10,6 @@ using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Lucene;
@@ -54,7 +53,11 @@ namespace OrchardCore.Tests.Apis.Context
                 ConnectionString = ConnectionString,
                 RecipeName = RecipeName,
                 Name = tenantName,
-                RequestUrlPrefix = tenantName
+                RequestUrlPrefix = tenantName,
+                TablePrefixSeparator = "_",
+                DocumentTable = "Document",
+                Schema = null,
+                IdentityColumnType = YesSql.IdentityColumnSize.Int32,
             };
 
             var createResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/create", createModel);

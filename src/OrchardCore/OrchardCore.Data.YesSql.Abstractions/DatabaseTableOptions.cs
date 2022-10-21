@@ -6,9 +6,9 @@ namespace OrchardCore.Data;
 
 public class DatabaseTableOptions
 {
-    public string DocumentTable { get; set; } = "Document";
+    public string DocumentTable { get; set; }
 
-    public string TablePrefixSeparator { get; set; } = "_";
+    public string TablePrefixSeparator { get; set; }
 
     public string Schema { get; set; }
 
@@ -39,6 +39,7 @@ public class DatabaseTableOptions
 
         // For backward compatibility, if the TablePrefixSeparator isn't set, we use _ as the default value.
         options.TablePrefixSeparator = shellSettings["TablePrefixSeparator"] ?? "_";
+        options.DocumentTable = "Document";
 
         if (!String.IsNullOrWhiteSpace(shellSettings["DocumentTable"]))
         {

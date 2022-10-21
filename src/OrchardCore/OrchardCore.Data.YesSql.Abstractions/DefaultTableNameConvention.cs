@@ -19,18 +19,20 @@ public class DefaultTableNameConvention : ITableNameConvention
             return type.Name;
         }
 
-        return collection + (_options.TablePrefixSeparator ?? String.Empty) + type.Name;
+        return collection + TablePrefixSeparator + type.Name;
     }
 
     public string GetDocumentTable(string collection = null)
     {
         if (String.IsNullOrEmpty(collection))
         {
-            return DocumentTable;
+            return DocumentTableName;
         }
 
-        return collection + (_options.TablePrefixSeparator ?? String.Empty) + DocumentTable;
+        return collection + TablePrefixSeparator + DocumentTableName;
     }
 
-    private string DocumentTable => !String.IsNullOrWhiteSpace(_options.DocumentTable) ? _options.DocumentTable : "Document";
+    private string DocumentTableName => !String.IsNullOrWhiteSpace(_options.DocumentTable) ? _options.DocumentTable.Trim() : "Document";
+
+    private string TablePrefixSeparator => (_options.TablePrefixSeparator ?? String.Empty).Trim();
 }

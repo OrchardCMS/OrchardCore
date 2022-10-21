@@ -28,6 +28,7 @@ namespace OrchardCore.Tenants.ViewModels
         [RegularExpression("^_*$", ErrorMessage = "Invalid prefix")]
         public string TablePrefixSeparator { get; set; }
 
+        [RegularExpression("^[A-Za-z_]+[A-Za-z0-9_]*$", ErrorMessage = "Invalid schema")]
         public string Schema { get; set; }
 
         [Required, RegularExpression("^[A-Za-z_]+[A-Za-z0-9_]*$", ErrorMessage = "Invalid name")]

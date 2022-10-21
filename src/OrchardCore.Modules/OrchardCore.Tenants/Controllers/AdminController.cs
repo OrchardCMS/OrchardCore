@@ -41,7 +41,6 @@ namespace OrchardCore.Tenants.Controllers
         private readonly ITenantValidator _tenantValidator;
         private readonly PagerOptions _pagerOptions;
         private readonly dynamic New;
-        private readonly DatabaseTableOptions _databaseTableOptions;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
 
@@ -59,7 +58,6 @@ namespace OrchardCore.Tenants.Controllers
             ITenantValidator tenantValidator,
             IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
-            IOptions<DatabaseTableOptions> databaseTableOptions,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
@@ -77,7 +75,6 @@ namespace OrchardCore.Tenants.Controllers
             _pagerOptions = pagerOptions.Value;
 
             New = shapeFactory;
-            _databaseTableOptions = databaseTableOptions.Value;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -304,10 +301,9 @@ namespace OrchardCore.Tenants.Controllers
                 RecipeName = shellSettings["RecipeName"],
                 FeatureProfile = currentFeatureProfile,
                 FeatureProfiles = featureProfiles,
-                Schema = _databaseTableOptions.Schema,
-                TablePrefixSeparator = _databaseTableOptions.TablePrefixSeparator,
-                IdentityColumnType = _databaseTableOptions.IdentityColumnType,
-                DocumentTable = _databaseTableOptions.DocumentTable,
+                TablePrefixSeparator = "_",
+                IdentityColumnType = IdentityColumnSize.Int32,
+                DocumentTable = "Document",
             };
 
             SetConfigurationShellValues(model);
@@ -359,7 +355,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["TablePrefixSeparator"] = model.TablePrefixSeparator ?? String.Empty;
                 shellSettings["Schema"] = model.Schema?.Trim();
                 shellSettings["IdentityColumnType"] = model.IdentityColumnType.ToString();
-                shellSettings["DocumentTable"] = model.DocumentTable.Trim();
+                shellSettings["DocumentTable"] = model.DocumentTable;
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);
 

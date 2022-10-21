@@ -220,7 +220,7 @@ namespace OrchardCore.AutoSetup
             shellSettings["FeatureProfile"] = setupOptions.FeatureProfile;
             shellSettings["Schema"] = setupOptions.Schema?.Trim();
             shellSettings["IdentityColumnType"] = setupOptions.IdentityColumnType;
-            shellSettings["DocumentTable"] = setupOptions.TablePrefixSeparator?.Trim() ?? "Document";
+            shellSettings["DocumentTable"] = setupOptions.TablePrefixSeparator?.Trim();
             shellSettings["TablePrefixSeparator"] = setupOptions.TablePrefixSeparator?.Trim() ?? String.Empty;
 
             await _shellHost.UpdateShellSettingsAsync(shellSettings);
