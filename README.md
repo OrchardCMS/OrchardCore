@@ -30,7 +30,7 @@ Nightly (main):
 
 ## Status
 
-### 1.4.0
+### 1.5.0
 
 The software is finished -- and by finished, we mean there are no show-stopping, little-children-killing bugs in it. That we know of. There are probably numerous lower-priority bugs triaged into the next point release or service pack, as well.
 
