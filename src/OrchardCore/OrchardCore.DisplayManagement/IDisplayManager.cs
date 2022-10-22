@@ -8,13 +8,13 @@ namespace OrchardCore.DisplayManagement
         Task<IShape> BuildDisplayAsync(TModel model, IUpdateModel updater, string displayType = "", string groupId = "");
 
         Task<IShape> BuildEditorAsync(TModel model, IUpdateModel updater, bool isNew, string groupId = "")
-            => BuildEditorAsync(model, updater, isNew,  groupId, "");
-        
+            => BuildEditorAsync(model, updater, isNew, groupId, "");
+
         Task<IShape> BuildEditorAsync(TModel model, IUpdateModel updater, bool isNew, string groupId, string htmlPrefix);
-        
+
         Task<IShape> UpdateEditorAsync(TModel model, IUpdateModel updater, bool isNew, string groupId = "")
-            => UpdateEditorAsync(model, updater, isNew,  groupId, "");
-        
+            => UpdateEditorAsync(model, updater, isNew, groupId, "");
+
         Task<IShape> UpdateEditorAsync(TModel model, IUpdateModel updater, bool isNew, string groupId, string htmlPrefix);
     }
 }
