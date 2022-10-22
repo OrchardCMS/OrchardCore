@@ -13,8 +13,6 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Search.Lucene;
-using OrchardCore.Search.Lucene.Model;
-
 
 namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 {
@@ -60,29 +58,19 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     FieldType fieldType;
 
                     var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
-                    if (querySchema.ContainsKey("hasTotal") && querySchema["hasTotal"].ToString().Equals("true", StringComparison.OrdinalIgnoreCase))
+                    var hasTotal = querySchema.ContainsKey("hasTotal") && querySchema["hasTotal"].ToString().Equals("true", StringComparison.OrdinalIgnoreCase);
+                    if (query.ReturnContentItems && type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (query.ReturnContentItems && type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
-                        {
-                            var contentType = type.Remove(0, 12);
-                            fieldType = BuildTotalContentTypeFieldType(schema, contentType, query, fieldTypeName);
-                        }
-                        else
-                        {
-                            fieldType = BuildTotalSchemaBasedFieldType(query, querySchema, fieldTypeName);
-                        }
+                        var contentType = type.Remove(0, 12);
+                        fieldType = hasTotal
+                          ? BuildTotalContentTypeFieldType(schema, contentType, query, fieldTypeName)
+                          : BuildContentTypeFieldType(schema, contentType, query, fieldTypeName);
                     }
                     else
                     {
-                        if (query.ReturnContentItems && type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
-                        {
-                            var contentType = type.Remove(0, 12);
-                            fieldType = BuildContentTypeFieldType(schema, contentType, query, fieldTypeName);
-                        }
-                        else
-                        {
-                            fieldType = BuildSchemaBasedFieldType(query, querySchema, fieldTypeName);
-                        }
+                        fieldType = hasTotal
+                          ? BuildTotalSchemaBasedFieldType(query, querySchema, fieldTypeName)
+                          : BuildSchemaBasedFieldType(query, querySchema, fieldTypeName);
                     }
 
                     if (fieldType != null && !schema.Query.HasField(fieldType.Name))
@@ -166,7 +154,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : new Dictionary<string, object>();
 
-                    var result = (await queryManager.ExecuteQueryAsync(iquery, queryParameters)) as OrchardCore.Lucene.LuceneQueryResults;
+                    var result = (await queryManager.ExecuteQueryAsync(iquery, queryParameters)) as LuceneQueryResults;
                     return result.Items;
                 }),
                 Type = typeof(ListGraphType<ObjectGraphType<JObject>>)
@@ -194,7 +182,8 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                 ResolvedType = typetype.ResolvedType,
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
-                    var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
+                    var queryManager = context.RequestServices
+                    .GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(query.Name);
 
                     var parameters = context.GetArgument<string>("parameters");
@@ -202,7 +191,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     var queryParameters = parameters != null ?
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : new Dictionary<string, object>();
-                    var result = (await queryManager.ExecuteQueryAsync(iquery, queryParameters)) as OrchardCore.Lucene.LuceneQueryResults;
+                    var result = (await queryManager.ExecuteQueryAsync(iquery, queryParameters)) as Search.Lucene.LuceneQueryResults;
                     return result.Items;
                 }),
                 Type = typetype.Type
@@ -217,7 +206,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
             {
                 return null;
             }
-            var totalType = new ObjectGraphType<OrchardCore.Lucene.LuceneQueryResults>()
+            var totalType = new ObjectGraphType<Search.Lucene.LuceneQueryResults>()
             {
                 Name = fieldTypeName
             };
@@ -295,7 +284,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : new Dictionary<string, object>();
 
-                    var result = (await queryManager.ExecuteQueryAsync(iquery, queryParameters)) as OrchardCore.Lucene.LuceneQueryResults;
+                    var result = (await queryManager.ExecuteQueryAsync(iquery, queryParameters)) as Search.Lucene.LuceneQueryResults;
                     return result;
                 }),
                 Type = totalType.GetType()
@@ -313,7 +302,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                 return null;
             }
 
-            var totalType = new ObjectGraphType<OrchardCore.Lucene.LuceneQueryResults>
+            var totalType = new ObjectGraphType<Search.Lucene.LuceneQueryResults>
             {
                 Name = fieldTypeName
             };
@@ -340,7 +329,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                 ResolvedType = totalType,
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
-                    var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
+                    var queryManager = context.RequestServices.GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(query.Name);
 
                     var parameters = context.GetArgument<string>("parameters");
@@ -350,7 +339,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         : new Dictionary<string, object>();
                     var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
 
-                    return result as OrchardCore.Lucene.LuceneQueryResults;
+                    return result as Search.Lucene.LuceneQueryResults;
                 }),
                 Type = totalType.GetType()
             };
