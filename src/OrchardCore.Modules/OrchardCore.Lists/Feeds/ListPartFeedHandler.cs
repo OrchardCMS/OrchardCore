@@ -11,8 +11,10 @@ namespace OrchardCore.Lists.Drivers
         {
             return context.ForAsync<FeedMetadata>(feedMetadata =>
             {
-                // If the value is not defined, it will be represented as null
+                // Disable the feed if the value is not defined
+                feedMetadata.EnableFeedProxyUrl = part.Content.EnableFeedProxyUrl ?? false;
                 feedMetadata.FeedProxyUrl = part.Content.FeedProxyUrl;
+
                 return Task.CompletedTask;
             });
         }
