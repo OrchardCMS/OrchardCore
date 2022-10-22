@@ -50,11 +50,11 @@ function initializeCustomMetaTagsEditor(elem, data, modalBodyElement) {
         return store.getMetaTagsFormattedList();
       },
       showModal: function showModal() {
-        $(modalBodyElement).modal();
+        metaTagsModal.props.data.modal = new bootstrap.Modal(modalBodyElement[0]);
+        metaTagsModal.props.data.modal.show();
       },
       closeModal: function closeModal() {
-        var modal = $(modalBodyElement).modal();
-        modal.modal('hide');
+        metaTagsModal.props.data.modal.hide();
       }
     }
   };
@@ -64,7 +64,8 @@ function initializeCustomMetaTagsEditor(elem, data, modalBodyElement) {
       metaTagsModal: metaTagsModal
     },
     data: {
-      sharedState: store.state
+      sharedState: store.state,
+      modal: null
     },
     el: elem,
     methods: {

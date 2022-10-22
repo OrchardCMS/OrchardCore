@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 
 namespace Microsoft.AspNetCore.Mvc
 {
@@ -26,6 +27,14 @@ namespace Microsoft.AspNetCore.Mvc
         /// <returns>The proper actionresult based upon if the user is authenticated</returns>
         public static ActionResult ChallengeOrForbid(this Controller controller, params string[] authenticationSchemes)
             => controller.User?.Identity?.IsAuthenticated ?? false ? (ActionResult)controller.Forbid(authenticationSchemes) : controller.Challenge(authenticationSchemes);
+
+        /// <summary>
+        /// Creates <see cref="ObjectResult"/> that produces a <see cref="HttpStatusCode.InternalServerError"/> response.
+        /// </summary>
+        /// <param name="controller">The <see cref="Controller"/>.</param>
+        /// <param name="value">An optional value to set on <see cref="ObjectResult"/>.</param>
+        public static ActionResult InternalServerError(this Controller controller, object value = null)
+            => controller.StatusCode((int)HttpStatusCode.InternalServerError, value);
 
         /// <summary>
         /// Creates a <see cref="LocalRedirectResult"/> object that redirects to the specified local localUrl

@@ -101,7 +101,7 @@ namespace OrchardCore.ContentLocalization.Records
                     return new LocalizedContentItemIndex
                     {
                         Culture = !partRemoved ? part.Culture.ToLowerInvariant() : null,
-                        LocalizationSet = part.LocalizationSet,
+                        LocalizationSet = !partRemoved ? part.LocalizationSet : null,
                         ContentItemId = contentItem.ContentItemId,
                         Published = contentItem.Published,
                         Latest = contentItem.Latest

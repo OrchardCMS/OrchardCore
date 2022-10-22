@@ -154,6 +154,9 @@ The following JavaScript functions are available by default to any activity that
 | `input` | Returns the input parameter with the specified name. Input to the workflow is provided when the workflow is executed by the workflow manager. | `input(name: string): any` |
 | `output` | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. | `output(name: string, value: any): void` |
 | `property` | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. | `property(name: string): any` |
+| `setProperty` | Stores the specified data in workflow properties. | `setProperty(name: string,data:any):void` |
+| `executeQuery` | Returns the result of the query, see [more](../Queries/#scripting). | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
+| `log` | Output logs according to the specified log level. Allowed log levels : `'Trace','Debug','Information','Warning','Error','Critical','None'` | `log(level: string, text: string, param: object): void` |
 | `lastResult` | Returns the value that the previous activity provided, if any. | `lastResult(): any` |
 | `correlationId` | Returns the correlation value of the workflow instance. | `correlationId(): string` |
 | `signalUrl` | Returns workflow trigger URL with a protected SAS token into which the specified signal name is encoded. Use this to generate URLs that can be shared with trusted parties to trigger the current workflow if it is blocked on the Signal activity that is configured with the same signal name. | `signalUrl(signal: string): string` |
@@ -335,13 +338,13 @@ public class NotifyTask : TaskActivity
     }
 
     // Returns the possible outcomes of this activity.
-    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)
+    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         return Outcomes(S["Done"]);
     }
 
     // This is the heart of the activity and actually performs the work to be done.
-    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         var message = await workflowContext.EvaluateExpressionAsync(Message);
         _notifier.Add(NotificationType, H[message]);
@@ -414,3 +417,9 @@ Continuing with the `NotifyTask` example, we now need to create the following Ra
 - `NotifyTask.Fields.Design.cshtml`
 - `NotifyTask.Fields.Thumbnail.cshtml`
 - `NotifyTask.Fields.Edit.cshtml`
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/n-O4WO6dVJk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IcR-YpxKlGQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

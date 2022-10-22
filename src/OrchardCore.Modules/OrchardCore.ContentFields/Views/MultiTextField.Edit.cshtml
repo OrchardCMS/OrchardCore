@@ -1,6 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.EditMultiTextFieldViewModel
 @using OrchardCore.Mvc.Utilities
-
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
     var options = new List<SelectListItem>();
@@ -11,12 +10,15 @@
 
         options.Add(new SelectListItem { Text = option.Name, Value = option.Value, Selected = isSelected });
     }
+    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
-<div class="form-group">
+
+<div class="mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Values)_FieldWrapper">
     <label asp-for="Values">@Model.PartFieldDefinition.DisplayName()</label>
-    <div class="row col-md-6 col-lg-4">
-        <select class="form-control content-preview-select" asp-for="Values" asp-items="options" multiple
-            style="min-height: 200px"></select>
+    <div class="row">
+        <div class="col-md-6 col-lg-4">
+            <select class="form-select content-preview-select" asp-for="Values" asp-items="options" multiple></select>
+        </div>
     </div>
     @if (!String.IsNullOrEmpty(settings.Hint))
     {

@@ -1,4 +1,5 @@
 @{
     Model.Metadata.Type = "Content_Edit";
-    @await DisplayAsync(Model)
+    Model.Metadata.Alternates.Clear();
 }
+@await DisplayAsync(Model)

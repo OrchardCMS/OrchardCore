@@ -41,7 +41,6 @@ namespace OrchardCore.Queries
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IQueryManager, QueryManager>();
-            services.AddScoped<IDisplayManager<Query>, DisplayManager<Query>>();
 
             services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
             services.AddRecipeExecutionStep<QueryStep>();
@@ -104,6 +103,17 @@ namespace OrchardCore.Queries
                 pattern: _adminOptions.AdminUrlPrefix + "/Queries/Sql/Query",
                 defaults: new { controller = typeof(Sql.Controllers.AdminController).ControllerName(), action = nameof(Sql.Controllers.AdminController.Query) }
             );
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Contents")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, QueryBasedContentDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<QueryBasedContentDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, QueryBasedContentDeploymentStepDriver>();
         }
     }
 }

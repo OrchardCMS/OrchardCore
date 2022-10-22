@@ -14,7 +14,7 @@ namespace OrchardCore.Localization
     {
         private const string CacheKeyPrefix = "CultureDictionary-";
 
-        private static PluralizationRuleDelegate DefaultPluralRule = n => (n != 1 ? 1 : 0);
+        private static readonly PluralizationRuleDelegate DefaultPluralRule = n => (n != 1 ? 1 : 0);
 
         private readonly IList<IPluralRuleProvider> _pluralRuleProviders;
         private readonly IEnumerable<ITranslationProvider> _translationProviders;

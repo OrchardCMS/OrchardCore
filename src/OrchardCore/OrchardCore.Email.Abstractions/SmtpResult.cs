@@ -9,7 +9,7 @@ namespace OrchardCore.Email
     public class SmtpResult
     {
         /// <summary>
-        /// Returns an <see cref="SmtpResult"/>indicating a successful Smtp operation.
+        /// Returns an <see cref="SmtpResult"/> indicating a successful Smtp operation.
         /// </summary>
         public static SmtpResult Success { get; } = new SmtpResult { Succeeded = true };
 

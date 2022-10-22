@@ -1,0 +1,62 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.props" />
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
+    <OrchardCoreDebugTargets>true</OrchardCoreDebugTargets>
+    <!-- Which version(s) may be further managed, bumped, etc, during preceding build targets... -->
+    <AssemblyVersion>7.8.9</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\OrchardCore\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <OrchardCoreAttributes Include="$(MSBuildProjectName).One"
+                           Type="feature"
+                           Category="two"
+                           Priority="3"
+                           Description="four"
+                           Dependencies="five;six;seven"
+                           DefaultTenant="true"
+                           AlwaysEnabled="true"
+                           EnabledByDependencyOnly="false" />
+
+    <OrchardCoreAttributes Include="$(MSBuildProjectName).Two"
+                           Type="feature"
+                           Category="three"
+                           Priority="4"
+                           Description="five"
+                           Dependencies="six;seven;eight"
+                           DefaultTenant="true"
+                           AlwaysEnabled="true"
+                           EnabledByDependencyOnly="false" />
+
+    <OrchardCoreAttributes Include="$(MSBuildProjectName)"
+                           Category="three"
+                           Priority="4"
+                           Description="five"
+                           Author="six"
+                           Version="$(AssemblyVersion)"
+                           Website="oc://moduleandfeaturesmsbuilditemlists.prop"
+                           Dependencies="nine;ten;eleven"
+                           Tags="ten;eleven;twelve"
+                           DefaultTenant="true"
+                           AlwaysEnabled="true"
+                           EnabledByDependencyOnly="false" />
+  </ItemGroup>
+
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.targets" />
+  <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>OrchardCore.Abstractions.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

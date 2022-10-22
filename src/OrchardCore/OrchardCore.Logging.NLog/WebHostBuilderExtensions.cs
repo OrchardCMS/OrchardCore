@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
@@ -15,7 +16,7 @@ namespace OrchardCore.Logging
         {
             LayoutRenderer.Register<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName);
             builder.UseNLog();
-            builder.ConfigureAppConfiguration((context, configuration) =>
+            builder.ConfigureAppConfiguration((context, _) =>
             {
                 var environment = context.HostingEnvironment;
                 environment.ConfigureNLog($"{environment.ContentRootPath}{Path.DirectorySeparatorChar}NLog.config");
@@ -26,7 +27,6 @@ namespace OrchardCore.Logging
         }
     }
 
-    // Waiting for NLog to use `IHostEnvironment`.
     internal static class AspNetExtensions
     {
         public static LoggingConfiguration ConfigureNLog(this IHostEnvironment env, string configFileRelativePath)

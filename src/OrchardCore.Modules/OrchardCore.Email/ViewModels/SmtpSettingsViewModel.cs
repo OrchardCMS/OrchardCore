@@ -7,6 +7,7 @@ namespace OrchardCore.Email.ViewModels
         [Required(AllowEmptyStrings = false)]
         public string To { get; set; }
 
+        [EmailAddress(ErrorMessage = "Invalid Email.")]
         public string Sender { get; set; }
 
         public string Bcc { get; set; }

@@ -1,4 +1,4 @@
-using OrchardCore.Liquid.Services;
+using OrchardCore.Modules.Services;
 using Xunit;
 
 namespace OrchardCore.Tests.Tokens.Content
@@ -34,6 +34,16 @@ namespace OrchardCore.Tests.Tokens.Content
         {
             var slug = _slugService.Slugify("a,d");
             Assert.Equal("a-d", slug);
+        }
+
+        [Theory]
+        [InlineData("Smith, John B.")]
+        [InlineData("Smith, John B...")]
+        public void ShouldRemoveHyphansFromEnd(string input)
+        {
+            // Act
+            var slug = _slugService.Slugify(input);
+            Assert.Equal("smith-john-b", slug);
         }
 
         [Fact]

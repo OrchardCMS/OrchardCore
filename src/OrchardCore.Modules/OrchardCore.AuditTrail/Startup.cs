@@ -49,14 +49,13 @@ namespace OrchardCore.AuditTrail
             services.AddScoped<IAuditTrailManager, AuditTrailManager>();
 
             services
-                .AddScoped<IDisplayManager<AuditTrailEvent>, DisplayManager<AuditTrailEvent>>()
                 .AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailEventDisplayDriver>();
 
             services.AddSingleton<IAuditTrailIdGenerator, AuditTrailIdGenerator>();
 
             services.Configure<StoreCollectionOptions>(o => o.Collections.Add(AuditTrailEvent.Collection));
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddSingleton<IIndexProvider, AuditTrailEventIndexProvider>();
             services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
 
@@ -67,8 +66,7 @@ namespace OrchardCore.AuditTrail
             services.AddScoped<IDisplayDriver<ISite>, AuditTrailSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<ISite>, AuditTrailTrimmingSettingsDisplayDriver>();
 
-            services.AddScoped<IDisplayManager<AuditTrailIndexOptions>, DisplayManager<AuditTrailIndexOptions>>()
-                .AddScoped<IDisplayDriver<AuditTrailIndexOptions>, AuditTrailOptionsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<AuditTrailIndexOptions>, AuditTrailOptionsDisplayDriver>();
 
             services.AddScoped<IAuditTrailAdminListQueryService, DefaultAuditTrailAdminListQueryService>();
 
