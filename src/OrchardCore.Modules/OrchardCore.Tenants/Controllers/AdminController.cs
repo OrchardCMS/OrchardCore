@@ -344,9 +344,6 @@ namespace OrchardCore.Tenants.Controllers
                 SetConfigurationShellValues(model);
                 shellSettings["Category"] = model.Category;
                 shellSettings["Description"] = model.Description;
-                shellSettings["ConnectionString"] = model.ConnectionString;
-                shellSettings["TablePrefix"] = model.TablePrefix;
-                shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
                 shellSettings["FeatureProfile"] = model.FeatureProfile;
@@ -356,6 +353,13 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Schema"] = model.Schema?.Trim();
                 shellSettings["IdentityColumnType"] = model.IdentityColumnType.ToString();
                 shellSettings["DocumentTable"] = model.DocumentTable;
+
+                if (!String.IsNullOrEmpty(model.DatabaseProvider))
+                {
+                    shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+                    shellSettings["ConnectionString"] = model.ConnectionString;
+                    shellSettings["TablePrefix"] = model.TablePrefix;
+                }
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -467,15 +471,20 @@ namespace OrchardCore.Tenants.Controllers
                 if (shellSettings.State == TenantState.Uninitialized)
                 {
                     SetConfigurationShellValues(model);
-                    shellSettings["DatabaseProvider"] = model.DatabaseProvider;
-                    shellSettings["TablePrefix"] = model.TablePrefix;
-                    shellSettings["ConnectionString"] = model.ConnectionString;
+
                     shellSettings["RecipeName"] = model.RecipeName;
                     shellSettings["Secret"] = Guid.NewGuid().ToString();
                     shellSettings["Schema"] = model.Schema?.Trim();
                     shellSettings["TableNameSeparator"] = model.TableNameSeparator?.Trim() ?? "NULL";
                     shellSettings["IdentityColumnType"] = model.IdentityColumnType.ToString();
                     shellSettings["DocumentTable"] = model.DocumentTable.Trim();
+
+                    if (!String.IsNullOrEmpty(model.DatabaseProvider))
+                    {
+                        shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+                        shellSettings["ConnectionString"] = model.ConnectionString;
+                        shellSettings["TablePrefix"] = model.TablePrefix;
+                    }
                 }
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);

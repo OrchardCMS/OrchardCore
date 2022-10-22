@@ -17,6 +17,7 @@ using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
 using OrchardCore.Setup.ViewModels;
+using YesSql;
 
 namespace OrchardCore.Setup.Controllers
 {
@@ -69,7 +70,10 @@ namespace OrchardCore.Setup.Controllers
                 DatabaseProviders = _databaseProviders,
                 Recipes = recipes,
                 RecipeName = defaultRecipe?.Name,
-                Secret = token
+                Secret = token,
+                TableNameSeparator = "_",
+                DocumentTable = "Document",
+                IdentityColumnType = IdentityColumnSize.Int32,
             };
 
             CopyShellSettingsValues(model);
@@ -148,6 +152,10 @@ namespace OrchardCore.Setup.Controllers
                     { SetupConstants.AdminEmail, model.Email },
                     { SetupConstants.AdminPassword, model.Password },
                     { SetupConstants.SiteTimeZone, model.SiteTimeZone },
+                    { SetupConstants.Schema, model.Schema },
+                    { SetupConstants.DocumentTable, model.DocumentTable },
+                    { SetupConstants.TableNameSeparator, String.IsNullOrEmpty(model.TableNameSeparator) ? "NULL" : model.TableNameSeparator },
+                    { SetupConstants.IdentityColumnType, model.IdentityColumnType },
                 }
             };
 
@@ -228,10 +236,10 @@ namespace OrchardCore.Setup.Controllers
 
         private async Task<bool> IsTokenValid(string token)
         {
+            var result = false;
+
             try
             {
-                var result = false;
-
                 var shellScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
 
                 await shellScope.UsingAsync(scope =>
@@ -251,15 +259,13 @@ namespace OrchardCore.Setup.Controllers
 
                     return Task.CompletedTask;
                 });
-
-                return result;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in decrypting the token");
             }
 
-            return false;
+            return result;
         }
     }
 }

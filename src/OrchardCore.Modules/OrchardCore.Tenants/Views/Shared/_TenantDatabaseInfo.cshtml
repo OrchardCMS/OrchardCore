@@ -63,7 +63,7 @@
             <div class="hint">@T["The default value is"] <code>Document</code></div>
         </div>
 
-        <div class="mb-3 col" asp-validation-class-for="Schema">
+        <div class="mb-3 col tablePrefix" asp-validation-class-for="Schema">
             <label asp-for="Schema">@T["The table schema?"]</label>
             <input asp-for="Schema" class="form-control" />
             <span asp-validation-for="Schema" class="text-danger"></span>

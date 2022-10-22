@@ -169,6 +169,28 @@ namespace OrchardCore.Setup.Services
                 shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider) ? databaseProvider?.ToString() : String.Empty;
                 shellSettings["ConnectionString"] = context.Properties.TryGetValue(SetupConstants.DatabaseConnectionString, out var databaseConnectionString) ? databaseConnectionString?.ToString() : String.Empty;
                 shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix) ? databaseTablePrefix?.ToString() : String.Empty;
+
+                if (context.Properties.TryGetValue(SetupConstants.Schema, out var schema) && schema != null)
+                {
+                    shellSettings["Schema"] = schema.ToString();
+                }
+
+                if (context.Properties.TryGetValue(SetupConstants.DocumentTable, out var documentTable) && documentTable != null)
+                {
+                    shellSettings["DocumentTable"] = documentTable.ToString();
+                }
+
+                if (context.Properties.TryGetValue(SetupConstants.TableNameSeparator, out var seperator))
+                {
+                    shellSettings["TableNameSeparator"] = seperator?.ToString() ?? "NULL";
+                }
+
+                if (context.Properties.TryGetValue(SetupConstants.IdentityColumnType, out var columnType)
+                    && columnType != null
+                    && Enum.TryParse<IdentityColumnSize>(columnType.ToString(), true, out var type))
+                {
+                    shellSettings["IdentityColumnType"] = type.ToString();
+                }
             }
 
             var validationContext = new DbConnectionValidatorContext(DatabaseTableOptions.Create(shellSettings))

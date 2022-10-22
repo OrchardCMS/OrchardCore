@@ -31,7 +31,7 @@ namespace OrchardCore.Tenants.ViewModels
         [RegularExpression("^[A-Za-z_]+[A-Za-z0-9_]*$", ErrorMessage = "Invalid schema")]
         public string Schema { get; set; }
 
-        [Required, RegularExpression("^[A-Za-z_]+[A-Za-z0-9_]*$", ErrorMessage = "Invalid name")]
+        [RegularExpression("^[A-Za-z_]+[A-Za-z0-9_]*$", ErrorMessage = "Invalid name")]
         public string DocumentTable { get; set; }
 
         public IdentityColumnSize IdentityColumnType { get; set; }
