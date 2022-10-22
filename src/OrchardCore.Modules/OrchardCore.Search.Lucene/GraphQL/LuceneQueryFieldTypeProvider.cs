@@ -13,7 +13,6 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Search.Lucene;
-
 namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 {
     public class LuceneQueryFieldTypeProvider : ISchemaBuilder
