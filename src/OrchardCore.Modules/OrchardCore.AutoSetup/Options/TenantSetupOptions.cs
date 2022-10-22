@@ -97,9 +97,9 @@ namespace OrchardCore.AutoSetup.Options
         public string DocumentTable { get; set; }
 
         /// <summary>
-        /// Gets or sets the database's table prefix seperator.
+        /// Gets or sets the database's table name seperator.
         /// </summary>
-        public string TablePrefixSeparator { get; set; }
+        public string TableNameSeparator { get; set; }
 
         /// <summary>
         /// Gets the Flag which indicates a Default/Root shell/tenant.

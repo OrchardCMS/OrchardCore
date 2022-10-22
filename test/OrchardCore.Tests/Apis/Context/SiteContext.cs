@@ -54,7 +54,7 @@ namespace OrchardCore.Tests.Apis.Context
                 RecipeName = RecipeName,
                 Name = tenantName,
                 RequestUrlPrefix = tenantName,
-                TablePrefixSeparator = "_",
+                TableNameSeparator = "_",
                 DocumentTable = "Document",
                 Schema = null,
                 IdentityColumnType = YesSql.IdentityColumnSize.Int32,

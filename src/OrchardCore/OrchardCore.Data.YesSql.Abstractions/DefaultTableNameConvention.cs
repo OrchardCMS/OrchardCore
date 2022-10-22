@@ -34,5 +34,5 @@ public class DefaultTableNameConvention : ITableNameConvention
 
     private string DocumentTableName => !String.IsNullOrWhiteSpace(_options.DocumentTable) ? _options.DocumentTable.Trim() : "Document";
 
-    private string TablePrefixSeparator => (_options.TablePrefixSeparator ?? String.Empty).Trim();
+    private string TablePrefixSeparator => (_options.TableNameSeparator ?? String.Empty).Trim();
 }

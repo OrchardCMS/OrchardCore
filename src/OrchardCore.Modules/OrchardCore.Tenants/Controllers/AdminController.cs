@@ -301,7 +301,7 @@ namespace OrchardCore.Tenants.Controllers
                 RecipeName = shellSettings["RecipeName"],
                 FeatureProfile = currentFeatureProfile,
                 FeatureProfiles = featureProfiles,
-                TablePrefixSeparator = "_",
+                TableNameSeparator = "_",
                 IdentityColumnType = IdentityColumnSize.Int32,
                 DocumentTable = "Document",
             };
@@ -350,9 +350,9 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
                 shellSettings["FeatureProfile"] = model.FeatureProfile;
-                // To distinguish between null and empty string, never store null in the shellSettings for TablePrefixSeparator
-                // otherwise old tenants will have invalid table names.
-                shellSettings["TablePrefixSeparator"] = model.TablePrefixSeparator ?? String.Empty;
+                // To distinguish between null and empty string, we store NULL in the shellSettings
+                // representing an empty string or no table name seperator
+                shellSettings["TableNameSeparator"] = model.TableNameSeparator ?? "NULL";
                 shellSettings["Schema"] = model.Schema?.Trim();
                 shellSettings["IdentityColumnType"] = model.IdentityColumnType.ToString();
                 shellSettings["DocumentTable"] = model.DocumentTable;
@@ -417,7 +417,7 @@ namespace OrchardCore.Tenants.Controllers
                 model.RecipeName = shellSettings["RecipeName"];
                 model.CanEditDatabasePresets = true;
                 model.Schema = shellSettings["Schema"];
-                model.TablePrefixSeparator = shellSettings["TablePrefixSeparator"];
+                model.TableNameSeparator = shellSettings["TableNameSeparator"] != "NULL" ? shellSettings["TableNameSeparator"] : null;
                 model.DocumentTable = shellSettings["DocumentTable"];
 
                 if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnType"], out var columnType))
@@ -473,7 +473,7 @@ namespace OrchardCore.Tenants.Controllers
                     shellSettings["RecipeName"] = model.RecipeName;
                     shellSettings["Secret"] = Guid.NewGuid().ToString();
                     shellSettings["Schema"] = model.Schema?.Trim();
-                    shellSettings["TablePrefixSeparator"] = model.TablePrefixSeparator?.Trim() ?? String.Empty;
+                    shellSettings["TableNameSeparator"] = model.TableNameSeparator?.Trim() ?? "NULL";
                     shellSettings["IdentityColumnType"] = model.IdentityColumnType.ToString();
                     shellSettings["DocumentTable"] = model.DocumentTable.Trim();
                 }
@@ -494,8 +494,8 @@ namespace OrchardCore.Tenants.Controllers
                 model.ConnectionString = shellSettings["ConnectionString"];
                 model.RecipeName = shellSettings["RecipeName"];
                 model.Schema = shellSettings["Schema"];
-                model.TablePrefixSeparator = shellSettings["TablePrefixSeparator"];
-                model.TablePrefixSeparator = shellSettings["DocumentTable"];
+                model.TableNameSeparator = shellSettings["TableNameSeparator"] != "NULL" ? shellSettings["TableNameSeparator"] : null;
+                model.DocumentTable = shellSettings["DocumentTable"];
                 if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnType"], out var columnType))
                 {
                     model.IdentityColumnType = columnType;
@@ -626,7 +626,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (model.DatabaseConfigurationPreset)
             {
-                model.TablePrefixSeparator = shellSettings["TablePrefixSeparator"];
+                model.TableNameSeparator = shellSettings["TableNameSeparator"];
                 model.Schema = shellSettings["DatabaseProvider"];
                 model.DocumentTable = shellSettings["DocumentTable"];
 

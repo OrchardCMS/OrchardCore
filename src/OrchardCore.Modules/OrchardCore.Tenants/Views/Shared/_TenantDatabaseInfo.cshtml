@@ -67,14 +67,14 @@
             <label asp-for="Schema">@T["The table schema?"]</label>
             <input asp-for="Schema" class="form-control" />
             <span asp-validation-for="Schema" class="text-danger"></span>
-            <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, {0} for SQL Server", "dbo"]</div>
+            <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server", "dbo"]</div>
         </div>
 
-        <div class="mb-3 col" asp-validation-class-for="TablePrefixSeparator">
-            <label asp-for="TablePrefixSeparator">@T["Table naming seperator to use when creating table names?"]</label>
-            <input asp-for="TablePrefixSeparator" class="form-control" />
-            <span asp-validation-for="TablePrefixSeparator" class="text-danger"></span>
-            <div class="hint">@T["The only valid value is an underscore. The default value is a single"] <code>_</code></div>
+        <div class="mb-3 col" asp-validation-class-for="TableNameSeparator">
+            <label asp-for="TableNameSeparator">@T["Table naming seperator to use when creating table names?"]</label>
+            <input asp-for="TableNameSeparator" class="form-control" />
+            <span asp-validation-for="TableNameSeparator" class="text-danger"></span>
+            <div class="hint">@T["The only valid character is an underscore or no value. The default value is a single"] <code>_</code></div>
         </div>
 
     </div>

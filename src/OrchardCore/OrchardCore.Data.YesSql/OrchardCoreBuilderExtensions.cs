@@ -67,7 +67,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         case DatabaseProviderValue.SqlConnection:
                             storeConfiguration
-                                .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, schema: databaseTableOptions.Schema)
                                 .UseBlockIdGenerator();
                             break;
                         case DatabaseProviderValue.Sqlite:
@@ -84,12 +84,12 @@ namespace Microsoft.Extensions.DependencyInjection
                             break;
                         case DatabaseProviderValue.MySql:
                             storeConfiguration
-                                .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, schema: databaseTableOptions.Schema)
                                 .UseBlockIdGenerator();
                             break;
                         case DatabaseProviderValue.Postgres:
                             storeConfiguration
-                                .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, schema: databaseTableOptions.Schema)
                                 .UseBlockIdGenerator();
                             break;
                         default:
@@ -98,7 +98,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     if (!String.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
                     {
-                        var tablePrefix = shellSettings["TablePrefix"].Trim() + databaseTableOptions.TablePrefixSeparator;
+                        var tablePrefix = shellSettings["TablePrefix"].Trim() + databaseTableOptions.TableNameSeparator;
 
                         storeConfiguration = storeConfiguration.SetTablePrefix(tablePrefix);
                     }
@@ -167,7 +167,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 QueryGatingEnabled = yesSqlOptions.QueryGatingEnabled,
                 ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
                 TableNameConvention = tableNameFactory.Create(databaseTableOptions),
-                Schema = databaseTableOptions.Schema,
                 IdentityColumnSize = databaseTableOptions.IdentityColumnType,
             };
 

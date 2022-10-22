@@ -9,6 +9,7 @@ using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
+using YesSql;
 
 namespace OrchardCore.Tenants.Workflows.Activities
 {
@@ -84,6 +85,30 @@ namespace OrchardCore.Tenants.Workflows.Activities
             set => SetProperty(value);
         }
 
+        public WorkflowExpression<string> TableNameSeparator
+        {
+            get => GetProperty(() => new WorkflowExpression<string>("_"));
+            set => SetProperty(value);
+        }
+
+        public WorkflowExpression<string> Schema
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
+        public WorkflowExpression<string> DocumentTable
+        {
+            get => GetProperty(() => new WorkflowExpression<string>("Document"));
+            set => SetProperty(value);
+        }
+
+        public IdentityColumnSize IdentityColumnType
+        {
+            get => GetProperty(() => IdentityColumnSize.Int32);
+            set => SetProperty(value);
+        }
+
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(S["Done"], S["Failed"]);
@@ -103,7 +128,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 return Outcomes("Failed");
             }
 
-            if (ShellHost.TryGetSettings(tenantName, out var shellSettings))
+            if (ShellHost.TryGetSettings(tenantName, out _))
             {
                 return Outcomes("Failed");
             }
@@ -115,49 +140,62 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var tablePrefix = (await ExpressionEvaluator.EvaluateAsync(TablePrefix, workflowContext, null))?.Trim();
             var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
             var featureProfile = (await ExpressionEvaluator.EvaluateAsync(FeatureProfile, workflowContext, null))?.Trim();
+            var tableNameSeparator = (await ExpressionEvaluator.EvaluateAsync(TableNameSeparator, workflowContext, null))?.Trim();
+            var schema = (await ExpressionEvaluator.EvaluateAsync(Schema, workflowContext, null))?.Trim();
+            var documentTable = (await ExpressionEvaluator.EvaluateAsync(DocumentTable, workflowContext, null))?.Trim();
 
             // Creates a default shell settings based on the configuration.
-            shellSettings = ShellSettingsManager.CreateDefaultSettings();
-
+            var shellSettings = ShellSettingsManager.CreateDefaultSettings();
             shellSettings.Name = tenantName;
 
-            if (!string.IsNullOrEmpty(requestUrlHost))
+            if (!String.IsNullOrEmpty(requestUrlHost))
             {
                 shellSettings.RequestUrlHost = requestUrlHost;
             }
 
-            if (!string.IsNullOrEmpty(requestUrlPrefix))
+            if (!String.IsNullOrEmpty(requestUrlPrefix))
             {
                 shellSettings.RequestUrlPrefix = requestUrlPrefix;
             }
 
             shellSettings.State = TenantState.Uninitialized;
 
-            if (!string.IsNullOrEmpty(connectionString))
+            if (!String.IsNullOrEmpty(connectionString))
             {
                 shellSettings["ConnectionString"] = connectionString;
             }
 
-            if (!string.IsNullOrEmpty(tablePrefix))
+            if (!String.IsNullOrEmpty(tablePrefix))
             {
                 shellSettings["TablePrefix"] = tablePrefix;
             }
 
-            if (!string.IsNullOrEmpty(databaseProvider))
+            if (!String.IsNullOrEmpty(databaseProvider))
             {
                 shellSettings["DatabaseProvider"] = databaseProvider;
             }
 
-            if (!string.IsNullOrEmpty(recipeName))
+            if (!String.IsNullOrEmpty(recipeName))
             {
                 shellSettings["RecipeName"] = recipeName;
             }
 
-            if (!string.IsNullOrEmpty(featureProfile))
+            if (!String.IsNullOrEmpty(featureProfile))
             {
                 shellSettings["FeatureProfile"] = featureProfile;
             }
 
+            if (!String.IsNullOrEmpty(schema))
+            {
+                shellSettings["Schema"] = schema;
+            }
+
+            if (tableNameSeparator != "NULL")
+            {
+                shellSettings["TableNameSeparator"] = tableNameSeparator;
+            }
+
+            shellSettings["IdentityColumnType"] = IdentityColumnType.ToString();
             shellSettings["Secret"] = Guid.NewGuid().ToString();
 
             await ShellHost.UpdateShellSettingsAsync(shellSettings);

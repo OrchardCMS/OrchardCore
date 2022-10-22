@@ -220,8 +220,8 @@ namespace OrchardCore.AutoSetup
             shellSettings["FeatureProfile"] = setupOptions.FeatureProfile;
             shellSettings["Schema"] = setupOptions.Schema?.Trim();
             shellSettings["IdentityColumnType"] = setupOptions.IdentityColumnType;
-            shellSettings["DocumentTable"] = setupOptions.TablePrefixSeparator?.Trim();
-            shellSettings["TablePrefixSeparator"] = setupOptions.TablePrefixSeparator?.Trim() ?? String.Empty;
+            shellSettings["DocumentTable"] = setupOptions.TableNameSeparator?.Trim();
+            shellSettings["TableNameSeparator"] = setupOptions.TableNameSeparator?.Trim() ?? "NULL";
 
             await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -260,7 +260,7 @@ namespace OrchardCore.AutoSetup
             setupContext.Properties[SetupConstants.Schema] = options.Schema;
             setupContext.Properties[SetupConstants.IdentityColumnType] = options.IdentityColumnType;
             setupContext.Properties[SetupConstants.DocumentTable] = options.DocumentTable;
-            setupContext.Properties[SetupConstants.TablePrefixSeparator] = options.TablePrefixSeparator;
+            setupContext.Properties[SetupConstants.TableNameSeparator] = options.TableNameSeparator;
 
             return setupContext;
         }

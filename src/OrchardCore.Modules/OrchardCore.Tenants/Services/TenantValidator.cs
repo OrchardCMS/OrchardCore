@@ -79,7 +79,7 @@ namespace OrchardCore.Tenants.Services
 
             var options = new DatabaseTableOptions()
             {
-                TablePrefixSeparator = model.TablePrefixSeparator,
+                TableNameSeparator = model.TableNameSeparator,
                 DocumentTable = model.DocumentTable,
                 IdentityColumnType = model.IdentityColumnType,
                 Schema = model.Schema,

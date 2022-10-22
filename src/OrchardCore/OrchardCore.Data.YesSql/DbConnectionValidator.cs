@@ -105,7 +105,7 @@ public class DbConnectionValidator : IDbConnectionValidator
 
         var sqlDialect = GetSqlDialect(context.DatabaseProvider);
 
-        var sqlBuilder = GetSqlBuilder(sqlDialect, context.DatabaseProvider, context.TableOptions.TablePrefixSeparator);
+        var sqlBuilder = GetSqlBuilder(sqlDialect, context.TablePrefix, context.TableOptions.TableNameSeparator);
 
         try
         {

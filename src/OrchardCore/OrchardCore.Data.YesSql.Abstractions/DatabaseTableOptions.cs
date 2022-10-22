@@ -8,7 +8,7 @@ public class DatabaseTableOptions
 {
     public string DocumentTable { get; set; }
 
-    public string TablePrefixSeparator { get; set; }
+    public string TableNameSeparator { get; set; }
 
     public string Schema { get; set; }
 
@@ -37,8 +37,13 @@ public class DatabaseTableOptions
 
         options.Schema = shellSettings["Schema"];
 
-        // For backward compatibility, if the TablePrefixSeparator isn't set, we use _ as the default value.
-        options.TablePrefixSeparator = shellSettings["TablePrefixSeparator"] ?? "_";
+        // For backward compatibility, if the TableNameSeparator isn't set, we use "_" as the default value.
+        options.TableNameSeparator = shellSettings["TableNameSeparator"] ?? "_";
+        if (options.TableNameSeparator == "NULL")
+        {
+            options.TableNameSeparator = String.Empty;
+        }
+
         options.DocumentTable = "Document";
 
         if (!String.IsNullOrWhiteSpace(shellSettings["DocumentTable"]))
