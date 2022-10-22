@@ -14,7 +14,6 @@ using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Lucene;
 using OrchardCore.Lucene.Model;
 
-
 namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 {
     public class LuceneQueryFieldTypeProvider : ISchemaBuilder
