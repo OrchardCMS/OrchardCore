@@ -15,6 +15,6 @@ namespace OrchardCore.Abstractions.Setup
         public static string IdentityColumnType = "IdentityColumnType";
         public static string FeatureProfile = "FeatureProfile";
         public static string DocumentTable = "DocumentTable";
-        public static string TableNameSeparator = "TablePrefixSeparator";
+        public static string TableNameSeparator = "TableNameSeparator";
     }
 }
