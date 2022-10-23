@@ -208,8 +208,8 @@ namespace OrchardCore.Search.Lucene
 
             if (indexSettings.StoreSourceData)
             {
-                doc.Add(new StringField(IndexingConstants.SourceKey + "ContentItemId", documentIndex.ContentItemId.ToString(), Field.Store.YES));
-                doc.Add(new StringField(IndexingConstants.SourceKey + "ContentItemVersionId", documentIndex.ContentItemVersionId.ToString(), Field.Store.YES));
+                doc.Add(new StoredField(IndexingConstants.SourceKey + "ContentItemId", documentIndex.ContentItemId.ToString()));
+                doc.Add(new StoredField(IndexingConstants.SourceKey + "ContentItemVersionId", documentIndex.ContentItemVersionId.ToString()));
             }
 
             foreach (var entry in documentIndex.Entries)
