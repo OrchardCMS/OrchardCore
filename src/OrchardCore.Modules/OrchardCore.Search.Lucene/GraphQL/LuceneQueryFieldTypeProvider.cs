@@ -198,6 +198,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
             return fieldType;
         }
+
         private FieldType BuildTotalSchemaBasedFieldType(LuceneQuery query, JToken querySchema, string fieldTypeName)
         {
             var properties = querySchema["properties"];
@@ -205,6 +206,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
             {
                 return null;
             }
+
             var totalType = new ObjectGraphType<Search.Lucene.LuceneQueryResults>()
             {
                 Name = fieldTypeName
@@ -291,7 +293,6 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
             return fieldType;
         }
-
 
         private FieldType BuildTotalContentTypeFieldType(ISchema schema, string contentType, LuceneQuery query, string fieldTypeName)
         {
