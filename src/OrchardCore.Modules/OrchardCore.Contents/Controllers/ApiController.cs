@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ namespace OrchardCore.Contents.Controllers
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
-        private static readonly JsonMergeSettings UpdateJsonMergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace };
+        private static readonly JsonMergeSettings UpdateJsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace };
 
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
@@ -99,17 +100,19 @@ namespace OrchardCore.Contents.Controllers
 
             if (contentItem == null)
             {
-                if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent))
-                {
-                    return this.ChallengeOrForbid("Api");
-                }
-
-                if (_contentDefinitionManager.GetTypeDefinition(model.ContentType) == null)
+                if (String.IsNullOrEmpty(model?.ContentType) || _contentDefinitionManager.GetTypeDefinition(model.ContentType) == null)
                 {
                     return BadRequest();
                 }
 
                 var newContentItem = await _contentManager.NewAsync(model.ContentType);
+                newContentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, newContentItem))
+                {
+                    return this.ChallengeOrForbid("Api");
+                }
+
                 newContentItem.Merge(model);
 
                 var result = await _contentManager.UpdateValidateAndCreateAsync(newContentItem, VersionOptions.Draft);
@@ -118,7 +121,7 @@ namespace OrchardCore.Contents.Controllers
                 {
                     return Problem(
                         title: S["One or more validation errors occurred."],
-                        detail: string.Join(',', result.Errors),
+                        detail: String.Join(',', result.Errors),
                         statusCode: (int)HttpStatusCode.BadRequest);
                 }
                 // We check the model state after calling all handlers because they trigger WF content events so, even they are not
@@ -149,7 +152,7 @@ namespace OrchardCore.Contents.Controllers
                 {
                     return Problem(
                         title: S["One or more validation errors occurred."],
-                        detail: string.Join(',', result.Errors),
+                        detail: String.Join(',', result.Errors),
                         statusCode: (int)HttpStatusCode.BadRequest);
                 }
                 // We check the model state after calling all handlers because they trigger WF content events so, even they are not
