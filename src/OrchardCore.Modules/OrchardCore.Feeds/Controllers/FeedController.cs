@@ -67,9 +67,9 @@ namespace OrchardCore.Feeds.Controllers
             var document = await context.Builder.ProcessAsync(context, async () =>
             {
                 await bestQueryMatch.FeedQuery.ExecuteAsync(context);
-            
+
                 await _feedItemBuilder.PopulateAsync(context);
-            
+
                 foreach (var contextualizer in context.Response.Contextualizers)
                 {
                     if (ControllerContext != null)
