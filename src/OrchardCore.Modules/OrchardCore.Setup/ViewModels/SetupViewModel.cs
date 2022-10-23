@@ -64,6 +64,6 @@ namespace OrchardCore.Setup.ViewModels
         [RegularExpression("^[A-Za-z_]+[A-Za-z0-9_]*$", ErrorMessage = "Invalid name")]
         public string DocumentTable { get; set; }
 
-        public IdentityColumnSize IdentityColumnType { get; set; }
+        public IdentityColumnSize IdentityColumnSize { get; set; }
     }
 }

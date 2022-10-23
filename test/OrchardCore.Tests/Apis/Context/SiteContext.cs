@@ -57,7 +57,7 @@ namespace OrchardCore.Tests.Apis.Context
                 TableNameSeparator = "_",
                 DocumentTable = "Document",
                 Schema = null,
-                IdentityColumnType = YesSql.IdentityColumnSize.Int32,
+                IdentityColumnSize = YesSql.IdentityColumnSize.Int32,
             };
 
             var createResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/create", createModel);

@@ -67,7 +67,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         case DatabaseProviderValue.SqlConnection:
                             storeConfiguration
-                                .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, schema: databaseTableOptions.Schema)
+                                .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, databaseTableOptions.Schema)
                                 .UseBlockIdGenerator();
                             break;
                         case DatabaseProviderValue.Sqlite:
@@ -84,12 +84,12 @@ namespace Microsoft.Extensions.DependencyInjection
                             break;
                         case DatabaseProviderValue.MySql:
                             storeConfiguration
-                                .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, schema: databaseTableOptions.Schema)
+                                .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, databaseTableOptions.Schema)
                                 .UseBlockIdGenerator();
                             break;
                         case DatabaseProviderValue.Postgres:
                             storeConfiguration
-                                .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, schema: databaseTableOptions.Schema)
+                                .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, databaseTableOptions.Schema)
                                 .UseBlockIdGenerator();
                             break;
                         default:
@@ -167,7 +167,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 QueryGatingEnabled = yesSqlOptions.QueryGatingEnabled,
                 ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
                 TableNameConvention = tableNameFactory.Create(databaseTableOptions),
-                IdentityColumnSize = databaseTableOptions.IdentityColumnType,
+                IdentityColumnSize = databaseTableOptions.IdentityColumnSize,
             };
 
             if (yesSqlOptions.IdGenerator != null)

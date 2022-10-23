@@ -87,9 +87,9 @@ namespace OrchardCore.AutoSetup.Options
         public string Schema { get; set; }
 
         /// <summary>
-        /// Gets or sets the database's identity column type.
+        /// Gets or sets the database's identity column size.
         /// </summary>
-        public string IdentityColumnType { get; set; }
+        public string IdentityColumnSize { get; set; }
 
         /// <summary>
         /// Gets or sets the database's document name.

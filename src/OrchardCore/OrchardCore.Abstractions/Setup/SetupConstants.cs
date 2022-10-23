@@ -11,10 +11,10 @@ namespace OrchardCore.Abstractions.Setup
         public const string DatabaseConnectionString = "DatabaseConnectionString";
         public const string DatabaseTablePrefix = "DatabaseTablePrefix";
         public const string SiteTimeZone = "SiteTimeZone";
-        public static string Schema = "Schema";
-        public static string IdentityColumnType = "IdentityColumnType";
-        public static string FeatureProfile = "FeatureProfile";
-        public static string DocumentTable = "DocumentTable";
-        public static string TableNameSeparator = "TablePrefixSeparator";
+        public const string Schema = "Schema";
+        public const string IdentityColumnSize = "IdentityColumnSize";
+        public const string FeatureProfile = "FeatureProfile";
+        public const string DocumentTable = "DocumentTable";
+        public const string TableNameSeparator = "TableNameSeparator";
     }
 }

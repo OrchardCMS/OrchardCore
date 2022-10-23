@@ -185,11 +185,11 @@ namespace OrchardCore.Setup.Services
                     shellSettings["TableNameSeparator"] = seperator?.ToString() ?? "NULL";
                 }
 
-                if (context.Properties.TryGetValue(SetupConstants.IdentityColumnType, out var columnType)
-                    && columnType != null
-                    && Enum.TryParse<IdentityColumnSize>(columnType.ToString(), true, out var type))
+                if (context.Properties.TryGetValue(SetupConstants.IdentityColumnSize, out var columnSize)
+                    && columnSize != null
+                    && Enum.TryParse<IdentityColumnSize>(columnSize.ToString(), true, out var size))
                 {
-                    shellSettings["IdentityColumnType"] = type.ToString();
+                    shellSettings["IdentityColumnSize"] = size.ToString();
                 }
             }
 

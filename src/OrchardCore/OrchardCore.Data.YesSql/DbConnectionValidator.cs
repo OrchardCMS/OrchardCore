@@ -160,7 +160,7 @@ public class DbConnectionValidator : IDbConnectionValidator
     {
         sqlBuilder.Select();
         sqlBuilder.Selector("*");
-        sqlBuilder.Table(documentTable, alias: null, schema: schema);
+        sqlBuilder.Table(documentTable, alias: null, schema);
         sqlBuilder.Take("1");
 
         return sqlBuilder;
@@ -170,7 +170,7 @@ public class DbConnectionValidator : IDbConnectionValidator
     {
         sqlBuilder.Select();
         sqlBuilder.Selector("*");
-        sqlBuilder.Table(documentTable, alias: null, schema: schema);
+        sqlBuilder.Table(documentTable, alias: null, schema);
         sqlBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
         sqlBuilder.Take("1");
 
@@ -201,12 +201,12 @@ public class DbConnectionValidator : IDbConnectionValidator
         };
     }
 
-    private static ISqlBuilder GetSqlBuilder(ISqlDialect sqlDialect, string tablePrefix, string tablePrefixSeparator)
+    private static ISqlBuilder GetSqlBuilder(ISqlDialect sqlDialect, string tablePrefix, string tableNameSeparator)
     {
         var prefix = String.Empty;
         if (!String.IsNullOrWhiteSpace(tablePrefix))
         {
-            prefix = tablePrefix.Trim() + tablePrefixSeparator;
+            prefix = tablePrefix.Trim() + tableNameSeparator;
         }
 
         return new SqlBuilder(prefix, sqlDialect);

@@ -100,9 +100,9 @@ namespace OrchardCore.Tenants.Controllers
             shellSettings["Secret"] = Guid.NewGuid().ToString();
             shellSettings["RecipeName"] = model.RecipeName;
             shellSettings["FeatureProfile"] = model.FeatureProfile;
-            shellSettings["TableNameSeparator"] = model.TableNameSeparator ?? "NULL";
+            shellSettings["TableNameSeparator"] = model.TableNameSeparator ?? "_";
             shellSettings["Schema"] = model.Schema?.Trim();
-            shellSettings["IdentityColumnType"] = model.IdentityColumnType.ToString();
+            shellSettings["IdentityColumnSize"] = model.IdentityColumnSize.ToString();
             shellSettings["DocumentTable"] = model.DocumentTable;
 
             model.IsNewTenant = true;

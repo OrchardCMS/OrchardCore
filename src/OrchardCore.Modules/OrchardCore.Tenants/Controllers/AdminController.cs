@@ -302,7 +302,7 @@ namespace OrchardCore.Tenants.Controllers
                 FeatureProfile = currentFeatureProfile,
                 FeatureProfiles = featureProfiles,
                 TableNameSeparator = "_",
-                IdentityColumnType = IdentityColumnSize.Int32,
+                IdentityColumnSize = IdentityColumnSize.Int32,
                 DocumentTable = "Document",
             };
 
@@ -351,7 +351,7 @@ namespace OrchardCore.Tenants.Controllers
                 // representing an empty string or no table name seperator
                 shellSettings["TableNameSeparator"] = model.TableNameSeparator ?? "NULL";
                 shellSettings["Schema"] = model.Schema?.Trim();
-                shellSettings["IdentityColumnType"] = model.IdentityColumnType.ToString();
+                shellSettings["IdentityColumnSize"] = model.IdentityColumnSize.ToString();
                 shellSettings["DocumentTable"] = model.DocumentTable;
 
                 if (!String.IsNullOrEmpty(model.DatabaseProvider))
@@ -424,9 +424,9 @@ namespace OrchardCore.Tenants.Controllers
                 model.TableNameSeparator = shellSettings["TableNameSeparator"] != "NULL" ? shellSettings["TableNameSeparator"] : null;
                 model.DocumentTable = shellSettings["DocumentTable"];
 
-                if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnType"], out var columnType))
+                if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnSize"], out var columnSize))
                 {
-                    model.IdentityColumnType = columnType;
+                    model.IdentityColumnSize = columnSize;
                 }
 
                 SetConfigurationShellValues(model);
@@ -476,7 +476,7 @@ namespace OrchardCore.Tenants.Controllers
                     shellSettings["Secret"] = Guid.NewGuid().ToString();
                     shellSettings["Schema"] = model.Schema?.Trim();
                     shellSettings["TableNameSeparator"] = model.TableNameSeparator?.Trim() ?? "NULL";
-                    shellSettings["IdentityColumnType"] = model.IdentityColumnType.ToString();
+                    shellSettings["IdentityColumnSize"] = model.IdentityColumnSize.ToString();
                     shellSettings["DocumentTable"] = model.DocumentTable.Trim();
 
                     if (!String.IsNullOrEmpty(model.DatabaseProvider))
@@ -505,9 +505,9 @@ namespace OrchardCore.Tenants.Controllers
                 model.Schema = shellSettings["Schema"];
                 model.TableNameSeparator = shellSettings["TableNameSeparator"] != "NULL" ? shellSettings["TableNameSeparator"] : null;
                 model.DocumentTable = shellSettings["DocumentTable"];
-                if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnType"], out var columnType))
+                if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnSize"], out var columnSize))
                 {
-                    model.IdentityColumnType = columnType;
+                    model.IdentityColumnSize = columnSize;
                 }
                 model.CanEditDatabasePresets = true;
                 SetConfigurationShellValues(model);
@@ -639,9 +639,9 @@ namespace OrchardCore.Tenants.Controllers
                 model.Schema = shellSettings["DatabaseProvider"];
                 model.DocumentTable = shellSettings["DocumentTable"];
 
-                if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnType"], out var columnType))
+                if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnSize"], out var columnSize))
                 {
-                    model.IdentityColumnType = columnType;
+                    model.IdentityColumnSize = columnSize;
                 }
             }
         }

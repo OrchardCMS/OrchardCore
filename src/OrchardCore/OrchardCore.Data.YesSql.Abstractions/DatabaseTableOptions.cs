@@ -12,7 +12,7 @@ public class DatabaseTableOptions
 
     public string Schema { get; set; }
 
-    public IdentityColumnSize IdentityColumnType { get; set; }
+    public IdentityColumnSize IdentityColumnSize { get; set; }
 
     public static DatabaseTableOptions Create(ShellSettings shellSettings)
     {
@@ -51,9 +51,9 @@ public class DatabaseTableOptions
             options.DocumentTable = shellSettings["DocumentTable"].Trim();
         }
 
-        if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnType"], out var columnType))
+        if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnSize"], out var columnType))
         {
-            options.IdentityColumnType = columnType;
+            options.IdentityColumnSize = columnType;
         }
     }
 }

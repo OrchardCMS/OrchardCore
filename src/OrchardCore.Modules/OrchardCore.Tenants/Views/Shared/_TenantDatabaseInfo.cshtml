@@ -49,10 +49,10 @@
     new SelectListItem(T["Big Integer"].Value, YesSql.IdentityColumnSize.Int64.ToString()),
     };
         }
-        <div class="mb-3 col" asp-validation-class-for="IdentityColumnType">
-            <label asp-for="IdentityColumnType">@T["Identity column type"]</label>
-            <span asp-validation-for="IdentityColumnType" class="text-danger"></span>
-            <select asp-for="IdentityColumnType" asp-items="@columTypes" class="form-select"></select>
+        <div class="mb-3 col" asp-validation-class-for="IdentityColumnSize">
+            <label asp-for="IdentityColumnSize">@T["Identity column type"]</label>
+            <span asp-validation-for="IdentityColumnSize" class="text-danger"></span>
+            <select asp-for="IdentityColumnSize" asp-items="@columTypes" class="form-select"></select>
             <div class="hint">@T["The default value is"] <code>@T["Integer"]</code></div>
         </div>
 

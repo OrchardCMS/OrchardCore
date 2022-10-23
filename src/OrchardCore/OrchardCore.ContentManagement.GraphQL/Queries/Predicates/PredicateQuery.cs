@@ -14,7 +14,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         private readonly Dictionary<string, string> _aliases = new();
         private readonly Dictionary<string, string> _tableAliases = new();
 
-        public PredicateQuery(IConfiguration configuration,
+        public PredicateQuery(
+            IConfiguration configuration,
             IEnumerable<IIndexPropertyProvider> propertyProviders)
         {
             Dialect = configuration.SqlDialect;
@@ -85,7 +86,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
             var values = propertyPath.Split('.', 2);
 
             // if empty prefix, use default (empty alias)
-            var aliasPath = values.Length == 1 ? string.Empty : values[0];
+            var aliasPath = values.Length == 1 ? String.Empty : values[0];
 
             // get the actual index from the alias
             if (_aliases.TryGetValue(aliasPath, out alias))
@@ -144,7 +145,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                     {
                         // Switch the given alias in the path with the mapped alias.
                         // aliasPart.alias -> AliasPartIndex.Alias
-                        return Dialect.QuoteForTableName($"{tableAlias}", schema: _configuration.Schema) + "." + Dialect.QuoteForColumnName(columnName);
+                        return Dialect.QuoteForTableName($"{tableAlias}", _configuration.Schema) + "." + Dialect.QuoteForColumnName(columnName);
                     }
                 }
                 else
@@ -152,7 +153,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                     // no property provider exists; hope sql is case-insensitive (will break postgres; property providers must be supplied for postgres)
                     // Switch the given alias in the path with the mapped alias.
                     // aliasPart.Alias -> AliasPartIndex.alias
-                    return Dialect.QuoteForTableName($"{tableAlias}", schema: _configuration.Schema) + "." + Dialect.QuoteForColumnName(values[1]);
+                    return Dialect.QuoteForTableName($"{tableAlias}", _configuration.Schema) + "." + Dialect.QuoteForColumnName(values[1]);
                 }
             }
 

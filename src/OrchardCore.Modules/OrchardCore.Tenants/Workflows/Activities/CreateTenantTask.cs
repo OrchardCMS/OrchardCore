@@ -103,7 +103,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public IdentityColumnSize IdentityColumnType
+        public IdentityColumnSize IdentityColumnSize
         {
             get => GetProperty(() => IdentityColumnSize.Int32);
             set => SetProperty(value);
@@ -180,6 +180,11 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 shellSettings["RecipeName"] = recipeName;
             }
 
+            if (!String.IsNullOrEmpty(documentTable))
+            {
+                shellSettings["DocumentTable"] = documentTable;
+            }
+
             if (!String.IsNullOrEmpty(featureProfile))
             {
                 shellSettings["FeatureProfile"] = featureProfile;
@@ -190,12 +195,16 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 shellSettings["Schema"] = schema;
             }
 
-            if (tableNameSeparator != "NULL")
+            if (String.IsNullOrEmpty(tableNameSeparator))
+            {
+                shellSettings["TableNameSeparator"] = "_";
+            }
+            else
             {
                 shellSettings["TableNameSeparator"] = tableNameSeparator;
             }
 
-            shellSettings["IdentityColumnType"] = IdentityColumnType.ToString();
+            shellSettings["IdentityColumnSize"] = IdentityColumnSize.ToString();
             shellSettings["Secret"] = Guid.NewGuid().ToString();
 
             await ShellHost.UpdateShellSettingsAsync(shellSettings);

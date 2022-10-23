@@ -81,7 +81,7 @@ namespace OrchardCore.Tenants.Services
             {
                 TableNameSeparator = model.TableNameSeparator,
                 DocumentTable = model.DocumentTable,
-                IdentityColumnType = model.IdentityColumnType,
+                IdentityColumnSize = model.IdentityColumnSize,
                 Schema = model.Schema,
             };
 

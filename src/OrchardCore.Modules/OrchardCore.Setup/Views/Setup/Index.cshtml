@@ -205,9 +205,9 @@
         };
             }
             <div class="mb-3 col">
-                <label asp-for="IdentityColumnType">@T["Identity column type"]</label>
-                <span asp-validation-for="IdentityColumnType" class="text-danger"></span>
-                <select asp-for="IdentityColumnType" asp-items="@columTypes" class="form-select"></select>
+                <label asp-for="IdentityColumnSize">@T["Identity column type"]</label>
+                <span asp-validation-for="IdentityColumnSize" class="text-danger"></span>
+                <select asp-for="IdentityColumnSize" asp-items="@columTypes" class="form-select"></select>
                 <div class="text-muted form-text small">@T["The default value is"] <code>@T["Integer"]</code></div>
             </div>
 

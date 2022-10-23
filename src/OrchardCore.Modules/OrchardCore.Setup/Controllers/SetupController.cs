@@ -73,7 +73,7 @@ namespace OrchardCore.Setup.Controllers
                 Secret = token,
                 TableNameSeparator = "_",
                 DocumentTable = "Document",
-                IdentityColumnType = IdentityColumnSize.Int32,
+                IdentityColumnSize = IdentityColumnSize.Int32,
             };
 
             CopyShellSettingsValues(model);
@@ -155,7 +155,7 @@ namespace OrchardCore.Setup.Controllers
                     { SetupConstants.Schema, model.Schema },
                     { SetupConstants.DocumentTable, model.DocumentTable },
                     { SetupConstants.TableNameSeparator, String.IsNullOrEmpty(model.TableNameSeparator) ? "NULL" : model.TableNameSeparator },
-                    { SetupConstants.IdentityColumnType, model.IdentityColumnType },
+                    { SetupConstants.IdentityColumnSize, model.IdentityColumnSize },
                 }
             };
 
