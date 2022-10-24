@@ -16,7 +16,6 @@ using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
@@ -115,7 +114,7 @@ namespace OrchardCore.Autoroute.Handlers
             }
         }
 
-        public override async Task ValidatingAsync(ValidateContentContext context, AutoroutePart part)
+        public override async Task ValidatingAsync(ValidatePartContentContext context, AutoroutePart part)
         {
             // Only validate the path if it's not empty.
             if (String.IsNullOrWhiteSpace(part.Path))

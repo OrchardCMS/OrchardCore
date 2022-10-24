@@ -65,7 +65,7 @@ namespace OrchardCore.ContentManagement
             builder.Services.TryAddScoped(handlerType);
             builder.Services.Configure<ContentOptions>(o =>
             {
-                o.AddHandler(builder.ContentPartType, handlerType);
+                o.AddPartHandler(builder.ContentPartType, handlerType);
             });
 
             return builder;
@@ -89,7 +89,55 @@ namespace OrchardCore.ContentManagement
             builder.Services.RemoveAll(handlerType);
             builder.Services.Configure<ContentOptions>(o =>
             {
-                o.RemoveHandler(builder.ContentPartType, handlerType);
+                o.RemovePartHandler(builder.ContentPartType, handlerType);
+            });
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Register a handler for use with a content field.
+        /// </summary>
+        /// <typeparam name="TContentFieldHandler"></typeparam>
+        public static ContentFieldOptionBuilder AddHandler<TContentFieldHandler>(this ContentFieldOptionBuilder builder)
+            where TContentFieldHandler : class, IContentFieldHandler
+        {
+            return builder.AddHandler(typeof(TContentFieldHandler));
+        }
+
+        /// <summary>
+        /// Register a handler for use with a content part.
+        /// </summary>
+        public static ContentFieldOptionBuilder AddHandler(this ContentFieldOptionBuilder builder, Type handlerType)
+        {
+            builder.Services.TryAddScoped(handlerType);
+            builder.Services.Configure<ContentOptions>(o =>
+            {
+                o.AddFieldHandler(builder.ContentFieldType, handlerType);
+            });
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Remove a handler registration from a content part.
+        /// </summary>
+        /// <typeparam name="TContentFieldHandler"></typeparam>
+        public static ContentFieldOptionBuilder RemoveHandler<TContentFieldHandler>(this ContentFieldOptionBuilder builder)
+            where TContentFieldHandler : class, IContentFieldHandler
+        {
+            return builder.RemoveHandler(typeof(TContentFieldHandler));
+        }
+
+        /// <summary>
+        /// Remove a handler registration from a content part.
+        /// </summary>
+        public static ContentFieldOptionBuilder RemoveHandler(this ContentFieldOptionBuilder builder, Type handlerType)
+        {
+            builder.Services.RemoveAll(handlerType);
+            builder.Services.Configure<ContentOptions>(o =>
+            {
+                o.RemoveFieldHandler(builder.ContentFieldType, handlerType);
             });
 
             return builder;

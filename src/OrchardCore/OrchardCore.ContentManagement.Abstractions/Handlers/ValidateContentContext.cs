@@ -3,6 +3,7 @@ using System.Linq;
 
 namespace OrchardCore.ContentManagement.Handlers
 {
+
     public class ValidateContentContext : ContentContextBase
     {
         public ValidateContentContext(ContentItem contentItem) : base(contentItem)

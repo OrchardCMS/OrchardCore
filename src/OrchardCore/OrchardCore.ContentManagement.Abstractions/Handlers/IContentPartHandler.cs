@@ -19,8 +19,8 @@ namespace OrchardCore.ContentManagement.Handlers
         Task ImportedAsync(ImportContentContext context, ContentPart part);
         Task UpdatingAsync(UpdateContentContext context, ContentPart part);
         Task UpdatedAsync(UpdateContentContext context, ContentPart part);
-        Task ValidatingAsync(ValidateContentContext context, ContentPart part);
-        Task ValidatedAsync(ValidateContentContext context, ContentPart part);
+        Task ValidatingAsync(ValidatePartContentContext context, ContentPart part);
+        Task ValidatedAsync(ValidatePartContentContext context, ContentPart part);
         Task VersioningAsync(VersionContentContext context, ContentPart existing, ContentPart building);
         Task VersionedAsync(VersionContentContext context, ContentPart existing, ContentPart building);
         Task DraftSavingAsync(SaveDraftContentContext context, ContentPart part);
