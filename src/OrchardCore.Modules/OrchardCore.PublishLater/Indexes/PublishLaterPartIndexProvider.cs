@@ -70,10 +70,10 @@ public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
 
                 return new PublishLaterPartIndex
                 {
-                    ContentItemId = part.ContentItem.ContentItemId,
+                    ContentItemId = contentItem.ContentItemId,
                     ScheduledPublishDateTimeUtc = part.ScheduledPublishUtc,
-                    Published = part.ContentItem.Published,
-                    Latest = part.ContentItem.Latest
+                    Published = contentItem.Published,
+                    Latest = contentItem.Latest
                 };
             });
     }
