@@ -182,7 +182,7 @@ namespace OrchardCore.Setup.Services
 
                 if (context.Properties.TryGetValue(SetupConstants.TableNameSeparator, out var seperator))
                 {
-                    shellSettings["TableNameSeparator"] = seperator?.ToString() ?? "NULL";
+                    shellSettings["TableNameSeparator"] = seperator?.ToString();
                 }
 
                 if (context.Properties.TryGetValue(SetupConstants.IdentityColumnSize, out var columnSize)

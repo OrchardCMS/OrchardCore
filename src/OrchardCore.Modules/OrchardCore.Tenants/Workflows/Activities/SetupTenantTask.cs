@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
+using YesSql;
 
 namespace OrchardCore.Tenants.Workflows.Activities
 {
@@ -101,6 +103,29 @@ namespace OrchardCore.Tenants.Workflows.Activities
             get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
+        public WorkflowExpression<string> TableNameSeparator
+        {
+            get => GetProperty(() => new WorkflowExpression<string>("_"));
+            set => SetProperty(value);
+        }
+
+        public WorkflowExpression<string> Schema
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
+        public WorkflowExpression<string> DocumentTable
+        {
+            get => GetProperty(() => new WorkflowExpression<string>("Document"));
+            set => SetProperty(value);
+        }
+
+        public IdentityColumnSize IdentityColumnSize
+        {
+            get => GetProperty(() => IdentityColumnSize.Int32);
+            set => SetProperty(value);
+        }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
@@ -140,12 +165,12 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var adminUsername = (await ExpressionEvaluator.EvaluateAsync(AdminUsername, workflowContext, null))?.Trim();
             var adminEmail = (await ExpressionEvaluator.EvaluateAsync(AdminEmail, workflowContext, null))?.Trim();
 
-            if (string.IsNullOrEmpty(adminUsername) || adminUsername.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
+            if (String.IsNullOrEmpty(adminUsername) || adminUsername.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
             {
                 return Outcomes("Failed");
             }
 
-            if (string.IsNullOrEmpty(adminEmail) || !_emailAddressValidator.Validate(adminEmail))
+            if (String.IsNullOrEmpty(adminEmail) || !_emailAddressValidator.Validate(adminEmail))
             {
                 return Outcomes("Failed");
             }
@@ -156,25 +181,43 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var databaseConnectionString = (await ExpressionEvaluator.EvaluateAsync(DatabaseConnectionString, workflowContext, null))?.Trim();
             var databaseTablePrefix = (await ExpressionEvaluator.EvaluateAsync(DatabaseTablePrefix, workflowContext, null))?.Trim();
             var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
+            var tableNameSeparator = (await ExpressionEvaluator.EvaluateAsync(TableNameSeparator, workflowContext, null))?.Trim();
+            var schema = (await ExpressionEvaluator.EvaluateAsync(Schema, workflowContext, null))?.Trim();
+            var documentTable = (await ExpressionEvaluator.EvaluateAsync(DocumentTable, workflowContext, null))?.Trim();
 
-            if (string.IsNullOrEmpty(databaseProvider))
+            if (String.IsNullOrEmpty(databaseProvider))
             {
                 databaseProvider = shellSettings["DatabaseProvider"];
             }
 
-            if (string.IsNullOrEmpty(databaseConnectionString))
+            if (String.IsNullOrEmpty(databaseConnectionString))
             {
                 databaseConnectionString = shellSettings["ConnectionString"];
             }
 
-            if (string.IsNullOrEmpty(databaseTablePrefix))
+            if (String.IsNullOrEmpty(databaseTablePrefix))
             {
                 databaseTablePrefix = shellSettings["TablePrefix"];
             }
 
-            if (string.IsNullOrEmpty(recipeName))
+            if (String.IsNullOrEmpty(recipeName))
             {
                 recipeName = shellSettings["RecipeName"];
+            }
+
+            if (String.IsNullOrEmpty(schema))
+            {
+                schema = shellSettings["Schema"];
+            }
+
+            if (String.IsNullOrEmpty(documentTable))
+            {
+                documentTable = shellSettings["DocumentTable"];
+            }
+
+            if (String.IsNullOrEmpty(tableNameSeparator))
+            {
+                tableNameSeparator = shellSettings["TableNameSeparator"];
             }
 
             var recipes = await SetupService.GetSetupRecipesAsync();
@@ -196,6 +239,10 @@ namespace OrchardCore.Tenants.Workflows.Activities
                     { SetupConstants.DatabaseProvider, databaseProvider },
                     { SetupConstants.DatabaseConnectionString, databaseConnectionString },
                     { SetupConstants.DatabaseTablePrefix, databaseTablePrefix },
+                    { SetupConstants.Schema, schema },
+                    { SetupConstants.DocumentTable, documentTable },
+                    { SetupConstants.TableNameSeparator, tableNameSeparator },
+                    { SetupConstants.IdentityColumnSize, IdentityColumnSize },
                 }
             };
 

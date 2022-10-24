@@ -180,14 +180,14 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 shellSettings["RecipeName"] = recipeName;
             }
 
-            if (!String.IsNullOrEmpty(documentTable))
-            {
-                shellSettings["DocumentTable"] = documentTable;
-            }
-
             if (!String.IsNullOrEmpty(featureProfile))
             {
                 shellSettings["FeatureProfile"] = featureProfile;
+            }
+
+            if (!String.IsNullOrEmpty(documentTable))
+            {
+                shellSettings["DocumentTable"] = documentTable;
             }
 
             if (!String.IsNullOrEmpty(schema))
@@ -195,15 +195,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 shellSettings["Schema"] = schema;
             }
 
-            if (String.IsNullOrEmpty(tableNameSeparator))
-            {
-                shellSettings["TableNameSeparator"] = "_";
-            }
-            else
-            {
-                shellSettings["TableNameSeparator"] = tableNameSeparator;
-            }
-
+            shellSettings["TableNameSeparator"] = tableNameSeparator;
             shellSettings["IdentityColumnSize"] = IdentityColumnSize.ToString();
             shellSettings["Secret"] = Guid.NewGuid().ToString();
 

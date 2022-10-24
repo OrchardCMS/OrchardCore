@@ -50,6 +50,38 @@
     <input type="text" asp-for="FeatureProfileExpression" class="form-control code" />
 </div>
 
+<div class="mb-3" asp-validation-class-for="Schema">
+    <label asp-for="Schema">@T["Schema"] <span asp-validation-for="Schema"></span></label>
+    <input type="text" asp-for="Schema" class="form-control" />
+    <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server", "dbo"]</div>
+</div>
+
+<div class="mb-3" asp-validation-class-for="DocumentTable">
+    <label asp-for="DocumentTable">@T["The name of the document table"] <span asp-validation-for="DocumentTable"></span></label>
+    <input type="text" asp-for="DocumentTable" class="form-control" />
+    <div class="hint">@T["The default value is"] <code>Document</code></div>
+</div>
+
+<div class="mb-3" asp-validation-class-for="TableNameSeparator">
+    <label asp-for="TableNameSeparator">@T["Table naming seperator to use when creating table names"] <span asp-validation-for="TableNameSeparator"></span></label>
+    <input type="text" asp-for="TableNameSeparator" class="form-control" />
+    <div class="hint">@T["Input one or more underscores or 'NULL' for an no separator. The default value is a single"] <code>_</code></div>
+</div>
+
+@{
+    var columnSizes = new List<SelectListItem>
+    {
+        new SelectListItem(T["Integer"].Value, YesSql.IdentityColumnSize.Int32.ToString()),
+        new SelectListItem(T["Big Integer"].Value, YesSql.IdentityColumnSize.Int64.ToString()),
+    };
+}
+
+<div class="mb-3" asp-validation-class-for="IdentityColumnSize">
+    <label asp-for="IdentityColumnSize">@T["Identity column type"] <span asp-validation-for="IdentityColumnSize" class="text-danger"></span></label>
+    <select asp-for="IdentityColumnSize" asp-items="@columnSizes" class="form-select"></select>
+    <div class="hint">@T["The default value is"] <code>@T["Integer"]</code></div>
+</div>
+
 <style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
@@ -60,54 +92,54 @@
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
 <script at="Foot">
-$(function () {
-    var editorRupTn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TenantNameExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-     });
-    var editorRup = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.RequestUrlPrefixExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-      });
-    var editorRuh = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.RequestUrlHostExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-     });
-    var editorDp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.DatabaseProviderExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-     });
-    var editorTp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TablePrefixExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-     });
-    var editorCs = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ConnectionStringExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-     });
-    var editorRn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.RecipeNameExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
+    $(function () {
+        var editorRupTn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TenantNameExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorRup = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.RequestUrlPrefixExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorRuh = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.RequestUrlHostExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorDp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.DatabaseProviderExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorTp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TablePrefixExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorCs = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ConnectionStringExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorRn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.RecipeNameExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorFp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.FeatureProfileExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
     });
-    var editorFp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.FeatureProfileExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-    });
-});
 </script>

@@ -71,9 +71,6 @@ namespace OrchardCore.Setup.Controllers
                 Recipes = recipes,
                 RecipeName = defaultRecipe?.Name,
                 Secret = token,
-                TableNameSeparator = "_",
-                DocumentTable = "Document",
-                IdentityColumnSize = IdentityColumnSize.Int32,
             };
 
             CopyShellSettingsValues(model);
@@ -82,6 +79,27 @@ namespace OrchardCore.Setup.Controllers
             {
                 model.DatabaseConfigurationPreset = true;
                 model.TablePrefix = _shellSettings["TablePrefix"];
+            }
+
+            if (!String.IsNullOrEmpty(_shellSettings["Schema"]))
+            {
+                model.Schema = _shellSettings["Schema"];
+            }
+
+            if (!String.IsNullOrEmpty(_shellSettings["DocumentTable"]))
+            {
+                model.DocumentTable = _shellSettings["DocumentTable"];
+            }
+
+            if (_shellSettings["TableNameSeparator"] != null)
+            {
+                model.TableNameSeparator = _shellSettings["TableNameSeparator"];
+            }
+
+            if (!String.IsNullOrEmpty(_shellSettings["IdentityColumnSize"])
+                && Enum.TryParse<IdentityColumnSize>(_shellSettings["IdentityColumnSize"], out var columnSize))
+            {
+                model.IdentityColumnSize = columnSize;
             }
 
             return View(model);
@@ -165,12 +183,20 @@ namespace OrchardCore.Setup.Controllers
                 setupContext.Properties[SetupConstants.DatabaseProvider] = _shellSettings["DatabaseProvider"];
                 setupContext.Properties[SetupConstants.DatabaseConnectionString] = _shellSettings["ConnectionString"];
                 setupContext.Properties[SetupConstants.DatabaseTablePrefix] = _shellSettings["TablePrefix"];
+                setupContext.Properties[SetupConstants.Schema] = _shellSettings["Schema"];
+                setupContext.Properties[SetupConstants.DocumentTable] = _shellSettings["DocumentTable"];
+                setupContext.Properties[SetupConstants.TableNameSeparator] = _shellSettings["TableNameSeparator"];
+                setupContext.Properties[SetupConstants.IdentityColumnSize] = _shellSettings["IdentityColumnSize"];
             }
             else
             {
                 setupContext.Properties[SetupConstants.DatabaseProvider] = model.DatabaseProvider;
                 setupContext.Properties[SetupConstants.DatabaseConnectionString] = model.ConnectionString;
                 setupContext.Properties[SetupConstants.DatabaseTablePrefix] = model.TablePrefix;
+                setupContext.Properties[SetupConstants.Schema] = model.Schema;
+                setupContext.Properties[SetupConstants.DocumentTable] = model.DocumentTable;
+                setupContext.Properties[SetupConstants.TableNameSeparator] = model.TableNameSeparator;
+                setupContext.Properties[SetupConstants.IdentityColumnSize] = model.IdentityColumnSize;
             }
 
             var executionId = await _setupService.SetupAsync(setupContext);

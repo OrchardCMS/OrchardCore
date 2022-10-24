@@ -51,9 +51,9 @@ public class DatabaseTableOptions
             options.DocumentTable = shellSettings["DocumentTable"].Trim();
         }
 
-        if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnSize"], out var columnType))
+        if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnSize"], out var columnSize))
         {
-            options.IdentityColumnSize = columnType;
+            options.IdentityColumnSize = columnSize;
         }
     }
 }
