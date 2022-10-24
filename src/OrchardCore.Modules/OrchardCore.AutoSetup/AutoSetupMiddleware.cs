@@ -221,7 +221,7 @@ namespace OrchardCore.AutoSetup
             shellSettings["Schema"] = setupOptions.Schema?.Trim();
             shellSettings["IdentityColumnSize"] = setupOptions.IdentityColumnSize;
             shellSettings["DocumentTable"] = setupOptions.DocumentTable?.Trim();
-            shellSettings["TableNameSeparator"] = setupOptions.TableNameSeparator?.Trim() ?? "NULL";
+            shellSettings["TableNameSeparator"] = setupOptions.TableNameSeparator?.Trim();
 
             await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
