@@ -7,5 +7,6 @@ using OrchardCore.Modules.Manifest;
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "The Themes modules allows you to specify the Front and the Admin theme.",
     Dependencies = new[] { "OrchardCore.Admin" },
-    Category = "Theming"
+    Category = "Theming",
+    IsAlwaysEnabled = true
 )]
