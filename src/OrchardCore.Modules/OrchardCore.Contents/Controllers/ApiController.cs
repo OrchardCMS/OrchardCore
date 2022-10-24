@@ -105,17 +105,17 @@ namespace OrchardCore.Contents.Controllers
                     return BadRequest();
                 }
 
-                var newContentItem = await _contentManager.NewAsync(model.ContentType);
-                newContentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                contentItem = await _contentManager.NewAsync(model.ContentType);
+                contentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, newContentItem))
+                if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, contentItem))
                 {
                     return this.ChallengeOrForbid("Api");
                 }
 
-                newContentItem.Merge(model);
+                contentItem.Merge(model);
 
-                var result = await _contentManager.UpdateValidateAndCreateAsync(newContentItem, VersionOptions.Draft);
+                var result = await _contentManager.UpdateValidateAndCreateAsync(contentItem, VersionOptions.Draft);
 
                 if (!result.Succeeded)
                 {
@@ -133,8 +133,6 @@ namespace OrchardCore.Contents.Controllers
                         detail: String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
                         statusCode: (int)HttpStatusCode.BadRequest);
                 }
-
-                contentItem = newContentItem;
             }
             else
             {
