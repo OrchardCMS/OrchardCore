@@ -33,11 +33,9 @@ namespace OrchardCore.Title.Handlers
         public override async Task UpdatedAsync(UpdateContentContext context, TitlePart part)
         {
             var settings = GetSettings(part);
-            // Do not compute the title if the user can modify it.
-            if (settings.Options == TitlePartOptions.Editable || settings.Options == TitlePartOptions.EditableRequired)
+            // Do not compute the title if the user can modify it and the text is already set.
+            if ((settings.Options == TitlePartOptions.Editable || settings.Options == TitlePartOptions.EditableRequired) && !String.IsNullOrWhiteSpace(part.ContentItem.DisplayText))
             {
-                part.ContentItem.DisplayText = part.Title;
-
                 return;
             }
 
