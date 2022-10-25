@@ -118,14 +118,16 @@ namespace OrchardCore.ContentManagement.Handlers
 
         public override Task ValidatingAsync(ValidateContentContext context)
         {
-            return InvokeValidationHandlers(context,
+            return InvokeHandlers(context,
+                (handler, context, part) => handler.ValidatingAsync(context, part),
                 (handler, context, part) => handler.ValidatingAsync(context, part),
                 (handler, context, field) => handler.ValidatingAsync(context, field));
         }
 
         public override Task ValidatedAsync(ValidateContentContext context)
         {
-            return InvokeValidationHandlers(context,
+            return InvokeHandlers(context,
+                (handler, context, part) => handler.ValidatedAsync(context, part),
                 (handler, context, part) => handler.ValidatedAsync(context, part),
                 (handler, context, field) => handler.ValidatedAsync(context, field));
         }
@@ -200,90 +202,18 @@ namespace OrchardCore.ContentManagement.Handlers
                 (handler, context, field) => handler.UpdatedAsync(context, field));
         }
 
-        public override async Task VersioningAsync(VersionContentContext context)
+        public override Task VersioningAsync(VersionContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            foreach (var typePartDefinition in contentTypeDefinition.Parts)
-            {
-                var partName = typePartDefinition.PartDefinition.Name;
-                var activator = _contentPartFactory.GetTypeActivator(partName);
-
-                var buildingPart = context.BuildingContentItem.Get(activator.Type, partName) as ContentPart;
-                var existingPart = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-
-                if (buildingPart != null && existingPart != null)
-                {
-                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
-                    await partHandlers.InvokeAsync((handler, context, existingPart, buildingPart) => handler.VersioningAsync(context, existingPart, buildingPart), context, existingPart, buildingPart, _logger);
-                }
-            }
+            return InvokeHandlers(context,
+                 (handler, context, existingPart, buildingPart) => handler.VersioningAsync(context, existingPart, buildingPart),
+                 (handler, context, existingField, buildingField) => handler.VersioningAsync(context, existingField, buildingField));
         }
 
-        public override async Task VersionedAsync(VersionContentContext context)
+        public override Task VersionedAsync(VersionContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-            {
-                return;
-            }
-
-            foreach (var typePartDefinition in contentTypeDefinition.Parts)
-            {
-                var partName = typePartDefinition.PartDefinition.Name;
-
-                if (String.IsNullOrEmpty(partName))
-                {
-                    _logger.LogError("The content type '{contentType}' contains part '{contentPart}' that does not exists.", contentTypeDefinition.Name, partName);
-
-                    continue;
-                }
-
-                var partActivator = _contentPartFactory.GetTypeActivator(partName);
-
-                var buildingPart = (ContentPart)context.BuildingContentItem.Get(partActivator.Type, partName);
-                var existingPart = (ContentPart)context.ContentItem.Get(partActivator.Type, typePartDefinition.Name);
-
-                if (buildingPart == null || existingPart == null)
-                {
-                    continue;
-                }
-
-                var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
-                await partHandlers.InvokeAsync((handler, context, existingPart, buildingPart) => handler.VersionedAsync(context, existingPart, buildingPart), context, existingPart, buildingPart, _logger);
-
-                if (typePartDefinition.PartDefinition?.Fields == null)
-                {
-                    continue;
-                }
-
-                foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
-                {
-                    var fieldName = partFieldDefinition.FieldDefinition.Name;
-
-                    if (String.IsNullOrEmpty(partName))
-                    {
-                        _logger.LogError("The content part '{contentPert}' contains field '{contentField}' that does not exists.", partName, fieldName);
-                        continue;
-                    }
-
-                    var fieldActivator = _contentFieldFactory.GetTypeActivator(fieldName);
-
-
-                    var buildingField = (ContentField)buildingPart.Get(fieldActivator.Type, fieldName);
-                    var existingField = (ContentField)existingPart.Get(fieldActivator.Type, partFieldDefinition.Name);
-
-                    if (buildingField == null || existingField == null)
-                    {
-                        continue;
-                    }
-
-                    var fieldHandlers = _contentFieldHandlerResolver.GetHandlers(fieldName);
-                    await fieldHandlers.InvokeAsync((handler, context, existingField, buildingField) => handler.VersionedAsync(context, existingField, buildingField), context, existingField, buildingField, _logger);
-                }
-            }
+            return InvokeHandlers(context,
+                 (handler, context, existingPart, buildingPart) => handler.VersionedAsync(context, existingPart, buildingPart),
+                 (handler, context, existingField, buildingField) => handler.VersionedAsync(context, existingField, buildingField));
         }
 
         public override async Task GetContentItemAspectAsync(ContentItemAspectContext context)
@@ -297,14 +227,6 @@ namespace OrchardCore.ContentManagement.Handlers
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-
-                if (String.IsNullOrEmpty(partName))
-                {
-                    _logger.LogError("The content type '{contentType}' contains part '{contentPart}' that does not exists.", contentTypeDefinition.Name, partName);
-
-                    continue;
-                }
-
                 var activator = _contentPartFactory.GetTypeActivator(partName);
                 var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
@@ -423,8 +345,61 @@ namespace OrchardCore.ContentManagement.Handlers
             }
         }
 
-        private async Task InvokeValidationHandlers<TContext>(
+        private async Task InvokeHandlers<TContext>(
             TContext context,
+            Func<IContentPartHandler, TContext, ContentPart, ContentPart, Task> partHandlerAction,
+            Func<IContentFieldHandler, TContext, ContentField, ContentField, Task> fieldHandlerAction)
+            where TContext : VersionContentContext
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            if (contentTypeDefinition == null)
+            {
+                return;
+            }
+
+            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            {
+                var partName = typePartDefinition.PartDefinition.Name;
+                var partActivator = _contentPartFactory.GetTypeActivator(partName);
+
+                var buildingPart = (ContentPart)context.BuildingContentItem.Get(partActivator.Type, partName);
+                var existingPart = (ContentPart)context.ContentItem.Get(partActivator.Type, typePartDefinition.Name);
+
+                if (buildingPart == null || existingPart == null)
+                {
+                    continue;
+                }
+
+                var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                await partHandlers.InvokeAsync(partHandlerAction, context, existingPart, buildingPart, _logger);
+
+                if (typePartDefinition.PartDefinition?.Fields == null)
+                {
+                    continue;
+                }
+
+                foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
+                {
+                    var fieldName = partFieldDefinition.FieldDefinition.Name;
+                    var fieldActivator = _contentFieldFactory.GetTypeActivator(fieldName);
+
+                    var buildingField = (ContentField)buildingPart.Get(fieldActivator.Type, fieldName);
+                    var existingField = (ContentField)existingPart.Get(fieldActivator.Type, partFieldDefinition.Name);
+
+                    if (buildingField == null || existingField == null)
+                    {
+                        continue;
+                    }
+
+                    var fieldHandlers = _contentFieldHandlerResolver.GetHandlers(fieldName);
+                    await fieldHandlers.InvokeAsync(fieldHandlerAction, context, existingField, buildingField, _logger);
+                }
+            }
+        }
+
+        private async Task InvokeHandlers<TContext>(
+            TContext context,
+            Func<IContentPartHandler, ValidateContentContext, ContentPart, Task> contextHandlerAction,
             Func<IContentPartHandler, ValidatePartContentContext, ContentPart, Task> partHandlerAction,
             Func<IContentFieldHandler, ValidateFieldContentContext, ContentField, Task> fieldHandlerAction)
             where TContext : ValidateContentContext
@@ -447,6 +422,9 @@ namespace OrchardCore.ContentManagement.Handlers
                 }
 
                 var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+
+                // For backward compatiability, we call this handler. This call can be removed in the future.
+                await partHandlers.InvokeAsync(contextHandlerAction, context, part, _logger);
 
                 var validatePartContentContext = new ValidatePartContentContext(context.ContentItem, typePartDefinition);
 
