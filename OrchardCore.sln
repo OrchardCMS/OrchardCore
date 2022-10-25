@@ -3,9 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.31710.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{275E087F-A4E2-4A7B-A924-ED68E3A52086}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\Users\malhayek\Downloads\banner.jpg = ..\..\..\Users\malhayek\Downloads\banner.jpg
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Cms.Web", "src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj", "{9D78FE2C-4179-47F6-B28A-034868280197}"
 EndProject
