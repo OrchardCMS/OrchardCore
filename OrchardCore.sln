@@ -480,7 +480,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Media.AmazonS3"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ArchiveLater", "src\OrchardCore.Modules\OrchardCore.ArchiveLater\OrchardCore.ArchiveLater.csproj", "{190C4BEB-C506-4F7F-BDCA-93F3C1C221BC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Features.Core", "src\OrchardCore\OrchardCore.Features.Core\OrchardCore.Features.Core.csproj", "{122EC0DA-A593-4038-BD21-2D4A7061F348}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Features.Core", "src\OrchardCore\OrchardCore.Features.Core\OrchardCore.Features.Core.csproj", "{122EC0DA-A593-4038-BD21-2D4A7061F348}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search", "src\OrchardCore.Modules\OrchardCore.Search\OrchardCore.Search.csproj", "{7BDF280B-70B7-4AFC-A6F7-B5759DCA2A2C}"
 EndProject
