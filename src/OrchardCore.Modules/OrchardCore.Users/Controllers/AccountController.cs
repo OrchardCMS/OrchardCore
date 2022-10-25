@@ -361,11 +361,17 @@ namespace OrchardCore.Users.Controllers
 
             if (result.Succeeded)
             {
+                await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
+
                 var identityResult = await _signInManager.UpdateExternalAuthenticationTokensAsync(info);
                 if (!identityResult.Succeeded)
                 {
                     _logger.LogError("Error updating the external authentication tokens.");
                 }
+            }
+            else
+            {
+                await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
             }
 
             return result;
@@ -415,13 +421,20 @@ namespace OrchardCore.Users.Controllers
                 var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
 
                 if (!string.IsNullOrWhiteSpace(email))
+                {
                     iUser = await _userManager.FindByEmailAsync(email);
+                }
 
                 ViewData["ReturnUrl"] = returnUrl;
                 ViewData["LoginProvider"] = info.LoginProvider;
 
                 if (iUser != null)
                 {
+                    if (iUser is User userToLink && registrationSettings.UsersMustValidateEmail && !userToLink.EmailConfirmed)
+                    {
+                        return RedirectToAction("ConfirmEmailSent", new { Area = "OrchardCore.Users", Controller = "Registration", ReturnUrl = returnUrl });
+                    }
+
                     // Link external login to an existing user
                     ViewData["UserName"] = iUser.UserName;
                     ViewData["Email"] = email;
@@ -618,23 +631,24 @@ namespace OrchardCore.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LinkExternalLogin(LinkExternalLoginViewModel model, string returnUrl = null)
         {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
             var info = await _signInManager.GetExternalLoginInfoAsync();
+
+            if (info == null)
+            {
+                _logger.LogWarning("Error loading external login info.");
+
+                return NotFound();
+            }
 
             var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
 
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (info == null)
-            {
-                _logger.LogWarning("Error loading external login info.");
-                return NotFound();
-            }
-
             if (user == null)
             {
                 _logger.LogWarning("Suspicious login detected from external provider. {provider} with key [{providerKey}] for {identity}",
                     info.LoginProvider, info.ProviderKey, info.Principal?.Identity?.Name);
+
                 return RedirectToAction(nameof(Login));
             }
 
@@ -661,6 +675,7 @@ namespace OrchardCore.Users.Controllers
                 }
                 AddIdentityErrors(identityResult);
             }
+
             return RedirectToAction(nameof(Login));
         }
 

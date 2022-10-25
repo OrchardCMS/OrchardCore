@@ -10,15 +10,11 @@ jobs:
     runs-on: macos-latest
     name: Unit Tests
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core 3.1
-      uses: actions/setup-dotnet@v1
+    - uses: actions/checkout@v3
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 3.1.*
-    - name: Setup .NET Core 5.0
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.*
+        dotnet-version: 6.0.x
     - name: Build and test
       run: |
         dotnet build --configuration Release

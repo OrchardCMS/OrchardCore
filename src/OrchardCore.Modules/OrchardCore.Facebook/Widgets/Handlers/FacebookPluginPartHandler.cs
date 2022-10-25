@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;

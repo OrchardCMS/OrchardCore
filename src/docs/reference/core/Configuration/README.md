@@ -38,7 +38,7 @@ Each Orchard Core module has its own configuration section under the `OrchardCor
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.Media": {
+    "OrchardCore_Media": {
       ... individual module configuration ...
     }
   }
@@ -149,6 +149,9 @@ services
         });
     });
 ```
+
+!!! note 
+    Such configuration for `SmtpSettings` is already available via the `ConfigureEmailSettings` extension method, see [Email Configuration](../../modules/Email/README.md).
 
 This will make the SMTP port use this configuration despite any other value defined in site settings. The second example's configuration value can come from e.g. an `appsettings.json` file like below:
 

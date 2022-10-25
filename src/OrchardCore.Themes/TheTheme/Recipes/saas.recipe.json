@@ -23,6 +23,7 @@
         "OrchardCore.Recipes",
         "OrchardCore.Resources",
         "OrchardCore.Roles",
+        "OrchardCore.Security",
         "OrchardCore.Settings",
         "OrchardCore.Tenants",
         "OrchardCore.Themes",

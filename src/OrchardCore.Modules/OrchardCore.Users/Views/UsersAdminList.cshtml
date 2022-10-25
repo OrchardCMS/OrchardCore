@@ -3,26 +3,31 @@
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
 
 <!-- Hidden submit button do not remove -->
-<input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
-<input type="submit" name="submit.BulkAction" class="sr-only" />
-  
+<input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
+<input type="submit" name="submit.BulkAction" class="visually-hidden" />
+
 @Html.HiddenFor(o => o.Options.BulkAction)
 
-<div class="card mb-3 position-sticky action-bar">
-    <div class="card-body bg-primary p-3">
-        <div class="form-group mb-n1">
-            @await DisplayAsync(Model.Header.Search)
-            @await DisplayAsync(Model.Header.Create)
+<div class="card bg-primary mb-3 position-sticky action-bar">
+    <div class="card-body">
+        <div class="row gx-3">
+            <div class="col">
+                @await DisplayAsync(Model.Header.Search)
+            </div>
+            <div class="col-auto">
+                @await DisplayAsync(Model.Header.Create)
+            </div>
         </div>
     </div>
 </div>
+
 <ul class="list-group with-checkbox">
     <li class="list-group-item bg-primary">
-        <div class="row">
+        <div class="row gx-3">
             <div class="col">
                 @await DisplayAsync(Model.Header.Summary)
             </div>
-            <div class="col d-flex justify-content-start flex-row-reverse">
+            <div class="col col-md-auto text-end">
                 @await DisplayAsync(Model.Header.Actions)
             </div>
         </div>
@@ -32,9 +37,9 @@
         @foreach (var entry in Model.Users)
         {
             <li class="list-group-item">
-                <div class="custom-control custom-checkbox float-left">
-                    <input type="checkbox" class="custom-control-input" value="@entry.UserId" name="itemIds" id="itemIds-@entry.UserId">
-                    <label class="custom-control-label" for="itemIds-@entry.UserId"></label>
+                <div class="form-check float-start">
+                    <input type="checkbox" class="form-check-input" value="@entry.UserId" name="itemIds" id="itemIds-@entry.UserId">
+                    <label class="form-check-label" for="itemIds-@entry.UserId"></label>
                 </div>
                 @await DisplayAsync(entry.Shape)
             </li>
@@ -67,17 +72,19 @@
             $("[name='submit.Filter']").click();
         });
 
-        $(".dropdown-menu .dropdown-item").filter(function() {
+        $(".dropdown-menu .dropdown-item").filter(function () {
             return $(this).data("action");
         }).on("click", function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);
-                confirmDialog({...$this.data(), callback: function(r) {
-                    if (r) {
-                        $("[name='Options.BulkAction']").val($this.data("action"));
-                        $("[name='submit.BulkAction']").click();
+                confirmDialog({
+                    ...$this.data(), callback: function (r) {
+                        if (r) {
+                            $("[name='Options.BulkAction']").val($this.data("action"));
+                            $("[name='submit.BulkAction']").click();
+                        }
                     }
-                }});
+                });
             }
         });
 
@@ -96,7 +103,7 @@
             }
         }
 
-        selectAllCtrl.click(function(){
+        selectAllCtrl.click(function () {
             itemsCheckboxes.not(this).prop("checked", this.checked);
             selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
             displayActionsOrFilters();

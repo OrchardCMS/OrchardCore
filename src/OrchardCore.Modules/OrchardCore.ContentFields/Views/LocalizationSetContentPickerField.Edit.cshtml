@@ -1,7 +1,8 @@
 @model OrchardCore.ContentFields.ViewModels.EditLocalizationSetContentPickerFieldViewModel
-@using Newtonsoft.Json;
-@using Newtonsoft.Json.Serialization;
-@using OrchardCore.Environment.Shell;
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Serialization
+@using OrchardCore.Environment.Shell
+@using OrchardCore.Mvc.Utilities
 
 @inject ShellSettings ShellSettings
 
@@ -10,6 +11,7 @@
     var selectedItems = JsonConvert.SerializeObject(Model.SelectedItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
+    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
     var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "LocalizationSetContentPickerAdmin", action = "SearchLocalizationSets", part = partName, field = fieldName });
     var vueElementId = $"LocalizedContentPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
@@ -20,10 +22,11 @@
 
 <label asp-for="LocalizationSets">@Model.PartFieldDefinition.DisplayName()</label>
 
-<div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="LocalizationSetContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="@multiple">
+<div class="mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.LocalizationSets)_FieldWrapper">
 
-    <div class="form-group">
-        <ul class="list-group w-xl-50 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>
+    <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="LocalizationSetContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="@multiple">
+
+        <ul class="mb-1 list-group w-xl-50 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>
             <draggable v-model="arrayOfItems">
                 <li v-for="(item, i) in arrayOfItems"
                     class="cursor-move list-group-item content-picker-default__list-item d-flex align-items-start justify-content-between"
@@ -36,9 +39,7 @@
                 </li>
             </draggable>
         </ul>
-    </div>
 
-    <div class="form-group">
         <div class="w-xl-50">
             <input asp-for="LocalizationSets" type="hidden" v-model="selectedIds" />
             <vue-multiselect v-model="value" :options="options" track-by="id"
@@ -49,7 +50,7 @@
                              :disabled="isDisabled"
                              select-label="@T["Select"]" deselect-label="@T["Remove"]">
                 <template slot="option" slot-scope="props">
-                    <div v-cloak><span>{{ props.option.displayText }}</span><span class="small ml-2" v-show="!props.option.hasPublished">(@T["Not published"])</span></div>
+                    <div v-cloak><span>{{ props.option.displayText }}</span><span class="small ms-2" v-show="!props.option.hasPublished">(@T["Not published"])</span></div>
                 </template>
                 <template slot="noResult">
                     @T["No result found"]

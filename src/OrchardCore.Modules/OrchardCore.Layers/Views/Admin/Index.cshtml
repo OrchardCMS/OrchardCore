@@ -1,6 +1,7 @@
 @using System.Globalization;
 @using OrchardCore.ContentManagement.Metadata.Settings;
 @using OrchardCore.Layers.Drivers
+@using OrchardCore.ContentManagement.Metadata.Models
 @model OrchardCore.Layers.ViewModels.LayersIndexViewModel
 
 @inject IContentManager ContentManager
@@ -8,7 +9,7 @@
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
 @{
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget");
 }
 <script asp-name="jquery-ui" at="Foot"></script>
 
@@ -16,9 +17,6 @@
 
 <form id="undo-form" asp-action="UpdatePosition" method="post" class="no-multisubmit">
     <div id="layer-undo-message" class="alert alert-success alert-dismissible show d-none" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
         @T["Widget successfully moved. <a href=\"javascript:console.log('submit');$('#undo-form').submit();\"><strong>Undo</strong></a>."]
     </div>
     <input id="layer-undo-message-contentItemId" type="hidden" name="contentItemId" value="" />
@@ -40,60 +38,71 @@
                 {
                     double maxPosition = 0;
 
-                    <div class="card form-group">
+                    <div class="card mb-3">
                         <div class="card-header text-muted">
                             @zone
                         </div>
                         <div class="layer-zone card-body" data-zone="@zone">
-                            <div class="form-group">
-                                <ul class="list-group zones">
-                                    @if (Model.Widgets.ContainsKey(zone))
-                                    {
+                            @if (Model.Widgets.ContainsKey(zone) && Model.Widgets[zone].Any())
+                            {
+                                <div class="mb-3">
+                                    <ul class="list-group zones">
                                         @foreach (var contentItemSummary in Model.Widgets[zone])
                                         {
-                                            await contentItemSummary.Tags.AddAsync(Html.Raw("<span class=\"badge ta-badge font-weight-normal\"><i class=\"fa fa-bookmark-o text-info\" aria-hidden=\"true\"></i> " + contentItemSummary.ContentItem.Content.LayerMetadata.Layer + "</span>"));
+                                            await contentItemSummary.Tags.AddAsync(Html.Raw("<span class=\"badge ta-badge font-weight-normal\"><i class=\"fa fa-bookmark-o text-info\" aria-hidden=\"true\"></i> " + Html.Encode(contentItemSummary.ContentItem.Content.LayerMetadata.Layer) + "</span>"));
                                             maxPosition = Math.Max(maxPosition, (double)contentItemSummary.ContentItem.Content.LayerMetadata.Position);
 
                                             <text>
-                                                <li class="list-group-item">
-                                                    <div class="properties cursor-move">
+                                            <li class="list-group-item">
+                                                <div class="w-100 cursor-move properties">
                                                         @await DisplayAsync(contentItemSummary)
-                                                    </div>
-                                                    <input type="hidden"
-                                                           class="layer-metadata"
-                                                           data-zone="@zone"
-                                                           data-layer="@contentItemSummary.ContentItem.Content.LayerMetadata.Layer"
-                                                           data-position="@contentItemSummary.ContentItem.Content.LayerMetadata.Position.ToString(CultureInfo.InvariantCulture)"
-                                                           data-content-item-id="@contentItemSummary.ContentItem.ContentItemId" />
-                                                </li>
+                                                </div>
+                                                <input type="hidden"
+                                       class="layer-metadata"
+                                       data-zone="@zone"
+                                       data-layer="@contentItemSummary.ContentItem.Content.LayerMetadata.Layer"
+                                       data-position="@contentItemSummary.ContentItem.Content.LayerMetadata.Position.ToString(CultureInfo.InvariantCulture)"
+                                       data-content-item-id="@contentItemSummary.ContentItem.ContentItemId" />
+                                            </li>
                                             </text>
                                         }
-                                    }
-                                </ul>
-                            </div>
+                                    </ul>
+                                </div>
+                            }
                             @if (Model.Layers.Any())
                             {
-                                <div class="btn-dropdown-wrapper w-100">
-                                    <div class="btn-group btn-dropdown">
-                                        <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            @T["Add Widget"]
-                                        </button>
-                                        <div class="dropdown-menu">
-                                            @foreach (var type in widgetContentTypes)
-                                            {
-                                                var contentItem = await ContentManager.NewAsync(type.Name);
-                                                var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
-                                                createRoute["returnUrl"] = Context.Request.PathBase + Context.Request.Path;
-                                                createRoute["LayerMetadata.Zone"] = zone;
-                                                createRoute["LayerMetadata.Position"] = maxPosition + 1;
-                                                <a class="dropdown-item add-list-widget btn-sm"
-                                                data-widget-type="@type.Name"
-                                                data-zone="@zone"
-                                                href="@Url.Action((string)createRoute["Action"], (string)createRoute["controller"], createRoute)">@type.DisplayName</a>
-                                            }
+                                @if (widgetContentTypes.Any())
+                                {
+                                    <div class="btn-dropdown-wrapper w-100">
+                                        <div class="btn-group btn-dropdown">
+                                            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                @T["Add Widget"]
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                @foreach (var type in widgetContentTypes)
+                                                {
+                                                    var contentItem = await ContentManager.NewAsync(type.Name);
+                                                    var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
+                                                    createRoute["returnUrl"] = Context.Request.PathBase + Context.Request.Path;
+                                                    createRoute["LayerMetadata.Zone"] = zone;
+                                                    createRoute["LayerMetadata.Position"] = maxPosition + 1;
+                                                    <a class="dropdown-item add-list-widget btn-sm"
+                                   data-widget-type="@type.Name"
+                                   data-zone="@zone"
+                                   href="@Url.Action((string)createRoute["Action"], (string)createRoute["controller"], createRoute)">@type.DisplayName</a>
+                                                }
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                }
+                                else
+                                {
+                                    <span>@T["No widgets found."]</span>
+                                }
+                            }
+                            else
+                            {
+                                <span>@T["No layers found."]</span>
                             }
                         </div>
                     </div>
@@ -101,7 +110,7 @@
             }
         </form>
     </div>
-    <div class="col-md-4 col-md-pull-right">
+    <div class="col-md-4 col-md-pull-end">
         <h3>@T["Layers"]</h3>
         <p>
             <span class="hint">
@@ -109,16 +118,16 @@
                 <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Layers/#rules" target="_blank">@T["See documentation"]</a>
             </span>
         </p>
-        <div class="form-group">
+        <div class="mb-3">
             <ul class="list-group">
                 @foreach (var layer in Model.Layers)
                 {
                     <li class="list-group-item">
                         <div class="properties">
                             <div class="d-flex flex-wrap">
-                                <div class="custom-control custom-checkbox mr-auto flex-grow-1">
-                                    <input type="checkbox" class="custom-control-input layer-check" id="@layer.Name" value="@layer.Name">
-                                    <label class="custom-control-label" for="@layer.Name">@layer.Name</label>
+                                <div class="form-check me-auto flex-grow-1">
+                                    <input type="checkbox" class="form-check-input layer-check" id="@layer.Name" value="@layer.Name">
+                                    <label class="form-check-label" for="@layer.Name">@layer.Name</label>
                                 </div>
                                 <div>
                                     <a class="btn btn-primary btn-sm" href="@Url.Action("Edit", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })">@T["Edit"]</a>
@@ -147,7 +156,7 @@
         handle: ".properties",
         cursor: "move",
         connectWith: '.list-group',
-        stop: function (event, ui) {
+        stop: function(event, ui) {
             var newZone = ui.item.closest('.layer-zone').data("zone");
             var metadata = ui.item.find('.layer-metadata')
             var currentPosition = Number(metadata.data("position"));
@@ -183,24 +192,24 @@
             var antiforgerytoken = $("[name='__RequestVerificationToken']").val();
 
             $.post(url, { "__RequestVerificationToken": antiforgerytoken })
-                .done(function () {
+                .done(function() {
                     console.log('done');
                     $('#layer-undo-message').removeClass("d-none");
                     $('#layer-undo-message-contentItemId').val(contentItemId);
                     $('#layer-undo-message-position').val(currentPosition);
                     $('#layer-undo-message-zone').val(currentZone);
                 })
-                .fail(function () {
+                .fail(function() {
                     console.log('failed');
                     $('#layer-undo-message').addClass("d-none");
                 })
-            ;
+                ;
         }
     });
 
-    $('.layer-check').on('click', function () {
+    $('.layer-check').on('click', function() {
         $('.list-group-item').removeClass('list-group-item-success');
-        $('.layer-check:checked').each(function () {
+        $('.layer-check:checked').each(function() {
             var layer = $(this).val();
             $('[data-layer="' + layer + '"]').closest('.list-group-item').addClass('list-group-item-success');
         });

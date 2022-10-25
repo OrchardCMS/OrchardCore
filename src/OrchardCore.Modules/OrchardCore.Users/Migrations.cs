@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell.Scope;

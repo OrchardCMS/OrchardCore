@@ -11,7 +11,6 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentPreview.Controllers
 {
@@ -93,7 +92,7 @@ namespace OrchardCore.ContentPreview.Controllers
                     }
                 }
 
-                return StatusCode(500, new { errors = errors });
+                return this.InternalServerError(new { errors });
             }
 
             var previewAspect = await _contentManager.PopulateAspectAsync(contentItem, new PreviewAspect());

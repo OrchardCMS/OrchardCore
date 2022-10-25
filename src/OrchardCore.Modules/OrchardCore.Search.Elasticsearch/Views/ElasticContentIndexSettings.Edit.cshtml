@@ -1,0 +1,11 @@
+@model ElasticContentIndexSettingsViewModel
+
+<h4>Elasticsearch @T["Index settings"]</h4>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="ElasticContentIndexSettings.Included" data-bs-toggle="collapse" data-bs-target="#elastic-index-settings" checked="@Model.ElasticContentIndexSettings.Included" />
+        <label class="form-check-label" asp-for="ElasticContentIndexSettings.Included">@T["Include this element in the index"]</label>
+        <span class="hint dashed">@T["Check to include the value of this element in the index."]</span>
+    </div>
+</div>

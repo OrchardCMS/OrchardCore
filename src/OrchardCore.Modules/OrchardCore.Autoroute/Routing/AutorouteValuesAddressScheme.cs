@@ -10,12 +10,12 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Autoroute.Routing
 {
-    internal sealed class AutoRouteValuesAddressScheme : IShellRouteValuesAddressScheme
+    internal sealed class AutorouteValuesAddressScheme : IShellRouteValuesAddressScheme
     {
         private readonly IAutorouteEntries _entries;
         private readonly AutorouteOptions _options;
 
-        public AutoRouteValuesAddressScheme(IAutorouteEntries entries, IOptions<AutorouteOptions> options)
+        public AutorouteValuesAddressScheme(IAutorouteEntries entries, IOptions<AutorouteOptions> options)
         {
             _entries = entries;
             _options = options.Value;

@@ -8,7 +8,6 @@ using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Contents.Controllers
 {
@@ -72,7 +71,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (contentItem == null)
             {
-                return StatusCode(204);
+                return NoContent();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteContent, contentItem))

@@ -8,7 +8,6 @@ using OrchardCore.Admin;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Entities;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -62,7 +61,7 @@ namespace OrchardCore.Workflows
             services.AddScoped<IWorkflowStore, WorkflowStore>();
             services.AddScoped<IWorkflowManager, WorkflowManager>();
             services.AddScoped<IActivityDisplayManager, ActivityDisplayManager>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<IActivity>, MissingActivityDisplayDriver>();

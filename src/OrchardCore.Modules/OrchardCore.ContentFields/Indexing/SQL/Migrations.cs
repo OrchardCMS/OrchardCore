@@ -740,7 +740,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             }
             catch
             {
-                _logger.LogWarning("Failed to alter 'Time' column. This is not an error when using SqLite");     
+                _logger.LogWarning("Failed to alter 'Time' column. This is not an error when using SqLite");
             }
 
             SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table

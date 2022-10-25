@@ -11,20 +11,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Security.Services;
-using OrchardCore.Settings;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 using YesSql;
-using YesSql.Services;
 using YesSql.Filters.Query;
+using YesSql.Services;
 
 namespace OrchardCore.Users.Controllers
 {
@@ -35,7 +35,7 @@ namespace OrchardCore.Users.Controllers
         private readonly SignInManager<IUser> _signInManager;
         private readonly ISession _session;
         private readonly IAuthorizationService _authorizationService;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly IDisplayManager<User> _userDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUserService _userService;
@@ -60,7 +60,7 @@ namespace OrchardCore.Users.Controllers
             IRoleService roleService,
             IUsersAdminListQueryService usersAdminListQueryService,
             INotifier notifier,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
             ILogger<AccountController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
@@ -74,7 +74,7 @@ namespace OrchardCore.Users.Controllers
             _session = session;
             _userManager = userManager;
             _notifier = notifier;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             _userService = userService;
             _roleService = roleService;
             _usersAdminListQueryService = usersAdminListQueryService;
@@ -116,8 +116,7 @@ namespace OrchardCore.Users.Controllers
 
             var routeData = new RouteData(options.RouteValues);
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var count = await users.CountAsync();
 
@@ -316,7 +315,7 @@ namespace OrchardCore.Users.Controllers
 
         [HttpPost]
         [ActionName(nameof(Create))]
-        public async Task<IActionResult> CreatePost()
+        public async Task<IActionResult> CreatePost([Bind(Prefix = "User.Password")] string password)
         {
             var user = new User();
 
@@ -332,7 +331,7 @@ namespace OrchardCore.Users.Controllers
                 return View(shape);
             }
 
-            await _userService.CreateUserAsync(user, null, ModelState.AddModelError);
+            await _userService.CreateUserAsync(user, password, ModelState.AddModelError);
 
             if (!ModelState.IsValid)
             {

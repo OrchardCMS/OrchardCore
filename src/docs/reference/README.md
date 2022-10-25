@@ -22,9 +22,11 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 
 ### App security
 
+- [Audit Trail](modules/AuditTrail/README.md)
 - [CORS](modules/Cors/README.md)
 - [ReCaptcha](modules/ReCaptcha/README.md)
-- [Sanitizer](core/Sanitizer/README.md) 
+- [Sanitizer](core/Sanitizer/README.md)
+- [Security](modules/Security/README.md) 
 
 ### Authentication and User Management
 
@@ -55,6 +57,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
   - [Flow](modules/Flow/README.md) 
   - [Bag](modules/Flow/BagPart.md)
   - [Publish Later](modules/PublishLater/README.md)
+  - [SEO Meta](modules/Seo/README.md)
 - [Content Fields](modules/ContentFields/README.md)
 - [Content Preview](modules/ContentPreview/README.md)
 - [Taxonomies](modules/Taxonomies/README.md)
@@ -63,6 +66,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - Media:
   - [Media](modules/Media/README.md)
   - [Media Slugify](modules/Media.Slugify/README.md)
+  - [Media Amazon S3](modules/Media.AmazonS3/README.md)
   - [Media Azure](modules/Media.Azure/README.md)
 - [XML-RPC](modules/XmlRpc/README.md)
 - [Shortcodes](modules/Shortcodes/README.md)
@@ -109,6 +113,9 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Mini Profiler](modules/MiniProfiler/README.md)
 - [Response Compression](modules/ResponseCompression/README.md)
 - [Email](modules/Email/README.md)
+- [Redis](modules/Redis/README.md)
+- [Deployment](modules/Deployment/README.md)
+- [Remote Deployment](modules/Deployment.Remote/README.md)
 
 ### Localization
 
@@ -126,5 +133,6 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 
 - [SQL](modules/SQLIndexing/README.md)
 - [Lucene](modules/Lucene/README.md)
+- [Elasticsearch](modules/Elasticsearch/README.md)
 - [Queries](modules/Queries/README.md)
 - [Indexing](modules/Indexing/README.md)

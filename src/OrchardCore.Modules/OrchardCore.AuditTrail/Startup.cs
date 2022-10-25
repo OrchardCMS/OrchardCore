@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.AuditTrail.Controllers;
@@ -20,7 +19,6 @@ using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
-using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
@@ -51,14 +49,13 @@ namespace OrchardCore.AuditTrail
             services.AddScoped<IAuditTrailManager, AuditTrailManager>();
 
             services
-                .AddScoped<IDisplayManager<AuditTrailEvent>, DisplayManager<AuditTrailEvent>>()
                 .AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailEventDisplayDriver>();
 
             services.AddSingleton<IAuditTrailIdGenerator, AuditTrailIdGenerator>();
 
             services.Configure<StoreCollectionOptions>(o => o.Collections.Add(AuditTrailEvent.Collection));
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddSingleton<IIndexProvider, AuditTrailEventIndexProvider>();
             services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
 
@@ -69,8 +66,7 @@ namespace OrchardCore.AuditTrail
             services.AddScoped<IDisplayDriver<ISite>, AuditTrailSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<ISite>, AuditTrailTrimmingSettingsDisplayDriver>();
 
-            services.AddScoped<IDisplayManager<AuditTrailIndexOptions>, DisplayManager<AuditTrailIndexOptions>>()
-                .AddScoped<IDisplayDriver<AuditTrailIndexOptions>, AuditTrailOptionsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<AuditTrailIndexOptions>, AuditTrailOptionsDisplayDriver>();
 
             services.AddScoped<IAuditTrailAdminListQueryService, DefaultAuditTrailAdminListQueryService>();
 

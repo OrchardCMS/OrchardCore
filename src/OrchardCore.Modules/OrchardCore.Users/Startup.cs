@@ -15,7 +15,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
@@ -27,6 +26,7 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes.Services;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -75,6 +75,14 @@ namespace OrchardCore.Users
                 pattern: userOptions.ChangePasswordUrl,
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.ChangePassword) }
             );
+
+            routes.MapAreaControllerRoute(
+                name: "ChangePasswordConfirmation",
+                areaName: "OrchardCore.Users",
+                pattern: userOptions.ChangePasswordConfirmationUrl,
+                defaults: new { controller = accountControllerName, action = nameof(AccountController.ChangePasswordConfirmation) }
+            );
+
             routes.MapAreaControllerRoute(
                 name: "UsersLogOff",
                 areaName: "OrchardCore.Users",
@@ -187,7 +195,7 @@ namespace OrchardCore.Users
             services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByClaimIndexProvider>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalProviderFactory>();
@@ -207,7 +215,6 @@ namespace OrchardCore.Users
 
             services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
 
-            services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserRoleDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserInformationDisplayDriver>();
@@ -219,7 +226,6 @@ namespace OrchardCore.Users
 
             services.AddScoped<IUsersAdminListQueryService, DefaultUsersAdminListQueryService>();
 
-            services.AddScoped<IDisplayManager<UserIndexOptions>, DisplayManager<UserIndexOptions>>();
             services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
 
             services.AddSingleton<IUsersAdminListFilterParser>(sp =>
@@ -238,6 +244,9 @@ namespace OrchardCore.Users
 
             services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
 
+            services.AddScoped<IUserEventHandler, UserDisabledEventHandler>();
+
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
         }
     }
 
@@ -455,7 +464,7 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSiteSettingsPropertyDeploymentStep<ResetPasswordDeploymentStartup, ResetPasswordDeploymentStartup>(S => S["Reset Password settings"], S => S["Exports the Reset Password settings."]);
+            services.AddSiteSettingsPropertyDeploymentStep<ResetPasswordSettings, ResetPasswordDeploymentStartup>(S => S["Reset Password settings"], S => S["Exports the Reset Password settings."]);
         }
     }
 

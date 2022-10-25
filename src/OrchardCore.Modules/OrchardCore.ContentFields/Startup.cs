@@ -27,7 +27,7 @@ namespace OrchardCore.ContentFields
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
-        
+
         public Startup(IOptions<AdminOptions> adminOptions)
         {
             _adminOptions = adminOptions.Value;
@@ -134,7 +134,7 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentPickerResultProvider, DefaultContentPickerResultProvider>();
 
             // Migration, can be removed in a future release.
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

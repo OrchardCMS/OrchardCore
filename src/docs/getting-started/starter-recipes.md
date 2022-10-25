@@ -31,19 +31,18 @@ Orchard Core Display Management techniques to render content.
 
 ## OrchardCore.Application.Cms.Core.Targets
 
-### Empty Recipe
+### Blank Recipe
 
-The Empty recipe enables content management features, but does not set a current theme.
+The Blank recipe enables content management features, but does not set a current theme.
 You can use this recipe when starting Orchard Core in Decoupled Mode,
 or when building your own theme.
 
 Alternatively you can start with another recipe,
 and change the active theme after setup.
 
-#### Empty Recipe Contents 
+#### Blank Recipe Contents 
 
 - Content management features
-- Enables templating via Liquid
 - Activates `TheAdmin` theme
 
 ### Headless Recipe
@@ -62,6 +61,10 @@ as an API, and Content Management System, with Administrator access to the host.
     You will want to review the default security configuration to be certain
     it suits your requirements.
 
+## Headless Recipe Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/dbABI1wECPg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## OrchardCore.Application.Cms.Targets
 
 ### TheBlogTheme and Blog Recipe
@@ -78,6 +81,29 @@ TheBlogTheme is based on the [Start Bootstrap Clean Blog Theme](https://startboo
 - A blog, and a first blog post, based on the `ListPart`
 - Liquid templates, in the TheBlogTheme source code
 - Bootstrap
+
+### Blog - Lucene Query Recipe
+
+The Lucene Query recipe is an optional recipe in the TheBlogTheme. 
+This recipe runs the Blog Lucene Search recipe and as an example,
+the recipe replaces the RecentBlogPosts SQL query with a Lucene query.
+
+#### Blog Lucene Query Recipe Contents
+
+- Runs the Blog Lucene Search recipe
+- Replace RecentBlogPosts SQL query with Lucene
+
+### Blog - Lucene Search Recipe
+
+The Lucene Search recipe is an optional recipe in the TheBlogTheme. 
+This recipe enables the Lucene feature and creates Search setting, Lucene indices and permissions.
+
+#### Blog Lucene Search Recipe Contents
+
+- Enables Lucene feature
+- Setup Lucene indices 
+- Create the search settings
+- Search index permission
 
 ### TheAgencyTheme and Agency Recipe
 

@@ -12,7 +12,10 @@
 
 .validation-summary-errors {
     @extend .alert, .alert-danger;
-    padding-bottom: 0;
+
+    ul {
+        margin-bottom: 0px;
+    }
 }
 
 .field-validation-error {
@@ -57,10 +60,6 @@ label .field-validation-error::before {
     display: none;
 }
 
-select[multiple] {
-    min-height: 300px;
-}
-
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
     display: none;
@@ -72,7 +71,7 @@ input[type="password"]::-ms-clear {
 
 .has-filter .form-control-feedback, .has-search .form-control-feedback {
     position: absolute;
-    left: 10px;
+    left: 1.75rem;
     z-index: 4;
     display: block;
     width: 1rem;
@@ -80,13 +79,18 @@ input[type="password"]::-ms-clear {
     line-height: 1rem;
     text-align: center;
     pointer-events: none;
-    color: #aaa;
-}
-
-.has-search .form-control-feedback {
-    left: 10px;
 }
 
 .has-filter .form-control-feedback {
-    left: 55px;
+    left: 4.25rem;
+    top: 0.25rem;
+}
+
+.has-search .form-control-feedback {
+    left: 1.75rem;
+}
+
+.has-search:not(.input-group) .form-control-feedback, .has-filter:not(.input-group) .form-control-feedback {
+    left: 1.75rem;
+    top: 1.25rem;
 }

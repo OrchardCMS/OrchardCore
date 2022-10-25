@@ -9,8 +9,8 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Workflows.Activities;
-using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Options;
 
 namespace OrchardCore.Workflows.Services
@@ -35,14 +35,14 @@ namespace OrchardCore.Workflows.Services
             return _displayManager.BuildDisplayAsync(model, updater, displayType, groupId);
         }
 
-        public Task<IShape> BuildEditorAsync(IActivity model, IUpdateModel updater, bool isNew, string groupId = "")
+        public Task<IShape> BuildEditorAsync(IActivity model, IUpdateModel updater, bool isNew, string groupId = "", string htmlPrefix = "")
         {
-            return _displayManager.BuildEditorAsync(model, updater, isNew, groupId);
+            return _displayManager.BuildEditorAsync(model, updater, isNew, groupId, htmlPrefix);
         }
 
-        public Task<IShape> UpdateEditorAsync(IActivity model, IUpdateModel updater, bool isNew, string groupId = "")
+        public Task<IShape> UpdateEditorAsync(IActivity model, IUpdateModel updater, bool isNew, string groupId = "", string htmlPrefix = "")
         {
-            return _displayManager.UpdateEditorAsync(model, updater, isNew, groupId);
+            return _displayManager.UpdateEditorAsync(model, updater, isNew, groupId, htmlPrefix);
         }
     }
 }

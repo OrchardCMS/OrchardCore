@@ -1,0 +1,21 @@
+@using Microsoft.AspNetCore.Authorization
+@using OrchardCore.Contents
+@model ArchiveLaterPartViewModel
+
+@inject IAuthorizationService AuthorizationService
+
+<style asp-src="~/OrchardCore.ArchiveLater/Styles/archive-later.min.css" debug-src="~/OrchardCore.ArchiveLater/Styles/archive-later.css"></style>
+
+@if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, Model.ContentItem))
+{
+    <div class="btn-group">
+        <input asp-for="ScheduledArchiveLocalDateTime" type="datetime-local" class="form-control content-preview-select" />
+        <button class="btn btn-primary btn-archive-later" type="submit" name="submit.Publish" value="submit.ArchiveLater">@T["Archive Later"]</button>
+    </div>
+    @if (Model.ScheduledArchiveUtc.HasValue)
+    {
+        <div class="btn-group">
+            <button class="btn btn-primary btn-archive-later" type="submit" name="submit.Publish" value="submit.CancelArchiveLater">@T["Cancel Archive Later"]</button>
+        </div>
+    }
+}

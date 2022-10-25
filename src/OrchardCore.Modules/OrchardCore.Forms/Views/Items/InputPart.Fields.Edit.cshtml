@@ -1,9 +1,11 @@
-@using OrchardCore.Forms.ViewModels;
+@using OrchardCore.Forms.ViewModels
 @model InputPartEditViewModel
-
-<div class="form-group">
+@{
+    var wrapperId = Html.IdFor(m => m);
+}
+<div class="mb-3" id="@wrapperId">
     <label asp-for="Type">@T["Type"]</label>
-    <select asp-for="Type" class="form-control content-preview-select">
+    <select asp-for="Type" class="form-select content-preview-select field-type-select-menu">
         <option value="text">@T["Text"]</option>
         <option value="number">@T["Number"]</option>
         <option value="email">@T["Email"]</option>
@@ -16,7 +18,6 @@
         <option value="week">@T["Week"]</option>
         <option value="hidden">@T["Hidden"]</option>
         <option value="password">@T["Password"]</option>
-        <option value="radio">@T["Radio"]</option>
         <option value="checkbox">@T["Checkbox"]</option>
         <option value="color">@T["Color"]</option>
         <option value="range">@T["Range"]</option>
@@ -30,14 +31,45 @@
     <span class="hint">@T["The button type."]</span>
 </div>
 
-<div class="form-group">
+<div class="mb-3 show-for-input">
     <label asp-for="Placeholder">@T["Placeholder Text"]</label>
     <input asp-for="Placeholder" type="text" class="form-control content-preview-text" />
     <span class="hint">@T["The text to display when the field has no value."]</span>
 </div>
 
-<div class="form-group">
+<div class="mb-3">
     <label asp-for="DefaultValue">@T["Default Value"]</label>
     <input asp-for="DefaultValue" type="text" class="form-control content-preview-text" />
     <span class="hint">@T["The default value for this field."]</span>
 </div>
+
+<script at="Foot">
+    var initilizeFieldType = (wrapper) => {
+        var selectMenus = wrapper.getElementsByClassName('field-type-select-menu');
+        for (let i = 0; i < selectMenus.length; i++) {
+            var selectMenu = selectMenus[i];
+            var widgetWrapper = selectMenu.closest('.widget-editor-body');
+            selectMenu.addEventListener('change', function(e) {
+                var visibleForInputContainers = (widgetWrapper || wrapper).getElementsByClassName('show-for-input');
+                if (visibleForInputContainers.length == 0) {
+                    return;
+                }
+                var value = e.target.value;
+                for (let i = 0; i < visibleForInputContainers.length; i++) {
+                    if (value == 'reset' || value == 'submit' || value == 'hidden') {
+                        visibleForInputContainers[i].classList.add('d-none');
+                    } else {
+                        visibleForInputContainers[i].classList.remove('d-none');
+                    }
+                }
+            });
+        }
+    };
+    var wrapper = document.getElementById('@wrapperId')
+    if (wrapper != null) {
+        initilizeFieldType(wrapper);
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        initilizeFieldType(document);
+    });
+</script>

@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
@@ -32,17 +33,20 @@ namespace OrchardCore.Modules
 
         private readonly IShellHost _shellHost;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly BackgroundServiceOptions _options;
         private readonly ILogger _logger;
         private readonly IClock _clock;
 
         public ModularBackgroundService(
             IShellHost shellHost,
             IHttpContextAccessor httpContextAccessor,
+            IOptions<BackgroundServiceOptions> options,
             ILogger<ModularBackgroundService> logger,
             IClock clock)
         {
             _shellHost = shellHost;
             _httpContextAccessor = httpContextAccessor;
+            _options = options.Value;
             _logger = logger;
             _clock = clock;
         }
@@ -53,6 +57,19 @@ namespace OrchardCore.Modules
             {
                 _logger.LogInformation("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
             });
+
+            if (_options.ShellWarmup)
+            {
+                try
+                {
+                    // Ensure all tenants are pre-loaded.
+                    await _shellHost.InitializeAsync();
+                }
+                catch (Exception ex) when (!ex.IsFatal())
+                {
+                    _logger.LogError(ex, "Failed to warm up the tenants from '{ServiceName}'.", nameof(ModularBackgroundService));
+                }
+            }
 
             while (GetRunningShells().Count() < 1)
             {
@@ -83,7 +100,7 @@ namespace OrchardCore.Modules
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
-                    _logger.LogError(ex, "Error while executing '{ServiceName}'", nameof(ModularBackgroundService));
+                    _logger.LogError(ex, "Error while executing '{ServiceName}'.", nameof(ModularBackgroundService));
                 }
             }
         }
@@ -107,7 +124,7 @@ namespace OrchardCore.Modules
 
                     var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
 
-                    if (shellScope.ShellContext.Pipeline == null)
+                    if (!_options.ShellWarmup && shellScope.ShellContext.Pipeline == null)
                     {
                         break;
                     }
@@ -193,7 +210,7 @@ namespace OrchardCore.Modules
 
                 var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
 
-                if (shellScope.ShellContext.Pipeline == null)
+                if (!_options.ShellWarmup && shellScope.ShellContext.Pipeline == null)
                 {
                     return;
                 }
@@ -286,7 +303,7 @@ namespace OrchardCore.Modules
 
         private IEnumerable<ShellContext> GetRunningShells()
         {
-            return _shellHost.ListShellContexts().Where(s => s.Settings.State == TenantState.Running && s.Pipeline != null).ToArray();
+            return _shellHost.ListShellContexts().Where(s => s.Settings.State == TenantState.Running && (_options.ShellWarmup || s.Pipeline != null)).ToArray();
         }
 
         private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)
@@ -348,63 +365,6 @@ namespace OrchardCore.Modules
                     _schedulers.TryRemove(key, out var scheduler);
                 }
             }
-        }
-    }
-
-    internal static class HttpContextExtensions
-    {
-        public static void SetBaseUrl(this HttpContext context, string baseUrl)
-        {
-            if (Uri.TryCreate(baseUrl, UriKind.Absolute, out var uri))
-            {
-                context.Request.Scheme = uri.Scheme;
-                context.Request.Host = new HostString(uri.Host, uri.Port);
-                context.Request.PathBase = uri.AbsolutePath;
-
-                if (!String.IsNullOrWhiteSpace(uri.Query))
-                {
-                    context.Request.QueryString = new QueryString(uri.Query);
-                }
-            }
-        }
-    }
-
-    internal static class ShellExtensions
-    {
-        public static HttpContext CreateHttpContext(this ShellContext shell)
-        {
-            var context = shell.Settings.CreateHttpContext();
-
-            context.Features.Set(new ShellContextFeature
-            {
-                ShellContext = shell,
-                OriginalPathBase = String.Empty,
-                OriginalPath = "/"
-            });
-
-            return context;
-        }
-
-        public static HttpContext CreateHttpContext(this ShellSettings settings)
-        {
-            var context = new DefaultHttpContext().UseShellScopeServices();
-
-            context.Request.Scheme = "https";
-
-            var urlHost = settings.RequestUrlHost?.Split(new[] { ',', ' ' },
-                StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-
-            context.Request.Host = new HostString(urlHost ?? "localhost");
-
-            if (!String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
-            {
-                context.Request.PathBase = "/" + settings.RequestUrlPrefix;
-            }
-
-            context.Request.Path = "/";
-            context.Items["IsBackground"] = true;
-
-            return context;
         }
     }
 }

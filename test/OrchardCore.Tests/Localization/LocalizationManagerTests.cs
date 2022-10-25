@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
@@ -9,16 +8,16 @@ namespace OrchardCore.Tests.Localization
 {
     public class LocalizationManagerTests
     {
-        private PluralizationRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
-        private Mock<IPluralRuleProvider> _pluralRuleProvider;
-        private Mock<ITranslationProvider> _translationProvider;
-        private IMemoryCache _memoryCache;
+        private readonly Mock<IPluralRuleProvider> _pluralRuleProvider;
+        private readonly Mock<ITranslationProvider> _translationProvider;
+        private readonly IMemoryCache _memoryCache;
 
         public LocalizationManagerTests()
         {
+            var csPluralRule = PluralizationRule.Czech;
             _pluralRuleProvider = new Mock<IPluralRuleProvider>();
             _pluralRuleProvider.SetupGet(o => o.Order).Returns(0);
-            _pluralRuleProvider.Setup(o => o.TryGetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"), out _csPluralRule)).Returns(true);
+            _pluralRuleProvider.Setup(o => o.TryGetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"), out csPluralRule)).Returns(true);
 
             _translationProvider = new Mock<ITranslationProvider>();
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
@@ -31,12 +30,13 @@ namespace OrchardCore.Tests.Localization
                 It.Is<string>(culture => culture == "cs"),
                 It.IsAny<CultureDictionary>())
             );
+
             var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
 
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
 
             Assert.Equal("cs", dictionary.CultureName);
-            Assert.Equal(_csPluralRule, dictionary.PluralRule);
+            Assert.Equal(PluralizationRule.Czech, dictionary.PluralRule);
         }
 
         [Fact]
@@ -46,6 +46,7 @@ namespace OrchardCore.Tests.Localization
             _translationProvider
                 .Setup(o => o.LoadTranslations(It.Is<string>(culture => culture == "cs"), It.IsAny<CultureDictionary>()))
                 .Callback<string, CultureDictionary>((culture, dictioanry) => dictioanry.MergeTranslations(new[] { dictionaryRecord }));
+
             var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
 
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
@@ -69,6 +70,7 @@ namespace OrchardCore.Tests.Localization
                 It.Is<string>(culture => culture == "cs"),
                 It.IsAny<CultureDictionary>())
             );
+
             var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object, highPriorityRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
 
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));

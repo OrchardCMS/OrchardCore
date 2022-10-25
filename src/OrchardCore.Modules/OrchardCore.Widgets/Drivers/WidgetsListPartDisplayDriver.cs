@@ -10,7 +10,6 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.Utilities;
-using OrchardCore.Settings;
 using OrchardCore.Widgets.Models;
 using OrchardCore.Widgets.Settings;
 using OrchardCore.Widgets.ViewModels;
@@ -22,19 +21,16 @@ namespace OrchardCore.Widgets.Drivers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ISiteService _siteService;
 
         public WidgetsListPartDisplayDriver(
             IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
-            IServiceProvider serviceProvider,
-            ISiteService siteService
+            IServiceProvider serviceProvider
             )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
             _serviceProvider = serviceProvider;
-            _siteService = siteService;
         }
 
         public override async Task<IDisplayResult> DisplayAsync(WidgetsListPart part, BuildPartDisplayContext context)
@@ -108,13 +104,13 @@ namespace OrchardCore.Widgets.Drivers
                 var contentItem = await _contentManager.NewAsync(contentType);
                 if (part.Widgets.ContainsKey(zone))
                 {
-                    var existingContentItem = part.Widgets[zone].FirstOrDefault(x => String.Equals(x.ContentItemId, model.Prefixes[i], StringComparison.OrdinalIgnoreCase));
+                    var existingContentItem = part.Widgets[zone].FirstOrDefault(x => String.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
                     // When the content item already exists merge its elements to preverse nested content item ids.
                     // All of the data for these merged items is then replaced by the model values on update, while a nested content item id is maintained.
                     // This prevents nested items which rely on the content item id, i.e. the media attached field, losing their reference point.
                     if (existingContentItem != null)
                     {
-                        contentItem.ContentItemId = model.Prefixes[i];
+                        contentItem.ContentItemId = model.ContentItems[i];
                         contentItem.Merge(existingContentItem);
                     }
                 }

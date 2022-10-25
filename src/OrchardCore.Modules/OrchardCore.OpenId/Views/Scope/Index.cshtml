@@ -15,8 +15,8 @@
         @foreach (var entry in Model.Scopes)
         {
             <li class="list-group-item">
-                <div class="properties">
-                    <div class="related float-xs-right">
+                <div class="w-100">
+                    <div class="float-end float-sm-end">
                         <a asp-action="Edit" asp-route-id="@entry.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
                         <a class="delete btn btn-danger btn-sm" asp-route-id="@entry.Id" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl">@T["Delete"]</a>
                     </div>

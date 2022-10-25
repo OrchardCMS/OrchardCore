@@ -38,6 +38,7 @@
         "OrchardCore.Recipes",
         "OrchardCore.Resources",
         "OrchardCore.Roles",
+        "OrchardCore.Security",
         "OrchardCore.Settings",
         "OrchardCore.Themes",
         "OrchardCore.Users",
@@ -50,7 +51,6 @@
         "OrchardCore.ContentFields",
         "OrchardCore.ContentPreview",
         "OrchardCore.Contents",
-        "OrchardCore.Contents.FileContentDefinition",
         "OrchardCore.ContentTypes",
         "OrchardCore.CustomSettings",
         "OrchardCore.Deployment",
@@ -59,13 +59,13 @@
         "OrchardCore.Flows",
         "OrchardCore.Indexing",
         "OrchardCore.Layers",
-        "OrchardCore.Lucene",
         "OrchardCore.Lists",
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
         "OrchardCore.Placements",
         "OrchardCore.Queries",
+        "OrchardCore.Queries.Sql",
         "OrchardCore.Shortcodes.Templates",
         "OrchardCore.Rules",
         "OrchardCore.Taxonomies",
@@ -241,13 +241,10 @@
                 "ContentTypePartSettings": {
                   "Position": "1"
                 },
-                "ContentIndexSettings": {
+                "LuceneContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                  "Keyword": false
                 },
                 "AutoroutePartSettings": {
                   "AllowCustomPath": true,
@@ -569,13 +566,10 @@
                   "DisplayName": "Banner Image",
                   "Position": "0"
                 },
-                "ContentIndexSettings": {
+                "LuceneContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                  "Keyword": false
                 },
                 "MediaFieldSettings": {
                   "Multiple": false,
@@ -607,13 +601,10 @@
                   "DisplayName": "Banner Image",
                   "Position": "1"
                 },
-                "ContentIndexSettings": {
+                "LuceneContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                  "Keyword": false
                 },
                 "MediaFieldSettings": {
                   "Multiple": false,
@@ -631,7 +622,6 @@
                   "DisplayMode": "Tags",
                   "Position": "2"
                 },
-                "ContentIndexSettings": {},
                 "TaxonomyFieldSettings": {
                   "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
                 },
@@ -646,7 +636,6 @@
                   "DisplayName": "Category",
                   "Position": "3"
                 },
-                "ContentIndexSettings": {},
                 "TaxonomyFieldSettings": {
                   "TaxonomyContentItemId": "[js: variables('categoriesContentItemId')]",
                   "Unique": true,
@@ -787,68 +776,9 @@
                 },
                 "TextFieldSettings": {
                   "Required": true
-                },
-                "ContentIndexSettings": {}
+                }
               }
             }
-          ]
-        }
-      ]
-    },
-    {
-      // Create the indices before the content items so they are indexed automatically.
-      "name": "lucene-index",
-      "Indices": [
-        {
-          "Search": {
-            "AnalyzerName": "standardanalyzer",
-            "IndexLatest": false,
-            "IndexedContentTypes": [
-              "Article",
-              "Blockquote",
-              "Blog",
-              "BlogPost",
-              "Button",
-              "Container",
-              "Form",
-              "ImageWidget",
-              "Image",
-              "Input",
-              "Label",
-              "LinkMenuItem",
-              "Menu",
-              "Page",
-              "Paragraph",
-              "RawHtml",
-              "Select",
-              "TextArea",
-              "Validation",
-              "ValidationSummary"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      // Create the search settings.
-      "name": "Settings",
-      "LuceneSettings": {
-        "SearchIndex": "Search",
-        "DefaultSearchFields": [
-          "Content.ContentItem.FullText"
-        ]
-      }
-    },
-    {
-      // Create the search index permissions.
-      "name": "Roles",
-      "Roles": [
-        {
-          "Name": "Anonymous",
-          "Description": "Anonymous role",
-          "Permissions": [
-            "ViewContent",
-            "QueryLuceneSearchIndex"
           ]
         }
       ]
@@ -1205,10 +1135,9 @@
       "name": "queries",
       "Queries": [
         {
-          "Source": "Lucene",
+          "Source": "Sql",
           "Name": "RecentBlogPosts",
-          "Index": "Search",
-          "Template": "[file:text('Snippets/recentBlogPosts.json')]",
+          "Template": "SELECT * FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC LIMIT 3",
           "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
           "ReturnContentItems": true
         }
@@ -1351,6 +1280,6 @@
           "Quality": 100
         }
       }
-    }    
+    }
   ]
 }

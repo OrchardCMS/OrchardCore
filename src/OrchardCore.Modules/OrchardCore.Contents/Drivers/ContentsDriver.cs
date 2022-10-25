@@ -6,7 +6,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
@@ -44,14 +44,9 @@ namespace OrchardCore.Contents.Drivers
             {
                 contentsMetadataShape.Displaying(ctx =>
                 {
-                    var stereotype = "";
-                    var settings = contentTypeDefinition?.GetSettings<ContentTypeSettings>();
-                    if (settings != null)
-                    {
-                        stereotype = settings.Stereotype;
-                    }
+                    var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
 
-                    if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
+                    if (hasStereotype && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
                     {
                         ctx.Shape.Metadata.Alternates.Add($"{stereotype}__ContentsMetadata");
                     }
@@ -59,15 +54,14 @@ namespace OrchardCore.Contents.Drivers
                     var displayType = ctx.Shape.Metadata.DisplayType;
 
                     if (!String.IsNullOrEmpty(displayType) && displayType != "Detail")
-                    {                        
+                    {
                         ctx.Shape.Metadata.Alternates.Add($"ContentsMetadata_{ctx.Shape.Metadata.DisplayType}");
 
-                        if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
+                        if (hasStereotype && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
                         {
                             ctx.Shape.Metadata.Alternates.Add($"{stereotype}_{displayType}__ContentsMetadata");
                         }
                     }
-
                 });
 
                 results.Add(contentsMetadataShape);
@@ -113,7 +107,7 @@ namespace OrchardCore.Contents.Drivers
             results.Add(Dynamic("Content_SaveDraftButton").Location("Actions:20")
                 .RenderWhen(async () =>
                 {
-                    if (contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable &&
+                    if (contentTypeDefinition.IsDraftable() &&
                         await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem))
                     {
                         return true;
