@@ -9,62 +9,59 @@ namespace OrchardCore;
 
 public static class CssOrchardHelper
 {
-    private static TheAdminThemeOptions _options;
-
-
     public static string GetLimitedWidthCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
     {
-        _options ??= GetThemeOptions(helper);
+        var options = GetThemeOptions(helper);
 
-        return String.Join(' ', Combine(_options.LimitedWidth, additionalClasses));
+        return String.Join(' ', Combine(options.LimitedWidth, additionalClasses));
     }
 
     public static string GetLabelCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
     {
-        _options ??= GetThemeOptions(helper);
+        var options = GetThemeOptions(helper);
 
-        return String.Join(' ', Combine(_options.LabelClasses, additionalClasses));
+        return String.Join(' ', Combine(options.LabelClasses, additionalClasses));
     }
 
     public static string GetStartCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
     {
-        _options ??= GetThemeOptions(helper);
+        var options = GetThemeOptions(helper);
 
-        return String.Join(' ', Combine(_options.StartClasses, additionalClasses));
+        return String.Join(' ', Combine(options.StartClasses, additionalClasses));
     }
 
     public static string GetEndCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
     {
-        _options ??= GetThemeOptions(helper);
+        var options = GetThemeOptions(helper);
 
-        return String.Join(' ', Combine(_options.EndClasses, additionalClasses));
+        return String.Join(' ', Combine(options.EndClasses, additionalClasses));
     }
 
     public static string GetEndCssClasses(this IOrchardHelper helper, bool withOffset, params string[] additionalClasses)
     {
-        _options ??= GetThemeOptions(helper);
+        var options = GetThemeOptions(helper);
 
-        if (withOffset && !String.IsNullOrEmpty(_options.OffsetClasses))
+        if (withOffset && !String.IsNullOrEmpty(options.OffsetClasses))
         {
             var cssClasses = new List<string>(additionalClasses)
             {
-                _options.OffsetClasses
+                options.OffsetClasses
             };
 
-            return String.Join(' ', Combine(_options.EndClasses, cssClasses.ToArray()));
+            return String.Join(' ', Combine(options.EndClasses, cssClasses.ToArray()));
         }
 
-        return String.Join(' ', Combine(_options.EndClasses, additionalClasses.ToArray()));
+        return String.Join(' ', Combine(options.EndClasses, additionalClasses.ToArray()));
     }
 
     public static string GetOffsetCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
     {
-        _options ??= GetThemeOptions(helper);
+        var options = GetThemeOptions(helper);
 
-        return String.Join(' ', Combine(_options.OffsetClasses, additionalClasses));
+        return String.Join(' ', Combine(options.OffsetClasses, additionalClasses));
     }
 
-    private static TheAdminThemeOptions GetThemeOptions(IOrchardHelper helper) => _options ??= helper.HttpContext.RequestServices.GetService<IOptions<TheAdminThemeOptions>>().Value;
+    private static TheAdminThemeOptions GetThemeOptions(IOrchardHelper helper) => helper.HttpContext.RequestServices.GetService<IOptions<TheAdminThemeOptions>>().Value;
 
     private static IEnumerable<string> Combine(string optionClasses, string[] additionalClasses)
     {
