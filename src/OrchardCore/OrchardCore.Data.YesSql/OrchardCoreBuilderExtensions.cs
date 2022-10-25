@@ -40,6 +40,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.AddTransient<ITableNameConventionFactory, TableNameConventionFactory>();
                 services.AddTransient<IConfigureOptions<SqliteOptions>, SqliteOptionsConfiguration>();
+                services.AddTransient<IConfigureOptions<DatabaseTableOptions>, ShellDatabaseTableOptionsConfiguration>();
 
                 // Adding supported databases
                 services.TryAddDataProvider(name: "Sql Server", value: DatabaseProviderValue.SqlConnection, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
@@ -47,7 +48,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.TryAddDataProvider(name: "MySql", value: DatabaseProviderValue.MySql, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
                 services.TryAddDataProvider(name: "Postgres", value: DatabaseProviderValue.Postgres, hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
 
-                services.AddTransient<IConfigureOptions<DatabaseTableOptions>, ShellDatabaseTableOptionsConfiguration>();
                 // Configuring data access
                 services.AddSingleton(sp =>
                 {

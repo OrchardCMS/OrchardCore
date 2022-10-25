@@ -27,7 +27,7 @@
     </div>
 </div>
 
-@if (!Model.DatabaseConfigurationPreset)
+@if (!Model.DatabaseConfigurationPreset || Model.CanEditDatabasePresets)
 {
     <div class="row connectionString" asp-validation-class-for="ConnectionString">
         <div class="mb-3 col-md-12">
@@ -74,7 +74,7 @@
             <label asp-for="TableNameSeparator">@T["Table naming seperator to use when creating table names"]</label>
             <input asp-for="TableNameSeparator" class="form-control" />
             <span asp-validation-for="TableNameSeparator" class="text-danger"></span>
-            <div class="hint">@T["Input one or more underscores or 'NULL' for an no separator. The default value is a single"] <code>_</code></div>
+            <div class="hint">@T["Input one or more underscores or 'NULL' for no separator. The default value is a single"] <code>_</code></div>
         </div>
 
     </div>

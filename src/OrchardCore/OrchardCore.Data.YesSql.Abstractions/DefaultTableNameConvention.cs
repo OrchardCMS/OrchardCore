@@ -7,10 +7,7 @@ public class DefaultTableNameConvention : ITableNameConvention
 {
     private readonly DatabaseTableOptions _options;
 
-    public DefaultTableNameConvention(DatabaseTableOptions options)
-    {
-        _options = options;
-    }
+    public DefaultTableNameConvention(DatabaseTableOptions options) => _options = options;
 
     public string GetIndexTable(Type type, string collection = null)
     {
@@ -19,22 +16,16 @@ public class DefaultTableNameConvention : ITableNameConvention
             return type.Name;
         }
 
-        return collection + TableNameSeparator + type.Name;
+        return collection + _options.TableNameSeparator + type.Name;
     }
 
     public string GetDocumentTable(string collection = null)
     {
         if (String.IsNullOrEmpty(collection))
         {
-            return DocumentTableName;
+            return _options.DocumentTable;
         }
 
-        return collection + TableNameSeparator + DocumentTableName;
+        return collection + _options.TableNameSeparator + _options.DocumentTable;
     }
-
-    private string DocumentTableName
-        => !String.IsNullOrWhiteSpace(_options.DocumentTable) ? _options.DocumentTable.Trim() : "Document";
-
-    private string TableNameSeparator
-        => (_options.TableNameSeparator ?? String.Empty).Trim();
 }

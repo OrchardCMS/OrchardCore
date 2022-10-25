@@ -6,11 +6,11 @@ namespace OrchardCore.Data;
 
 public class DatabaseTableOptions
 {
+    public string Schema { get; set; }
+
     public string DocumentTable { get; set; }
 
     public string TableNameSeparator { get; set; }
-
-    public string Schema { get; set; }
 
     public IdentityColumnSize IdentityColumnSize { get; set; }
 
@@ -35,20 +35,25 @@ public class DatabaseTableOptions
             throw new ArgumentNullException(nameof(options));
         }
 
-        options.Schema = shellSettings["Schema"];
-
-        // For backward compatibility, if the TableNameSeparator isn't set, we use "_" as the default value.
-        options.TableNameSeparator = shellSettings["TableNameSeparator"] ?? "_";
-        if (options.TableNameSeparator == "NULL")
+        if (!String.IsNullOrWhiteSpace(shellSettings["Schema"]))
         {
-            options.TableNameSeparator = String.Empty;
+            options.Schema = shellSettings["Schema"].Trim();
         }
 
         options.DocumentTable = "Document";
-
         if (!String.IsNullOrWhiteSpace(shellSettings["DocumentTable"]))
         {
             options.DocumentTable = shellSettings["DocumentTable"].Trim();
+        }
+
+        options.TableNameSeparator = "_";
+        if (!String.IsNullOrWhiteSpace(shellSettings["TableNameSeparator"]))
+        {
+            options.TableNameSeparator = shellSettings["TableNameSeparator"].Trim();
+            if (options.TableNameSeparator == "NULL")
+            {
+                options.TableNameSeparator = String.Empty;
+            }
         }
 
         if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnSize"], out var columnSize))

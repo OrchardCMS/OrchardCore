@@ -65,42 +65,21 @@ namespace OrchardCore.Setup.Controllers
                 return NotFound();
             }
 
+            var databaseTableOptions = DatabaseTableOptions.Create(_shellSettings);
+
             var model = new SetupViewModel
             {
                 DatabaseProviders = _databaseProviders,
                 Recipes = recipes,
                 RecipeName = defaultRecipe?.Name,
                 Secret = token,
+                Schema = databaseTableOptions.Schema,
+                DocumentTable = databaseTableOptions.DocumentTable,
+                TableNameSeparator = databaseTableOptions.TableNameSeparator,
+                IdentityColumnSize = databaseTableOptions.IdentityColumnSize,
             };
 
             CopyShellSettingsValues(model);
-
-            if (!String.IsNullOrEmpty(_shellSettings["TablePrefix"]))
-            {
-                model.DatabaseConfigurationPreset = true;
-                model.TablePrefix = _shellSettings["TablePrefix"];
-            }
-
-            if (!String.IsNullOrEmpty(_shellSettings["Schema"]))
-            {
-                model.Schema = _shellSettings["Schema"];
-            }
-
-            if (!String.IsNullOrEmpty(_shellSettings["DocumentTable"]))
-            {
-                model.DocumentTable = _shellSettings["DocumentTable"];
-            }
-
-            if (_shellSettings["TableNameSeparator"] != null)
-            {
-                model.TableNameSeparator = _shellSettings["TableNameSeparator"];
-            }
-
-            if (!String.IsNullOrEmpty(_shellSettings["IdentityColumnSize"])
-                && Enum.TryParse<IdentityColumnSize>(_shellSettings["IdentityColumnSize"], out var columnSize))
-            {
-                model.IdentityColumnSize = columnSize;
-            }
 
             return View(model);
         }

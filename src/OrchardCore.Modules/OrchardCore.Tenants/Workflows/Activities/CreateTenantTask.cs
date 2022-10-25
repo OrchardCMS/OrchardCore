@@ -190,12 +190,16 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 shellSettings["DocumentTable"] = documentTable;
             }
 
+            if (!String.IsNullOrEmpty(tableNameSeparator))
+            {
+                shellSettings["TableNameSeparator"] = tableNameSeparator;
+            }
+
             if (!String.IsNullOrEmpty(schema))
             {
                 shellSettings["Schema"] = schema;
             }
 
-            shellSettings["TableNameSeparator"] = tableNameSeparator;
             shellSettings["IdentityColumnSize"] = IdentityColumnSize.ToString();
             shellSettings["Secret"] = Guid.NewGuid().ToString();
 
