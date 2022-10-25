@@ -15,7 +15,7 @@
     <PackageManagement Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.3" />
     <PackageManagement Include="Azure.Identity" Version="1.7.0" />
-    <PackageManagement Include="Azure.Storage.Blobs" Version="12.13.1" />
+    <PackageManagement Include="Azure.Storage.Blobs" Version="12.14.0" />
     <PackageManagement Include="BenchmarkDotNet" Version="0.13.2" />
     <PackageManagement Include="Castle.Core" Version="5.1.0" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
@@ -25,7 +25,7 @@
     <PackageManagement Include="GraphQL.MicrosoftDI" Version="4.8.0" />
     <PackageManagement Include="GraphQL.SystemTextJson" Version="4.8.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-2037" />
-    <PackageManagement Include="HtmlSanitizer" Version="7.1.542" />
+    <PackageManagement Include="HtmlSanitizer" Version="8.0.601" />
     <PackageManagement Include="Lorem.Universal.NET" Version="4.0.80" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
@@ -41,7 +41,7 @@
     <PackageManagement Include="Moq" Version="4.18.2" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />
     <PackageManagement Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageManagement Include="NEST" Version="7.17.4" />
+    <PackageManagement Include="NEST" Version="7.17.5" />
     <PackageManagement Include="NJsonSchema" Version="10.8.0" />
     <PackageManagement Include="NLog.Web.AspNetCore" Version="5.1.4" />
     <PackageManagement Include="NodaTime" Version="3.1.4" />
@@ -56,11 +56,11 @@
     <PackageManagement Include="xunit.analyzers" Version="1.0.0" />
     <PackageManagement Include="xunit" Version="2.4.2" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.5" />
-    <PackageManagement Include="YesSql" Version="3.0.12" />
-    <PackageManagement Include="YesSql.Core" Version="3.0.12" />
-    <PackageManagement Include="YesSql.Abstractions" Version="3.0.12" />
-    <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.0.12" />
-    <PackageManagement Include="YesSql.Filters.Query" Version="3.0.12" />
+    <PackageManagement Include="YesSql" Version="3.2.0" />
+    <PackageManagement Include="YesSql.Core" Version="3.2.0" />
+    <PackageManagement Include="YesSql.Abstractions" Version="3.2.0" />
+    <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.2.0" />
+    <PackageManagement Include="YesSql.Filters.Query" Version="3.2.0" />
     <PackageManagement Include="ZString" Version="2.4.4" />
   </ItemGroup>
 </Project>

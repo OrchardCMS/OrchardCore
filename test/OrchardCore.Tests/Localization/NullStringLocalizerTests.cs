@@ -24,11 +24,9 @@ namespace OrchardCore.Tests.Localization
         {
             var localizer = new NullHtmlLocalizerFactory().Create(typeof(object));
 
-            using (var writer = new StringWriter())
-            {
-                localizer.Plural(count, singular, plural, arguments).WriteTo(writer, HtmlEncoder.Default);
-                Assert.Equal(expected, writer.ToString());
-            }
+            using var writer = new StringWriter();
+            localizer.Plural(count, singular, plural, arguments).WriteTo(writer, HtmlEncoder.Default);
+            Assert.Equal(expected, writer.ToString());
         }
 
         [Theory]
