@@ -18,7 +18,7 @@ namespace OrchardCore.Title.Handlers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IStringLocalizer<TitlePartHandler> S;
+        private readonly IStringLocalizer S;
 
         public TitlePartHandler(
             ILiquidTemplateManager liquidTemplateManager,
@@ -33,10 +33,15 @@ namespace OrchardCore.Title.Handlers
         public override async Task UpdatedAsync(UpdateContentContext context, TitlePart part)
         {
             var settings = GetSettings(part);
-            // Do not compute the title if the user can modify it and the text is already set.
-            if ((settings.Options == TitlePartOptions.Editable || settings.Options == TitlePartOptions.EditableRequired) && String.IsNullOrWhiteSpace(part.ContentItem.DisplayText))
+            // Do not compute the title if the user can modify it.
+            if (settings.Options == TitlePartOptions.Editable || settings.Options == TitlePartOptions.EditableRequired)
             {
-                part.ContentItem.DisplayText = part.Title;
+                if (String.IsNullOrWhiteSpace(part.ContentItem.DisplayText))
+                {
+                    // UpdatedAsync event is called from non-UI request like API, we update the DisplayText if it is not already set.
+                    // When the displayText is not set, we set it to the value of title.
+                    part.ContentItem.DisplayText = part.Title;
+                }
 
                 return;
             }
