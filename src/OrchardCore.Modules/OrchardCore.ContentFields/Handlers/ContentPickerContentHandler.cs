@@ -34,20 +34,20 @@ namespace OrchardCore.ContentFields.Handlers
             });
         }
 
-        private async Task<string> GetContentPickerItemExtendedDescription(ContentItem contentItem, CultureInfo culture, string pattern, string defaultValue)
+        private async Task<string> GetContentPickerItemExtendedValue(ContentItem contentItem, CultureInfo culture, string pattern, string defaultValue)
         {
-            var description = defaultValue;
+            var result = defaultValue;
             if (!string.IsNullOrEmpty(pattern))
             {
                 
                 using (CultureScope.Create(culture))
                 {
-                    description = await _templateManager.RenderStringAsync(pattern, NullEncoder.Default, contentItem,
+                    result = await _templateManager.RenderStringAsync(pattern, NullEncoder.Default, contentItem,
                         new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) });
                 }
             }
 
-            return description;
+            return result;
         }
     }
 }
