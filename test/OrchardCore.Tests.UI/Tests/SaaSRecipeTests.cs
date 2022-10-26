@@ -42,7 +42,7 @@ namespace OrchardCore.Tests.UI.Tests
                 {
                     await context.SignInDirectlyAsync();
 
-                    await context.CreateAndChangeToTenantManuallyAsync("test", "test");
+                    await context.CreateAndSwitchToTenantManuallyAsync("test", "test");
 
                     await context.GoToSetupPageAndSetupOrchardCoreAsync(
                         new OrchardCoreSetupParameters(context)
