@@ -35,7 +35,7 @@ jobs:
     - name: Set up Azurite
       uses: Lombiq/GitHub-Actions/.github/actions/setup-azurite@dev
       with:
-        location: ${{ inputs.build-directory}}
+        location: test/OrchardCore.Tests.UI
     - name: CMS UI Tests - SQLite
       uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-407
       with:
