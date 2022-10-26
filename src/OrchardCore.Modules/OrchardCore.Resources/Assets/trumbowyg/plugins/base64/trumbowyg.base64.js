@@ -26,6 +26,12 @@
                 errFileReaderNotSupported: 'FileReader is not supported by your browser.',
                 errInvalidImage: 'Invalid image file.'
             },
+            by: {
+                base64: 'Выява (фармат base64)',
+                file: 'Файл',
+                errFileReaderNotSupported: 'FileReader не падтрымліваецца вашым браўзэрам.',
+                errInvalidImage: 'Несапраўдны файл выявы.'
+            },
             cs: {
                 base64: 'Vložit obrázek',
                 file: 'Soubor'

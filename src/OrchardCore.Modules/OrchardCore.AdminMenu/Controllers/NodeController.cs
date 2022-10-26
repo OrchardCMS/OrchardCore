@@ -265,7 +265,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             if (adminMenu.RemoveMenuItem(treeNode) == false)
             {
-                return new StatusCodeResult(500);
+                return this.InternalServerError();
             }
 
             await _adminMenuService.SaveAsync(adminMenu);

@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 
 namespace OrchardCore.ContentFields.Settings
@@ -8,7 +9,8 @@ namespace OrchardCore.ContentFields.Settings
         public bool Required { get; set; }
         public bool Multiple { get; set; }
         public bool DisplayAllContentTypes { get; set; }
-        public string[] DisplayedContentTypes { get; set; } = new string[0];
+        public string[] DisplayedContentTypes { get; set; } = Array.Empty<string>();
+        public string[] DisplayedStereotypes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// The pattern used to build custom title

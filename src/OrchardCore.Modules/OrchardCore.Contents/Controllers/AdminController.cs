@@ -10,11 +10,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
@@ -24,7 +24,6 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
@@ -35,8 +34,8 @@ namespace OrchardCore.Contents.Controllers
     {
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ISiteService _siteService;
-        private readonly YesSql.ISession _session;
+        private readonly PagerOptions _pagerOptions;
+        private readonly ISession _session;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
@@ -54,9 +53,9 @@ namespace OrchardCore.Contents.Controllers
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             INotifier notifier,
-            YesSql.ISession session,
+            ISession session,
             IShapeFactory shapeFactory,
             IDisplayManager<ContentOptionsViewModel> contentOptionsDisplayManager,
             IContentsAdminListQueryService contentsAdminListQueryService,
@@ -69,7 +68,7 @@ namespace OrchardCore.Contents.Controllers
             _notifier = notifier;
             _contentItemDisplayManager = contentItemDisplayManager;
             _session = session;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
             _updateModelAccessor = updateModelAccessor;
@@ -91,16 +90,13 @@ namespace OrchardCore.Contents.Controllers
             string contentTypeId = "")
         {
             var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions()
-                    .Where(ctd => IsCreatable(ctd))
+                    .Where(ctd => ctd.IsCreatable())
                     .OrderBy(ctd => ctd.DisplayName);
 
             if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ViewContent, contentTypeDefinitions, _contentManager))
             {
                 return Forbid();
             }
-
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             // This is used by the AdminMenus so needs to be passed into the options.
             if (!String.IsNullOrEmpty(contentTypeId))
@@ -127,7 +123,7 @@ namespace OrchardCore.Contents.Controllers
                 var creatableList = new List<SelectListItem>();
 
                 // Allows non creatable types to be created by another admin page.
-                if (IsCreatable(contentTypeDefinition) || options.CanCreateSelectedContentType)
+                if (contentTypeDefinition.IsCreatable() || options.CanCreateSelectedContentType)
                 {
                     var contentItem = await CreateContentItemForOwnedByCurrentAsync(contentTypeDefinition.Name);
 
@@ -149,7 +145,7 @@ namespace OrchardCore.Contents.Controllers
                     {
                         var contentItem = await CreateContentItemForOwnedByCurrentAsync(contentTypeDefinition.Name);
 
-                        if (IsCreatable(contentTypeDefinition) && await IsAuthorizedAsync(CommonPermissions.EditContent, contentItem))
+                        if (contentTypeDefinition.IsCreatable() && await IsAuthorizedAsync(CommonPermissions.EditContent, contentItem))
                         {
                             creatableList.Add(new SelectListItem(contentTypeDefinition.DisplayName, contentTypeDefinition.Name));
                         }
@@ -195,7 +191,7 @@ namespace OrchardCore.Contents.Controllers
 
                 foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
                 {
-                    if (!ctd.GetSettings<ContentTypeSettings>().Listable)
+                    if (!ctd.IsListable())
                     {
                         continue;
                     }
@@ -214,7 +210,7 @@ namespace OrchardCore.Contents.Controllers
 
                 options.ContentTypeOptions = new List<SelectListItem>
                 {
-                    new SelectListItem() { Text = S["All content types"], Value = "" }
+                    new SelectListItem() { Text = S["All content types"], Value = String.Empty }
                 };
 
                 foreach (var option in contentTypeOptions)
@@ -240,13 +236,8 @@ namespace OrchardCore.Contents.Controllers
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
             var routeData = new RouteData(options.RouteValues);
-            var maxPagedCount = siteSettings.MaxPagedCount;
-            if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
-            {
-                pager.PageSize = maxPagedCount;
-            }
-
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(_pagerOptions.MaxPagedCount > 0 ? _pagerOptions.MaxPagedCount : await query.CountAsync()).RouteData(routeData);
 
             // Load items so that loading handlers are invoked.
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync(_contentManager);
@@ -389,7 +380,7 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                await _notifier.SuccessAsync(String.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? H["Your content draft has been saved."]
                     : H["Your {0} draft has been saved.", typeDefinition.DisplayName]);
             });
@@ -508,7 +499,7 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                await _notifier.SuccessAsync(String.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? H["Your content draft has been saved."]
                     : H["Your {0} draft has been saved.", typeDefinition.DisplayName]);
             });
@@ -537,7 +528,7 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                await _notifier.SuccessAsync(String.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? H["Your content has been published."]
                     : H["Your {0} has been published.", typeDefinition.DisplayName]);
             });
@@ -631,7 +622,7 @@ namespace OrchardCore.Contents.Controllers
 
                 await _contentManager.DiscardDraftAsync(contentItem);
 
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                await _notifier.SuccessAsync(String.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? H["The draft has been removed."]
                     : H["The {0} draft has been removed.", typeDefinition.DisplayName]);
             }
@@ -681,7 +672,7 @@ namespace OrchardCore.Contents.Controllers
 
             var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-            if (string.IsNullOrEmpty(typeDefinition.DisplayName))
+            if (String.IsNullOrEmpty(typeDefinition.DisplayName))
             {
                 await _notifier.SuccessAsync(H["That content has been published."]);
             }
@@ -721,11 +712,6 @@ namespace OrchardCore.Contents.Controllers
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
-        }
-
-        private static bool IsCreatable(ContentTypeDefinition contentTypeDefinition)
-        {
-            return contentTypeDefinition.GetSettings<ContentTypeSettings>().Creatable;
         }
 
         private async Task<ContentItem> CreateContentItemForOwnedByCurrentAsync(string contentType)

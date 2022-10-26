@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -20,7 +20,6 @@ using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
@@ -39,7 +38,7 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IClock _clock;
         private readonly INotifier _notifier;
         private readonly ITenantValidator _tenantValidator;
-
+        private readonly PagerOptions _pagerOptions;
         private readonly dynamic New;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
@@ -56,6 +55,7 @@ namespace OrchardCore.Tenants.Controllers
             IClock clock,
             INotifier notifier,
             ITenantValidator tenantValidator,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
@@ -71,6 +71,7 @@ namespace OrchardCore.Tenants.Controllers
             _clock = clock;
             _notifier = notifier;
             _tenantValidator = tenantValidator;
+            _pagerOptions = pagerOptions.Value;
 
             New = shapeFactory;
             S = stringLocalizer;
@@ -92,34 +93,25 @@ namespace OrchardCore.Tenants.Controllers
             var allSettings = _shellHost.GetAllSettings().OrderBy(s => s.Name);
             var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 
-            var pageSize = 10;
-            var siteService = HttpContext.RequestServices.GetService<ISiteService>();
-            if (siteService != null)
-            {
-                var siteSettings = await siteService.GetSiteSettingsAsync();
-                pageSize = siteSettings.PageSize;
-            }
-
-            var pager = new Pager(pagerParameters, pageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var entries = allSettings.Select(x =>
-                {
-                    var entry = new ShellSettingsEntry
-                    {
-                        Category = x["Category"],
-                        Description = x["Description"],
-                        Name = x.Name,
-                        ShellSettings = x,
-                        IsDefaultTenant = x.IsDefaultShell(),
-                    };
+               {
+                   var entry = new ShellSettingsEntry
+                   {
+                       Category = x["Category"],
+                       Description = x["Description"],
+                       Name = x.Name,
+                       ShellSettings = x,
+                   };
 
-                    if (x.State == TenantState.Uninitialized && !String.IsNullOrEmpty(x["Secret"]))
-                    {
-                        entry.Token = dataProtector.Protect(x["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
-                    }
+                   if (x.State == TenantState.Uninitialized && !String.IsNullOrEmpty(x["Secret"]))
+                   {
+                       entry.Token = dataProtector.Protect(x["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
+                   }
 
-                    return entry;
-                }).ToList();
+                   return entry;
+               }).ToList();
 
             if (!String.IsNullOrWhiteSpace(options.Search))
             {
@@ -134,32 +126,20 @@ namespace OrchardCore.Tenants.Controllers
                 entries = entries.Where(t => t.Category?.Equals(options.Category, StringComparison.OrdinalIgnoreCase) == true).ToList();
             }
 
-            switch (options.Status)
+            entries = options.Status switch
             {
-                case TenantsState.Disabled:
-                    entries = entries.Where(t => t.ShellSettings.State == TenantState.Disabled).ToList();
-                    break;
-                case TenantsState.Running:
-                    entries = entries.Where(t => t.ShellSettings.State == TenantState.Running).ToList();
-                    break;
-                case TenantsState.Uninitialized:
-                    entries = entries.Where(t => t.ShellSettings.State == TenantState.Uninitialized).ToList();
-                    break;
-            }
+                TenantsState.Disabled => entries.Where(t => t.ShellSettings.State == TenantState.Disabled).ToList(),
+                TenantsState.Running => entries.Where(t => t.ShellSettings.State == TenantState.Running).ToList(),
+                TenantsState.Uninitialized => entries.Where(t => t.ShellSettings.State == TenantState.Uninitialized).ToList(),
+                _ => entries,
+            };
 
-            switch (options.OrderBy)
+            entries = options.OrderBy switch
             {
-                case TenantsOrder.Name:
-                    entries = entries.OrderBy(t => t.Name).ToList();
-                    break;
-                case TenantsOrder.State:
-                    entries = entries.OrderBy(t => t.ShellSettings?.State).ToList();
-                    break;
-                default:
-                    entries = entries.OrderByDescending(t => t.Name).ToList();
-                    break;
-            }
-            var count = entries.Count();
+                TenantsOrder.Name => entries.OrderBy(t => t.Name).ToList(),
+                TenantsOrder.State => entries.OrderBy(t => t.ShellSettings?.State).ToList(),
+                _ => entries.OrderByDescending(t => t.Name).ToList(),
+            };
 
             var results = entries
                 .Skip(pager.GetStartIndex())
@@ -172,7 +152,7 @@ namespace OrchardCore.Tenants.Controllers
             routeData.Values.Add("Options.Search", options.Search);
             routeData.Values.Add("Options.OrderBy", options.OrderBy);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(entries.Count).RouteData(routeData);
 
             var model = new AdminIndexViewModel
             {

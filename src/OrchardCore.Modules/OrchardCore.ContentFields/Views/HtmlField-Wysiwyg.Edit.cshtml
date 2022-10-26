@@ -1,19 +1,20 @@
 @model OrchardCore.ContentFields.ViewModels.EditHtmlFieldViewModel
 @using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.ContentFields.Settings;
-
+@using OrchardCore.ContentFields.Settings
+@using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
+    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
 <style asp-name="trumbowyg" version="2"></style>
 <script asp-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.tag.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.tag.js" depends-on="trumbowyg" at="Foot"></script>
 <script asp-name="trumbowyg-shortcodes" at="Foot"></script>
 
-@await DisplayAsync(await New.ShortcodeModal())
 
-<div class="mb-3">
+<div class="mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Html)_FieldWrapper">
+    @await DisplayAsync(await New.ShortcodeModal())
     <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
     @if (culture.IsRightToLeft())
     {
@@ -33,7 +34,7 @@
 </div>
 
 <script at="Foot">
-    $(function() {
+    $(function () {
     @* set dir while keeping trumbowg translations dictionary intact *@
     @if (culture.GetLanguageDirection() == LanguageDirection.RTL)
     {
@@ -61,7 +62,7 @@
             semantic: false
         }
 
-        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function() {
+        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
             $(document).trigger('contentpreview:render');
         });
     });

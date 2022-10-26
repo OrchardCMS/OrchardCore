@@ -1,7 +1,7 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Liquid;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Resources.Liquid;
@@ -10,11 +10,11 @@ namespace OrchardCore.Resources
 {
     public class Startup : StartupBase
     {
-        private readonly IConfiguration _configuration;
+        private readonly IShellConfiguration _shellConfiguration;
 
-        public Startup(IConfiguration configuration)
+        public Startup(IShellConfiguration shellConfiguration)
         {
-            _configuration = configuration;
+            _shellConfiguration = shellConfiguration;
         }
 
         public override void ConfigureServices(IServiceCollection serviceCollection)
@@ -32,7 +32,8 @@ namespace OrchardCore.Resources
 
             serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
 
-            serviceCollection.Configure<ResourceOptions>(options => _configuration.GetSection("OrchardCore:OrchardCore_Resources").Bind(options));
+            var resourceConfiguration = _shellConfiguration.GetSection("OrchardCore_Resources");
+            serviceCollection.Configure<ResourceOptions>(resourceConfiguration);
         }
     }
 }

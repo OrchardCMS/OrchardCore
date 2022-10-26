@@ -107,6 +107,22 @@ Output
 Wednesday, 02 August 2017 11:54:48
 ```
 
+### `utc`
+
+Converts a local date and time to the UTC date and time based on the site settings.
+
+Input
+
+```liquid
+{{ "now" | utc | date: "%c" }}
+```
+
+Output
+
+```text
+Wednesday, 02 August 2017 11:54:48
+```
+
 ### `t`
 
 Localizes a string using the current culture.

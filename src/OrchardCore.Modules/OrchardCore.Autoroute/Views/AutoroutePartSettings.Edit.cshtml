@@ -51,7 +51,7 @@
 </div>
 
 <fieldset>
-    <h5 class="mb-3">@T["Container Settings"]<span class="hint dashed">@T["Settings for parent or child content items."]</span></h5>
+    <h5 class="my-3">@T["Container Settings"]<span class="hint dashed">@T["Settings for parent or child content items."]</span></h5>
     <div class="mb-3">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="AllowRouteContainedItems" checked="@Model.AllowRouteContainedItems">
@@ -68,16 +68,17 @@
         </div>
     </div>
 
-    <div class="mb-3 d-flex">
-        <div class="d-flex form-check manage-contained-item-routes" style="@(Model.ManageContainedItemRoutes ? "" : "display: none")">
-            <input type="checkbox" class="form-check-input" asp-for="AllowAbsolutePath" checked="@Model.AllowAbsolutePath">
-            <label class="form-check-label" asp-for="AllowAbsolutePath">@T["Allow absolute path"]</label>
-
-        </div>
-        <div class="d-flex flex-column ms-2 pt-1">
-            <span class="hint dashed">@T["Check to allow users to enable absolute paths for child content items. When disabled the path is relative to the parents path."]</span>
-            <span class="hint ms-3">@T["When relative : https://mysite.com/my-parent/my-child-item."]</span>
-            <span class="hint ms-3">@T["When absolute : https://mysite.com/my-child-item."]</span>
+    <div class="mb-3">
+        <div class="manage-contained-item-routes" style="@(Model.ManageContainedItemRoutes ? "" : "display: none")">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="AllowAbsolutePath" checked="@Model.AllowAbsolutePath">
+                <label class="form-check-label" asp-for="AllowAbsolutePath">@T["Allow absolute path"]</label>
+                <span class="hint dashed">@T["Check to allow users to enable absolute paths for child content items. When disabled the path is relative to the parents path."]</span>
+            </div>
+            <div class="ps-2">
+                <div class="hint ms-3">@T["When relative : https://mysite.com/my-parent/my-child-item."]</div>
+                <div class="hint ms-3">@T["When absolute : https://mysite.com/my-child-item."]</div>
+            </div>
         </div>
     </div>
 </fieldset>
@@ -99,5 +100,5 @@
             checked ? $(this).show() : $(this).hide();
         });
     });
-    //]]>
+                                                            //]]>
 </script>

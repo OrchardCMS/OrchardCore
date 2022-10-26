@@ -61,3 +61,11 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[] { "OrchardCore.AuditTrail", "OrchardCore.Users" },
     Category = "Security"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Users.Authentication.CacheTicketStore",
+    Name = "Users Authentication Ticket Store",
+    Description = "Stores users authentication tickets on server in memory cache instead of cookies. If distributed cache feature is enabled it will store authentication tickets on distributed cache.",
+    Dependencies = new[] { "OrchardCore.Users" },
+    Category = "Security"
+)]

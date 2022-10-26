@@ -111,6 +111,7 @@ nav:
       - Gulp pipeline: docs/guides/gulp-pipeline/README.md
   - Key Topics:
       - Manage your Content: docs/topics/content-management/README.md
+      - Content Relationships: docs/topics/content-relationships/README.md
       - Customize the Display: docs/topics/display/README.md
       - Localize your site: docs/topics/localize/README.md
       - Handle the Media: docs/topics/media/README.md
@@ -153,6 +154,7 @@ nav:
           - Indexing: docs/reference/modules/Indexing/README.md
           - SQL Indexing: docs/reference/modules/SQLIndexing/README.md
           - Lucene: docs/reference/modules/Lucene/README.md
+          - Elasticsearch: docs/reference/modules/Elasticsearch/README.md
           - Queries: docs/reference/modules/Queries/README.md
           - Media:
               - Media: docs/reference/modules/Media/README.md
