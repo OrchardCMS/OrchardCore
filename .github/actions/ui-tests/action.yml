@@ -1,3 +1,4 @@
+# To be refactored, need to check how DRY can work in the end.
 name: UI Tests
 description: Runs UI tests and publishes the failure dumps as an artifact on test failure.
 

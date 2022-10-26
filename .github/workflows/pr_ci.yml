@@ -28,7 +28,11 @@ jobs:
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
-    - name: UI Tests
-      uses: ./.github/actions/ui-tests
+    - name: CMS UI Tests
+      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
       with:
-        artifact-name-suffix: ${{ matrix.os }}
+        build-directory: test/OrchardCore.Tests.UI
+    - name: MVC UI Tests
+      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
+      with:
+        build-directory: test/OrchardCore.Tests.UI.Mvc
