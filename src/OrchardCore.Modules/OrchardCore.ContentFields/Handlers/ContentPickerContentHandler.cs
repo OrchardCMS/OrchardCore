@@ -28,26 +28,24 @@ namespace OrchardCore.ContentFields.Handlers
                 var settings = aspect.ContentPickerFieldSettings as ContentPickerFieldSettings;
 
                 if (settings != null) {
-                    aspect.Title = await GetContentPickerItemExtendedDescription(context.ContentItem, aspect.Culture, settings.TitlePattern, context.ContentItem.ToString());
-                    aspect.Description = await GetContentPickerItemExtendedDescription(context.ContentItem, aspect.Culture, settings.DescriptionPattern, string.Empty);
+                    aspect.Title = await GetContentPickerItemExtendedValue(context.ContentItem, aspect.Culture, settings.TitlePattern, context.ContentItem.ToString());
+                    aspect.Description = await GetContentPickerItemExtendedValue(context.ContentItem, aspect.Culture, settings.DescriptionPattern, string.Empty);
                 }
             });
         }
 
         private async Task<string> GetContentPickerItemExtendedValue(ContentItem contentItem, CultureInfo culture, string pattern, string defaultValue)
         {
-            var result = defaultValue;
             if (!string.IsNullOrEmpty(pattern))
             {
-                
                 using (CultureScope.Create(culture))
                 {
-                    result = await _templateManager.RenderStringAsync(pattern, NullEncoder.Default, contentItem,
+                    defaultValue = await _templateManager.RenderStringAsync(pattern, NullEncoder.Default, contentItem,
                         new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) });
                 }
             }
 
-            return result;
+            return defaultValue;
         }
     }
 }
