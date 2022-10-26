@@ -29,10 +29,10 @@ jobs:
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     - name: CMS UI Tests
-      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
+      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-407
       with:
         build-directory: test/OrchardCore.Tests.UI
     - name: MVC UI Tests
-      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
+      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-407
       with:
         build-directory: test/OrchardCore.Tests.UI.Mvc
