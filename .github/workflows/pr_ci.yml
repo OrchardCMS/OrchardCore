@@ -31,4 +31,4 @@ jobs:
     - name: UI Tests
       uses: ./.github/actions/ui-tests
       with:
-        os-name: ${{ matrix.os }}
+        artifact-name-suffix: ${{ matrix.os }}
