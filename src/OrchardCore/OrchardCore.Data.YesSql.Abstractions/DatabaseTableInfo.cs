@@ -4,7 +4,7 @@ using YesSql;
 
 namespace OrchardCore.Data;
 
-public class DatabaseTableOptions
+public class DatabaseTableInfo
 {
     public string Schema { get; set; }
 
@@ -12,18 +12,23 @@ public class DatabaseTableOptions
 
     public string TableNameSeparator { get; set; }
 
+    public string TableNameSeparatorModelValue =>
+        !String.IsNullOrEmpty(TableNameSeparator)
+        ? TableNameSeparator
+        : "NULL";
+
     public IdentityColumnSize IdentityColumnSize { get; set; }
 
-    public static DatabaseTableOptions Create(ShellSettings shellSettings)
+    public static DatabaseTableInfo Create(ShellSettings shellSettings)
     {
-        var options = new DatabaseTableOptions();
+        var options = new DatabaseTableInfo();
 
         Configure(shellSettings, options);
 
         return options;
     }
 
-    public static void Configure(ShellSettings shellSettings, DatabaseTableOptions options)
+    private static void Configure(ShellSettings shellSettings, DatabaseTableInfo options)
     {
         if (shellSettings == null)
         {

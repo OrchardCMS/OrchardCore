@@ -17,9 +17,9 @@ namespace OrchardCore.Tenants.Workflows.Drivers
             model.DatabaseConnectionStringExpression = activity.DatabaseConnectionString.Expression;
             model.DatabaseTablePrefixExpression = activity.DatabaseTablePrefix.Expression;
             model.RecipeNameExpression = activity.RecipeName.Expression;
-            model.Schema = activity.Schema.Expression;
-            model.DocumentTable = activity.DocumentTable.Expression;
-            model.TableNameSeparator = activity.TableNameSeparator.Expression;
+            model.Schema = activity.Schema;
+            model.DocumentTable = activity.DocumentTable;
+            model.TableNameSeparator = activity.TableNameSeparator;
             model.IdentityColumnSize = activity.IdentityColumnSize;
         }
 
@@ -34,9 +34,9 @@ namespace OrchardCore.Tenants.Workflows.Drivers
             activity.DatabaseConnectionString = new WorkflowExpression<string>(model.DatabaseConnectionStringExpression);
             activity.DatabaseTablePrefix = new WorkflowExpression<string>(model.DatabaseTablePrefixExpression);
             activity.RecipeName = new WorkflowExpression<string>(model.RecipeNameExpression);
-            activity.Schema = new WorkflowExpression<string>(model.Schema);
-            activity.DocumentTable = new WorkflowExpression<string>(model.DocumentTable);
-            activity.TableNameSeparator = new WorkflowExpression<string>(model.TableNameSeparator);
+            activity.Schema = model.Schema;
+            activity.DocumentTable = model.DocumentTable;
+            activity.TableNameSeparator = model.TableNameSeparator;
             activity.IdentityColumnSize = model.IdentityColumnSize;
         }
     }

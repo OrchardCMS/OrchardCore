@@ -5,7 +5,7 @@ namespace OrchardCore.Data;
 
 public class TableNameConventionFactory : ITableNameConventionFactory
 {
-    public ITableNameConvention Create(DatabaseTableOptions options)
+    public ITableNameConvention Create(DatabaseTableInfo options)
     {
         return new DefaultTableNameConvention(options);
     }

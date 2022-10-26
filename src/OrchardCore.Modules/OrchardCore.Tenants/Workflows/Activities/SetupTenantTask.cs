@@ -103,22 +103,23 @@ namespace OrchardCore.Tenants.Workflows.Activities
             get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
-        public WorkflowExpression<string> TableNameSeparator
+
+        public string Schema
         {
-            get => GetProperty(() => new WorkflowExpression<string>("_"));
-            set => SetProperty(value);
+            get => GetProperty(() => String.Empty);
+            set => SetProperty(value ?? String.Empty);
         }
 
-        public WorkflowExpression<string> Schema
+        public string DocumentTable
         {
-            get => GetProperty(() => new WorkflowExpression<string>());
-            set => SetProperty(value);
+            get => GetProperty(() => "Document");
+            set => SetProperty(value ?? String.Empty);
         }
 
-        public WorkflowExpression<string> DocumentTable
+        public string TableNameSeparator
         {
-            get => GetProperty(() => new WorkflowExpression<string>("Document"));
-            set => SetProperty(value);
+            get => GetProperty(() => "_");
+            set => SetProperty(value ?? String.Empty);
         }
 
         public IdentityColumnSize IdentityColumnSize
@@ -181,9 +182,6 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var databaseConnectionString = (await ExpressionEvaluator.EvaluateAsync(DatabaseConnectionString, workflowContext, null))?.Trim();
             var databaseTablePrefix = (await ExpressionEvaluator.EvaluateAsync(DatabaseTablePrefix, workflowContext, null))?.Trim();
             var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
-            var tableNameSeparator = (await ExpressionEvaluator.EvaluateAsync(TableNameSeparator, workflowContext, null))?.Trim();
-            var schema = (await ExpressionEvaluator.EvaluateAsync(Schema, workflowContext, null))?.Trim();
-            var documentTable = (await ExpressionEvaluator.EvaluateAsync(DocumentTable, workflowContext, null))?.Trim();
 
             if (String.IsNullOrEmpty(databaseProvider))
             {
@@ -205,20 +203,25 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 recipeName = shellSettings["RecipeName"];
             }
 
-            if (String.IsNullOrEmpty(schema))
+            var schema = Schema;
+            if (String.IsNullOrWhiteSpace(schema))
             {
                 schema = shellSettings["Schema"];
             }
 
-            if (String.IsNullOrEmpty(documentTable))
+            var documentTable = DocumentTable;
+            if (String.IsNullOrWhiteSpace(documentTable))
             {
                 documentTable = shellSettings["DocumentTable"];
             }
 
-            if (String.IsNullOrEmpty(tableNameSeparator))
+            var tableNameSeparator = TableNameSeparator;
+            if (String.IsNullOrWhiteSpace(tableNameSeparator))
             {
                 tableNameSeparator = shellSettings["TableNameSeparator"];
             }
+
+            var identityColumnSize = IdentityColumnSize.ToString();
 
             var recipes = await SetupService.GetSetupRecipesAsync();
             var recipe = recipes.FirstOrDefault(r => r.Name == recipeName);
@@ -242,7 +245,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
                     { SetupConstants.Schema, schema },
                     { SetupConstants.DocumentTable, documentTable },
                     { SetupConstants.TableNameSeparator, tableNameSeparator },
-                    { SetupConstants.IdentityColumnSize, IdentityColumnSize },
+                    { SetupConstants.IdentityColumnSize, identityColumnSize },
                 }
             };
 

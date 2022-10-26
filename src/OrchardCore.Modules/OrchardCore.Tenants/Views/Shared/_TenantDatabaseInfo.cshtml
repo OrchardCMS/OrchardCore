@@ -6,7 +6,7 @@
     <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
 </h6>
 <div class="row row-cols-1 row-cols-md-2">
-    @if (!Model.DatabaseConfigurationPreset)
+    @if (!Model.DatabaseConfigurationPreset || Model.CanEditDatabasePresets)
     {
         <div class="mb-3 col" asp-validation-class-for="DatabaseProvider">
             <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>

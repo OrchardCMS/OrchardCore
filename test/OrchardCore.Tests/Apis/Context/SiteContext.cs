@@ -54,10 +54,10 @@ namespace OrchardCore.Tests.Apis.Context
                 RecipeName = RecipeName,
                 Name = tenantName,
                 RequestUrlPrefix = tenantName,
-                TableNameSeparator = "_",
-                DocumentTable = "Document",
                 Schema = null,
-                IdentityColumnSize = YesSql.IdentityColumnSize.Int32,
+                DocumentTable = "Document",
+                TableNameSeparator = "_",
+                IdentityColumnSize = YesSql.IdentityColumnSize.Int64,
             };
 
             var createResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/create", createModel);
@@ -78,7 +78,7 @@ namespace OrchardCore.Tests.Apis.Context
                 UserName = "admin",
                 Password = "Password01_",
                 Name = tenantName,
-                Email = "Nick@Orchard"
+                Email = "Nick@Orchard",
             };
 
             var setupResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", setupModel);

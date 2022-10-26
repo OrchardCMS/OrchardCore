@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
+using YesSql;
 
 namespace OrchardCore.Tenants.ViewModels
 {
@@ -27,8 +28,20 @@ namespace OrchardCore.Tenants.ViewModels
         public string Password { get; set; }
 
         public string RecipeName { get; set; }
+
         public IFormFile Recipe { get; set; }
 
         public string SiteTimeZone { get; set; }
+
+        [RegularExpression("^[A-Za-z_]+[A-Za-z0-9_]*$", ErrorMessage = "Invalid schema")]
+        public string Schema { get; set; }
+
+        [RegularExpression("^[A-Za-z_]+[A-Za-z0-9_]*$", ErrorMessage = "Invalid name")]
+        public string DocumentTable { get; set; }
+
+        [RegularExpression("^_*$", ErrorMessage = "Invalid table name separator")]
+        public string TableNameSeparator { get; set; }
+
+        public IdentityColumnSize IdentityColumnSize { get; set; }
     }
 }

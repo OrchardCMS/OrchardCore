@@ -85,22 +85,22 @@ namespace OrchardCore.Tenants.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public WorkflowExpression<string> TableNameSeparator
+        public string Schema
         {
-            get => GetProperty(() => new WorkflowExpression<string>("_"));
-            set => SetProperty(value);
+            get => GetProperty(() => String.Empty);
+            set => SetProperty(value ?? String.Empty);
         }
 
-        public WorkflowExpression<string> Schema
+        public string DocumentTable
         {
-            get => GetProperty(() => new WorkflowExpression<string>());
-            set => SetProperty(value);
+            get => GetProperty(() => "Document");
+            set => SetProperty(value ?? String.Empty);
         }
 
-        public WorkflowExpression<string> DocumentTable
+        public string TableNameSeparator
         {
-            get => GetProperty(() => new WorkflowExpression<string>("Document"));
-            set => SetProperty(value);
+            get => GetProperty(() => "_");
+            set => SetProperty(value ?? String.Empty);
         }
 
         public IdentityColumnSize IdentityColumnSize
@@ -140,9 +140,6 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var tablePrefix = (await ExpressionEvaluator.EvaluateAsync(TablePrefix, workflowContext, null))?.Trim();
             var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
             var featureProfile = (await ExpressionEvaluator.EvaluateAsync(FeatureProfile, workflowContext, null))?.Trim();
-            var tableNameSeparator = (await ExpressionEvaluator.EvaluateAsync(TableNameSeparator, workflowContext, null))?.Trim();
-            var schema = (await ExpressionEvaluator.EvaluateAsync(Schema, workflowContext, null))?.Trim();
-            var documentTable = (await ExpressionEvaluator.EvaluateAsync(DocumentTable, workflowContext, null))?.Trim();
 
             // Creates a default shell settings based on the configuration.
             var shellSettings = ShellSettingsManager.CreateDefaultSettings();
@@ -185,22 +182,23 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 shellSettings["FeatureProfile"] = featureProfile;
             }
 
-            if (!String.IsNullOrEmpty(documentTable))
+            if (!String.IsNullOrEmpty(Schema))
             {
-                shellSettings["DocumentTable"] = documentTable;
+                shellSettings["Schema"] = Schema;
             }
 
-            if (!String.IsNullOrEmpty(tableNameSeparator))
+            if (!String.IsNullOrEmpty(DocumentTable))
             {
-                shellSettings["TableNameSeparator"] = tableNameSeparator;
+                shellSettings["DocumentTable"] = DocumentTable;
             }
 
-            if (!String.IsNullOrEmpty(schema))
+            if (!String.IsNullOrEmpty(TableNameSeparator))
             {
-                shellSettings["Schema"] = schema;
+                shellSettings["TableNameSeparator"] = TableNameSeparator;
             }
 
             shellSettings["IdentityColumnSize"] = IdentityColumnSize.ToString();
+
             shellSettings["Secret"] = Guid.NewGuid().ToString();
 
             await ShellHost.UpdateShellSettingsAsync(shellSettings);

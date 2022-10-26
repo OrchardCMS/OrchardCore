@@ -25,7 +25,7 @@ namespace OrchardCore.Tenants.ViewModels
 
         public string FeatureProfile { get; set; }
 
-        [RegularExpression("^_*$", ErrorMessage = "Invalid table name separator")]
+        [RegularExpression("^_*$|\\bNULL\\b$", ErrorMessage = "Invalid table name separator")]
         public string TableNameSeparator { get; set; }
 
         [RegularExpression("^[A-Za-z_]+[A-Za-z0-9_]*$", ErrorMessage = "Invalid schema")]

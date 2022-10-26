@@ -100,10 +100,10 @@ namespace OrchardCore.Tenants.Controllers
             shellSettings["Secret"] = Guid.NewGuid().ToString();
             shellSettings["RecipeName"] = model.RecipeName;
             shellSettings["FeatureProfile"] = model.FeatureProfile;
-            shellSettings["TableNameSeparator"] = model.TableNameSeparator;
-            shellSettings["Schema"] = model.Schema?.Trim();
-            shellSettings["IdentityColumnSize"] = model.IdentityColumnSize.ToString();
+            shellSettings["Schema"] = model.Schema;
             shellSettings["DocumentTable"] = model.DocumentTable;
+            shellSettings["TableNameSeparator"] = model.TableNameSeparator;
+            shellSettings["IdentityColumnSize"] = model.IdentityColumnSize.ToString();
 
             model.IsNewTenant = true;
 
@@ -259,6 +259,30 @@ namespace OrchardCore.Tenants.Controllers
                 }
             }
 
+            var schema = shellSettings["Schema"];
+            if (String.IsNullOrEmpty(schema))
+            {
+                schema = model.Schema;
+            }
+
+            var documentTable = shellSettings["DocumentTable"];
+            if (String.IsNullOrEmpty(schema))
+            {
+                documentTable = model.DocumentTable;
+            }
+
+            var tableNameSeparator = shellSettings["TableNameSeparator"];
+            if (String.IsNullOrEmpty(tableNameSeparator))
+            {
+                tableNameSeparator = model.TableNameSeparator;
+            }
+
+            var identityColumnSize = shellSettings["IdentityColumnSize"];
+            if (String.IsNullOrEmpty(identityColumnSize))
+            {
+                identityColumnSize = model.IdentityColumnSize.ToString();
+            }
+
             var setupContext = new SetupContext
             {
                 ShellSettings = shellSettings,
@@ -275,6 +299,10 @@ namespace OrchardCore.Tenants.Controllers
                     { SetupConstants.DatabaseProvider, selectedProvider.Value },
                     { SetupConstants.DatabaseConnectionString, connectionString },
                     { SetupConstants.DatabaseTablePrefix, tablePrefix },
+                    { SetupConstants.Schema, schema },
+                    { SetupConstants.DocumentTable, documentTable },
+                    { SetupConstants.TableNameSeparator, tableNameSeparator },
+                    { SetupConstants.IdentityColumnSize, identityColumnSize },
                 }
             };
 

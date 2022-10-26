@@ -40,7 +40,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.AddTransient<ITableNameConventionFactory, TableNameConventionFactory>();
                 services.AddTransient<IConfigureOptions<SqliteOptions>, SqliteOptionsConfiguration>();
-                services.AddTransient<IConfigureOptions<DatabaseTableOptions>, ShellDatabaseTableOptionsConfiguration>();
 
                 // Adding supported databases
                 services.TryAddDataProvider(name: "Sql Server", value: DatabaseProviderValue.SqlConnection, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
@@ -60,7 +59,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
 
                     var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
-                    var databaseTableOptions = sp.GetService<IOptions<DatabaseTableOptions>>().Value;
+                    var databaseTableOptions = DatabaseTableInfo.Create(shellSettings);
                     var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions, databaseTableOptions);
 
                     switch (shellSettings["DatabaseProvider"])
@@ -157,7 +156,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        private static IConfiguration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)
+        private static IConfiguration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableInfo databaseTableOptions)
         {
             var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
 

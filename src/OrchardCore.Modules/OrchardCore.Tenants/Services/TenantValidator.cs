@@ -77,7 +77,7 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
 
-            var options = new DatabaseTableOptions()
+            var options = new DatabaseTableInfo()
             {
                 TableNameSeparator = model.TableNameSeparator,
                 DocumentTable = model.DocumentTable,
@@ -115,7 +115,7 @@ namespace OrchardCore.Tenants.Services
             return errors;
         }
 
-        private async Task AssertConnectionValidityAndApplyErrorsAsync(string databaseProvider, string connectionString, string tablePrefix, List<ModelError> errors, string shellName, DatabaseTableOptions options)
+        private async Task AssertConnectionValidityAndApplyErrorsAsync(string databaseProvider, string connectionString, string tablePrefix, List<ModelError> errors, string shellName, DatabaseTableInfo options)
         {
             var validationContext = new DbConnectionValidatorContext(options)
             {

@@ -65,7 +65,7 @@ namespace OrchardCore.Setup.Controllers
                 return NotFound();
             }
 
-            var databaseTableOptions = DatabaseTableOptions.Create(_shellSettings);
+            var databaseTableOptions = DatabaseTableInfo.Create(_shellSettings);
 
             var model = new SetupViewModel
             {
@@ -75,7 +75,7 @@ namespace OrchardCore.Setup.Controllers
                 Secret = token,
                 Schema = databaseTableOptions.Schema,
                 DocumentTable = databaseTableOptions.DocumentTable,
-                TableNameSeparator = databaseTableOptions.TableNameSeparator,
+                TableNameSeparator = databaseTableOptions.TableNameSeparatorModelValue,
                 IdentityColumnSize = databaseTableOptions.IdentityColumnSize,
             };
 
@@ -149,10 +149,6 @@ namespace OrchardCore.Setup.Controllers
                     { SetupConstants.AdminEmail, model.Email },
                     { SetupConstants.AdminPassword, model.Password },
                     { SetupConstants.SiteTimeZone, model.SiteTimeZone },
-                    { SetupConstants.Schema, model.Schema },
-                    { SetupConstants.DocumentTable, model.DocumentTable },
-                    { SetupConstants.TableNameSeparator, String.IsNullOrEmpty(model.TableNameSeparator) ? "NULL" : model.TableNameSeparator },
-                    { SetupConstants.IdentityColumnSize, model.IdentityColumnSize },
                 }
             };
 
@@ -163,7 +159,7 @@ namespace OrchardCore.Setup.Controllers
                 setupContext.Properties[SetupConstants.DatabaseConnectionString] = _shellSettings["ConnectionString"];
                 setupContext.Properties[SetupConstants.DatabaseTablePrefix] = _shellSettings["TablePrefix"];
                 setupContext.Properties[SetupConstants.Schema] = _shellSettings["Schema"];
-                setupContext.Properties[SetupConstants.DocumentTable] = _shellSettings["DocumentTable"];
+                setupContext.Properties[SetupConstants.DocumentTable] = _shellSettings["Schema"];
                 setupContext.Properties[SetupConstants.TableNameSeparator] = _shellSettings["TableNameSeparator"];
                 setupContext.Properties[SetupConstants.IdentityColumnSize] = _shellSettings["IdentityColumnSize"];
             }
@@ -175,7 +171,7 @@ namespace OrchardCore.Setup.Controllers
                 setupContext.Properties[SetupConstants.Schema] = model.Schema;
                 setupContext.Properties[SetupConstants.DocumentTable] = model.DocumentTable;
                 setupContext.Properties[SetupConstants.TableNameSeparator] = model.TableNameSeparator;
-                setupContext.Properties[SetupConstants.IdentityColumnSize] = model.IdentityColumnSize;
+                setupContext.Properties[SetupConstants.IdentityColumnSize] = model.IdentityColumnSize.ToString();
             }
 
             var executionId = await _setupService.SetupAsync(setupContext);

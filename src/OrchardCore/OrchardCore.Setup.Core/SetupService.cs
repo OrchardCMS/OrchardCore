@@ -169,31 +169,13 @@ namespace OrchardCore.Setup.Services
                 shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider) ? databaseProvider?.ToString() : String.Empty;
                 shellSettings["ConnectionString"] = context.Properties.TryGetValue(SetupConstants.DatabaseConnectionString, out var databaseConnectionString) ? databaseConnectionString?.ToString() : String.Empty;
                 shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix) ? databaseTablePrefix?.ToString() : String.Empty;
-
-                if (context.Properties.TryGetValue(SetupConstants.Schema, out var schema) && schema != null)
-                {
-                    shellSettings["Schema"] = schema.ToString();
-                }
-
-                if (context.Properties.TryGetValue(SetupConstants.DocumentTable, out var documentTable) && documentTable != null)
-                {
-                    shellSettings["DocumentTable"] = documentTable.ToString();
-                }
-
-                if (context.Properties.TryGetValue(SetupConstants.TableNameSeparator, out var seperator))
-                {
-                    shellSettings["TableNameSeparator"] = seperator?.ToString();
-                }
-
-                if (context.Properties.TryGetValue(SetupConstants.IdentityColumnSize, out var columnSize)
-                    && columnSize != null
-                    && Enum.TryParse<IdentityColumnSize>(columnSize.ToString(), true, out var size))
-                {
-                    shellSettings["IdentityColumnSize"] = size.ToString();
-                }
+                shellSettings["Schema"] = context.Properties.TryGetValue(SetupConstants.Schema, out var schema) ? schema?.ToString() : String.Empty;
+                shellSettings["DocumentTable"] = context.Properties.TryGetValue(SetupConstants.DocumentTable, out var documentTable) ? documentTable?.ToString() : String.Empty;
+                shellSettings["TableNameSeparator"] = context.Properties.TryGetValue(SetupConstants.TableNameSeparator, out var tableNameSeparator) ? tableNameSeparator?.ToString() : String.Empty;
+                shellSettings["IdentityColumnSize"] = context.Properties.TryGetValue(SetupConstants.IdentityColumnSize, out var identityColumnSize) ? identityColumnSize?.ToString() : String.Empty;
             }
 
-            var validationContext = new DbConnectionValidatorContext(DatabaseTableOptions.Create(shellSettings))
+            var validationContext = new DbConnectionValidatorContext(DatabaseTableInfo.Create(shellSettings))
             {
                 DatabaseProvider = shellSettings["DatabaseProvider"],
                 ConnectionString = shellSettings["ConnectionString"],
