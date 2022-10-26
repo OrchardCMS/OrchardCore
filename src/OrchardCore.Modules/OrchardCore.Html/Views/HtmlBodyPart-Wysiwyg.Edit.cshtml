@@ -16,46 +16,47 @@
     @if (culture.IsRightToLeft())
     {
         <div style="text-align:right">
-            <textarea asp-for="Html" rows="5" class="form-control"></textarea>
+            <textarea asp-for="Html"></textarea>
         </div>
     }
     else
     {
-        <textarea asp-for="Html" rows="5" class="form-control"></textarea>
+        <textarea asp-for="Html"></textarea>
     }
     <span class="hint">@T["The body of the content item."]</span>
 </div>
 
 
 <script at="Foot">
-    $(function () {
-        @* set dir while keeping trumbowg translations dictionary intact *@
-        @if (culture.GetLanguageDirection() == LanguageDirection.RTL)
-        {
-            <text>
+    $(function() {
+    @* set dir while keeping trumbowg translations dictionary intact *@
+    @if (culture.GetLanguageDirection() == LanguageDirection.RTL)
+    {
+        <text>
             var langs = jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName;
 
             if (!langs) {
-                cloned = { 
+                cloned = {
                     ...jQuery.trumbowyg.langs['en'],
                     _dir: '@culture.GetLanguageDirection()'
                 };
                 jQuery.trumbowyg.langs['@culture.TwoLetterISOLanguageName'] = cloned;
             }
-            </text>
-        }
+        </text>
+    }
 
-        @* Extend trumbowyg default buttons. Only use for the wysiwyg editor which gets all buttons by default *@
+    @* Extend trumbowyg default buttons. Only use for the wysiwyg editor which gets all buttons by default *@
         var defaultButtons = jQuery.trumbowyg.defaultOptions.btns;
         if (defaultButtons[6] !== "insertShortcode") {
             defaultButtons.splice(6, 0, "insertShortcode");
         }
-                
-        var settings = { 
-            lang: '@culture.TwoLetterISOLanguageName'
+
+        var settings = {
+            lang: '@culture.TwoLetterISOLanguageName',
+            semantic: false
         }
 
-        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
+        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function() {
             $(document).trigger('contentpreview:render');
         });
     });

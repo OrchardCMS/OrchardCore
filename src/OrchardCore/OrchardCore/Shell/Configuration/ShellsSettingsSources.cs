@@ -23,6 +23,8 @@ namespace OrchardCore.Environment.Shell.Configuration
             return Task.CompletedTask;
         }
 
+        public Task AddSourcesAsync(string tenant, IConfigurationBuilder builder) => AddSourcesAsync(builder);
+
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
             JObject tenantsSettings;

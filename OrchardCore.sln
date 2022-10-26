@@ -432,7 +432,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Themes", "Orcha
 		src\OrchardCore.Themes\Directory.Build.targets = src\OrchardCore.Themes\Directory.Build.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Security", "src\OrchardCore.Modules\OrchardCore.Security\OrchardCore.Security.csproj", "{B02C00A7-33C2-4FEE-9D0F-B14C349ADB68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Security", "src\OrchardCore.Modules\OrchardCore.Security\OrchardCore.Security.csproj", "{B02C00A7-33C2-4FEE-9D0F-B14C349ADB68}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Abstractions.Tests", "test\OrchardCore.Abstractions.Tests\OrchardCore.Abstractions.Tests.csproj", "{FE8011DE-D917-4F74-9955-238B2BBA9165}"
 EndProject
@@ -464,9 +464,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.Themes.AssyAttrib.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.OrchardCoreThemes.Alpha", "test\OrchardCore.Tests.Themes\Examples.OrchardCoreThemes.Alpha\Examples.OrchardCoreThemes.Alpha.csproj", "{ECCBDB6C-BF57-43B8-9A58-5F3D60357D0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.FileStorage.AmazonS3", "src\OrchardCore\OrchardCore.FileStorage.AmazonS3\OrchardCore.FileStorage.AmazonS3.csproj", "{38F43FA0-5BA8-4D6B-8F66-C708D590EF76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ResourceManagement.Core", "src\OrchardCore\OrchardCore.ResourceManagement.Core\OrchardCore.ResourceManagement.Core.csproj", "{25C50837-551F-433C-9CED-DD0732523D3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Media.AmazonS3", "src\OrchardCore.Modules\OrchardCore.Media.AmazonS3\OrchardCore.Media.AmazonS3.csproj", "{FF1C550C-6D30-499A-AF11-68DE7C8B6869}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.FileStorage.AmazonS3", "src\OrchardCore\OrchardCore.FileStorage.AmazonS3\OrchardCore.FileStorage.AmazonS3.csproj", "{38F43FA0-5BA8-4D6B-8F66-C708D590EF76}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Media.AmazonS3", "src\OrchardCore.Modules\OrchardCore.Media.AmazonS3\OrchardCore.Media.AmazonS3.csproj", "{FF1C550C-6D30-499A-AF11-68DE7C8B6869}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1228,6 +1230,10 @@ Global
 		{ECCBDB6C-BF57-43B8-9A58-5F3D60357D0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECCBDB6C-BF57-43B8-9A58-5F3D60357D0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECCBDB6C-BF57-43B8-9A58-5F3D60357D0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25C50837-551F-433C-9CED-DD0732523D3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25C50837-551F-433C-9CED-DD0732523D3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25C50837-551F-433C-9CED-DD0732523D3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25C50837-551F-433C-9CED-DD0732523D3D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{38F43FA0-5BA8-4D6B-8F66-C708D590EF76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{38F43FA0-5BA8-4D6B-8F66-C708D590EF76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38F43FA0-5BA8-4D6B-8F66-C708D590EF76}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -1450,6 +1456,7 @@ Global
 		{95406CBA-9382-4019-B422-EE339D47CE8F} = {61436BAE-FB36-4ADA-8E5D-EE64C4E04522}
 		{80E34B32-9043-42FE-AB5C-CE1178F2B90D} = {61436BAE-FB36-4ADA-8E5D-EE64C4E04522}
 		{ECCBDB6C-BF57-43B8-9A58-5F3D60357D0D} = {61436BAE-FB36-4ADA-8E5D-EE64C4E04522}
+		{25C50837-551F-433C-9CED-DD0732523D3D} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{38F43FA0-5BA8-4D6B-8F66-C708D590EF76} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{FF1C550C-6D30-499A-AF11-68DE7C8B6869} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 	EndGlobalSection
