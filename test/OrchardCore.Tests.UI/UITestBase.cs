@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Lombiq.Tests.UI;
 using Lombiq.Tests.UI.Services;
-using OrchardCore.Tests.UI.Helpers;
 using Xunit.Abstractions;
 
 namespace OrchardCore.Tests.UI
@@ -17,8 +16,13 @@ namespace OrchardCore.Tests.UI
         protected override Task ExecuteTestAfterSetupAsync(
             Func<UITestContext, Task> testAsync,
             Browser browser,
-            Func<OrchardCoreUITestExecutorConfiguration, Task> changeConfigurationAsync) =>
-            ExecuteTestAsync(testAsync, browser, SetupHelpers.RunSetupAsync, changeConfigurationAsync);
+            Func<OrchardCoreUITestExecutorConfiguration, Task> changeConfigurationAsync)
+        {
+            throw new NotSupportedException(
+                "Since these tests are run for all database engines supported by Orchard Core, and setup snapshotting " +
+                "required by this method is only supported for SQLite and SQL Server by the UI Testing Toolbox, this " +
+                "isn't supported. Run the applicable setup operation in the test instead.");
+        }
 
         protected override Task ExecuteTestAsync(
             Func<UITestContext, Task> testAsync,

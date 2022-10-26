@@ -37,9 +37,18 @@ namespace OrchardCore.Tests.UI.Tests
 
         [Theory, Chrome]
         public Task BasicOrchardFeaturesShouldWorkWithNewTenant(Browser browser) =>
-            ExecuteTestAfterSetupAsync(
+            ExecuteTestAsync(
                 async context =>
                 {
+                    await context.GoToSetupPageAndSetupOrchardCoreAsync(
+                       new OrchardCoreSetupParameters(context)
+                       {
+                           SiteName = "Orchard Core - UI Testing",
+                           RecipeId = "SaaS.Tests",
+                           TablePrefix = "default",
+                           SiteTimeZoneValue = "America/New_York",
+                       });
+
                     await context.SignInDirectlyAsync();
 
                     await context.CreateAndSwitchToTenantManuallyAsync("test", "test");
