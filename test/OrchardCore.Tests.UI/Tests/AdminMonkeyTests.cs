@@ -39,8 +39,7 @@ namespace OrchardCore.Tests.UI.Tests
                         new MonkeyTestingOptions
                         {
                             PageTestTime = TimeSpan.FromSeconds(10)
-                        },
-                        startingRelativeUrl: "/");
+                        });
                 },
                 browser,
                 configuration =>
