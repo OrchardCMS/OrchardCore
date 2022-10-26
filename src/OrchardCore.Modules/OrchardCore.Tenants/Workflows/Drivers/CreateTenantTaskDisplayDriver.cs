@@ -9,6 +9,7 @@ namespace OrchardCore.Tenants.Workflows.Drivers
         protected override void EditActivity(CreateTenantTask activity, CreateTenantTaskViewModel model)
         {
             model.TenantNameExpression = activity.TenantName.Expression;
+            model.DescriptionExpression = activity.Description.Expression;
             model.RequestUrlPrefixExpression = activity.RequestUrlPrefix.Expression;
             model.RequestUrlHostExpression = activity.RequestUrlHost.Expression;
             model.DatabaseProviderExpression = activity.DatabaseProvider.Expression;
@@ -24,7 +25,8 @@ namespace OrchardCore.Tenants.Workflows.Drivers
 
         protected override void UpdateActivity(CreateTenantTaskViewModel model, CreateTenantTask activity)
         {
-            activity.TenantName = new WorkflowExpression<string>(model.TenantNameExpression);
+            activity.TenantName = new WorkflowExpression<string>(model.DescriptionExpression);
+            activity.Description = new WorkflowExpression<string>(model.TenantNameExpression);
             activity.RequestUrlPrefix = new WorkflowExpression<string>(model.RequestUrlPrefixExpression);
             activity.RequestUrlHost = new WorkflowExpression<string>(model.RequestUrlHostExpression);
             activity.DatabaseProvider = new WorkflowExpression<string>(model.DatabaseProviderExpression);

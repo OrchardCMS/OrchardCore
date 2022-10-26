@@ -292,7 +292,7 @@ namespace OrchardCore.Tenants.Controllers
 
             var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfile);
 
-            var databaseTableOptions = DatabaseTableInfo.Create(shellSettings);
+            var databaseTableOptions = DatabaseTableOptions.Create(shellSettings);
 
             var model = new EditTenantViewModel
             {
@@ -412,7 +412,7 @@ namespace OrchardCore.Tenants.Controllers
                 var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
                 model.Recipes = recipes;
 
-                var databaseTableOptions = DatabaseTableInfo.Create(shellSettings);
+                var databaseTableOptions = DatabaseTableOptions.Create(shellSettings);
 
                 model.DatabaseProvider = shellSettings["DatabaseProvider"];
                 model.TablePrefix = shellSettings["TablePrefix"];
@@ -487,7 +487,7 @@ namespace OrchardCore.Tenants.Controllers
             // tenant has not been initialized yet
             if (shellSettings.State == TenantState.Uninitialized)
             {
-                var databaseTableOptions = DatabaseTableInfo.Create(shellSettings);
+                var databaseTableOptions = DatabaseTableOptions.Create(shellSettings);
 
                 model.DatabaseProvider = shellSettings["DatabaseProvider"];
                 model.TablePrefix = shellSettings["TablePrefix"];

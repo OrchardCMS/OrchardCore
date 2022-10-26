@@ -31,12 +31,6 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public override LocalizedString DisplayText => S["Create Tenant Task"];
 
-        public string ContentType
-        {
-            get => GetProperty<string>();
-            set => SetProperty(value);
-        }
-
         public WorkflowExpression<string> Description
         {
             get => GetProperty(() => new WorkflowExpression<string>());
@@ -133,6 +127,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 return Outcomes("Failed");
             }
 
+            var description = (await ExpressionEvaluator.EvaluateAsync(Description, workflowContext, null))?.Trim();
             var requestUrlPrefix = (await ExpressionEvaluator.EvaluateAsync(RequestUrlPrefix, workflowContext, null))?.Trim();
             var requestUrlHost = (await ExpressionEvaluator.EvaluateAsync(RequestUrlHost, workflowContext, null))?.Trim();
             var databaseProvider = (await ExpressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext, null))?.Trim();
@@ -144,6 +139,11 @@ namespace OrchardCore.Tenants.Workflows.Activities
             // Creates a default shell settings based on the configuration.
             var shellSettings = ShellSettingsManager.CreateDefaultSettings();
             shellSettings.Name = tenantName;
+
+            if (!String.IsNullOrEmpty(description))
+            {
+                shellSettings["Description"] = description;
+            }
 
             if (!String.IsNullOrEmpty(requestUrlHost))
             {

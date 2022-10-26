@@ -77,7 +77,7 @@
 }
 
 <div class="mb-3" asp-validation-class-for="IdentityColumnSize">
-    <label asp-for="IdentityColumnSize">@T["Identity column type"] <span asp-validation-for="IdentityColumnSize" class="text-danger"></span></label>
+    <label asp-for="IdentityColumnSize">@T["Identity column size"] <span asp-validation-for="IdentityColumnSize" class="text-danger"></span></label>
     <select asp-for="IdentityColumnSize" asp-items="@columnSizes" class="form-select"></select>
     <div class="hint">@T["The default value is"] <code>@T["Integer"]</code></div>
 </div>
@@ -94,6 +94,12 @@
 <script at="Foot">
     $(function () {
         var editorRupTn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TenantNameExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorRupDe = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.DescriptionExpression)'), {
             lineNumbers: true,
             styleActiveLine: true,
             matchBrackets: true,

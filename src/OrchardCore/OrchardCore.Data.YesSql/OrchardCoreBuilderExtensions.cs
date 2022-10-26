@@ -59,7 +59,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
 
                     var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
-                    var databaseTableOptions = DatabaseTableInfo.Create(shellSettings);
+                    var databaseTableOptions = DatabaseTableOptions.Create(shellSettings);
                     var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions, databaseTableOptions);
 
                     switch (shellSettings["DatabaseProvider"])
@@ -156,7 +156,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        private static IConfiguration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableInfo databaseTableOptions)
+        private static IConfiguration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)
         {
             var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
 

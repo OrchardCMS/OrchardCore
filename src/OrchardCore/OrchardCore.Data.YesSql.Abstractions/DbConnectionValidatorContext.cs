@@ -12,9 +12,9 @@ public class DbConnectionValidatorContext
 
     public string ShellName { get; set; }
 
-    public DatabaseTableInfo TableOptions { get; }
+    public DatabaseTableOptions TableOptions { get; }
 
-    public DbConnectionValidatorContext(DatabaseTableInfo options)
+    public DbConnectionValidatorContext(DatabaseTableOptions options)
     {
         TableOptions = options ?? throw new ArgumentNullException(nameof(options));
     }

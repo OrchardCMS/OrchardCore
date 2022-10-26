@@ -4,7 +4,7 @@ using YesSql;
 
 namespace OrchardCore.Data;
 
-public class DatabaseTableInfo
+public class DatabaseTableOptions
 {
     public string Schema { get; set; }
 
@@ -19,16 +19,16 @@ public class DatabaseTableInfo
 
     public IdentityColumnSize IdentityColumnSize { get; set; }
 
-    public static DatabaseTableInfo Create(ShellSettings shellSettings)
+    public static DatabaseTableOptions Create(ShellSettings shellSettings)
     {
-        var options = new DatabaseTableInfo();
+        var options = new DatabaseTableOptions();
 
         Configure(shellSettings, options);
 
         return options;
     }
 
-    private static void Configure(ShellSettings shellSettings, DatabaseTableInfo options)
+    private static void Configure(ShellSettings shellSettings, DatabaseTableOptions options)
     {
         if (shellSettings == null)
         {
@@ -61,9 +61,11 @@ public class DatabaseTableInfo
             }
         }
 
-        if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnSize"], out var columnSize))
+        options.IdentityColumnSize = IdentityColumnSize.Int32;
+        if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnSize"], out var identityColumnSize) &&
+            Enum.IsDefined(identityColumnSize))
         {
-            options.IdentityColumnSize = columnSize;
+            options.IdentityColumnSize = identityColumnSize;
         }
     }
 }

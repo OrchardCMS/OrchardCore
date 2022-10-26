@@ -5,9 +5,9 @@ namespace OrchardCore.Data;
 
 public class DefaultTableNameConvention : ITableNameConvention
 {
-    private readonly DatabaseTableInfo _options;
+    private readonly DatabaseTableOptions _options;
 
-    public DefaultTableNameConvention(DatabaseTableInfo options) => _options = options;
+    public DefaultTableNameConvention(DatabaseTableOptions options) => _options = options;
 
     public string GetIndexTable(Type type, string collection = null)
     {

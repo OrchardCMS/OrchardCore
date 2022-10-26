@@ -50,7 +50,7 @@
     };
         }
         <div class="mb-3 col" asp-validation-class-for="IdentityColumnSize">
-            <label asp-for="IdentityColumnSize">@T["Identity column type"]</label>
+            <label asp-for="IdentityColumnSize">@T["Identity column size"]</label>
             <span asp-validation-for="IdentityColumnSize" class="text-danger"></span>
             <select asp-for="IdentityColumnSize" asp-items="@columnSizes" class="form-select"></select>
             <div class="hint">@T["The default value is"] <code>@T["Integer"]</code></div>
