@@ -13,34 +13,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     name: Build & Test
-    services:
-      postgres:
-        image: postgres:11
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: admin
-          POSTGRES_DB: app
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      mariadb:
-        image: mariadb:latest
-        ports:
-          - 3306
-        env:
-          MYSQL_DATABASE: test
-          MYSQL_ROOT_PASSWORD: test123
-        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
-      mssql:
-        image: mcr.microsoft.com/mssql/server:2019-latest
-        ports:
-          - 1433
-        env:
-          ACCEPT_EULA: Y
-          MSSQL_SA_PASSWORD: Password12!
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
