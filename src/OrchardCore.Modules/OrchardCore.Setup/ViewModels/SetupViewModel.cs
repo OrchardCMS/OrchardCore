@@ -61,7 +61,7 @@ namespace OrchardCore.Setup.ViewModels
         [RegularExpression("^[A-Za-z_]+[A-Za-z0-9_]*$", ErrorMessage = "Invalid name")]
         public string DocumentTable { get; set; }
 
-        [RegularExpression("^_*$", ErrorMessage = "Invalid table name separator")]
+        [RegularExpression("^_*$|\\bNULL\\b$", ErrorMessage = "Invalid table name separator")]
         public string TableNameSeparator { get; set; }
 
         public IdentityColumnSize IdentityColumnSize { get; set; }
