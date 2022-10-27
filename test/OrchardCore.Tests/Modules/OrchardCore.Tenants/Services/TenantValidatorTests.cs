@@ -117,7 +117,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 ? ShellHost.GetSettings(ShellHelper.DefaultShellName)
                 : new ShellSettings();
 
-            var connectionFactory = new Mock<IDbConnectionValidator>();
+            var dbConnectionValidatorMock = new Mock<IDbConnectionValidator>();
 
             var validationContext = new DbConnectionValidatorContext(new DatabaseTableOptions(shellSettings))
             {
@@ -127,12 +127,12 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 ShellName = shellSettings.Name,
             };
 
-            connectionFactory.Setup(l => l.ValidateAsync(validationContext));
+            dbConnectionValidatorMock.Setup(v => v.ValidateAsync(validationContext));
 
             return new TenantValidator(
                 ShellHost,
                 featureProfilesServiceMock.Object,
-                connectionFactory.Object,
+                dbConnectionValidatorMock.Object,
                 stringLocalizerMock.Object
                 );
         }

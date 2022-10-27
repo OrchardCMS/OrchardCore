@@ -256,7 +256,6 @@ namespace OrchardCore.AutoSetup
             setupContext.Properties[SetupConstants.DatabaseTablePrefix] = options.DatabaseTablePrefix;
             setupContext.Properties[SetupConstants.SiteName] = options.SiteName;
             setupContext.Properties[SetupConstants.SiteTimeZone] = options.SiteTimeZone;
-            setupContext.Properties[SetupConstants.FeatureProfile] = options.FeatureProfile;
             setupContext.Properties[SetupConstants.Schema] = options.Schema;
             setupContext.Properties[SetupConstants.DocumentTable] = options.DocumentTable;
             setupContext.Properties[SetupConstants.TableNameSeparator] = options.TableNameSeparator;
