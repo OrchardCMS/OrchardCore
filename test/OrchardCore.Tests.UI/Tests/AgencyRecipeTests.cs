@@ -22,7 +22,7 @@ namespace OrchardCore.Tests.UI.Tests
             ExecuteTestAsync(
                 async context =>
                 {
-                    await context.TestSetupWithInvalidAndValidDataAsync(new OrchardCoreSetupParameters(context)
+                    await context.TestSetupAsync(new OrchardCoreSetupParameters(context)
                     {
                         RecipeId = "Agency.Tests",
                     });
