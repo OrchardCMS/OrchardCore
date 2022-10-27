@@ -65,7 +65,7 @@ namespace OrchardCore.Setup.Controllers
                 return NotFound();
             }
 
-            var databaseTableOptions = DatabaseTableOptions.Create(_shellSettings);
+            var databaseTableOptionsModel = new DatabaseTableOptionsModel(_shellSettings);
 
             var model = new SetupViewModel
             {
@@ -73,10 +73,10 @@ namespace OrchardCore.Setup.Controllers
                 Recipes = recipes,
                 RecipeName = defaultRecipe?.Name,
                 Secret = token,
-                Schema = databaseTableOptions.Schema,
-                DocumentTable = databaseTableOptions.DocumentTable,
-                TableNameSeparator = databaseTableOptions.TableNameSeparatorModelValue,
-                IdentityColumnSize = databaseTableOptions.IdentityColumnSize,
+                Schema = databaseTableOptionsModel.Schema,
+                DocumentTable = databaseTableOptionsModel.DocumentTable,
+                TableNameSeparator = databaseTableOptionsModel.TableNameSeparator,
+                IdentityColumnSize = databaseTableOptionsModel.IdentityColumnSize,
             };
 
             CopyShellSettingsValues(model);
@@ -212,11 +212,6 @@ namespace OrchardCore.Setup.Controllers
             else
             {
                 model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
-            }
-
-            if (!String.IsNullOrEmpty(_shellSettings["Description"]))
-            {
-                model.Description = _shellSettings["Description"];
             }
         }
 

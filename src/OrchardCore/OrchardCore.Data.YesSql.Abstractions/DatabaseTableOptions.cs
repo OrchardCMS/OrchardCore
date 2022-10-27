@@ -6,66 +6,68 @@ namespace OrchardCore.Data;
 
 public class DatabaseTableOptions
 {
-    public string Schema { get; set; }
-
-    public string DocumentTable { get; set; }
-
-    public string TableNameSeparator { get; set; }
-
-    public string TableNameSeparatorModelValue =>
-        !String.IsNullOrEmpty(TableNameSeparator)
-        ? TableNameSeparator
-        : "NULL";
-
-    public IdentityColumnSize IdentityColumnSize { get; set; }
-
-    public static DatabaseTableOptions Create(ShellSettings shellSettings)
-    {
-        var options = new DatabaseTableOptions();
-
-        Configure(shellSettings, options);
-
-        return options;
-    }
-
-    private static void Configure(ShellSettings shellSettings, DatabaseTableOptions options)
+    public DatabaseTableOptions(ShellSettings shellSettings)
     {
         if (shellSettings == null)
         {
             throw new ArgumentNullException(nameof(shellSettings));
         }
 
-        if (options == null)
+        _ = Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnSize"], out var identityColumnSize);
+
+        Initialize(
+            shellSettings?["Schema"],
+            shellSettings["DocumentTable"],
+            shellSettings["TableNameSeparator"],
+            identityColumnSize);
+    }
+
+    public DatabaseTableOptions(
+        string schema,
+        string documentTable,
+        string tableNameSeparator,
+        IdentityColumnSize identityColumnSize) =>
+            Initialize(schema, documentTable, tableNameSeparator, identityColumnSize);
+
+    public virtual string Schema { get; private set; }
+
+    public virtual string DocumentTable { get; private set; }
+
+    public virtual string TableNameSeparator { get; private set; }
+
+    public virtual IdentityColumnSize IdentityColumnSize { get; private set; }
+
+    private void Initialize(
+        string schema,
+        string documentTable,
+        string tableNameSeparator,
+        IdentityColumnSize identityColumnSize)
+    {
+        if (!String.IsNullOrWhiteSpace(schema))
         {
-            throw new ArgumentNullException(nameof(options));
+            Schema = schema.Trim();
         }
 
-        if (!String.IsNullOrWhiteSpace(shellSettings["Schema"]))
+        DocumentTable = "Document";
+        if (!String.IsNullOrWhiteSpace(documentTable))
         {
-            options.Schema = shellSettings["Schema"].Trim();
+            DocumentTable = documentTable.Trim();
         }
 
-        options.DocumentTable = "Document";
-        if (!String.IsNullOrWhiteSpace(shellSettings["DocumentTable"]))
+        TableNameSeparator = "_";
+        if (!String.IsNullOrWhiteSpace(tableNameSeparator))
         {
-            options.DocumentTable = shellSettings["DocumentTable"].Trim();
-        }
-
-        options.TableNameSeparator = "_";
-        if (!String.IsNullOrWhiteSpace(shellSettings["TableNameSeparator"]))
-        {
-            options.TableNameSeparator = shellSettings["TableNameSeparator"].Trim();
-            if (options.TableNameSeparator == "NULL")
+            TableNameSeparator = tableNameSeparator.Trim();
+            if (TableNameSeparator == "NULL")
             {
-                options.TableNameSeparator = String.Empty;
+                TableNameSeparator = String.Empty;
             }
         }
 
-        options.IdentityColumnSize = IdentityColumnSize.Int32;
-        if (Enum.TryParse<IdentityColumnSize>(shellSettings["IdentityColumnSize"], out var identityColumnSize) &&
-            Enum.IsDefined(identityColumnSize))
+        IdentityColumnSize = IdentityColumnSize.Int32;
+        if (Enum.IsDefined(identityColumnSize))
         {
-            options.IdentityColumnSize = identityColumnSize;
+            IdentityColumnSize = identityColumnSize;
         }
     }
 }

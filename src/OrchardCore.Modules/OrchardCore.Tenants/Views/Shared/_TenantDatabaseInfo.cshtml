@@ -41,14 +41,13 @@
 
 @if (!Model.DatabaseConfigurationPreset || Model.CanEditDatabasePresets)
 {
-    <div class="row row-cols-1 row-cols-md-2">
-        @{
-            var columnSizes = new List<SelectListItem>
+    var columnSizes = new List<SelectListItem>
     {
-    new SelectListItem(T["Integer"].Value, YesSql.IdentityColumnSize.Int32.ToString()),
-    new SelectListItem(T["Big Integer"].Value, YesSql.IdentityColumnSize.Int64.ToString()),
+        new SelectListItem(T["Integer"].Value, YesSql.IdentityColumnSize.Int32.ToString()),
+        new SelectListItem(T["Big Integer"].Value, YesSql.IdentityColumnSize.Int64.ToString()),
     };
-        }
+
+    <div class="row row-cols-1 row-cols-md-2">
         <div class="mb-3 col" asp-validation-class-for="IdentityColumnSize">
             <label asp-for="IdentityColumnSize">@T["Identity column size"]</label>
             <span asp-validation-for="IdentityColumnSize" class="text-danger"></span>

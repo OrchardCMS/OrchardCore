@@ -59,7 +59,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
 
                     var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
-                    var databaseTableOptions = DatabaseTableOptions.Create(shellSettings);
+                    var databaseTableOptions = new DatabaseTableOptions(shellSettings);
                     var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions, databaseTableOptions);
 
                     switch (shellSettings["DatabaseProvider"])

@@ -175,7 +175,7 @@ namespace OrchardCore.Setup.Services
                 shellSettings["IdentityColumnSize"] = context.Properties.TryGetValue(SetupConstants.IdentityColumnSize, out var identityColumnSize) ? identityColumnSize?.ToString() : String.Empty;
             }
 
-            var validationContext = new DbConnectionValidatorContext(DatabaseTableOptions.Create(shellSettings))
+            var validationContext = new DbConnectionValidatorContext(new DatabaseTableOptions(shellSettings))
             {
                 DatabaseProvider = shellSettings["DatabaseProvider"],
                 ConnectionString = shellSettings["ConnectionString"],

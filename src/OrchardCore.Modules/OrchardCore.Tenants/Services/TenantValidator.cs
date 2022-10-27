@@ -77,13 +77,13 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
 
-            var options = new DatabaseTableOptions()
-            {
-                TableNameSeparator = model.TableNameSeparator,
-                DocumentTable = model.DocumentTable,
-                IdentityColumnSize = model.IdentityColumnSize,
-                Schema = model.Schema,
-            };
+            var options = new DatabaseTableOptions
+            (
+                model.Schema,
+                model.DocumentTable,
+                model.TableNameSeparator,
+                model.IdentityColumnSize
+            );
 
             if (model.IsNewTenant)
             {

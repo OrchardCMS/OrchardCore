@@ -189,9 +189,7 @@ namespace OrchardCore.Tenants.Controllers
                 return BadRequest(S["The database provider is not defined."]);
             }
 
-            var selectedProvider = _databaseProviders.FirstOrDefault(provider =>
-                String.Equals(provider.Value, databaseProvider, StringComparison.OrdinalIgnoreCase));
-
+            var selectedProvider = _databaseProviders.FirstOrDefault(provider => provider.Value == databaseProvider);
             if (selectedProvider == null)
             {
                 return BadRequest(S["The database provider is not supported."]);

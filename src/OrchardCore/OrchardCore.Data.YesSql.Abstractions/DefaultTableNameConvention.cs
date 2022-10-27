@@ -16,7 +16,7 @@ public class DefaultTableNameConvention : ITableNameConvention
             return type.Name;
         }
 
-        return collection + _options.TableNameSeparator + type.Name;
+        return $"{collection}{_options.TableNameSeparator}{type.Name}";
     }
 
     public string GetDocumentTable(string collection = null)
@@ -26,6 +26,6 @@ public class DefaultTableNameConvention : ITableNameConvention
             return _options.DocumentTable;
         }
 
-        return collection + _options.TableNameSeparator + _options.DocumentTable;
+        return $"{collection}{_options.TableNameSeparator}{_options.DocumentTable}";
     }
 }

@@ -117,7 +117,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
             var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
-            if (string.IsNullOrEmpty(tenantName))
+            if (String.IsNullOrEmpty(tenantName))
             {
                 return Outcomes("Failed");
             }
@@ -197,7 +197,10 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 shellSettings["TableNameSeparator"] = TableNameSeparator;
             }
 
-            shellSettings["IdentityColumnSize"] = IdentityColumnSize.ToString();
+            if (Enum.IsDefined(IdentityColumnSize))
+            {
+                shellSettings["IdentityColumnSize"] = IdentityColumnSize.ToString();
+            }
 
             shellSettings["Secret"] = Guid.NewGuid().ToString();
 

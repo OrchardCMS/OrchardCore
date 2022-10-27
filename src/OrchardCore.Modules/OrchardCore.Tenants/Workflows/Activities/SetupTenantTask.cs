@@ -142,7 +142,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
             var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
-            if (string.IsNullOrWhiteSpace(tenantName))
+            if (String.IsNullOrWhiteSpace(tenantName))
             {
                 return Outcomes("Failed");
             }
@@ -222,6 +222,10 @@ namespace OrchardCore.Tenants.Workflows.Activities
             }
 
             var identityColumnSize = IdentityColumnSize.ToString();
+            if (!Enum.IsDefined(IdentityColumnSize))
+            {
+                identityColumnSize = shellSettings["IdentityColumnSize"];
+            }
 
             var recipes = await SetupService.GetSetupRecipesAsync();
             var recipe = recipes.FirstOrDefault(r => r.Name == recipeName);
