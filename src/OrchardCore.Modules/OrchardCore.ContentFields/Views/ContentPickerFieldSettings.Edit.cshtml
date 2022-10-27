@@ -1,6 +1,16 @@
 @model OrchardCore.ContentFields.Settings.ContentPickerFieldSettingsViewModel
 @using OrchardCore.ContentManagement;
 
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
 <div class="mb-3">
     <div class="form-check">
         <input asp-for="Required" type="checkbox" class="form-check-input">
