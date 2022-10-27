@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
+using YesSql;
 
 namespace OrchardCore.AutoSetup.Options
 {
@@ -87,11 +88,6 @@ namespace OrchardCore.AutoSetup.Options
         public string Schema { get; set; }
 
         /// <summary>
-        /// Gets or sets the database's identity column size.
-        /// </summary>
-        public string IdentityColumnSize { get; set; }
-
-        /// <summary>
         /// Gets or sets the database's document name.
         /// </summary>
         public string DocumentTable { get; set; }
@@ -100,6 +96,11 @@ namespace OrchardCore.AutoSetup.Options
         /// Gets or sets the database's table name seperator.
         /// </summary>
         public string TableNameSeparator { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database's identity column size.
+        /// </summary>
+        public IdentityColumnSize IdentityColumnSize { get; set; }
 
         /// <summary>
         /// Gets the Flag which indicates a Default/Root shell/tenant.

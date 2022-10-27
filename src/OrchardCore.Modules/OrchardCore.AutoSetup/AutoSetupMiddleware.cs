@@ -218,10 +218,10 @@ namespace OrchardCore.AutoSetup
             shellSettings["Secret"] = Guid.NewGuid().ToString();
             shellSettings["RecipeName"] = setupOptions.RecipeName;
             shellSettings["FeatureProfile"] = setupOptions.FeatureProfile;
-            shellSettings["Schema"] = setupOptions.Schema?.Trim();
-            shellSettings["IdentityColumnSize"] = setupOptions.IdentityColumnSize;
-            shellSettings["DocumentTable"] = setupOptions.DocumentTable?.Trim();
-            shellSettings["TableNameSeparator"] = setupOptions.TableNameSeparator?.Trim();
+            shellSettings["Schema"] = setupOptions.Schema;
+            shellSettings["DocumentTable"] = setupOptions.DocumentTable;
+            shellSettings["TableNameSeparator"] = setupOptions.TableNameSeparator;
+            shellSettings["IdentityColumnSize"] = setupOptions.IdentityColumnSize.ToString();
 
             await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -258,9 +258,9 @@ namespace OrchardCore.AutoSetup
             setupContext.Properties[SetupConstants.SiteTimeZone] = options.SiteTimeZone;
             setupContext.Properties[SetupConstants.FeatureProfile] = options.FeatureProfile;
             setupContext.Properties[SetupConstants.Schema] = options.Schema;
-            setupContext.Properties[SetupConstants.IdentityColumnSize] = options.IdentityColumnSize;
             setupContext.Properties[SetupConstants.DocumentTable] = options.DocumentTable;
             setupContext.Properties[SetupConstants.TableNameSeparator] = options.TableNameSeparator;
+            setupContext.Properties[SetupConstants.IdentityColumnSize] = options.IdentityColumnSize.ToString();
 
             return setupContext;
         }

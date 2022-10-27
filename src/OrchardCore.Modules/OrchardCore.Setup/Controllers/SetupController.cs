@@ -81,6 +81,12 @@ namespace OrchardCore.Setup.Controllers
 
             CopyShellSettingsValues(model);
 
+            if (!String.IsNullOrEmpty(_shellSettings["TablePrefix"]))
+            {
+                model.DatabaseConfigurationPreset = true;
+                model.TablePrefix = _shellSettings["TablePrefix"];
+            }
+
             return View(model);
         }
 
