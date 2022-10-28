@@ -50,30 +50,29 @@ namespace OrchardCore.ContentManagement
             return option;
         }
 
-
-        internal void AddFieldHandler(Type contentPartType, Type handlerType)
+        internal void AddFieldHandler(Type contentFieldType, Type handlerType)
         {
-            var option = GetOrAddContentField(contentPartType);
+            var option = GetOrAddContentField(contentFieldType);
             option.AddHandler(handlerType);
         }
 
-        internal void RemoveFieldHandler(Type contentPartType, Type handlerType)
+        internal void RemoveFieldHandler(Type contentFieldType, Type handlerType)
         {
-            var option = GetOrAddContentField(contentPartType);
+            var option = GetOrAddContentField(contentFieldType);
             option.RemoveHandler(handlerType);
         }
 
-        internal ContentFieldOption GetOrAddContentField(Type contentPartType)
+        internal ContentFieldOption GetOrAddContentField(Type contentFieldType)
         {
-            if (!contentPartType.IsSubclassOf(typeof(ContentField)))
+            if (!contentFieldType.IsSubclassOf(typeof(ContentField)))
             {
                 throw new ArgumentException("The type must inherit from " + nameof(ContentField));
             }
 
-            var option = _contentFields.FirstOrDefault(x => x.Type == contentPartType);
+            var option = _contentFields.FirstOrDefault(x => x.Type == contentFieldType);
             if (option == null)
             {
-                option = new ContentFieldOption(contentPartType);
+                option = new ContentFieldOption(contentFieldType);
                 _contentFields.Add(option);
             }
 
