@@ -461,7 +461,7 @@ namespace OrchardCore.ContentManagement.Handlers
                 }
 
                 // Add any part errors to the context errors.
-                foreach (var error in context.ContentValidateResult.Errors)
+                foreach (var error in partValidationContext.ContentValidateResult.Errors)
                 {
                     context.ContentValidateResult.Fail(error);
                 }
