@@ -120,14 +120,12 @@ namespace OrchardCore.ContentManagement.Handlers
         {
             return InvokeHandlers(context,
                 (handler, context, part) => handler.ValidatingAsync(context, part),
-                (handler, context, part) => handler.ValidatingAsync(context, part),
                 (handler, context, field) => handler.ValidatingAsync(context, field));
         }
 
         public override Task ValidatedAsync(ValidateContentContext context)
         {
             return InvokeHandlers(context,
-                (handler, context, part) => handler.ValidatedAsync(context, part),
                 (handler, context, part) => handler.ValidatedAsync(context, part),
                 (handler, context, field) => handler.ValidatedAsync(context, field));
         }
@@ -399,8 +397,7 @@ namespace OrchardCore.ContentManagement.Handlers
 
         private async Task InvokeHandlers<TContext>(
             TContext context,
-            Func<IContentPartHandler, ValidateContentContext, ContentPart, Task> contextHandlerAction,
-            Func<IContentPartHandler, ValidatePartContentContext, ContentPart, Task> partHandlerAction,
+            Func<IContentPartHandler, ValidateContentContext, ContentPart, Task> partHandlerAction,
             Func<IContentFieldHandler, ValidateFieldContentContext, ContentField, Task> fieldHandlerAction)
             where TContext : ValidateContentContext
         {
@@ -423,12 +420,12 @@ namespace OrchardCore.ContentManagement.Handlers
 
                 var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
 
-                // For backward compatiability, we call this handler. This call can be removed in the future.
-                await partHandlers.InvokeAsync(contextHandlerAction, context, part, _logger);
+                var partValidationContext = new ValidateContentContext(context.ContentItem)
+                {
+                    ContentTypePartDefinition = typePartDefinition,
+                };
 
-                var validatePartContentContext = new ValidatePartContentContext(context.ContentItem, typePartDefinition);
-
-                await partHandlers.InvokeAsync(partHandlerAction, validatePartContentContext, part, _logger);
+                await partHandlers.InvokeAsync(partHandlerAction, partValidationContext, part, _logger);
 
                 if (typePartDefinition.PartDefinition?.Fields == null)
                 {
@@ -449,7 +446,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     }
 
                     var validateFieldContentContext = new ValidateFieldContentContext(
-                        validatePartContentContext.ContentItem,
+                        context.ContentItem,
                         partFieldDefinition,
                         typePartDefinition.Name ?? partName);
 
@@ -464,7 +461,7 @@ namespace OrchardCore.ContentManagement.Handlers
                 }
 
                 // Add any part errors to the context errors.
-                foreach (var error in validatePartContentContext.ContentValidateResult.Errors)
+                foreach (var error in context.ContentValidateResult.Errors)
                 {
                     context.ContentValidateResult.Fail(error);
                 }

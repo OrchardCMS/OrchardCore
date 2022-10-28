@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.ContentManagement.Handlers
@@ -20,13 +19,7 @@ namespace OrchardCore.ContentManagement.Handlers
         Task ImportedAsync(ImportContentContext context, ContentPart part);
         Task UpdatingAsync(UpdateContentContext context, ContentPart part);
         Task UpdatedAsync(UpdateContentContext context, ContentPart part);
-        Task ValidatingAsync(ValidatePartContentContext context, ContentPart part);
-        Task ValidatedAsync(ValidatePartContentContext context, ContentPart part);
-
-        [Obsolete("This method will be removed in future releases. Instead, use ValidatingAsync(ValidatePartContentContext context, ContentPart part)")]
         Task ValidatingAsync(ValidateContentContext context, ContentPart part);
-
-        [Obsolete("This method will be removed in future releases. Instead, use ValidatedAsync(ValidatePartContentContext context, ContentPart part)")]
         Task ValidatedAsync(ValidateContentContext context, ContentPart part);
 
         Task VersioningAsync(VersionContentContext context, ContentPart existing, ContentPart building);

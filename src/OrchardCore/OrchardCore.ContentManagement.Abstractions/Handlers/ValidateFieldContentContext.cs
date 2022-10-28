@@ -41,7 +41,7 @@ namespace OrchardCore.ContentManagement.Handlers
             }
         }
 
-        public static void Fail(this ValidatePartContentContext context, string errorMessage, string propertyName)
+        public static void Fail(this ValidateContentContext context, string errorMessage, string propertyName)
         {
             if (propertyName == null)
             {

@@ -87,13 +87,6 @@ namespace OrchardCore.ContentManagement.Handlers
                 : Task.CompletedTask;
         }
 
-        Task IContentPartHandler.ValidatingAsync(ValidatePartContentContext context, ContentPart part)
-        {
-            return part is TPart tpart
-                ? ValidatingAsync(context, tpart)
-                : Task.CompletedTask;
-        }
-
         Task IContentPartHandler.ValidatingAsync(ValidateContentContext context, ContentPart part)
         {
             return part is TPart tpart
@@ -102,14 +95,6 @@ namespace OrchardCore.ContentManagement.Handlers
         }
 
         Task IContentPartHandler.ValidatedAsync(ValidateContentContext context, ContentPart part)
-        {
-            return part is TPart tpart
-                ? ValidatedAsync(context, tpart)
-                : Task.CompletedTask;
-        }
-
-
-        Task IContentPartHandler.ValidatedAsync(ValidatePartContentContext context, ContentPart part)
         {
             return part is TPart tpart
                 ? ValidatedAsync(context, tpart)
@@ -220,13 +205,8 @@ namespace OrchardCore.ContentManagement.Handlers
         public virtual Task ImportedAsync(ImportContentContext context, TPart instance) => Task.CompletedTask;
         public virtual Task UpdatingAsync(UpdateContentContext context, TPart instance) => Task.CompletedTask;
         public virtual Task UpdatedAsync(UpdateContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task ValidatingAsync(ValidatePartContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task ValidatedAsync(ValidatePartContentContext context, TPart instance) => Task.CompletedTask;
-
         public virtual Task ValidatingAsync(ValidateContentContext context, TPart instance) => Task.CompletedTask;
-
         public virtual Task ValidatedAsync(ValidateContentContext context, TPart instance) => Task.CompletedTask;
-
         public virtual Task VersioningAsync(VersionContentContext context, TPart existing, TPart building) => Task.CompletedTask;
         public virtual Task VersionedAsync(VersionContentContext context, TPart existing, TPart building) => Task.CompletedTask;
         public virtual Task DraftSavingAsync(SaveDraftContentContext context, TPart instance) => Task.CompletedTask;
