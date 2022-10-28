@@ -50,6 +50,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             foreach (var typeDefinition in contentDefinitionManager.ListTypeDefinitions())
             {
+                if (_contentOptionsAccessor.Value.ShouldSkipContentType(typeDefinition.Name))
+                {
+                    continue;
+                }
+
                 var typeType = new ContentItemType(_contentOptionsAccessor)
                 {
                     Name = typeDefinition.Name,
@@ -63,7 +68,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     ResolvedType = new ListGraphType(typeType)
                 };
 
-                query.RequirePermission(CommonPermissions.ViewContent, typeDefinition.Name);
+                query.RequirePermission(CommonPermissions.ViewOwnContent, typeDefinition.Name);
 
                 foreach (var builder in contentTypeBuilders)
                 {

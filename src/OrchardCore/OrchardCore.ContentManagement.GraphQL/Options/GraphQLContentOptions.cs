@@ -106,7 +106,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
                 return true;
             }
 
-            var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => ctp.ContentType == contentType);
+            var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => String.Equals(ctp.ContentType, contentType, StringComparison.OrdinalIgnoreCase));
 
             if (contentTypeOption != null)
             {
@@ -115,7 +115,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
                     return true;
                 }
 
-                var contentTypePartOption = contentTypeOption.PartOptions.FirstOrDefault(p => p.Name == partName);
+                var contentTypePartOption = contentTypeOption.PartOptions.FirstOrDefault(p => String.Equals(p.Name, partName, StringComparison.OrdinalIgnoreCase));
 
                 if (contentTypePartOption != null)
                 {
@@ -126,7 +126,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
                 }
             }
 
-            var contentPartOption = PartOptions.FirstOrDefault(p => p.Name == partName);
+            var contentPartOption = PartOptions.FirstOrDefault(p => String.Equals(p.Name, partName, StringComparison.OrdinalIgnoreCase));
 
             if (contentPartOption != null)
             {
@@ -156,6 +156,18 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             return false;
         }
 
+        public bool ShouldSkipContentType(string contentType)
+        {
+            if (String.IsNullOrEmpty(contentType))
+            {
+                throw new ArgumentNullException(nameof(contentType));
+            }
+
+            var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => String.Equals(ctp.ContentType, contentType, StringComparison.OrdinalIgnoreCase));
+
+            return contentTypeOption?.Hidden ?? false;
+        }
+
         internal bool ShouldSkip(Type fieldType, string fieldName)
         {
             return HiddenFields
@@ -167,7 +179,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             var contentType = definition.ContentTypeDefinition.Name;
             var partName = definition.PartDefinition.Name;
 
-            var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => ctp.ContentType == contentType);
+            var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => String.Equals(ctp.ContentType, contentType, StringComparison.OrdinalIgnoreCase));
 
             if (contentTypeOption != null)
             {
@@ -176,7 +188,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
                     return true;
                 }
 
-                var contentTypePartOption = contentTypeOption.PartOptions.FirstOrDefault(p => p.Name == partName);
+                var contentTypePartOption = contentTypeOption.PartOptions.FirstOrDefault(p => String.Equals(p.Name, partName, StringComparison.OrdinalIgnoreCase));
 
                 if (contentTypePartOption != null)
                 {
@@ -187,7 +199,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
                 }
             }
 
-            var contentPartOption = PartOptions.FirstOrDefault(p => p.Name == partName);
+            var contentPartOption = PartOptions.FirstOrDefault(p => String.Equals(p.Name, partName, StringComparison.OrdinalIgnoreCase));
 
             if (contentPartOption != null)
             {
