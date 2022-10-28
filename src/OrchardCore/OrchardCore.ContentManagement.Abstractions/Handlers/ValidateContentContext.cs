@@ -4,7 +4,6 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.Handlers
 {
-
     public class ValidateContentContext : ContentContextBase
     {
         public ValidateContentContext(ContentItem contentItem) : base(contentItem)

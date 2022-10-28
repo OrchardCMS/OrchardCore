@@ -16,6 +16,7 @@ using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
