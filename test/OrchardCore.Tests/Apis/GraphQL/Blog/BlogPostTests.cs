@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Autoroute.Models;
@@ -233,7 +232,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     AuthorizedPermissions = new[]
                     {
                         GraphQLApi.Permissions.ExecuteGraphQL,
-                        Contents.Permissions.ViewContent
+                        Contents.Permissions.ViewContent,
                     }
                 });
 

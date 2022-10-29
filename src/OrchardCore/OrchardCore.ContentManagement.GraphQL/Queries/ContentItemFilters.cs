@@ -34,6 +34,12 @@ public class ContentItemFilters : GraphQLFilter<ContentItem>
     {
         var contentType = ((ListGraphType)(context.FieldDefinition).ResolvedType).ResolvedType.Name;
 
+        if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ViewContent))
+        {
+            // No additinal check when the user has permission to view all contents
+            return query;
+        }
+
         var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentType);
         var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.ViewContent);
         var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
@@ -42,7 +48,8 @@ public class ContentItemFilters : GraphQLFilter<ContentItem>
 
         if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, dynamicPermission, dummy))
         {
-            return await base.PreQueryAsync(query, context);
+            // User has access to view any content item of the given type.
+            return query;
         }
 
         var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -52,9 +59,10 @@ public class ContentItemFilters : GraphQLFilter<ContentItem>
 
         if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, contentTypeOwnPermission, dummy))
         {
-            return query.With<ContentItemIndex>(x => x.Owner == userId);
+            return query.With<ContentItemIndex>(x => x.ContentType == contentType && x.Owner == userId);
         }
 
-        return query.With<ContentItemIndex>(x => x.ContentType != contentType);
+        // Since the user has no permission to this content type, return a query that returns no record.
+        return query.With<ContentItemIndex>(x => true == false);
     }
 }
