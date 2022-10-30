@@ -232,7 +232,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     AuthorizedPermissions = new[]
                     {
                         GraphQLApi.Permissions.ExecuteGraphQL,
-                        Contents.Permissions.ViewContent,
+                        Contents.Permissions.ViewContent
                     }
                 });
 
