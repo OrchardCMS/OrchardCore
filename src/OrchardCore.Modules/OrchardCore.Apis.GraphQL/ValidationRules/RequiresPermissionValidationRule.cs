@@ -76,7 +76,14 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
                 return;
             }
 
-            if (permissions.Count() == 1)
+            var totalPermissions = permissions.Count();
+
+            if (totalPermissions == 0)
+            {
+                return;
+            }
+
+            if (totalPermissions == 1)
             {
                 var permission = permissions.First();
                 // small optimization for the single policy - no 'new List<>()', no 'await Task.WhenAll()'
