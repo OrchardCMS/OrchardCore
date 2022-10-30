@@ -43,18 +43,17 @@ public class Startup : StartupBase
         services.AddScoped<INotificationManager, NotificationManager>();
         services.AddScoped<INotificationMethodProviderAccessor, NotificationMethodProviderAccessor>();
 
-        services.AddScoped<IDisplayDriver<User>, UserNotificationPreferencesPartDisplayDriver>();
         services.AddDataMigration<NotificationMigrations>();
         services.AddSingleton<IIndexProvider, NotificationIndexProvider>();
         services.AddScoped<INotificationsAdminListQueryService, DefaultNotificationsAdminListQueryService>();
         services.Configure<StoreCollectionOptions>(o => o.Collections.Add(NotificationConstants.NotificationCollection));
         services.AddScoped<INotificationEvents, CoreNotificationEventsHandler>();
 
+
         services.AddScoped<IPermissionProvider, WebNotificationPermissionsProvider>();
         services.AddScoped<IDisplayDriver<ListNotificationOptions>, NotificationOptionsDisplayDriver>();
         services.AddScoped<IDisplayDriver<Notification>, NotificationDisplayDriver>();
         services.AddTransient<INotificationAdminListFilterProvider, DefaultNotificationAdminListFilterProvider>();
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, NotificationOptionsConfiguration>();
         services.AddSingleton<INotificationAdminListFilterParser>(sp =>
         {
             var filterProviders = sp.GetServices<INotificationAdminListFilterProvider>();
@@ -68,6 +67,9 @@ public class Startup : StartupBase
 
             return new DefaultNotificationAdminListFilterParser(parser);
         });
+
+        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, NotificationOptionsConfiguration>();
+        services.AddScoped<IDisplayDriver<User>, UserNotificationPreferencesPartDisplayDriver>();
 
         services.Configure<MvcOptions>((options) =>
         {

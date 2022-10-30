@@ -26,8 +26,8 @@ public class NotificationMigrations : DataMigration
                 "UserId",
                 "IsRead",
                 "CreatedAtUtc",
-                "Content"),
-                collection: NotificationConstants.NotificationCollection
+                "Content")
+                , collection: NotificationConstants.NotificationCollection
         );
 
         return 1;

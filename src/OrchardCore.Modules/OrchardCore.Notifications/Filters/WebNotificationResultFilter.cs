@@ -80,5 +80,4 @@ public class WebNotificationResultFilter : IAsyncResultFilter
 
         await next();
     }
-
 }

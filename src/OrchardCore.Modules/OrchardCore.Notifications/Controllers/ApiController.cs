@@ -15,13 +15,13 @@ namespace OrchardCore.Notifications.Controllers;
 [Feature("OrchardCore.Notifications")]
 [Route("api/notifications")]
 [ApiController]
-public class WebNotificationController : Controller
+public class ApiController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly YesSql.ISession _session;
     private readonly IClock _clock;
 
-    public WebNotificationController(
+    public ApiController(
         IAuthorizationService authorizationService,
         YesSql.ISession session,
         IClock clock)
