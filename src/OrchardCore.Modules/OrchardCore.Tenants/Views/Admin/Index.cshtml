@@ -1,8 +1,13 @@
 @model AdminIndexViewModel
+
 @using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.Options
 @using OrchardCore.DisplayManagement
 @using OrchardCore.Environment.Shell
 @using OrchardCore.Environment.Shell.Models
+
+@inject IOptions<TenantsOptions> TenantsOptions
+
 @{
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.ShellSettingsEntries.Count - 1;
