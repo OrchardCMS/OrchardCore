@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Admin;
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
@@ -41,6 +42,7 @@ namespace OrchardCore.Tenants
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<ITenantValidator, TenantValidator>();
+            services.AddScoped<IShapeTableProvider, TenantShapeTableProvider>();
             services.AddSetup();
 
             services.Configure<TenantsOptions>(_shellConfiguration.GetSection("OrchardCore_Tenants"));
@@ -211,6 +213,15 @@ namespace OrchardCore.Tenants
             services.AddTransient<IDeploymentSource, AllFeatureProfilesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllFeatureProfilesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllFeatureProfilesDeploymentStepDriver>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Tenants", "OrchardCore.Features")]
+    public class TenantFeatureProfilesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IShapeTableProvider, TenantFeatureShapeTableProvider>();
         }
     }
 }

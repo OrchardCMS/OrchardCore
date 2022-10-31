@@ -38,8 +38,6 @@ namespace OrchardCore.Tenants.ViewModels
 
         public string Name { get; set; }
 
-        public bool IsDefaultTenant { get; set; }
-
         public string Token { get; set; }
 
         [BindNever]
