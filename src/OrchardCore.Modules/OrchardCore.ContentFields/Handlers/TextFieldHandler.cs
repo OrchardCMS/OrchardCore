@@ -10,7 +10,7 @@ namespace OrchardCore.ContentFields.Handlers;
 
 public class TextFieldHandler : ContentFieldHandler<TextField>
 {
-    private readonly IStringLocalizer<TextFieldHandler> S;
+    private readonly IStringLocalizer S;
 
     public TextFieldHandler(IStringLocalizer<TextFieldHandler> stringLocalizer)
     {
