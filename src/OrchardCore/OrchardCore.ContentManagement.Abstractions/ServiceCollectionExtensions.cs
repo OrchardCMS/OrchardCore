@@ -29,7 +29,7 @@ namespace OrchardCore.ContentManagement
 
         /// <summary>
         /// Registers a content field type. This method may be called multiple times safely,
-        /// to reconfigure an existing part.
+        /// to reconfigure an existing field.
         /// </summary>
         public static ContentFieldOptionBuilder AddContentField<TContentField>(this IServiceCollection services)
             where TContentField : ContentField
@@ -39,7 +39,7 @@ namespace OrchardCore.ContentManagement
 
         /// <summary>
         /// Registers a content field type. This method may be called multiple times safely,
-        /// to reconfigure an existing part.
+        /// to reconfigure an existing field.
         /// </summary>
         public static ContentFieldOptionBuilder AddContentField(this IServiceCollection services, Type contentFieldType)
         {
@@ -106,7 +106,7 @@ namespace OrchardCore.ContentManagement
         }
 
         /// <summary>
-        /// Register a handler for use with a content part.
+        /// Register a handler for use with a content field.
         /// </summary>
         public static ContentFieldOptionBuilder AddHandler(this ContentFieldOptionBuilder builder, Type handlerType)
         {
@@ -120,7 +120,7 @@ namespace OrchardCore.ContentManagement
         }
 
         /// <summary>
-        /// Remove a handler registration from a content part.
+        /// Remove a handler registration from a content field.
         /// </summary>
         /// <typeparam name="TContentFieldHandler"></typeparam>
         public static ContentFieldOptionBuilder RemoveHandler<TContentFieldHandler>(this ContentFieldOptionBuilder builder)
@@ -130,7 +130,7 @@ namespace OrchardCore.ContentManagement
         }
 
         /// <summary>
-        /// Remove a handler registration from a content part.
+        /// Remove a handler registration from a content field.
         /// </summary>
         public static ContentFieldOptionBuilder RemoveHandler(this ContentFieldOptionBuilder builder, Type handlerType)
         {
