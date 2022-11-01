@@ -34,10 +34,10 @@ Update the source so everything looks like on the new version.
 Make sure everything works all right.
 
 - [ ] Make sure that [OrchardCore.Samples works](https://github.com/OrchardCMS/OrchardCore.Samples).
-- [ ] Test the [guides](https://docs.orchardcore.net/en/dev/docs/guides/) with the NuGet packages from the Cloudsmith feed (branches under `release/` are automatically published too). Test at least the following guides:
-    - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/dev/docs/guides/create-modular-application-mvc/)
-    - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/dev/docs/guides/create-cms-application/)
-    - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/dev/docs/guides/decoupled-cms/)
+- [ ] Test the [guides](https://docs.orchardcore.net/en/latest/docs/guides/) with the NuGet packages from the Cloudsmith feed (branches under `release/` are automatically published too). Test at least the following guides:
+    - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/docs/guides/create-modular-application-mvc/)
+    - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/latest/docs/guides/create-cms-application/)
+    - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/docs/guides/decoupled-cms/)
 
 ### Prepare and publish Orchard Core Translations
 
