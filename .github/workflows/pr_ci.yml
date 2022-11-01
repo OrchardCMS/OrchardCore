@@ -14,6 +14,9 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     name: Build & Test
     steps:
+    - name: Start PostgreSQL
+      # v1.4.0
+      uses: dentarg/postgres@3ab3e1c502a120b43f4e7c1e6650db6b0c95cdcc
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
@@ -40,11 +43,18 @@ jobs:
     #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
     #  with:
     #    build-directory: test/OrchardCore.Tests.UI
-    - name: Set up SQL Server
-      uses: Lombiq/GitHub-Actions/.github/actions/setup-sql-server@dev
-    - name: CMS UI Tests - SQL Server
+    #- name: Set up SQL Server
+    #  uses: Lombiq/GitHub-Actions/.github/actions/setup-sql-server@dev
+    #- name: CMS UI Tests - SQL Server
+    #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
+    #  env:
+    #    OrchardCore__UseSqlServerForUITesting: true
+    #  with:
+    #    build-directory: test/OrchardCore.Tests.UI
+    - name: CMS UI Tests - PostgreSQL
       uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
       env:
-        OrchardCore__UseSqlServerForUITesting: true
+        OrchardCore__ConnectionString: "User ID=postgres;Password=root;Host=postgres;Port=5432;Database=app;"
+        OrchardCore__DatabaseProvider: "Postgres"
       with:
         build-directory: test/OrchardCore.Tests.UI
