@@ -40,3 +40,11 @@ jobs:
       uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
       with:
         build-directory: test/OrchardCore.Tests.UI
+    - name: Set up SQL Server
+      uses: Lombiq/GitHub-Actions/.github/actions/setup-sql-server@dev
+    - name: CMS UI Tests - SQL Server
+      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
+      env:
+        OrchardCore__UseSqlServerForUITesting: true
+      with:
+        build-directory: test/OrchardCore.Tests.UI
