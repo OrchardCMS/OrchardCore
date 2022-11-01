@@ -29,7 +29,7 @@ jobs:
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     - name: MVC UI Tests
-      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-407
+      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
       with:
         build-directory: test/OrchardCore.Tests.UI.Mvc
     - name: Set up Azurite
@@ -37,6 +37,6 @@ jobs:
       with:
         location: test/OrchardCore.Tests.UI
     - name: CMS UI Tests - SQLite
-      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-407
+      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
       with:
         build-directory: test/OrchardCore.Tests.UI
