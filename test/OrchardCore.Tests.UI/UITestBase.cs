@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Lombiq.Tests.UI;
 using Lombiq.Tests.UI.Services;
-using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
 
 namespace OrchardCore.Tests.UI
@@ -40,6 +39,13 @@ namespace OrchardCore.Tests.UI
 
                     var section = TestConfigurationManager.RootConfiguration.GetSection("OrchardCore");
                     configuration.UseSqlServer = section.GetValue<bool>("UseSqlServerForUITesting");
+
+                    if (configuration.UseSqlServer)
+                    {
+                        configuration.SqlServerDatabaseConfiguration.ConnectionStringTemplate =
+                            configuration.SqlServerDatabaseConfiguration.ConnectionStringTemplate +
+                            ";Encrypt=False;TrustServerCertificate=True";
+                    }
 
                     if (changeConfigurationAsync != null) await changeConfigurationAsync(configuration);
                 });
