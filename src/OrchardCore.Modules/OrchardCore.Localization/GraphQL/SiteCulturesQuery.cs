@@ -6,8 +6,10 @@ using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
+using OrchardCore.ContentManagement.GraphQL.Options;
 
 namespace OrchardCore.Localization.GraphQL
 {
@@ -17,14 +19,20 @@ namespace OrchardCore.Localization.GraphQL
     public class SiteCulturesQuery : ISchemaBuilder
     {
         private readonly IStringLocalizer S;
+        private readonly GraphQLContentOptions _graphQLContentOptions;
 
         /// <summary>
         /// Creates a new instance of the <see cref="SiteCulturesQuery"/>.
         /// </summary>
         /// <param name="localizer">The <see cref="IStringLocalizer"/>.</param>
-        public SiteCulturesQuery(IStringLocalizer<SiteCulturesQuery> localizer)
+        /// <param name="graphQLContentOptions">The <see cref="GraphQLContentOptions"/>.</param>
+        /// 
+        public SiteCulturesQuery(
+            IStringLocalizer<SiteCulturesQuery> localizer,
+            IOptions<GraphQLContentOptions> graphQLContentOptions)
         {
             S = localizer;
+            _graphQLContentOptions = graphQLContentOptions.Value;
         }
 
         public Task<string> GetIdentifierAsync() => Task.FromResult(String.Empty);
@@ -32,6 +40,11 @@ namespace OrchardCore.Localization.GraphQL
         /// <inheritdocs/>
         public Task BuildAsync(ISchema schema)
         {
+            if (_graphQLContentOptions.ShouldSkipContentType("SiteCultures"))
+            {
+                return Task.CompletedTask;
+            }
+
             var field = new FieldType
             {
                 Name = "SiteCultures",
