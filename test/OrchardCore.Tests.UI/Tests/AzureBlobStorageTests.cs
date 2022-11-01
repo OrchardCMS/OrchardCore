@@ -14,7 +14,7 @@ namespace OrchardCore.Tests.UI.Tests
         {
         }
 
-        [Theory, Chrome]
+        [Theory(Skip = "Minimal test suite for multi-DB testing."), Chrome]
         public Task BasicOrchardFeaturesShouldWorkWithBlogAndAzureBlobStorage(Browser browser) =>
             ExecuteTestAsync(
                 context => context.TestBasicOrchardFeaturesAsync("Blog.Tests"),
