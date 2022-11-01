@@ -49,7 +49,6 @@
   <ItemGroup>
     <PackageReference Include="Lombiq.Tests.UI" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="170.8.0" />
     <PackageReference Include="xunit.runner.visualstudio" />
   </ItemGroup>
 
