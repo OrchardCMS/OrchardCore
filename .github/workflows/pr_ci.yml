@@ -25,9 +25,9 @@ jobs:
     - name: Build
       run: |
         dotnet build --configuration Release --framework net6.0
-    - name: Unit Tests
-      run: |
-        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
+    #- name: Unit Tests
+    #  run: |
+    #    dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     - name: MVC UI Tests
       uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
       with:
