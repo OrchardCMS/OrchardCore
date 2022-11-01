@@ -25,21 +25,21 @@ jobs:
     - name: Build
       run: |
         dotnet build --configuration Release --framework net6.0
-    - name: Unit Tests
-      run: |
-        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
-    - name: MVC UI Tests
-      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
-      with:
-        build-directory: test/OrchardCore.Tests.UI.Mvc
+    #- name: Unit Tests
+    #  run: |
+    #    dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
+    #- name: MVC UI Tests
+    #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
+    #  with:
+    #    build-directory: test/OrchardCore.Tests.UI.Mvc
     - name: Set up Azurite
       uses: Lombiq/GitHub-Actions/.github/actions/setup-azurite@dev
       with:
         location: test/OrchardCore.Tests.UI
-    - name: CMS UI Tests - SQLite
-      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
-      with:
-        build-directory: test/OrchardCore.Tests.UI
+    #- name: CMS UI Tests - SQLite
+    #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
+    #  with:
+    #    build-directory: test/OrchardCore.Tests.UI
     - name: Set up SQL Server
       uses: Lombiq/GitHub-Actions/.github/actions/setup-sql-server@dev
     - name: CMS UI Tests - SQL Server
