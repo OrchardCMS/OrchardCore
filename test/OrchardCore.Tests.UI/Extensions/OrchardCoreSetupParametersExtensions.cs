@@ -6,7 +6,7 @@ namespace Lombiq.Tests.UI.Pages
     public static class OrchardCoreSetupParametersExtensions
     {
         public static OrchardCoreSetupParameters DatabaseProviderFromEnvironmentIfAvailable(
-            this OrchardCoreSetupParameters setupParameters)
+            this OrchardCoreSetupParameters setupParameters, UITestContext context)
         {
             var section = TestConfigurationManager.RootConfiguration.GetSection("OrchardCore");
             var databaseProvider = section.GetValue<string>("DatabaseProvider");
@@ -14,6 +14,7 @@ namespace Lombiq.Tests.UI.Pages
             if (!string.IsNullOrEmpty(databaseProvider) && (databaseProvider is "Postgres" or "MySql"))
             {
                 setupParameters.DatabaseProvider = OrchardCoreSetupPage.DatabaseType.ProvidedByEnvironment;
+                setupParameters.TablePrefix = context.Id;
             }
 
             return setupParameters;

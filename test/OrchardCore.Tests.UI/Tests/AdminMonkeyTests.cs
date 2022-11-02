@@ -33,7 +33,7 @@ namespace OrchardCore.Tests.UI.Tests
                            RecipeId = "Blog.Tests",
                            TablePrefix = "default",
                            SiteTimeZoneValue = "America/New_York",
-                       }.DatabaseProviderFromEnvironmentIfAvailable());
+                       }.DatabaseProviderFromEnvironmentIfAvailable(context));
 
                     await context.TestAdminAsMonkeyRecursivelyAsync(
                         new MonkeyTestingOptions
