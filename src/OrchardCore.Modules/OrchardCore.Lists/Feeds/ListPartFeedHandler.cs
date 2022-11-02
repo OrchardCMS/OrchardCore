@@ -11,8 +11,8 @@ namespace OrchardCore.Lists.Drivers
         {
             return context.ForAsync<FeedMetadata>(feedMetadata =>
             {
-                // Disable the feed if the value is not defined
-                feedMetadata.EnableFeedProxyUrl = part.Content.EnableFeedProxyUrl ?? false;
+                // Enable the feed if the value is not defined. This is handy to migrate the old feeds
+                feedMetadata.EnableFeedProxyUrl = part.Content.EnableFeedProxyUrl ?? true;
                 feedMetadata.FeedProxyUrl = part.Content.FeedProxyUrl;
 
                 return Task.CompletedTask;
