@@ -23,7 +23,7 @@ namespace OrchardCore.Tests.UI.Tests
                     await context.TestSetupAsync(new OrchardCoreSetupParameters(context)
                     {
                         RecipeId = "Headless.Tests",
-                    });
+                    }.DatabaseProviderFromEnvironmentIfAvailable());
 
                     await context.TestLoginWithInvalidDataAsync();
                     await context.TestLoginAsync();

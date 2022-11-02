@@ -23,7 +23,7 @@ namespace OrchardCore.Tests.UI.Tests
                     await context.TestSetupAsync(new OrchardCoreSetupParameters(context)
                     {
                         RecipeId = "SaaS.Tests",
-                    });
+                    }.DatabaseProviderFromEnvironmentIfAvailable());
 
                     await context.TestRegistrationWithInvalidDataAsync();
                     await context.TestRegistrationAsync();
@@ -47,7 +47,7 @@ namespace OrchardCore.Tests.UI.Tests
                            RecipeId = "SaaS.Tests",
                            TablePrefix = "default",
                            SiteTimeZoneValue = "America/New_York",
-                       });
+                       }.DatabaseProviderFromEnvironmentIfAvailable());
 
                     await context.SignInDirectlyAsync();
 
@@ -60,7 +60,7 @@ namespace OrchardCore.Tests.UI.Tests
                             RecipeId = "Blog.Tests",
                             TablePrefix = "test",
                             RunSetupOnCurrentPage = true,
-                        });
+                        }.DatabaseProviderFromEnvironmentIfAvailable());
 
                     await context.TestBasicOrchardFeaturesExceptSetupAsync();
                 },

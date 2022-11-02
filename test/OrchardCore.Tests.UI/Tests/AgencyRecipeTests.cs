@@ -25,7 +25,7 @@ namespace OrchardCore.Tests.UI.Tests
                     await context.TestSetupAsync(new OrchardCoreSetupParameters(context)
                     {
                         RecipeId = "Agency.Tests",
-                    });
+                    }.DatabaseProviderFromEnvironmentIfAvailable());
 
                     await context.TestRegistrationWithInvalidDataAsync();
                     await context.TestRegistrationAsync();
