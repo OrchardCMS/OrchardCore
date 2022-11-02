@@ -29,21 +29,21 @@ jobs:
     #  run: |
     #    dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     #- name: MVC UI Tests
-    #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
+    #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
     #  with:
     #    build-directory: test/OrchardCore.Tests.UI.Mvc
     - name: Set up Azurite
-      uses: Lombiq/GitHub-Actions/.github/actions/setup-azurite@dev
+      uses: Lombiq/GitHub-Actions/.github/actions/setup-azurite@issue/OSOE-424
       with:
         location: test/OrchardCore.Tests.UI
     #- name: CMS UI Tests - SQLite
-    #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
+    #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
     #  with:
     #    build-directory: test/OrchardCore.Tests.UI
     #- name: Set up SQL Server
-    #  uses: Lombiq/GitHub-Actions/.github/actions/setup-sql-server@dev
+    #  uses: Lombiq/GitHub-Actions/.github/actions/setup-sql-server@issue/OSOE-424
     #- name: CMS UI Tests - SQL Server
-    #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
+    #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
     #  env:
     #    OrchardCore__UseSqlServerForUITesting: true
     #  with:
@@ -53,7 +53,7 @@ jobs:
       # This will cause warnings until this is fixed: https://github.com/ikalnytskyi/action-setup-postgres/issues/6.
       uses: ikalnytskyi/action-setup-postgres@e5b77936cf3f9d1a079ac5e8c1787fc657924809
     - name: CMS UI Tests - PostgreSQL
-      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
+      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
       env:
         OrchardCore__ConnectionString: "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=postgres;"
         OrchardCore__DatabaseProvider: "Postgres"
