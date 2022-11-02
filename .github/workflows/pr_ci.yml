@@ -15,8 +15,8 @@ jobs:
     name: Build & Test
     steps:
     - name: Start PostgreSQL
-      # v1.4.0
-      uses: dentarg/postgres@3ab3e1c502a120b43f4e7c1e6650db6b0c95cdcc
+      # v3
+    - uses: ikalnytskyi/action-setup-postgres@e5b77936cf3f9d1a079ac5e8c1787fc657924809
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
@@ -54,7 +54,7 @@ jobs:
     - name: CMS UI Tests - PostgreSQL
       uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
       env:
-        OrchardCore__ConnectionString: "User ID=postgres;Password=root;Host=postgres;Port=5432;Database=app;"
+        OrchardCore__ConnectionString: "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=postgres;"
         OrchardCore__DatabaseProvider: "Postgres"
       with:
         build-directory: test/OrchardCore.Tests.UI
