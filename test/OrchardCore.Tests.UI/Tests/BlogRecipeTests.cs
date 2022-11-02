@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
+using Lombiq.Tests.UI.Pages;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
 using Xunit;
@@ -18,7 +19,10 @@ namespace OrchardCore.Tests.UI.Tests
         [Theory, Chrome]
         public Task BasicOrchardFeaturesShouldWorkWithBlog(Browser browser) =>
             ExecuteTestAsync(
-                context => context.TestBasicOrchardFeaturesAsync("Blog.Tests"),
+                context => context.TestBasicOrchardFeaturesAsync(new OrchardCoreSetupParameters(context)
+                {
+                    RecipeId = "Blog.Tests",
+                }.DatabaseProviderFromEnvironmentIfAvailable(context)),
                 browser,
                 configuration =>
                 {
