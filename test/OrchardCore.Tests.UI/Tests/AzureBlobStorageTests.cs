@@ -18,10 +18,15 @@ namespace OrchardCore.Tests.UI.Tests
         [Theory(Skip = "Minimal test suite for multi-DB testing."), Chrome]
         public Task BasicOrchardFeaturesShouldWorkWithBlogAndAzureBlobStorage(Browser browser) =>
             ExecuteTestAsync(
-                context => context.TestBasicOrchardFeaturesAsync(new OrchardCoreSetupParameters(context)
+                async context =>
                 {
-                    RecipeId = "Blog.Tests",
-                }.DatabaseProviderFromEnvironmentIfAvailable(context)),
+                    await context.TestSetupAsync(new OrchardCoreSetupParameters(context)
+                    {
+                        RecipeId = "Blog.Tests",
+                    }.DatabaseProviderFromEnvironmentIfAvailable(context));
+
+                    await context.TestBasicOrchardFeaturesExceptSetupAsync();
+                },
                 browser,
                 configuration =>
                 {

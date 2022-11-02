@@ -19,10 +19,15 @@ namespace OrchardCore.Tests.UI.Tests
         [Theory, Chrome]
         public Task BasicOrchardFeaturesShouldWorkWithBlog(Browser browser) =>
             ExecuteTestAsync(
-                context => context.TestBasicOrchardFeaturesAsync(new OrchardCoreSetupParameters(context)
+                async context =>
                 {
-                    RecipeId = "Blog.Tests",
-                }.DatabaseProviderFromEnvironmentIfAvailable(context)),
+                    await context.TestSetupAsync(new OrchardCoreSetupParameters(context)
+                    {
+                        RecipeId = "Blog.Tests",
+                    }.DatabaseProviderFromEnvironmentIfAvailable(context));
+
+                    await context.TestBasicOrchardFeaturesExceptSetupAsync();
+                },
                 browser,
                 configuration =>
                 {
