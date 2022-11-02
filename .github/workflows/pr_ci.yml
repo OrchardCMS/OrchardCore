@@ -18,7 +18,7 @@ jobs:
       # v3
       uses: ankane/setup-postgres@d13a84e814666d5ad6d52c8b67019fbdcb45ebe3
       with:
-        database: postgres
+        database: uitests
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
@@ -56,7 +56,7 @@ jobs:
     - name: CMS UI Tests - PostgreSQL
       uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
       env:
-        OrchardCore__ConnectionString: "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=postgres;"
+        OrchardCore__ConnectionString: "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=uitests;"
         OrchardCore__DatabaseProvider: "Postgres"
       with:
         build-directory: test/OrchardCore.Tests.UI
