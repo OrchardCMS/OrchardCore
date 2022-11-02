@@ -16,7 +16,7 @@ jobs:
     steps:
     - name: Start PostgreSQL
       # v3
-    - uses: ikalnytskyi/action-setup-postgres@e5b77936cf3f9d1a079ac5e8c1787fc657924809
+      uses: ikalnytskyi/action-setup-postgres@e5b77936cf3f9d1a079ac5e8c1787fc657924809
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
