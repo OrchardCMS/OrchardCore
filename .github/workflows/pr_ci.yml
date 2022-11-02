@@ -14,11 +14,6 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     name: Build & Test
     steps:
-    - name: Start PostgreSQL
-      # v3
-      uses: ankane/setup-postgres@d13a84e814666d5ad6d52c8b67019fbdcb45ebe3
-      with:
-        database: uitests
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
@@ -53,10 +48,14 @@ jobs:
     #    OrchardCore__UseSqlServerForUITesting: true
     #  with:
     #    build-directory: test/OrchardCore.Tests.UI
+    - name: Start PostgreSQL
+      # v3
+      # This will cause warnings until this is fixed: https://github.com/ikalnytskyi/action-setup-postgres/issues/6.
+      uses: ikalnytskyi/action-setup-postgres@e5b77936cf3f9d1a079ac5e8c1787fc657924809
     - name: CMS UI Tests - PostgreSQL
       uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev
       env:
-        OrchardCore__ConnectionString: "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=uitests;"
+        OrchardCore__ConnectionString: "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=postgres;"
         OrchardCore__DatabaseProvider: "Postgres"
       with:
         build-directory: test/OrchardCore.Tests.UI
