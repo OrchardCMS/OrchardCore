@@ -9,7 +9,7 @@ namespace Lombiq.Tests.UI.Pages
             this OrchardCoreSetupParameters setupParameters)
         {
             var section = TestConfigurationManager.RootConfiguration.GetSection("OrchardCore");
-            var databaseProvider = section.GetValue<string>("OrchardCore__DatabaseProvider");
+            var databaseProvider = section.GetValue<string>("DatabaseProvider");
 
             if (!string.IsNullOrEmpty(databaseProvider) && (databaseProvider is "Postgres" or "MySql"))
             {
