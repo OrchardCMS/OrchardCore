@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
@@ -19,7 +20,13 @@ namespace OrchardCore.Tests.UI.Tests
         public Task SetupWithInvalidDataShouldFail(Browser browser) =>
             ExecuteTestAsync(
                 context => context.TestSetupWithInvalidDataAsync(
-                    new OrchardCoreSetupParameters(context).ConfigureDatabaseSettings(context)),
+                    new OrchardCoreSetupParameters(context)
+                    {
+                        SiteName = String.Empty,
+                        UserName = String.Empty,
+                        Email = String.Empty,
+                        Password = String.Empty,
+                    }.ConfigureDatabaseSettings(context)),
                 browser);
     }
 }

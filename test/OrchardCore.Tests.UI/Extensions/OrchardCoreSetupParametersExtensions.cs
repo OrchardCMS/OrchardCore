@@ -26,7 +26,7 @@ namespace Lombiq.Tests.UI.Pages
             // and the max table name length is 64 characters), see https://mariadb.com/kb/en/identifier-names/. With
             // the leading "t" and the no-hyphen context ID it would be 34 characters, so we have to shorten it. With
             // the hash it will be at most 11 characters (since negative hash codes are disallowed).
-            setupParameters.TablePrefix = "t" + Math.Abs(context.Id.Replace("-", "").GetHashCode());
+            setupParameters.TablePrefix = "t" + Math.Abs(context.Id.Replace("-", String.Empty).GetHashCode());
 
             if (provider == OrchardCoreSetupPage.DatabaseType.Postgres)
             {
