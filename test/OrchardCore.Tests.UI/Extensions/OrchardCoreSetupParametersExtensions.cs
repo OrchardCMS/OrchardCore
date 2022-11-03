@@ -12,7 +12,6 @@ namespace Lombiq.Tests.UI.Pages
                 .GetSection("OrchardCore")
                 .GetValue<string>("DatabaseProvider");
 
-            setupParameters.TablePrefix = context.Id;
             if (!string.IsNullOrEmpty(databaseProvider) && (databaseProvider is "Postgres" or "MySql"))
             {
                 setupParameters.DatabaseProvider = OrchardCoreSetupPage.DatabaseType.ProvidedByEnvironment;
