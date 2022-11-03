@@ -59,7 +59,7 @@ namespace OrchardCore.Tests.UI.Tests
                         RunSetupOnCurrentPage = true,
                     }.ConfigureDatabaseSettings(context);
 
-                    tenantSetupParameters.TablePrefix += "2";
+                    tenantSetupParameters.TablePrefix += "t2";
 
                     await context.GoToSetupPageAndSetupOrchardCoreAsync(tenantSetupParameters);
 
