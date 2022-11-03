@@ -24,7 +24,7 @@ namespace OrchardCore.Tests.UI.Tests
                     await context.TestSetupAsync(new OrchardCoreSetupParameters(context)
                     {
                         RecipeId = "Blog.Tests",
-                    }.DatabaseProviderFromEnvironmentIfAvailable(context));
+                    }.ConfigureDatabaseSettings(context));
 
                     await context.TestBasicOrchardFeaturesExceptSetupAsync();
                 },

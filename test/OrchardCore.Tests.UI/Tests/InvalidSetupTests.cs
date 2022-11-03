@@ -19,7 +19,7 @@ namespace OrchardCore.Tests.UI.Tests
         public Task SetupWithInvalidDataShouldFail(Browser browser) =>
             ExecuteTestAsync(
                 context => context.TestSetupWithInvalidDataAsync(
-                    new OrchardCoreSetupParameters(context).DatabaseProviderFromEnvironmentIfAvailable(context)),
+                    new OrchardCoreSetupParameters(context).ConfigureDatabaseSettings(context)),
                 browser);
     }
 }

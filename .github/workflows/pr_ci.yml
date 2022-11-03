@@ -45,7 +45,7 @@ jobs:
     #- name: CMS UI Tests - SQL Server
     #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
     #  env:
-    #    OrchardCore__UseSqlServerForUITesting: true
+    #    OrchardCore__UITestingCIDatabaseProvider: "SqlServer"
     #  with:
     #    build-directory: test/OrchardCore.Tests.UI
     - name: Start PostgreSQL
@@ -55,7 +55,6 @@ jobs:
     - name: CMS UI Tests - PostgreSQL
       uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
       env:
-        OrchardCore__ConnectionString: "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=postgres;"
-        OrchardCore__DatabaseProvider: "Postgres"
+        OrchardCore__UITestingCIDatabaseProvider: "Postgres"
       with:
         build-directory: test/OrchardCore.Tests.UI

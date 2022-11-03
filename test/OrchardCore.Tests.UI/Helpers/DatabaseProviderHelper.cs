@@ -1,3 +1,4 @@
+using Lombiq.Tests.UI.Pages;
 using Lombiq.Tests.UI.Services;
 using Microsoft.Extensions.Configuration;
 
@@ -5,13 +6,11 @@ namespace OrchardCore.Tests.UI.Helpers
 {
     internal static class DatabaseProviderHelper
     {
-        public static bool IsDatabaseProviderProvidedByEnvironment()
+        public static OrchardCoreSetupPage.DatabaseType GetCIDatabaseProvider()
         {
-            var databaseProvider = TestConfigurationManager.RootConfiguration
+            return TestConfigurationManager.RootConfiguration
                 .GetSection("OrchardCore")
-                .GetValue<string>("DatabaseProvider");
-
-            return !string.IsNullOrEmpty(databaseProvider) && (databaseProvider is "Postgres" or "MySql");
+                .GetValue("UITestingCIDatabaseProvider", OrchardCoreSetupPage.DatabaseType.Sqlite);
         }
     }
 }

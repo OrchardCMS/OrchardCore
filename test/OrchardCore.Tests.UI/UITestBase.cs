@@ -1,9 +1,8 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using Lombiq.Tests.UI;
+using Lombiq.Tests.UI.Pages;
 using Lombiq.Tests.UI.Services;
-using Microsoft.Extensions.Configuration;
 using OrchardCore.Tests.UI.Helpers;
 using Xunit.Abstractions;
 
@@ -40,9 +39,8 @@ namespace OrchardCore.Tests.UI
                 {
                     configuration.AccessibilityCheckingConfiguration.RunAccessibilityCheckingAssertionOnAllPageChanges = true;
 
-                    configuration.UseSqlServer = TestConfigurationManager.RootConfiguration
-                        .GetSection("OrchardCore")
-                        .GetValue<bool>("UseSqlServerForUITesting");
+                    configuration.UseSqlServer =
+                        DatabaseProviderHelper.GetCIDatabaseProvider() == OrchardCoreSetupPage.DatabaseType.SqlServer;
 
                     if (configuration.UseSqlServer)
                     {
@@ -50,20 +48,6 @@ namespace OrchardCore.Tests.UI
                             configuration.SqlServerDatabaseConfiguration.ConnectionStringTemplate +
                             ";Encrypt=False;TrustServerCertificate=True";
                     }
-
-                    configuration.OrchardCoreConfiguration.BeforeAppStart +=
-                        (contentRootPath, argumentsBuilder) =>
-                        {
-                            // When DatabaseProvider comes from the environment then TablePrefix needs to, too, since
-                            // the setup screen won't have a corresponding text field.
-                            if (DatabaseProviderHelper.IsDatabaseProviderProvidedByEnvironment())
-                            {
-                                var contextId = Path.GetFileName(Path.GetDirectoryName(contentRootPath));
-                                argumentsBuilder.AddWithValue("OrchardCore:TablePrefix", contextId.Replace('-', '_'));
-                            }
-
-                            return Task.CompletedTask;
-                        };
 
                     if (changeConfigurationAsync != null) await changeConfigurationAsync(configuration);
                 });

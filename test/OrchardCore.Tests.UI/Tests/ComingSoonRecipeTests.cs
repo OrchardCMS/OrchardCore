@@ -23,7 +23,7 @@ namespace OrchardCore.Tests.UI.Tests
                     await context.TestSetupAsync(new OrchardCoreSetupParameters(context)
                     {
                         RecipeId = "ComingSoon.Tests",
-                    }.DatabaseProviderFromEnvironmentIfAvailable(context));
+                    }.ConfigureDatabaseSettings(context));
 
                     await context.TestRegistrationWithInvalidDataAsync();
                     await context.TestRegistrationAsync();
