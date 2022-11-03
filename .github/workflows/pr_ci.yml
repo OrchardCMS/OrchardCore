@@ -24,7 +24,7 @@ jobs:
     - name: Create MariaDB database
       shell: pwsh
       run: |
-        mysql --user=root --password=test123 --host=127.0.0.1 -execute="CREATE DATABASE mariadb"
+        mysql --user=root --password=test123 --host=127.0.0.1 --execute="CREATE DATABASE mariadb"
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
