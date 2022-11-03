@@ -20,7 +20,7 @@ namespace Lombiq.Tests.UI.Pages
             // Table names in PostgreSQL should begin with a letter and mustn't contain hyphens
             // (https://www.postgresql.org/docs/7.0/syntax525.htm). In MariaDB the rules are similar (table names can
             // start with numbers but it's safer if they don't), see https://mariadb.com/kb/en/identifier-names/.
-            setupParameters.TablePrefix = "test" + context.Id.Replace('-', '');
+            setupParameters.TablePrefix = "test" + context.Id.Replac e('-', '');
 
             if (provider == OrchardCoreSetupPage.DatabaseType.Postgres)
             {
