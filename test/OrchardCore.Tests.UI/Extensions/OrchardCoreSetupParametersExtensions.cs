@@ -29,11 +29,11 @@ namespace Lombiq.Tests.UI.Pages
 
             if (provider == OrchardCoreSetupPage.DatabaseType.Postgres)
             {
-                setupParameters.ConnectionString = "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=postgres;";
+                setupParameters.ConnectionString = "Host=localhost;Port=5432;User ID=postgres;Password=postgres;Database=postgres;";
             }
             else if (provider == OrchardCoreSetupPage.DatabaseType.MySql)
             {
-                setupParameters.ConnectionString = "server=127.0.0.1;uid=root;pwd=test123;database=test";
+                setupParameters.ConnectionString = "Server=127.0.0.1;User ID=root;Password=test123;Database=test";
             }
 
             return setupParameters;
