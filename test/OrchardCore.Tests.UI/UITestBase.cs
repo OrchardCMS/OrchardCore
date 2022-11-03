@@ -1,8 +1,10 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Lombiq.Tests.UI;
 using Lombiq.Tests.UI.Services;
 using Microsoft.Extensions.Configuration;
+using OrchardCore.Tests.UI.Helpers;
 using Xunit.Abstractions;
 
 namespace OrchardCore.Tests.UI
@@ -48,6 +50,19 @@ namespace OrchardCore.Tests.UI
                             configuration.SqlServerDatabaseConfiguration.ConnectionStringTemplate +
                             ";Encrypt=False;TrustServerCertificate=True";
                     }
+
+                    configuration.OrchardCoreConfiguration.BeforeAppStart +=
+                        (contentRootPath, argumentsBuilder) =>
+                        {
+                            if (DatabaseProviderHelper.IsDatabaseProviderProvidedByEnvironment())
+                            {
+                                var contextId = Path.GetFileName(Path.GetDirectoryName(contentRootPath));
+
+                                argumentsBuilder.AddWithValue("OrchardCore:TablePrefix", contextId);
+                            }
+
+                            return Task.CompletedTask;
+                        };
 
                     if (changeConfigurationAsync != null) await changeConfigurationAsync(configuration);
                 });
