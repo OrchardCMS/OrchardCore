@@ -18,18 +18,3 @@
     <input asp-for="FeedItemsCount" class="form-control" />
     <span class="hint">@T["The number of elements to display in the feed."]</span>
 </div>
-
-<script at="Foot">
-    $(function () {
-        var enableFeedElement = document.getElementById("@Html.IdFor(m => m.DisableRssFeed)");
-        enableFeedElement.addEventListener('change', toggleFeedInfo);
-
-        toggleFeedInfo();
-        
-        function toggleFeedInfo() {
-            document.getElementById("@Html.IdFor(m => m.FeedProxyUrl)").disabled = !enableFeedElement.checked;
-            document.getElementById("@Html.IdFor(m => m.FeedItemsCount)").disabled = !enableFeedElement.checked;
-            document.getElementById("currentFeedPreview").style.display = enableFeedElement.checked ? 'block' : 'none';
-        }
-    });
-</script>
