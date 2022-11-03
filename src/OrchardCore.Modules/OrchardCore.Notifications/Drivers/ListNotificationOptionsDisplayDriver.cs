@@ -6,7 +6,7 @@ using OrchardCore.Notifications.Models;
 
 namespace OrchardCore.Notifications.Drivers;
 
-public class NotificationOptionsDisplayDriver : DisplayDriver<ListNotificationOptions>
+public class ListNotificationOptionsDisplayDriver : DisplayDriver<ListNotificationOptions>
 {
     // Maintain the Options prefix for compatability with binding.
     protected override void BuildPrefix(ListNotificationOptions model, string htmlFieldPrefix)

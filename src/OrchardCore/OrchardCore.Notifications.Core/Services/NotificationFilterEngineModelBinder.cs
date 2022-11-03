@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Notifications.Services;
 
-public class WebNotificationFilterEngineModelBinder : IModelBinder
+public class NotificationFilterEngineModelBinder : IModelBinder
 {
     private readonly INotificationAdminListFilterParser _parser;
 
-    public WebNotificationFilterEngineModelBinder(INotificationAdminListFilterParser parser)
+    public NotificationFilterEngineModelBinder(INotificationAdminListFilterParser parser)
     {
         _parser = parser;
     }

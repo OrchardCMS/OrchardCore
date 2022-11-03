@@ -72,7 +72,7 @@ public class AdminController : Controller, IUpdateModel
     }
 
     public async Task<IActionResult> List(
-        [ModelBinder(BinderType = typeof(WebNotificationFilterEngineModelBinder), Name = "q")] QueryFilterResult<Notification> queryFilterResult,
+        [ModelBinder(BinderType = typeof(NotificationFilterEngineModelBinder), Name = "q")] QueryFilterResult<Notification> queryFilterResult,
         PagerParameters pagerParameters,
         ListNotificationOptions options)
     {

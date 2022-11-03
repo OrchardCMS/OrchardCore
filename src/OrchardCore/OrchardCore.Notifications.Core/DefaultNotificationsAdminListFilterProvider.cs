@@ -12,7 +12,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Notifications;
 
-public class DefaultNotificationAdminListFilterProvider : INotificationAdminListFilterProvider
+public class DefaultNotificationsAdminListFilterProvider : INotificationAdminListFilterProvider
 {
     public void Build(QueryEngineBuilder<Notification> builder)
     {

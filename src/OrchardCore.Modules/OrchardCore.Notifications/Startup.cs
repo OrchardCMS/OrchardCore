@@ -51,9 +51,9 @@ public class Startup : StartupBase
 
 
         services.AddScoped<IPermissionProvider, WebNotificationPermissionsProvider>();
-        services.AddScoped<IDisplayDriver<ListNotificationOptions>, NotificationOptionsDisplayDriver>();
+        services.AddScoped<IDisplayDriver<ListNotificationOptions>, ListNotificationOptionsDisplayDriver>();
         services.AddScoped<IDisplayDriver<Notification>, NotificationDisplayDriver>();
-        services.AddTransient<INotificationAdminListFilterProvider, DefaultNotificationAdminListFilterProvider>();
+        services.AddTransient<INotificationAdminListFilterProvider, DefaultNotificationsAdminListFilterProvider>();
         services.AddSingleton<INotificationAdminListFilterParser>(sp =>
         {
             var filterProviders = sp.GetServices<INotificationAdminListFilterProvider>();

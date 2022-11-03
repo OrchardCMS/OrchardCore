@@ -14,7 +14,4 @@ public class UserNotificationViewModel
 
     [BindNever]
     public IEnumerable<SelectListItem> AvailableMethods { get; set; }
-
-    [BindNever]
-    public IEnumerable<SelectListItem> Strategies { get; set; }
 }

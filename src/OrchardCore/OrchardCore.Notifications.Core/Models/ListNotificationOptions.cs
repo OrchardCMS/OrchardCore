@@ -31,7 +31,7 @@ public class ListNotificationOptions
     [BindNever]
     public int TotalItemCount { get; set; }
 
-    [ModelBinder(BinderType = typeof(WebNotificationFilterEngineModelBinder), Name = nameof(SearchText))]
+    [ModelBinder(BinderType = typeof(NotificationFilterEngineModelBinder), Name = nameof(SearchText))]
     public QueryFilterResult<Notification> FilterResult { get; set; }
 
     [BindNever]
