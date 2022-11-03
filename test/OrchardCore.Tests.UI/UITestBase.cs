@@ -54,6 +54,8 @@ namespace OrchardCore.Tests.UI
                     configuration.OrchardCoreConfiguration.BeforeAppStart +=
                         (contentRootPath, argumentsBuilder) =>
                         {
+                            // When DatabaseProvider comes from the environment then TablePrefix needs to, too, since
+                            // the setup screen won't have a corresponding text field.
                             if (DatabaseProviderHelper.IsDatabaseProviderProvidedByEnvironment())
                             {
                                 var contextId = Path.GetFileName(Path.GetDirectoryName(contentRootPath));
