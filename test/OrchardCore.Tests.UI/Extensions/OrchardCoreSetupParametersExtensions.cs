@@ -12,7 +12,8 @@ namespace Lombiq.Tests.UI.Pages
             {
                 setupParameters.DatabaseProvider = OrchardCoreSetupPage.DatabaseType.Postgres;
                 setupParameters.ConnectionString = "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=postgres;";
-                setupParameters.TablePrefix = context.Id.Replace('-', '_');
+                // Table names in PostgreSQL should begin with a letter and mustn't contain hyphens.
+                setupParameters.TablePrefix = "test_" + context.Id.Replace('-', '_');
             }
 
             return setupParameters;

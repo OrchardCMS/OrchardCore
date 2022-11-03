@@ -52,13 +52,16 @@ namespace OrchardCore.Tests.UI.Tests
 
                     await context.CreateAndSwitchToTenantManuallyAsync("test", "test");
 
-                    await context.GoToSetupPageAndSetupOrchardCoreAsync(
-                        new OrchardCoreSetupParameters(context)
-                        {
-                            SiteName = "Test Tenant",
-                            RecipeId = "Blog.Tests",
-                            RunSetupOnCurrentPage = true,
-                        }.ConfigureDatabaseSettings(context));
+                    var tenantSetupParameters = new OrchardCoreSetupParameters(context)
+                    {
+                        SiteName = "Test Tenant",
+                        RecipeId = "Blog.Tests",
+                        RunSetupOnCurrentPage = true,
+                    }.ConfigureDatabaseSettings(context);
+
+                    tenantSetupParameters.TablePrefix += "_tenant";
+
+                    await context.GoToSetupPageAndSetupOrchardCoreAsync(tenantSetupParameters);
 
                     await context.TestBasicOrchardFeaturesExceptSetupAsync();
                 },
