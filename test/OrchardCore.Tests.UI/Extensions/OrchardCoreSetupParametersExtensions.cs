@@ -15,6 +15,7 @@ namespace Lombiq.Tests.UI.Pages
             {
                 setupParameters.DatabaseProvider = OrchardCoreSetupPage.DatabaseType.ProvidedByEnvironment;
                 setupParameters.TablePrefix = context.Id;
+
             }
 
             return setupParameters;
