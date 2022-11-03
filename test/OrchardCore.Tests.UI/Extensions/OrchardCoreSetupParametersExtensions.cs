@@ -34,7 +34,7 @@ namespace Lombiq.Tests.UI.Pages
             }
             else if (provider == OrchardCoreSetupPage.DatabaseType.MySql)
             {
-                setupParameters.ConnectionString = "Host=127.0.0.1;uid=root;pwd=test123;database=test;";
+                setupParameters.ConnectionString = "Host=localhost;uid=root;pwd=test123;database=test;";
             }
 
             return setupParameters;
