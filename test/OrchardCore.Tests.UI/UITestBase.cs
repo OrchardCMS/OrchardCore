@@ -57,8 +57,7 @@ namespace OrchardCore.Tests.UI
                             if (DatabaseProviderHelper.IsDatabaseProviderProvidedByEnvironment())
                             {
                                 var contextId = Path.GetFileName(Path.GetDirectoryName(contentRootPath));
-
-                                argumentsBuilder.AddWithValue("OrchardCore:TablePrefix", contextId);
+                                argumentsBuilder.AddWithValue("OrchardCore:TablePrefix", contextId.Replace('-', '_'));
                             }
 
                             return Task.CompletedTask;
