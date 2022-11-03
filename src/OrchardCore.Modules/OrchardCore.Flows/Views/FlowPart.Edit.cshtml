@@ -60,7 +60,7 @@
             }
         }
     </div>
-    <div class="btn-widget-add-below-wrapper w-100">
+    <div class="btn-widget-add-below-wrapper w-100 my-2">
         <div class="btn-widget-add-below w-100 border border-info">
             <div class="btn-group">
                 <button type="button" title="@T["Add Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -75,7 +75,7 @@
                     {
                         @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
                         {
-                            <a class="dropdown-item add-widget  btn-sm"
+                            <a class="dropdown-item add-widget btn-sm"
                             data-target-id="@widgetTemplatePlaceholderId"
                             data-html-field-prefix="@htmlFieldPrefix"
                             data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
@@ -103,125 +103,123 @@
         }
 
         <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.min.js"
-                debug-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
+            debug-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
         <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css"
-               debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
+           debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
         <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.css"
-               debug-src="~/OrchardCore.Flows/Styles/flows.edit.min.css"></style>
+           debug-src="~/OrchardCore.Flows/Styles/flows.edit.min.css"></style>
     }
 
     <script at="Foot">
-    function toggleWidgets(){
-        var icon = $('.dot');
+        function toggleWidgets() {
+            var icon = $('.dot');
 
-        if(icon.attr('data-icon') == 'angles-up')
-        {
-            icon.attr('data-icon', 'angles-down')
+            if (icon.attr('data-icon') == 'angles-up') {
+                icon.attr('data-icon', 'angles-down')
+            }
+            else {
+                icon.attr('data-icon', 'angles-up')
+            }
+
+            $('.widget.widget-editor.card').toggleClass('collapsed');
         }
-        else
-        {
-            icon.attr('data-icon', 'angles-up')
-        }
 
-        $('.widget.widget-editor.card').toggleClass('collapsed');
-    }
-
-    @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
-    if ($('#@widgetTemplatePlaceholderId').length == 1) {
-        $("#@widgetTemplatePlaceholderId").sortable({
-            handle: ".widget-editor-handle",
-            cursor: "move",
-            tolerance: "pointer",
-            opacity: 0.7,
-            placeholder: {
-                element: function(currentItem) {
-                    return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];
+        @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
+                    if ($('#@widgetTemplatePlaceholderId').length == 1) {
+            $("#@widgetTemplatePlaceholderId").sortable({
+                handle: ".widget-editor-handle",
+                cursor: "move",
+                tolerance: "pointer",
+                opacity: 0.7,
+                placeholder: {
+                    element: function (currentItem) {
+                        return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];
+                    },
+                    update: function (container, p) {
+                        return;
+                    }
                 },
-                update: function (container, p) {
-                    return;
-                }
-            },
-            toleranceElement: '> div',
-            connectWith: '.widget-template-placeholder.widget-template-placeholder-flowpart',
-            start: function (event, ui) {
+                toleranceElement: '> div',
+                connectWith: '.widget-template-placeholder.widget-template-placeholder-flowpart',
+                start: function (event, ui) {
 
-                widgetDragItem = ui.item;
-                lastContainer = ui.item.parent();
-                lastContainer.toggleClass('widget-dropzone-hint');
+                    widgetDragItem = ui.item;
+                    lastContainer = ui.item.parent();
+                    lastContainer.toggleClass('widget-dropzone-hint');
 
-                widgetDragItem.find('.card').first().toggleClass('border-primary')
+                    widgetDragItem.find('.card').first().toggleClass('border-primary')
 
-                widgetItemSourceId = widgetDragItem.parent().attr('id');
+                    widgetItemSourceId = widgetDragItem.parent().attr('id');
 
-                var classList = widgetDragItem.attr('class').split(' ');
-                $.each(classList, function (id, item) {
-                    if (item.indexOf('col-md-') === 0) ui.placeholder.addClass(item);
-                });
+                    var classList = widgetDragItem.attr('class').split(' ');
+                    $.each(classList, function (id, item) {
+                        if (item.indexOf('col-md-') === 0) ui.placeholder.addClass(item);
+                    });
 
-            },
-            stop: function (event, ui) {
+                },
+                stop: function (event, ui) {
 
-                lastContainer.toggleClass('widget-dropzone-hint');
-                widgetDragItem.find('.card').first().toggleClass('border-primary');
+                    lastContainer.toggleClass('widget-dropzone-hint');
+                    widgetDragItem.find('.card').first().toggleClass('border-primary');
 
-                widgetItemDestId = widgetDragItem.parent().attr('id');
+                    widgetItemDestId = widgetDragItem.parent().attr('id');
 
-                if (widgetItemDestId !== widgetItemSourceId) {
+                    if (widgetItemDestId !== widgetItemSourceId) {
 
-                    var inputs = widgetDragItem.children("input[name*='FlowPart']");
+                        var inputs = widgetDragItem.children("input[name*='FlowPart']");
 
-                    var destination = $('#' + widgetItemDestId);
-                    var source = $('#' + widgetItemSourceId);
+                        var destination = $('#' + widgetItemDestId);
+                        var source = $('#' + widgetItemSourceId);
 
-                    var sourceGuid = widgetItemSourceId.substring(0, widgetItemSourceId.lastIndexOf('_') + 1);
-                    sourceNameGuid = sourceGuid.replaceAll('_', '.');
+                        var sourceGuid = widgetItemSourceId.substring(0, widgetItemSourceId.lastIndexOf('_') + 1);
+                        sourceNameGuid = sourceGuid.replaceAll('_', '.');
 
-                    if (destination.length > 0) {
+                        if (destination.length > 0) {
 
-                        var destGuid = widgetItemDestId.substring(0, widgetItemDestId.lastIndexOf('_') + 1);
-                        destNameGuid = destGuid.replaceAll('_', '.');
+                            var destGuid = widgetItemDestId.substring(0, widgetItemDestId.lastIndexOf('_') + 1);
+                            destNameGuid = destGuid.replaceAll('_', '.');
 
-                        if (source.length > 0) {
+                            if (source.length > 0) {
+                                inputs.each(function (index, item) {
+                                    $(this).attr('id', $(this).attr('id').replace(sourceGuid, destGuid));
+                                    $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, destNameGuid));
+                                });
+
+                            } else {
+
+                                inputs.each(function (index, item) {
+                                    $(this).attr('id', destGuid + $(this).attr('id'));
+                                    $(this).attr('name', destNameGuid + $(this).attr('name'));
+                                });
+                            }
+
+                        }
+                        else if (source.length > 0) {
                             inputs.each(function (index, item) {
-                                $(this).attr('id', $(this).attr('id').replace(sourceGuid, destGuid));
-                                $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, destNameGuid));
-                            });
-
-                        } else {
-
-                            inputs.each(function (index, item) {
-                                $(this).attr('id', destGuid + $(this).attr('id'));
-                                $(this).attr('name', destNameGuid  + $(this).attr('name'));
+                                $(this).attr('id', $(this).attr('id').replace(sourceGuid, ''));
+                                $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, ''));
                             });
                         }
 
                     }
-                    else if (source.length > 0) {
-                        inputs.each(function (index, item) {
-                            $(this).attr('id', $(this).attr('id').replace(sourceGuid, '') );
-                            $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, ''));
-                        });
+
+                    $(document).trigger('contentpreview:render');
+
+                    //clear the global variables
+                    widgetDragItem = null;
+                    lastContainer = null;
+                    widgetItemSourceId = null;
+                    widgetItemDestId = null;
+                },
+                over: function (event, ui) {
+                    var $self = $(this);
+                    if (lastContainer[0] != this) {
+                        lastContainer.toggleClass('widget-dropzone-hint');
+                        lastContainer = $self;
+                        $self.toggleClass('widget-dropzone-hint');
                     }
-
                 }
-
-                $(document).trigger('contentpreview:render');
-
-                //clear the global variables
-                widgetDragItem = null;
-                lastContainer = null;
-                widgetItemSourceId = null;
-                widgetItemDestId = null;
-            },
-            over: function (event, ui) {
-                var $self = $(this);
-                if (lastContainer[0] != this) {
-                    lastContainer.toggleClass('widget-dropzone-hint');
-                    lastContainer = $self;
-                    $self.toggleClass('widget-dropzone-hint');
-                }
-            }
-        });
-    }
+            });
+        }
     </script>
 </div>
