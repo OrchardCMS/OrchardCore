@@ -4,7 +4,7 @@ namespace OrchardCore.Lists.Feeds
 {
     public class ListFeedEditViewModel
     {
-        public bool EnableFeedProxyUrl { get; set; } = true;
+        public bool DisableRssFeed { get; set; }
 
         public string FeedProxyUrl { get; set; }
 

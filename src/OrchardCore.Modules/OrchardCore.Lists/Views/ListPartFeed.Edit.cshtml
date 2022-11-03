@@ -1,9 +1,9 @@
 @using OrchardCore.Lists.Feeds
 @model ListFeedEditViewModel
 
-<div class="mb-3 form-check" asp-validation-class-for="EnableFeedProxyUrl">
-    <input type="checkbox" class="form-check-input" asp-for="EnableFeedProxyUrl">
-    <label class="form-check-label" asp-for="EnableFeedProxyUrl">@T["Enable feed proxy URL"]</label>
+<div class="mb-3 form-check" asp-validation-class-for="DisableRssFeed">
+    <input type="checkbox" class="form-check-input" asp-for="DisableRssFeed">
+    <label class="form-check-label" asp-for="DisableRssFeed">@T["Disable RSS feed link generation."]</label>
 </div>
 
 <div class="mb-3">
@@ -21,7 +21,7 @@
 
 <script at="Foot">
     $(function () {
-        var enableFeedElement = document.getElementById("@Html.IdFor(m => m.EnableFeedProxyUrl)");
+        var enableFeedElement = document.getElementById("@Html.IdFor(m => m.DisableRssFeed)");
         enableFeedElement.addEventListener('change', toggleFeedInfo);
 
         toggleFeedInfo();

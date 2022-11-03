@@ -39,7 +39,7 @@ namespace OrchardCore.Lists.Feeds
             var contentItem = await _contentManager.GetAsync(model.ContentItemId);
             var feedMetadata = await _contentManager.PopulateAspectAsync<FeedMetadata>(contentItem);
 
-            if (!feedMetadata.EnableFeedProxyUrl)
+            if (!feedMetadata.DisableRssFeed)
             {
                 return null;
             }
