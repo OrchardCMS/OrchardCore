@@ -48,30 +48,30 @@ jobs:
     #    OrchardCore__UITestingCIDatabaseProvider: "SqlServer"
     #  with:
     #    build-directory: test/OrchardCore.Tests.UI
-    - name: Start PostgreSQL
-      # v3
-      # This will cause warnings until this is fixed: https://github.com/ikalnytskyi/action-setup-postgres/issues/6.
-      uses: ikalnytskyi/action-setup-postgres@e5b77936cf3f9d1a079ac5e8c1787fc657924809
-    - name: CMS UI Tests - PostgreSQL
-      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
-      env:
-        OrchardCore__UITestingCIDatabaseProvider: "Postgres"
-      with:
-        build-directory: test/OrchardCore.Tests.UI
-    # MariaDB is an open-source drop-in replacement of MySQL, so we can use it instead.
-    #- name: Set up MariaDB
-    #  # v1.13.0
-    #  uses: shogo82148/actions-setup-mysql@e9da98ba6e914131f3111105e445c06bc1629280
-    #  with:
-    #    distribution: "mariadb"
-    #    root-password: "test123"
-    #- name: Create MariaDB database
-    #  shell: pwsh
-    #  run: |
-    #    mysql --user=root --password=test123 --host=127.0.0.1 --execute="CREATE DATABASE mariadb"
-    #- name: CMS UI Tests - MySql
+    #- name: Start PostgreSQL
+    #  # v3
+    #  # This will cause warnings until this is fixed: https://github.com/ikalnytskyi/action-setup-postgres/issues/6.
+    #  uses: ikalnytskyi/action-setup-postgres@e5b77936cf3f9d1a079ac5e8c1787fc657924809
+    #- name: CMS UI Tests - PostgreSQL
     #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
     #  env:
-    #    OrchardCore__UITestingCIDatabaseProvider: "MySql"
+    #    OrchardCore__UITestingCIDatabaseProvider: "Postgres"
     #  with:
     #    build-directory: test/OrchardCore.Tests.UI
+    # MariaDB is an open-source drop-in replacement of MySQL, so we can use it instead.
+    - name: Set up MariaDB
+      # v1.13.0
+      uses: shogo82148/actions-setup-mysql@e9da98ba6e914131f3111105e445c06bc1629280
+      with:
+        distribution: "mariadb"
+        root-password: "test123"
+    - name: Create MariaDB database
+      shell: pwsh
+      run: |
+        mysql --user=root --password=test123 --host=127.0.0.1 --execute="CREATE DATABASE mariadb"
+    - name: CMS UI Tests - MySql
+      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
+      env:
+        OrchardCore__UITestingCIDatabaseProvider: "MySql"
+      with:
+        build-directory: test/OrchardCore.Tests.UI
