@@ -17,15 +17,19 @@ namespace Lombiq.Tests.UI.Pages
 
             setupParameters.DatabaseProvider = provider;
 
-            // Table names in PostgreSQL should begin with a letter and mustn't contain hyphens
-            // (https://www.postgresql.org/docs/7.0/syntax525.htm). In MariaDB the rules are similar (table names can
-            // start with numbers but it's safer if they don't), see https://mariadb.com/kb/en/identifier-names/.
-            setupParameters.TablePrefix = "test" + context.Id.Replace("-", "");
+            // Since apart from SQLite and SQL Server all the tests will use the same, single DB, each test and each of
+            // the executions (if repeated due to transient errors) should use a unique table prefix.
+            // Table names in PostgreSQL should begin with a letter mustn't contain hyphens
+            // (https://www.postgresql.org/docs/7.0/syntax525.htm), and can be at most 63 characters long. In
+            // MySQL/MariaDB the rules are similar (table names can start with numbers but it's safer if they don't,
+            // and the max table name length is 64 characters), see https://mariadb.com/kb/en/identifier-names/. With
+            // the leading "t" and the no-hyphen context ID it would be 34 characters, so we have to shorten it. With
+            // the hash it will be at most 12 characters.
+            setupParameters.TablePrefix = "t" + context.Id.Replace("-", "").GetHashCode();
 
             if (provider == OrchardCoreSetupPage.DatabaseType.Postgres)
             {
                 setupParameters.ConnectionString = "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=postgres;";
-
             }
             else if (provider == OrchardCoreSetupPage.DatabaseType.MySql)
             {
