@@ -15,7 +15,7 @@ namespace OrchardCore.Tests.UI.Tests
         {
         }
 
-        [Theory(Skip = "Minimal test suite for multi-DB testing."), Chrome]
+        [Theory, Chrome]
         public Task BasicOrchardFeaturesShouldWorkWithComingSoon(Browser browser) =>
             ExecuteTestAsync(
                 async context =>
