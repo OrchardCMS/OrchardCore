@@ -22,7 +22,7 @@ namespace OrchardCore.Lists.Feeds
         {
             return Initialize<ListFeedEditViewModel>("ListPartFeed_Edit", m =>
             {
-                m.DisableRssFeed = part.ContentItem.Content.ListPart.DisableRssFeed ?? true;
+                m.DisableRssFeed = part.ContentItem.Content.ListPart.DisableRssFeed ?? false;
                 m.FeedProxyUrl = part.ContentItem.Content.ListPart.FeedProxyUrl;
                 m.FeedItemsCount = part.ContentItem.Content.ListPart.FeedItemsCount ?? 20;
                 m.ContentItem = part.ContentItem;
