@@ -83,7 +83,7 @@ namespace OrchardCore.Autoroute.Handlers
                 await SetHomeRouteAsync(part, homeRoute =>
                 {
                     homeRoute[_options.ContentItemIdKey] = context.ContentItem.ContentItemId;
-                    homeRoute[_options.JsonPathKey] = "";
+                    homeRoute.Remove(_options.JsonPathKey);
                 });
             }
 
