@@ -14,17 +14,6 @@ jobs:
         os: [ubuntu-latest]
     name: Build & Test
     steps:
-    # MariaDB is an open-source drop-in replacement of MySQL, so we can use it instead.
-    - name: Set up MariaDB
-      # v1.13.0
-      uses: shogo82148/actions-setup-mysql@e9da98ba6e914131f3111105e445c06bc1629280
-      with:
-        distribution: "mariadb"
-        root-password: "test123"
-    - name: Create MariaDB database
-      shell: pwsh
-      run: |
-        mysql --user=root --password=test123 --host=127.0.0.1 --execute="CREATE DATABASE mariadb"
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
@@ -69,6 +58,17 @@ jobs:
     #    OrchardCore__UITestingCIDatabaseProvider: "Postgres"
     #  with:
     #    build-directory: test/OrchardCore.Tests.UI
+    # MariaDB is an open-source drop-in replacement of MySQL, so we can use it instead.
+    - name: Set up MariaDB
+      # v1.13.0
+      uses: shogo82148/actions-setup-mysql@e9da98ba6e914131f3111105e445c06bc1629280
+      with:
+        distribution: "mariadb"
+        root-password: "test123"
+    - name: Create MariaDB database
+      shell: pwsh
+      run: |
+        mysql --user=root --password=test123 --host=127.0.0.1 --execute="CREATE DATABASE mariadb"
     - name: CMS UI Tests - MySql
       uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
       env:
