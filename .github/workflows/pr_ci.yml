@@ -14,7 +14,45 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     name: Build & Test
     steps:
-    - name: Test execution debug
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: "15"
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Build
+      run: |
+        dotnet build --configuration Release --framework net6.0
+    #- name: Unit Tests
+    #  run: |
+    #    dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
+    #- name: MVC UI Tests
+    #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
+    #  with:
+    #    build-directory: test/OrchardCore.Tests.UI.Mvc
+    - name: Set up Azurite
+      uses: Lombiq/GitHub-Actions/.github/actions/setup-azurite@issue/OSOE-424
+      with:
+        location: test/OrchardCore.Tests.UI
+    #- name: CMS UI Tests - SQLite
+    #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
+    #  with:
+    #    build-directory: test/OrchardCore.Tests.UI
+    #- name: Set up SQL Server
+    #  uses: Lombiq/GitHub-Actions/.github/actions/setup-sql-server@issue/OSOE-424
+    #- name: CMS UI Tests - SQL Server
+    #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
+    #  env:
+    #    OrchardCore__UseSqlServerForUITesting: true
+    #  with:
+    #    build-directory: test/OrchardCore.Tests.UI
+    - name: Start PostgreSQL
+      # v3
+      # This will cause warnings until this is fixed: https://github.com/ikalnytskyi/action-setup-postgres/issues/6.
+      uses: ikalnytskyi/action-setup-postgres@e5b77936cf3f9d1a079ac5e8c1787fc657924809
+    - name: CMS UI Tests - PostgreSQL
       uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
       env:
         OrchardCore__ConnectionString: "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=postgres;"
