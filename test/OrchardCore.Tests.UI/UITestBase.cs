@@ -38,8 +38,9 @@ namespace OrchardCore.Tests.UI
                 {
                     configuration.AccessibilityCheckingConfiguration.RunAccessibilityCheckingAssertionOnAllPageChanges = true;
 
-                    var section = TestConfigurationManager.RootConfiguration.GetSection("OrchardCore");
-                    configuration.UseSqlServer = section.GetValue<bool>("UseSqlServerForUITesting");
+                    configuration.UseSqlServer = TestConfigurationManager.RootConfiguration
+                        .GetSection("OrchardCore")
+                        .GetValue<bool>("UseSqlServerForUITesting");
 
                     if (configuration.UseSqlServer)
                     {
