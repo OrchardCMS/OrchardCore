@@ -40,24 +40,24 @@ jobs:
     #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
     #  with:
     #    build-directory: test/OrchardCore.Tests.UI
-    - name: Set up SQL Server
-      uses: Lombiq/GitHub-Actions/.github/actions/setup-sql-server@issue/OSOE-424
-    - name: CMS UI Tests - SQL Server
-      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
-      env:
-        OrchardCore__UITestingCIDatabaseProvider: "SqlServer"
-      with:
-        build-directory: test/OrchardCore.Tests.UI
-    #- name: Start PostgreSQL
-    #  # v3
-    #  # This will cause warnings until this is fixed: https://github.com/ikalnytskyi/action-setup-postgres/issues/6.
-    #  uses: ikalnytskyi/action-setup-postgres@e5b77936cf3f9d1a079ac5e8c1787fc657924809
-    #- name: CMS UI Tests - PostgreSQL
+    #- name: Set up SQL Server
+    #  uses: Lombiq/GitHub-Actions/.github/actions/setup-sql-server@issue/OSOE-424
+    #- name: CMS UI Tests - SQL Server
     #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
     #  env:
-    #    OrchardCore__UITestingCIDatabaseProvider: "Postgres"
+    #    OrchardCore__UITestingCIDatabaseProvider: "SqlServer"
     #  with:
     #    build-directory: test/OrchardCore.Tests.UI
+    - name: Start PostgreSQL
+      # v3
+      # This will cause warnings until this is fixed: https://github.com/ikalnytskyi/action-setup-postgres/issues/6.
+      uses: ikalnytskyi/action-setup-postgres@e5b77936cf3f9d1a079ac5e8c1787fc657924809
+    - name: CMS UI Tests - PostgreSQL
+      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
+      env:
+        OrchardCore__UITestingCIDatabaseProvider: "Postgres"
+      with:
+        build-directory: test/OrchardCore.Tests.UI
     # MariaDB is an open-source drop-in replacement of MySQL, so we can use it instead.
     #- name: Set up MariaDB
     #  # v1.13.0
