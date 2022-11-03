@@ -8,12 +8,28 @@ namespace Lombiq.Tests.UI.Pages
         public static OrchardCoreSetupParameters ConfigureDatabaseSettings(
             this OrchardCoreSetupParameters setupParameters, UITestContext context)
         {
-            if (DatabaseProviderHelper.GetCIDatabaseProvider() == OrchardCoreSetupPage.DatabaseType.Postgres)
+            var provider = DatabaseProviderHelper.GetCIDatabaseProvider();
+
+            if (provider is not (OrchardCoreSetupPage.DatabaseType.Postgres or OrchardCoreSetupPage.DatabaseType.MySql))
             {
-                setupParameters.DatabaseProvider = OrchardCoreSetupPage.DatabaseType.Postgres;
+                return setupParameters;
+            }
+
+            setupParameters.DatabaseProvider = provider;
+
+            // Table names in PostgreSQL should begin with a letter and mustn't contain hyphens
+            // (https://www.postgresql.org/docs/7.0/syntax525.htm). In MariaDB the rules are similar (table names can
+            // start with numbers but it's safer if they don't), see https://mariadb.com/kb/en/identifier-names/.
+            setupParameters.TablePrefix = "test_" + context.Id.Replace('-', '_');
+
+            if (provider == OrchardCoreSetupPage.DatabaseType.Postgres)
+            {
                 setupParameters.ConnectionString = "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=postgres;";
-                // Table names in PostgreSQL should begin with a letter and mustn't contain hyphens.
-                setupParameters.TablePrefix = "test_" + context.Id.Replace('-', '_');
+
+            }
+            else if (provider == OrchardCoreSetupPage.DatabaseType.MySql)
+            {
+                setupParameters.ConnectionString = "server=mariadb;uid=root;pwd=test123;database=test";
             }
 
             return setupParameters;
