@@ -45,7 +45,6 @@ namespace OrchardCore.Tests.UI.Tests
                        {
                            SiteName = "Orchard Core - UI Testing",
                            RecipeId = "SaaS.Tests",
-                           TablePrefix = "default",
                            SiteTimeZoneValue = "America/New_York",
                        }.DatabaseProviderFromEnvironmentIfAvailable(context));
 
@@ -58,7 +57,6 @@ namespace OrchardCore.Tests.UI.Tests
                         {
                             SiteName = "Test Tenant",
                             RecipeId = "Blog.Tests",
-                            TablePrefix = "test",
                             RunSetupOnCurrentPage = true,
                         }.DatabaseProviderFromEnvironmentIfAvailable(context));
 
