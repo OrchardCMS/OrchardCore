@@ -5,7 +5,7 @@ namespace OrchardCore.Feeds.Models
     /// </summary>
     public class FeedMetadata
     {
-        public bool DisableRssFeed { get; set; } = true;
+        public bool DisableRssFeed { get; set; }
 
         public string FeedProxyUrl { get; set; }
     }
