@@ -1,3 +1,4 @@
+using System;
 using Lombiq.Tests.UI.Services;
 using OrchardCore.Tests.UI.Helpers;
 
@@ -24,8 +25,8 @@ namespace Lombiq.Tests.UI.Pages
             // MySQL/MariaDB the rules are similar (table names can start with numbers but it's safer if they don't,
             // and the max table name length is 64 characters), see https://mariadb.com/kb/en/identifier-names/. With
             // the leading "t" and the no-hyphen context ID it would be 34 characters, so we have to shorten it. With
-            // the hash it will be at most 12 characters.
-            setupParameters.TablePrefix = "t" + context.Id.Replace("-", "").GetHashCode();
+            // the hash it will be at most 11 characters (since negative hash codes are disallowed).
+            setupParameters.TablePrefix = "t" + Math.Abs(context.Id.Replace("-", "").GetHashCode());
 
             if (provider == OrchardCoreSetupPage.DatabaseType.Postgres)
             {
