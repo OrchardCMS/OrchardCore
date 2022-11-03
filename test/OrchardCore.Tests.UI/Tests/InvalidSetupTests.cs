@@ -15,7 +15,7 @@ namespace OrchardCore.Tests.UI.Tests
         {
         }
 
-        [Theory(Skip = "Minimal test suite for multi-DB testing."), Chrome]
+        [Theory, Chrome]
         public Task SetupWithInvalidDataShouldFail(Browser browser) =>
             ExecuteTestAsync(
                 context => context.TestSetupWithInvalidDataAsync(
