@@ -64,6 +64,9 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// </summary>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            // The syncing period in seconds of the default tenant while it is 'Uninitialized'.
+            const int DefaultTenantSyncingPeriod = 20;
+
             stoppingToken.Register(() =>
             {
                 _logger.LogInformation("'{ServiceName}' is stopping.", nameof(DistributedShellHostedService));
@@ -71,6 +74,9 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             // Init the idle time.
             var idleTime = MinIdleTime;
+
+            // Init the second counter used to sync the default tenant while it is 'Uninitialized'.
+            var defaultTenantSyncingSeconds = 0;
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -82,9 +88,35 @@ namespace OrchardCore.Environment.Shell.Distributed
                         break;
                     }
 
-                    // If there is no default tenant or it is not running, nothing to do.
-                    if (!_shellHost.TryGetShellContext(ShellHelper.DefaultShellName, out var defaultContext) ||
-                        defaultContext.Settings.State != TenantState.Running)
+                    // If there is no default tenant, nothing to do.
+                    if (!_shellHost.TryGetShellContext(ShellHelper.DefaultShellName, out var defaultContext))
+                    {
+                        continue;
+                    }
+
+                    // Manage the second counter used to sync the default tenant while it is 'Uninitialized'.
+                    defaultTenantSyncingSeconds = defaultContext.Settings.State == TenantState.Uninitialized
+                        ? defaultTenantSyncingSeconds
+                        : 0;
+
+                    // Check periodically if the default tenant is still 'Uninitialized'.
+                    if (defaultTenantSyncingSeconds++ > DefaultTenantSyncingPeriod)
+                    {
+                        defaultTenantSyncingSeconds = 0;
+
+                        // Load the settings of the default tenant that may have been setup by another instance.
+                        var defaultSettings = await _shellSettingsManager.LoadSettingsAsync(ShellHelper.DefaultShellName);
+                        if (defaultSettings.State == TenantState.Running)
+                        {
+                            // If the default tenant has been setup by another instance, reload it locally.
+                            await _shellHost.ReloadShellContextAsync(defaultContext.Settings, eventSource: false);
+                        }
+
+                        continue;
+                    }
+
+                    // If the default tenant is not running, nothing to do.
+                    if (defaultContext.Settings.State != TenantState.Running)
                     {
                         continue;
                     }

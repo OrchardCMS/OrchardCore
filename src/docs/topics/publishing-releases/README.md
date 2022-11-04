@@ -17,7 +17,7 @@ While the checklist is in a recommended order not every step depends strictly on
 
 Do some housekeeping on GitHub in the [main repo](https://github.com/OrchardCMS/OrchardCore).
 
-- [ ] Close remaining issues for the version (including merging corresponding pull requests if suitable) or assign then to the next one.
+- [ ] Close remaining issues for the version (including merging corresponding pull requests if suitable) or assign them to the next one.
 - [ ] Assign all issues that were closed for an upcoming version (including a wildcard version like "1.0.x") to this version (milestone).
 
 ### Prepare the code

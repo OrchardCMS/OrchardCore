@@ -10,6 +10,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
     public class SqlParserTests
     {
         private ISqlDialect _defaultDialect = new SqlServerDialect();
+        private string _schema = new Configuration().Schema;
         private string _defaultTablePrefix = "tp_";
 
         private string FormatSql(string sql)
@@ -31,7 +32,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select distinct a", "SELECT DISTINCT [a];")]
         public void ShouldParseSelectClause(string sql, string expectedSql)
         {
-            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
@@ -43,7 +44,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("SELECT a FROM t1, t2", "SELECT [a] FROM [tp_t1], [tp_t2];")]
         public void ShouldParseFromClause(string sql, string expectedSql)
         {
-            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
@@ -55,7 +56,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a where b = c and d", "SELECT [a] WHERE [b] = [c] AND [d];")]
         public void ShouldParseWhereClause(string sql, string expectedSql)
         {
-            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
@@ -84,7 +85,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a where b = (select Avg(c) from d)", "SELECT [a] WHERE [b] = (SELECT Avg([c]) FROM [tp_d]);")]
         public void ShouldParseExpression(string sql, string expectedSql)
         {
-            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
@@ -95,7 +96,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a where a = @b limit @limit:10", "SELECT TOP (@limit) [a] WHERE [a] = @b;")]
         public void ShouldParseParameters(string sql, string expectedSql)
         {
-            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
@@ -104,7 +105,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         public void ShouldDefineDefaultParametersValue()
         {
             var parameters = new Dictionary<string, object>();
-            var result = SqlParser.TryParse("select a where a = @b:10", _defaultDialect, _defaultTablePrefix, parameters, out var rawQuery, out var messages);
+            var result = SqlParser.TryParse("select a where a = @b:10", _schema, _defaultDialect, _defaultTablePrefix, parameters, out var rawQuery, out var messages);
             Assert.True(result);
             Assert.Equal(10, parameters["b"]);
         }
@@ -119,7 +120,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a from b inner join c on 1 = @param left join d on d.a = @param left join e on e.a = 'foo'", "SELECT [a] FROM [tp_b] INNER JOIN [tp_c] ON 1 = @param LEFT JOIN [tp_d] ON [tp_d].[a] = @param LEFT JOIN [tp_e] ON [tp_e].[a] = 'foo';")]
         public void ShouldParseJoinClause(string sql, string expectedSql)
         {
-            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
@@ -133,7 +134,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a order by b desc", "SELECT [a] ORDER BY [b] DESC;")]
         public void ShouldParseOrderByClause(string sql, string expectedSql)
         {
-            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
@@ -144,7 +145,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a offset 10", "SELECT [a] OFFSET 10 ROWS;")]
         public void ShouldParseLimitOffsetClause(string sql, string expectedSql)
         {
-            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
@@ -157,7 +158,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select Month(a) as m group by Month(a)", "SELECT Month([a]) AS m GROUP BY Month([a]);")]
         public void ShouldParseGroupByClause(string sql, string expectedSql)
         {
-            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
@@ -166,7 +167,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("SELECT COUNT(CustomerID) GROUP BY Country HAVING COUNT(CustomerID) > 5", "SELECT COUNT([CustomerID]) GROUP BY [Country] HAVING COUNT([CustomerID]) > 5;")]
         public void ShouldParseHavingClause(string sql, string expectedSql)
         {
-            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
@@ -174,7 +175,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [Fact]
         public void ShouldReturnErrorMessage()
         {
-            var result = SqlParser.TryParse("SEL a", _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            var result = SqlParser.TryParse("SEL a", _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
 
             Assert.False(result);
             Assert.Single(messages);
@@ -188,7 +189,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("SELECT /* comment \n comment */ a;", "SELECT [a];")]
         public void ShouldParseComments(string sql, string expectedSql)
         {
-            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
@@ -204,7 +205,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select COUNT(1) over () a, MAX(b) over () c from d", "SELECT COUNT(1) OVER () AS a, MAX([b]) OVER () AS c FROM [tp_d];")]
         public void ShouldParseWindowFunction(string sql, string expectedSql)
         {
-            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
@@ -215,7 +216,35 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a from b union all select c from d union select e from f", "SELECT [a] FROM [tp_b] UNION ALL SELECT [c] FROM [tp_d] UNION SELECT [e] FROM [tp_f];")]
         public void ShouldParseUnionClause(string sql, string expectedSql)
         {
-            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            Assert.True(result);
+            Assert.Equal(expectedSql, FormatSql(rawQuery));
+        }
+
+        [Theory]
+        [InlineData("with cte as (select a from t) select * from cte", "WITH cte AS (SELECT [a] FROM [tp_t]) SELECT * FROM [cte];")]
+        [InlineData("with cte as (select a from t), cte2 as (select b from t) select * from cte2", "WITH cte AS (SELECT [a] FROM [tp_t]), cte2 AS (SELECT [b] FROM [tp_t]) SELECT * FROM [cte2];")]
+        [InlineData("with cte as (select a from t union all select b from t) select * from cte", "WITH cte AS (SELECT [a] FROM [tp_t] UNION ALL SELECT [b] FROM [tp_t]) SELECT * FROM [cte];")]
+        [InlineData("with cte1(abc, def) as (select id as abc, id as def from t), cte2(ghi,jkl) as (select abc as ghi, def as jkl from cte1) select ghi, jkl from cte2", "WITH cte1(abc, def) AS (SELECT [id] AS abc, [id] AS def FROM [tp_t]), cte2(ghi, jkl) AS (SELECT [abc] AS ghi, [def] AS jkl FROM [cte1]) SELECT [ghi], [jkl] FROM [cte2];")]
+        [InlineData("with test(test) as (select a as test from t) select test from test", "WITH test(test) AS (SELECT [a] AS test FROM [tp_t]) SELECT [test] FROM [test];")]
+        public void ShouldParseCte(string sql, string expectedSql)
+        {
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            Assert.True(result);
+            Assert.Equal(expectedSql, FormatSql(rawQuery));
+        }
+
+        [Theory]
+        [InlineData("select * from (select * from t) as b", "SELECT * FROM (SELECT * FROM [tp_t]) AS b;")]
+        [InlineData("select b.a from (select a from t) as b where b.a = b.a", "SELECT b.[a] FROM (SELECT [a] FROM [tp_t]) AS b WHERE b.[a] = b.[a];")]
+        [InlineData("select c.b from (select a as b from t) as c", "SELECT c.[b] FROM (SELECT [a] AS b FROM [tp_t]) AS c;")]
+        [InlineData("select b.a from (select a from t where [a] = 1) as b where b.a = 1", "SELECT b.[a] FROM (SELECT [a] FROM [tp_t] WHERE [a] = 1) AS b WHERE b.[a] = 1;")]
+        [InlineData("select b.a from (select a from t where [a] = 1 union all select a from t where [a] = 2) as b", "SELECT b.[a] FROM (SELECT [a] FROM [tp_t] WHERE [a] = 1 UNION ALL SELECT [a] FROM [tp_t] WHERE [a] = 2) AS b;")]
+        [InlineData("select d.b, g.b from (select a as b from c) as d, (select e as b from f) as g", "SELECT d.[b], g.[b] FROM (SELECT [a] AS b FROM [tp_c]) AS d, (SELECT [e] AS b FROM [tp_f]) AS g;")]
+        [InlineData("select * from (select d as e from (select c as d from (select b as c from (select a as b from t) as l4) as l3) as l2) as l1", "SELECT * FROM (SELECT [d] AS e FROM (SELECT [c] AS d FROM (SELECT [b] AS c FROM (SELECT [a] AS b FROM [tp_t]) AS l4) AS l3) AS l2) AS l1;")]
+        public void ShouldParseSubquery(string sql, string expectedSql)
+        {
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }

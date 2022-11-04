@@ -1,0 +1,8 @@
+[
+  {
+    "inputs": [
+      "Assets/js/password-generator.js"
+    ],
+    "output": "wwwroot/Scripts/password-generator.js"
+  }
+]

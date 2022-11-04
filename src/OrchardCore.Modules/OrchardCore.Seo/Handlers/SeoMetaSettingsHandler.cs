@@ -92,7 +92,7 @@ namespace OrchardCore.Seo.Drivers
 
                 // OpenGraph
 
-                aspect.OpenGraphUrl = absoluteUrl;
+                aspect.OpenGraphUrl = aspect.Canonical ??= absoluteUrl;
 
                 if (String.IsNullOrEmpty(aspect.OpenGraphType))
                 {
@@ -151,7 +151,7 @@ namespace OrchardCore.Seo.Drivers
                 }
 
                 // Twitter
-                aspect.TwitterUrl = absoluteUrl;
+                aspect.TwitterUrl = aspect.Canonical ??= absoluteUrl;
 
                 if (String.IsNullOrEmpty(aspect.TwitterTitle))
                 {

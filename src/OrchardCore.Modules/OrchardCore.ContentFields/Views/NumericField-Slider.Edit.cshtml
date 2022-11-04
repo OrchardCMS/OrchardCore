@@ -1,6 +1,6 @@
 @model OrchardCore.ContentFields.ViewModels.EditNumericFieldViewModel
 @using System.Globalization
-
+@using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<NumericFieldSettings>();
     string name = Model.PartFieldDefinition.DisplayName();
@@ -10,11 +10,12 @@
     string id = Html.IdFor(m => m.Value);
     string javascriptDecimalSeparator = CultureInfo.InvariantCulture.NumberFormat.NumberDecimalSeparator;
     string serverDecimalSeparator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
+    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<script asp-name="nouislider" at="Foot" version="15.5.1"></script>
+<script asp-name="nouislider" at="Foot"></script>
 
-<div class="mb-3">
+<div class="mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Value)_FieldWrapper">
     <div class="row">
         <div class="col-md-6 col-lg-4">
             <label asp-for="Value">@name</label>
@@ -36,8 +37,8 @@
         {
             <span class="ms-1 me-3">@min</span>
         }
-        
-        <div id="@(id)-nouislider" class="w-100 w-md-50 ms-3 me-3"></div>
+
+        <div id="@(id)-nouislider" class="w-100 w-md-50 mx-3"></div>
         @if (settings.Maximum.HasValue)
         {
             <span class="ms-3 me-1">@max</span>
@@ -62,28 +63,27 @@
         range: {
             'min': @min,
             'max': @max
-        }
+            }
     });
 
     slider.noUiSlider.set("@Model.Value");
 
-    slider.noUiSlider.on('change', function () { 
+    slider.noUiSlider.on('change', function () {
         let value = slider.noUiSlider.get();
-        @if (javascriptDecimalSeparator != serverDecimalSeparator)
-        {
-            <text>value = value.replace('@(javascriptDecimalSeparator)', serverDecimalSeparator);</text>
-        }
-        $('#@(id)').val(value);
+    @if (javascriptDecimalSeparator != serverDecimalSeparator)
+    {
+        <text>value = value.replace('@(javascriptDecimalSeparator)', serverDecimalSeparator); </text>
+    }
+            $('#@(id)').val(value);
     });
 
     $('#@(id)').on('keyup', function () {
         let value = this.value;
         @if (javascriptDecimalSeparator != serverDecimalSeparator)
         {
-            <text>value = value.replace(serverDecimalSeparator, '@(javascriptDecimalSeparator)');</text>
+        <text>value = value.replace(serverDecimalSeparator, '@(javascriptDecimalSeparator)'); </text>
         }
-        value = (Number(value) || 0);
-        slider.noUiSlider.set(value);
+        slider.noUiSlider.set(Number(value) || 0);
     });
 
 </script>

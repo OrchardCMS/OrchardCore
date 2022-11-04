@@ -5,11 +5,12 @@
 @{
     var shortcodeDescriptors = await ShortcodeDescriptorManager.GetShortcodeDescriptors();
     var categories = shortcodeDescriptors
-        .SelectMany(s => s.Categories)
-        .GroupBy(c => c, StringComparer.OrdinalIgnoreCase)
-        .Select(g => g.Key);
+        .SelectMany(shortcodeDescriptor => shortcodeDescriptor.Categories ?? Enumerable.Empty<string>())
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .OrderBy(category => category)
+        .ToList();
 
-    var jCategories = JsonConvert.SerializeObject(categories);  
+    var jCategories = JsonConvert.SerializeObject(categories);
     var jSelectedCategories = JsonConvert.SerializeObject(Model.Categories);
 }
 

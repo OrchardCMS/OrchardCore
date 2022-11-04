@@ -44,33 +44,34 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 
 | Name                  | Type   | Versions      | Dependencies   |
 | --------------------- | ------ | ------------- | -------------- |
-| jQuery                | Script | 3.6.0         | -              |
-| jQuery.slim           | Script | 3.6.0         | -              |
+| jQuery                | Script | 3.6.1         | -              |
+| jQuery.slim           | Script | 3.6.1         | -              |
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | jquery.easing         | Script | 1.4.1         | -              |
 | jquery-resizable-dom  | Script | 0.35.0        | -              |
 | js-cookie             | Script | 3.0.1         | jQuery         |
 | popper                | Script | 1.16.1        | -              |
-| popperjs              | Script | 2.10.2        | -              |
+| popperjs              | Script | 2.11.6        | -              |
 | bootstrap             | Script | 4.6.1         | popper         |
-| bootstrap             | Script | 5.1.3         | popperjs       |
-| bootstrap             | Style  | 4.6.1, 5.1.3  | -              |
+| bootstrap             | Script | 5.2.1         | popperjs       |
+| bootstrap             | Style  | 4.6.1, 5.2.1  | -              |
 | bootstrap-select      | Script | 1.14.0-beta2  | -              |
 | bootstrap-select      | Style  | 1.14.0-beta2  | -              |
-| codemirror            | Script | 5.65.4        | -              |
-| codemirror            | Style  | 5.65.4        | -              |
-| font-awesome          | Style  | 6.0.0         | -              |
-| font-awesome          | Script | 6.0.0         | -              |
-| font-awesome-v4-shims | Script | 6.0.0         | -              |
+| codemirror            | Script | 5.65.7        | -              |
+| codemirror            | Style  | 5.65.7        | -              |
+| font-awesome          | Style  | 6.2.0         | -              |
+| font-awesome          | Script | 6.2.0         | -              |
+| font-awesome-v4-shims | Script | 6.2.0         | -              |
 | Sortable              | Script | 1.10.2        | -              |
-| trumbowyg             | Script | 2.25.1        | -              |
+| trumbowyg             | Style  | 2.25.2        | -              |
+| trumbowyg             | Script | 2.25.2        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
-| monaco-loader         | Script | 0.32.1        | -              |
-| monaco                | Script | 0.32.1        | monaco-loader  |
-| nouislider            | Script | 15.6.0        | -              |
-| nouislider            | Style  | 15.6.0        | -              |
+| monaco-loader         | Script | 0.34.0        | -              |
+| monaco                | Script | 0.34.0        | monaco-loader  |
+| nouislider            | Script | 15.6.1        | -              |
+| nouislider            | Style  | 15.6.1        | -              |
 
 ### Registering a Resource Manifest
 

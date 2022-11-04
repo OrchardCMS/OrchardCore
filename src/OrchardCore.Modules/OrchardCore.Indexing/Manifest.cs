@@ -6,5 +6,5 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "Provides index management for content items.",
-    Category = "Content"
+    Category = "Search"
 )]

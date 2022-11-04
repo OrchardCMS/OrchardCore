@@ -44,6 +44,10 @@
 
 // Buttons =====================================================================
 
+.bootstrap-select > .dropdown-toggle.bs-placeholder, .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
+    color: $white !important;
+}
+
 // Typography ==================================================================
 
 .blockquote {
@@ -217,6 +221,10 @@
     color: $gray-700;
 }
 
+.form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ced4da' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+}
+
 // Navs
 
 .breadcrumb a {
@@ -245,7 +253,8 @@
         &-#{$color} {
             @if $enable-gradients {
                 background: $value linear-gradient(180deg, mix($white, $value, 15%), $value) repeat-x;
-            } @else {
+            }
+            @else {
                 background-color: $value;
             }
         }

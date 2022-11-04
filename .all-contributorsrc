@@ -568,7 +568,8 @@
       "contributions": [
         "code",
         "video",
-        "translation"
+        "translation",
+        "doc"
       ]
     },
     {
@@ -2569,6 +2570,61 @@
       "profile": "https://github.com/neglectedvalue",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "PBMikeW",
+      "name": "Mike Williamson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/89110166?v=4",
+      "profile": "https://github.com/PBMikeW",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ProstoMimoProhodill",
+      "name": "Andrew",
+      "avatar_url": "https://avatars.githubusercontent.com/u/32439583?v=4",
+      "profile": "https://github.com/ProstoMimoProhodill",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "MZole",
+      "name": "Zoltán Máté",
+      "avatar_url": "https://avatars.githubusercontent.com/u/99020631?v=4",
+      "profile": "https://github.com/MZole",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "vahpetr",
+      "name": "Vasilev Pyotr",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10128393?v=4",
+      "profile": "https://github.com/vahpetr",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "aderderian",
+      "name": "Arra Derderian",
+      "avatar_url": "https://avatars.githubusercontent.com/u/868165?v=4",
+      "profile": "https://github.com/aderderian",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "MikeAlhayek",
+      "name": "Mike Alhayek",
+      "avatar_url": "https://avatars.githubusercontent.com/u/24724371?v=4",
+      "profile": "https://www.crestapps.com/",
+      "contributions": [
+        "code",
+        "doc"
       ]
     }
   ],

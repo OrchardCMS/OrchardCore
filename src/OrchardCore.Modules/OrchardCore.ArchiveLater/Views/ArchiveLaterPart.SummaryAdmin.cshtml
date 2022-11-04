@@ -1,0 +1,8 @@
+@model ArchiveLaterPartViewModel
+
+@if (Model.ScheduledArchiveUtc.HasValue)
+{
+    <div>
+        <span class="hint">@T["Scheduled to be archived on {0}", (object)(await DisplayAsync(await New.DateTime(Utc: Model.ScheduledArchiveUtc)))]</span>
+    </div>
+}

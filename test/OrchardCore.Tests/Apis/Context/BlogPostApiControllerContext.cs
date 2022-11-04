@@ -1,15 +1,11 @@
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.ContentManagement;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Tests.Apis.Context
 {
     public class BlogPostApiControllerContext : SiteContext
     {
-        public static IShellHost ShellHost { get; private set; }
-
         public string BlogContentItemId { get; private set; }
         public ContentItem BlogPost { get; private set; }
         public string CategoriesTaxonomyContentItemId { get; private set; }
@@ -17,7 +13,6 @@ namespace OrchardCore.Tests.Apis.Context
 
         static BlogPostApiControllerContext()
         {
-            ShellHost = Site.Services.GetRequiredService<IShellHost>();
         }
 
         public override async Task InitializeAsync()
