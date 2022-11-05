@@ -68,7 +68,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 };
 
                 query.RequirePermission(CommonPermissions.ExecuteGraphQL);
-                query.RequirePermission(Contents.CommonPermissions.ViewContent, typeDefinition.Name);
+                query.RequirePermission(Contents.CommonPermissions.ViewOwnContent, typeDefinition.Name);
 
                 foreach (var builder in contentTypeBuilders)
                 {
