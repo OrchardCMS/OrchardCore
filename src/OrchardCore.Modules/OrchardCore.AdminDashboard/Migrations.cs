@@ -10,7 +10,7 @@ namespace OrchardCore.AdminDashboard
 {
     public class Migrations : DataMigration
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private IContentDefinitionManager _contentDefinitionManager;
         private readonly IRecipeMigrator _recipeMigrator;
 
         public Migrations(IContentDefinitionManager contentDefinitionManager, IRecipeMigrator recipeMigrator)
