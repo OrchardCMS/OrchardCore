@@ -1,7 +1,12 @@
 {
   "name": "orchardcore.media",
+  "private": true,
   "version": "1.0.0",
-  "dependencies": {
+  "scripts": {
+    "install:media-app": "cd Assets/js/vue/MediaApp && npm install",
+    "postinstall": "run-s install:*"
+  },
+  "devDependencies": {
     "blueimp-file-upload": "10.32.0",
     "bootstrap": "5.1.3"
   }
