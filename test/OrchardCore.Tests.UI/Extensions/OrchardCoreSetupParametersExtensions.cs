@@ -34,7 +34,7 @@ namespace Lombiq.Tests.UI.Pages
             }
             else if (provider == OrchardCoreSetupPage.DatabaseType.MySql)
             {
-                setupParameters.ConnectionString = "Server=127.0.0.1;User ID=root;Password=test123;Database=mariadb;";
+                setupParameters.ConnectionString = "Server=127.0.0.1;Database=mariadb;";
             }
 
             return setupParameters;
