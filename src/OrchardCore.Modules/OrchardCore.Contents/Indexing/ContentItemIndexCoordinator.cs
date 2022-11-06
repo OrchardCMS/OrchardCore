@@ -49,7 +49,9 @@ namespace OrchardCore.Contents.Indexing
                 var partActivator = _contentPartFactory.GetTypeActivator(partTypeName);
                 var part = (ContentPart)context.ContentItem.Get(partActivator.Type, partName);
 
-                var typePartIndexSettings = contentTypePartDefinition.GetSettings<ContentIndexSettings>();
+                var contentTypePartDefinitionMethod = contentTypePartDefinition.GetType().GetMethod("GetSettings");
+                var contentTypePartDefinitionGeneric = contentTypePartDefinitionMethod.MakeGenericMethod(context.Settings.GetType());
+                var typePartIndexSettings = (IContentIndexSettings)contentTypePartDefinitionGeneric.Invoke(contentTypePartDefinition, null);
 
                 // Skip this part if it's not included in the index and it's not the default type part
                 if (contentTypeDefinition.Name != partTypeName && !typePartIndexSettings.Included)
@@ -63,7 +65,9 @@ namespace OrchardCore.Contents.Indexing
 
                 foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
                 {
-                    var partFieldIndexSettings = contentPartFieldDefinition.GetSettings<ContentIndexSettings>();
+                    var contentPartFieldDefinitionMethod = contentPartFieldDefinition.GetType().GetMethod("GetSettings");
+                    var contentPartFieldDefinitionGeneric = contentPartFieldDefinitionMethod.MakeGenericMethod(context.Settings.GetType());
+                    var partFieldIndexSettings = (IContentIndexSettings)contentPartFieldDefinitionGeneric.Invoke(contentPartFieldDefinition, null);
 
                     if (!partFieldIndexSettings.Included)
                     {

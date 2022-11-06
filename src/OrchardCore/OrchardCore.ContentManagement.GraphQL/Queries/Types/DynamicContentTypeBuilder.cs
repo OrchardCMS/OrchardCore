@@ -33,6 +33,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
             var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
 
+            if (_contentOptions.ShouldSkipContentType(contentTypeDefinition.Name))
+            {
+                return;
+            }
+
             foreach (var part in contentTypeDefinition.Parts)
             {
                 var partName = part.Name;
@@ -105,7 +110,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                             resolve: context =>
                             {
                                 var nameToResolve = partName;
-                                var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
+                                var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
 
                                 return context.Source.Get(typeToResolve, nameToResolve);
                             });

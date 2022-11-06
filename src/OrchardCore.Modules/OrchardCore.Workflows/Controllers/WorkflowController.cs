@@ -115,7 +115,7 @@ namespace OrchardCore.Workflows.Controllers
                     break;
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var routeData = new RouteData();
             routeData.Values.Add("Filter", model.Options.Filter);

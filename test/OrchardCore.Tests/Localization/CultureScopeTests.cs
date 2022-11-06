@@ -72,6 +72,7 @@ namespace OrchardCore.Tests.Localization
                     throw new Exception("Something goes wrong!!");
                 }
             });
+
             Assert.Equal(culture, CultureInfo.CurrentCulture);
             Assert.Equal(uiCulture, CultureInfo.CurrentUICulture);
         }

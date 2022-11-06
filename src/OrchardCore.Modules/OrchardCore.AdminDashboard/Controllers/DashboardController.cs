@@ -15,7 +15,7 @@ using OrchardCore.AdminDashboard.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -109,9 +109,7 @@ namespace OrchardCore.AdminDashboard.Controllers
             var dashboardCreatable = new List<SelectListItem>();
 
             var widgetContentTypes = _contentDefinitionManager.ListTypeDefinitions()
-                    .Where(t =>
-                    !string.IsNullOrEmpty(t.GetSettings<ContentTypeSettings>().Stereotype) &&
-                    t.GetSettings<ContentTypeSettings>().Stereotype.Contains("DashboardWidget"))
+                    .Where(t => t.TryGetStereotype(out var stereotype) && stereotype.Contains("DashboardWidget"))
                     .OrderBy(x => x.DisplayName);
             foreach (var ctd in widgetContentTypes)
             {
@@ -149,7 +147,7 @@ namespace OrchardCore.AdminDashboard.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminDashboard))
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
 
             var contentItemIds = parts.Select(i => i.ContentItemId).ToArray();
@@ -161,7 +159,7 @@ namespace OrchardCore.AdminDashboard.Controllers
 
             if (latestItems == null)
             {
-                return StatusCode(404);
+                return NotFound();
             }
 
             foreach (var contentItem in latestItems)
@@ -169,7 +167,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                 var dashboardPart = contentItem.As<DashboardPart>();
                 if (dashboardPart == null)
                 {
-                    return StatusCode(403);
+                    return Forbid();
                 }
 
                 var partViewModel = parts.Where(m => m.ContentItemId == contentItem.ContentItemId).FirstOrDefault();
@@ -200,7 +198,7 @@ namespace OrchardCore.AdminDashboard.Controllers
 
             if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
-                return StatusCode(200);
+                return Ok();
             }
             else
             {

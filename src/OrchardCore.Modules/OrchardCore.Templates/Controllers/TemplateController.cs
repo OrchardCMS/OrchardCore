@@ -72,7 +72,7 @@ namespace OrchardCore.Templates.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var templatesDocument = options.AdminTemplates
                 ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
                 : await _templatesManager.GetTemplatesDocumentAsync()

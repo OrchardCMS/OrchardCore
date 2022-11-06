@@ -41,7 +41,7 @@ namespace OrchardCore.Taxonomies.Drivers
             {
                 return Task.FromResult<IDisplayResult>(Initialize<TermPartViewModel>("TermPart", async m =>
                 {
-                    var pager = await GetPagerAsync(context.Updater, _pagerOptions.PageSize);
+                    var pager = await GetPagerAsync(context.Updater, _pagerOptions.GetPageSize());
                     m.TaxonomyContentItemId = part.TaxonomyContentItemId;
                     m.ContentItem = part.ContentItem;
                     m.ContentItems = (await QueryTermItemsAsync(part, pager)).ToArray();

@@ -1,28 +1,41 @@
 @using Microsoft.AspNetCore.Html
 @using OrchardCore.Modules;
 @model FeaturesViewModel
+@{
+    var title = T["Features"];
+    if (!String.IsNullOrEmpty(Model.Name))
+    {
+        title = T["Features for {0} tenant", Model.Name];
+    }
+}
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Features"])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(title)</h1></zone>
 
 <form autocomplete="off" class="position-sticky action-bar">
-    <div class="card mb-3">
-        <div class="card-body bg-primary p-3">
-            <div class="mb-0">
-                <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
-                    <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
-                    <input id="search-box" class="form-control me-sm-2" placeholder="@T["Search"]" type="search" autofocus />
+    <div class="card bg-primary mb-3">
+        <div class="card-body">
+
+            <div class="row gx-3">
+                <div class="col">
+                    <div class="has-search">
+                        <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
+                        <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                    </div>
                 </div>
-                <div class="dropdown float-end order-md-1">
-                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        @T["Bulk Actions"]
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
-                        <li><a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Disable)">@T["Disable"]</a></li>
-                        <li><a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Enable)">@T["Enable"]</a></li>
-                        <li><a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Toggle)">@T["Toggle"]</a></li>
-                    </ul>
+                <div class="col-auto">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @T["Bulk Actions"]
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
+                            <li><a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Disable)">@T["Disable"]</a></li>
+                            <li><a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Enable)">@T["Enable"]</a></li>
+                            <li><a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Toggle)">@T["Toggle"]</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
+
         </div>
     </div>
 </form>
@@ -108,13 +121,13 @@
                                         {
                                             @if (feature.IsEnabled)
                                             {
-                                                <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automaticlly enabled based on dependency and cannot be manually disabled."]">
+                                                <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automatically enabled based on dependency and cannot be manually disabled."]">
                                                     <button class="btn btn-danger btn-sm" disabled>@T["Disable"]</button>
                                                 </div>
                                             }
                                             else
                                             {
-                                                <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automaticlly disabled based on dependency and cannot be manually enabled."]">
+                                                <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automatically disabled based on dependency and cannot be manually enabled."]">
                                                     <button class="btn btn-primary btn-sm" disabled>@T["Enable"]</button>
                                                 </div>
                                             }
@@ -129,7 +142,7 @@
                                         {
                                             if (showEnable && !feature.IsEnabled)
                                             {
-                                                <a id="btn-enable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Enable" asp-route-id="@feature.Descriptor.Id" class="btn btn-primary btn-sm" data-url-af="UnsafeUrl">@T["Enable"]</a>
+                                                <a id="btn-enable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Enable" asp-route-id="@feature.Descriptor.Id" asp-route-tenant="@Model.Name" class="btn btn-primary btn-sm" data-url-af="UnsafeUrl">@T["Enable"]</a>
                                             }
                                             @if (showDisable && feature.IsEnabled)
                                             {
@@ -139,7 +152,7 @@
                                                     var enabledDependentFeatures = new HtmlString($"<ul>{String.Join("", feature.EnabledDependentFeatures.Select(f => $"<li>{f.Name}</li>"))}</ul>");
                                                     confirmationMessage = T["Disabling the {0} feature will also disable the following dependent features:{1}Continue?", feature.Descriptor.Name, enabledDependentFeatures];
                                                 }
-                                                <a id="btn-disable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+                                                <a id="btn-disable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Disable" asp-route-id="@feature.Descriptor.Id" asp-route-tenant="@Model.Name" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl RemoveUrl">@T["Disable"]</a>
                                             }
                                         }
                                     </div>
@@ -156,11 +169,11 @@
     }
 </form>
 <script at="Foot">
-    $(function() {
+    $(function () {
         var searchBox = $('#search-box');
 
         // On each keypress filter the list of features
-        searchBox.keyup(function(e) {
+        searchBox.keyup(function (e) {
             var search = $(this).val().toLowerCase();
             var elementsToFilter = $("[data-filter-value]");
 
@@ -169,7 +182,7 @@
                 searchBox.val('');
                 elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
             } else {
-                elementsToFilter.each(function() {
+                elementsToFilter.each(function () {
                     var text = $(this).data('filter-value').toLowerCase();
                     var found = text.indexOf(search) > -1;
 
@@ -181,7 +194,7 @@
                     }
                 });
 
-                $('ul.list-group').each(function() {
+                $('ul.list-group').each(function () {
                     $(this).find('li').filter(":not(.d-none)").first().addClass("first-child-visible");
                     $(this).find('li').filter(":not(.d-none)").last().addClass("last-child-visible");
                 });
@@ -197,19 +210,18 @@
         });
 
         //prevent posting form on pressing enter key
-        searchBox.keypress(function(e) {
+        searchBox.keypress(function (e) {
             var key = e.charCode || e.keyCode || 0;
             if (key == 13) {
                 return false;
             }
         });
 
-        $(".dropdown-menu a").filter(function() {
+        $(".dropdown-menu a").filter(function () {
             return $(this).data("action");
-        }).on('click', function() {
+        }).on('click', function () {
             $("[name='BulkAction']").val($(this).data('action'));
             $("[name='submit.BulkAction']").click();
         });
-
     });
 </script>
