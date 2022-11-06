@@ -49,9 +49,8 @@ jobs:
     #  with:
     #    build-directory: test/OrchardCore.Tests.UI
     #- name: Start PostgreSQL
-    #  # v3
-    #  # This will cause warnings until this is fixed: https://github.com/ikalnytskyi/action-setup-postgres/issues/6.
-    #  uses: ikalnytskyi/action-setup-postgres@e5b77936cf3f9d1a079ac5e8c1787fc657924809
+    #  # v1 branch as of 06.11.2022.
+    #  uses: ankane/setup-postgres@fb3b63234a45536dde68bae3f8cf1b6dbbc281cb
     #- name: CMS UI Tests - PostgreSQL
     #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
     #  env:

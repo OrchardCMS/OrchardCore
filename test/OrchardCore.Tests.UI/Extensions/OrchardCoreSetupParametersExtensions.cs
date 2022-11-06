@@ -30,7 +30,7 @@ namespace Lombiq.Tests.UI.Pages
 
             if (provider == OrchardCoreSetupPage.DatabaseType.Postgres)
             {
-                setupParameters.ConnectionString = "Host=localhost;Port=5432;User ID=postgres;Password=postgres;Database=postgres;";
+                setupParameters.ConnectionString = "Host=localhost;Port=5432;Database=postgres;";
             }
             else if (provider == OrchardCoreSetupPage.DatabaseType.MySql)
             {
