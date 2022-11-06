@@ -1,0 +1,23 @@
+// media item title. Shared by grid and table-view
+.media-container-main-item-title {
+    border-top: solid 1px $gray-300;
+    padding-top: 24px;
+    position: relative;
+    overflow: hidden;
+
+    .media-filename {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+}
+
+.break-word {
+    word-break: break-all;
+    word-wrap: break-word;
+}
+
+[v-cloak] {
+    display: none !important;
+}

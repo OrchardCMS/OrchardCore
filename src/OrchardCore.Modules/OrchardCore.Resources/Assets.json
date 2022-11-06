@@ -222,9 +222,16 @@
   {
     "copy": true,
     "inputs": [
-      "node_modules/vue-multiselect/dist/vue-multiselect.min.js"
+      "node_modules/vue-multiselect/dist/vue-multiselect.umd.js"
     ],
-    "output": "wwwroot/Scripts/vue-multiselect.min.js"
+    "output": "wwwroot/Scripts/vue-multiselect.umd.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/vue-multiselect/dist/vue-multiselect.umd.min.js"
+    ],
+    "output": "wwwroot/Scripts/vue-multiselect.umd.min.js"
   },
   {
     "copy": true,

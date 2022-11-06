@@ -1,8 +1,99 @@
 <script asp-src="~/OrchardCore.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, sortable, vuedraggable, jQuery-ui"></script>
 <style asp-src="~/OrchardCore.Media/Styles/media.min.css" debug-src="~/OrchardCore.Media/Styles/media.css"></style>
 
+<div id="mediaApp" 
+    data-get-folders-url="@Url.Action("GetFolders", "Admin", new { area = "OrchardCore.Media" })"
+    data-delete-folders-url="@Url.Action("DeleteFolder", "Admin", new { area = "OrchardCore.Media" })"
+    data-create-folders-url="@Url.Action("CreateFolder", "Admin", new { area = "OrchardCore.Media" })"
+    get-media-items-url="@Url.Action("GetMediaItems", "Admin", new { area = "OrchardCore.Media" })"
+    delete-media-url="@Url.Action("DeleteMedia", "Admin", new { area = "OrchardCore.Media" })"
+    rename-media-url="@Url.Action("MoveMedia", "Admin", new { area = "OrchardCore.Media" })"
+    delete-media-list-url="@Url.Action("DeleteMediaList", "Admin", new { area = "OrchardCore.Media" })"
+    move-media-list-url="@Url.Action("MoveMediaList", "Admin", new { area = "OrchardCore.Media" })"
+    upload-files="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })"
+>
+</div>
+
+@*Localizable Strings shared*@
+<input type="hidden" id="deleteFolder" data-title="@T["Delete media folder"]" data-message="@T["Are you sure you want to delete this folder?"]" />
+<input type="hidden" id="deleteMedia" data-title="@T["Delete media"]" data-message="@T["Are you sure you want to delete these media items?"]" />
+<input type="hidden" id="moveMedia" data-title="@T["Move media"]" data-message="@T["Are you sure you want to move the selected media to this folder?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-success" />
+<input type="hidden" id="sameFolderMessage" value="@T["The media is already on this folder"]" />
+<input type="hidden" id="t-edit-button" value="@T["Edit"]" />
+<input type="hidden" id="t-delete-button" value="@T["Delete"]" />
+<input type="hidden" id="t-view-button" value="@T["View"]" />
+
+@*Localizable Strings for uploadComponent*@
+<input type="hidden" id="t-error" value="@T["This file exceeds the maximum upload size"]" />
+
+@*Localizable Strings for uploadListcomponent*@
+<input type="hidden" id="t-uploads" value="@T["Uploads"]" />
+<input type="hidden" id="t-errors" value="@T["Errors"]" />
+<input type="hidden" id="t-clear-errors" value="@T["Clear Errors"]" />
+
+@*Localizable Strings for mediaItemsTableComponent*@
+<input type="hidden" id="t-image-header" value="@T["Image"]" />
+<input type="hidden" id="t-name-header" value="@T["Name"]" />
+<input type="hidden" id="t-lastModify-header" value="@T["Last modification"]" />
+<input type="hidden" id="t-size-header" value="@T["Size"]" />
+<input type="hidden" id="t-type-header" value="@T["Type"]" />
+
+@*Localizable Strings for pagerComponent*@
+<input type="hidden" id="t-pager-first-button" value="@T["First"]" />
+<input type="hidden" id="t-pager-previous-button" value="@T["Previous"]" />
+<input type="hidden" id="t-pager-next-button" value="@T["Next"]" />
+<input type="hidden" id="t-pager-last-button" value="@T["Last"]" />
+<input type="hidden" id="t-pager-page-size-label" value="@T["Page Size"]" />
+<input type="hidden" id="t-pager-page-label" value="@T["Page:"]" />
+<input type="hidden" id="t-pager-total-label" value="@T["Total items:"]" />
+
+<div class="modal" id="createFolderModal" tabindex="-1" role="dialog" aria-labelledby="createFolderModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modelTitle">@T["Create Folder"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="input" class="form-control-label" id="input-label">@T["Folder name"]</label>
+                    <input type="text" id="create-folder-name" class="form-control">
+                </div>
+                <div id="createFolderModal-errors"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="modalFooterOk">@T["Ok"]</button>
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="renameMediaModal" tabindex="-1" role="dialog" aria-labelledby="renameMediaModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modelTitle">@T["Rename Item"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="input" class="form-control-label" id="input-label">@T["New Name"]</label>
+                    <input type="text" id="new-item-name" class="form-control">
+                    <input type="hidden" id="old-item-name" value="">
+                </div>
+                <div id="renameMediaModal-errors"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="renameMediaModalFooterOk">@T["Ok"]</button>
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script at="Foot">
-    initializeMediaApplication(true, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })', '@Context.Request.PathBase.ToString()');
+    //initializeMediaApplication(true, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })', '@Context.Request.PathBase.ToString()');
 
     @* mediaApp is absolutely positioned. When a warning is shown we need to move it down to avoid overlapping. *@
     $(function () {

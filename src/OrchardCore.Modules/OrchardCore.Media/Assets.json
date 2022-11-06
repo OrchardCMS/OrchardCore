@@ -11,7 +11,9 @@
     "inputs": [
       "./node_modules/blueimp-file-upload/js/jquery.fileupload.js",
       "./node_modules/blueimp-file-upload/js/jquery.iframe-transport.js",
-      "Assets/js/**/*.js"
+      "Assets/js/MediaApp/**/*.js",
+      "Assets/js/MediaField/**/*.js",
+      "Assets/js/Shared/**/*.js"      
     ],
     "output": "wwwroot/Scripts/media.js"
   }

@@ -13,7 +13,7 @@ namespace OrchardCore.Resources
         private readonly PathString _pathBase;
         // Versions
         private const string codeMirrorVersion = "5.65.7";
-        private const string monacoEditorVersion = "0.34.0";
+        private const string monacoEditorVersion = "0.34.1";
         // URLs
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
@@ -171,9 +171,9 @@ namespace OrchardCore.Resources
             manifest
                .DefineScript("popperjs")
                .SetUrl("~/OrchardCore.Resources/Scripts/popper.min.js", "~/OrchardCore.Resources/Scripts/popper.js")
-               .SetCdn("https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js", "https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.js")
-               .SetCdnIntegrity("sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB", "sha384-7bLhHCLchQRw474eiNFHP0txk38fyqbVOG/RohbcYXnTrdd9mNPQrVkOcY14iscj")
-               .SetVersion("2.10.2");
+               .SetCdn("https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js", "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.js")
+               .SetCdnIntegrity("sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3", "sha384-VQo0vWAZ18Sqo1Alu/vX3/9h02S6fyWFzsl04LHApi5zmn8ZTmjmqTn0WqxmlPPm")
+               .SetVersion("2.11.6");
 
             manifest
                 .DefineScript("bootstrap")
@@ -438,24 +438,24 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("vuejs")
                 .SetUrl("~/OrchardCore.Resources/Scripts/vue.global.prod.js", "~/OrchardCore.Resources/Scripts/vue.global.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/vue@3.2.31/dist/vue.global.prod.js", "https://cdn.jsdelivr.net/npm/vue@3.2.31/dist/vue.global.js")
-                .SetCdnIntegrity("sha384-7Upc7W1WCZPT1Wedl0xz0Qf/gk9dxlIbTEcYz0tUoG/Hn+g9qQcjRAiaA8hJk7QX", "sha384-G0X+ECsBjU2Ha7N2iYaXgLhQLRqTXERPvAoao78HQWMzQjfoVJxMaUj1595qZw5+")
-                .SetVersion("3.2.31");
+                .SetCdn("https://cdn.jsdelivr.net/npm/vue@3.2.41/dist/vue.global.prod.js", "https://cdn.jsdelivr.net/npm/vue@3.2.41/dist/vue.global.js")
+                .SetCdnIntegrity("sha256-kgmHr8X3NCK+tP7+Mlnaxylp5JoAt1tcOAfa6WvELRg=", "sha256-tRcd5zw5e/MGCiQHuT+fetPWHpfYIMuhpQ/Qn7zvJJM=")
+                .SetVersion("3.2.41");
 
             manifest
                 .DefineScript("vue-multiselect")
                 .SetDependencies("vuejs")
-                .SetUrl("~/OrchardCore.Resources/Scripts/vue-multiselect.min.js", "~/OrchardCore.Resources/Scripts/vue-multiselect.min.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.js", "https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.js")
-                .SetCdnIntegrity("sha384-a4eXewRTYCwYdFtSnMCZTNtiXrfdul6aQdueRgHPAx2y1Ldp0QaFdCTpOx0ycsXU", "sha384-a4eXewRTYCwYdFtSnMCZTNtiXrfdul6aQdueRgHPAx2y1Ldp0QaFdCTpOx0ycsXU")
-                .SetVersion("2.1.6");
+                .SetUrl("~/OrchardCore.Resources/Scripts/vue-multiselect.umd.min.js", "~/OrchardCore.Resources/Scripts/vue-multiselect.umd.js")
+                .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@3.0.0-alpha.2/dist/vue-multiselect.umd.min.js", "https://cdn.jsdelivr.net/npm/vue-multiselect@3.0.0-alpha.2/dist/vue-multiselect.umd.js")
+                .SetCdnIntegrity("sha256-BG2jF5avrBI525b65+XV3oBDf4aMwv0Gmby5+PR3YUc=", "sha256-XB6NElpLwfeswT2RqMxDyIXKP83r37JQoZaiSWXEFnA=")
+                .SetVersion("3.0.0");
 
             manifest
                 .DefineStyle("vue-multiselect")
                 .SetUrl("~/OrchardCore.Resources/Styles/vue-multiselect.min.css", "~/OrchardCore.Resources/Styles/vue-multiselect.min.css")
-                .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.css", "https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.css")
-                .SetCdnIntegrity("sha384-PPH/T7V86Z1+B4eMPef4FJXLD5fsTpObWoCoK3CiNtSX7aji+5qxpOCn1f2TDYAM", "sha384-PPH/T7V86Z1+B4eMPef4FJXLD5fsTpObWoCoK3CiNtSX7aji+5qxpOCn1f2TDYAM")
-                .SetVersion("2.1.6");
+                .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@3.0.0-alpha.2/dist/vue-multiselect.css", "https://cdn.jsdelivr.net/npm/vue-multiselect@3.0.0-alpha.2/dist/vue-multiselect.css")
+                .SetCdnIntegrity("sha256-Rk36exDVuC4nmPvTICbIZCCh4MAYJ5eh2I6cen3EBww=", "sha256-Rk36exDVuC4nmPvTICbIZCCh4MAYJ5eh2I6cen3EBww=")
+                .SetVersion("3.0.0");
 
             manifest
                 .DefineScript("Sortable")
@@ -467,10 +467,10 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("vuedraggable")
                 .SetDependencies("vuejs", "Sortable")
-                .SetUrl("~/OrchardCore.Resources/Scripts/vue-draggable-next.global.prod.js", "~/OrchardCore.Resources/Scripts/vue-draggable-next.global.js")
-                .SetCdn("https://unpkg.com/vue-draggable-next@2.1.1/dist/vue-draggable-next.global.prod.js", "https://unpkg.com/vue-draggable-next@2.1.1/dist/vue-draggable-next.global.js")
-                .SetCdnIntegrity("sha384-NorK0A1dut9utqRnuadoNWg6YxAZJwrLWCuvQOHm1RwN15QkvZPh+I0HQ/sQHyji", "sha384-LULdGGLvMashG5zTp0PUXc+8Q+0KmE3eiT8Zd6INJVLPYqiiWwHYDqVRZg8HV3+4")
-                .SetVersion("2.1.1");
+                .SetUrl("~/OrchardCore.Resources/Scripts/vuedraggable.umd.min.js", "~/OrchardCore.Resources/Scripts/vuedraggable.umd.js")
+                .SetCdn("https://cdn.jsdelivr.net/npm/vuedraggable@4.1.0/dist/vuedraggable.umd.min.js", "https://cdn.jsdelivr.net/npm/vuedraggable@4.1.0/dist/vuedraggable.umd.js")
+                .SetCdnIntegrity("sha256-FjxpX3VAkThN5LyMBcYXWG07S53R7zenPcuYdGsHM5I=", "sha256-WmIsBn89Zsqc1mnbARPrEIskG1iJLpZaMM91oA8QLDI=")
+                .SetVersion("4.1.0");
 
             manifest
                 .DefineScript("js-cookie")
