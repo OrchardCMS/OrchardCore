@@ -48,24 +48,24 @@ jobs:
     #    OrchardCore__UITestingCIDatabaseProvider: "SqlServer"
     #  with:
     #    build-directory: test/OrchardCore.Tests.UI
-    - name: Start PostgreSQL
-      # v1 branch as of 06.11.2022.
-      uses: ankane/setup-postgres@fb3b63234a45536dde68bae3f8cf1b6dbbc281cb
-    - name: CMS UI Tests - PostgreSQL
-      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
-      env:
-        OrchardCore__UITestingCIDatabaseProvider: "Postgres"
-      with:
-        build-directory: test/OrchardCore.Tests.UI
-    # MariaDB is an open-source drop-in replacement of MySQL, so we can use it instead.
-    #- name: Set up MariaDB
+    #- name: Start PostgreSQL
     #  # v1 branch as of 06.11.2022.
-    #  uses: ankane/setup-mariadb@81fcdda23edba40ba0762fb8fff403e320a46f76
-    #  with:
-    #    database: mariadb
-    #- name: CMS UI Tests - MySql
+    #  uses: ankane/setup-postgres@fb3b63234a45536dde68bae3f8cf1b6dbbc281cb
+    #- name: CMS UI Tests - PostgreSQL
     #  uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
     #  env:
-    #    OrchardCore__UITestingCIDatabaseProvider: "MySql"
+    #    OrchardCore__UITestingCIDatabaseProvider: "Postgres"
     #  with:
     #    build-directory: test/OrchardCore.Tests.UI
+    # MariaDB is an open-source drop-in replacement of MySQL, so we can use it instead.
+    - name: Set up MariaDB
+      # v1 branch as of 06.11.2022.
+      uses: ankane/setup-mariadb@81fcdda23edba40ba0762fb8fff403e320a46f76
+      with:
+        database: mariadb
+    - name: CMS UI Tests - MySql
+      uses: Lombiq/GitHub-Actions/.github/actions/test-dotnet@issue/OSOE-424
+      env:
+        OrchardCore__UITestingCIDatabaseProvider: "MySql"
+      with:
+        build-directory: test/OrchardCore.Tests.UI
