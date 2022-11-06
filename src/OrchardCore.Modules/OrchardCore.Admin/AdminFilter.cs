@@ -10,11 +10,11 @@ namespace OrchardCore.Admin
     /// Intercepts any request to check whether it applies to the admin site.
     /// If so it marks the request as such and ensures the user as the right to access it.
     /// </summary>
-    public class AdminFilter : ActionFilterAttribute, IAsyncPageFilter
+    public class AdminFilterAttribute : ActionFilterAttribute, IAsyncPageFilter
     {
         private readonly IAuthorizationService _authorizationService;
 
-        public AdminFilter(IAuthorizationService authorizationService)
+        public AdminFilterAttribute(IAuthorizationService authorizationService)
         {
             _authorizationService = authorizationService;
         }
