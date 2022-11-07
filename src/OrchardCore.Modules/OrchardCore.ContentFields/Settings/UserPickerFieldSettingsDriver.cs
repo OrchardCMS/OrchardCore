@@ -36,7 +36,7 @@ namespace OrchardCore.ContentFields.Settings
                     .ToArray();
 
                 model.Roles = roles;
-                model.DisplayAllUsers = settings.DisplayAllUsers || !roles.Where(x => x.IsSelected).Any();
+                model.DisplayAllUsers = settings.DisplayAllUsers || !roles.Any(x => x.IsSelected);
 
             }).Location("Content");
         }

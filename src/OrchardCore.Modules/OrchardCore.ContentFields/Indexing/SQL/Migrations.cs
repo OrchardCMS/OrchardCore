@@ -460,14 +460,6 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
-            // Can't be created on existing databases where the 'Text' may be of 768 chars.
-            //SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
-            //    .CreateIndex("IDX_TextFieldIndex_DocumentId_Text",
-            //        "DocumentId",
-            //        "Text",
-            //        "Published",
-            //        "Latest")
-            //);
 
             SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
                 .CreateIndex("IDX_BooleanFieldIndex_DocumentId",

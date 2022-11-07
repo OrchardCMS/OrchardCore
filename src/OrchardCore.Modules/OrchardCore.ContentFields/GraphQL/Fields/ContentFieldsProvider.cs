@@ -119,7 +119,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             };
         }
 
-        private class FieldTypeDescriptor
+        private sealed class FieldTypeDescriptor
         {
             public string Description { get; set; }
             public Type FieldType { get; set; }

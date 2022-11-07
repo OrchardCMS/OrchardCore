@@ -77,7 +77,6 @@ namespace OrchardCore.ContentPreview.Controllers
             contentItem.Published = true;
 
             // TODO: we should probably get this value from the main editor as it might impact validators
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             if (!ModelState.IsValid)
             {
@@ -112,7 +111,7 @@ namespace OrchardCore.ContentPreview.Controllers
                 return Ok();
             }
 
-            model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "Detail");
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "Detail");
 
             return View(model);
         }

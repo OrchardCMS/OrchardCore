@@ -44,13 +44,8 @@ namespace OrchardCore.ContentLocalization.Handlers
 
         public override Task UnpublishedAsync(PublishContentContext context, LocalizationPart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null)
-            {
-                // Update entries from the index table after the session is committed.
-                return _entries.UpdateEntriesAsync();
-            }
 
-            return Task.CompletedTask;
+            return PublishedAsync(context, part);
         }
 
         public override Task RemovedAsync(RemoveContentContext context, LocalizationPart part)

@@ -31,7 +31,7 @@ namespace OrchardCore.AdminMenu.Recipes
 
             var serializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.Auto };
 
-            foreach (JObject token in model.Data)
+            foreach (JToken token in model.Data)
             {
                 var adminMenu = token.ToObject<Models.AdminMenu>(serializer);
 
@@ -44,7 +44,6 @@ namespace OrchardCore.AdminMenu.Recipes
                 await _adminMenuService.SaveAsync(adminMenu);
             }
 
-            return;
         }
     }
 

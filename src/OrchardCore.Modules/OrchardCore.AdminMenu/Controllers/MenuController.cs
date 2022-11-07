@@ -68,13 +68,12 @@ namespace OrchardCore.AdminMenu.Controllers
                 adminMenuList = adminMenuList.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            var count = adminMenuList.Count();
+            var count = adminMenuList.Count;
 
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
             IEnumerable<Models.AdminMenu> results = new List<Models.AdminMenu>();
 
-            //todo: handle the case where there is a deserialization exception on some of the presets.
             // load at least the ones without error. Provide a way to delete the ones on error.
             try
             {
@@ -261,7 +260,7 @@ namespace OrchardCore.AdminMenu.Controllers
                         await _notifier.SuccessAsync(H["Admin menus successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException("Admin menus hasn't been successfully removed" + options);
                 }
             }
 

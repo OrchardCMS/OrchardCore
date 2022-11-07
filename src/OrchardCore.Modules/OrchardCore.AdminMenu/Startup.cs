@@ -55,7 +55,7 @@ namespace OrchardCore.AdminMenu
             services.AddScoped<IDisplayDriver<MenuItem>, LinkAdminNodeDriver>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             // Menu
             var menuControllerName = typeof(MenuController).ControllerName();
