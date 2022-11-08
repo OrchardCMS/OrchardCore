@@ -29,12 +29,12 @@ jobs:
         echo VERSION:${VERSION}
         echo ::set-output name=VERSION::${VERSION}
       shell: bash
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
         node-version: "15"
     - name: Setup .NET 7.0
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.x
         include-prerelease: true
@@ -43,7 +43,11 @@ jobs:
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 15471 ))" >> $GITHUB_ENV
     - name: Build
       run: |
+<<<<<<< HEAD
         dotnet build --configuration Release --framework net7.0
+=======
+        dotnet build --configuration Release --framework net6.0 -p:Version=${{ steps.get_version.outputs.VERSION }}
+>>>>>>> main
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 

@@ -34,7 +34,8 @@ Auto-Setup parameters are defined in appsettings.json. Example excerpt:
                 "DatabaseTablePrefix": "tenant",
                 "RecipeName": "Agency",
                 "RequestUrlHost": "",
-                "RequestUrlPrefix": "tenant"
+                "RequestUrlPrefix": "tenant",
+                "FeatureProfile": "my-profile"
             }
         ]
     }
@@ -59,6 +60,7 @@ Auto-Setup parameters are defined in appsettings.json. Example excerpt:
 | `RecipeName` | The tenant installation Recipe name. |
 | `RequestUrlHost` | The tenant host url. |
 | `RequestUrlPrefix` | The tenant url prefix. |
+| `FeatureProfile` | Optionally, the name of the feature profile used by default. Only applicable if the "Feature Profiles" feature is used. See the [documentation of the Tenants module](../Tenants/README.md#feature-profiles) for details. |
 
 !!! note
     Tenants array must contain the root tenant with `ShellName` equals to `Default`.  

@@ -33,7 +33,6 @@ namespace OrchardCore.Liquid
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ISlugService, SlugService>();
             services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
 
             services.Configure<TemplateOptions>(options =>
