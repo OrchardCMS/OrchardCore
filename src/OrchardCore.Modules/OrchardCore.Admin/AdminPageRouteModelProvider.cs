@@ -73,6 +73,7 @@ namespace OrchardCore.Admin
 
         public void OnProvidersExecuted(PageRouteModelProviderContext context)
         {
+            //Implementation missing
         }
 
         private IEnumerable<CompiledViewDescriptor> GetPageDescriptors<T>(ApplicationPartManager applicationManager) where T : ViewsFeature, new()

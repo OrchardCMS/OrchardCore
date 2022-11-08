@@ -62,7 +62,7 @@ namespace OrchardCore.Contents.AdminNodes
                     .Where(x => x.IsChecked == true)
                     .Select(x => new ContentTypeEntry { ContentTypeId = x.ContentTypeId, IconClass = x.IconClass })
                     .ToArray();
-            };
+            }
 
             return Edit(treeNode);
         }
