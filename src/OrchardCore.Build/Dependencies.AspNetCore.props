@@ -17,14 +17,12 @@
 
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM (default = net6.0) -->
   <PropertyGroup>
-    <AzureADUIPackagesVersion>7.0.0-preview.6.22330.3</AzureADUIPackagesVersion>
     <AspNetCorePackagesVersion>7.0.0</AspNetCorePackagesVersion>
     <MicrosoftExtensionsPackagesVersion>7.0.0</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
 
   <!-- 'Microsoft.AspNetCore' packages that are not included in the ASP.NET Core shared framework -->
   <ItemGroup>
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="$(AzureADUIPackagesVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(AspNetCorePackagesVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Google" Version="$(AspNetCorePackagesVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="$(AspNetCorePackagesVersion)" />
