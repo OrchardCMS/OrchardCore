@@ -205,12 +205,9 @@ namespace OrchardCore.AuditTrail.Services
                     else
                     {
                         var success = true;
-                        if (!DateTime.TryParse(dateValue, context.CultureInfo, DateTimeStyles.None, out var dateTime))
+                        if (!DateTime.TryParse(dateValue, context.CultureInfo, DateTimeStyles.None, out var dateTime) && !DateTime.TryParse(dateValue, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
                         {
-                            if (!DateTime.TryParse(dateValue, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
-                            {
-                                success = false;
-                            }
+                            success = false;
                         }
 
                         // If no timezone is specified, assume local using the configured timezone

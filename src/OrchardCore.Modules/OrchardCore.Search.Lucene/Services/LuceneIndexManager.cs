@@ -45,6 +45,10 @@ namespace OrchardCore.Search.Lucene
         private readonly GeohashPrefixTree _grid;
         private readonly static object _synLock = new object();
 
+        private readonly static object locker = new object();
+
+
+
         public LuceneIndexManager(
             IClock clock,
             IOptions<ShellOptions> shellOptions,
@@ -98,7 +102,7 @@ namespace OrchardCore.Search.Lucene
 
         public void DeleteIndex(string indexName)
         {
-            lock (this)
+            lock (locker)
             {
                 if (_writers.TryGetValue(indexName, out var writer))
                 {
@@ -364,7 +368,7 @@ namespace OrchardCore.Search.Lucene
 
         private BaseDirectory CreateDirectory(string indexName)
         {
-            lock (this)
+            lock (locker)
             {
                 var path = new DirectoryInfo(PathExtensions.Combine(_rootPath, indexName));
 
@@ -386,7 +390,7 @@ namespace OrchardCore.Search.Lucene
             if (!_writers.TryGetValue(indexName, out var writer))
             {
                 var indexAnalyzer = await _luceneIndexSettingsService.LoadIndexAnalyzerAsync(indexName);
-                lock (this)
+                lock (locker)
                 {
                     if (!_writers.TryGetValue(indexName, out writer))
                     {
