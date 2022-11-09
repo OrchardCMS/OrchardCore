@@ -13,7 +13,7 @@ namespace OrchardCore.Modules
     public class Module
     {
         public const string WebRootPath = "wwwroot";
-        public static string WebRoot = WebRootPath + "/";
+        public const string WebRoot = WebRootPath + "/";
 
         private readonly string _baseNamespace;
         private readonly DateTimeOffset _lastModified;
