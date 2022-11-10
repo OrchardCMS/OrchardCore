@@ -17,7 +17,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 8.0.601 | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
 | [Image Sharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 2.0.2 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
 | [Irony.Core](https://github.com/daxnet/irony) | A modified version of the Irony project with .NET Core support | 1.0.7 | [MIT](https://github.com/daxnet/irony/blob/master/LICENSE) |
-| [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.0.0-beta-2037 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
+| [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.0.0-beta-2043 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
 | [Lorem.NET for netstandard](https://github.com/trichards57/Lorem.Universal.NET) | A .NET library for all things random! | 4.0.80 | [MIT](https://github.com/trichards57/Lorem.Universal.NET/blob/master/license.md) |
 | [Lucene.Net](https://github.com/apache/lucenenet) | .NET full-text search engine. | 4.8.0-beta00016 | [Apache-2.0](https://github.com/apache/lucenenet/blob/master/LICENSE.txt) |
 | [MailKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 3.4.2 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |

@@ -24,7 +24,7 @@
     <PackageManagement Include="GraphQL.DataLoader" Version="4.8.0" />
     <PackageManagement Include="GraphQL.MicrosoftDI" Version="4.8.0" />
     <PackageManagement Include="GraphQL.SystemTextJson" Version="4.8.0" />
-    <PackageManagement Include="Jint" Version="3.0.0-beta-2037" />
+    <PackageManagement Include="Jint" Version="3.0.0-beta-2043" />
     <PackageManagement Include="HtmlSanitizer" Version="8.0.601" />
     <PackageManagement Include="Lorem.Universal.NET" Version="4.0.80" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00016" />
