@@ -205,7 +205,7 @@ namespace OrchardCore.AuditTrail.Services
                     else
                     {
                         var success = true;
-                        if (!DateTime.TryParse(dateValue, context.CultureInfo, DateTimeStyles.None, out var dateTime) == true && !DateTime.TryParse(dateValue, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime) == true)
+                        if (!DateTime.TryParse(dateValue, context.CultureInfo, DateTimeStyles.None, out var dateTime) && !DateTime.TryParse(dateValue, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
                         {
                             success = false;
                         }

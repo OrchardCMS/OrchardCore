@@ -127,7 +127,11 @@ namespace OrchardCore.Alias.Handlers
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(AliasPart)));
 
-            return contentTypePartDefinition.GetSettings<AliasPartSettings>().Pattern;
+            var pattern = "";
+            if (contentTypePartDefinition != null)
+                pattern = contentTypePartDefinition.GetSettings<AliasPartSettings>().Pattern;
+
+            return pattern;
         }
 
         private async Task<string> GenerateUniqueAliasAsync(string alias, AliasPart context)

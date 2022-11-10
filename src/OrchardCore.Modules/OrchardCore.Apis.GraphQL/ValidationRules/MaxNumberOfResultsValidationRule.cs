@@ -24,7 +24,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
             _logger = logger;
         }
 
-        public Task<INodeVisitor> ValidateAsync(ValidationContext validationContext)
+        public Task<INodeVisitor> ValidateAsync(ValidationContext context)
         {
             return Task.FromResult((INodeVisitor)new NodeVisitors(
             new MatchingNodeVisitor<Argument>((arg, visitorContext) =>
@@ -39,7 +39,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
                     }
                     else
                     {
-                        if (validationContext.Inputs.TryGetValue(arg.Value.ToString(), out var input))
+                        if (context.Inputs.TryGetValue(arg.Value.ToString(), out var input))
                         {
                             value = (int?)input;
                         }
@@ -51,8 +51,8 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
                         if (_maxNumberOfResultsValidationMode == MaxNumberOfResultsValidationMode.Enabled)
                         {
-                            validationContext.ReportError(new ValidationError(
-                                validationContext.Document.OriginalQuery,
+                            context.ReportError(new ValidationError(
+                            context.Document.OriginalQuery,
                                 "ArgumentInputError",
                                 errorMessage,
                                 arg));
