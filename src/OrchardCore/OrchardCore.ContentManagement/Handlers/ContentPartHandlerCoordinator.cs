@@ -244,13 +244,6 @@ namespace OrchardCore.ContentManagement.Handlers
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
                     var fieldName = partFieldDefinition.FieldDefinition.Name;
-
-                    if (String.IsNullOrEmpty(partName))
-                    {
-                        _logger.LogError("The content part '{contentPert}' contains field '{contentField}' that does not exists.", partName, fieldName);
-                        continue;
-                    }
-
                     var fieldActivator = _contentFieldFactory.GetTypeActivator(fieldName);
                     var field = context.ContentItem.Get(fieldActivator.Type, partFieldDefinition.Name) as ContentField;
 
@@ -427,6 +420,12 @@ namespace OrchardCore.ContentManagement.Handlers
 
                 await partHandlers.InvokeAsync(partHandlerAction, partValidationContext, part, _logger);
 
+                // Add any part errors to the context errors.
+                foreach (var error in partValidationContext.ContentValidateResult.Errors)
+                {
+                    context.ContentValidateResult.Fail(error);
+                }
+
                 if (typePartDefinition.PartDefinition?.Fields == null)
                 {
                     continue;
@@ -458,12 +457,6 @@ namespace OrchardCore.ContentManagement.Handlers
                     {
                         context.ContentValidateResult.Fail(error);
                     }
-                }
-
-                // Add any part errors to the context errors.
-                foreach (var error in partValidationContext.ContentValidateResult.Errors)
-                {
-                    context.ContentValidateResult.Fail(error);
                 }
             }
         }
