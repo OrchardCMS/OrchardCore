@@ -8,11 +8,23 @@
     ContentItem contentItem = Model.ContentItem;
     var contentTypeDefinition = ContentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
     var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
+    var returnUrl = Context.Request.Query["ReturnUrl"];
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["New {0}", typeDisplayName])</h1></zone>
+<zone Name="Title">
+    <h1>
+        @RenderTitleSegments(T["New {0}", typeDisplayName])
+    </h1>
 
-<form asp-action="Create" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">
+    @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+    {
+        <a class="mb-2 btn btn-secondary cancel" role="button" href="@returnUrl">
+            Go back
+        </a>
+    }
+</zone>
+
+<form asp-action="Create" asp-route-returnUrl="@returnUrl" method="post" enctype="multipart/form-data" class="no-multisubmit">
     @if (!ViewContext.ModelState.IsValid)
     {
         @Html.ValidationSummary()
