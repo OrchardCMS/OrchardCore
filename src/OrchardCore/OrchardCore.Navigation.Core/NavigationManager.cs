@@ -204,7 +204,7 @@ namespace OrchardCore.Navigation
             }
 
             // Use the unescaped 'Value' to not encode some possible reserved delimiters.
-            return actionContext.HttpContext.Request.PathBase.Add('/' + menuItemUrl).Value;
+            return actionContext.HttpContext.Request.PathBase.Add("/Admin/" + menuItemUrl).Value;
         }
 
         /// <summary>
