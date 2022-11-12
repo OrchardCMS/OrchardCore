@@ -203,6 +203,11 @@ namespace OrchardCore.Navigation
                 menuItemUrl = menuItemUrl.Substring(2);
             }
 
+            if (menuItemUrl.StartsWith("admin/", StringComparison.OrdinalIgnoreCase))
+            {
+                menuItemUrl = menuItemUrl.Remove(0, 6); //backward compatibility
+            }
+
             // Use the unescaped 'Value' to not encode some possible reserved delimiters.
             return actionContext.HttpContext.Request.PathBase.Add("/Admin/" + menuItemUrl).Value;
         }
