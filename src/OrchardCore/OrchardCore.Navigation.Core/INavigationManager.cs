@@ -6,6 +6,6 @@ namespace OrchardCore.Navigation
 {
     public interface INavigationManager
     {
-        Task<IEnumerable<MenuItem>> BuildMenuAsync(string name, ActionContext context, string adminUrlPrefix);
+        Task<IEnumerable<MenuItem>> BuildMenuAsync(string name, ActionContext context);
     }
 }

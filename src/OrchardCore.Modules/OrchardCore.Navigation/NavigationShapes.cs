@@ -1,9 +1,6 @@
-using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
@@ -45,11 +42,9 @@ namespace OrchardCore.Navigation
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
 
-                    var adminOptions = context.ServiceProvider.GetRequiredService<IOptions<AdminOptions>>().Value;
-
                     foreach (var navigationManager in navigationManagers)
                     {
-                        var menuItems = await navigationManager.BuildMenuAsync(menuName, viewContext, adminOptions.AdminUrlPrefix);
+                        var menuItems = await navigationManager.BuildMenuAsync(menuName, viewContext);
                         var httpContext = httpContextAccessor.HttpContext;
 
                         if (httpContext != null)
