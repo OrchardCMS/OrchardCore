@@ -37,7 +37,7 @@ namespace OrchardCore.Navigation
             _authorizationService = authorizationService;
         }
 
-        public async Task<IEnumerable<MenuItem>> BuildMenuAsync(string name, ActionContext actionContext)
+        public async Task<IEnumerable<MenuItem>> BuildMenuAsync(string name, ActionContext actionContext, string adminUrlPrefix)
         {
             var builder = new NavigationBuilder();
 
@@ -64,7 +64,7 @@ namespace OrchardCore.Navigation
             menuItems = await AuthorizeAsync(menuItems, actionContext.HttpContext.User);
 
             // Compute Url and RouteValues properties to Href
-            menuItems = ComputeHref(menuItems, actionContext);
+            menuItems = ComputeHref(menuItems, actionContext, adminUrlPrefix);
 
             // Keep only menu items with an Href, or that have child items with an Href
             menuItems = Reduce(menuItems);
@@ -157,12 +157,12 @@ namespace OrchardCore.Navigation
         /// Computes the <see cref="MenuItem.Href"/> properties based on <see cref="MenuItem.Url"/>
         /// and <see cref="MenuItem.RouteValues"/> values.
         /// </summary>
-        private List<MenuItem> ComputeHref(List<MenuItem> menuItems, ActionContext actionContext)
+        private List<MenuItem> ComputeHref(List<MenuItem> menuItems, ActionContext actionContext, string adminUrlPrefix)
         {
             foreach (var menuItem in menuItems)
             {
-                menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, actionContext);
-                menuItem.Items = ComputeHref(menuItem.Items, actionContext);
+                menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, actionContext, adminUrlPrefix);
+                menuItem.Items = ComputeHref(menuItem.Items, actionContext, adminUrlPrefix);
             }
 
             return menuItems;
@@ -174,8 +174,9 @@ namespace OrchardCore.Navigation
         /// <param name="menuItemUrl">The </param>
         /// <param name="routeValueDictionary"></param>
         /// <param name="actionContext"></param>
+        /// <param name="adminUrlPrefix"></param>
         /// <returns></returns>
-        private string GetUrl(string menuItemUrl, RouteValueDictionary routeValueDictionary, ActionContext actionContext)
+        private string GetUrl(string menuItemUrl, RouteValueDictionary routeValueDictionary, ActionContext actionContext, string adminUrlPrefix)
         {
             if (routeValueDictionary?.Count > 0)
             {
@@ -203,13 +204,13 @@ namespace OrchardCore.Navigation
                 menuItemUrl = menuItemUrl.Substring(2);
             }
 
-            if (menuItemUrl.StartsWith("admin/", StringComparison.OrdinalIgnoreCase))
+            if (menuItemUrl.StartsWith(adminUrlPrefix, StringComparison.OrdinalIgnoreCase))
             {
-                menuItemUrl = menuItemUrl.Remove(0, 6); //backward compatibility
+                menuItemUrl = menuItemUrl.Remove(0, adminUrlPrefix.Length); //backward compatibility
             }
 
             // Use the unescaped 'Value' to not encode some possible reserved delimiters.
-            return actionContext.HttpContext.Request.PathBase.Add("/Admin/" + menuItemUrl).Value;
+            return actionContext.HttpContext.Request.PathBase.Add($"/{adminUrlPrefix}/" + menuItemUrl).Value;
         }
 
         /// <summary>
