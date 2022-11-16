@@ -7,10 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Abstractions.Setup;
 using OrchardCore.Data;
-using OrchardCore.Data.YesSql;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
@@ -20,7 +18,6 @@ using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Setup.Events;
-using YesSql;
 
 namespace OrchardCore.Setup.Services
 {
@@ -202,26 +199,6 @@ namespace OrchardCore.Setup.Services
             {
                 await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
                 {
-                    IStore store;
-
-                    try
-                    {
-                        store = scope.ServiceProvider.GetRequiredService<IStore>();
-                    }
-                    catch (Exception e)
-                    {
-                        // Tables already exist or database was not found
-
-                        // The issue is that the user creation needs the tables to be present,
-                        // if the user information is not valid, the next POST will try to recreate the
-                        // tables. The tables should be rolled back if one of the steps is invalid,
-                        // unless the recipe is executing?
-
-                        _logger.LogError(e, "An error occurred while initializing the datastore.");
-                        context.Errors.Add(String.Empty, S["An error occurred while initializing the datastore: {0}", e.Message]);
-                        return;
-                    }
-
                     // Create the "minimum shell descriptor"
                     await scope
                         .ServiceProvider
