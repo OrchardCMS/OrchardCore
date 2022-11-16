@@ -199,12 +199,21 @@ namespace OrchardCore.Setup.Services
             {
                 await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
                 {
-                    // Create the "minimum shell descriptor"
-                    await scope
-                        .ServiceProvider
-                        .GetService<IShellDescriptorManager>()
-                        .UpdateShellDescriptorAsync(0,
-                            shellContext.Blueprint.Descriptor.Features);
+                    try
+                    {
+                        // Create the "minimum shell descriptor"
+                        await scope
+                            .ServiceProvider
+                            .GetService<IShellDescriptorManager>()
+                            .UpdateShellDescriptorAsync(0,
+                                shellContext.Blueprint.Descriptor.Features);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "An error occurred while initializing the shell descriptor manager.");
+                        context.Errors.Add(String.Empty, S["An error occurred while initializing the shell descriptor manager: {0}", e.Message]);
+                        return;
+                    }
                 });
 
                 if (context.Errors.Any())
