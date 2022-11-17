@@ -92,7 +92,7 @@ namespace OrchardCore.Search.Lucene
                             }
                             else
                             {
-                                if ((bool)included && !(bool)analyzed)
+                                if ((bool)included && (analyzed == null || !(bool)analyzed))
                                 {
                                     existingPartSettings["Keyword"] = true;
                                 }
@@ -128,7 +128,7 @@ namespace OrchardCore.Search.Lucene
                                 }
                                 else
                                 {
-                                    if ((bool)included && !(bool)analyzed)
+                                    if ((bool)included && (analyzed == null || !(bool)analyzed))
                                     {
                                         existingFieldSettings["Keyword"] = true;
                                     }
