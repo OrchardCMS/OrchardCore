@@ -66,7 +66,7 @@ namespace OrchardCore.Title.Handlers
             }
         }
 
-        public override Task ValidatingAsync(ValidateContentContext context, TitlePart part)
+        protected override Task ValidatingAsync(ValidateContentPartContext context, TitlePart part)
         {
             var settings = context.ContentTypePartDefinition.GetSettings<TitlePartSettings>();
 

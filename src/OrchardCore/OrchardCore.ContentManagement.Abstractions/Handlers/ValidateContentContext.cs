@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.Handlers
 {
@@ -11,8 +10,6 @@ namespace OrchardCore.ContentManagement.Handlers
         }
 
         public ContentValidateResult ContentValidateResult { get; } = new ContentValidateResult();
-
-        public ContentTypePartDefinition ContentTypePartDefinition { get; set; }
     }
 
     public static class ValidateContentContextExtensions

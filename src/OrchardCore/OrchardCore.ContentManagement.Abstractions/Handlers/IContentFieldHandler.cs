@@ -7,32 +7,32 @@ namespace OrchardCore.ContentManagement.Handlers
     /// </summary>
     public interface IContentFieldHandler
     {
-        Task ActivatedAsync(ActivatedContentContext context, ContentField field);
-        Task ActivatingAsync(ActivatingContentContext context, ContentField field);
-        Task InitializingAsync(InitializingContentContext context, ContentField field);
-        Task InitializedAsync(InitializingContentContext context, ContentField field);
-        Task CreatingAsync(CreateContentContext context, ContentField field);
-        Task CreatedAsync(CreateContentContext context, ContentField field);
-        Task LoadingAsync(LoadContentContext context, ContentField field);
-        Task LoadedAsync(LoadContentContext context, ContentField field);
-        Task ImportingAsync(ImportContentContext context, ContentField field);
-        Task ImportedAsync(ImportContentContext context, ContentField field);
-        Task UpdatingAsync(UpdateContentContext context, ContentField field);
-        Task UpdatedAsync(UpdateContentContext context, ContentField field);
-        Task ValidatingAsync(ValidateFieldContentContext context, ContentField field);
-        Task ValidatedAsync(ValidateFieldContentContext context, ContentField field);
-        Task VersioningAsync(VersionContentContext context, ContentField existing, ContentField building);
-        Task VersionedAsync(VersionContentContext context, ContentField existing, ContentField building);
-        Task DraftSavingAsync(SaveDraftContentContext context, ContentField field);
-        Task DraftSavedAsync(SaveDraftContentContext context, ContentField field);
-        Task PublishingAsync(PublishContentContext context, ContentField field);
-        Task PublishedAsync(PublishContentContext context, ContentField field);
-        Task UnpublishingAsync(PublishContentContext context, ContentField field);
-        Task UnpublishedAsync(PublishContentContext context, ContentField field);
-        Task RemovingAsync(RemoveContentContext context, ContentField field);
-        Task RemovedAsync(RemoveContentContext context, ContentField field);
+        Task ActivatedAsync(ActivatedContentFieldContext context, ContentField field);
+        Task ActivatingAsync(ActivatingContentFieldContext context, ContentField field);
+        Task InitializingAsync(InitializingContentFieldContext context, ContentField field);
+        Task InitializedAsync(InitializingContentFieldContext context, ContentField field);
+        Task CreatingAsync(CreateContentFieldContext context, ContentField field);
+        Task CreatedAsync(CreateContentFieldContext context, ContentField field);
+        Task LoadingAsync(LoadContentFieldContext context, ContentField field);
+        Task LoadedAsync(LoadContentFieldContext context, ContentField field);
+        Task ImportingAsync(ImportContentFieldContext context, ContentField field);
+        Task ImportedAsync(ImportContentFieldContext context, ContentField field);
+        Task UpdatingAsync(UpdateContentFieldContext context, ContentField field);
+        Task UpdatedAsync(UpdateContentFieldContext context, ContentField field);
+        Task ValidatingAsync(ValidateContentFieldContext context, ContentField field);
+        Task ValidatedAsync(ValidateContentFieldContext context, ContentField field);
+        Task VersioningAsync(VersionContentFieldContext context, ContentField existing, ContentField building);
+        Task VersionedAsync(VersionContentFieldContext context, ContentField existing, ContentField building);
+        Task DraftSavingAsync(SaveDraftContentFieldContext context, ContentField field);
+        Task DraftSavedAsync(SaveDraftContentFieldContext context, ContentField field);
+        Task PublishingAsync(PublishContentFieldContext context, ContentField field);
+        Task PublishedAsync(PublishContentFieldContext context, ContentField field);
+        Task UnpublishingAsync(PublishContentFieldContext context, ContentField field);
+        Task UnpublishedAsync(PublishContentFieldContext context, ContentField field);
+        Task RemovingAsync(RemoveContentFieldContext context, ContentField field);
+        Task RemovedAsync(RemoveContentFieldContext context, ContentField field);
         Task GetContentItemAspectAsync(ContentItemAspectContext context, ContentField field);
-        Task CloningAsync(CloneContentContext context, ContentField field);
-        Task ClonedAsync(CloneContentContext context, ContentField field);
+        Task CloningAsync(CloneContentFieldContext context, ContentField field);
+        Task ClonedAsync(CloneContentFieldContext context, ContentField field);
     }
 }

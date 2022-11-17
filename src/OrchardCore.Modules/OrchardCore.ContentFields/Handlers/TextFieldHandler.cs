@@ -17,7 +17,7 @@ public class TextFieldHandler : ContentFieldHandler<TextField>
         S = stringLocalizer;
     }
 
-    public override Task ValidatingAsync(ValidateFieldContentContext context, TextField field)
+    public override Task ValidatingAsync(ValidateContentFieldContext context, TextField field)
     {
         var settings = context.ContentPartFieldDefinition.GetSettings<TextFieldSettings>();
 

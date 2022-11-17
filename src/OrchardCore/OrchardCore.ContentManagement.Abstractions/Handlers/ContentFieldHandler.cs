@@ -4,167 +4,167 @@ namespace OrchardCore.ContentManagement.Handlers;
 
 public abstract class ContentFieldHandler<TField> : IContentFieldHandler where TField : ContentField, new()
 {
-    Task IContentFieldHandler.ActivatedAsync(ActivatedContentContext context, ContentField field)
+    Task IContentFieldHandler.ActivatedAsync(ActivatedContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? ActivatedAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.ActivatingAsync(ActivatingContentContext context, ContentField field)
+    Task IContentFieldHandler.ActivatingAsync(ActivatingContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? ActivatingAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.InitializingAsync(InitializingContentContext context, ContentField field)
+    Task IContentFieldHandler.InitializingAsync(InitializingContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? InitializingAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.InitializedAsync(InitializingContentContext context, ContentField field)
+    Task IContentFieldHandler.InitializedAsync(InitializingContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? InitializedAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.CreatingAsync(CreateContentContext context, ContentField field)
+    Task IContentFieldHandler.CreatingAsync(CreateContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? CreatingAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.CreatedAsync(CreateContentContext context, ContentField field)
+    Task IContentFieldHandler.CreatedAsync(CreateContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? CreatedAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.LoadingAsync(LoadContentContext context, ContentField field)
+    Task IContentFieldHandler.LoadingAsync(LoadContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? LoadingAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.LoadedAsync(LoadContentContext context, ContentField field)
+    Task IContentFieldHandler.LoadedAsync(LoadContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? LoadedAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.ImportingAsync(ImportContentContext context, ContentField field)
+    Task IContentFieldHandler.ImportingAsync(ImportContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? ImportingAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.ImportedAsync(ImportContentContext context, ContentField field)
+    Task IContentFieldHandler.ImportedAsync(ImportContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? ImportedAsync(context, tfield)
             : Task.CompletedTask;
     }
-    Task IContentFieldHandler.UpdatingAsync(UpdateContentContext context, ContentField field)
+    Task IContentFieldHandler.UpdatingAsync(UpdateContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? UpdatingAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.UpdatedAsync(UpdateContentContext context, ContentField field)
+    Task IContentFieldHandler.UpdatedAsync(UpdateContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? UpdatedAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.ValidatingAsync(ValidateFieldContentContext context, ContentField field)
+    Task IContentFieldHandler.ValidatingAsync(ValidateContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? ValidatingAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.ValidatedAsync(ValidateFieldContentContext context, ContentField field)
+    Task IContentFieldHandler.ValidatedAsync(ValidateContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? ValidatedAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.VersioningAsync(VersionContentContext context, ContentField existing, ContentField building)
+    Task IContentFieldHandler.VersioningAsync(VersionContentFieldContext context, ContentField existing, ContentField building)
     {
         return existing is TField texisting && building is TField tbuilding
             ? VersioningAsync(context, texisting, tbuilding)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.VersionedAsync(VersionContentContext context, ContentField existing, ContentField building)
+    Task IContentFieldHandler.VersionedAsync(VersionContentFieldContext context, ContentField existing, ContentField building)
     {
         return existing is TField texisting && building is TField tbuilding
             ? VersionedAsync(context, texisting, tbuilding)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.DraftSavingAsync(SaveDraftContentContext context, ContentField field)
+    Task IContentFieldHandler.DraftSavingAsync(SaveDraftContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? DraftSavingAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.DraftSavedAsync(SaveDraftContentContext context, ContentField field)
+    Task IContentFieldHandler.DraftSavedAsync(SaveDraftContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? DraftSavedAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.PublishingAsync(PublishContentContext context, ContentField field)
+    Task IContentFieldHandler.PublishingAsync(PublishContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? PublishingAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.PublishedAsync(PublishContentContext context, ContentField field)
+    Task IContentFieldHandler.PublishedAsync(PublishContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? PublishedAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.UnpublishingAsync(PublishContentContext context, ContentField field)
+    Task IContentFieldHandler.UnpublishingAsync(PublishContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? UnpublishingAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.UnpublishedAsync(PublishContentContext context, ContentField field)
+    Task IContentFieldHandler.UnpublishedAsync(PublishContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? UnpublishedAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.RemovingAsync(RemoveContentContext context, ContentField field)
+    Task IContentFieldHandler.RemovingAsync(RemoveContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? RemovingAsync(context, tfield)
             : Task.CompletedTask;
     }
 
-    Task IContentFieldHandler.RemovedAsync(RemoveContentContext context, ContentField field)
+    Task IContentFieldHandler.RemovedAsync(RemoveContentFieldContext context, ContentField field)
     {
         return field is TField tfield
             ? RemovedAsync(context, tfield)
@@ -177,7 +177,7 @@ public abstract class ContentFieldHandler<TField> : IContentFieldHandler where T
             ? GetContentItemAspectAsync(context, tfield)
             : Task.CompletedTask;
     }
-    async Task IContentFieldHandler.CloningAsync(CloneContentContext context, ContentField field)
+    async Task IContentFieldHandler.CloningAsync(CloneContentFieldContext context, ContentField field)
     {
         if (field is TField tfield)
         {
@@ -185,7 +185,7 @@ public abstract class ContentFieldHandler<TField> : IContentFieldHandler where T
         }
     }
 
-    async Task IContentFieldHandler.ClonedAsync(CloneContentContext context, ContentField field)
+    async Task IContentFieldHandler.ClonedAsync(CloneContentFieldContext context, ContentField field)
     {
         if (field is TField tfield)
         {
@@ -193,31 +193,31 @@ public abstract class ContentFieldHandler<TField> : IContentFieldHandler where T
         }
     }
 
-    public virtual Task ActivatedAsync(ActivatedContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task ActivatingAsync(ActivatingContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task InitializingAsync(InitializingContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task InitializedAsync(InitializingContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task CreatingAsync(CreateContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task CreatedAsync(CreateContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task LoadingAsync(LoadContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task LoadedAsync(LoadContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task ImportingAsync(ImportContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task ImportedAsync(ImportContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task UpdatingAsync(UpdateContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task UpdatedAsync(UpdateContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task ValidatingAsync(ValidateFieldContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task ValidatedAsync(ValidateFieldContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task VersioningAsync(VersionContentContext context, TField existing, TField building) => Task.CompletedTask;
-    public virtual Task VersionedAsync(VersionContentContext context, TField existing, TField building) => Task.CompletedTask;
-    public virtual Task DraftSavingAsync(SaveDraftContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task DraftSavedAsync(SaveDraftContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task PublishingAsync(PublishContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task PublishedAsync(PublishContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task UnpublishingAsync(PublishContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task UnpublishedAsync(PublishContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task RemovingAsync(RemoveContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task RemovedAsync(RemoveContentContext context, TField instance) => Task.CompletedTask;
-    public virtual Task GetContentItemAspectAsync(ContentItemAspectContext context, TField part) => Task.CompletedTask;
-    public virtual Task CloningAsync(CloneContentContext context, TField part) => Task.CompletedTask;
-    public virtual Task ClonedAsync(CloneContentContext context, TField part) => Task.CompletedTask;
+    public virtual Task ActivatedAsync(ActivatedContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task ActivatingAsync(ActivatingContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task InitializingAsync(InitializingContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task InitializedAsync(InitializingContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task CreatingAsync(CreateContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task CreatedAsync(CreateContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task LoadingAsync(LoadContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task LoadedAsync(LoadContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task ImportingAsync(ImportContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task ImportedAsync(ImportContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task UpdatingAsync(UpdateContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task UpdatedAsync(UpdateContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task ValidatingAsync(ValidateContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task ValidatedAsync(ValidateContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task VersioningAsync(VersionContentFieldContext context, TField existing, TField building) => Task.CompletedTask;
+    public virtual Task VersionedAsync(VersionContentFieldContext context, TField existing, TField building) => Task.CompletedTask;
+    public virtual Task DraftSavingAsync(SaveDraftContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task DraftSavedAsync(SaveDraftContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task PublishingAsync(PublishContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task PublishedAsync(PublishContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task UnpublishingAsync(PublishContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task UnpublishedAsync(PublishContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task RemovingAsync(RemoveContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task RemovedAsync(RemoveContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task GetContentItemAspectAsync(ContentItemAspectContext context, TField field) => Task.CompletedTask;
+    public virtual Task CloningAsync(CloneContentFieldContext context, TField field) => Task.CompletedTask;
+    public virtual Task ClonedAsync(CloneContentFieldContext context, TField field) => Task.CompletedTask;
 }
