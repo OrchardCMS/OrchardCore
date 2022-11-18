@@ -40,16 +40,16 @@ namespace OrchardCore.Search.Lucene
 
                             if (included != null)
                             {
-                                if (analyzed != null)
+                                if (analyzed == null)
                                 {
-                                    if ((bool)included)
+                                    if ((bool)included && !(bool)analyzed)
                                     {
                                         existingPartSettings["Keyword"] = true;
                                     }
                                 }
                                 else
                                 {
-                                    if ((bool)included && (analyzed == null || !(bool)analyzed))
+                                    if ((bool)included)
                                     {
                                         existingPartSettings["Keyword"] = true;
                                     }
@@ -83,16 +83,16 @@ namespace OrchardCore.Search.Lucene
 
                         if (included != null)
                         {
-                            if (analyzed != null)
+                            if (analyzed == null)
                             {
-                                if ((bool)included)
+                                if ((bool)included && !(bool)analyzed)
                                 {
                                     existingPartSettings["Keyword"] = true;
                                 }
                             }
                             else
                             {
-                                if ((bool)included && (analyzed == null || !(bool)analyzed))
+                                if ((bool)included)
                                 {
                                     existingPartSettings["Keyword"] = true;
                                 }
@@ -121,14 +121,14 @@ namespace OrchardCore.Search.Lucene
                             {
                                 if (analyzed == null)
                                 {
-                                    if ((bool)included)
+                                    if ((bool)included && !(bool)analyzed)
                                     {
                                         existingFieldSettings["Keyword"] = true;
                                     }
                                 }
                                 else
                                 {
-                                    if ((bool)included && (analyzed == null || !(bool)analyzed))
+                                    if ((bool)included)
                                     {
                                         existingFieldSettings["Keyword"] = true;
                                     }
@@ -178,7 +178,7 @@ namespace OrchardCore.Search.Lucene
                             var updateCmd = $"UPDATE {dialect.QuoteForTableName(table, session.Store.Configuration.Schema)} SET Content = REPLACE(content, '\"$type\":\"OrchardCore.Lucene.LuceneQuery, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.LuceneQuery, OrchardCore.Search.Lucene\"') WHERE [Type] = 'OrchardCore.Queries.Services.QueriesDocument, OrchardCore.Queries'";
 
                             await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
-                            
+
                             updateCmd = $"UPDATE {dialect.QuoteForTableName(table, session.Store.Configuration.Schema)} SET Content = REPLACE(content, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneIndexDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneIndexDeploymentStep, OrchardCore.Search.Lucene\"') WHERE [Type] = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
 
                             await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
