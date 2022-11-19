@@ -7,7 +7,7 @@
     <DefaultTargetFramework>net7.0</DefaultTargetFramework>
     
     <!-- TFMs used to build the abstractions and modules-->
-    <CommonTargetFrameworks Condition="'$(CommonTargetFrameworks)' == ''">net7.0</CommonTargetFrameworks>
+    <CommonTargetFrameworks Condition="'$(CommonTargetFrameworks)' == ''">net6.0</CommonTargetFrameworks>
   </PropertyGroup>
 
   <!-- Detect if the solution is opened in VS to limit the TFMs that are analyzed by Roslyn for performance reasons -->
