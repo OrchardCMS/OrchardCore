@@ -210,8 +210,8 @@ namespace OrchardCore.Setup.Services
                     }
                     catch (Exception e)
                     {
-                        _logger.LogError(e, "An error occurred while initializing the shell descriptor manager.");
-                        context.Errors.Add(String.Empty, S["An error occurred while initializing the shell descriptor manager: {0}", e.Message]);
+                        _logger.LogError(e, "An error occurred while initializing the datastore.");
+                        context.Errors.Add(String.Empty, S["An error occurred while initializing the datastore: {0}", e.Message]);
                         return;
                     }
                 });
