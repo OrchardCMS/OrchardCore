@@ -40,7 +40,7 @@ namespace OrchardCore.Search.Lucene
 
                             if (included != null)
                             {
-                                if (analyzed == null)
+                                if (analyzed != null)
                                 {
                                     if ((bool)included && !(bool)analyzed)
                                     {
@@ -83,7 +83,7 @@ namespace OrchardCore.Search.Lucene
 
                         if (included != null)
                         {
-                            if (analyzed == null)
+                            if (analyzed != null)
                             {
                                 if ((bool)included && !(bool)analyzed)
                                 {
@@ -119,7 +119,7 @@ namespace OrchardCore.Search.Lucene
 
                             if (included != null)
                             {
-                                if (analyzed == null)
+                                if (analyzed != null)
                                 {
                                     if ((bool)included && !(bool)analyzed)
                                     {
