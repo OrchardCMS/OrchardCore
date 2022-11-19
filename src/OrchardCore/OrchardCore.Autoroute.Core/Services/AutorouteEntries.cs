@@ -5,13 +5,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.ContentManagement.Records;
+using OrchardCore.Autoroute.Core.Indexes;
+using OrchardCore.Autoroute.Core.Model;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Documents;
 using OrchardCore.Environment.Shell.Scope;
 using YesSql;
 
-namespace OrchardCore.Autoroute.Services
+namespace OrchardCore.Autoroute.Core.Services
 {
     public class AutorouteEntries : IAutorouteEntries
     {
@@ -21,7 +22,7 @@ namespace OrchardCore.Autoroute.Services
         private ImmutableDictionary<string, AutorouteEntry> _contentItemIds = ImmutableDictionary<string, AutorouteEntry>.Empty;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
-        private int _lastIndexId;
+        private long _lastIndexId;
         private string _stateIdentifier;
         private bool _initialized;
 

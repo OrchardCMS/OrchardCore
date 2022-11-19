@@ -28,7 +28,6 @@ namespace OrchardCore.Autoroute.Routing
                 return Enumerable.Empty<Endpoint>();
             }
 
-
             // Try to get the contained item first, then the container content item
             string contentItemId = address.ExplicitValues[_options.ContainedContentItemIdKey]?.ToString();
             if (string.IsNullOrEmpty(contentItemId))
