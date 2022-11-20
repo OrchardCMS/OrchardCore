@@ -13,8 +13,8 @@
     }
 }
 
-<div class="widget widget-editor card my-1@(collapsed ? " collapsed" : String.Empty)">
-    <div class="widget-editor-header card-header text-muted py-1 ps-3 pe-1">
+<div class="widget widget-editor card@(collapsed ? " collapsed" : String.Empty)">
+    <div class="widget-editor-header card-header text-muted py-1 ps-2 pe-1">
         @if (Model.CanMove)
         {
             <div class="widget-editor-handle"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div>
@@ -30,7 +30,7 @@
             </div>
         }
     </div>
-    <div class="widget-editor-body card-body px-2 py-1">
+    <div class="widget-editor-body card-body">
         <div class="w-100">
             @if (Model.ContentEditor != null)
             {
