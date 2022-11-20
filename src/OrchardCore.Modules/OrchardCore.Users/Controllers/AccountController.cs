@@ -23,6 +23,7 @@ using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
+using OrchardCore.Workflows.Helpers;
 using IWorkflowManager = OrchardCore.Workflows.Services.IWorkflowManager;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
@@ -340,13 +341,13 @@ namespace OrchardCore.Users.Controllers
         {
             var claims = info.Principal.GetSerializableClaims();
             var userRoles = await _userManager.GetRolesAsync(user);
-            var context = new UpdateRolesContext(user, info.LoginProvider, claims, userRoles);
+            var context = new UpdateUserContext(user, info.LoginProvider, claims, userRoles);
 
             foreach (var item in _externalLoginHandlers)
             {
                 try
                 {
-                    await item.UpdateRoles(context);
+                    await item.UpdateUser(context);
                 }
                 catch (Exception ex)
                 {
@@ -356,7 +357,11 @@ namespace OrchardCore.Users.Controllers
 
             await _userManager.AddToRolesAsync(user, context.RolesToAdd.Distinct());
             await _userManager.RemoveFromRolesAsync(user, context.RolesToRemove.Distinct());
-
+            if (context.PropertiesToUpdate != null)
+            {
+                (user as User).Properties.Merge(context.PropertiesToUpdate);
+                await _userManager.UpdateAsync(user);
+            }
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
 
             if (result.Succeeded)

@@ -1,21 +1,22 @@
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Users.Handlers
 {
     /// <summary>
     /// Represents a <see cref="UserContextBase"/> for updated user roles.
     /// </summary>
-    public class UpdateRolesContext : UserContextBase
+    public class UpdateUserContext : UserContextBase
     {
         /// <summary>
-        /// Creates a new instance of <see cref="UpdateRolesContext"/>.
+        /// Creates a new instance of <see cref="UpdateUserContext"/>.
         /// </summary>
         /// <param name="user">The <see cref="IUser"/>.</param>
         /// <param name="loginProvider">The login provider.</param>
         /// <param name="externalClaims">The user claims.</param>
         /// <param name="userRoles">The user roles</param>
-        public UpdateRolesContext(IUser user, string loginProvider, IEnumerable<SerializableClaim> externalClaims, IEnumerable<string> userRoles) : base(user)
+        public UpdateUserContext(IUser user, string loginProvider, IEnumerable<SerializableClaim> externalClaims, IEnumerable<string> userRoles) : base(user)
         {
             ExternalClaims = externalClaims.AsEnumerable();
             UserRoles = userRoles;
@@ -46,5 +47,9 @@ namespace OrchardCore.Users.Handlers
         /// Gets the roles to be removed from the user roles.
         /// </summary>
         public List<string> RolesToRemove { get; } = new List<string>();
+        /// <summary>
+        /// Gets the user properties to update the user
+        /// </summary>
+        public JObject PropertiesToUpdate { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using OrchardCore.Entities;
 using OrchardCore.Scripting;
@@ -52,7 +53,7 @@ namespace OrchardCore.Users.Handlers
             return String.Empty;
         }
 
-        public async Task UpdateRoles(UpdateRolesContext context)
+        public async Task UpdateUser(UpdateUserContext context)
         {
             var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
             if (loginSettings.UseScriptToSyncRoles)
@@ -61,6 +62,11 @@ namespace OrchardCore.Users.Handlers
                 dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
                 context.RolesToAdd.AddRange((evaluationResult.rolesToAdd as object[]).Select(i => i.ToString()));
                 context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()));
+                if (evaluationResult.propertiesToUpdate != null)
+                {
+                    var props = JObject.FromObject(evaluationResult.propertiesToUpdate);
+                    context.PropertiesToUpdate.Merge(props);
+                }
             }
         }
     }
