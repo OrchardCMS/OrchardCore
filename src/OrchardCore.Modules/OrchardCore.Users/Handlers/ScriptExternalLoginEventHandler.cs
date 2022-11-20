@@ -64,8 +64,15 @@ namespace OrchardCore.Users.Handlers
                 context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()));
                 if (evaluationResult.propertiesToUpdate != null)
                 {
-                    var props = JObject.FromObject(evaluationResult.propertiesToUpdate);
-                    context.PropertiesToUpdate.Merge(props);
+                    if (context.PropertiesToUpdate != null)
+                    {
+
+                        context.PropertiesToUpdate.Merge(evaluationResult.propertiesToUpdate);
+                    }
+                    else
+                    {
+                        context.PropertiesToUpdate = JObject.FromObject(evaluationResult.propertiesToUpdate);
+                    }
                 }
             }
         }
