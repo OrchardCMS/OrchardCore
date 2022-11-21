@@ -32,6 +32,7 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Setup.Events;
+using OrchardCore.Users.Abstractions;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
@@ -40,6 +41,7 @@ using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
+using OrchardCore.Users.Services.ControllerServicices;
 using OrchardCore.Users.ViewModels;
 using YesSql.Filters.Query;
 using YesSql.Indexes;
@@ -176,6 +178,7 @@ namespace OrchardCore.Users
             services.TryAddScoped<IUserClaimStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserAuthenticationTokenStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
 
+            services.AddScoped<IAccountControllerAbstraction, DefaultAccountControllerService>();
             services.ConfigureApplicationCookie(options =>
             {
                 var userOptions = ShellScope.Services.GetRequiredService<IOptions<UserOptions>>();
