@@ -21,6 +21,6 @@
     "vuedraggable": "^2.24.3"
   },
   "devDependencies": {
-    "typescript-json-schema": "^0.51.0"
+    "typescript-json-schema": "^0.55.0"
   }
 }
