@@ -17,6 +17,11 @@
                 formulas: 'Formulas',
                 inline: 'Inline'
             },
+            sl: {
+                mathml: 'Vstavi matematični izraz',
+                formulas: 'Formula',
+                inline: 'V vrstici'
+            },
             by: {
                 mathml: 'Уставіць формулу',
                 formulas: 'Формула',
