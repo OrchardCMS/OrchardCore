@@ -7,6 +7,7 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
@@ -23,11 +24,16 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<SqlQueryFieldTypeProvider> _logger;
+        private readonly GraphQLSettings _graphQLSettings;
 
-        public SqlQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<SqlQueryFieldTypeProvider> logger)
+        public SqlQueryFieldTypeProvider(
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<SqlQueryFieldTypeProvider> logger,
+            IOptions<GraphQLSettings> settingsAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
+            _graphQLSettings = settingsAccessor.Value;
         }
         public Task<string> GetIdentifierAsync()
         {
@@ -100,41 +106,108 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             {
                 var name = child.Name;
                 var nameLower = name.Replace('.', '_');
-                var type = child.Value["type"].ToString();
-                var description = child.Value["description"]?.ToString();
+                var type = child.Value["type"]?.ToString()?.ToLower() ?? "string";
 
-                if (type == "string")
+                FieldType field = null;
+
+                switch (type)
                 {
-                    var field = typetype.Field(
-                        typeof(StringGraphType),
-                        nameLower,
-                        description: description,
-                        resolve: context =>
-                        {
-                            var source = context.Source;
-                            return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<string>();
-                        });
-                    field.Metadata.Add("Name", name);
+                    case "string":
+                        field = typetype.Field(
+                            typeof(StringGraphType),
+                            nameLower,
+                            description: child.Value["description"]?.ToString(),
+                            resolve: context =>
+                            {
+                                var source = context.Source;
+                                return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<string>();
+                            });
+                        break;
+
+                    case "integer":
+                    case "int":
+                        field = typetype.Field(
+                           typeof(IntGraphType),
+                           nameLower,
+                           description: child.Value["description"]?.ToString(),
+                           resolve: context =>
+                           {
+                               var source = context.Source;
+                               return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
+                           });
+                        break;
+                    case "boolean":
+                    case "bool":
+                        field = typetype.Field(
+                           typeof(BooleanGraphType),
+                           nameLower,
+                           description: child.Value["description"]?.ToString(),
+                           resolve: context =>
+                           {
+                               var source = context.Source;
+                               return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<bool>();
+                           });
+                        break;
+
+                    case "identifier":
+                    case "id":
+                        field = typetype.Field(
+                           typeof(IdGraphType),
+                           nameLower,
+                           description: child.Value["description"]?.ToString(),
+                           resolve: context =>
+                           {
+                               var source = context.Source;
+                               return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<string>();
+                           });
+                        break;
+
+                    case "double":
+                    case "numeric":
+                    case "decimal":
+                        field = typetype.Field(
+                           typeof(FloatGraphType),
+                           nameLower,
+                           description: child.Value["description"]?.ToString(),
+                           resolve: context =>
+                           {
+                               var source = context.Source;
+                               return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<decimal>();
+                           });
+                        break;
+
+                    default:
+                        break;
                 }
-                else if (type == "integer")
+
+                if (field == null)
                 {
-                    var field = typetype.Field(
-                        typeof(IntGraphType),
-                        nameLower,
-                        description: description,
-                        resolve: context =>
-                        {
-                            var source = context.Source;
-                            return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
-                        });
-                    field.Metadata.Add("Name", name);
+                    continue;
+                }
+
+                field.Metadata.Add("Name", name);
+
+                if (Boolean.TryParse(child.Value["filterable"]?.ToString(), out var filterable))
+                {
+                    field.Metadata.Add("Filterable", filterable);
+                }
+
+                if (Boolean.TryParse(child.Value["sortable"]?.ToString(), out var sortable))
+                {
+                    field.Metadata.Add("Sortable", sortable);
                 }
             }
 
+            var whereInput = new DynamicWhereInput(typetype.Fields);
+            var orderByInput = new DynamicOrderByInput(typetype.Fields);
             var fieldType = new FieldType
             {
                 Arguments = new QueryArguments(
-                    new QueryArgument<StringGraphType> { Name = "parameters" }
+                    new QueryArgument<StringGraphType> { Name = "parameters" },
+                    new QueryArgument<DynamicWhereInput> { Name = "where", Description = "filters the content items", ResolvedType = whereInput },
+                    new QueryArgument<DynamicOrderByInput> { Name = "orderBy", Description = "sort order", ResolvedType = orderByInput },
+                    new QueryArgument<IntGraphType> { Name = "first", Description = "the first n content items", ResolvedType = new IntGraphType() },
+                    new QueryArgument<IntGraphType> { Name = "skip", Description = "the number of content items to skip", ResolvedType = new IntGraphType() }
                 ),
 
                 Name = fieldTypeName,
@@ -145,7 +218,26 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                     var queryManager = context.RequestServices.GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(query.Name);
 
+                    var first = context.GetArgument<int>("first");
+
+                    if (first == 0)
+                    {
+                        first = _graphQLSettings.DefaultNumberOfResults;
+                    }
+
+                    // Apply Take(first)
+
+                    if (context.HasPopulatedArgument("skip"))
+                    {
+                        var skip = context.GetArgument<int>("skip");
+
+                        // Apply Skip(skip)
+                    }
+
                     var parameters = context.GetArgument<string>("parameters");
+
+                    var where = context.GetArgument<string>("where");
+                    // apply there where logic...
 
                     var queryParameters = parameters != null ?
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
@@ -160,7 +252,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             return fieldType;
         }
 
-        private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, SqlQuery query, string fieldTypeName)
+        private static FieldType BuildContentTypeFieldType(ISchema schema, string contentType, SqlQuery query, string fieldTypeName)
         {
             var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
             if (typetype == null)

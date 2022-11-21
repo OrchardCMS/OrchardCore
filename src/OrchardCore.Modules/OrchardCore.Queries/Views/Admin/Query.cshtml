@@ -92,20 +92,21 @@
 
 @{
     string sqlmode = "text/x-sql";
+    var factoryName = Model.FactoryName ?? String.Empty;
 
-    if (Model.FactoryName.Contains("Sqlite"))
+    if (factoryName.Contains("Sqlite"))
     {
         sqlmode = "text/x-sqlite";
     }
-    else if (Model.FactoryName.Contains("Mysql"))
+    else if (factoryName.Contains("Mysql"))
     {
         sqlmode = "text/x-mysql";
     }
-    else if (Model.FactoryName.Contains("Npgsql"))
+    else if (factoryName.Contains("Npgsql"))
     {
         sqlmode = "text/x-pgsql";
     }
-    else if (Model.FactoryName.Contains("Sql"))
+    else if (factoryName.Contains("Sql"))
     {
         sqlmode = "text/x-mssql";
     }
@@ -116,7 +117,7 @@
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: "text/x-pgsql", lineNumbers: true, viewportMargin: Infinity });
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
         if (rawSql = document.getElementById('@Html.IdFor(m => m.RawSql)')) {
-          CodeMirror.fromTextArea(rawSql, { mode: "@sqlmode", lineNumbers: true, readonly: true, viewportMargin: Infinity });
+            CodeMirror.fromTextArea(rawSql, { mode: "@sqlmode", lineNumbers: true, readonly: true, viewportMargin: Infinity });
         }
     });
 </script>
@@ -151,11 +152,11 @@
                 minimap: { enabled: false },
                 model: jsonModel
             });
-            
+
             editor.getModel().setValue(textArea.value);
 
             //format json
-            setTimeout(function() {
+            setTimeout(function () {
                 editor.getAction('editor.action.formatDocument').run();
             }, 300);
 
