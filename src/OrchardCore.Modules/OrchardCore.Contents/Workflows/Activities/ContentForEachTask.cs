@@ -109,7 +109,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 Index = 0;
             }
 
-            if (ContentItems.Count() != 0)
+            if (ContentItems.Count() != 0 && Index < ContentItems.Count())
             {
                 var contentItem = ContentItems[Index];
                 var current = Current = contentItem;
@@ -119,11 +119,11 @@ namespace OrchardCore.Contents.Workflows.Activities
                 Index++;
                 return Outcomes("Iterate"); 
             }
-            else
+            else 
             {
-                Index = 0;
                 return Outcomes("Done");
             }
+            
         }
         
         /// <summary>
