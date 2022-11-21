@@ -1,23 +1,66 @@
 @model ContentForEachTaskViewModel
 
-<div class="mb-3" asp-validation-class-for="ContentType">
-    <label asp-for="ContentType">@T["Content Type"]</label>
-    <select asp-for="ContentType" asp-items="@Model.AvailableContentTypes" class="form-select" asp-validation-class-for="ContentType"></select>
-    <span asp-validation-for="ContentType"></span>
-    <span class="hint">@T["Select the type of content to loop."]</span>
+<div class="mb-3" asp-validation-class-for="UseQuery">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="UseQuery" />
+        <label class="form-check-label" asp-for="UseQuery">@T["Use query?"]</label>
+        <span class="hint dashed">@T["Check to use lucene or elastic query instead of selecting all of one content type."]</span>
+    </div>
+</div>
+<div id="QueryInputs">
+    <div class="mb-3" asp-validation-class-for="Query">
+        <label asp-for="Query">@T["Query Name"]</label>
+        <select asp-for="Query" asp-items="@Model.Queries" class="form-select" asp-validation-class-for="Query"></select>
+        <span asp-validation-for="Query"></span>
+        <span class="hint">@T["Select the query you want to run."]</span>
+    </div>
+    <div class="mb-3" asp-validation-class-for="Parameters">
+        <label asp-for="Parameters">@T["Parameters"]</label>
+        <input type="text" asp-for="Parameters" class="form-control code" />
+        <span asp-validation-for="Parameters"></span>
+        <span class="hint">@T["Optional parameters in json format."] I.e. { "fulltext" : "text" }</span>
+    </div>
+
+</div>
+<div id="ContentInputs">
+    <div class="mb-3" asp-validation-class-for="ContentType">
+        <label asp-for="ContentType">@T["Content Type"]</label>
+        <select asp-for="ContentType" asp-items="@Model.AvailableContentTypes" class="form-select" asp-validation-class-for="ContentType"></select>
+        <span asp-validation-for="ContentType"></span>
+        <span class="hint">@T["Select the type of content to loop."]</span>
+    </div>
 </div>
 
 <div class="mb-3" asp-validation-class-for="Take">
     <label asp-for="Take">@T["Take"]</label>
     <input type="text" asp-for="Take" class="form-control code" />
     <span asp-validation-for="Take"></span>
-    <span class="hint">@T["How many to take"]</span>
+    <span class="hint">@T["How many to take per call. Automatically overrides / adds size and from parameters in query"]</span>
 </div>
 
-<div class="mb-3" asp-validation-class-for="Published">
+<div class="mb-3" asp-validation-class-for="PublishedOnly">
     <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="Published" />
-        <label class="form-check-label" asp-for="Published">@T["Published"]</label>
-        <span class="hint dashed">@T["Check if you only want to return published items. Leave unchecked to return latest."]</span>
+        <input type="checkbox" class="form-check-input" asp-for="PublishedOnly" />
+        <label class="form-check-label" asp-for="PublishedOnly">@T["Published Only?"]</label>
+        <span class="hint dashed">@T["Check if you only want to return published items. Leave unchecked to return latest (Includes published and draft)."]</span>
     </div>
 </div>
+
+
+<script at="Foot">
+    $(function () {
+        var useQuery = $('#@Html.IdFor(x => x.UseQuery)');
+
+        if (useQuery.is(':checked')) {
+            $('#ContentInputs').slideToggle('fast');
+        } else {
+            $('#QueryInputs').slideToggle('fast');
+        }
+
+        useQuery.on('click', function () {
+            $('#ContentInputs').slideToggle('fast');
+            $('#QueryInputs').slideToggle('fast');
+        });
+    });
+</script>
+

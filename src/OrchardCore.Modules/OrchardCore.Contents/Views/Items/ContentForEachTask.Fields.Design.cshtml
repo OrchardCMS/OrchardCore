@@ -3,4 +3,4 @@
 <header>
     <h4><i class="fa fa-circle-o-notch"></i>@Model.Activity.GetTitleOrDefault(() => T["Content For Each"])</h4>
 </header>
-<em>@Model.Activity.ContentType</em>
+<em>@(Model.Activity.UseQuery ? $"Query: {Model.Activity.Query}" : $"ContentType: {Model.Activity.ContentType}")</em>

@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Workflows;
 using Newtonsoft.Json;
 using OrchardCore.Workflows.Services;
+using OrchardCore.Queries;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Contents.Workflows.Activities
 {
@@ -21,14 +23,17 @@ namespace OrchardCore.Contents.Workflows.Activities
         private readonly ISession _session;
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         private readonly IContentManager _contentManager;
+        private readonly IQueryManager _queryManager;
 
-        public ContentForEachTask(IWorkflowScriptEvaluator scriptEvaluator, IContentManager contentManager, IStringLocalizer<RetrieveContentTask> localizer, ISession session)
+        public ContentForEachTask(IWorkflowScriptEvaluator scriptEvaluator, IContentManager contentManager, IStringLocalizer<RetrieveContentTask> localizer, ISession session, IQueryManager queryManager)
         {
-            S = localizer;
-            _session = session;
             _scriptEvaluator = scriptEvaluator;
             _contentManager = contentManager;
+            _session = session;
+            _queryManager = queryManager;
+            S = localizer;
         }
+
         public override string Name => nameof(ContentForEachTask);
 
         public override LocalizedString DisplayText => S["Content For Each Task"];
@@ -37,7 +42,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(S["Iterate"], S["Done"]);
+            return Outcomes(S["Iterate"], S["Done"], S["Failed"]);
         }
         public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
@@ -45,14 +50,61 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            //Store the result so a db call is not made per iteration
-            if (Skip == 0 || Take % Index == 1)
+            //Query is selected, get the query, override skip and take in the query
+            if(UseQuery && (Index % Take) == 0)
+            {
+                var contentItems = new List<ContentItem>();
+                dynamic query = await _queryManager.GetQueryAsync(Query);
+                if(query == null)
+                {
+                    throw new InvalidOperationException($"Failed to retrieve the query {Query} (Have you changed or deleted the query?)");
+                }
+                var queryParameters = !String.IsNullOrEmpty(Parameters) ?
+                    JsonConvert.DeserializeObject<Dictionary<string, object>>(Parameters)
+                    : new Dictionary<string, object>();
+                if (query.Source != "Sql")
+                {
+                    var template = JObject.Parse(query.Template);
+                    template["from"] = Skip;
+                    template["size"] = Take;
+                    query.Template = template.ToString();
+                }
+                var results = (await _queryManager.ExecuteQueryAsync(query, queryParameters)).Items;
+                if (results != null)
+                {
+                    foreach (var result in results)
+                    {
+                        if (!(result is ContentItem contentItem))
+                        {
+                            contentItem = null;
+
+                            if (result is JObject jObject)
+                            {
+                                contentItem = jObject.ToObject<ContentItem>();
+                            }
+                        }
+                        if (contentItem?.ContentItemId == null)
+                        {
+                            continue;
+                        }
+                        contentItems.Add(contentItem);
+                    }
+                }
+                Skip += Take;
+                Index = 0;
+                ContentItems = contentItems;
+            }
+
+            //Query the db for a contenttype and store the result so a db call is not made per iteration
+            else if (Index % Take == 0)
             {
                 ContentItems = await _session
-                    .Query<ContentItem, ContentItemIndex>(index => index.ContentType == ContentType && (Published && index.Published == true || !Published && index.Latest == true))
-                    .Skip(Skip)
-                    .Take(Take)
-                    .ListAsync() as List<ContentItem>;
+                .Query<ContentItem, ContentItemIndex>(index => index.ContentType == ContentType)
+                //If PublishedOnly == true then Publish should be true and Latest can be either and vice versa
+                .Where(w => (w.Published == true || w.Published == PublishedOnly) && (w.Latest == true || w.Latest == !PublishedOnly))
+                .Skip(Skip)
+                .Take(Take)
+                .ListAsync() as List<ContentItem>;
                 Skip += Take;
                 Index = 0;
             }
@@ -117,16 +169,44 @@ namespace OrchardCore.Contents.Workflows.Activities
             get => GetProperty(() => new List<ContentItem>());
             set => SetProperty(value);
         }
-
+        /// <summary>
+        /// The name of the content type to select.
+        /// </summary>
         public string ContentType
         {
             get => GetProperty(() => string.Empty);
             set => SetProperty(value);
         }
-
-        public bool Published
+        /// <summary>
+        /// Toggles between using a query (I.e. Lucene or raw YesSql query).
+        /// </summary>
+        public bool UseQuery
         {
-            get => GetProperty<bool>();
+            get => GetProperty<bool>(() => false);
+            set => SetProperty(value);
+        }
+        /// <summary>
+        /// The name of the query to run.
+        /// </summary>
+        public string Query
+        {
+            get => GetProperty(() => string.Empty);
+            set => SetProperty(value);
+        }
+        /// <summary>
+        /// Parameters to pass into the query.
+        /// </summary>
+        public string Parameters
+        {
+            get => GetProperty(() => string.Empty);
+            set => SetProperty(value);
+        }
+        /// <summary>
+        /// Only return published items.
+        /// </summary>
+        public bool PublishedOnly
+        {
+            get => GetProperty<bool>(() => false);
             set => SetProperty(value);
         }
     }

@@ -22,15 +22,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.Contents.Workflows.ViewModels
 {
-
     public class ContentForEachTaskViewModel
     {
-        [Required]
+        public bool UseQuery { get; set; }
         public string ContentType { get; set; }
-        public bool Published { get; set; }
+        public string Query { get; set; }
+        public string Parameters { get; set; }
+        public bool PublishedOnly { get; set; }
         public int Take { get; set; }
+        
         [BindNever]
         public IList<SelectListItem> AvailableContentTypes { get; set; }
+
+        [BindNever]
+        public IList<SelectListItem> Queries { get; set; }
     }
 
 }
