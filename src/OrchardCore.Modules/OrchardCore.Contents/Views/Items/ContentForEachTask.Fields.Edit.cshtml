@@ -29,6 +29,13 @@
         <span asp-validation-for="ContentType"></span>
         <span class="hint">@T["Select the type of content to loop."]</span>
     </div>
+    <div class="mb-3" asp-validation-class-for="PublishedOnly">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="PublishedOnly" />
+            <label class="form-check-label" asp-for="PublishedOnly">@T["Published Only?"]</label>
+            <span class="hint dashed">@T["Check if you only want to return published items. Leave unchecked to return latest (Includes published and draft)."]</span>
+        </div>
+    </div>
 </div>
 
 <div class="mb-3" asp-validation-class-for="Take">
@@ -37,15 +44,6 @@
     <span asp-validation-for="Take"></span>
     <span class="hint">@T["How many to take per call. Automatically overrides / adds size and from parameters in query"]</span>
 </div>
-
-<div class="mb-3" asp-validation-class-for="PublishedOnly">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="PublishedOnly" />
-        <label class="form-check-label" asp-for="PublishedOnly">@T["Published Only?"]</label>
-        <span class="hint dashed">@T["Check if you only want to return published items. Leave unchecked to return latest (Includes published and draft)."]</span>
-    </div>
-</div>
-
 
 <script at="Foot">
     $(function () {

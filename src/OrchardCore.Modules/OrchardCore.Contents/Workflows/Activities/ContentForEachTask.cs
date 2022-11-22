@@ -42,7 +42,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(S["Iterate"], S["Done"], S["Failed"]);
+            return Outcomes(S["Iterate"], S["Done"]);
         }
         public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
@@ -62,13 +62,12 @@ namespace OrchardCore.Contents.Workflows.Activities
                 var queryParameters = !String.IsNullOrEmpty(Parameters) ?
                     JsonConvert.DeserializeObject<Dictionary<string, object>>(Parameters)
                     : new Dictionary<string, object>();
-                if (query.Source != "Sql")
-                {
-                    var template = JObject.Parse(query.Template);
-                    template["from"] = Skip;
-                    template["size"] = Take;
-                    query.Template = template.ToString();
-                }
+
+                var template = JObject.Parse(query.Template);
+                template["from"] = Skip;
+                template["size"] = Take;
+                query.Template = template.ToString();
+
                 var results = (await _queryManager.ExecuteQueryAsync(query, queryParameters)).Items;
                 if (results != null)
                 {
