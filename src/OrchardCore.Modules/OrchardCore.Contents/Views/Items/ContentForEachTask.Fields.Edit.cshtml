@@ -1,6 +1,14 @@
+@using Microsoft.AspNetCore.Http;
 @model ContentForEachTaskViewModel
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor;
+@{
+    var httpContext = HttpContextAccessor.HttpContext;
+    var dashboardFeature = httpContext.Features;
 
-<div class="mb-3" asp-validation-class-for="UseQuery">
+}
+@if (Model.QueriesEnabled)
+{
+   <div class="mb-3" asp-validation-class-for="UseQuery">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="UseQuery" />
         <label class="form-check-label" asp-for="UseQuery">@T["Use query?"]</label>
@@ -21,7 +29,9 @@
         <span class="hint">@T["Optional parameters in json format."] I.e. { "fulltext" : "text" }</span>
     </div>
 
-</div>
+</div> 
+}
+
 <div id="ContentInputs">
     <div class="mb-3" asp-validation-class-for="ContentType">
         <label asp-for="ContentType">@T["Content Type"]</label>

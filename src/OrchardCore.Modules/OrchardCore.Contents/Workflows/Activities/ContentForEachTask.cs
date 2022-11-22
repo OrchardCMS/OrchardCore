@@ -14,6 +14,8 @@ using Newtonsoft.Json;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Queries;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Environment.Shell.Descriptor.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Contents.Workflows.Activities
 {
@@ -23,15 +25,17 @@ namespace OrchardCore.Contents.Workflows.Activities
         private readonly ISession _session;
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         private readonly IContentManager _contentManager;
-        private readonly IQueryManager _queryManager;
+        private readonly ShellDescriptor _shellDescriptor;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ContentForEachTask(IWorkflowScriptEvaluator scriptEvaluator, IContentManager contentManager, IStringLocalizer<RetrieveContentTask> localizer, ISession session, IQueryManager queryManager)
+        public ContentForEachTask(IWorkflowScriptEvaluator scriptEvaluator, IContentManager contentManager, IStringLocalizer<ContentForEachTask> localizer, ISession session, ShellDescriptor shellDescriptor, IServiceProvider serviceProvider)
         {
             _scriptEvaluator = scriptEvaluator;
             _contentManager = contentManager;
             _session = session;
-            _queryManager = queryManager;
             S = localizer;
+            _shellDescriptor = shellDescriptor;
+            _serviceProvider = serviceProvider;
         }
 
         public override string Name => nameof(ContentForEachTask);
@@ -50,50 +54,54 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            //Query is selected, get the query, override skip and take in the query
-            if(UseQuery && (Index % Take) == 0)
+            //Only try and get service if feature is enabled.
+            if (UseQuery && _shellDescriptor.Features.Any(feature => feature.Id == "OrchardCore.Queries"))
             {
-                var contentItems = new List<ContentItem>();
-                dynamic query = await _queryManager.GetQueryAsync(Query);
-                if(query == null)
+                var _queryManager = (IQueryManager)_serviceProvider.GetService(typeof(IQueryManager));
+                if (Index % Take == 0)
                 {
-                    throw new InvalidOperationException($"Failed to retrieve the query {Query} (Have you changed or deleted the query?)");
-                }
-                var queryParameters = !String.IsNullOrEmpty(Parameters) ?
-                    JsonConvert.DeserializeObject<Dictionary<string, object>>(Parameters)
-                    : new Dictionary<string, object>();
-
-                var template = JObject.Parse(query.Template);
-                template["from"] = Skip;
-                template["size"] = Take;
-                query.Template = template.ToString();
-
-                var results = (await _queryManager.ExecuteQueryAsync(query, queryParameters)).Items;
-                if (results != null)
-                {
-                    foreach (var result in results)
+                    //Query is selected, get the query, 
+                    var contentItems = new List<ContentItem>();                  
+                    dynamic query = await _queryManager.GetQueryAsync(Query);
+                    if (query == null)
                     {
-                        if (!(result is ContentItem contentItem))
-                        {
-                            contentItem = null;
-
-                            if (result is JObject jObject)
-                            {
-                                contentItem = jObject.ToObject<ContentItem>();
-                            }
-                        }
-                        if (contentItem?.ContentItemId == null)
-                        {
-                            continue;
-                        }
-                        contentItems.Add(contentItem);
+                        throw new InvalidOperationException($"Failed to retrieve the query {Query} (Have you changed or deleted the query?)");
                     }
-                }
-                Skip += Take;
-                Index = 0;
-                ContentItems = contentItems;
-            }
+                    var queryParameters = !String.IsNullOrEmpty(Parameters) ?
+                        JsonConvert.DeserializeObject<Dictionary<string, object>>(Parameters)
+                        : new Dictionary<string, object>();
+                    //Override skip and take in the query to enable paging of datasource
+                    var template = JObject.Parse(query.Template);
+                    template["from"] = Skip;
+                    template["size"] = Take;
+                    query.Template = template.ToString();
+                    //Store the contentitems or the query results in the workflow context (Return document may not be selected)
+                    var results = (await _queryManager.ExecuteQueryAsync(query, queryParameters)).Items;
+                    if (results != null)
+                    {
+                        foreach (var result in results)
+                        {
+                            if (!(result is ContentItem contentItem))
+                            {
+                                contentItem = null;
 
+                                if (result is JObject jObject)
+                                {
+                                    contentItem = jObject.ToObject<ContentItem>();
+                                }
+                            }
+                            if (contentItem?.ContentItemId == null)
+                            {
+                                continue;
+                            }
+                            contentItems.Add(contentItem);
+                        }
+                    }
+                    Skip += Take;
+                    Index = 0;
+                    ContentItems = contentItems;
+                }
+            }
             //Query the db for a contenttype and store the result so a db call is not made per iteration
             else if (Index % Take == 0)
             {

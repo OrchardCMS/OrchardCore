@@ -9,6 +9,8 @@ using OrchardCore.Queries;
 using System.Collections.Generic;
 using YesSql;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Shell.Descriptor.Models;
+using System;
 
 namespace OrchardCore.Contents.Workflows.Drivers
 {
@@ -17,25 +19,37 @@ namespace OrchardCore.Contents.Workflows.Drivers
     public class ContentForEachTaskDisplayDriver: ActivityDisplayDriver<ContentForEachTask, ContentForEachTaskViewModel>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IQueryManager _queryManager;
         private readonly ISession _session;
-        public ContentForEachTaskDisplayDriver(IContentDefinitionManager contentDefinitionManager, IQueryManager queryManager, ISession session)
+        private readonly ShellDescriptor _shellDescriptor; 
+        private readonly IServiceProvider _serviceProvider;
+        public ContentForEachTaskDisplayDriver(IContentDefinitionManager contentDefinitionManager, ISession session, ShellDescriptor shellDescriptor, IServiceProvider serviceProvider)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            _queryManager = queryManager;
             _session = session;
+            _shellDescriptor = shellDescriptor;
+            _serviceProvider = serviceProvider;
         }
         protected override void EditActivity(ContentForEachTask activity, ContentForEachTaskViewModel model)
         {
-            model.UseQuery = activity.UseQuery;
-            model.Query = activity.Query;
-            model.Parameters = activity.Parameters;
+            model.QueriesEnabled = _shellDescriptor.Features.Any(feature => feature.Id == "OrchardCore.Queries");
+            if(model.QueriesEnabled)
+            {
+                var _queryManager = (IQueryManager)_serviceProvider.GetService(typeof(IQueryManager));
+                model.UseQuery = activity.UseQuery;
+                model.Query = activity.Query;
+                model.Parameters = activity.Parameters;
+                var task = _queryManager.ListQueriesAsync();
+                var queries = task.Result as List<Query>;
+                model.Queries = queries.Where(w => w.Source != "Sql").Select(x => new SelectListItem { Text = x.Name, Value = x.Name }).ToList();
+            }
+            else
+            {
+                model.UseQuery = false;
+            }
+
             model.AvailableContentTypes = _contentDefinitionManager.ListTypeDefinitions()
                 .Select(x => new SelectListItem { Text = x.DisplayName, Value = x.Name })
                 .ToList();
-            var task = _queryManager.ListQueriesAsync();
-            var queries = task.Result as List<Query>;
-            model.Queries = queries.Where(w => w.Source != "Sql").Select(x => new SelectListItem { Text = x.Name, Value = x.Name }).ToList();
             model.ContentType = activity.ContentType;
             model.Take = activity.Take;
             model.PublishedOnly = activity.PublishedOnly;

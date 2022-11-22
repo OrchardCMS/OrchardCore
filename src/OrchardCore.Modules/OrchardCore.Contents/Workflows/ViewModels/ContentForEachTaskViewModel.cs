@@ -24,6 +24,7 @@ namespace OrchardCore.Contents.Workflows.ViewModels
 {
     public class ContentForEachTaskViewModel
     {
+        public bool QueriesEnabled { get; set; }
         public bool UseQuery { get; set; }
         public string ContentType { get; set; }
         public string Query { get; set; }
