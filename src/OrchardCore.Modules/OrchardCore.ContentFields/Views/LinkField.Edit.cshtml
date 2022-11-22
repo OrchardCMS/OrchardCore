@@ -6,11 +6,11 @@
     var isTextRequired = settings.LinkTextMode == LinkTextMode.Required && String.IsNullOrWhiteSpace(settings.DefaultText);
     var urlClass = settings.Required ? "required" : null;
     var textClass = settings.LinkTextMode == LinkTextMode.Required ? "required" : null;
-    var fieldName = Model.PartFieldDefinition.Name;
+    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
     var useFormFloating = String.IsNullOrWhiteSpace(settings.UrlPlaceholder) || String.IsNullOrWhiteSpace(settings.TextPlaceholder);
 }
 
-<div class="row field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x.Text)_FieldWrapper">
+<div class="row field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Text)_FieldWrapper">
     <div class="mb-1 col-md-12">
         <label asp-for="Url">@Model.PartFieldDefinition.DisplayName()</label>
     </div>

@@ -6,10 +6,10 @@
     var settings = Model.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
     int previousLevel = 0;
     int closingDivs = 0;
-    var fieldName = Model.PartFieldDefinition.Name;
+    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="mb-3 field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x.TermEntries)_FieldWrapper">
+<div class="mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.TermEntries)_FieldWrapper">
 
     <label>@Model.PartFieldDefinition.DisplayName()</label>
 

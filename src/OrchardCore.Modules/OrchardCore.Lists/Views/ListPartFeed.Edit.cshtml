@@ -1,5 +1,10 @@
-﻿@using OrchardCore.Lists.Feeds
+@using OrchardCore.Lists.Feeds
 @model ListFeedEditViewModel
+
+<div class="mb-3 form-check" asp-validation-class-for="DisableRssFeed">
+    <input type="checkbox" class="form-check-input" asp-for="DisableRssFeed">
+    <label class="form-check-label" asp-for="DisableRssFeed">@T["Disable RSS feed link generation."]</label>
+</div>
 
 <div class="mb-3">
     <label asp-for="FeedProxyUrl">@T["Feed proxy Url"]</label>

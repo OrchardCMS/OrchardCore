@@ -9338,7 +9338,7 @@ html[data-theme=default] .text-warning {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-warning-rgb), var(--bs-text-opacity)) !important;
 }
-html[data-theme=default] .text-danger {
+html[data-theme=default] .text-danger, html[data-theme=default] .field-validation-error, html[data-theme=default] .has-validation-error {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important;
 }
@@ -39409,7 +39409,7 @@ html[data-theme=darkmode] .text-warning {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-warning-rgb), var(--bs-text-opacity)) !important;
 }
-html[data-theme=darkmode] .text-danger {
+html[data-theme=darkmode] .text-danger, html[data-theme=darkmode] .field-validation-error, html[data-theme=darkmode] .has-validation-error {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important;
 }

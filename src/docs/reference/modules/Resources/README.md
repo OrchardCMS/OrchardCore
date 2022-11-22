@@ -54,22 +54,22 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | popper                | Script | 1.16.1        | -              |
 | popperjs              | Script | 2.11.6        | -              |
 | bootstrap             | Script | 4.6.1         | popper         |
-| bootstrap             | Script | 5.2.2         | popperjs       |
-| bootstrap             | Style  | 4.6.1, 5.2.2  | -              |
+| bootstrap             | Script | 5.2.3         | popperjs       |
+| bootstrap             | Style  | 4.6.1, 5.2.3  | -              |
 | bootstrap-select      | Script | 1.14.0-beta2  | -              |
 | bootstrap-select      | Style  | 1.14.0-beta2  | -              |
 | codemirror            | Script | 5.65.7        | -              |
 | codemirror            | Style  | 5.65.7        | -              |
-| font-awesome          | Style  | 6.2.0         | -              |
-| font-awesome          | Script | 6.2.0         | -              |
-| font-awesome-v4-shims | Script | 6.2.0         | -              |
+| font-awesome          | Style  | 6.2.1         | -              |
+| font-awesome          | Script | 6.2.1         | -              |
+| font-awesome-v4-shims | Script | 6.2.1         | -              |
 | Sortable              | Script | 1.10.2        | -              |
-| trumbowyg             | Style  | 2.25.2        | -              |
-| trumbowyg             | Script | 2.25.2        | -              |
+| trumbowyg             | Style  | 2.26.0        | -              |
+| trumbowyg             | Script | 2.26.0        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
-| monaco-loader         | Script | 0.34.0        | -              |
-| monaco                | Script | 0.34.0        | monaco-loader  |
+| monaco-loader         | Script | 0.34.1        | -              |
+| monaco                | Script | 0.34.1        | monaco-loader  |
 | nouislider            | Script | 15.6.1        | -              |
 | nouislider            | Style  | 15.6.1        | -              |
 
