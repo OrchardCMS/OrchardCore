@@ -1,11 +1,4 @@
-@using Microsoft.AspNetCore.Http;
 @model ContentForEachTaskViewModel
-@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor;
-@{
-    var httpContext = HttpContextAccessor.HttpContext;
-    var dashboardFeature = httpContext.Features;
-
-}
 @if (Model.QueriesEnabled)
 {
    <div class="mb-3" asp-validation-class-for="UseQuery">
