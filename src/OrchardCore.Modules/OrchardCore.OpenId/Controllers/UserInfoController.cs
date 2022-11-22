@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using OrchardCore.Modules;
@@ -14,14 +13,11 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.Controllers
 {
+    // Note: the error descriptions used in this controller are deliberately not localized as
+    // the OAuth 2.0 specification only allows select US-ASCII characters in error_description.
     [Feature(OpenIdConstants.Features.Server), SkipStatusCodePages]
     public class UserInfoController : Controller
     {
-        private readonly IStringLocalizer S;
-
-        public UserInfoController(IStringLocalizer<UserInfoController> localizer)
-            => S = localizer;
-
         // GET/POST: /connect/userinfo
         [AcceptVerbs("GET", "POST")]
         [IgnoreAntiforgeryToken]
@@ -57,7 +53,7 @@ namespace OrchardCore.OpenId.Controllers
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidRequest,
                     [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        S["The userinfo endpoint can only be used with access tokens representing users."]
+                        "The userinfo endpoint can only be used with access tokens representing users."
                 }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 
