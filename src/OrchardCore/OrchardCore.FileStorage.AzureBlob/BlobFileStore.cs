@@ -8,6 +8,7 @@ using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 
 namespace OrchardCore.FileStorage.AzureBlob
@@ -39,23 +40,21 @@ namespace OrchardCore.FileStorage.AzureBlob
     {
         private const string _directoryMarkerFileName = "OrchardCore.Media.txt";
 
-        private readonly BlobStorageOptions _options;
         private readonly IClock _clock;
         private readonly BlobContainerClient _blobContainer;
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly string _basePrefix = null;
 
-        public BlobFileStore(BlobStorageOptions options, IClock clock, IContentTypeProvider contentTypeProvider)
+        public BlobFileStore(BlobContainerClient blobContainerClient, string basePath, IClock clock, IContentTypeProvider contentTypeProvider)
         {
-            _options = options;
             _clock = clock;
             _contentTypeProvider = contentTypeProvider;
 
-            _blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
+            _blobContainer = blobContainerClient;
 
-            if (!String.IsNullOrEmpty(_options.BasePath))
+            if (!String.IsNullOrEmpty(basePath))
             {
-                _basePrefix = NormalizePrefix(_options.BasePath);
+                _basePrefix = NormalizePrefix(basePath);
             }
         }
 
@@ -69,7 +68,7 @@ namespace OrchardCore.FileStorage.AzureBlob
 
                 return new BlobFile(path, properties.Value.ContentLength, properties.Value.LastModified);
             }
-            catch (RequestFailedException ex) when (ex.ErrorCode == BlobErrorCode.BlobNotFound) 
+            catch (RequestFailedException ex) when (ex.ErrorCode == BlobErrorCode.BlobNotFound)
             {
                 // Instead of ExistsAsync() check which is 'slow' if we're expecting to find the blob we rely on the exception
                 return null;
@@ -402,7 +401,7 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         private BlobClient GetBlobReference(string path)
         {
-            var blobPath = this.Combine(_options.BasePath, path);
+            var blobPath = this.Combine(_basePrefix, path);
             var blob = _blobContainer.GetBlobClient(blobPath);
 
             return blob;
