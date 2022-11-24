@@ -20,7 +20,7 @@ namespace OrchardCore.Alias.Models
 
                 if (!await IsAliasUniqueAsync(part, session, part.Alias))
                 {
-                    yield return new ValidationResult(S["Your alias is already in use."], new[] { nameof(part.Alias) });
+                    yield return new ValidationResult(S["Your alias is already in use. \"{0}\"", part.Alias], new[] { nameof(part.Alias) });
                 }
             }
         }
