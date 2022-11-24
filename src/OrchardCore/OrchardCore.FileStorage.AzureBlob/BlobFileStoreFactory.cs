@@ -11,6 +11,8 @@ public class BlobFileStoreFactory
     private readonly IAzureClientFactory<BlobServiceClient> _clientFactory;
     private readonly IServiceProvider _serviceProvider;
 
+    private const string DefaultStorageName = "Default";
+
     public BlobFileStoreFactory(IAzureClientFactory<BlobServiceClient> clientFactory, IServiceProvider serviceProvider)
     {
         _clientFactory = clientFactory;
@@ -38,13 +40,24 @@ public class BlobFileStoreFactory
 
     private BlobContainerClient CreateContainerClientFromOptions(BlobStorageOptions options)
     {
+        // return a container client from connectionstring, if specified
         if (!String.IsNullOrEmpty(options.ConnectionString))
         {
             return new BlobContainerClient(options.ConnectionString, options.ContainerName);
         }
 
-        var serviceClient = _clientFactory.CreateClient(options.BlobServiceName);
-        return serviceClient.GetBlobContainerClient(options.ContainerName);
+        // else use the clientFactory to lookup a BlobService with the specified name
+        if (!String.IsNullOrEmpty(options.BlobServiceName))
+        {
+            return _clientFactory
+                .CreateClient(options.BlobServiceName)
+                .GetBlobContainerClient(options.ContainerName);
+        }
+
+        // fall-back to the default registered blob storage
+        return _clientFactory
+            .CreateClient(DefaultStorageName)
+            .GetBlobContainerClient(options.ContainerName);
     }
 
 }
