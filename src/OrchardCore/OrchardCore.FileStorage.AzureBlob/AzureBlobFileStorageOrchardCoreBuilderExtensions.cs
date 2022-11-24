@@ -11,8 +11,7 @@ public static class AzureBlobFileStorageOrchardCoreBuilderExtensions
     /// <returns></returns>
     public static OrchardCoreBuilder AddAzureBlobFileStorage(this OrchardCoreBuilder builder)
     {
-        builder.ConfigureServices(services => services.AddAzureBlobFileStorage());
-
+        builder.ApplicationServices.AddAzureBlobFileStorage();
         return builder;
     }
 }
