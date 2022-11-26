@@ -208,7 +208,7 @@ namespace OrchardCore.Navigation
                 menuItemUrl = menuItemUrl.Substring(2);
             }
 
-            if (menuItemUrl.StartsWith(_adminOptions.AdminUrlPrefix, StringComparison.OrdinalIgnoreCase))
+            if (menuItemUrl.StartsWith($"{_adminOptions.AdminUrlPrefix}/", StringComparison.OrdinalIgnoreCase))
             {                
                 return actionContext.HttpContext.Request.PathBase.Add($"/{menuItemUrl}").Value;
             }
