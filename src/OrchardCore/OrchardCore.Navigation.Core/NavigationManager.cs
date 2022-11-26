@@ -209,8 +209,8 @@ namespace OrchardCore.Navigation
             }
 
             if (menuItemUrl.StartsWith(_adminOptions.AdminUrlPrefix, StringComparison.OrdinalIgnoreCase))
-            {
-                menuItemUrl = menuItemUrl.Remove(0, _adminOptions.AdminUrlPrefix.Length); //backward compatibility
+            {                
+                return actionContext.HttpContext.Request.PathBase.Add($"/{menuItemUrl}").Value;
             }
 
             // Use the unescaped 'Value' to not encode some possible reserved delimiters.
