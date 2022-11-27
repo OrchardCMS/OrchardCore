@@ -24,6 +24,9 @@
                 noembed: 'Noembed',
                 noembedError: 'Error'
             },
+            by: {
+                noembedError: 'Памылка'
+            },
             cs: {
                 noembedError: 'Chyba'
             },

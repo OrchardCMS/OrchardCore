@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Ganss.XSS;
+using Ganss.Xss;
 
 namespace OrchardCore.Infrastructure.Html
 {

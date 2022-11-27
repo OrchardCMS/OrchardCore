@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentLocalization;
@@ -82,7 +83,7 @@ namespace OrchardCore.Autoroute.Handlers
                 await SetHomeRouteAsync(part, homeRoute =>
                 {
                     homeRoute[_options.ContentItemIdKey] = context.ContentItem.ContentItemId;
-                    homeRoute[_options.JsonPathKey] = "";
+                    homeRoute.Remove(_options.JsonPathKey);
                 });
             }
 
@@ -397,7 +398,10 @@ namespace OrchardCore.Autoroute.Handlers
                 _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
 
                 var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect());
-                using (CultureScope.Create(cultureAspect.Culture))
+
+                var cultureOptions = _serviceProvider.GetService<IOptions<CultureOptions>>().Value;
+
+                using (CultureScope.Create(cultureAspect.Culture, ignoreSystemSettings: cultureOptions.IgnoreSystemSettings))
                 {
                     part.Path = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
                         new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });

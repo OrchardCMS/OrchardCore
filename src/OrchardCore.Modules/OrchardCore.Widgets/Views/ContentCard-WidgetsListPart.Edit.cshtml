@@ -1,25 +1,25 @@
 @using OrchardCore.ContentManagement.Metadata.Settings;
 @using OrchardCore.Localization
-
+@using OrchardCore.ContentManagement.Metadata.Models
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
 @{
     var contentType = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget");
 }
 
-<div class="widget widget-editor card my-1 @(Model.Inline != true ? "collapsed" : "")">
-    <div class="widget-editor-header card-header text-muted py-1 ps-3 pe-1">
-        @if (Model.CanMove != false)
+<div class="widget widget-editor card@(Model.Inline ? " collapsed" : String.Empty)">
+    <div class="widget-editor-header card-header text-muted py-1 ps-2 pe-1">
+        @if (Model.CanMove)
         {
             <div class="widget-editor-handle"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div>
         }
         <button type="button" class="btn btn-outline-secondary btn-sm widget-list-editor-btn-toggle widget-editor-btn-collapse"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
         <button type="button" class="btn btn-outline-secondary btn-sm widget-list-editor-btn-toggle widget-editor-btn-expand"><i class="fa fa-angle-@(Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left")" aria-hidden="true"></i></button>
         @contentType
-        <div class="btn-widget-metadata border border-info w-100">
+        <div class="btn-widget-metadata border border-info w-100 my-2">
             <div class="btn-group">
-                @if (Model.CanInsert != false)
+                @if (Model.CanInsert)
                 {
                     <button type="button" title="@T["Insert Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-plus" aria-hidden="true"></i>
@@ -27,18 +27,20 @@
                     <ul class="dropdown-menu dropdown-menu-end">
                         @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
                         {
-                            <li><a class="dropdown-item insert-list-widget btn-sm"
-                               data-target-id="@Model.TargetId"
-                               data-html-field-prefix="@Model.HtmlFieldPrefix"
-                               data-prefixes-name="@Model.PrefixesName"
-                               data-zones-name="@Model.ZonesName"
-                               data-contenttypes-name="@Model.ContentTypesName"
-                               data-contentitems-name="@Model.ContentItemsName"
-                               data-widget-type="@type.Name"
-                               data-parent-content-type="@Model.ParentContentType"
-                               data-part-name="@Model.CollectionPartName"
-                               data-zone="@Model.ZoneValue"
-                               href="javascript:;">@type.DisplayName</a></li>
+                            <li>
+                                <a class="dropdown-item insert-list-widget btn-sm"
+                           data-target-id="@Model.TargetId"
+                           data-html-field-prefix="@Model.HtmlFieldPrefix"
+                           data-prefixes-name="@Model.PrefixesName"
+                           data-zones-name="@Model.ZonesName"
+                           data-contenttypes-name="@Model.ContentTypesName"
+                           data-contentitems-name="@Model.ContentItemsName"
+                           data-widget-type="@type.Name"
+                           data-parent-content-type="@Model.ParentContentType"
+                           data-part-name="@Model.CollectionPartName"
+                           data-zone="@Model.ZoneValue"
+                           href="javascript:;">@type.DisplayName</a>
+                            </li>
                         }
                     </ul>
                 }
@@ -46,13 +48,13 @@
         </div>
 
         <div class="btn-group btn-group-sm float-sm-end" role="group">
-            @if (Model.CanDelete != false)
+            @if (Model.CanDelete)
             {
                 <button type="button" class="btn btn-danger widget-list-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>
             }
         </div>
     </div>
-    <div class="widget-editor-body card-body px-2 py-2">
+    <div class="widget-editor-body card-body">
         <div class="w-100">
             @if (Model.ContentEditor != null)
             {
@@ -62,7 +64,7 @@
     </div>
     @if (Model.Footer != null)
     {
-        <div class="widget-editor-footer card-footer text-muted px-1 py-1">
+        <div class="widget-editor-footer card-footer text-muted py-1 px-2">
             @await DisplayAsync(Model.Footer)
         </div>
     }

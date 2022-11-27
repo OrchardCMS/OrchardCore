@@ -68,7 +68,7 @@ You should always render this shape in your theme:
 
 #### `ContentCulturePickerContainer`
 
-The `ContentCulturePickerContainer` shape is used to render the CulturePicker.
+The `ContentCulturePickerContainer` shape is used to render the `ContentCulturePicker`.
 You should override this shape in your theme.
 
 | Property                  | Description                                                 |
@@ -159,7 +159,7 @@ The following configuration is used by default and can be customized:
 ```json
 {
    "OrchardCore": {
-    "OrchardCore_ContentLocalization_CulturePicker": {
+    "OrchardCore_ContentLocalization_CulturePickerOptions": {
      "CookieLifeTime": 14 // Set the culture picker cookie life time (in days).
     }
   }

@@ -2,6 +2,7 @@
 @using OrchardCore.Mvc.Utilities;
 @using OrchardCore.Widgets.Models;
 @using OrchardCore.Widgets.ViewModels;
+@using OrchardCore.ContentManagement.Metadata.Models;
 
 @model WidgetsListPartEditViewModel
 
@@ -11,7 +12,7 @@
 
 @{
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget");
     var parentContentType = Model.WidgetsListPart.ContentItem.ContentType;
     string partName = ((dynamic)Model).Metadata.Name;
 }
@@ -23,13 +24,13 @@
     {
         var widgetTemplatePlaceholderId = Guid.NewGuid().ToString("n");
 
-        <div class="widget-list-zone card my-2">
-            <div class="card-header text-muted">
+            <div class="widget-list-zone card my-2">
+                <div class="card-header text-muted">
                 @zone
-            </div>
-            <div class="widget-editor-body card-body px-2 py-1" data-zone="@zone">
-                <div class="w-100 mb-3">
-                    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-widget-list @( ($"widgetlist-{partName}-{zone}").HtmlClassify() ) row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Widgets" })">
+                </div>
+                <div class="widget-editor-body card-body" data-zone="@zone">
+                    <div class="w-100 mb-3">
+                        <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-widget-list @( ($"widgetlist-{partName}-{zone}").HtmlClassify() ) row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Widgets" })">
 
                         @if (Model.WidgetsListPart.Widgets.ContainsKey(zone))
                         {
@@ -38,125 +39,124 @@
                             {
                                 //Create a Card Shape
                                 dynamic contentCard = await New.ContentCard(
-                                    //For Updater
-                                    CollectionShape: Model,
-                                    //Shape Specific
-                                    CollectionShapeType: nameof(WidgetsListPart),
-                                    ContentItem: widget,
-                                    BuildEditor: true,
-                                    ParentContentType: parentContentType,
-                                    CollectionPartName: partName,
-                                    //WidgetListPart Specific
-                                    ZoneValue: zone,
-                                    //Card Specific Properties
-                                    TargetId: widgetTemplatePlaceholderId,
-                                    Inline: false,
-                                    CanMove: true,
-                                    CanDelete: true,
-                                    //Input hidden
-                                    //Prefixes
-                                    HtmlFieldPrefix: htmlFieldPrefix,
-                                    PrefixValue: htmlFieldPrefix + '-' + zone + '-' + (index++).ToString(),
-                                    PrefixesId: Html.IdFor(x => x.Prefixes),
-                                    PrefixesName: Html.NameFor(x => x.Prefixes),
-                                    //Content Types
-                                    ContentTypesId: Html.IdFor(x => x.ContentTypes),
-                                    ContentTypesName: Html.NameFor(x => x.ContentTypes),
-                                    //Content Items
-                                    ContentItemsId: Html.IdFor(x => x.ContentItems),
-                                    ContentItemsName: Html.NameFor(x => x.ContentItems),
-                                    //Zone
-                                    ZonesId: Html.IdFor(x => x.Zones),
-                                    ZonesName: Html.NameFor(x => x.Zones)
+                                //For Updater
+                                CollectionShape: Model,
+                                //Shape Specific
+                                CollectionShapeType: nameof(WidgetsListPart),
+                                ContentItem: widget,
+                                BuildEditor: true,
+                                ParentContentType: parentContentType,
+                                CollectionPartName: partName,
+                                //WidgetListPart Specific
+                                ZoneValue: zone,
+                                //Card Specific Properties
+                                TargetId: widgetTemplatePlaceholderId,
+                                Inline: false,
+                                CanMove: true,
+                                CanDelete: true,
+                                //Input hidden
+                                //Prefixes
+                                HtmlFieldPrefix: htmlFieldPrefix,
+                                PrefixValue: htmlFieldPrefix + '-' + zone + '-' + (index++).ToString(),
+                                PrefixesId: Html.IdFor(x => x.Prefixes),
+                                PrefixesName: Html.NameFor(x => x.Prefixes),
+                                //Content Types
+                                ContentTypesId: Html.IdFor(x => x.ContentTypes),
+                                ContentTypesName: Html.NameFor(x => x.ContentTypes),
+                                //Content Items
+                                ContentItemsId: Html.IdFor(x => x.ContentItems),
+                                ContentItemsName: Html.NameFor(x => x.ContentItems),
+                                //Zone
+                                ZonesId: Html.IdFor(x => x.Zones),
+                                ZonesName: Html.NameFor(x => x.Zones)
                                 );
                                 @await DisplayAsync(contentCard)
                             }
                         }
 
-                        <script at="Foot">
-                            @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
-                            if ($('#@widgetTemplatePlaceholderId').length == 1) {
-                                $("#@widgetTemplatePlaceholderId").sortable({
-                                    handle: ".widget-editor-handle",
-                                    cursor: "move",
-                                    opacity: 0.7,
-                                    tolerance: "pointer",
-                                    placeholder: {
-                                        element: function (currentItem) {
-                                            return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];
+                            <script at="Foot">
+                                @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
+                                if ($('#@widgetTemplatePlaceholderId').length == 1) {
+                                    $("#@widgetTemplatePlaceholderId").sortable({
+                                        handle: ".widget-editor-handle",
+                                        cursor: "move",
+                                        opacity: 0.7,
+                                        tolerance: "pointer",
+                                        placeholder: {
+                                            element: function (currentItem) {
+                                                return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];
+                                            },
+                                            update: function (container, p) {
+                                                return;
+                                            }
                                         },
-                                        update: function (container, p) {
-                                            return;
-                                        }
-                                    },
-                                    toleranceElement: '> div',
-                                    connectWith: '.widget-template-placeholder.widget-template-placeholder-widget-list',
-                                    receive: function (event, ui) {
-                                        var newZone = ui.item.closest('.widget-editor-body').data("zone");
-                                        var zoneInput = ui.item.find('.source-zone').val(newZone);
-                                    },
-                                    start: function (event, ui) {
-                                        widgetDragItem = ui.item;
-                                        lastContainer = ui.item.parent();
-                                        lastContainer.toggleClass('widget-dropzone-hint');
-                                        widgetDragItem.find('.card').first().toggleClass('border-primary');
-                                        var classList = widgetDragItem.attr('class').split(' ');
-                                        $.each(classList, function (id, item) {
-                                            if (item.indexOf('col-md-') === 0) ui.placeholder.addClass(item);
-                                        });
-                                    },
-                                    stop: function (event, ui) {
-                                        lastContainer.toggleClass('widget-dropzone-hint');
-                                        widgetDragItem.find('.card').first().toggleClass('border-primary');
-                                        //clear the global variables
-                                        widgetDragItem = null;
-                                        lastContainer = null;
-                                        widgetItemSourceId = null;
-                                        widgetItemDestId = null;
-
-                                        $(document).trigger('contentpreview:render');
-                                    },
-                                    over: function (event, ui) {
-                                        var $self = $(this);
-                                        if (lastContainer[0] != this) {
+                                        toleranceElement: '> div',
+                                        connectWith: '.widget-template-placeholder.widget-template-placeholder-widget-list',
+                                        receive: function (event, ui) {
+                                            var newZone = ui.item.closest('.widget-editor-body').data("zone");
+                                            var zoneInput = ui.item.find('.source-zone').val(newZone);
+                                        },
+                                        start: function (event, ui) {
+                                            widgetDragItem = ui.item;
+                                            lastContainer = ui.item.parent();
                                             lastContainer.toggleClass('widget-dropzone-hint');
-                                            lastContainer = $self;
-                                            $self.toggleClass('widget-dropzone-hint');
+                                            widgetDragItem.find('.card').first().toggleClass('border-primary');
+                                            var classList = widgetDragItem.attr('class').split(' ');
+                                            $.each(classList, function (id, item) {
+                                                if (item.indexOf('col-md-') === 0) ui.placeholder.addClass(item);
+                                            });
+                                        },
+                                        stop: function (event, ui) {
+                                            lastContainer.toggleClass('widget-dropzone-hint');
+                                            widgetDragItem.find('.card').first().toggleClass('border-primary');
+                                            //clear the global variables
+                                            widgetDragItem = null;
+                                            lastContainer = null;
+                                            widgetItemSourceId = null;
+                                            widgetItemDestId = null;
+                                            $(document).trigger('contentpreview:render');
+                                        },
+                                        over: function (event, ui) {
+                                            var $self = $(this);
+                                            if (lastContainer[0] != this) {
+                                                lastContainer.toggleClass('widget-dropzone-hint');
+                                                lastContainer = $self;
+                                                $self.toggleClass('widget-dropzone-hint');
+                                            }
                                         }
-                                    }
-                                });
-                            }
-                        </script>
-                    </div>
-                    <div class="btn-widget-add-below-wrapper w-100">
-                        <div class="btn-widget-add-below w-100 border border-info">
-                            <div class="btn-group ">
-                                <button type="button" title="@T["Add Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa fa-plus" aria-hidden="true"></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
-                                    {
-                                        <a class="dropdown-item add-list-widget btn-sm"
-                                           data-target-id="@widgetTemplatePlaceholderId"
-                                           data-html-field-prefix="@htmlFieldPrefix"
-                                           data-zones-name="@Html.NameFor(x => x.Zones)"
-                                           data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
-                                           data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
-                                           data-contentitems-name="@Html.NameFor(x => x.ContentItems)"
-                                           data-widget-type="@type.Name"
-                                           data-parent-content-type="@parentContentType"
-                                           data-part-name="@partName"
-                                           data-zone="@zone"
-                                           href="javascript:;">@type.DisplayName</a>
-                                    }
+                                    });
+                                }
+                            </script>
+                        </div>
+                        <div class="btn-widget-add-below-wrapper w-100 my-2">
+                            <div class="btn-widget-add-below w-100 border border-info">
+                                <div class="btn-group ">
+                                    <button type="button" title="@T["Add Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
+                                        {
+                                                <a class="dropdown-item add-list-widget btn-sm"
+                                   data-target-id="@widgetTemplatePlaceholderId"
+                                   data-html-field-prefix="@htmlFieldPrefix"
+                                   data-zones-name="@Html.NameFor(x => x.Zones)"
+                                   data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
+                                   data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
+                                   data-contentitems-name="@Html.NameFor(x => x.ContentItems)"
+                                   data-widget-type="@type.Name"
+                                   data-parent-content-type="@parentContentType"
+                                   data-part-name="@partName"
+                                   data-zone="@zone"
+                                   href="javascript:;">@type.DisplayName</a>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
     }
 
     @if (Context.Items["WidgetsListPart.Edit"] == null)
@@ -170,8 +170,8 @@
         }
 
         <script asp-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.min.js"
-                debug-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.js" at="Foot" depends-on="admin"></script>
+            debug-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.js" at="Foot" depends-on="admin"></script>
         <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css"
-               debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
+           debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
     }
 </div>

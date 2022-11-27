@@ -19,7 +19,6 @@
 
 .ta-badge {
     @extend .bg-light;
-
     background-color: darken(#f8f9fa, 5%) !important;
     color: $gray-700;
 }
@@ -47,6 +46,10 @@
             color: black;
         }
     }
+}
+
+.bootstrap-select > .dropdown-toggle.bs-placeholder, .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
+    color: $gray-900 !important;
 }
 
 // Typography ==================================================================

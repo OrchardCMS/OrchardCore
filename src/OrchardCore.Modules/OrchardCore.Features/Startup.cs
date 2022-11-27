@@ -52,19 +52,19 @@ namespace OrchardCore.Features
             routes.MapAreaControllerRoute(
                 name: "Features",
                 areaName: "OrchardCore.Features",
-                pattern: _adminOptions.AdminUrlPrefix + "/Features",
+                pattern: _adminOptions.AdminUrlPrefix + "/Features/{tenant?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Features) }
             );
             routes.MapAreaControllerRoute(
                 name: "FeaturesDisable",
                 areaName: "OrchardCore.Features",
-                pattern: _adminOptions.AdminUrlPrefix + "/Features/{id}/Disable",
+                pattern: _adminOptions.AdminUrlPrefix + "/Features/{id}/Disable/{tenant?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Disable) }
             );
             routes.MapAreaControllerRoute(
                 name: "FeaturesEnable",
                 areaName: "OrchardCore.Features",
-                pattern: _adminOptions.AdminUrlPrefix + "/Features/{id}/Enable",
+                pattern: _adminOptions.AdminUrlPrefix + "/Features/{id}/Enable/{tenant?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Enable) }
             );
         }
