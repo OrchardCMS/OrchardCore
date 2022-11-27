@@ -118,7 +118,7 @@
         $(".dropdown-menu .dropdown-item").filter(function() {
             return $(this).data("action");
         }).on("click", function () {
-            if ($(":checkbox[name='itemIds']:checked").length > 0) {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);
                 switch ($this.data("action")){
                 case "Delete":
@@ -138,7 +138,7 @@
         });
 
         function displayActionsOrFilters() {
-            if ($(":checkbox[name='itemIds']:checked").length > 0) {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 actions.show();
                 filters.hide();
                 selectedItems.show();
