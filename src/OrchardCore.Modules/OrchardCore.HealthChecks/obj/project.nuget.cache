@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "bUpRLSbhYVgpouolLk+JFUOff08XCdahw8ncSGoudSuQik0WxrG2jiJWbMsYP6P+A0cO0XG0BmOd/WCK6tiMVQ==",
+  "dgSpecHash": "A4R5Sdid7eTBQtfbmSt3je/KI3JRnquhFZePI7qD57TzAKO/FpbLqa52nQ9gORUdKNQfkbcr+lwryuLJfVyF7Q==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.HealthChecks\\OrchardCore.HealthChecks.csproj",
   "expectedPackageFiles": [

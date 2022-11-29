@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ocbtCazQZ4AcE0wimTzlroC0r/uOzQ74u9+O1Tlj5fyyYcJ2VayEZzLXJNK5FbaoDW2DSTCn8ouseVrd3fb4KQ==",
+  "dgSpecHash": "syuYt/tgLiVA25xNhnm8WMZ1gtGfNjMcJpydw9hZDZa26mgjzH7oKU8TUue+yU1w6cMITCWgcjVsDokbYzT16g==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Redis.Abstractions\\OrchardCore.Redis.Abstractions.csproj",
   "expectedPackageFiles": [

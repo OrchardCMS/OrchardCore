@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "deW4o7HALYvlXgPBzMp5TwgqzGYgc7SQWatSC8dNXnpo/ppy8LC6uICbSEIUMoPrJTr6eb+RBspCz69RWgS1OA==",
+  "dgSpecHash": "X6u7ZpitU5oy83aRi+22gySxfLDH8I9QLfl2xQaQ37G6j9w3GEM7YpZeyf0O0J/9JOWqIGf57iLFMYRk8Wc1gA==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.DynamicCache.Abstractions\\OrchardCore.DynamicCache.Abstractions.csproj",
   "expectedPackageFiles": [

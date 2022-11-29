@@ -88,7 +88,7 @@ using System.Reflection;
     ".min.css")]
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Orchard Core Community and Contributors")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.6.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.6.0-preview+ffde8427e914f48701e08ca27f4515fe13df3c8c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.6.0-preview")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OrchardCore.AdminDashboard")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.6.0.0")]
 [assembly: System.Reflection.AssemblyMetadataAttribute("RepositoryUrl", "https://github.com/OrchardCMS/OrchardCore")]

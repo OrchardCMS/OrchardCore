@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "kQ10OiciNwo2R50v+GZsxCLtrmExo93VUXSwhj3NgT/l+IiK4rTFo0vHCZ1kuuE2zKSY8wh2TWc3xe595H+uBw==",
+  "dgSpecHash": "EWLOi06oTWpS0FOGXflzho6RIypBIgwylyJEKvbAAQ1pP0tvvrmbVYPWCU35ecjAXbjgLfZ+5lI/QJVpB6jxCQ==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.FileStorage.AzureBlob\\OrchardCore.FileStorage.AzureBlob.csproj",
   "expectedPackageFiles": [

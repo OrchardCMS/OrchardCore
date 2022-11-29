@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "t7ptmnJZCRPmfK6basH+OHTA76J7c41mYW8v02PB4ai9kziiZ8dDiHMDrf5GAhV38V7hBBHKl7j35V7UQqRMyg==",
+  "dgSpecHash": "s+YJsTw9mrRExtiq1H2cAx6nOHwnjh5Yy70NSA5kfuk+xXl4xJMp67n2uNMdGs2pEMu384zdKoTClHVtIWE+0Q==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.FileStorage.FileSystem\\OrchardCore.FileStorage.FileSystem.csproj",
   "expectedPackageFiles": [

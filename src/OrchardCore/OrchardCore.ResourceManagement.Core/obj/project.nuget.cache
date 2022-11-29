@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "DFXpbjjwM2Zqe8gTubYTsBlrRCupZdh0KhmoeTjTIwRR12kleN6GlqJgKDJ1gsM0L9AelDFFMRpnzRh6mPchiQ==",
+  "dgSpecHash": "FgtL+EFZ4Z8kPo5sEzifzzJhTBdT+fsKRi/Ck9vonHbUBJZ4pAQBOnPgXOLZmQ94AUFnE0Wop75EX04SnsXqhA==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.ResourceManagement.Core\\OrchardCore.ResourceManagement.Core.csproj",
   "expectedPackageFiles": [

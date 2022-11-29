@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "/qrL2CXkIFZzTUjtXtdT1FkdDpPD/gRNNpQJ91qFM1BCjSacCayDX7lrCTd+lA4UYf6WdRn+BJUOz4E12qUxqA==",
+  "dgSpecHash": "Jo6v5vkwsPD4yqR2gdZTycMVrTojmKQiV9XZ9s55edoGg2P2a1BGejUd8k21hEx837VnXZ+ui+GhJXpTDL8mZg==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.DisplayManagement.Abstractions\\OrchardCore.DisplayManagement.Abstractions.csproj",
   "expectedPackageFiles": [

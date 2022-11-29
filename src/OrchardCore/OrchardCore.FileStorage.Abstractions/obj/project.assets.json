@@ -39,45 +39,6 @@
           "buildMultiTargeting/Microsoft.SourceLink.GitHub.targets": {}
         }
       }
-    },
-    "net6.0/win-x64": {
-      "Microsoft.Build.Tasks.Git/1.1.1": {
-        "type": "package",
-        "build": {
-          "build/Microsoft.Build.Tasks.Git.props": {},
-          "build/Microsoft.Build.Tasks.Git.targets": {}
-        },
-        "buildMultiTargeting": {
-          "buildMultiTargeting/Microsoft.Build.Tasks.Git.props": {},
-          "buildMultiTargeting/Microsoft.Build.Tasks.Git.targets": {}
-        }
-      },
-      "Microsoft.SourceLink.Common/1.1.1": {
-        "type": "package",
-        "build": {
-          "build/Microsoft.SourceLink.Common.props": {},
-          "build/Microsoft.SourceLink.Common.targets": {}
-        },
-        "buildMultiTargeting": {
-          "buildMultiTargeting/Microsoft.SourceLink.Common.props": {},
-          "buildMultiTargeting/Microsoft.SourceLink.Common.targets": {}
-        }
-      },
-      "Microsoft.SourceLink.GitHub/1.1.1": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Build.Tasks.Git": "1.1.1",
-          "Microsoft.SourceLink.Common": "1.1.1"
-        },
-        "build": {
-          "build/Microsoft.SourceLink.GitHub.props": {},
-          "build/Microsoft.SourceLink.GitHub.targets": {}
-        },
-        "buildMultiTargeting": {
-          "buildMultiTargeting/Microsoft.SourceLink.GitHub.props": {},
-          "buildMultiTargeting/Microsoft.SourceLink.GitHub.targets": {}
-        }
-      }
     }
   },
   "libraries": {
@@ -299,11 +260,6 @@
           }
         },
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
-      }
-    },
-    "runtimes": {
-      "win-x64": {
-        "#import": []
       }
     }
   }

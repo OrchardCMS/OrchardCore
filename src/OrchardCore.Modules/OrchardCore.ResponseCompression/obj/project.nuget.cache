@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "urry1mbtUUT9RJAsNIJ/gDxzqYwsiNPgiHOE9zU2AB4zjZ4KrRULh3jBoZNi9cB/nVo9nlnZCHh01/uMLg1rKQ==",
+  "dgSpecHash": "UeiPUEaCH9f1JULLqpFb2iuK2NRJOA/jYDTAE/dNvcBDb6fjBIwHYyb3Vu4huIxVhlO5+NdjOqFEUYPqG3L5PA==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.ResponseCompression\\OrchardCore.ResponseCompression.csproj",
   "expectedPackageFiles": [

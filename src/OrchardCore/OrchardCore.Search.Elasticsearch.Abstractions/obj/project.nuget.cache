@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "kBhjHP5TXWCEcKaqOql+cCtR2FB9FTELtUWvaZZ8oPNS1FJ8fG4Agr3JYmV8bGkcAD6JdDIetwn4PtaWlK09sw==",
+  "dgSpecHash": "Of3eZGDLZgGPXHeDDmoce/Ynx+1x81WnABBTIHAulAXTYTnqWoXsxvNuavx2/JOvLluzIIH9x50fOm+wFqRk6A==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Search.Elasticsearch.Abstractions\\OrchardCore.Search.Elasticsearch.Abstractions.csproj",
   "expectedPackageFiles": [

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "mRb1H1tL8lttc2VjdPRic+ZmHpEYTMIMB4s0tpNNjqCGchkn0dNCBAj6D8b/zf4piCys8mqbgGed98Ss4pN0bg==",
+  "dgSpecHash": "/ivsJYxWQIHgHmLudOQ4yMNejFjtJf7Z6zDqIjgSvcI9M+coG7eTOrSwZT111s4oCa+q3KpdRlvIa5eq3KnKug==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Data.YesSql.Abstractions\\OrchardCore.Data.YesSql.Abstractions.csproj",
   "expectedPackageFiles": [

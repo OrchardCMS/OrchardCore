@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "Svl4sXGm/fhFBg3ASdDlcEhEuDEqeNI0Vk7wo40y+tI5ZfdExjexUpxJHgaF72y2h/CqWC7AhuaheyjqhoyNgw==",
+  "dgSpecHash": "fYsCP8hlr0m9/yoqu77pG9s9sC7bbLsb4m7aUdbu/4mrm3VDbCyRHGjoj6RBJGpHljMOfHvyQZ6ti45KDvHZbQ==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Email.Abstractions\\OrchardCore.Email.Abstractions.csproj",
   "expectedPackageFiles": [

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "hpTV6KJgwnv0XBVWU3FQpIB9u6FzYBZhNei2gNOVMtJ6G1NYkN3jyUD+DF8jXiF/EAr+cPGgWC7qDL2c+pRUiA==",
+  "dgSpecHash": "XDfuzq+1sgSHijgfYHFs3oa3ss+8+U4mYAnv2tDMAoAEyhulptVemekITL55zTsfqSvQeDGZ5HTDnuFMTOIyhg==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.FileStorage.Abstractions\\OrchardCore.FileStorage.Abstractions.csproj",
   "expectedPackageFiles": [

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ghZesSZtl+loX1Lto7snD0r3QQT+QWr2IpgwqEFC612/HU6LuVqHnmc6psO4heeyF0no0Ej+b7oSs8/vzakDcQ==",
+  "dgSpecHash": "NaMX8VIk80hl7DSIyxCYXv8YOgth93GzDxwrhWuMQSrznosECblNYATn/bnouG83VrsQTq9omFEwQRBHgFRNAA==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.FileStorage.AmazonS3\\OrchardCore.FileStorage.AmazonS3.csproj",
   "expectedPackageFiles": [

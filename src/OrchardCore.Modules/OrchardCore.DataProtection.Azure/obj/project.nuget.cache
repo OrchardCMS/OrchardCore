@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "5oACIa+smnVT0xtnvR4DYDtXoSdBJYYcEcqY0aG/Q/QeydsZJP1NRfrK4juSW8WH04zDHFDGQVtDhqyA8APvLw==",
+  "dgSpecHash": "5pRj9K8FyAVY+tGi5S/KN/eHO+aRjX57G9BavzueaTrWDZyVICklVbBUDnh3/oM51FR0V64fUqfkWDRn389ijQ==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.DataProtection.Azure\\OrchardCore.DataProtection.Azure.csproj",
   "expectedPackageFiles": [

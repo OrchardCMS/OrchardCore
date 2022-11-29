@@ -22,7 +22,7 @@ using System.Reflection;
     " the Orchard Core Framework.\r\n\r\n      The Security module adds HTTP headers to f" +
     "ollow security best practices.\r\n    ")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.6.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.6.0-preview+ffde8427e914f48701e08ca27f4515fe13df3c8c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.6.0-preview")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OrchardCore.Security")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.6.0.0")]
 [assembly: System.Reflection.AssemblyMetadataAttribute("RepositoryUrl", "https://github.com/OrchardCMS/OrchardCore")]

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ORkba1mtM1UDqLLBEmB1YOwYwu/VMFEaV9fkkpumwsmASFZa0IcTBFTETMz78w2kuZew44jkrruCXsPiXh6pHQ==",
+  "dgSpecHash": "O6JpA1TPHalb7pmzItnN0kYlNqI9uxclYCwSLh6yRgmxle6mk/SlsPpOMEGJr6Lz2SxGICZ4NYRYEoSf9wrw1A==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Mvc.Core\\OrchardCore.Mvc.Core.csproj",
   "expectedPackageFiles": [

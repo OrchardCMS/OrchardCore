@@ -16,7 +16,7 @@ using System.Reflection;
     "nant applications on ASP.NET Core.\r\n\r\n    Converts project/library into an Orcha" +
     "rdCore Module that can be referenced in OrchardCore modular application.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.6.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.6.0-preview+ffde8427e914f48701e08ca27f4515fe13df3c8c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.6.0-preview")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OrchardCore.Module.Targets")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.6.0.0")]
 [assembly: System.Reflection.AssemblyMetadataAttribute("RepositoryUrl", "https://github.com/OrchardCMS/OrchardCore")]

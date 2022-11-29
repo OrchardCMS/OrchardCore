@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "3Tpy3KiqEZSCCBge6UdeIAQ9XUToa2JZ7R+dPlxfeQBKtX3NZzx4QueHajzg10BJgjMY/CBtwc8djRt5SqzfTg==",
+  "dgSpecHash": "z/6cgpH98CDmBD4trdsJ+0gNr+kg0KR0Grs19hn3D5Y3SGsfaIm1glS7vsdGalvIEXXpv9WRoxAZEFZWou0qFA==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.XmlRpc.Abstractions\\OrchardCore.XmlRpc.Abstractions.csproj",
   "expectedPackageFiles": [

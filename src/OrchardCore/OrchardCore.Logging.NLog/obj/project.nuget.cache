@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "+db1v1n0qZZLNRi6a5W2FLPbcv/j75ZsNbxo+E+Rp/fw5XMt1mBZafcafY/a+mVtA3WjoG/yIVBUS6pDLWV+Ag==",
+  "dgSpecHash": "b/AYXxjPAPvyT7kINXdUSdXOfyhpYOzzJT0jprf2Xm32uOZ9E04LxgFMJ6NmoosAAxmkriVD15teEnba6zi9Ag==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Logging.NLog\\OrchardCore.Logging.NLog.csproj",
   "expectedPackageFiles": [

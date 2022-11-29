@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\.github",
+    "\\.github\\workflows"
   ],
-  "SelectedNode": "\\OrchardCore.sln",
+  "SelectedNode": "\\.github\\workflows",
   "PreviewInSolutionExplorer": false
 }

@@ -65,7 +65,7 @@ using System.Reflection;
     "hard Core Framework.\r\n\r\n    The Shortcodes module adds shortcode capabilities to" +
     " content editor.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.6.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.6.0-preview+ffde8427e914f48701e08ca27f4515fe13df3c8c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.6.0-preview")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OrchardCore.Shortcodes")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.6.0.0")]
 [assembly: System.Reflection.AssemblyMetadataAttribute("RepositoryUrl", "https://github.com/OrchardCMS/OrchardCore")]

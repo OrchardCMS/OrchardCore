@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "1dPrGxYB+qZ1unKFvlTAHhsQMZA4sdQjRpJSp6DsHv6RBNEnVoaWueXYA0VpWJ5cdyEhB1223vtl6wcEO8chXA==",
+  "dgSpecHash": "FTEv/uDTOFuEwwJcHIsvyG+aMkjTAqcbRVTu/0cefRv6PI6+Ug4NqsgqCIwh2mHtQBoVjopexKQ1aAr1TrVKIg==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Scripting\\OrchardCore.Scripting.csproj",
   "expectedPackageFiles": [

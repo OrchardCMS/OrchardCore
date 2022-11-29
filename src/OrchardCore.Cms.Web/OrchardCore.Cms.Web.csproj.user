@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <NameOfLastUsedPublishProfile>C:\repos\loethenweb\src\OrchardCore.Cms.Web\Properties\PublishProfiles\loethennet - Web Deploy.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>C:\repos\loethenweb\.github\workflows\loethennet.yml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>

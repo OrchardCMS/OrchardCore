@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "zkRC/RpCBzQWtszp7f4jeRmYHhO8IFU5fNNbs4y9aga1ytRwGCPvwkWaPmKd8m6+zaY1CLffs7vN5uYbv9Tb3Q==",
+  "dgSpecHash": "qIKmIFQKyJwOYOBMFTBaRshivrynRpWfug1wfwwvVIUVMyAGcACzBRFRAXBIJR93Cov1ItuBDpkjEo8+gp73Pw==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Apis.GraphQL.Abstractions\\OrchardCore.Apis.GraphQL.Abstractions.csproj",
   "expectedPackageFiles": [

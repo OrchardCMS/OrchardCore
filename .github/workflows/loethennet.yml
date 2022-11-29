@@ -11,7 +11,7 @@ env:
   WORKING_DIRECTORY: src\OrchardCore.Cms.Web
 jobs:
   build:
-    runs-on: [self-hosted, uubuntu-22.04]
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
@@ -32,7 +32,7 @@ jobs:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
   deploy:
-    runs-on: [self-hosted, uubuntu-22.04]
+    runs-on: self-hosted
     needs: build
     steps:
     - name: Download artifact from build job

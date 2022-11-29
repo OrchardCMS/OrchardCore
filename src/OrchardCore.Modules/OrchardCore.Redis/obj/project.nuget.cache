@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "Se39wLtEBH5/pWKvBCe1qcO7Ls6A2nRpaYXLBrdr+lwtZrzyiQi4latcZrWEMyLSmC2bQyvhYcRwINKr0YDoPg==",
+  "dgSpecHash": "ixtCWQU7V2LyhgNHOtgTlTVe3w+dT1LgBIF08y3pFlb055409opikxgl3Jmb3RlmrjUcQX4zJEwNcBZsiUZMxQ==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Redis\\OrchardCore.Redis.csproj",
   "expectedPackageFiles": [

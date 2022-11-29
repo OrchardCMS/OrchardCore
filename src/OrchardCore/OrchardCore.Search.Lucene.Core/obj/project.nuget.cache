@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "+P1Q0gyGO5k+Wl6DFiuA0XPbod65ySIBoR/j5Bg65Xn/r4lcJzlct+Ol0YE67KlTSe8xyWonfTPxsCRYONwhSQ==",
+  "dgSpecHash": "0crJMrTkA2ybZ9DctY2t8qXCygq2XHpDcnGxrqT+G/y8WfIlVyeail359xDNZHX/Pdq+Wkl5jpTLGeHh1v8Cdw==",
   "success": true,
   "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Search.Lucene.Core\\OrchardCore.Search.Lucene.Core.csproj",
   "expectedPackageFiles": [

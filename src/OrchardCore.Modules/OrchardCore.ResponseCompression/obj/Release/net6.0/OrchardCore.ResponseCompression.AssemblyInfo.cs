@@ -18,7 +18,7 @@ using System.Reflection;
     "nant applications on ASP.NET Core.\r\n\r\n    The Response Compression module provid" +
     "es the gzip compression.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.6.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.6.0-preview+ffde8427e914f48701e08ca27f4515fe13df3c8c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.6.0-preview")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OrchardCore.ResponseCompression")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.6.0.0")]
 [assembly: System.Reflection.AssemblyMetadataAttribute("RepositoryUrl", "https://github.com/OrchardCMS/OrchardCore")]
