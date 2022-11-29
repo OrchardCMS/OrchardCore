@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "0xIFvRr3HrcR/JbZvTfmrZKydYm4UGZ+QDyakDHLi/s=",
+  "Source": "OrchardCore.AuditTrail",
+  "BasePath": "_content/OrchardCore.AuditTrail",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.AuditTrail\\wwwroot",
+      "Source": "OrchardCore.AuditTrail",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.AuditTrail\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.AuditTrail",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

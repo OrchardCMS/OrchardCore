@@ -1,0 +1,170 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: it\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Html.pot\n"
+"X-Crowdin-File-ID: 754\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Italian\n"
+"Language: it_IT\n"
+"PO-Revision-Date: 2022-10-11 20:11\n"
+
+#. updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+#: OrchardCore.Html\Drivers\HtmlBodyPartDisplayDriver.cs:73
+msgctxt "OrchardCore.Html.Drivers.HtmlBodyPartDisplayDriver"
+msgid "{0} doesn't contain a valid Liquid expression. Details: {1}"
+msgstr "{0} non contiene un'espressione Liquid valida. Dettagli: {1}"
+
+#. Description = S["Content stored as HTML."];
+#: OrchardCore.Html\GraphQL\HtmlBodyQueryObjectType.cs:26
+msgctxt "OrchardCore.Html.GraphQL.HtmlBodyQueryObjectType"
+msgid "Content stored as HTML."
+msgstr "Contenuto salvato come HTML."
+
+#. .Description(S["the HTML content"])
+#: OrchardCore.Html\GraphQL\HtmlBodyQueryObjectType.cs:30
+msgctxt "OrchardCore.Html.GraphQL.HtmlBodyQueryObjectType"
+msgid "the HTML content"
+msgstr "il contenuto HTML"
+
+#. context.Updater.ModelState.AddModelError(Prefix + "." + nameof(MonacoSettingsViewModel.Options), S["The options are written in an incorrect format."]);
+#: OrchardCore.Html\Settings\HtmlBodyPartMonacoEditorSettingsDriver.cs:49
+msgctxt "OrchardCore.Html.Settings.HtmlBodyPartMonacoEditorSettingsDriver"
+msgid "The options are written in an incorrect format."
+msgstr "Le opzioni sono scritte in un formato errato."
+
+#. context.Updater.ModelState.AddModelError(Prefix + "." + nameof(TrumbowygSettingsViewModel.Options), S["The options are written in an incorrect format."]);
+#: OrchardCore.Html\Settings\HtmlBodyPartTrumbowygEditorSettingsDriver.cs:45
+msgctxt "OrchardCore.Html.Settings.HtmlBodyPartTrumbowygEditorSettingsDriver"
+msgid "The options are written in an incorrect format."
+msgstr "Le opzioni sono scritte in un formato errato."
+
+#. <span class="hint">@T["The body of the content item."]</span>
+#: OrchardCore.Html\Views\HtmlBodyPart-Monaco.Edit.cshtml:14
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Monaco.Edit"
+msgid "The body of the content item."
+msgstr "Il testo dell'elemento di contenuto."
+
+#. <option value="Monaco" selected="@(currentEditor == "Monaco")">@T["Monaco editor"]</option>
+#: OrchardCore.Html\Views\HtmlBodyPart-Monaco.Option.cshtml:4
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Monaco.Option"
+msgid "Monaco editor"
+msgstr "Editor Monaco"
+
+#. <span class="hint">@T["The body of the content item."]</span>
+#: OrchardCore.Html\Views\HtmlBodyPart-Trumbowyg.Edit.cshtml:35
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Trumbowyg.Edit"
+msgid "The body of the content item."
+msgstr "Il testo dell'elemento di contenuto."
+
+#. <option value="Trumbowyg" selected="@(currentEditor == "Trumbowyg")">@T["Trumbowyg editor"]</option>
+#: OrchardCore.Html\Views\HtmlBodyPart-Trumbowyg.Option.cshtml:4
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Trumbowyg.Option"
+msgid "Trumbowyg editor"
+msgstr "Editor Trumbowyg"
+
+#. <span class="hint">@T["The body of the content item."]</span>
+#: OrchardCore.Html\Views\HtmlBodyPart-Wysiwyg.Edit.cshtml:26
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Wysiwyg.Edit"
+msgid "The body of the content item."
+msgstr "Il testo dell'elemento di contenuto."
+
+#. <option value="Wysiwyg" selected="@(currentEditor == "Wysiwyg")">@T["Wysiwyg editor"]</option>
+#: OrchardCore.Html\Views\HtmlBodyPart-Wysiwyg.Option.cshtml:4
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Wysiwyg.Option"
+msgid "Wysiwyg editor"
+msgstr "Editor Wysiwyg"
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentDisplayMode)">@T["Standard"]</option>
+#: OrchardCore.Html\Views\HtmlBodyPart.DisplayOption.cshtml:4
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart.DisplayOption"
+msgid "Standard"
+msgstr "Predefinito"
+
+#. <span class="hint">@T["The body of the content item."]</span>
+#: OrchardCore.Html\Views\HtmlBodyPart.Edit.cshtml:13
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart.Edit"
+msgid "The body of the content item."
+msgstr "Il testo dell'elemento di contenuto."
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentEditor)">@T["Standard"]</option>
+#: OrchardCore.Html\Views\HtmlBodyPart.Option.cshtml:4
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart.Option"
+msgid "Standard"
+msgstr "Predefinito"
+
+#. <label asp-for="Options">@T["Enter the editor options, language is always set to `html` when saved."]</label>
+#: OrchardCore.Html\Views\HtmlBodyPartMonacoSettings.Edit.cshtml:10
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartMonacoSettings.Edit"
+msgid "Enter the editor options, language is always set to `html` when saved."
+msgstr "Inserisci le opzioni dell'editor, il linguaggio è sempre impostato con `html` quando viene salvato."
+
+#. <span class="hint"><a href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.IStandaloneEditorConstructionOptions.html" target="_blank">@T["Documentation for options"]</a></span>
+#: OrchardCore.Html\Views\HtmlBodyPartMonacoSettings.Edit.cshtml:12
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartMonacoSettings.Edit"
+msgid "Documentation for options"
+msgstr "Documentazione delle opzioni"
+
+#. <label class="form-check-label" asp-for="SanitizeHtml">@T["Sanitize Html"]</label>
+#: OrchardCore.Html\Views\HtmlBodyPartSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartSettings.Edit"
+msgid "Sanitize Html"
+msgstr "Ripulisci Html"
+
+#. @T["Whether the Html is sanitized to prevent custom scripts."]
+#: OrchardCore.Html\Views\HtmlBodyPartSettings.Edit.cshtml:8
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartSettings.Edit"
+msgid "Whether the Html is sanitized to prevent custom scripts."
+msgstr "Se l'Html viene ripulito, tutti gli script personalizzati saranno rimossi."
+
+#. <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/core/Sanitizer" target="_blank">@T["See documentation"]</a>
+#: OrchardCore.Html\Views\HtmlBodyPartSettings.Edit.cshtml:9
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartSettings.Edit"
+msgid "See documentation"
+msgstr "Vedi la documentazione"
+
+#. <label class="form-check-label" asp-for="InsertMediaWithUrl">@T["Insert Media with url"]</label>
+#: OrchardCore.Html\Views\HtmlBodyPartTrumbowygSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartTrumbowygSettings.Edit"
+msgid "Insert Media with url"
+msgstr "Inserisci immagini tramite url"
+
+#. <span class="hint dashed">@T["Whether the url is used when selected from Insert Media (By default, the Shortcode is inserted)."]</span>
+#: OrchardCore.Html\Views\HtmlBodyPartTrumbowygSettings.Edit.cshtml:7
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartTrumbowygSettings.Edit"
+msgid "Whether the url is used when selected from Insert Media (By default, the Shortcode is inserted)."
+msgstr "Viene utilizzato il tag img e un url quando si utilizza la funzione \"Inserisci Media\" (normalmente viene utilizzato uno Shortcode)."
+
+#. <label asp-for="Options">@T["Enter the editor options"]</label>
+#: OrchardCore.Html\Views\HtmlBodyPartTrumbowygSettings.Edit.cshtml:12
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartTrumbowygSettings.Edit"
+msgid "Enter the editor options"
+msgstr "Inserisci le opzioni dell'editor"
+
+#. <span class="hint"><a href="https://alex-d.github.io/Trumbowyg/documentation/#button-pane" target="_blank">@T["Documentation for options"]</a></span>
+#: OrchardCore.Html\Views\HtmlBodyPartTrumbowygSettings.Edit.cshtml:13
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartTrumbowygSettings.Edit"
+msgid "Documentation for options"
+msgstr "Documentazione delle opzioni"
+
+#. <h5 class="modal-title">@T["Select Media"]</h5>
+#: OrchardCore.Html\Views\Media-HtmlBodyPart.Modal.cshtml:5
+msgctxt "OrchardCore.Html.Views.Media-HtmlBodyPart.Modal"
+msgid "Select Media"
+msgstr "Seleziona media"
+
+#. <button type="button" class="btn btn-primary" id="mediaBodySelectButton">@T["OK"]</button>
+#: OrchardCore.Html\Views\Media-HtmlBodyPart.Modal.cshtml:11
+msgctxt "OrchardCore.Html.Views.Media-HtmlBodyPart.Modal"
+msgid "OK"
+msgstr "OK"
+
+#. <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+#: OrchardCore.Html\Views\Media-HtmlBodyPart.Modal.cshtml:12
+msgctxt "OrchardCore.Html.Views.Media-HtmlBodyPart.Modal"
+msgid "Cancel"
+msgstr "Annulla"
+

@@ -1,0 +1,418 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Localization.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Localization.CultureDictionary">
+            <summary>
+            Represents a dictionary for a certain culture.
+            </summary>
+            <remarks>This type is not thread safe.</remarks>
+        </member>
+        <member name="M:OrchardCore.Localization.CultureDictionary.#ctor(System.String,OrchardCore.Localization.PluralizationRuleDelegate)">
+            <summary>
+            Creates a new instance of <see cref="T:OrchardCore.Localization.CultureDictionary"/>.
+            </summary>
+            <param name="cultureName">The culture name.</param>
+            <param name="pluralRule">The pluralization rule.</param>
+        </member>
+        <member name="P:OrchardCore.Localization.CultureDictionary.CultureName">
+            <summary>
+            Gets the culture name.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.CultureDictionary.PluralRule">
+            <summary>
+            gets the pluralization rule.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.CultureDictionary.Item(OrchardCore.Localization.CultureDictionaryRecordKey)">
+            <summary>
+            Gets the localized value.
+            </summary>
+            <param name="key">The resource key.</param>
+            <returns></returns>
+        </member>
+        <member name="P:OrchardCore.Localization.CultureDictionary.Item(OrchardCore.Localization.CultureDictionaryRecordKey,System.Nullable{System.Int32})">
+            <summary>
+            Gets the localized value.
+            </summary>
+            <param name="key">The resource key.</param>
+            <param name="count">The number to specify the pluralization form.</param>
+            <returns></returns>
+        </member>
+        <member name="P:OrchardCore.Localization.CultureDictionary.Translations">
+            <summary>
+            Gets a list of the culture translations including the plural forms.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.CultureDictionary.MergeTranslations(System.Collections.Generic.IEnumerable{OrchardCore.Localization.CultureDictionaryRecord})">
+            <summary>
+            Merges the translations from multiple dictionary records.
+            </summary>
+            <param name="records">The records to be merged.</param>
+        </member>
+        <member name="T:OrchardCore.Localization.CultureDictionaryRecord">
+            <summary>
+            Represents a record in a <see cref="T:OrchardCore.Localization.CultureDictionary"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.CultureDictionaryRecord.#ctor(System.String,System.String[])">
+            <summary>
+            Creates new instance of <see cref="T:OrchardCore.Localization.CultureDictionaryRecord"/>.
+            </summary>
+            <param name="messageId">The message Id.</param>
+            <param name="translations">a list of translations</param>
+        </member>
+        <member name="M:OrchardCore.Localization.CultureDictionaryRecord.#ctor(System.String,System.String,System.String[])">
+            <summary>
+            Creates new instance of <see cref="T:OrchardCore.Localization.CultureDictionaryRecord"/>.
+            </summary>
+            <param name="messageId">The message Id.</param>
+            <param name="context">The message context.</param>
+            <param name="translations">a list of translations</param>
+        </member>
+        <member name="P:OrchardCore.Localization.CultureDictionaryRecord.Key">
+            <summary>
+            Gets the resource key.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.CultureDictionaryRecord.Translations">
+            <summary>
+            Gets the translation values.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.CultureDictionaryRecord.GetKey(System.String,System.String)">
+            <summary>
+            Retrieved the resource key using <paramref name="messageId"/> and <paramref name="context"/>.
+            </summary>
+            <param name="messageId">The message Id.</param>
+            <param name="context">The message context.</param>
+            <returns>The resource key.</returns>
+        </member>
+        <member name="T:OrchardCore.Localization.CultureDictionaryRecordKey">
+            <summary>
+            Represents a key for <see cref="T:OrchardCore.Localization.CultureDictionaryRecord"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.CultureDictionaryRecordKey.#ctor(System.String)">
+            <summary>
+            Creates new instance of <see cref="T:OrchardCore.Localization.CultureDictionaryRecordKey"/>.
+            </summary>
+            <param name="messageId">The message Id.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.CultureDictionaryRecordKey.#ctor(System.String,System.String)">
+            <summary>
+            Creates new instance of <see cref="T:OrchardCore.Localization.CultureDictionaryRecordKey"/>.
+            </summary>
+            <param name="messageId">The message Id.</param>
+            <param name="context">The message context.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.CultureDictionaryRecordKey.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Localization.CultureDictionaryRecordKey.Equals(OrchardCore.Localization.CultureDictionaryRecordKey)">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Localization.CultureDictionaryRecordKey.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="T:OrchardCore.Localization.CultureInfoExtensions">
+            <summary>
+            Provides an extension methods for <see cref="T:System.Globalization.CultureInfo"/> to deal with language direction.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.CultureInfoExtensions.GetLanguageDirection(System.Globalization.CultureInfo)">
+            <summary>
+            Gets the language direction for a given culture.
+            </summary>
+            <param name="culture">The <see cref="T:System.Globalization.CultureInfo"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.CultureInfoExtensions.IsRightToLeft(System.Globalization.CultureInfo)">
+            <summary>
+            Gets whether the culture is RTL or not.
+            </summary>
+            <param name="culture">The culture.</param>
+        </member>
+        <member name="T:OrchardCore.Localization.ILocalizationFileLocationProvider">
+            <summary>
+            Contract that provides a location for the localization strings in the file system.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.ILocalizationFileLocationProvider.GetLocations(System.String)">
+            <summary>
+            Gets the localization location for a specified culture.
+            </summary>
+            <param name="cultureName">The culture name.</param>
+            <returns>A list of localization files.</returns>
+        </member>
+        <member name="T:OrchardCore.Localization.ILocalizationManager">
+            <summary>
+            Contract to manage the localization.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.ILocalizationManager.GetDictionary(System.Globalization.CultureInfo)">
+            <summary>
+            Retrieves a dictionary for a specified culture.
+            </summary>
+            <param name="culture">The <see cref="T:System.Globalization.CultureInfo"/>.</param>
+            <returns>A <see cref="T:OrchardCore.Localization.CultureDictionary"/> for the specified culture.</returns>
+        </member>
+        <member name="T:OrchardCore.Localization.IPluralRuleProvider">
+            <summary>
+            Contract to provide a pluralization rule for cultures.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.IPluralRuleProvider.Order">
+            <summary>
+            Gets the order for <see cref="T:OrchardCore.Localization.IPluralRuleProvider"/> implementation to be executed.
+            </summary>
+            <remarks>Set the <see cref="P:OrchardCore.Localization.IPluralRuleProvider.Order"/> to a negative value in order to get called before the default implementation, or a
+            positive value to be used as a fallback one.</remarks>
+        </member>
+        <member name="M:OrchardCore.Localization.IPluralRuleProvider.TryGetRule(System.Globalization.CultureInfo,OrchardCore.Localization.PluralizationRuleDelegate@)">
+            <summary>
+            Gets a pluralization rule for the specified culture if there is one.
+            </summary>
+            <param name="culture">The culture.</param>
+            <param name="rule">The <see cref="T:OrchardCore.Localization.PluralizationRuleDelegate"/>.</param>
+            <returns>A boolean value indicates whether the culture rule is retrieved?</returns>
+        </member>
+        <member name="T:OrchardCore.Localization.IPluralStringLocalizer">
+            <summary>
+            Contract that extends <see cref="T:Microsoft.Extensions.Localization.IStringLocalizer"/> to support pluralization.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.IPluralStringLocalizer.GetTranslation(System.String,System.Object[])">
+            <summary>
+            Gets the localized strings.
+            </summary>
+            <param name="name">The resource name.</param>
+            <param name="arguments">Optional parameters that can be used inside the resource key.</param>
+            <returns>A list of localized strings including the plural forms.</returns>
+        </member>
+        <member name="T:OrchardCore.Localization.ITranslationProvider">
+            <summary>
+            Contract to provide a translations.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.ITranslationProvider.LoadTranslations(System.String,OrchardCore.Localization.CultureDictionary)">
+            <summary>
+            Loads translations from a certain source for a specific culture.
+            </summary>
+            <param name="cultureName">The culture name.</param>
+            <param name="dictionary">The <see cref="T:OrchardCore.Localization.CultureDictionary"/> that will contains all loaded translations.</param>
+        </member>
+        <member name="T:OrchardCore.Localization.LanguageDirection">
+            <summary>
+            Provides a language directions.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Localization.LanguageDirection.LTR">
+            <summary>
+            Defines left to right direction.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Localization.LanguageDirection.RTL">
+            <summary>
+            Defines right to left direction.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Localization.OrchardCoreRequestLocalizationOptions">
+            <summary>
+            Represents an options for the <see cref="T:Microsoft.AspNetCore.Localization.RequestLocalizationMiddleware"/> that extends <see cref="T:Microsoft.AspNetCore.Builder.RequestLocalizationOptions"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.OrchardCoreRequestLocalizationOptions.#ctor">
+            <summary>
+            Creates a new <see cref="T:OrchardCore.Localization.OrchardCoreRequestLocalizationOptions"/> with default values.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.OrchardCoreRequestLocalizationOptions.#ctor(System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:OrchardCore.Localization.OrchardCoreRequestLocalizationOptions"/> with default values and ability to ignore system settings.
+            <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not.</param>
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.OrchardCoreRequestLocalizationOptions.AddSupportedCultures(System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.Localization.OrchardCoreRequestLocalizationOptions.AddSupportedUICultures(System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.Localization.OrchardCoreRequestLocalizationOptions.SetDefaultCulture(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:OrchardCore.Localization.PluralForm">
+            <summary>
+            Represents a pluralization form.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.PluralForm.#ctor(System.String,System.Int32)">
+            <summary>
+            Creates new instance of <see cref="T:OrchardCore.Localization.PluralForm"/> with key and form.
+            </summary>
+            <param name="key">The localized string.</param>
+            <param name="form">The plural form.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.PluralForm.#ctor(System.String,System.Int32,System.Globalization.CultureInfo)">
+            <summary>
+            Creates new instance of <see cref="T:OrchardCore.Localization.PluralForm"/> with key, form and culture.
+            </summary>
+            <param name="key">The localized string.</param>
+            <param name="form">The plural form.</param>
+            <param name="culture">The <see cref="T:System.Globalization.CultureInfo"/>.</param>
+        </member>
+        <member name="P:OrchardCore.Localization.PluralForm.Culture">
+            <summary>
+            The current UI culture.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.PluralForm.Form">
+            <summary>
+            Get the plural form.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.PluralForm.Key">
+            <summary>
+            Gets the localized string.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Localization.PluralFormNotFoundException">
+            <summary>
+            Represents an exception that is thrown when a pluralization form is not found.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.PluralFormNotFoundException.#ctor">
+            <summary>
+            Creates new instance of <see cref="T:OrchardCore.Localization.PluralFormNotFoundException"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.PluralFormNotFoundException.#ctor(System.String)">
+            <summary>
+            Creates new instance of <see cref="T:OrchardCore.Localization.PluralFormNotFoundException"/> with a message.
+            </summary>
+            <param name="message">The exception message.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.PluralFormNotFoundException.#ctor(System.String,OrchardCore.Localization.PluralForm)">
+            <summary>
+            Creates new instance of <see cref="T:OrchardCore.Localization.PluralFormNotFoundException"/> with a message.
+            </summary>
+            <param name="message">The exception message.</param>
+            <param name="form">The <see cref="T:OrchardCore.Localization.PluralForm"/> that causes the exception.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.PluralFormNotFoundException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates new instance of <see cref="T:OrchardCore.Localization.PluralFormNotFoundException"/> with a message and inner exception.
+            </summary>
+            <param name="message">The exception message.</param>
+            <param name="innerException">The inner <see cref="T:System.Exception"/>.</param>
+        </member>
+        <member name="P:OrchardCore.Localization.PluralFormNotFoundException.Form">
+            <summary>
+            Gets the pluralization form.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Localization.PluralizationArgument">
+            <summary>
+            Represents a pluralization argument.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.PluralizationArgument.Count">
+            <summary>
+            Gets or sets the number to be used for selecting the proper pluralization form.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.PluralizationArgument.Forms">
+            <summary>
+            Gets or sets the pluralization forms.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.PluralizationArgument.Arguments">
+            <summary>
+            Gets or sets the parameters that could be used in localization.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Localization.PluralizationRuleDelegate">
+            <summary>
+            Represents the method that will get the position of the pluralization form.
+            </summary>
+            <param name="count">The number used to specify the pluralization form.</param>
+            <returns>The pluralization rule position.</returns>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Mvc.Localization.HtmlLocalizerExtensions">
+            <summary>
+            Provides extension methods for <see cref="T:Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Mvc.Localization.HtmlLocalizerExtensions.Plural(Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer,System.Int32,System.String,System.String,System.Object[])">
+            <summary>
+            Gets the pluralization form.
+            </summary>
+            <param name="localizer">The <see cref="T:Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer"/>.</param>
+            <param name="count">The number to be used for selecting the pluralization form.</param>
+            <param name="singular">The singular form key.</param>
+            <param name="plural">The plural form key.</param>
+            <param name="arguments">The parameters used in the key.</param>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Mvc.Localization.HtmlLocalizerExtensions.Plural(Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer,System.Int32,System.String[],System.Object[])">
+            <summary>
+            Gets the pluralization form.
+            </summary>
+            <param name="localizer">The <see cref="T:Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer"/>.</param>
+            <param name="count">The number to be used for selecting the pluralization form.</param>
+            <param name="pluralForms">A list of pluralization forms.</param>
+            <param name="arguments">The parameters used in the key.</param>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Mvc.Localization.ViewLocalizerExtensions">
+            <summary>
+            Provides extension methods for <see cref="T:Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Mvc.Localization.ViewLocalizerExtensions.Plural(Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer,System.Int32,System.String,System.String,System.Object[])">
+            <summary>
+            Gets the pluralization form.
+            </summary>
+            <param name="localizer">The <see cref="T:Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer"/>.</param>
+            <param name="count">The number to be used for selecting the pluralization form.</param>
+            <param name="singular">The singular form key.</param>
+            <param name="plural">The plural form key.</param>
+            <param name="arguments">The parameters used in the key.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Mvc.Localization.ViewLocalizerExtensions.Plural(Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer,System.Int32,System.String[],System.Object[])">
+            <summary>
+            Gets the pluralization form.
+            </summary>
+            <param name="localizer">The <see cref="T:Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer"/>.</param>
+            <param name="count">The number to be used for selecting the pluralization form.</param>
+            <param name="pluralForms">A list of pluralization forms.</param>
+            <param name="arguments">The parameters used in the key.</param>
+        </member>
+        <member name="T:Microsoft.Extensions.Localization.StringLocalizerExtensions">
+            <summary>
+            Provides extension methods for <see cref="T:Microsoft.Extensions.Localization.IStringLocalizer"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.Localization.StringLocalizerExtensions.Plural(Microsoft.Extensions.Localization.IStringLocalizer,System.Int32,System.String,System.String,System.Object[])">
+            <summary>
+            Gets the pluralization form.
+            </summary>
+            <param name="localizer">The <see cref="T:Microsoft.Extensions.Localization.IStringLocalizer"/>.</param>
+            <param name="count">The number to be used for selecting the pluralization form.</param>
+            <param name="singular">The singular form key.</param>
+            <param name="plural">The plural form key.</param>
+            <param name="arguments">The parameters used in the key.</param>
+        </member>
+        <member name="M:Microsoft.Extensions.Localization.StringLocalizerExtensions.Plural(Microsoft.Extensions.Localization.IStringLocalizer,System.Int32,System.String[],System.Object[])">
+            <summary>
+            Gets the pluralization form.
+            </summary>
+            <param name="localizer">The <see cref="T:Microsoft.Extensions.Localization.IStringLocalizer"/>.</param>
+            <param name="count">The number to be used for selecting the pluralization form.</param>
+            <param name="pluralForms">A list of pluralization forms.</param>
+            <param name="arguments">The parameters used in the key.</param>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "PQeRcBi8kTA04np73aA7wpkZSvDr71kyLJM6zHKSeABrgJfJwO6BuruZehbVV2ZiZBBjzVkLZEdex0ppMDeOOg==",
+  "success": true,
+  "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Shortcodes.Abstractions\\OrchardCore.Shortcodes.Abstractions.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.build.tasks.git\\1.1.1\\microsoft.build.tasks.git.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.sourcelink.common\\1.1.1\\microsoft.sourcelink.common.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.sourcelink.github\\1.1.1\\microsoft.sourcelink.github.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\parlot\\0.0.23\\parlot.0.0.23.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\shortcodes\\1.3.3\\shortcodes.1.3.3.nupkg.sha512"
+  ],
+  "logs": []
+}

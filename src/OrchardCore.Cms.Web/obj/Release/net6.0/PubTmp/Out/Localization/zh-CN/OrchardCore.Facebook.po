@@ -1,0 +1,282 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Facebook.pot\n"
+"X-Crowdin-File-ID: 742\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"PO-Revision-Date: 2022-05-05 18:53\n"
+
+#. builder.Add(S["Configuration"], configuration => configuration
+#: OrchardCore.Facebook\AdminMenu.cs:27
+msgctxt "OrchardCore.Facebook.AdminMenu"
+msgid "Configuration"
+msgstr "配置"
+
+#. .Add(S["Settings"], settings => settings
+#: OrchardCore.Facebook\AdminMenu.cs:28
+msgctxt "OrchardCore.Facebook.AdminMenu"
+msgid "Settings"
+msgstr "设置"
+
+#. .Add(S["Facebook App"], S["Facebook App"].PrefixPosition(), settings => settings
+#. .Add(S["Facebook App"], S["Facebook App"].PrefixPosition(), settings => settings
+#: OrchardCore.Facebook\AdminMenu.cs:29
+#: OrchardCore.Facebook\AdminMenu.cs:29
+msgctxt "OrchardCore.Facebook.AdminMenu"
+msgid "Facebook App"
+msgstr "Facebook 应用程序"
+
+#. builder.Add(S["Security"], security => security
+#: OrchardCore.Facebook\AdminMenu.cs:59
+msgctxt "OrchardCore.Facebook.AdminMenuLogin"
+msgid "Security"
+msgstr "安全"
+
+#. .Add(S["Authentication"], authentication => authentication
+#: OrchardCore.Facebook\AdminMenu.cs:60
+msgctxt "OrchardCore.Facebook.AdminMenuLogin"
+msgid "Authentication"
+msgstr "认证"
+
+#. .Add(S["Facebook"], S["Facebook"].PrefixPosition(), settings => settings
+#. .Add(S["Facebook"], S["Facebook"].PrefixPosition(), settings => settings
+#: OrchardCore.Facebook\AdminMenu.cs:61
+#: OrchardCore.Facebook\AdminMenu.cs:61
+msgctxt "OrchardCore.Facebook.AdminMenuLogin"
+msgid "Facebook"
+msgstr "脸谱网（Facebook）"
+
+#. results.Add(new ValidationResult(S["The AppId is required."], new[]
+#: OrchardCore.Facebook\Services\FacebookService.cs:55
+msgctxt "OrchardCore.Facebook.Services.FacebookService"
+msgid "The AppId is required."
+msgstr "AppId 是必需的。"
+
+#. results.Add(new ValidationResult(S["The App Secret is required."], new[]
+#: OrchardCore.Facebook\Services\FacebookService.cs:63
+msgctxt "OrchardCore.Facebook.Services.FacebookService"
+msgid "The App Secret is required."
+msgstr "App Secret 是必需的。"
+
+#. [RegularExpression(@"\/[-A-Za-z0-9+&@#\/%?=~_|!:,.;]+[-A-Za-z0-9+&@#\/%=~_|]", ErrorMessage = "Invalid path")]
+#: OrchardCore.Facebook\Login\ViewModels\FacebookLoginSettingsViewModel.cs:7
+msgctxt "OrchardCore.Facebook.Login.ViewModels.FacebookLoginSettingsViewModel"
+msgid "Invalid path"
+msgstr "无效路径"
+
+#. updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+#: OrchardCore.Facebook\Widgets\Drivers\FacebookPluginPartDisplayDriver.cs:85
+msgctxt "OrchardCore.Facebook.Widgets.Drivers.FacebookPluginPartDisplayDriver"
+msgid "The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}"
+msgstr "Facebook正文不包含有效的 Liquid 表达式。详细信息： {0}"
+
+#. context.Updater.ModelState.AddModelError(nameof(model.Liquid), S["The Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+#: OrchardCore.Facebook\Widgets\Settings\FacebookPluginPartSettingsDisplayDriver.cs:41
+msgctxt "OrchardCore.Facebook.Widgets.Settings.FacebookPluginPartSettingsDisplayDriver"
+msgid "The Body doesn't contain a valid Liquid expression. Details: {0}"
+msgstr "Facebook正文不包含有效的 Liquid 表达式。详细信息： {0}"
+
+#. @T["The current tenant will be reloaded when the settings are saved."]
+#: OrchardCore.Facebook\Views\FacebookLoginSettings.Edit.cshtml:5
+msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr "保存设置后，当前租户将会被重新加载。"
+
+#. <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Facebook/#facebook-login" target="_blank">@T["See documentation"]</a>
+#: OrchardCore.Facebook\Views\FacebookLoginSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
+msgid "See documentation"
+msgstr "查看文档"
+
+#. <h3>@T["Login Settings"]</h3>
+#: OrchardCore.Facebook\Views\FacebookLoginSettings.Edit.cshtml:9
+msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
+msgid "Login Settings"
+msgstr "登录设置"
+
+#. <label>@T["CallbackPath"]</label>
+#: OrchardCore.Facebook\Views\FacebookLoginSettings.Edit.cshtml:12
+msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
+msgid "CallbackPath"
+msgstr "回调地址"
+
+#. <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
+#: OrchardCore.Facebook\Views\FacebookLoginSettings.Edit.cshtml:15
+msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
+msgid "The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."
+msgstr "应用程序的基路径内将返回用户代理的请求路径。中间件到达时将处理此请求。"
+
+#. <label class="form-check-label" asp-for="SaveTokens">@T["Store tokens"]</label>
+#: OrchardCore.Facebook\Views\FacebookLoginSettings.Edit.cshtml:21
+msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
+msgid "Store tokens"
+msgstr "存储令牌"
+
+#. <span class="hint dashed">@T["Store external authentication tokens for reuse"]</span>
+#: OrchardCore.Facebook\Views\FacebookLoginSettings.Edit.cshtml:22
+msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
+msgid "Store external authentication tokens for reuse"
+msgstr "存储外部身份验证令牌以便重新使用"
+
+#. <label asp-for="Liquid">@T["Body"]</label>
+#: OrchardCore.Facebook\Views\FacebookPluginPart.Edit.cshtml:13
+msgctxt "OrchardCore.Facebook.Views.FacebookPluginPart.Edit"
+msgid "Body"
+msgstr "正文部分(Body)"
+
+#. <span class="hint">@T["The template of the plugin, in Liquid format."]</span>
+#: OrchardCore.Facebook\Views\FacebookPluginPart.Edit.cshtml:15
+msgctxt "OrchardCore.Facebook.Views.FacebookPluginPart.Edit"
+msgid "The template of the plugin, in Liquid format."
+msgstr "使用 Liquid 模板语言的插件模板。"
+
+#. <label asp-for="Liquid">@T["Body"]</label>
+#: OrchardCore.Facebook\Views\FacebookPluginPartSettings.Edit.cshtml:13
+msgctxt "OrchardCore.Facebook.Views.FacebookPluginPartSettings.Edit"
+msgid "Body"
+msgstr "正文部分(Body)"
+
+#. <span class="hint">@T["The default template of the plugin, in Liquid format."]</span>
+#: OrchardCore.Facebook\Views\FacebookPluginPartSettings.Edit.cshtml:15
+msgctxt "OrchardCore.Facebook.Views.FacebookPluginPartSettings.Edit"
+msgid "The default template of the plugin, in Liquid format."
+msgstr "使用 Liquid 模板语言的默认插件模板。"
+
+#. @T["The current tenant will be reloaded when the settings are saved."]
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:5
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr "保存设置后，当前租户将会被重新加载。"
+
+#. <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Facebook/#core-components" target="_blank">@T["See documentation"]</a>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "See documentation"
+msgstr "查看文档"
+
+#. <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:11
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "An error occurred while decrypting a setting. Please apply and save."
+msgstr "解密设置时出错。请应用并保存。"
+
+#. <h3>@T["Facebook Integration"]</h3>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:14
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Facebook Integration"
+msgstr "Facebook 集成"
+
+#. <label>@T["Application Identifier"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:17
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Application Identifier"
+msgstr "应用程序标识符"
+
+#. <span class="hint">@T["The Application ID found on the Facebook developer portal parameters."]</span>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:20
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "The Application ID found on the Facebook developer portal parameters."
+msgstr "Facebook开发者门户参数中找到了应用程序ID。"
+
+#. <label>@T["Secret Key"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:24
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Secret Key"
+msgstr "密钥"
+
+#. <span class="hint">@T["The Application secret key found on the Facebook developer portal parameters."]</span>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:27
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "The Application secret key found on the Facebook developer portal parameters."
+msgstr "Facebook开发者门户参数中找到了应用程序密钥。"
+
+#. <label>@T["Javascript SDK Version"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:32
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Javascript SDK Version"
+msgstr "Javascript SDK 版本"
+
+#. <label>@T["Javascript Sdk js"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:35
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Javascript Sdk js"
+msgstr "Javascript Sdk js"
+
+#. <span class="hint">@T["Determines which versions of the Graph API and any API dialogs or plugins are invoked. Default is v3.2"]</span>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:40
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Determines which versions of the Graph API and any API dialogs or plugins are invoked. Default is v3.2"
+msgstr "确定引用Graph API 和任意 API dialogs或插件的版本。默认为 v3.2"
+
+#. <span class="hint">@T["Determines which sdk js file to load. Default is sdk.js but you can change it as needed. Eg. to render the chat plugin use sdk/xfbml.customerchat.js and <a target=\"_blank\" href=\"https://developers.facebook.com/docs/messenger-platform/discovery/customer-chat-plugin#steps\">follow instructions</a>"]</span>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:46
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Determines which sdk js file to load. Default is sdk.js but you can change it as needed. Eg. to render the chat plugin use sdk/xfbml.customerchat.js and <a target=\"_blank\" href=\"https://developers.facebook.com/docs/messenger-platform/discovery/customer-chat-plugin#steps\">follow instructions</a>"
+msgstr "确定要载入哪些 sdk js 文件。默认是 sdk.js，但可视需要改变它。Eg。请让聊天插件使用 sdk/xfbml.custarcht.js 和 <a target=\"_blank\" href=\"https://developers.facebook.com/docs/messenger-platform/discovery/customer-chat-plugin#steps\">遵循指示</a>"
+
+#. <label class="form-check-label">@T["Init on every page"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:52
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Init on every page"
+msgstr "在每个页面上初始化"
+
+#. <label>@T["Parameters for the FB.init() call"]</label>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:59
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "Parameters for the FB.init() call"
+msgstr "FB.init() 调用的参数"
+
+#. <span class="hint">@T["AppId and Version are filled automatically. Check the <a target=\"_blank\" href=\"https://developers.facebook.com/docs/javascript/reference/FB.init/v3.2\">reference doc for the <code>FB.init</code></a> function for more info"]</span>
+#: OrchardCore.Facebook\Views\FacebookSettings.Edit.cshtml:62
+msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
+msgid "AppId and Version are filled automatically. Check the <a target=\"_blank\" href=\"https://developers.facebook.com/docs/javascript/reference/FB.init/v3.2\">reference doc for the <code>FB.init</code></a> function for more info"
+msgstr "应用ID和版本自动填充。请检查 <a target=\"_blank\" href=\"https://developers.facebook.com/docs/javascript/reference/FB.init/v3.2\">参考文档 <code>FB.init</code></a> 功能以获取更多信息"
+
+#. <span class="icon"><i class="fa fa-facebook" aria-hidden="true"></i></span><span class="title">@T["Facebook"]</span>
+#: OrchardCore.Facebook\Views\NavigationItemText-facebook.Id.cshtml:1
+msgctxt "OrchardCore.Facebook.Views.NavigationItemText-facebook.Id"
+msgid "Facebook"
+msgstr "Facebook"
+
+#. <span class="icon"><i class="fa fa-facebook" aria-hidden="true"></i></span><span class="title">@T["Facebook App"]</span>
+#: OrchardCore.Facebook\Views\NavigationItemText-facebookApp.Id.cshtml:1
+msgctxt "OrchardCore.Facebook.Views.NavigationItemText-facebookApp.Id"
+msgid "Facebook App"
+msgstr "Facebook 应用程序"
+
+#. <h5>@T["Facebook Login Settings"]</h5>
+#: OrchardCore.Facebook\Views\Items\FacebookLoginDeploymentStep.Edit.cshtml:3
+msgctxt "OrchardCore.Facebook.Views.Items.FacebookLoginDeploymentStep.Edit"
+msgid "Facebook Login Settings"
+msgstr "Facebook 登录设置"
+
+#. <h5>@T["Facebook Login Settings"]</h5>
+#: OrchardCore.Facebook\Views\Items\FacebookLoginDeploymentStep.Summary.cshtml:3
+msgctxt "OrchardCore.Facebook.Views.Items.FacebookLoginDeploymentStep.Summary"
+msgid "Facebook Login Settings"
+msgstr "Facebook 登录设置"
+
+#. <span class="hint">@T["Adds Facebook Login settings to the plan."]</span>
+#: OrchardCore.Facebook\Views\Items\FacebookLoginDeploymentStep.Summary.cshtml:5
+msgctxt "OrchardCore.Facebook.Views.Items.FacebookLoginDeploymentStep.Summary"
+msgid "Adds Facebook Login settings to the plan."
+msgstr "将 Facebook 登录设置添加到计划中。"
+
+#. <h4 class="card-title">@T["Facebook Login Settings"]</h4>
+#: OrchardCore.Facebook\Views\Items\FacebookLoginDeploymentStep.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Facebook.Views.Items.FacebookLoginDeploymentStep.Thumbnail"
+msgid "Facebook Login Settings"
+msgstr "Facebook 登录设置"
+
+#. <p>@T["Exports the Facebook Login settings."]</p>
+#: OrchardCore.Facebook\Views\Items\FacebookLoginDeploymentStep.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Facebook.Views.Items.FacebookLoginDeploymentStep.Thumbnail"
+msgid "Exports the Facebook Login settings."
+msgstr "导出 Facebook 登录设置。"
+

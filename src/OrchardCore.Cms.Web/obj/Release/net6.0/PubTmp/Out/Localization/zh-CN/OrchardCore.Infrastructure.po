@@ -1,0 +1,44 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Infrastructure.pot\n"
+"X-Crowdin-File-ID: 760\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"PO-Revision-Date: 2021-07-15 19:01\n"
+
+#. throw new Exception(S["Multiple commands found matching arguments \"{0}\". Commands available: {1}.",
+#: OrchardCore.Infrastructure\Commands\DefaultCommandManager.cs:38
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandManager"
+msgid "Multiple commands found matching arguments \"{0}\". Commands available: {1}."
+msgstr "多个命令找到匹配参数“{0}”。可用的命令: {1}。"
+
+#. throw new Exception(S["No command found matching arguments \"{0}\". Commands available: {1}.",
+#: OrchardCore.Infrastructure\Commands\DefaultCommandManager.cs:41
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandManager"
+msgid "No command found matching arguments \"{0}\". Commands available: {1}."
+msgstr "没有找到匹配参数“{0}”。命令可用： {1}。"
+
+#. await Context.Output.WriteLineAsync(S["List of available commands:"]);
+#: OrchardCore.Infrastructure\Commands\Builtin\HelpCommand.cs:25
+msgctxt "OrchardCore.Environment.Commands.Builtin.HelpCommand"
+msgid "List of available commands:"
+msgstr "可用命令列表："
+
+#. await Context.Output.WriteLineAsync(S["Command {0} doesn't exist", command]);
+#: OrchardCore.Infrastructure\Commands\Builtin\HelpCommand.cs:49
+msgctxt "OrchardCore.Environment.Commands.Builtin.HelpCommand"
+msgid "Command {0} doesn't exist"
+msgstr "命令 {0} 不存在"
+
+#. return S["{0}.{1}: no help text", descriptor.MethodInfo.DeclaringType?.FullName, descriptor.MethodInfo.Name];
+#: OrchardCore.Infrastructure\Commands\Builtin\HelpCommand.cs:70
+msgctxt "OrchardCore.Environment.Commands.Builtin.HelpCommand"
+msgid "{0}.{1}: no help text"
+msgstr "{0}.{1}: 没有帮助文本"
+

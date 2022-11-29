@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Indexing</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Indexing.Services.IndexingTaskManager">
+            <summary>
+            This is a scoped service that enlists tasks to be stored in the database.
+            It enlists a final task using the current <see cref="T:OrchardCore.Environment.Shell.Scope.ShellScope"/> such
+            that multiple calls to <see cref="M:OrchardCore.Indexing.Services.IndexingTaskManager.CreateTaskAsync(OrchardCore.ContentManagement.ContentItem,OrchardCore.Indexing.IndexingTaskTypes)"/> can be done without incurring
+            a SQL query on every single one.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Indexing.Startup">
+            <summary>
+            These services are registered on the tenant service collection
+            </summary>
+        </member>
+    </members>
+</doc>

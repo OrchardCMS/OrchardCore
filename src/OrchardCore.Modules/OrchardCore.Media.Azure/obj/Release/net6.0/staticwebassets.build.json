@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "Wt3FMTQlXWLVUqG73sqN6mNqWkei6ymW204yPXDBs8w=",
+  "Source": "OrchardCore.Media.Azure",
+  "BasePath": "_content/OrchardCore.Media.Azure",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

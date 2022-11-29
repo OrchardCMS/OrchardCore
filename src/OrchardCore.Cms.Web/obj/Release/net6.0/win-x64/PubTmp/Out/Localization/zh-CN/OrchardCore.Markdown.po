@@ -1,0 +1,182 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Markdown.pot\n"
+"X-Crowdin-File-ID: 774\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"PO-Revision-Date: 2022-10-11 20:17\n"
+
+#. updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+#: OrchardCore.Markdown\Drivers\MarkdownBodyPartDisplayDriver.cs:75
+msgctxt "OrchardCore.Markdown.Drivers.MarkdownBodyPartDisplayDriver"
+msgid "{0} doesn't contain a valid Liquid expression. Details: {1}"
+msgstr "{0} 不包含有效的 Liquid 表达式。详细信息: {1}"
+
+#. updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} field doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
+#: OrchardCore.Markdown\Drivers\MarkdownFieldDriver.cs:105
+msgctxt "OrchardCore.Markdown.Drivers.MarkdownFieldDisplayDriver"
+msgid "{0} field doesn't contain a valid Liquid expression. Details: {1}"
+msgstr "{0} 字段不包含有效的 Liquid 表达式。详细信息: {1}"
+
+#. Description = S["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
+#: OrchardCore.Markdown\GraphQL\MarkdownBodyQueryObjectType.cs:28
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownBodyQueryObjectType"
+msgid "Content stored as Markdown. You can also query the HTML interpreted version of Markdown."
+msgstr "内容存储为 Markdown。您也可以查询 HTML 解释的 Markdown 版本。"
+
+#. .Description(S["the markdown value"]);
+#: OrchardCore.Markdown\GraphQL\MarkdownBodyQueryObjectType.cs:31
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownBodyQueryObjectType"
+msgid "the markdown value"
+msgstr "markdown值"
+
+#. .Description(S["the HTML representation of the markdown content"])
+#: OrchardCore.Markdown\GraphQL\MarkdownBodyQueryObjectType.cs:34
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownBodyQueryObjectType"
+msgid "the HTML representation of the markdown content"
+msgstr "Markdown 内容的 HTML 描述"
+
+#. Description = S["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
+#: OrchardCore.Markdown\GraphQL\MarkdownFieldQueryObjectType.cs:30
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownFieldQueryObjectType"
+msgid "Content stored as Markdown. You can also query the HTML interpreted version of Markdown."
+msgstr "内容存储为 Markdown。您也可以查询 HTML 解释的 Markdown 版本。"
+
+#. .Description(S["the markdown value"]);
+#: OrchardCore.Markdown\GraphQL\MarkdownFieldQueryObjectType.cs:33
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownFieldQueryObjectType"
+msgid "the markdown value"
+msgstr "markdown值"
+
+#. .Description(S["the HTML representation of the markdown content"])
+#: OrchardCore.Markdown\GraphQL\MarkdownFieldQueryObjectType.cs:36
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownFieldQueryObjectType"
+msgid "the HTML representation of the markdown content"
+msgstr "Markdown 内容的 HTML 代表"
+
+#. <span class="hint">@T["The markdown text of the content item."]</span>
+#: OrchardCore.Markdown\Views\MarkdownBodyPart-Wysiwyg.Edit.cshtml:19
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart-Wysiwyg.Edit"
+msgid "The markdown text of the content item."
+msgstr "内容项的markdown文本。"
+
+#. <option value="Wysiwyg" selected="@(currentEditor == "Wysiwyg")">@T["Wysiwyg editor"]</option>
+#: OrchardCore.Markdown\Views\MarkdownBodyPart-Wysiwyg.Option.cshtml:4
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart-Wysiwyg.Option"
+msgid "Wysiwyg editor"
+msgstr "Wysiwyg富文本编辑器"
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentDisplayMode)">@T["Standard"]</option>
+#: OrchardCore.Markdown\Views\MarkdownBodyPart.DisplayOption.cshtml:4
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart.DisplayOption"
+msgid "Standard"
+msgstr "标准"
+
+#. <span class="hint">@T["The body of the content item, in Markdown format."]</span>
+#: OrchardCore.Markdown\Views\MarkdownBodyPart.Edit.cshtml:17
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart.Edit"
+msgid "The body of the content item, in Markdown format."
+msgstr "内容项目的正文，以Markdown格式。"
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentEditor)">@T["Standard"]</option>
+#: OrchardCore.Markdown\Views\MarkdownBodyPart.Option.cshtml:4
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart.Option"
+msgid "Standard"
+msgstr "标准"
+
+#. <label class="form-check-label" asp-for="SanitizeHtml">@T["Sanitize Html"]</label>
+#: OrchardCore.Markdown\Views\MarkdownBodyPartSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPartSettings.Edit"
+msgid "Sanitize Html"
+msgstr "HTML无害化"
+
+#. @T["Whether the Html output from the Markdown is sanitized to prevent custom scripts."]
+#: OrchardCore.Markdown\Views\MarkdownBodyPartSettings.Edit.cshtml:8
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPartSettings.Edit"
+msgid "Whether the Html output from the Markdown is sanitized to prevent custom scripts."
+msgstr "Markdown 的 Html 输出是否被净化，以防止自定义脚本。"
+
+#. <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/core/Sanitizer" target="_blank">@T["See documentation"]</a>
+#: OrchardCore.Markdown\Views\MarkdownBodyPartSettings.Edit.cshtml:9
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPartSettings.Edit"
+msgid "See documentation"
+msgstr "查看文档"
+
+#. <option value="TextArea" selected="@(currentEditor == "TextArea")">@T["Multi-line"]</option>
+#: OrchardCore.Markdown\Views\MarkdownField-TextArea.Option.cshtml:4
+msgctxt "OrchardCore.Markdown.Views.MarkdownField-TextArea.Option"
+msgid "Multi-line"
+msgstr "多行"
+
+#. <option value="Wysiwyg" selected="@(currentEditor == "Wysiwyg")">@T["Wysiwyg editor"]</option>
+#: OrchardCore.Markdown\Views\MarkdownField-Wysiwyg.Option.cshtml:4
+msgctxt "OrchardCore.Markdown.Views.MarkdownField-Wysiwyg.Option"
+msgid "Wysiwyg editor"
+msgstr "Wysiwyg富文本编辑器"
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentDisplayMode)">@T["Standard"]</option>
+#: OrchardCore.Markdown\Views\MarkdownField.DisplayOption.cshtml:4
+msgctxt "OrchardCore.Markdown.Views.MarkdownField.DisplayOption"
+msgid "Standard"
+msgstr "标准"
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentEditor)">@T["Standard"]</option>
+#: OrchardCore.Markdown\Views\MarkdownField.Option.cshtml:4
+msgctxt "OrchardCore.Markdown.Views.MarkdownField.Option"
+msgid "Standard"
+msgstr "标准"
+
+#. <label asp-for="Hint">@T["Hint"]</label>
+#: OrchardCore.Markdown\Views\MarkdownFieldSettings.Edit.cshtml:5
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
+msgid "Hint"
+msgstr "提示"
+
+#. <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+#: OrchardCore.Markdown\Views\MarkdownFieldSettings.Edit.cshtml:7
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr "编辑器上为此字段显示的提示文本。"
+
+#. <label class="form-check-label" asp-for="SanitizeHtml">@T["Sanitize Html"]</label>
+#: OrchardCore.Markdown\Views\MarkdownFieldSettings.Edit.cshtml:14
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
+msgid "Sanitize Html"
+msgstr "HTML无害化"
+
+#. @T["Whether the Html output is sanitized to prevent custom scripts."]
+#: OrchardCore.Markdown\Views\MarkdownFieldSettings.Edit.cshtml:16
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
+msgid "Whether the Html output is sanitized to prevent custom scripts."
+msgstr "Html 输出是否被净化以防止自定义脚本。"
+
+#. <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/core/Sanitizer" target="_blank">@T["See documentation"]</a>
+#: OrchardCore.Markdown\Views\MarkdownFieldSettings.Edit.cshtml:17
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
+msgid "See documentation"
+msgstr "查看文档"
+
+#. <h5 class="modal-title">@T["Select Media"]</h5>
+#: OrchardCore.Markdown\Views\Media-MarkdownBodyPart.Modal.cshtml:7
+msgctxt "OrchardCore.Markdown.Views.Media-MarkdownBodyPart.Modal"
+msgid "Select Media"
+msgstr "选择媒体"
+
+#. <button type="button" class="btn btn-primary" id="mediaMarkdownSelectButton">@T["OK"]</button>
+#: OrchardCore.Markdown\Views\Media-MarkdownBodyPart.Modal.cshtml:13
+msgctxt "OrchardCore.Markdown.Views.Media-MarkdownBodyPart.Modal"
+msgid "OK"
+msgstr "确定"
+
+#. <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+#: OrchardCore.Markdown\Views\Media-MarkdownBodyPart.Modal.cshtml:14
+msgctxt "OrchardCore.Markdown.Views.Media-MarkdownBodyPart.Modal"
+msgid "Cancel"
+msgstr "取消"
+

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "N8bFdZHJ12U/W+1ALwtphcu1mx3cu+43ozKJeHRVvTc=",
+  "Source": "OrchardCore.AutoSetup",
+  "BasePath": "_content/OrchardCore.AutoSetup",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

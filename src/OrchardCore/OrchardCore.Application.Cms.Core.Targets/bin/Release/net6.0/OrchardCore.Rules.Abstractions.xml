@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Rules.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Rules.IRuleMigrator">
+            <comment>
+            Migrates existing script rules to rules
+            </comment>
+            <remarks>
+            For migrations purposes only. This code can be removed in a later release.
+            </remarks>
+        </member>
+    </members>
+</doc>

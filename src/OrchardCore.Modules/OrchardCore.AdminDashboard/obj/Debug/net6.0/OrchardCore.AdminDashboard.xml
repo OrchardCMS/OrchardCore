@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.AdminDashboard</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.AdminDashboard.Services.IAdminDashboardService">
+            <summary>
+            Provides services to manage the Admin Dashboards.
+            </summary>
+        </member>
+    </members>
+</doc>

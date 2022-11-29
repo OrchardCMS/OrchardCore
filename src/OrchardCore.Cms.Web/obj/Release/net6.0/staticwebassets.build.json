@@ -1,0 +1,1132 @@
+{
+  "Version": 1,
+  "Hash": "KeLqGBvCT7ForsscwVn+q4uQpWAs96nUYP9yjfz2uA4=",
+  "Source": "OrchardCore.Cms.Web",
+  "BasePath": "_content/OrchardCore.Cms.Web",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Admin\\OrchardCore.Admin.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Admin",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.AdminDashboard\\OrchardCore.AdminDashboard.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.AdminDashboard",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.AdminMenu\\OrchardCore.AdminMenu.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.AdminMenu",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Alias\\OrchardCore.Alias.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Alias",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Apis.GraphQL\\OrchardCore.Apis.GraphQL.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Apis.GraphQL",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.ArchiveLater\\OrchardCore.ArchiveLater.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.ArchiveLater",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.AuditTrail\\OrchardCore.AuditTrail.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.AuditTrail",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Autoroute\\OrchardCore.Autoroute.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Autoroute",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.AutoSetup\\OrchardCore.AutoSetup.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.AutoSetup",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.BackgroundTasks\\OrchardCore.BackgroundTasks.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.BackgroundTasks",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.ContentFields\\OrchardCore.ContentFields.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.ContentFields",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.ContentLocalization\\OrchardCore.ContentLocalization.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.ContentLocalization",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.ContentPreview\\OrchardCore.ContentPreview.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.ContentPreview",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Contents\\OrchardCore.Contents.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Contents",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.ContentTypes\\OrchardCore.ContentTypes.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.ContentTypes",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Cors\\OrchardCore.Cors.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Cors",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.CustomSettings\\OrchardCore.CustomSettings.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.CustomSettings",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Deployment.Remote\\OrchardCore.Deployment.Remote.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Deployment.Remote",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Deployment\\OrchardCore.Deployment.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Deployment",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Diagnostics\\OrchardCore.Diagnostics.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Diagnostics",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Email\\OrchardCore.Email.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Email",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Facebook\\OrchardCore.Facebook.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Facebook",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Features\\OrchardCore.Features.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Features",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Flows\\OrchardCore.Flows.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Flows",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Forms\\OrchardCore.Forms.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Forms",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.GitHub\\OrchardCore.GitHub.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.GitHub",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Google\\OrchardCore.Google.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Google",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Html\\OrchardCore.Html.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Html",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Https\\OrchardCore.Https.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Https",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Indexing\\OrchardCore.Indexing.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Indexing",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Layers\\OrchardCore.Layers.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Layers",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Liquid\\OrchardCore.Liquid.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Liquid",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Lists\\OrchardCore.Lists.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Lists",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Localization\\OrchardCore.Localization.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Localization",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Markdown\\OrchardCore.Markdown.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Markdown",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Media.AmazonS3\\OrchardCore.Media.AmazonS3.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Media.AmazonS3",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Media.Azure\\OrchardCore.Media.Azure.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Media.Azure",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Media\\OrchardCore.Media.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Media",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Menu\\OrchardCore.Menu.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Menu",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Microsoft.Authentication\\OrchardCore.Microsoft.Authentication.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Microsoft.Authentication",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.MiniProfiler\\OrchardCore.MiniProfiler.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.MiniProfiler",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Navigation\\OrchardCore.Navigation.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Navigation",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.OpenId\\OrchardCore.OpenId.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.OpenId",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Placements\\OrchardCore.Placements.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Placements",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.PublishLater\\OrchardCore.PublishLater.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.PublishLater",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Queries\\OrchardCore.Queries.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Queries",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.ReCaptcha\\OrchardCore.ReCaptcha.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.ReCaptcha",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Recipes\\OrchardCore.Recipes.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Recipes",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.ReverseProxy\\OrchardCore.ReverseProxy.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.ReverseProxy",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Roles\\OrchardCore.Roles.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Roles",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Rules\\OrchardCore.Rules.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Rules",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Search.Elasticsearch\\OrchardCore.Search.Elasticsearch.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Search.Elasticsearch",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Search.Lucene\\OrchardCore.Search.Lucene.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Search.Lucene",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Search\\OrchardCore.Search.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Search",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Security\\OrchardCore.Security.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Security",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Seo\\OrchardCore.Seo.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Seo",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Settings\\OrchardCore.Settings.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Settings",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Setup\\OrchardCore.Setup.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Setup",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Shortcodes\\OrchardCore.Shortcodes.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Shortcodes",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Sitemaps\\OrchardCore.Sitemaps.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Sitemaps",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Spatial\\OrchardCore.Spatial.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Spatial",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Taxonomies\\OrchardCore.Taxonomies.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Taxonomies",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Templates\\OrchardCore.Templates.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Templates",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Tenants\\OrchardCore.Tenants.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Tenants",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Themes\\OrchardCore.Themes.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Themes",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Title\\OrchardCore.Title.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Title",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Twitter\\OrchardCore.Twitter.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Twitter",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Users\\OrchardCore.Users.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Users",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Widgets\\OrchardCore.Widgets.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Widgets",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Workflows\\OrchardCore.Workflows.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Workflows",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Themes\\SafeMode\\SafeMode.csproj",
+      "Version": 2,
+      "Source": "SafeMode",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Themes\\TheAdmin\\TheAdmin.csproj",
+      "Version": 2,
+      "Source": "TheAdmin",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Themes\\TheBlogTheme\\TheBlogTheme.csproj",
+      "Version": 2,
+      "Source": "TheBlogTheme",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Themes\\TheTheme\\TheTheme.csproj",
+      "Version": 2,
+      "Source": "TheTheme",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    }
+  ],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.Admin\\wwwroot",
+      "Source": "OrchardCore.Admin",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Admin\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Admin",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.AdminDashboard\\wwwroot",
+      "Source": "OrchardCore.AdminDashboard",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.AdminDashboard\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.AdminDashboard",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.AdminMenu\\wwwroot",
+      "Source": "OrchardCore.AdminMenu",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.AdminMenu\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.AdminMenu",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Apis.GraphQL\\wwwroot",
+      "Source": "OrchardCore.Apis.GraphQL",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Apis.GraphQL\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Apis.GraphQL",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.ArchiveLater\\wwwroot",
+      "Source": "OrchardCore.ArchiveLater",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.ArchiveLater\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.ArchiveLater",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.AuditTrail\\wwwroot",
+      "Source": "OrchardCore.AuditTrail",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.AuditTrail\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.AuditTrail",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Cms.Web\\wwwroot",
+      "Source": "OrchardCore.Cms.Web",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Cms.Web\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Cms.Web",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.ContentFields\\wwwroot",
+      "Source": "OrchardCore.ContentFields",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.ContentFields\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.ContentFields",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.ContentLocalization\\wwwroot",
+      "Source": "OrchardCore.ContentLocalization",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.ContentLocalization\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.ContentLocalization",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.ContentPreview\\wwwroot",
+      "Source": "OrchardCore.ContentPreview",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.ContentPreview\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.ContentPreview",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Contents\\wwwroot",
+      "Source": "OrchardCore.Contents",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Contents\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Contents",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Cors\\wwwroot",
+      "Source": "OrchardCore.Cors",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Cors\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Cors",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Deployment\\wwwroot",
+      "Source": "OrchardCore.Deployment",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Deployment\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Deployment",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Flows\\wwwroot",
+      "Source": "OrchardCore.Flows",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Flows\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Flows",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Forms\\wwwroot",
+      "Source": "OrchardCore.Forms",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Forms\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Forms",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Html\\wwwroot",
+      "Source": "OrchardCore.Html",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Html\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Html",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Layers\\wwwroot",
+      "Source": "OrchardCore.Layers",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Layers\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Layers",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Liquid\\wwwroot",
+      "Source": "OrchardCore.Liquid",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Liquid\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Liquid",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Lists\\wwwroot",
+      "Source": "OrchardCore.Lists",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Lists\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Lists",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Localization\\wwwroot",
+      "Source": "OrchardCore.Localization",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Localization\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Localization",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Markdown\\wwwroot",
+      "Source": "OrchardCore.Markdown",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Markdown\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Markdown",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Media\\wwwroot",
+      "Source": "OrchardCore.Media",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Media\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Media",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Menu\\wwwroot",
+      "Source": "OrchardCore.Menu",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Menu\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Menu",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.OpenId\\wwwroot",
+      "Source": "OrchardCore.OpenId",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.OpenId\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.OpenId",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.PublishLater\\wwwroot",
+      "Source": "OrchardCore.PublishLater",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.PublishLater\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.PublishLater",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Rules\\wwwroot",
+      "Source": "OrchardCore.Rules",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Rules\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Rules",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Seo\\wwwroot",
+      "Source": "OrchardCore.Seo",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Seo\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Seo",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Setup\\wwwroot",
+      "Source": "OrchardCore.Setup",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Setup\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Setup",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Shortcodes\\wwwroot",
+      "Source": "OrchardCore.Shortcodes",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Shortcodes\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Shortcodes",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Spatial\\wwwroot",
+      "Source": "OrchardCore.Spatial",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Spatial\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Spatial",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Taxonomies\\wwwroot",
+      "Source": "OrchardCore.Taxonomies",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Taxonomies\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Taxonomies",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Templates\\wwwroot",
+      "Source": "OrchardCore.Templates",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Templates\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Templates",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Tenants\\wwwroot",
+      "Source": "OrchardCore.Tenants",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Tenants\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Tenants",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Themes\\wwwroot",
+      "Source": "OrchardCore.Themes",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Themes\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Themes",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Users\\wwwroot",
+      "Source": "OrchardCore.Users",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Users\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Users",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Widgets\\wwwroot",
+      "Source": "OrchardCore.Widgets",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Widgets\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Widgets",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Workflows\\wwwroot",
+      "Source": "OrchardCore.Workflows",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Workflows\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Workflows",
+      "Pattern": "**"
+    },
+    {
+      "Name": "SafeMode\\wwwroot",
+      "Source": "SafeMode",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Themes\\SafeMode\\wwwroot\\",
+      "BasePath": "_content/SafeMode",
+      "Pattern": "**"
+    },
+    {
+      "Name": "TheAdmin\\wwwroot",
+      "Source": "TheAdmin",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Themes\\TheAdmin\\wwwroot\\",
+      "BasePath": "_content/TheAdmin",
+      "Pattern": "**"
+    },
+    {
+      "Name": "TheBlogTheme\\wwwroot",
+      "Source": "TheBlogTheme",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Themes\\TheBlogTheme\\wwwroot\\",
+      "BasePath": "_content/TheBlogTheme",
+      "Pattern": "**"
+    },
+    {
+      "Name": "TheTheme\\wwwroot",
+      "Source": "TheTheme",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Themes\\TheTheme\\wwwroot\\",
+      "BasePath": "_content/TheTheme",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Cms.Web\\wwwroot\\.placeholder",
+      "SourceId": "OrchardCore.Cms.Web",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Cms.Web\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Cms.Web",
+      "RelativePath": ".placeholder",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\.placeholder"
+    }
+  ]
+}

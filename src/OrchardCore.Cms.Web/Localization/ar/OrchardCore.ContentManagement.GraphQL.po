@@ -1,0 +1,40 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.ContentManagement.GraphQL.pot\n"
+"X-Crowdin-File-ID: 714\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Arabic\n"
+"Language: ar_SA\n"
+"PO-Revision-Date: 2022-10-11 20:01\n"
+
+#. Description = S["Content items are instances of content types, just like objects are instances of classes."],
+#: OrchardCore.ContentManagement.GraphQL\Queries\ContentItemQuery.cs:34
+msgctxt "OrchardCore.ContentManagement.GraphQL.Queries.ContentItemQuery"
+msgid "Content items are instances of content types, just like objects are instances of classes."
+msgstr "عناصر المحتوى هي كائنات من أنواع المحتوى, مثل كائنات الفئات."
+
+#. Description = S["Content item id"]
+#: OrchardCore.ContentManagement.GraphQL\Queries\ContentItemQuery.cs:40
+msgctxt "OrchardCore.ContentManagement.GraphQL.Queries.ContentItemQuery"
+msgid "Content item id"
+msgstr "معرف عنصر المحتوى"
+
+#. Description = S["Represents a {0}.", typeDefinition.DisplayName]
+#. Description = S["Represents a {0}.", typeDefinition.DisplayName],
+#: OrchardCore.ContentManagement.GraphQL\Queries\ContentTypeQuery.cs:56
+#: OrchardCore.ContentManagement.GraphQL\Queries\ContentTypeQuery.cs:62
+msgctxt "OrchardCore.ContentManagement.GraphQL.Queries.ContentTypeQuery"
+msgid "Represents a {0}."
+msgstr "يمثل {0}."
+
+#. description: S["Represents a {0}.", part.PartDefinition.Name],
+#: OrchardCore.ContentManagement.GraphQL\Queries\Types\DynamicContentTypeBuilder.cs:104
+msgctxt "OrchardCore.ContentManagement.GraphQL.Queries.Types.DynamicContentTypeBuilder"
+msgid "Represents a {0}."
+msgstr "يمثل {0}."
+

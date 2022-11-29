@@ -1,0 +1,288 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: tr\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.BackgroundTasks.pot\n"
+"X-Crowdin-File-ID: 708\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Turkish\n"
+"Language: tr_TR\n"
+"PO-Revision-Date: 2022-05-05 18:43\n"
+
+#. .Add(S["Configuration"], configuration => configuration
+#: OrchardCore.BackgroundTasks\AdminMenu.cs:25
+msgctxt "OrchardCore.BackgroundTasks.AdminMenu"
+msgid "Configuration"
+msgstr "Konfigürasyon"
+
+#. .Add(S["Tasks"], S["Tasks"].PrefixPosition(), tasks => tasks
+#. .Add(S["Tasks"], S["Tasks"].PrefixPosition(), tasks => tasks
+#: OrchardCore.BackgroundTasks\AdminMenu.cs:26
+#: OrchardCore.BackgroundTasks\AdminMenu.cs:26
+msgctxt "OrchardCore.BackgroundTasks.AdminMenu"
+msgid "Tasks"
+msgstr "Görevler"
+
+#. .Add(S["Background Tasks"], S["Background Tasks"].PrefixPosition(), backgroundTasks => backgroundTasks
+#. .Add(S["Background Tasks"], S["Background Tasks"].PrefixPosition(), backgroundTasks => backgroundTasks
+#: OrchardCore.BackgroundTasks\AdminMenu.cs:27
+#: OrchardCore.BackgroundTasks\AdminMenu.cs:27
+msgctxt "OrchardCore.BackgroundTasks.AdminMenu"
+msgid "Background Tasks"
+msgstr "Arkaplan işlemleri"
+
+#. ModelState.AddModelError(nameof(BackgroundTaskViewModel.Name), S["The name is mandatory."]);
+#. ModelState.AddModelError(nameof(BackgroundTaskViewModel.Name), S["The name is mandatory."]);
+#: OrchardCore.BackgroundTasks\Controllers\BackgroundTaskController.cs:121
+#: OrchardCore.BackgroundTasks\Controllers\BackgroundTaskController.cs:189
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "The name is mandatory."
+msgstr "Ad zorunludur."
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Task Settings"])</h1></zone>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:3
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "Edit Task Settings"
+msgstr "Göre ayarlarını değiştir"
+
+#. <a class="nav-link active" id="properties-tab" data-bs-toggle="tab" href="#properties" role="tab" aria-controls="site" aria-selected="true">@T["Properties"]</a>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:10
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "Properties"
+msgstr "Özellikler"
+
+#. <a class="nav-link" id="advanced-tab" data-bs-toggle="tab" href="#advanced" role="tab" aria-controls="resources">@T["Advanced"]</a>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:13
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "Advanced"
+msgstr "Gelişmiş"
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:20
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "Name"
+msgstr "Ad"
+
+#. <span class="hint">@T["The task on which this settings will apply."]</span>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:22
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "The task on which this settings will apply."
+msgstr "Bu ayarların uygulanacağı görev."
+
+#. <label asp-for="Schedule">@T["Schedule"]</label>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:26
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "Schedule"
+msgstr "Zamanlama"
+
+#. <span class="hint">@T["The task schedule as a cron expression."]</span>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:28
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "The task schedule as a cron expression."
+msgstr "Bir cron ifadesi olarak görev programı."
+
+#. <div><span asp-validation-for="LockTimeout" class="text-danger">@T["Invalid lock timeout value in the advanced tab"]</span></div>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:37
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "Invalid lock timeout value in the advanced tab"
+msgstr "Gelişmiş sekmesinde geçersiz kilit zaman aşımı değeri"
+
+#. <div><span asp-validation-for="LockExpiration" class="text-danger">@T["Invalid lock expiration value in the advanced tab"]</span></div>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:38
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "Invalid lock expiration value in the advanced tab"
+msgstr "Gelişmiş sekmesinde geçersiz kilit süre sonu değeri"
+
+#. <label asp-for="LockTimeout">@T["Lock timeout (ms)"]</label>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:43
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "Lock timeout (ms)"
+msgstr "Kilit zaman aşımı (ms)"
+
+#. <span class="hint">@T["The timeout in milliseconds to acquire a lock before executing the task atomically. Leave it to zero to not use any locking."]</span>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:45
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "The timeout in milliseconds to acquire a lock before executing the task atomically. Leave it to zero to not use any locking."
+msgstr "Görevi atomik olarak yürütmeden önce bir kilit elde etmek için milisaniye cinsinden zaman aşımı. Herhangi bir kilit kullanmamak için sıfır olarak bırakın."
+
+#. <span class="hint">@T["Ignored if there is no distributed lock feature enabled."]</span>
+#. <span class="hint">@T["Ignored if there is no distributed lock feature enabled."]</span>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:46
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:53
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "Ignored if there is no distributed lock feature enabled."
+msgstr "Etkin dağıtılmış kilit özelliği yoksa, yoksayılır."
+
+#. <label asp-for="LockExpiration">@T["Lock expiration (ms)"]</label>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:50
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "Lock expiration (ms)"
+msgstr "Kilit zaman aşımı süresi (ms)"
+
+#. <span class="hint">@T["The expiration in milliseconds of the lock acquired before executing the task atomically. Leave it to zero to not use any locking."]</span>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:52
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "The expiration in milliseconds of the lock acquired before executing the task atomically. Leave it to zero to not use any locking."
+msgstr "Görevi atomik olarak yürütmeden önce bir kilit elde etmek için milisaniye cinsinden süre sonu. Herhangi bir kilit kullanmamak için sıfır olarak bırakın."
+
+#. <button id="use-default-schedule" class="btn btn-success">@T["Reset Schedule"]</button>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:59
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "Reset Schedule"
+msgstr "Programı sıfırla"
+
+#. <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:60
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "Save"
+msgstr "Kaydet"
+
+#. <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Create.cshtml:61
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Create"
+msgid "Cancel"
+msgstr "İptal"
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Task Settings"])</h1></zone>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:3
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Edit Task Settings"
+msgstr "Görev ayarlarını değiştir"
+
+#. <a class="nav-link active" id="properties-tab" data-bs-toggle="tab" href="#properties" role="tab" aria-controls="site" aria-selected="true">@T["Properties"]</a>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:10
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Properties"
+msgstr "Özellikler"
+
+#. <a class="nav-link" id="advanced-tab" data-bs-toggle="tab" href="#advanced" role="tab" aria-controls="resources">@T["Advanced"]</a>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:13
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Advanced"
+msgstr "Gelişmiş"
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:20
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Name"
+msgstr "İsim"
+
+#. <span class="hint">@T["The task on which this settings will apply."]</span>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:22
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "The task on which this settings will apply."
+msgstr "Bu ayarların uygulanacağı görev."
+
+#. <label asp-for="Schedule">@T["Schedule"]</label>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:26
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Schedule"
+msgstr "Zamanlama"
+
+#. <span class="hint">@T["The task schedule as a cron expression."]</span>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:28
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "The task schedule as a cron expression."
+msgstr "Bir cron ifadesi olarak görev programı."
+
+#. <div><span asp-validation-for="LockTimeout" class="text-danger">@T["Invalid lock timeout value in the advanced tab"]</span></div>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:37
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Invalid lock timeout value in the advanced tab"
+msgstr "Gelişmiş sekmesinde geçersiz kilit zaman aşımı değeri (invalid lock timeout value)"
+
+#. <div><span asp-validation-for="LockExpiration" class="text-danger">@T["Invalid lock expiration value in the advanced tab"]</span></div>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:38
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Invalid lock expiration value in the advanced tab"
+msgstr "Gelişmiş sekmesinde geçersiz kilit süre sonu değeri (invalid lock expiration value )"
+
+#. <label asp-for="LockTimeout">@T["Lock timeout (ms)"]</label>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:43
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Lock timeout (ms)"
+msgstr "Kilit zaman aşımı (dk)"
+
+#. <span class="hint">@T["The timeout in milliseconds to acquire a lock before executing the task atomically. Leave it to zero to not use any locking."]</span>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:45
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "The timeout in milliseconds to acquire a lock before executing the task atomically. Leave it to zero to not use any locking."
+msgstr "Görevi atomik olarak yürütmeden önce bir kilit elde etmek için milisaniye cinsinden zaman aşımı. Herhangi bir kilit kullanmamak için sıfır olarak bırakın."
+
+#. <span class="hint">@T["Ignored if there is no distributed lock feature enabled."]</span>
+#. <span class="hint">@T["Ignored if there is no distributed lock feature enabled."]</span>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:46
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:53
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Ignored if there is no distributed lock feature enabled."
+msgstr "Etkin dağıtılmış kilit özelliği yoksa, yoksayılır."
+
+#. <label asp-for="LockExpiration">@T["Lock expiration (ms)"]</label>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:50
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Lock expiration (ms)"
+msgstr "Kilit zaman aşımı süresi (ms)"
+
+#. <span class="hint">@T["The expiration in milliseconds of the lock acquired before executing the task atomically. Leave it to zero to not use any locking."]</span>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:52
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "The expiration in milliseconds of the lock acquired before executing the task atomically. Leave it to zero to not use any locking."
+msgstr "Görevi atomik olarak yürütmeden önce bir kilit elde etmek için milisaniye cinsinden süre sonu. Herhangi bir kilit kullanmamak için sıfır olarak bırakın."
+
+#. <button id="use-default-schedule" class="btn btn-success">@T["Reset Schedule"]</button>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:59
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Reset Schedule"
+msgstr "Programı sıfırla"
+
+#. <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:60
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Save"
+msgstr "Kaydet"
+
+#. <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Edit.cshtml:61
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Cancel"
+msgstr "İptal"
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(T["Background Tasks"])</h1></zone>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Index.cshtml:4
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
+msgid "Background Tasks"
+msgstr "Arkaplan işlemleri"
+
+#. <a asp-action="Disable" asp-route-name="@settings.Name" class="btn btn-danger btn-sm" data-url-af="UnsafeUrl">@T["Disable"]</a>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Index.cshtml:18
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
+msgid "Disable"
+msgstr "Devredışı Bırak"
+
+#. <a asp-action="Enable" asp-route-name="@settings.Name" class="btn btn-success btn-sm" data-url-af="UnsafeUrl">@T["Enable"]</a>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Index.cshtml:22
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
+msgid "Enable"
+msgstr "Etkinleştir"
+
+#. <a asp-action="Edit" asp-route-name="@settings.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Index.cshtml:25
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
+msgid "Edit"
+msgstr "Düzenle"
+
+#. <span class="text-primary" title="@T["Settings"]"><i class="fa fa-cog" aria-hidden="true"></i></span>
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Index.cshtml:27
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
+msgid "Settings"
+msgstr "Ayarlar"
+
+#. @T["<strong>Nothing here!</strong> There are no background task for the moment."]
+#: OrchardCore.BackgroundTasks\Views\BackgroundTask\Index.cshtml:38
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
+msgid "<strong>Nothing here!</strong> There are no background task for the moment."
+msgstr "<strong>Hiçbirşey Yok!</strong> Şuan arkada çalışan görev yok."
+

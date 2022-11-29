@@ -1,0 +1,74 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: vi\n"
+"X-Crowdin-File: /main/Localization/TheAdmin.pot\n"
+"X-Crowdin-File-ID: 848\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"PO-Revision-Date: 2022-05-05 19:24\n"
+
+#. <a id="btn-darkmode" class="me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
+#. <span class="d-none">@T["Light mode"]</span>
+#: TheAdmin\Views\Layout.cshtml:46
+#: TheAdmin\Views\Layout.cshtml:50
+msgctxt "TheAdmin.Views.Layout"
+msgid "Light mode"
+msgstr ""
+
+#. <a id="btn-darkmode" class="me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
+#. <span class="d-none">@T["Dark mode"]</span>
+#: TheAdmin\Views\Layout.cshtml:46
+#: TheAdmin\Views\Layout.cshtml:55
+msgctxt "TheAdmin.Views.Layout"
+msgid "Dark mode"
+msgstr ""
+
+#. <a href="@Url.Content("~/")" class="me-3" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Visit Site"]" role="button">
+#: TheAdmin\Views\Layout.cshtml:59
+msgctxt "TheAdmin.Views.Layout"
+msgid "Visit Site"
+msgstr ""
+
+#. <button type="button" class="leftbar-compactor" title="@T["Collapse / expand menu"]">
+#. <span class="d-none">@T["Collapse / expand menu"]</span>
+#: TheAdmin\Views\Layout.cshtml:70
+#: TheAdmin\Views\Layout.cshtml:71
+msgctxt "TheAdmin.Views.Layout"
+msgid "Collapse / expand menu"
+msgstr "Thu gọn / mở rộng menu"
+
+#. <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
+#: TheAdmin\Views\Layout.cshtml:90
+msgctxt "TheAdmin.Views.Layout"
+msgid "Delete"
+msgstr "Xóa"
+
+#. <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
+#: TheAdmin\Views\Layout.cshtml:90
+msgctxt "TheAdmin.Views.Layout"
+msgid "Are you sure you want to remove this element?"
+msgstr "Bạn có muốn xóa bỏ thành phần này không?"
+
+#. <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
+#: TheAdmin\Views\Layout.cshtml:90
+msgctxt "TheAdmin.Views.Layout"
+msgid "Ok"
+msgstr "Đồng ý"
+
+#. <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
+#: TheAdmin\Views\Layout.cshtml:90
+msgctxt "TheAdmin.Views.Layout"
+msgid "Cancel"
+msgstr "Bỏ qua"
+
+#. <input id="filter" class="form-control" placeholder="@T["Filter"]" type="search" data-bs-toggle="tooltip" data-bs-placement="right" data-html="true" title="Ctrl+Shift+F" />
+#: TheAdmin\Views\Navigation-admin.cshtml:16
+msgctxt "TheAdmin.Views.Navigation-admin"
+msgid "Filter"
+msgstr "Bộ lọc"
+

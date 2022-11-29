@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Recipes.Core</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Recipes.Services.ApplicationRecipeHarvester">
+            <summary>
+            Finds recipes in the application content folder.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Recipes.Services.RecipeExecutor.EvaluateJsonTree(OrchardCore.Scripting.IScriptingManager,OrchardCore.Recipes.Models.RecipeExecutionContext,Newtonsoft.Json.Linq.JToken)">
+            <summary>
+            Traverse all the nodes of the json document and replaces their value if they are scripted.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Recipes.Services.RecipeHarvester.HarvestRecipesAsync(System.String)">
+            <summary>
+            Returns a list of recipes for a content path.
+            </summary>
+            <param name="path">A path string relative to the content root of the application.</param>
+            <returns>The list of <see cref="T:OrchardCore.Recipes.Models.RecipeDescriptor"/> instances.</returns>
+        </member>
+    </members>
+</doc>

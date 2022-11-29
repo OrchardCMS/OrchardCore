@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Tenants</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Tenants.Recipes.FeatureProfilesStep">
+            <summary>
+            This recipe step creates a set of feature profiles.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Tenants.Services.FeatureProfilesManager.LoadFeatureProfilesDocumentAsync">
+            <summary>
+            Loads the feature profiles document from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Tenants.Services.FeatureProfilesManager.GetFeatureProfilesDocumentAsync">
+            <summary>
+            Gets the feature profiles document from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Tenants.Services.FeatureProfilesSchemaService">
+            <summary>
+            Generates a json schema for a <see cref="T:OrchardCore.Environment.Shell.Models.FeatureRule"/>
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Tenants.FileProviderStartup.AssetsPath">
+            <summary>
+            The path in the tenant's App_Data folder containing the files
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,109 @@
+is_global = true
+build_property.TargetFramework = net6.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = OrchardCore.Menu
+build_property.RootNamespace = OrchardCore.Menu
+build_property.ProjectDir = C:\repos\loethenweb\src\OrchardCore.Modules\OrchardCore.Menu\
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\repos\loethenweb\src\OrchardCore.Modules\OrchardCore.Menu
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/Admin/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/Admin/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/ContentMenuItemPart.Admin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVudE1lbnVJdGVtUGFydC5BZG1pbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/ContentMenuItemPart.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVudE1lbnVJdGVtUGFydC5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/ContentMenuItemPart.Thumbnail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVudE1lbnVJdGVtUGFydC5UaHVtYm5haWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/HtmlMenuItemPart.Admin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbE1lbnVJdGVtUGFydC5BZG1pbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/HtmlMenuItemPart.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbE1lbnVJdGVtUGFydC5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/HtmlMenuItemPart.Thumbnail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbE1lbnVJdGVtUGFydC5UaHVtYm5haWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/HtmlMenuItemPartSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbE1lbnVJdGVtUGFydFNldHRpbmdzLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/LinkMenuItemPart.Admin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlua01lbnVJdGVtUGFydC5BZG1pbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/LinkMenuItemPart.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlua01lbnVJdGVtUGFydC5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/LinkMenuItemPart.Thumbnail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlua01lbnVJdGVtUGFydC5UaHVtYm5haWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/Menu.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVudS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/MenuItem.Admin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVudUl0ZW0uQWRtaW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/MenuItem.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVudUl0ZW0uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/MenuItem.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVudUl0ZW0uRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/MenuItem.Thumbnail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVudUl0ZW0uVGh1bWJuYWlsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/MenuItemLink-ContentMenuItem.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVudUl0ZW1MaW5rLUNvbnRlbnRNZW51SXRlbS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/MenuItemLink-HtmlMenuItem.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVudUl0ZW1MaW5rLUh0bWxNZW51SXRlbS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/MenuItemLink-LinkMenuItem.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVudUl0ZW1MaW5rLUxpbmtNZW51SXRlbS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/MenuItemLink.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVudUl0ZW1MaW5rLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/MenuPart.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVudVBhcnQuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Menu/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 

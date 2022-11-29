@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Users</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.Users.Controllers.ControllerExtensions.RegisterUser(Microsoft.AspNetCore.Mvc.Controller,OrchardCore.Users.ViewModels.RegisterViewModel,System.String,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Returns the created user, otherwise returns null
+            </summary>
+            <param name="controller"></param>
+            <param name="model"></param>
+            <param name="confirmationEmailSubject"></param>
+            <param name="logger"></param>
+            <returns></returns>
+        </member>
+        <member name="T:OrchardCore.Users.Services.SetupEventHandler">
+            <summary>
+            During setup, creates the admin user account.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Users.Services.UserAuthorizationHandler">
+            <summary>
+            This provides authorization when the permission request is ManageUsers and the current authenticated User
+            has permission to edit any of the roles the user being managed is a member of.
+            Callers should supply a <see cref="T:OrchardCore.Users.IUser"/> resource
+            </summary>
+            <remarks>
+            This handler will not be triggered when only requesting ManagerUsers permission with supplying an <see href="IUser"/>.
+            </remarks>
+        </member>
+        <member name="T:OrchardCore.Users.Services.UsersThemeSelector">
+            <summary>
+            Provides the theme defined in the site configuration for the current scope (request).
+            This selector provides AdminTheme as default or fallback for Account|Registration|ResetPassword
+            controllers based on SiteSettings.
+            The same <see cref="T:OrchardCore.DisplayManagement.Theming.ThemeSelectorResult"/> is returned if called multiple times
+            during the same scope.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Users.TimeZone.Services.UserTimeZoneSelector">
+            <summary>
+            Provides the timezone defined for the currently logged-in user for the current scope (request).
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Users.ViewModels.EditUserViewModel.IsEditingDisabled">
+            <summary>
+            When a user only has rights to view they cannot update this model.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Users.Workflows.Activities.UserActivity.User">
+            <summary>
+            An expression that evaluates to an <see cref="P:OrchardCore.Users.Workflows.Activities.UserActivity.User"/> item.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Liquid.LiquidUserAccessor">
+            <summary>
+            This is a placeholder class that allows modules to extend the `User` property in the current Liquid scope
+            </summary>
+        </member>
+    </members>
+</doc>

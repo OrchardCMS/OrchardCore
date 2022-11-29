@@ -1,0 +1,287 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Sitemaps.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="P:OrchardCore.Sitemaps.Builders.ContentItemsQueryContext.ContentItems">
+            <summary>
+            Content items to include in sitemap.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.Builders.ContentItemsQueryContext.ReferenceContentItems">
+            <summary>
+            Reference content items that may be used to perform a lookup for url alternatives.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Sitemaps.Builders.IContentItemsQueryProvider.GetContentItemsAsync(OrchardCore.Sitemaps.Models.ContentTypesSitemapSource,OrchardCore.Sitemaps.Builders.ContentItemsQueryContext)">
+            <summary>
+            Get content items to evaluate for inclusion in a sitemap.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Builders.ISitemapBuilder">
+            <summary>
+            Builds a sitemap.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Builders.ISitemapContentItemExtendedMetadataProvider">
+            <summary>
+            Provides extended metadata, such as hreflang, or image sitemap metadata, to a url element.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.Builders.ISitemapContentItemExtendedMetadataProvider.GetExtendedAttribute">
+            <summary>
+            Get extended attributes to add to the xml schema.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Sitemaps.Builders.ISitemapContentItemExtendedMetadataProvider.ApplyExtendedMetadataAsync(OrchardCore.Sitemaps.Builders.SitemapBuilderContext,OrchardCore.Sitemaps.Builders.ContentItemsQueryContext,OrchardCore.ContentManagement.ContentItem,System.Xml.Linq.XElement)">
+            <summary>
+            Apply extended metadata to the url element.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Builders.ISitemapModifiedDateProvider">
+            <summary>
+            Provides a last modified date for a sitemap.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Builders.ISitemapSourceBuilder">
+            <summary>
+            Builds items for a sitemap source.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Builders.ISitemapSourceModifiedDateProvider">
+            <summary>
+            Provides a last modified date from a sitemap source.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Builders.ISitemapTypeBuilder">
+            <summary>
+            Builds a sitemap source.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Builders.SitemapSourceBuilderBase`1">
+            <summary>
+            Inherit to provide a sitemap source item builder.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Builders.SitemapSourceModifiedDateProviderBase`1">
+            <summary>
+            Inherit to provide a sitemap source modified date provider.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Sitemaps.Builders.SitemapSourceModifiedDateProviderBase`1.GetLastModifiedDateAsync(`0)">
+            <summary>
+            Implement to provide a last modified date for a sitemap source.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Builders.SitemapTypeBuilderBase`1">
+            <summary>
+            Inherit to provide a sitemap type builder.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Cache.ISitemapCacheFileResolver">
+            <summary>
+            Resolves a sitemap cache file.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Cache.ISitemapCacheProvider">
+            <summary>
+            Provides sitemap files from the cache.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Handlers.ISitemapSourceUpdateHandler">
+            <summary>
+            Handles sitemaps updates based on their <see cref="T:OrchardCore.Sitemaps.Models.SitemapSource"/> of a given type.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Handlers.ISitemapTypeUpdateHandler">
+            <summary>
+            Handles sitemaps updates based on their <see cref="T:OrchardCore.Sitemaps.Models.SitemapSource"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Handlers.ISitemapUpdateHandler">
+            <summary>
+            Handles sitemaps updates by using all <see cref="T:OrchardCore.Sitemaps.Handlers.ISitemapTypeUpdateHandler"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Models.ContentTypesSitemapSource">
+            <summary>
+            A sitemap source for managing content by content type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.Models.ContentTypesSitemapSource.IndexAll">
+            <summary>
+            Index all content types.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.Models.ContentTypesSitemapSource.LimitItems">
+            <summary>
+            Limit quantity of content items in sitemap.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.Models.ContentTypesSitemapSource.ChangeFrequency">
+            <summary>
+            Change frequency to apply to sitemap entries.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.Models.ContentTypesSitemapSource.ContentTypes">
+            <summary>
+            When not indexing all content types this contains the list of content types to index.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.Models.ContentTypesSitemapSource.LimitedContentType">
+            <summary>
+            When limiting content items, only one content type can be specified.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Models.CustomPathSitemapSource">
+            <summary>
+            A sitemap source for managing a custom path.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.Models.CustomPathSitemapSource.Path">
+            <summary>
+            Gets and sets the custom path.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.Models.CustomPathSitemapSource.LastUpdate">
+            <summary>
+            Gets and sets last update date time. Updated automatically by te system.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.Models.CustomPathSitemapSource.ChangeFrequency">
+            <summary>
+            Gets and sets the frequency to apply to sitemap entries.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Models.SitemapType">
+            <summary>
+            Abstract to provide a type of sitemap.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.Models.SitemapType.SitemapId">
+            <summary>
+            Sitemap id.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.Models.SitemapType.Name">
+            <summary>
+            Name of sitemap.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.Models.SitemapType.Enabled">
+            <summary>
+            When false sitemap will not be included in routing.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.Models.SitemapType.Path">
+            <summary>
+            Sitemap path.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.Models.SitemapType.CacheFileName">
+            <summary>
+            Sitemap unique file name used for caching.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.Models.SitemapType.SitemapSources">
+            <summary>
+            Sitemap sources contained by this sitemap.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Services.IRouteableContentTypeCoordinator">
+            <summary>
+            Coordinates content types that are routable.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Sitemaps.Services.IRouteableContentTypeCoordinator.ListRoutableTypeDefinitions">
+            <summary>
+            Lists all routable content types.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Sitemaps.Services.IRouteableContentTypeCoordinator.GetRouteAsync(OrchardCore.Sitemaps.Builders.SitemapBuilderContext,OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Gets the route for a content item, when building a sitemap.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Services.IRouteableContentTypeProvider">
+            <summary>
+            Provides routable content types to the coordinator.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Sitemaps.Services.IRouteableContentTypeProvider.ListRoutableTypeDefinitions">
+            <summary>
+            Provides routable content types.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Sitemaps.Services.IRouteableContentTypeProvider.GetRouteAsync(OrchardCore.Sitemaps.Builders.SitemapBuilderContext,OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Gets the route for a content item, when building a sitemap.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Sitemaps.Services.ISitemapHelperService">
+            <summary>
+            Helper services to provides path validation, and sitemap slugs.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Sitemaps.Services.ISitemapManager.GetIdentifierAsync">
+            <summary>
+            Gets an unique identifier that is updated when any <see cref="T:OrchardCore.Sitemaps.Models.SitemapType"/> has changed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Sitemaps.Services.ISitemapManager.LoadSitemapsAsync">
+            <summary>
+            Loads all stored <see cref="T:OrchardCore.Sitemaps.Models.SitemapType"/> for updating.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Sitemaps.Services.ISitemapManager.GetSitemapsAsync">
+            <summary>
+            Gets all cached <see cref="T:OrchardCore.Sitemaps.Models.SitemapType"/> for sharing.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Sitemaps.Services.ISitemapManager.LoadSitemapAsync(System.String)">
+            <summary>
+            Loads the specified <see cref="T:OrchardCore.Sitemaps.Models.SitemapType"/> for updating.
+            </summary>
+            <param name="sitemapId">The id of the sitemap to load.</param>
+        </member>
+        <member name="M:OrchardCore.Sitemaps.Services.ISitemapManager.GetSitemapAsync(System.String)">
+            <summary>
+            Gets the specified <see cref="T:OrchardCore.Sitemaps.Models.SitemapType"/> for sharing.
+            </summary>
+            <param name="sitemapId">The id of the sitemap to get.</param>
+        </member>
+        <member name="M:OrchardCore.Sitemaps.Services.ISitemapManager.DeleteSitemapAsync(System.String)">
+            <summary>
+            Deletes the specified <see cref="T:OrchardCore.Sitemaps.Models.SitemapType"/>.
+            </summary>
+            <param name="sitemapId">The id of the sitemap to delete.</param>
+        </member>
+        <member name="M:OrchardCore.Sitemaps.Services.ISitemapManager.UpdateSitemapAsync(OrchardCore.Sitemaps.Models.SitemapType)">
+            <summary>
+            Updates the specific <see cref="T:OrchardCore.Sitemaps.Models.SitemapType"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Sitemaps.Services.ISitemapManager.UpdateSitemapAsync">
+            <summary>
+            Updates all <see cref="T:OrchardCore.Sitemaps.Models.SitemapType"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.SitemapsRazorPagesContentTypeOption.ContentType">
+            <summary>
+            The content type name using razor pages.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.SitemapsRazorPagesContentTypeOption.PageName">
+            <summary>
+            The razor page name.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Sitemaps.SitemapsRazorPagesContentTypeOption.RouteValues">
+            <summary>
+            Route values used to create the link to the razor page.
+            Must include the area, or namespace of module, the razor page belongs to. 
+            </summary>
+        </member>
+    </members>
+</doc>

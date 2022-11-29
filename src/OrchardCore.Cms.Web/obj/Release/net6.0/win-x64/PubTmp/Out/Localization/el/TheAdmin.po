@@ -1,0 +1,74 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: el\n"
+"X-Crowdin-File: /main/Localization/TheAdmin.pot\n"
+"X-Crowdin-File-ID: 848\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Greek\n"
+"Language: el_GR\n"
+"PO-Revision-Date: 2022-05-05 19:23\n"
+
+#. <a id="btn-darkmode" class="me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
+#. <span class="d-none">@T["Light mode"]</span>
+#: TheAdmin\Views\Layout.cshtml:46
+#: TheAdmin\Views\Layout.cshtml:50
+msgctxt "TheAdmin.Views.Layout"
+msgid "Light mode"
+msgstr "Φωτεινή λειτουργία"
+
+#. <a id="btn-darkmode" class="me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
+#. <span class="d-none">@T["Dark mode"]</span>
+#: TheAdmin\Views\Layout.cshtml:46
+#: TheAdmin\Views\Layout.cshtml:55
+msgctxt "TheAdmin.Views.Layout"
+msgid "Dark mode"
+msgstr "Σκοτεινή λειτουργία"
+
+#. <a href="@Url.Content("~/")" class="me-3" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Visit Site"]" role="button">
+#: TheAdmin\Views\Layout.cshtml:59
+msgctxt "TheAdmin.Views.Layout"
+msgid "Visit Site"
+msgstr "Επίσκεψη Ιστοτόπου"
+
+#. <button type="button" class="leftbar-compactor" title="@T["Collapse / expand menu"]">
+#. <span class="d-none">@T["Collapse / expand menu"]</span>
+#: TheAdmin\Views\Layout.cshtml:70
+#: TheAdmin\Views\Layout.cshtml:71
+msgctxt "TheAdmin.Views.Layout"
+msgid "Collapse / expand menu"
+msgstr "Σύμπτυξη / επέκταση μενού"
+
+#. <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
+#: TheAdmin\Views\Layout.cshtml:90
+msgctxt "TheAdmin.Views.Layout"
+msgid "Delete"
+msgstr "Διαγραφή"
+
+#. <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
+#: TheAdmin\Views\Layout.cshtml:90
+msgctxt "TheAdmin.Views.Layout"
+msgid "Are you sure you want to remove this element?"
+msgstr "Είστε βέβαιος(α) ότι θέλετε να αφαιρέσετε αυτό το στοιχείο;"
+
+#. <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
+#: TheAdmin\Views\Layout.cshtml:90
+msgctxt "TheAdmin.Views.Layout"
+msgid "Ok"
+msgstr "Εντάξει"
+
+#. <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
+#: TheAdmin\Views\Layout.cshtml:90
+msgctxt "TheAdmin.Views.Layout"
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+#. <input id="filter" class="form-control" placeholder="@T["Filter"]" type="search" data-bs-toggle="tooltip" data-bs-placement="right" data-html="true" title="Ctrl+Shift+F" />
+#: TheAdmin\Views\Navigation-admin.cshtml:16
+msgctxt "TheAdmin.Views.Navigation-admin"
+msgid "Filter"
+msgstr "Φίλτρο"
+

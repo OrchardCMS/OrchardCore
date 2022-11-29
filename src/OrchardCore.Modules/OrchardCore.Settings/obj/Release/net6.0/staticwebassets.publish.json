@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "05SDFuOB3lLipdQRvIB8Mter1TZrk2UqDvArTTmdrx8=",
+  "Source": "OrchardCore.Settings",
+  "BasePath": "_content/OrchardCore.Settings",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

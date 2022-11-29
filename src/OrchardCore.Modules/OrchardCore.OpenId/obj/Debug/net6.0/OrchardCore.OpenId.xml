@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.OpenId</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.OpenId.Deployment.OpenIdServerDeploymentStep">
+            <summary>
+            Adds Open ID settings to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.OpenId.Deployment.OpenIdValidationDeploymentStep">
+            <summary>
+            Adds Open ID settings to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.OpenId.Recipes.OpenIdApplicationStep.#ctor(OrchardCore.OpenId.Abstractions.Managers.IOpenIdApplicationManager)">
+            <summary>
+            This recipe step adds an OpenID Connect app.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.OpenId.Recipes.OpenIdClientSettingsStep">
+            <summary>
+            This recipe step sets general OpenID Connect Client settings.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.OpenId.Recipes.OpenIdScopeStep.#ctor(OrchardCore.OpenId.Abstractions.Managers.IOpenIdScopeManager)">
+            <summary>
+            This recipe step adds an OpenID Connect scope.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.OpenId.Recipes.OpenIdServerSettingsStep">
+            <summary>
+            This recipe step sets general OpenID Connect settings.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.OpenId.Recipes.OpenIdValidationSettingsStep">
+            <summary>
+            This recipe step sets Token Validation OpenID Connect settings.
+            </summary>
+        </member>
+    </members>
+</doc>

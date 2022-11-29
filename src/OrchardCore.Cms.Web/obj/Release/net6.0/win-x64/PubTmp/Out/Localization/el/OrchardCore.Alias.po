@@ -1,0 +1,103 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: el\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Alias.pot\n"
+"X-Crowdin-File-ID: 700\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Greek\n"
+"Language: el_GR\n"
+"PO-Revision-Date: 2022-01-05 13:33\n"
+
+#. Description = S["the alias part of the content item"];
+#: OrchardCore.Alias\GraphQL\AliasInputObjectType.cs:13
+msgctxt "OrchardCore.Alias.GraphQL.AliasInputObjectType"
+msgid "the alias part of the content item"
+msgstr "το μέρος ψευδώνυμου από το περιεχομένο"
+
+#. AddScalarFilterFields<StringGraphType>("alias", S["the alias of the content item"]);
+#: OrchardCore.Alias\GraphQL\AliasInputObjectType.cs:15
+msgctxt "OrchardCore.Alias.GraphQL.AliasInputObjectType"
+msgid "the alias of the content item"
+msgstr "το ψευδώνυμο του περιεχομένου"
+
+#. Description = S["Alternative path for the content item"];
+#: OrchardCore.Alias\GraphQL\AliasQueryObjectType.cs:12
+msgctxt "OrchardCore.Alias.GraphQL.AliasQueryObjectType"
+msgid "Alternative path for the content item"
+msgstr "Εναλλακτική διαδρομή για το στοιχείο περιεχομένου"
+
+#. yield return new ValidationResult(S["Your alias is too long. The alias can only be up to {0} characters.", AliasPart.MaxAliasLength], new string[] { nameof(part.Alias) });
+#: OrchardCore.Alias\Models\AliasPartExtensions.cs:18
+msgctxt "OrchardCore.Alias.Models.AliasPartExtensions"
+msgid "Your alias is too long. The alias can only be up to {0} characters."
+msgstr "Το ψευδώνυμό σας είναι πολύ μεγάλο. Το ψευδώνυμο μπορεί να είναι μόνο μέχρι {0} χαρακτήρες."
+
+#. yield return new ValidationResult(S["Your alias is already in use."], new[] { nameof(part.Alias) });
+#: OrchardCore.Alias\Models\AliasPartExtensions.cs:23
+msgctxt "OrchardCore.Alias.Models.AliasPartExtensions"
+msgid "Your alias is already in use."
+msgstr "Το ψευδώνυμό σας χρησιμοποιείται ήδη."
+
+#. context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+#: OrchardCore.Alias\Settings\AliasPartSettingsDisplayDriver.cs:43
+msgctxt "OrchardCore.Alias.Settings.AliasPartSettingsDisplayDriver"
+msgid "Pattern doesn't contain a valid Liquid expression. Details: {0}"
+msgstr "Το μοτίβο δεν περιέχει μια έγκυρη έκφραση Liquid. Λεπτομέρειες: {0}"
+
+#. <label asp-for="Alias">@T["Alias"] </label>
+#: OrchardCore.Alias\Views\AliasPart.Edit.cshtml:11
+msgctxt "OrchardCore.Alias.Views.AliasPart.Edit"
+msgid "Alias"
+msgstr "Ψευδώνυμο"
+
+#. @T["The alias of the content item."]
+#: OrchardCore.Alias\Views\AliasPart.Edit.cshtml:15
+msgctxt "OrchardCore.Alias.Views.AliasPart.Edit"
+msgid "The alias of the content item."
+msgstr "Το ψευδώνυμο του περιεχομένου."
+
+#: OrchardCore.Alias\Views\AliasPart.Edit.cshtml:0
+msgctxt "OrchardCore.Alias.Views.AliasPart.Edit"
+msgid "Leave empty to re-generate it."
+msgstr "Αφήστε το, κενό για να επαναδημιουργηθεί."
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentEditor)">@T["Standard"]</option>
+#: OrchardCore.Alias\Views\AliasPart.Option.cshtml:4
+msgctxt "OrchardCore.Alias.Views.AliasPart.Option"
+msgid "Standard"
+msgstr "Τυπικό"
+
+#. <label asp-for="Options">@T["Options"]</label>
+#: OrchardCore.Alias\Views\AliasPartSettings.Edit.cshtml:15
+msgctxt "OrchardCore.Alias.Views.AliasPartSettings.Edit"
+msgid "Options"
+msgstr "Επιλογές"
+
+#. <option value="@AliasPartOptions.Editable" selected="@(Model.Options == AliasPartOptions.Editable)">@T["Alias is editable"]</option>
+#: OrchardCore.Alias\Views\AliasPartSettings.Edit.cshtml:17
+msgctxt "OrchardCore.Alias.Views.AliasPartSettings.Edit"
+msgid "Alias is editable"
+msgstr "Το ψευδώνυμο είναι επεξεργάσιμο"
+
+#. <option value="@AliasPartOptions.GeneratedDisabled" selected="@(Model.Options == AliasPartOptions.GeneratedDisabled)">@T["Alias is generated and input is disabled"]</option>
+#: OrchardCore.Alias\Views\AliasPartSettings.Edit.cshtml:18
+msgctxt "OrchardCore.Alias.Views.AliasPartSettings.Edit"
+msgid "Alias is generated and input is disabled"
+msgstr "Το ψευδώνυμο είναι δημιουργημένο και η είσοδος είναι απενεργοποιημένη"
+
+#. <label asp-for="Pattern">@T["Pattern"]</label>
+#: OrchardCore.Alias\Views\AliasPartSettings.Edit.cshtml:24
+msgctxt "OrchardCore.Alias.Views.AliasPartSettings.Edit"
+msgid "Pattern"
+msgstr "Μοτίβο"
+
+#. <span class="hint">@T["The pattern used to render the alias of this content type."]</span>
+#: OrchardCore.Alias\Views\AliasPartSettings.Edit.cshtml:26
+msgctxt "OrchardCore.Alias.Views.AliasPartSettings.Edit"
+msgid "The pattern used to render the alias of this content type."
+msgstr "Το μοτίβο χρησιμοποιείται για την απόδοση του ψευδώνυμου αυτού του περιεχομένου."
+

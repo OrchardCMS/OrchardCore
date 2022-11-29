@@ -1,0 +1,50 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: zh-TW\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.ContentPreview.pot\n"
+"X-Crowdin-File-ID: 716\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Chinese Traditional\n"
+"Language: zh_TW\n"
+"PO-Revision-Date: 2022-05-05 18:46\n"
+
+#. context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+#: OrchardCore.ContentPreview\Settings\PreviewPartSettingsDisplayDriver.cs:45
+msgctxt "OrchardCore.ContentPreview.Settings.PreviewPartSettingsDisplayDriver"
+msgid "Pattern doesn't contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#. <a id="previewButton" target="_blank" class="btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.ContentPreview", id = previewId })">@T["Preview"]</a>
+#: OrchardCore.ContentPreview\Views\ContentPreview.Button.cshtml:13
+msgctxt "OrchardCore.ContentPreview.Views.ContentPreview.Button"
+msgid "Preview"
+msgstr "預覽"
+
+#. <label asp-for="Pattern">@T["Pattern"]</label>
+#: OrchardCore.ContentPreview\Views\PreviewPartSettings.Edit.cshtml:15
+msgctxt "OrchardCore.ContentPreview.Views.PreviewPartSettings.Edit"
+msgid "Pattern"
+msgstr ""
+
+#. <span class="hint">@T["The pattern used to render the custom preview url of this content type."]</span>
+#: OrchardCore.ContentPreview\Views\PreviewPartSettings.Edit.cshtml:17
+msgctxt "OrchardCore.ContentPreview.Views.PreviewPartSettings.Edit"
+msgid "The pattern used to render the custom preview url of this content type."
+msgstr ""
+
+#. <span>@T["Preview Disconnected"] </span>
+#: OrchardCore.ContentPreview\Views\Preview\Index.cshtml:14
+msgctxt "OrchardCore.ContentPreview.Views.Preview.Index"
+msgid "Preview Disconnected"
+msgstr ""
+
+#. <p>@T["Preview Error"] </p>
+#: OrchardCore.ContentPreview\Views\Preview\Index.cshtml:19
+msgctxt "OrchardCore.ContentPreview.Views.Preview.Index"
+msgid "Preview Error"
+msgstr ""
+

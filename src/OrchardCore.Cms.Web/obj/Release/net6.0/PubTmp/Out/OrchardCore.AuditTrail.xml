@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.AuditTrail</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.AuditTrail.Services.CorrelationIdFilterNode">
+            <summary>
+            Provides a correlation id node is used when a filter has not been selected
+            </summary>
+        </member>
+    </members>
+</doc>

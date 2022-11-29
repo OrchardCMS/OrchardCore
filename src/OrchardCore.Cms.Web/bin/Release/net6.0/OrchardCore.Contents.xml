@@ -1,0 +1,194 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Contents</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Contents.Deployment.AddToDeploymentPlan.ContentItemDeploymentStep">
+            <summary>
+            Adds a content item to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Contents.Deployment.AllContentDeploymentStep">
+            <summary>
+            Adds all content items to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Contents.Deployment.ContentDeploymentStep">
+            <summary>
+            Adds all content items of a specific type to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget.ExportContentToDeploymentTargetDeploymentStep">
+            <summary>
+            Adds content selected with export content to deployment plan target feature to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget.ExportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId">
+            <summary>
+            The id of the export content to deployment target deployment plan
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Contents.Handlers.FullTextAspectContentHandler">
+            <summary>
+            Provides the content for FullTextAspect based on FullTextAspectSettings
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Contents.Indexing.ContentItemIndexCoordinator">
+            <summary>
+            Enumerates all parts and fields of content item to extract indexed properties.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Contents.Liquid.IContentItemRecursionHelper`1.IsRecursive(OrchardCore.ContentManagement.ContentItem,System.Int32)">
+            <summary>
+            Returns <see langword="True"/> when the <see cref="T:OrchardCore.ContentManagement.ContentItem"/> has already been evaluated during this request by the particular filter./>
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Contents.Liquid.ContentItemRecursionHelper`1">
+            <inheritdocs />
+        </member>
+        <member name="M:OrchardCore.Contents.Liquid.ContentItemRecursionHelper`1.IsRecursive(OrchardCore.ContentManagement.ContentItem,System.Int32)">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Contents.Models.CommonPart">
+            <summary>
+            When attached to a content type, provides a way to edit the common
+            properties of a content item like CreatedUtc and Owner.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Contents.Models.FullTextAspectSettings.IncludeFullTextTemplate">
+            <summary>
+            Whether the content type should use a custom template to add content to the full-text aspect.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Contents.Models.FullTextAspectSettings.FullTextTemplate">
+            <summary>
+            The template used for the full-text aspect.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Contents.Models.FullTextAspectSettings.IncludeBodyAspect">
+            <summary>
+            Whether the body aspect should be added to the full-text aspect.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Contents.Models.FullTextAspectSettings.IncludeDisplayText">
+            <summary>
+            Whether the display text should be added to the full-text aspect.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Contents.Recipes.ContentStep">
+            <summary>
+            This recipe step creates a set of content items.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Contents.Services.ContentTypeFilterNode">
+            <summary>
+            Provides a content type node is used when a filter has not been selected
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Contents.Shapes.EncodeAlternateElement(System.String)">
+            <summary>
+            Encodes dashed and dots so that they don't conflict in filenames
+            </summary>
+            <param name="alternateElement"></param>
+            <returns></returns>
+        </member>
+        <member name="P:OrchardCore.Contents.Workflows.Activities.ContentActivity.InlineEvent">
+            <summary>
+            A <see cref="T:OrchardCore.ContentManagement.Workflows.ContentEventContext"/> updated when executed inline from a <see cref="T:OrchardCore.Contents.Workflows.Activities.ContentEvent"/>
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Contents.Workflows.Activities.ContentActivity.Content">
+            <summary>
+            An expression that evaluates to an <see cref="T:OrchardCore.ContentManagement.IContent"/> item.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Contents.Workflows.Drivers.ContentEventDisplayDriver`2.FilterContentTypesQuery(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Filters out any content type that doesn't exist.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Contents.Workflows.ViewModels.DeleteContentTaskViewModel.Expression">
+            <summary>
+            The expression resulting into a content item or content item ID to delete.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Contents.Workflows.ViewModels.PublishContentTaskViewModel.Expression">
+            <summary>
+            The expression resulting into a content item or content item ID to publish.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Contents.Workflows.ViewModels.RetrieveContentTaskViewModel.ContentItemId">
+            <summary>
+            The expression resulting into a content item ID to retrieve.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Contents.Workflows.ViewModels.UnpublishContentTaskViewModel.Expression">
+            <summary>
+            The expression resulting into a content item or content item ID to unpublish.
+            </summary>
+        </member>
+        <member name="M:ContentRazorHelperExtensions.GetContentItemIdByHandleAsync(OrchardCore.IOrchardHelper,System.String)">
+            <summary>
+            Returns a content item id by its handle.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="handle">The handle.</param>
+            <example>GetContentItemIdByHandleAsync("alias:carousel")</example>
+            <example>GetContentItemIdByHandleAsync("slug:myblog/my-blog-post")</example>
+            <returns>A content item id or <c>null</c> if it was not found.</returns>
+        </member>
+        <member name="M:ContentRazorHelperExtensions.GetContentItemByHandleAsync(OrchardCore.IOrchardHelper,System.String,System.Boolean)">
+            <summary>
+            Loads a content item by its handle.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="handle">The handle to load.</param>
+            <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
+            <example>GetContentItemByHandleAsync("alias:carousel")</example>
+            <example>GetContentItemByHandleAsync("slug:myblog/my-blog-post", true)</example>
+            <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
+        </member>
+        <member name="M:ContentRazorHelperExtensions.GetContentItemByIdAsync(OrchardCore.IOrchardHelper,System.String,System.Boolean)">
+            <summary>
+            Loads a content item by its id.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="contentItemId">The content item id to load.</param>
+            <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
+            <example>GetContentItemByIdAsync("4xxxxxxxxxxxxxxxx")</example>
+            <returns>A content item with the specific id, or <c>null</c> if it doesn't exist.</returns>
+        </member>
+        <member name="M:ContentRazorHelperExtensions.GetContentItemsByIdAsync(OrchardCore.IOrchardHelper,System.Collections.Generic.IEnumerable{System.String},System.Boolean)">
+            <summary>
+            Loads a list of content items by their ids.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="contentItemIds">The content item ids to load.</param>
+            <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
+            <returns>A list of content items with the specific ids.</returns>
+        </member>
+        <member name="M:ContentRazorHelperExtensions.GetContentItemByVersionIdAsync(OrchardCore.IOrchardHelper,System.String)">
+            <summary>
+            Loads a content item by its version id.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="contentItemVersionId">The content item version id to load.</param>
+            <example>GetContentItemByVersionIdAsync("4xxxxxxxxxxxxxxxx")</example>
+            <returns>A content item with the specific version id, or <c>null</c> if it doesn't exist.</returns>
+        </member>
+        <member name="M:ContentRazorHelperExtensions.QueryContentItemsAsync(OrchardCore.IOrchardHelper,System.Func{YesSql.IQuery{OrchardCore.ContentManagement.ContentItem,OrchardCore.ContentManagement.Records.ContentItemIndex},YesSql.IQuery{OrchardCore.ContentManagement.ContentItem}})">
+            <summary>
+            Query content items.
+            </summary>
+        </member>
+        <member name="M:ContentRazorHelperExtensions.GetRecentContentItemsByContentTypeAsync(OrchardCore.IOrchardHelper,System.String,System.Int32)">
+            <summary>
+            Loads content items of a specific type.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="contentType">The content type to load.</param>
+            <param name="maxContentItems">The maximum content items to return.</param>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Queries</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Queries.Deployment.AllQueriesDeploymentStep">
+            <summary>
+            Adds all queries to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Queries.Deployment.QueryBasedContentDeploymentStep">
+            <summary>
+            Adds all content items from the result of a Query to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Queries.QueryGlobalMethodProvider.#ctor">
+            <summary>
+            Usage: executeQuery(name, parameters)
+            Ex: executeQuery("MySqlQuery", {"Owner":"bob"});
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Queries.Recipes.QueryStep">
+            <summary>
+            This recipe step creates a set of queries.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Queries.Services.QueryManager.LoadDocumentAsync">
+            <summary>
+            Loads the queries document from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Queries.Services.QueryManager.GetDocumentAsync">
+            <summary>
+            Gets the queries document from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Queries.Sql.GraphQL.Queries.SqlQueryFieldTypeProvider">
+            <summary>
+            This implementation of <see cref="T:OrchardCore.Apis.GraphQL.ISchemaBuilder"/> registers
+            all SQL Queries as GraphQL queries.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Queries.Sql.GraphQL.Startup">
+            <summary>
+            These services are registered on the tenant service collection
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Queries.Sql.Startup">
+            <summary>
+            These services are registered on the tenant service collection
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Queries.Startup">
+            <summary>
+            These services are registered on the tenant service collection
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Liquid.LiquidQueriesAccessor">
+            <summary>
+            This is a placeholder class that allows modules to extend the `Queries` property in the current Liquid scope
+            </summary>
+        </member>
+    </members>
+</doc>

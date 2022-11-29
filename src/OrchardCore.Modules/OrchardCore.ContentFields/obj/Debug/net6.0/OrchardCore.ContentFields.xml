@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.ContentFields</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.ContentFields.Fields.UserNamesExtensions.GetUserNames(OrchardCore.ContentFields.Fields.UserPickerField)">
+            <summary>
+            User names are a less well known property of a <see cref="T:OrchardCore.ContentFields.Fields.UserPickerField"/>
+            </summary>
+            <remarks>
+            This property is stored when the <see cref="T:OrchardCore.ContentFields.Fields.UserPickerField"/> is saved, not when the <see cref="P:OrchardCore.Users.Models.User.UserName"/> value changes.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.ContentFields.Fields.UserNamesExtensions.SetUserNames(OrchardCore.ContentFields.Fields.UserPickerField,System.String[])">
+            <summary>
+            User names are a less well known property of a <see cref="T:OrchardCore.ContentFields.Fields.UserPickerField"/>
+            </summary>
+            <remarks>
+            This property is stored when the <see cref="T:OrchardCore.ContentFields.Fields.UserPickerField"/> is saved, not when the <see cref="P:OrchardCore.Users.Models.User.UserName"/> value changes.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Metadata.Models.ContentPartFieldDefinitionExtensions.GetContentField``1(OrchardCore.ContentManagement.Metadata.Models.ContentPartFieldDefinition,OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Returns the value of the defined content field from the <paramref name="contentItem"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Metadata.Models.ContentPartFieldDefinitionExtensions.GetContentFields``1(System.Collections.Generic.IEnumerable{OrchardCore.ContentManagement.Metadata.Models.ContentPartFieldDefinition},OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Returns each field from <paramref name="fieldDefinitions"/> that exists in <paramref name="contentItem"/> in a
+            tuple along with its <see cref="T:OrchardCore.ContentManagement.Metadata.Models.ContentPartFieldDefinition"/>.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,230 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3;\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: cs\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Menu.pot\n"
+"X-Crowdin-File-ID: 780\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Czech\n"
+"Language: cs_CZ\n"
+"PO-Revision-Date: 2022-05-05 19:03\n"
+
+#. builder.Add(S["Content"], design => design
+#: OrchardCore.Menu\AdminMenu.cs:33
+msgctxt "OrchardCore.Menu.AdminMenu"
+msgid "Content"
+msgstr "Obsah"
+
+#. .Add(S["Menus"], S["Menus"].PrefixPosition(), menus => menus
+#. .Add(S["Menus"], S["Menus"].PrefixPosition(), menus => menus
+#: OrchardCore.Menu\AdminMenu.cs:34
+#: OrchardCore.Menu\AdminMenu.cs:34
+msgctxt "OrchardCore.Menu.AdminMenu"
+msgid "Menus"
+msgstr "Menu"
+
+#. await _notifier.SuccessAsync(H["Menu item deleted successfully."]);
+#: OrchardCore.Menu\Controllers\AdminController.cs:282
+msgctxt "OrchardCore.Menu.Controllers.AdminController"
+msgid "Menu item deleted successfully."
+msgstr "Položka menu byla úspěšně smazána."
+
+#. updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
+#. updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
+#: OrchardCore.Menu\Drivers\HtmlMenuItemPartDisplayDriver.cs:101
+#: OrchardCore.Menu\Drivers\HtmlMenuItemPartDisplayDriver.cs:109
+msgctxt "OrchardCore.Menu.Drivers.HtmlMenuItemPartDisplayDriver"
+msgid "{0} is an invalid url."
+msgstr ""
+
+#. updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
+#. updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
+#: OrchardCore.Menu\Drivers\LinkMenuItemPartDisplayDriver.cs:96
+#: OrchardCore.Menu\Drivers\LinkMenuItemPartDisplayDriver.cs:104
+msgctxt "OrchardCore.Menu.Drivers.LinkMenuItemPartDisplayDriver"
+msgid "{0} is an invalid url."
+msgstr ""
+
+#. await _notifier.WarningAsync(H["The menu item content item with id {0} has no matching {1} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType]);
+#: OrchardCore.Menu\Drivers\MenuPartDisplayDriver.cs:52
+msgctxt "OrchardCore.Menu.Drivers.MenuPartDisplayDriver"
+msgid "The menu item content item with id {0} has no matching {1} content type definition."
+msgstr ""
+
+#. await _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]);
+#: OrchardCore.Menu\Drivers\MenuPartDisplayDriver.cs:59
+msgctxt "OrchardCore.Menu.Drivers.MenuPartDisplayDriver"
+msgid "Publishing this content item may erase created content. Fix any content type issues beforehand."
+msgstr ""
+
+#. <h5>@T["Content Menu Item"]</h5>
+#: OrchardCore.Menu\Views\ContentMenuItemPart.Edit.cshtml:3
+msgctxt "OrchardCore.Menu.Views.ContentMenuItemPart.Edit"
+msgid "Content Menu Item"
+msgstr "Obsahová položka menu"
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.Menu\Views\ContentMenuItemPart.Edit.cshtml:6
+msgctxt "OrchardCore.Menu.Views.ContentMenuItemPart.Edit"
+msgid "Name"
+msgstr "Název"
+
+#. <h4 class="card-title">@T["Content Menu Item"]</h4>
+#: OrchardCore.Menu\Views\ContentMenuItemPart.Thumbnail.cshtml:1
+msgctxt "OrchardCore.Menu.Views.ContentMenuItemPart.Thumbnail"
+msgid "Content Menu Item"
+msgstr "Obsahová položka menu"
+
+#. <p>@T["Links to a Content url."]</p>
+#: OrchardCore.Menu\Views\ContentMenuItemPart.Thumbnail.cshtml:2
+msgctxt "OrchardCore.Menu.Views.ContentMenuItemPart.Thumbnail"
+msgid "Links to a Content url."
+msgstr "Odkazuje na URL obsahu."
+
+#. <h5>@T["Html Menu Item"]</h5>
+#: OrchardCore.Menu\Views\HtmlMenuItemPart.Edit.cshtml:3
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Edit"
+msgid "Html Menu Item"
+msgstr "HTML položka menu"
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.Menu\Views\HtmlMenuItemPart.Edit.cshtml:6
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Edit"
+msgid "Name"
+msgstr "Název"
+
+#. <label asp-for="Url">@T["Url"]</label>
+#: OrchardCore.Menu\Views\HtmlMenuItemPart.Edit.cshtml:11
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Edit"
+msgid "Url"
+msgstr "URL"
+
+#. <label asp-for="Html">@T["Html"]</label>
+#: OrchardCore.Menu\Views\HtmlMenuItemPart.Edit.cshtml:16
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Edit"
+msgid "Html"
+msgstr "HTML"
+
+#. <h4 class="card-title">@T["Html Menu Item"]</h4>
+#: OrchardCore.Menu\Views\HtmlMenuItemPart.Thumbnail.cshtml:1
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Thumbnail"
+msgid "Html Menu Item"
+msgstr "HTML položka menu"
+
+#. <p>@T["Links to a custom url with HTML."]</p>
+#: OrchardCore.Menu\Views\HtmlMenuItemPart.Thumbnail.cshtml:2
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Thumbnail"
+msgid "Links to a custom url with HTML."
+msgstr "Odkazuje na vlastní URL s HTML."
+
+#. <label class="form-check-label" asp-for="SanitizeHtml">@T["Sanitize Html"]</label>
+#: OrchardCore.Menu\Views\HtmlMenuItemPartSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPartSettings.Edit"
+msgid "Sanitize Html"
+msgstr "Sanitizovat HTML"
+
+#. @T["Whether the Html is sanitized to prevent custom scripts."]
+#: OrchardCore.Menu\Views\HtmlMenuItemPartSettings.Edit.cshtml:8
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPartSettings.Edit"
+msgid "Whether the Html is sanitized to prevent custom scripts."
+msgstr "Zda je HTML sanitizován pro prevenci před spouštěním vlastních scriptů."
+
+#. <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/core/Sanitizer" target="_blank">@T["See documentation"]</a>
+#: OrchardCore.Menu\Views\HtmlMenuItemPartSettings.Edit.cshtml:9
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPartSettings.Edit"
+msgid "See documentation"
+msgstr "Viz dokumentaci"
+
+#. <h5>@T["Link Menu Item"]</h5>
+#: OrchardCore.Menu\Views\LinkMenuItemPart.Edit.cshtml:3
+msgctxt "OrchardCore.Menu.Views.LinkMenuItemPart.Edit"
+msgid "Link Menu Item"
+msgstr "Položka menu s odkazem"
+
+#. <label asp-for="Name">@T["Name"]</label>
+#: OrchardCore.Menu\Views\LinkMenuItemPart.Edit.cshtml:6
+msgctxt "OrchardCore.Menu.Views.LinkMenuItemPart.Edit"
+msgid "Name"
+msgstr "Název"
+
+#. <label asp-for="Url">@T["Url"]</label>
+#: OrchardCore.Menu\Views\LinkMenuItemPart.Edit.cshtml:11
+msgctxt "OrchardCore.Menu.Views.LinkMenuItemPart.Edit"
+msgid "Url"
+msgstr "URL"
+
+#. <h4 class="card-title">@T["Link Menu Item"]</h4>
+#: OrchardCore.Menu\Views\LinkMenuItemPart.Thumbnail.cshtml:1
+msgctxt "OrchardCore.Menu.Views.LinkMenuItemPart.Thumbnail"
+msgid "Link Menu Item"
+msgstr "Položka menu s odkazem"
+
+#. <p>@T["Links to a custom url."]</p>
+#: OrchardCore.Menu\Views\LinkMenuItemPart.Thumbnail.cshtml:2
+msgctxt "OrchardCore.Menu.Views.LinkMenuItemPart.Thumbnail"
+msgid "Links to a custom url."
+msgstr "Odkazuje na vlastní URL."
+
+#. @T["Edit"]
+#: OrchardCore.Menu\Views\MenuItem.Admin.cshtml:38
+msgctxt "OrchardCore.Menu.Views.MenuItem.Admin"
+msgid "Edit"
+msgstr "Upravit"
+
+#. @T["Add"]
+#: OrchardCore.Menu\Views\MenuItem.Admin.cshtml:41
+msgctxt "OrchardCore.Menu.Views.MenuItem.Admin"
+msgid "Add"
+msgstr "Přidat"
+
+#. @T["Delete"]
+#: OrchardCore.Menu\Views\MenuItem.Admin.cshtml:50
+msgctxt "OrchardCore.Menu.Views.MenuItem.Admin"
+msgid "Delete"
+msgstr "Smazat"
+
+#. <a class="btn btn-primary btn-sm thumbnail-link-create" asp-route-action="Create" asp-route-controller="Admin" asp-route-id="@Model.MenuItemType" asp-route-menuContentItemId="@Model.MenuContentItemId" asp-route-area="OrchardCore.Menu">@T["Add"]</a>
+#: OrchardCore.Menu\Views\MenuItem.Thumbnail.cshtml:16
+msgctxt "OrchardCore.Menu.Views.MenuItem.Thumbnail"
+msgid "Add"
+msgstr "Přidat"
+
+#. @T["Add Menu Item"]
+#: OrchardCore.Menu\Views\MenuPart.Edit.cshtml:25
+msgctxt "OrchardCore.Menu.Views.MenuPart.Edit"
+msgid "Add Menu Item"
+msgstr "Přidat položku menu"
+
+#. <h5 class="modal-title" id="available-menu-items-title">@T["Available Menu Items"]</h5>
+#: OrchardCore.Menu\Views\MenuPart.Edit.cshtml:47
+msgctxt "OrchardCore.Menu.Views.MenuPart.Edit"
+msgid "Available Menu Items"
+msgstr "Dostupné položky menu"
+
+#. <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+#: OrchardCore.Menu\Views\MenuPart.Edit.cshtml:66
+msgctxt "OrchardCore.Menu.Views.MenuPart.Edit"
+msgid "Cancel"
+msgstr "Storno"
+
+#. <div id="msg-leave" style="display:none" data>@T["You have reordered the navigation."]</div>
+#: OrchardCore.Menu\Views\MenuPart.Edit.cshtml:73
+msgctxt "OrchardCore.Menu.Views.MenuPart.Edit"
+msgid "You have reordered the navigation."
+msgstr "Změnili jste pořadí položek v menu."
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(T["New {0}", typeDisplayName])</h1></zone>
+#: OrchardCore.Menu\Views\Admin\Create.cshtml:13
+msgctxt "OrchardCore.Menu.Views.Admin.Create"
+msgid "New {0}"
+msgstr "Nový {0}"
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(T["Edit {0}", typeDisplayName])</h1></zone>
+#: OrchardCore.Menu\Views\Admin\Edit.cshtml:13
+msgctxt "OrchardCore.Menu.Views.Admin.Edit"
+msgid "Edit {0}"
+msgstr "Upravit {0}"
+

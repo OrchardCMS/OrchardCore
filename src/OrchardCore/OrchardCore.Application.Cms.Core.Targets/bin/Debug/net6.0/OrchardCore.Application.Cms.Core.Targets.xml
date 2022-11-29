@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Application.Cms.Core.Targets</name>
+    </assembly>
+    <members>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceExtensions.AddOrchardCms(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds Orchard CMS services to the application.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceExtensions.AddOrchardCms(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder})">
+            <summary>
+            Adds Orchard CMS services to the application and let the app change the
+            default tenant behavior and set of features through a configure action.
+            </summary>
+        </member>
+    </members>
+</doc>

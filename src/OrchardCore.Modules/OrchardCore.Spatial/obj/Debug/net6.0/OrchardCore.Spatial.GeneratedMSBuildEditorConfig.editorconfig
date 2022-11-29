@@ -1,0 +1,45 @@
+is_global = true
+build_property.TargetFramework = net6.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = OrchardCore.Spatial
+build_property.RootNamespace = OrchardCore.Spatial
+build_property.ProjectDir = C:\repos\loethenweb\src\OrchardCore.Modules\OrchardCore.Spatial\
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\repos\loethenweb\src\OrchardCore.Modules\OrchardCore.Spatial
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Spatial/Views/GeoPointField-Leaflet.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR2VvUG9pbnRGaWVsZC1MZWFmbGV0LkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Spatial/Views/GeoPointField-Leaflet.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR2VvUG9pbnRGaWVsZC1MZWFmbGV0Lk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Spatial/Views/GeoPointField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR2VvUG9pbnRGaWVsZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Spatial/Views/GeoPointField.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR2VvUG9pbnRGaWVsZC5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Spatial/Views/GeoPointField.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR2VvUG9pbnRGaWVsZC5PcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Spatial/Views/GeoPointFieldSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR2VvUG9pbnRGaWVsZFNldHRpbmdzLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Spatial/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 

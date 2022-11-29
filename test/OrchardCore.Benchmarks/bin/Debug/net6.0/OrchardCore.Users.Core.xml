@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Users.Core</name>
+    </assembly>
+    <members>
+        <member name="F:OrchardCore.Users.CommonPermissions.ManageUsers">
+            <summary>
+            When authorizing request ManageUsers and pass an <see cref="T:OrchardCore.Users.IUser"/>
+            Do not request a dynamic permission unless you are checking if the user can manage a specific role.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Users.CommonPermissions.ViewUsers">
+            <summary>
+            View users only allows listing or viewing a users profile.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Users.Models.UserClaim">
+            <summary>
+            Represents a claim that is granted to a specific user.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Users.Models.UserClaim.ClaimType">
+            <summary>
+            Gets or sets the claim type for this claim.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Users.Models.UserClaim.ClaimValue">
+            <summary>
+            Gets or sets the claim value for this claim.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Users.Services.DefaultUserClaimsPrincipalFactory">
+            <summary>
+            Custom implementation of <see cref="T:Microsoft.AspNetCore.Identity.IUserClaimsPrincipalFactory`1"/> adding email claims.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Users.Services.DefaultUserClaimsPrincipalProviderFactory">
+            <summary>
+            Custom implementation of <see cref="T:Microsoft.AspNetCore.Identity.IUserClaimsPrincipalFactory`1"/> allowing adding claims by implementing the <see cref="T:OrchardCore.Users.Services.IUserClaimsProvider"/>
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Users.Services.UserService">
+            <summary>
+            Implements <see cref="T:OrchardCore.Users.Services.IUserService"/> by using the ASP.NET Core Identity packages.
+            </summary>
+        </member>
+        <member name="M:UserRazorHelperExtensions.GetUserByIdAsync(OrchardCore.IOrchardHelper,System.String)">
+            <summary>
+            Returns a <see cref="T:OrchardCore.Users.Models.User"/> by its <see cref="P:OrchardCore.Users.Models.User.UserId"/>
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="userId">The <see cref="P:OrchardCore.Users.Models.User.UserId"/>.</param>
+            <returns>A <see cref="T:OrchardCore.Users.Models.User"/> or <c>null</c> if it was not found.</returns>
+        </member>
+        <member name="M:UserRazorHelperExtensions.GetUsersByIdsAsync(OrchardCore.IOrchardHelper,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Loads a list of users by their user ids./>
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="userIds">The user ids to load.</param>
+            <returns>A list of users with the specific ids.</returns>
+        </member>
+    </members>
+</doc>

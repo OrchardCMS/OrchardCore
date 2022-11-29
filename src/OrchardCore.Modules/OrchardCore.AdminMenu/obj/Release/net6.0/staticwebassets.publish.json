@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "pA8HFQp/3iDse93XUcefavx4f1+zVz7HsIBkd/WGvBc=",
+  "Source": "OrchardCore.AdminMenu",
+  "BasePath": "_content/OrchardCore.AdminMenu",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

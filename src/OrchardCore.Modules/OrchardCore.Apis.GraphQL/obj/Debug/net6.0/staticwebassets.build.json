@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "PNNJCAeI5lSXmPBQ1BM+mbtn1UTBmFpuic6ZwvxLeCw=",
+  "Source": "OrchardCore.Apis.GraphQL",
+  "BasePath": "_content/OrchardCore.Apis.GraphQL",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.Apis.GraphQL\\wwwroot",
+      "Source": "OrchardCore.Apis.GraphQL",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Apis.GraphQL\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Apis.GraphQL",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

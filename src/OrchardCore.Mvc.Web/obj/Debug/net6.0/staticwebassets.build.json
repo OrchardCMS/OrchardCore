@@ -1,0 +1,49 @@
+{
+  "Version": 1,
+  "Hash": "UxhJiB1Qb4FKe2Gj03op8O+nB3LLhNfjrRTZnBoGnlw=",
+  "Source": "OrchardCore.Mvc.Web",
+  "BasePath": "_content/OrchardCore.Mvc.Web",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Mvc.HelloWorld\\OrchardCore.Mvc.HelloWorld.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Mvc.HelloWorld",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Debug;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Debug;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;RuntimeIdentifier;SelfContained"
+    }
+  ],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.Mvc.Web\\wwwroot",
+      "Source": "OrchardCore.Mvc.Web",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Mvc.Web\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Mvc.Web",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Mvc.Web\\wwwroot\\.placeholder",
+      "SourceId": "OrchardCore.Mvc.Web",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Mvc.Web\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Mvc.Web",
+      "RelativePath": ".placeholder",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\.placeholder"
+    }
+  ]
+}

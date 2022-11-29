@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Data.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="P:OrchardCore.Data.Documents.Document.Identifier">
+            <summary>
+            The <see cref="P:OrchardCore.Data.Documents.IDocument.Identifier"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Data.Documents.DocumentStoreCommitException">
+            <summary>
+            The <see cref="T:System.Exception"/> that is thrown if <see cref="M:OrchardCore.Data.Documents.IDocumentStore.CommitAsync"/> fails.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Documents.DocumentStoreCommitException.#ctor(System.String)">
+            <summary>
+            Creates a new instance of <see cref="T:OrchardCore.Data.Documents.DocumentStoreCommitException"/> with the specified
+            exception message.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="M:OrchardCore.Data.Documents.DocumentStoreCommitException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates a new instance of <see cref="T:OrchardCore.Data.Documents.DocumentStoreCommitException"/> with the specified
+            exception message and inner exception.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+            <param name="innerException">The inner <see cref="T:System.Exception"/>.</param>
+        </member>
+        <member name="T:OrchardCore.Data.Documents.DocumentStoreCommitFailureDelegate">
+            <summary>
+            The type of the delegate that will get called after <see cref="M:OrchardCore.Data.Documents.IDocumentStore.CommitAsync"/> if it is not successful.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Data.Documents.DocumentStoreCommitSuccessDelegate">
+            <summary>
+            The type of the delegate that will get called after <see cref="M:OrchardCore.Data.Documents.IDocumentStore.CommitAsync"/> if it is successful.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Data.Documents.IDocument.Identifier">
+            <summary>
+            The unique identifier of the document.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Data.Documents.IDocumentStore">
+            <summary>
+            A cacheable, committable and cancellable document store allowing to get documents from a shared cache while being able
+            to update them to the store at the scope level, and allowing to register delegates that get called after committing.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Documents.IDocumentStore.GetOrCreateMutableAsync``1(System.Func{System.Threading.Tasks.Task{``0}})">
+            <summary>
+            Loads a single document (or create a new one) for updating and that should not be cached.
+            For a full isolation, it needs to be used in pair with <see cref="M:OrchardCore.Data.Documents.IDocumentStore.GetOrCreateImmutableAsync``1(System.Func{System.Threading.Tasks.Task{``0}})"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Documents.IDocumentStore.GetOrCreateImmutableAsync``1(System.Func{System.Threading.Tasks.Task{``0}})">
+            <summary>
+            Gets a single document (or create a new one) for caching and that should not be updated,
+            and a bool indicating if it can be cached, not if it has been already loaded for update.
+            For a full isolation, it needs to be used in pair with <see cref="M:OrchardCore.Data.Documents.IDocumentStore.GetOrCreateMutableAsync``1(System.Func{System.Threading.Tasks.Task{``0}})"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Documents.IDocumentStore.UpdateAsync``1(``0,System.Func{``0,System.Threading.Tasks.Task},System.Boolean)">
+            <summary>
+            Updates the store with the provided document and then uses the delegate to update the cache.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Documents.IDocumentStore.CancelAsync">
+            <summary>
+            Allows to cancel the current updating before calling <see cref="M:OrchardCore.Data.Documents.IDocumentStore.CommitAsync"/> at the end of the scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Documents.IDocumentStore.AfterCommitSuccess``1(OrchardCore.Data.Documents.DocumentStoreCommitSuccessDelegate)">
+            <summary>
+            Registers a <see cref="T:OrchardCore.Data.Documents.DocumentStoreCommitSuccessDelegate"/> that will get called after <see cref="M:OrchardCore.Data.Documents.IDocumentStore.CommitAsync"/> if it succeeded.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Documents.IDocumentStore.AfterCommitFailure``1(OrchardCore.Data.Documents.DocumentStoreCommitFailureDelegate)">
+            <summary>
+            Registers a <see cref="T:OrchardCore.Data.Documents.DocumentStoreCommitFailureDelegate"/> that will get called after <see cref="M:OrchardCore.Data.Documents.IDocumentStore.CommitAsync"/> if it failed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Documents.IDocumentStore.CommitAsync">
+            <summary>
+            Commits the related document store.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Data.Documents.IFileDocumentStore">
+            <summary>
+            A singleton service using the file system to store document files under the tenant folder, and that is in sync
+            with the ambient transaction, any file is updated after a successful <see cref="M:OrchardCore.Data.Documents.IDocumentStore.CommitAsync"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Data.Migration.IDataMigrationManager">
+            <summary>
+            Represents a contract to manage database migrations.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Migration.IDataMigrationManager.GetFeaturesThatNeedUpdateAsync">
+            <summary>
+            Returns the features which have at least one Data Migration class with a corresponding Upgrade method to be called
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Migration.IDataMigrationManager.UpdateAllFeaturesAsync">
+            <summary>
+            Run all migrations that need to be updated.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Migration.IDataMigrationManager.UpdateAsync(System.String)">
+            <summary>
+            Updates the database to the latest version for the specified feature
+            </summary>
+            <param name="feature">The feature to be uninstalled.</param>
+        </member>
+        <member name="M:OrchardCore.Data.Migration.IDataMigrationManager.UpdateAsync(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Updates the database to the latest version for the specified features
+            </summary>
+            <param name="features">The features to be updated.</param>
+        </member>
+        <member name="M:OrchardCore.Data.Migration.IDataMigrationManager.Uninstall(System.String)">
+            <summary>
+            Execute a script to delete any information relative to the feature
+            </summary>
+            <param name="feature">The feature to be uninstalled.</param>
+        </member>
+        <member name="T:OrchardCore.Data.IDbConnectionAccessor">
+            <summary>
+            Represents a contract to access the <see cref="T:System.Data.Common.DbConnection"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.IDbConnectionAccessor.CreateConnection">
+            <summary>
+            Creates a database connection.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Data.ServiceCollectionExtensions">
+            <summary>
+            Provides extension methods for <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to add YesSQL <see cref="T:OrchardCore.Data.DatabaseProvider"/>s.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.ServiceCollectionExtensions.TryAddDataProvider(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String,System.String,System.Boolean,System.Boolean,System.Boolean,System.String)">
+             <summary>
+            
+             </summary>
+             <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+             <param name="name">The database provider name.</param>
+             <param name="value">The database provider value, i.e. SQL Server, MySQL.</param>
+             <param name="hasConnectionString">Whether the database contains a connection string.</param>
+             <param name="hasTablePrefix">The table prefix.</param>
+             <param name="isDefault">Whether the data provider is the default one.</param>
+             <param name="sampleConnectionString">A sample connection string, e.g. Server={Server Name};Database={Database Name};IntegratedSecurity=true</param>
+             <returns></returns>
+        </member>
+    </members>
+</doc>

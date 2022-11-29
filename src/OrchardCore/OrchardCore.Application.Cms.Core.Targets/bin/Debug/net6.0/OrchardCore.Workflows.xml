@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Workflows</name>
+    </assembly>
+    <members>
+        <member name="P:OrchardCore.Workflows.Activities.ForEachTask.Enumerable">
+            <summary>
+            An expression evaluating to an enumerable object to iterate over.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Activities.ForEachTask.LoopVariableName">
+            <summary>
+            The current iteration value.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Activities.ForEachTask.Current">
+            <summary>
+            The current iteration value.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Activities.ForEachTask.Index">
+            <summary>
+            The current number of iterations executed.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Activities.ForLoopTask.From">
+            <summary>
+            An expression evaluating to the start value.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Activities.ForLoopTask.To">
+            <summary>
+            An expression evaluating to the end value.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Activities.ForLoopTask.Step">
+            <summary>
+            An expression evaluating to the end value.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Activities.ForLoopTask.LoopVariableName">
+            <summary>
+            The property name to store the current iteration number in.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Activities.ForLoopTask.Index">
+            <summary>
+            The current index of the iteration.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Activities.IfElseTask.Condition">
+            <summary>
+            A script evaluating to either true or false.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Workflows.Activities.MissingActivity">
+            <summary>
+            A replacement for when a referenced activity could not be found. This is a system-level activity that is not registered with WorkflowOptions.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Activities.ScriptTask.Script">
+            <summary>
+            The script can call any available functions, including setOutcome().
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Activities.WhileLoopTask.Condition">
+            <summary>
+            An expression evaluating to true or false.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Http.Controllers.HttpWorkflowController.GetWorkflowActionResult">
+            <summary>
+            Returns the appropriate action result depending on whether the status code has already been set by a workflow.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Http.Services.WorkflowRouteEntries`1.LoadDocumentAsync">
+            <summary>
+            Loads the workflow route document for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Http.Services.WorkflowRouteEntries`1.GetDocumentAsync">
+            <summary>
+            Gets the workflow route document for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Workflows.Services.Resolver`1">
+            <summary>
+            Temporary replacement for Func until we add proper DI support using DryIoc or Autofac.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Services.WorkflowManager.InvokeActivitiesAsync(OrchardCore.Workflows.Models.WorkflowExecutionContext,System.Func{OrchardCore.Workflows.Models.ActivityContext,System.Threading.Tasks.Task})">
+            <summary>
+            Executes a specific action on all the activities of a workflow.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.ViewModels.ActivityViewModel.ClientId">
+            <summary>
+            The local id used for connections
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.ViewModels.ActivityViewModel.Name">
+            <summary>
+            The name of the activity
+            </summary>
+        </member>
+    </members>
+</doc>

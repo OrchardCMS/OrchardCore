@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "qcww79PX3mUWaX8XIJ+6xZqqjSl/8gLZIrpCLH6ngRo=",
+  "Source": "OrchardCore.Microsoft.Authentication",
+  "BasePath": "_content/OrchardCore.Microsoft.Authentication",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

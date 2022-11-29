@@ -1,0 +1,44 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: ru\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Infrastructure.Abstractions.pot\n"
+"X-Crowdin-File-ID: 758\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Russian\n"
+"Language: ru_RU\n"
+"PO-Revision-Date: 2022-03-05 10:52\n"
+
+#. throw new InvalidOperationException(S["Switch \"{0}\" was not found", commandSwitch.Key]);
+#: OrchardCore.Infrastructure.Abstractions\Commands\DefaultCommandHandler.cs:45
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "Switch \"{0}\" was not found"
+msgstr ""
+
+#. throw new InvalidOperationException(S["A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, typeof(OrchardSwitchAttribute).Name]);
+#: OrchardCore.Infrastructure.Abstractions\Commands\DefaultCommandHandler.cs:49
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "A property \"{0}\" exists but is not decorated with \"{1}\""
+msgstr ""
+
+#. string message = S["Error converting value \"{0}\" to \"{1}\" for switch \"{2}\"",
+#: OrchardCore.Infrastructure.Abstractions\Commands\DefaultCommandHandler.cs:61
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "Error converting value \"{0}\" to \"{1}\" for switch \"{2}\""
+msgstr ""
+
+#. throw new InvalidOperationException(S["Command arguments \"{0}\" don't match command definition", string.Join(" ", arguments)]);
+#: OrchardCore.Infrastructure.Abstractions\Commands\DefaultCommandHandler.cs:77
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "Command arguments \"{0}\" don't match command definition"
+msgstr ""
+
+#. throw new InvalidOperationException(S["Method \"{0}\" does not support switch \"{1}\".", methodInfo.Name, commandSwitch]);
+#: OrchardCore.Infrastructure.Abstractions\Commands\DefaultCommandHandler.cs:176
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "Method \"{0}\" does not support switch \"{1}\"."
+msgstr ""
+

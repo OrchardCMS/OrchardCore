@@ -1,0 +1,770 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: tr\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Lucene.pot\n"
+"X-Crowdin-File-ID: 772\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Turkish\n"
+"Language: tr_TR\n"
+"PO-Revision-Date: 2022-05-05 19:01\n"
+
+#. .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
+#. .Add(S["Search"], S["Search"].PrefixPosition(), entry => entry
+#. .Add(S["Search"], S["Search"].PrefixPosition(), entry => entry
+#: OrchardCore.Lucene\AdminMenu.cs:26
+#: OrchardCore.Lucene\AdminMenu.cs:38
+#: OrchardCore.Lucene\AdminMenu.cs:38
+msgctxt "OrchardCore.Lucene.AdminMenu"
+msgid "Search"
+msgstr "Ara"
+
+#. .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
+#. .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
+#: OrchardCore.Lucene\AdminMenu.cs:28
+#: OrchardCore.Lucene\AdminMenu.cs:28
+msgctxt "OrchardCore.Lucene.AdminMenu"
+msgid "Indexing"
+msgstr "Endeksleme"
+
+#. .Add(S["Lucene Indices"], S["Lucene Indices"].PrefixPosition(), indexes => indexes
+#. .Add(S["Lucene Indices"], S["Lucene Indices"].PrefixPosition(), indexes => indexes
+#: OrchardCore.Lucene\AdminMenu.cs:29
+#: OrchardCore.Lucene\AdminMenu.cs:29
+msgctxt "OrchardCore.Lucene.AdminMenu"
+msgid "Lucene Indices"
+msgstr "Lucene Endeksleri"
+
+#. .Add(S["Run Lucene Query"], S["Run Lucene Query"].PrefixPosition(), queries => queries
+#. .Add(S["Run Lucene Query"], S["Run Lucene Query"].PrefixPosition(), queries => queries
+#: OrchardCore.Lucene\AdminMenu.cs:33
+#: OrchardCore.Lucene\AdminMenu.cs:33
+msgctxt "OrchardCore.Lucene.AdminMenu"
+msgid "Run Lucene Query"
+msgstr "Lucene Sorgusunu Çalıştırın"
+
+#. .Add(S["Settings"], settings => settings
+#: OrchardCore.Lucene\AdminMenu.cs:37
+msgctxt "OrchardCore.Lucene.AdminMenu"
+msgid "Settings"
+msgstr "Ayarlar"
+
+#. new SelectListItem() { Text = S["Reset"], Value = nameof(ContentsBulkAction.Reset) },
+#: OrchardCore.Lucene\Controllers\AdminController.cs:129
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "Reset"
+msgstr "Sıfırla"
+
+#. new SelectListItem() { Text = S["Rebuild"], Value = nameof(ContentsBulkAction.Rebuild) },
+#: OrchardCore.Lucene\Controllers\AdminController.cs:130
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "Rebuild"
+msgstr "Yeniden oluştur"
+
+#. new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+#: OrchardCore.Lucene\Controllers\AdminController.cs:131
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "Delete"
+msgstr "Sil"
+
+#. .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
+#. .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" });
+#: OrchardCore.Lucene\Controllers\AdminController.cs:174
+#: OrchardCore.Lucene\Controllers\AdminController.cs:212
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "Any culture"
+msgstr "Herhangi bir kültür"
+
+#. ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["An index named {0} already exists.", model.IndexName]);
+#: OrchardCore.Lucene\Controllers\AdminController.cs:198
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "An index named {0} already exists."
+msgstr "{0} adlı bir dizin zaten var."
+
+#. ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exist.", model.IndexName]);
+#: OrchardCore.Lucene\Controllers\AdminController.cs:205
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "An index named {0} doesn't exist."
+msgstr "{0} adlı bir dizin mevcut değil."
+
+#. await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
+#: OrchardCore.Lucene\Controllers\AdminController.cs:230
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "An error occurred while creating the index."
+msgstr "Dizin oluşturulurken bir hata oluştu."
+
+#. await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", model.IndexName]);
+#: OrchardCore.Lucene\Controllers\AdminController.cs:235
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "Index <em>{0}</em> created successfully."
+msgstr "<em>{0}</em> dizini başarıyla oluşturuldu."
+
+#. await _notifier.ErrorAsync(H["An error occurred while editing the index."]);
+#: OrchardCore.Lucene\Controllers\AdminController.cs:247
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "An error occurred while editing the index."
+msgstr "Dizin düzenlenirken bir hata oluştu."
+
+#. await _notifier.SuccessAsync(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", model.IndexName]);
+#: OrchardCore.Lucene\Controllers\AdminController.cs:252
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>"
+msgstr "<em>{0}</em> dizini başarıyla değiştirildi, <strong>lütfen dizinde yeniden oluşturmayı düşünün.</strong>"
+
+#. await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", id]);
+#. await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", item.IndexName]);
+#: OrchardCore.Lucene\Controllers\AdminController.cs:281
+#: OrchardCore.Lucene\Controllers\AdminController.cs:457
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "Index <em>{0}</em> reset successfully."
+msgstr "<em>{0}</em> dizini başarıyla sıfırlandı."
+
+#. await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", id]);
+#. await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", item.IndexName]);
+#: OrchardCore.Lucene\Controllers\AdminController.cs:302
+#: OrchardCore.Lucene\Controllers\AdminController.cs:471
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "Index <em>{0}</em> rebuilt successfully."
+msgstr "<em>{0}</em> dizini başarıyla yeniden oluşturuldu."
+
+#. await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
+#: OrchardCore.Lucene\Controllers\AdminController.cs:328
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "Index <em>{0}</em> deleted successfully."
+msgstr "<em>{0}</em> dizini başarıyla silindi."
+
+#. await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
+#: OrchardCore.Lucene\Controllers\AdminController.cs:332
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "An error occurred while deleting the index."
+msgstr "Dizin silinirken bir hata oluştu."
+
+#. ModelState.AddModelError(nameof(model.DecodedQuery), S["Invalid query : {0}", e.Message]);
+#: OrchardCore.Lucene\Controllers\AdminController.cs:412
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "Invalid query : {0}"
+msgstr "Geçersiz sorgu: {0}"
+
+#. await _notifier.SuccessAsync(H["Indices successfully removed."]);
+#: OrchardCore.Lucene\Controllers\AdminController.cs:444
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "Indices successfully removed."
+msgstr "Endeksler başarıyla kaldırıldı."
+
+#. ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexedContentTypes), S["At least one content type selection is required."]);
+#: OrchardCore.Lucene\Controllers\AdminController.cs:486
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "At least one content type selection is required."
+msgstr "En az bir içerik türü seçimi gereklidir."
+
+#. ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["The index name is required."]);
+#: OrchardCore.Lucene\Controllers\AdminController.cs:491
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "The index name is required."
+msgstr "Dizin adı gerekli."
+
+#. ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["The index name contains unallowed chars."]);
+#: OrchardCore.Lucene\Controllers\AdminController.cs:495
+msgctxt "OrchardCore.Lucene.Controllers.AdminController"
+msgid "The index name contains unallowed chars."
+msgstr "Dizin adı izin verilmeyen karakterler içeriyor."
+
+#. ModelState.AddModelError("Terms", S["Incorrect query syntax."]);
+#: OrchardCore.Lucene\Controllers\SearchController.cs:158
+msgctxt "OrchardCore.Lucene.Controllers.SearchController"
+msgid "Incorrect query syntax."
+msgstr "Yanlış sorgu sözdizimi."
+
+#. updater.ModelState.AddModelError(nameof(model.Template), S["The query field is required"]);
+#: OrchardCore.Lucene\Drivers\LuceneQueryDisplayDriver.cs:63
+msgctxt "OrchardCore.Lucene.Drivers.LuceneQueryDisplayDriver"
+msgid "The query field is required"
+msgstr "Sorgu alanı gereklidir"
+
+#. updater.ModelState.AddModelError(nameof(model.Index), S["The index field is required"]);
+#: OrchardCore.Lucene\Drivers\LuceneQueryDisplayDriver.cs:68
+msgctxt "OrchardCore.Lucene.Drivers.LuceneQueryDisplayDriver"
+msgid "The index field is required"
+msgstr "İndeks alanı zorunludur"
+
+#. return new HtmlString($"<option value=\"Lucene\" selected=\"selected\">{S["Lucene"]}</option>");
+#. return new HtmlString($"<option value=\"Lucene\">{S["Lucene"]}</option>");
+#: OrchardCore.Lucene\Shapes\LuceneContentPickerShapeProvider.cs:26
+#: OrchardCore.Lucene\Shapes\LuceneContentPickerShapeProvider.cs:28
+msgctxt "OrchardCore.Lucene.LuceneContentPickerShapeProvider"
+msgid "Lucene"
+msgstr "Lucene"
+
+#. <label class="form-check-label" asp-for="ContentIndexSettings.Included">@T["Include this element in the index"]</label>
+#: OrchardCore.Lucene\Views\ContentIndexSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Lucene.Views.ContentIndexSettings.Edit"
+msgid "Include this element in the index"
+msgstr "Bu öğeyi dizine dahil et"
+
+#. <span class="hint dashed">@T["Check to include the value of this element in the index."]</span>
+#: OrchardCore.Lucene\Views\ContentIndexSettings.Edit.cshtml:7
+msgctxt "OrchardCore.Lucene.Views.ContentIndexSettings.Edit"
+msgid "Check to include the value of this element in the index."
+msgstr "Bu öğenin değerini dizine dahil etmek için kontrol edin."
+
+#. <label class="form-check-label" asp-for="ContentIndexSettings.Stored">@T["Stored"]</label>
+#: OrchardCore.Lucene\Views\ContentIndexSettings.Edit.cshtml:13
+msgctxt "OrchardCore.Lucene.Views.ContentIndexSettings.Edit"
+msgid "Stored"
+msgstr "Depolanmış"
+
+#. <span class="hint dashed">@T["Check to be able to retrieve the value from the index."]</span>
+#: OrchardCore.Lucene\Views\ContentIndexSettings.Edit.cshtml:14
+msgctxt "OrchardCore.Lucene.Views.ContentIndexSettings.Edit"
+msgid "Check to be able to retrieve the value from the index."
+msgstr "Değeri dizinden alabilmek için kontrol edin."
+
+#. <label class="form-check-label" asp-for="ContentIndexSettings.Analyzed">@T["Analyzed"]</label>
+#: OrchardCore.Lucene\Views\ContentIndexSettings.Edit.cshtml:19
+msgctxt "OrchardCore.Lucene.Views.ContentIndexSettings.Edit"
+msgid "Analyzed"
+msgstr "analiz edildi"
+
+#. <span class="hint dashed">@T["Check to analyze the value as readable text."]</span>
+#: OrchardCore.Lucene\Views\ContentIndexSettings.Edit.cshtml:20
+msgctxt "OrchardCore.Lucene.Views.ContentIndexSettings.Edit"
+msgid "Check to analyze the value as readable text."
+msgstr "Değeri okunabilir metin olarak analiz etmek için işaretleyin."
+
+#. <label asp-for="Index">@T["Index"]</label>
+#: OrchardCore.Lucene\Views\ContentPickerFieldLuceneEditorSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Lucene.Views.ContentPickerFieldLuceneEditorSettings.Edit"
+msgid "Index"
+msgstr "Indeks"
+
+#. <span class="hint">@T["The Lucene index to query for content items"]</span>
+#: OrchardCore.Lucene\Views\ContentPickerFieldLuceneEditorSettings.Edit.cshtml:14
+msgctxt "OrchardCore.Lucene.Views.ContentPickerFieldLuceneEditorSettings.Edit"
+msgid "The Lucene index to query for content items"
+msgstr "Lucene dizini içerik öğelerini sorgulamak içindir"
+
+#. class="btn btn-success btn-sm">@T["Run"]</a>
+#: OrchardCore.Lucene\Views\LuceneQuery.Buttons.SummaryAdmin.cshtml:12
+msgctxt "OrchardCore.Lucene.Views.LuceneQuery.Buttons.SummaryAdmin"
+msgid "Run"
+msgstr "Çalıştır"
+
+#. <label asp-for="Index">@T["Index"]</label>
+#: OrchardCore.Lucene\Views\LuceneQuery.Edit.cshtml:8
+msgctxt "OrchardCore.Lucene.Views.LuceneQuery.Edit"
+msgid "Index"
+msgstr "Indeks"
+
+#. <span class="hint">@T["The lucene index to search on"]</span>
+#: OrchardCore.Lucene\Views\LuceneQuery.Edit.cshtml:15
+msgctxt "OrchardCore.Lucene.Views.LuceneQuery.Edit"
+msgid "The lucene index to search on"
+msgstr "Aranacak lucene indeksi"
+
+#. <label class="form-check-label" asp-for="ReturnContentItems">@T["Return Content Items"]</label>
+#: OrchardCore.Lucene\Views\LuceneQuery.Edit.cshtml:21
+msgctxt "OrchardCore.Lucene.Views.LuceneQuery.Edit"
+msgid "Return Content Items"
+msgstr "İçerik Öğelerini İade Et"
+
+#. <span class="hint dashed">@T["Check to return the corresponding content items."]</span>
+#: OrchardCore.Lucene\Views\LuceneQuery.Edit.cshtml:22
+msgctxt "OrchardCore.Lucene.Views.LuceneQuery.Edit"
+msgid "Check to return the corresponding content items."
+msgstr "İlgili içerik öğelerini döndürmek için işaretleyin."
+
+#. <label asp-for="Query">@T["Query"]</label>
+#: OrchardCore.Lucene\Views\LuceneQuery.Edit.cshtml:27
+msgctxt "OrchardCore.Lucene.Views.LuceneQuery.Edit"
+msgid "Query"
+msgstr "Sorgu"
+
+#. <span class="hint">@T["The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"]</span>
+#: OrchardCore.Lucene\Views\LuceneQuery.Edit.cshtml:29
+msgctxt "OrchardCore.Lucene.Views.LuceneQuery.Edit"
+msgid "The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"
+msgstr "Arama sorgusu Elasticsearch biçimini kullanır. Bazı belgeler burada bulunabilir <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"
+
+#. <span class="hint">@T["Lucene query"]</span>
+#: OrchardCore.Lucene\Views\LuceneQuery.SummaryAdmin.cshtml:1
+msgctxt "OrchardCore.Lucene.Views.LuceneQuery.SummaryAdmin"
+msgid "Lucene query"
+msgstr "Lucene Sorgusu"
+
+#. <label asp-for="SearchIndex">@T["Default search index"]</label>
+#: OrchardCore.Lucene\Views\LuceneSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Lucene.Views.LuceneSettings.Edit"
+msgid "Default search index"
+msgstr "Varsayılan arama dizini"
+
+#. <option value="" selected="@(Model.SearchIndex == null)">@T["Select a search index"]</option>
+#: OrchardCore.Lucene\Views\LuceneSettings.Edit.cshtml:8
+msgctxt "OrchardCore.Lucene.Views.LuceneSettings.Edit"
+msgid "Select a search index"
+msgstr "Bir arama dizini seçin"
+
+#. <span class="hint">@T["The default index to use for the search page."]</span>
+#: OrchardCore.Lucene\Views\LuceneSettings.Edit.cshtml:15
+msgctxt "OrchardCore.Lucene.Views.LuceneSettings.Edit"
+msgid "The default index to use for the search page."
+msgstr "Arama sayfası için kullanılacak varsayılan dizin."
+
+#. <div class="alert alert-warning">@T["You need to create at least an index to set as the Search index."]</div>
+#: OrchardCore.Lucene\Views\LuceneSettings.Edit.cshtml:20
+msgctxt "OrchardCore.Lucene.Views.LuceneSettings.Edit"
+msgid "You need to create at least an index to set as the Search index."
+msgstr "Arama dizini olarak ayarlamak için en azından bir dizin oluşturmanız gerekir."
+
+#. <label asp-for="SearchFields">@T["Default searched fields"]</label>
+#: OrchardCore.Lucene\Views\LuceneSettings.Edit.cshtml:24
+msgctxt "OrchardCore.Lucene.Views.LuceneSettings.Edit"
+msgid "Default searched fields"
+msgstr "Varsayılan aranan alanlar"
+
+#. <span class="hint">@T["A comma separated list of fields to use for search pages. The default value is <code>Content.ContentItem.FullText</code>."]</span>
+#: OrchardCore.Lucene\Views\LuceneSettings.Edit.cshtml:27
+msgctxt "OrchardCore.Lucene.Views.LuceneSettings.Edit"
+msgid "A comma separated list of fields to use for search pages. The default value is <code>Content.ContentItem.FullText</code>."
+msgstr "Arama sayfaları için kullanılacak alanların virgülle ayrılmış listesi. Varsayılan değer <code>Content.ContentItem.FullText</code>'dir."
+
+#. <label class="form-check-label" asp-for="AllowLuceneQueriesInSearch">@T["Allow Lucene queries in search forms"]</label>
+#: OrchardCore.Lucene\Views\LuceneSettings.Edit.cshtml:33
+msgctxt "OrchardCore.Lucene.Views.LuceneSettings.Edit"
+msgid "Allow Lucene queries in search forms"
+msgstr "Arama formlarında Lucene sorgularına izin ver"
+
+#. <span class="hint dashed">@T["Whether search queries should be allowed to use <a href=\"https://lucene.apache.org/core/2_9_4/queryparsersyntax.html\">Lucene query parser syntax</a>."] <a  class="seedoc" href="http://www.lucenetutorial.com/lucene-query-syntax.html" target="_blank">@T["See documentation"]</a></span>
+#: OrchardCore.Lucene\Views\LuceneSettings.Edit.cshtml:34
+msgctxt "OrchardCore.Lucene.Views.LuceneSettings.Edit"
+msgid "Whether search queries should be allowed to use <a href=\"https://lucene.apache.org/core/2_9_4/queryparsersyntax.html\">Lucene query parser syntax</a>."
+msgstr "Arama sorgularının <a href=\"https://lucene.apache.org/core/2_9_4/queryparsersyntax.html\">Lucene sorgu ayrıştırıcı sözdizimini</a> kullanmasına izin verilip verilmeyeceğini belirtir."
+
+#. <span class="hint dashed">@T["Whether search queries should be allowed to use <a href=\"https://lucene.apache.org/core/2_9_4/queryparsersyntax.html\">Lucene query parser syntax</a>."] <a  class="seedoc" href="http://www.lucenetutorial.com/lucene-query-syntax.html" target="_blank">@T["See documentation"]</a></span>
+#: OrchardCore.Lucene\Views\LuceneSettings.Edit.cshtml:34
+msgctxt "OrchardCore.Lucene.Views.LuceneSettings.Edit"
+msgid "See documentation"
+msgstr "Dokümantasyonu gör"
+
+#. <span class="icon"><i class="fa fa-search" aria-hidden="true"></i></span><span class="title">@T["Search"]</span>
+#: OrchardCore.Lucene\Views\NavigationItemText-search.Id.cshtml:1
+msgctxt "OrchardCore.Lucene.Views.NavigationItemText-search.Id"
+msgid "Search"
+msgstr "Arama"
+
+#. <h4>@T["Lucene"]</h4>
+#: OrchardCore.Lucene\Views\Query-Lucene.Link.cshtml:11
+msgctxt "OrchardCore.Lucene.Views.Query-Lucene.Link"
+msgid "Lucene"
+msgstr "Lucene"
+
+#. <p class="hint">@T["Queries a Lucene index."]</p>
+#: OrchardCore.Lucene\Views\Query-Lucene.Link.cshtml:12
+msgctxt "OrchardCore.Lucene.Views.Query-Lucene.Link"
+msgid "Queries a Lucene index."
+msgstr "Bir Lucene indeksi sorgular."
+
+#. <a disabled="@disabled" class="btn btn-primary btn-sm" asp-route-action="Create" asp-route-controller="Admin" asp-route-id="@Model.Name" asp-area="OrchardCore.Queries">@T["Add"]</a>
+#: OrchardCore.Lucene\Views\Query-Lucene.Link.cshtml:15
+msgctxt "OrchardCore.Lucene.Views.Query-Lucene.Link"
+msgid "Add"
+msgstr "Ekle"
+
+#. <input name="Terms" type="text" value="@Model.Terms" class="form-control form-control-lg" placeholder="@T["Enter your search term(s)"]" autofocus />
+#: OrchardCore.Lucene\Views\Search-Form.cshtml:6
+msgctxt "OrchardCore.Lucene.Views.Search-Form"
+msgid "Enter your search term(s)"
+msgstr "Arama terimlerinizi girin"
+
+#. <button type="submit" class="btn btn-primary btn-sm">@T["Search"]</button>
+#: OrchardCore.Lucene\Views\Search-Form.cshtml:7
+msgctxt "OrchardCore.Lucene.Views.Search-Form"
+msgid "Search"
+msgstr "Arama"
+
+#. <p class="alert alert-warning">@T["There are no such results."]</p>
+#: OrchardCore.Lucene\Views\Search-Results.cshtml:17
+msgctxt "OrchardCore.Lucene.Views.Search-Results"
+msgid "There are no such results."
+msgstr "Hiçbir sonuç bulunamadı."
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(T["Create Index"])</h1></zone>
+#: OrchardCore.Lucene\Views\Admin\Edit.cshtml:4
+msgctxt "OrchardCore.Lucene.Views.Admin.Edit"
+msgid "Create Index"
+msgstr "İndeks oluştur"
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Index"])</h1></zone>
+#: OrchardCore.Lucene\Views\Admin\Edit.cshtml:8
+msgctxt "OrchardCore.Lucene.Views.Admin.Edit"
+msgid "Edit Index"
+msgstr "Dizini düzenle"
+
+#. <label asp-for="IndexName">@T["Index Name"]</label>
+#: OrchardCore.Lucene\Views\Admin\Edit.cshtml:14
+msgctxt "OrchardCore.Lucene.Views.Admin.Edit"
+msgid "Index Name"
+msgstr "Dizin ismi"
+
+#. <label asp-for="AnalyzerName">@T["Analyzer Name"]</label>
+#: OrchardCore.Lucene\Views\Admin\Edit.cshtml:20
+msgctxt "OrchardCore.Lucene.Views.Admin.Edit"
+msgid "Analyzer Name"
+msgstr "Çözümleyici Adı"
+
+#. <label asp-for="Culture">@T["Culture"]</label>
+#: OrchardCore.Lucene\Views\Admin\Edit.cshtml:26
+msgctxt "OrchardCore.Lucene.Views.Admin.Edit"
+msgid "Culture"
+msgstr "Kültür"
+
+#. <span class="hint">@T["The content culture that it will index."]</span>
+#: OrchardCore.Lucene\Views\Admin\Edit.cshtml:28
+msgctxt "OrchardCore.Lucene.Views.Admin.Edit"
+msgid "The content culture that it will index."
+msgstr "Dizine ekleyeceği içerik kültürü."
+
+#. <label asp-for="IndexedContentTypes">@T["Content Types"]</label>
+#: OrchardCore.Lucene\Views\Admin\Edit.cshtml:33
+msgctxt "OrchardCore.Lucene.Views.Admin.Edit"
+msgid "Content Types"
+msgstr "İçerik Türleri"
+
+#. <span class="hint dashed">@T["The content types to index. Choose at least one."]</span>
+#: OrchardCore.Lucene\Views\Admin\Edit.cshtml:34
+msgctxt "OrchardCore.Lucene.Views.Admin.Edit"
+msgid "The content types to index. Choose at least one."
+msgstr "Dizine eklenecek içerik türleri. En az birini seçin."
+
+#. <label asp-for="IndexLatest">@T["Index options"]</label>
+#: OrchardCore.Lucene\Views\Admin\Edit.cshtml:47
+msgctxt "OrchardCore.Lucene.Views.Admin.Edit"
+msgid "Index options"
+msgstr "Dizin seçenekleri"
+
+#. <label class="form-check-label" asp-for="IndexLatest">@T["Index latest version"]</label>
+#: OrchardCore.Lucene\Views\Admin\Edit.cshtml:50
+msgctxt "OrchardCore.Lucene.Views.Admin.Edit"
+msgid "Index latest version"
+msgstr "Dizin son sürüm"
+
+#. <span class="hint dashed">@T["Check to index draft if it exists, otherwise only the published version is indexed."]</span>
+#: OrchardCore.Lucene\Views\Admin\Edit.cshtml:51
+msgctxt "OrchardCore.Lucene.Views.Admin.Edit"
+msgid "Check to index draft if it exists, otherwise only the published version is indexed."
+msgstr "Dizin taslağı varsa kontrol edin, aksi takdirde yalnızca yayınlanan sürüm dizine eklenir."
+
+#. <button class="btn btn-primary create" type="submit">@T["Create"]</button>
+#: OrchardCore.Lucene\Views\Admin\Edit.cshtml:59
+msgctxt "OrchardCore.Lucene.Views.Admin.Edit"
+msgid "Create"
+msgstr "Oluştur"
+
+#. <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+#. <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+#: OrchardCore.Lucene\Views\Admin\Edit.cshtml:60
+#: OrchardCore.Lucene\Views\Admin\Edit.cshtml:65
+msgctxt "OrchardCore.Lucene.Views.Admin.Edit"
+msgid "Cancel"
+msgstr "İptal"
+
+#. <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+#: OrchardCore.Lucene\Views\Admin\Edit.cshtml:64
+msgctxt "OrchardCore.Lucene.Views.Admin.Edit"
+msgid "Save"
+msgstr "Kaydet"
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(T["Indices"])</h1></zone>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:7
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Indices"
+msgstr "Endeksler"
+
+#. <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:20
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Search"
+msgstr "Arama"
+
+#. <a asp-route-action="Edit" class="btn btn-sm btn-secondary float-end create" role="button">@T["Add Index"]</a>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:23
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Add Index"
+msgstr "İndeks ekle"
+
+#. <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:36
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Select All"
+msgstr "Tümünü Seç"
+
+#. <label id="items" for="select-all">@T.Plural(Model.Indexes.Count(), "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:37
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "1 item"
+msgid_plural "{0} items"
+msgstr[0] "1 öge"
+msgstr[1] "{0} öğe"
+
+#. <label id="items" for="select-all">@T.Plural(Model.Indexes.Count(), "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:37
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Items {0} to {1}"
+msgstr "{0} öğesinden {1} e"
+
+#. <label id="items" for="select-all">@T.Plural(Model.Indexes.Count(), "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:37
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid " / {0} item in total"
+msgid_plural " / {0} items in total"
+msgstr[0] " / Toplamda {0} öğe"
+msgstr[1] " / Toplamda {0} öge"
+
+#. @T["Actions"]
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:44
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Actions"
+msgstr "Eylemler"
+
+#. <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:49
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Bulk Action"
+msgstr "Toplu Eylem"
+
+#. <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:49
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Are you sure you want to {0} these items?"
+msgstr "Bu nesneleri {0} istediğinizden emin misiniz?"
+
+#. <a asp-action="Query" asp-route-IndexName="@entry.Name" class="btn btn-success btn-sm">@T["Query"]</a>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:69
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Query"
+msgstr "Sorgu"
+
+#. <a asp-action="Reset" asp-route-id="@entry.Name" class="btn btn-primary btn-sm" data-title="@T["Reset Index"]" data-message="@T["This will restart the indexing of all content items. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" data-url-af="UnsafeUrl">@T["Reset"]</a>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:70
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Reset Index"
+msgstr "Dizini Sıfırla"
+
+#. <a asp-action="Reset" asp-route-id="@entry.Name" class="btn btn-primary btn-sm" data-title="@T["Reset Index"]" data-message="@T["This will restart the indexing of all content items. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" data-url-af="UnsafeUrl">@T["Reset"]</a>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:70
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "This will restart the indexing of all content items. Continue?"
+msgstr "Bu, tüm içerik öğelerinin dizine eklenmesini yeniden başlatacaktır. Devam et?"
+
+#. <a asp-action="Reset" asp-route-id="@entry.Name" class="btn btn-primary btn-sm" data-title="@T["Reset Index"]" data-message="@T["This will restart the indexing of all content items. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" data-url-af="UnsafeUrl">@T["Reset"]</a>
+#. <a asp-action="Rebuild" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" data-title="@T["Rebuild Index"]" data-message="@T["Your index will be rebuilt, which might alter some services during the process. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl">@T["Rebuild"]</a>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:70
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:71
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Yes"
+msgstr "Evet"
+
+#. <a asp-action="Reset" asp-route-id="@entry.Name" class="btn btn-primary btn-sm" data-title="@T["Reset Index"]" data-message="@T["This will restart the indexing of all content items. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" data-url-af="UnsafeUrl">@T["Reset"]</a>
+#. <a asp-action="Rebuild" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" data-title="@T["Rebuild Index"]" data-message="@T["Your index will be rebuilt, which might alter some services during the process. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl">@T["Rebuild"]</a>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:70
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:71
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "No"
+msgstr "Hayır"
+
+#. <a asp-action="Reset" asp-route-id="@entry.Name" class="btn btn-primary btn-sm" data-title="@T["Reset Index"]" data-message="@T["This will restart the indexing of all content items. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" data-url-af="UnsafeUrl">@T["Reset"]</a>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:70
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Reset"
+msgstr "Sıfırla"
+
+#. <a asp-action="Rebuild" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" data-title="@T["Rebuild Index"]" data-message="@T["Your index will be rebuilt, which might alter some services during the process. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl">@T["Rebuild"]</a>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:71
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Rebuild Index"
+msgstr "Dizini yeniden oluştur"
+
+#. <a asp-action="Rebuild" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" data-title="@T["Rebuild Index"]" data-message="@T["Your index will be rebuilt, which might alter some services during the process. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl">@T["Rebuild"]</a>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:71
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Your index will be rebuilt, which might alter some services during the process. Continue?"
+msgstr "Dizininiz yeniden oluşturulacak ve bu işlem sırasında bazı hizmetleri değiştirebilecek. Devam et?"
+
+#. <a asp-action="Rebuild" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" data-title="@T["Rebuild Index"]" data-message="@T["Your index will be rebuilt, which might alter some services during the process. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl">@T["Rebuild"]</a>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:71
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Rebuild"
+msgstr "Yeniden oluştur"
+
+#. <a asp-action="Edit" asp-route-IndexName="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:72
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Edit"
+msgstr "Düzenle"
+
+#. <a asp-action="Delete" asp-route-IndexName="@entry.Name" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:73
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "Delete"
+msgstr "Sil"
+
+#. @T["<strong>Nothing here!</strong> There are no indices for the moment."]
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:83
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "<strong>Nothing here!</strong> There are no indices for the moment."
+msgstr "<strong>Burada hiçbir şey yok!</strong> Şu an için herhangi bir endeks yok."
+
+#. selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+#. selectedItems.text(selectedItemsCount + ' @T["selected"]');
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:134
+#: OrchardCore.Lucene\Views\Admin\Index.cshtml:145
+msgctxt "OrchardCore.Lucene.Views.Admin.Index"
+msgid "selected"
+msgstr "seçili"
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(T["Lucene Query"])</h1></zone>
+#: OrchardCore.Lucene\Views\Admin\Query.cshtml:18
+msgctxt "OrchardCore.Lucene.Views.Admin.Query"
+msgid "Lucene Query"
+msgstr "Lucene Sorgusu"
+
+#. <label asp-for="IndexName">@T["Index"]</label>
+#: OrchardCore.Lucene\Views\Admin\Query.cshtml:23
+msgctxt "OrchardCore.Lucene.Views.Admin.Query"
+msgid "Index"
+msgstr "Indeks"
+
+#. <span class="hint">@T["The lucene index to search on"]</span>
+#: OrchardCore.Lucene\Views\Admin\Query.cshtml:30
+msgctxt "OrchardCore.Lucene.Views.Admin.Query"
+msgid "The lucene index to search on"
+msgstr "Aranacak lucene indeksi"
+
+#. <label asp-for="DecodedQuery">@T["Template"]</label>
+#: OrchardCore.Lucene\Views\Admin\Query.cshtml:34
+msgctxt "OrchardCore.Lucene.Views.Admin.Query"
+msgid "Template"
+msgstr "Şablon"
+
+#. <span class="hint">@T["You can use the <a href=\"{0}\">Match All query</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Lucene", Query = matchAllQuery, IndexName = Model.IndexName }))]</span>
+#: OrchardCore.Lucene\Views\Admin\Query.cshtml:36
+msgctxt "OrchardCore.Lucene.Views.Admin.Query"
+msgid "You can use the <a href=\"{0}\">Match All query</a> to search all documents."
+msgstr "Tüm belgeleri aramak için <a href=\"{0}\">Tümünü Eşleştir</a> sorgusunu kullanabilirsiniz."
+
+#. <span class="hint">@T["The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"]</span>
+#: OrchardCore.Lucene\Views\Admin\Query.cshtml:37
+msgctxt "OrchardCore.Lucene.Views.Admin.Query"
+msgid "The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"
+msgstr "Arama sorgusu Elasticsearch biçimini kullanır. Bazı belgeler burada bulunabilir <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"
+
+#. <label asp-for="Parameters">@T["Parameters"]</label>
+#: OrchardCore.Lucene\Views\Admin\Query.cshtml:41
+msgctxt "OrchardCore.Lucene.Views.Admin.Query"
+msgid "Parameters"
+msgstr "Parametreler"
+
+#. <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
+#: OrchardCore.Lucene\Views\Admin\Query.cshtml:43
+msgctxt "OrchardCore.Lucene.Views.Admin.Query"
+msgid "An optional Json object containing the parameter values for this query."
+msgstr "Bu sorgu için parametre değerlerini içeren isteğe bağlı bir Json nesnesi."
+
+#. <button type="submit" class="btn btn-primary">@T["Query"]</button>
+#: OrchardCore.Lucene\Views\Admin\Query.cshtml:47
+msgctxt "OrchardCore.Lucene.Views.Admin.Query"
+msgid "Query"
+msgstr "Sorgu"
+
+#. <p><span class="text-muted">@T["Found {0} result(s) in {1} ms", Model.Count.ToString(), Model.Elapsed.TotalMilliseconds.ToString()]</span></p>
+#: OrchardCore.Lucene\Views\Admin\Query.cshtml:54
+msgctxt "OrchardCore.Lucene.Views.Admin.Query"
+msgid "Found {0} result(s) in {1} ms"
+msgstr "{1} ms içinde {0} sonuç bulundu"
+
+#. <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Lucene", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
+#: OrchardCore.Lucene\Views\Admin\Query.cshtml:62
+msgctxt "OrchardCore.Lucene.Views.Admin.Query"
+msgid "Create"
+msgstr "Oluştur"
+
+#. <h5>@T["Search Indexes"]</h5>
+#: OrchardCore.Lucene\Views\Items\LuceneIndexDeploymentStep.Fields.Edit.cshtml:8
+msgctxt "OrchardCore.Lucene.Views.Items.LuceneIndexDeploymentStep.Fields.Edit"
+msgid "Search Indexes"
+msgstr "Indeksleri Ara"
+
+#. @T["Include all search indexes."]
+#: OrchardCore.Lucene\Views\Items\LuceneIndexDeploymentStep.Fields.Edit.cshtml:17
+msgctxt "OrchardCore.Lucene.Views.Items.LuceneIndexDeploymentStep.Fields.Edit"
+msgid "Include all search indexes."
+msgstr "Tüm arama indekslerini tekrar indeksle."
+
+#. <span class="hint">@T["The search indexes to add as part of the plan."]</span>
+#: OrchardCore.Lucene\Views\Items\LuceneIndexDeploymentStep.Fields.Edit.cshtml:27
+msgctxt "OrchardCore.Lucene.Views.Items.LuceneIndexDeploymentStep.Fields.Edit"
+msgid "The search indexes to add as part of the plan."
+msgstr "Planın bir parçası olarak eklenecek arama dizinleri."
+
+#. <h5>@T["Search Indexes"]</h5>
+#: OrchardCore.Lucene\Views\Items\LuceneIndexDeploymentStep.Fields.Summary.cshtml:11
+msgctxt "OrchardCore.Lucene.Views.Items.LuceneIndexDeploymentStep.Fields.Summary"
+msgid "Search Indexes"
+msgstr "Indeksleri Ara"
+
+#. <span class="badge bg-success">@T["All"]</span>
+#: OrchardCore.Lucene\Views\Items\LuceneIndexDeploymentStep.Fields.Summary.cshtml:15
+msgctxt "OrchardCore.Lucene.Views.Items.LuceneIndexDeploymentStep.Fields.Summary"
+msgid "All"
+msgstr "Tümü"
+
+#. <span class="badge bg-warning">@T["No index selected."]</span>
+#: OrchardCore.Lucene\Views\Items\LuceneIndexDeploymentStep.Fields.Summary.cshtml:26
+msgctxt "OrchardCore.Lucene.Views.Items.LuceneIndexDeploymentStep.Fields.Summary"
+msgid "No index selected."
+msgstr "Dizin seçilmedi."
+
+#. <h4 class="card-title">@T["Search Indexes"]</h4>
+#: OrchardCore.Lucene\Views\Items\LuceneIndexDeploymentStep.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Lucene.Views.Items.LuceneIndexDeploymentStep.Fields.Thumbnail"
+msgid "Search Indexes"
+msgstr "Dizinleri Ara"
+
+#. <p>@T["Exports all or specified search indexes."]</p>
+#: OrchardCore.Lucene\Views\Items\LuceneIndexDeploymentStep.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Lucene.Views.Items.LuceneIndexDeploymentStep.Fields.Thumbnail"
+msgid "Exports all or specified search indexes."
+msgstr "Tüm veya belirtilen arama dizinlerini dışa aktarır."
+
+#. <h5>@T["Search Settings"]</h5>
+#: OrchardCore.Lucene\Views\Items\LuceneSettingsDeploymentStep.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Lucene.Views.Items.LuceneSettingsDeploymentStep.Fields.Edit"
+msgid "Search Settings"
+msgstr "Arama Ayarları"
+
+#. <h5>@T["Search Settings"]</h5>
+#: OrchardCore.Lucene\Views\Items\LuceneSettingsDeploymentStep.Fields.Summary.cshtml:3
+msgctxt "OrchardCore.Lucene.Views.Items.LuceneSettingsDeploymentStep.Fields.Summary"
+msgid "Search Settings"
+msgstr "Arama Ayarları"
+
+#. <span class="hint">@T["Adds search settings to the plan."]</span>
+#: OrchardCore.Lucene\Views\Items\LuceneSettingsDeploymentStep.Fields.Summary.cshtml:5
+msgctxt "OrchardCore.Lucene.Views.Items.LuceneSettingsDeploymentStep.Fields.Summary"
+msgid "Adds search settings to the plan."
+msgstr "Plana arama ayarları ekler."
+
+#. <h4 class="card-title">@T["Search Settings"]</h4>
+#: OrchardCore.Lucene\Views\Items\LuceneSettingsDeploymentStep.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Lucene.Views.Items.LuceneSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Search Settings"
+msgstr "Arama Ayarları"
+
+#. <p>@T["Exports search settings."]</p>
+#: OrchardCore.Lucene\Views\Items\LuceneSettingsDeploymentStep.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Lucene.Views.Items.LuceneSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Exports search settings."
+msgstr "Arama ayarlarını dışa aktarır."
+

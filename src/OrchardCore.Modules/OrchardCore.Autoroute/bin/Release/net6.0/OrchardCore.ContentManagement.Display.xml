@@ -1,0 +1,212 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.ContentManagement.Display</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentFieldServiceCollectionExtensions.UseDisplayDriver``1(OrchardCore.ContentManagement.ContentFieldOptionBuilder)">
+            <summary>
+            Register a display driver for use with a content field and all display modes and editors.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentFieldServiceCollectionExtensions.UseDisplayDriver(OrchardCore.ContentManagement.ContentFieldOptionBuilder,System.Type)">
+            <summary>
+            Register a display driver for use with a content field and all display modes and editors.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentFieldServiceCollectionExtensions.UseDisplayDriver``1(OrchardCore.ContentManagement.ContentFieldOptionBuilder,System.Func{System.String,System.Boolean})">
+            <summary>
+            Register a display driver for use with a content field and all display modes and editors.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentFieldServiceCollectionExtensions.RemoveDisplayDriver``1(OrchardCore.ContentManagement.ContentFieldOptionBuilder)">
+            <summary>
+            Removes a display driver from all editors and display modes.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentFieldServiceCollectionExtensions.RemoveDisplayDriver(OrchardCore.ContentManagement.ContentFieldOptionBuilder,System.Type)">
+            <summary>
+            Removes a display driver from all editors and display modes.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentFieldServiceCollectionExtensions.ForDisplayMode``1(OrchardCore.ContentManagement.ContentFieldOptionBuilder)">
+            <summary>
+            Registers a display driver for use with all display modes.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentFieldServiceCollectionExtensions.ForDisplayMode``1(OrchardCore.ContentManagement.ContentFieldOptionBuilder,System.Func{System.String,System.Boolean})">
+            <summary>
+            Registers a display driver for use with a specific display mode.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentFieldServiceCollectionExtensions.ForDisplayMode(OrchardCore.ContentManagement.ContentFieldOptionBuilder,System.Type,System.Func{System.String,System.Boolean})">
+            <summary>
+            Registers a display driver for use with a specific display mode.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentFieldServiceCollectionExtensions.ForEditor``1(OrchardCore.ContentManagement.ContentFieldOptionBuilder)">
+            <summary>
+            Registers a display driver for use with all editors.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentFieldServiceCollectionExtensions.ForEditor(OrchardCore.ContentManagement.ContentFieldOptionBuilder,System.Type)">
+            <summary>
+            Registers a display driver for use with a specific editor.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentFieldServiceCollectionExtensions.ForEditor``1(OrchardCore.ContentManagement.ContentFieldOptionBuilder,System.Func{System.String,System.Boolean})">
+            <summary>
+            Registers a display driver for use with a specific editor.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentFieldServiceCollectionExtensions.ForEditor(OrchardCore.ContentManagement.ContentFieldOptionBuilder,System.Type,System.Func{System.String,System.Boolean})">
+            <summary>
+            Registers a display driver for use with a specific editor.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.Display.ContentDisplay.ContentPartDisplayDriver`1">
+            <summary>
+            Any concrete implementation of this class can provide shapes for any content item which has a specific Part.
+            </summary>
+            <typeparam name="TPart"></typeparam>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.Display.ContentDisplay.ContentPartDisplayDriver`1.TempPrefix">
+            <summary>
+            Restores the previous prefix automatically
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentPartServiceCollectionExtensions.UseDisplayDriver``1(OrchardCore.ContentManagement.ContentPartOptionBuilder)">
+            <summary>
+            Register a display driver for use with a content part and all display modes and editors.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentPartServiceCollectionExtensions.UseDisplayDriver(OrchardCore.ContentManagement.ContentPartOptionBuilder,System.Type)">
+            <summary>
+            Register a display driver for use with a content part and all display modes and editors.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentPartServiceCollectionExtensions.RemoveDisplayDriver``1(OrchardCore.ContentManagement.ContentPartOptionBuilder)">
+            <summary>
+            Removes a display driver from all display modes and editors.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentPartServiceCollectionExtensions.RemoveDisplayDriver(OrchardCore.ContentManagement.ContentPartOptionBuilder,System.Type)">
+            <summary>
+            Removes a display driver from all display modes and editors.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentPartServiceCollectionExtensions.ForDisplayMode``1(OrchardCore.ContentManagement.ContentPartOptionBuilder)">
+            <summary>
+            Registers a display driver for use with all display modes.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentPartServiceCollectionExtensions.ForDisplayMode(OrchardCore.ContentManagement.ContentPartOptionBuilder,System.Type)">
+            <summary>
+            Registers a display driver for use with a specific display mode.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentPartServiceCollectionExtensions.ForDisplayMode``1(OrchardCore.ContentManagement.ContentPartOptionBuilder,System.Func{System.String,System.Boolean})">
+            <summary>
+            Registers a display driver for use with a specific display mode.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentPartServiceCollectionExtensions.ForDisplayMode(OrchardCore.ContentManagement.ContentPartOptionBuilder,System.Type,System.Func{System.String,System.Boolean})">
+            <summary>
+            Registers a display driver for use with a specific display mode.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentPartServiceCollectionExtensions.ForEditor``1(OrchardCore.ContentManagement.ContentPartOptionBuilder)">
+            <summary>
+            Registers a display driver for use with all editors.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentPartServiceCollectionExtensions.ForEditor(OrchardCore.ContentManagement.ContentPartOptionBuilder,System.Type)">
+            <summary>
+            Registers a display driver for use with a specific editor.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentPartServiceCollectionExtensions.ForEditor``1(OrchardCore.ContentManagement.ContentPartOptionBuilder,System.Func{System.String,System.Boolean})">
+            <summary>
+            Registers a display driver for use with a specific editor.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Display.ContentDisplay.ContentPartServiceCollectionExtensions.ForEditor(OrchardCore.ContentManagement.ContentPartOptionBuilder,System.Type,System.Func{System.String,System.Boolean})">
+            <summary>
+            Registers a display driver for use with a specific editor.
+            This method will override previous registrations for the driver type,
+            and can be called multiple times safely, to reconfigure an existing driver.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.Display.ContentDisplay.IContentDisplayHandler">
+            <summary>
+            An implementation of <see cref="T:OrchardCore.ContentManagement.Display.ContentDisplay.IContentDisplayHandler"/> is able to take part in the rendering of
+            a <see cref="T:OrchardCore.ContentManagement.ContentItem"/> instance.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.Display.ContentItemDisplayCoordinator">
+            <summary>
+            Provides a concrete implementation of a display handler coordinating part, field and content item drivers.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.Display.ContentItemDisplayManager">
+            <summary>
+            The default implementation of <see cref="T:OrchardCore.ContentManagement.Display.IContentItemDisplayManager"/>. It is used to render
+            <see cref="T:OrchardCore.ContentManagement.ContentItem"/> objects by leveraging any <see cref="T:OrchardCore.ContentManagement.Display.ContentDisplay.IContentDisplayHandler"/>
+            implementation. The resulting shapes are targeting the stereotype of the content item
+            to display.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.Display.IContentItemDisplayManager">
+            <summary>
+            Describes services responsible for displaying a content item. The result dynamic objects
+            are the Shape to render a <see cref="T:OrchardCore.ContentManagement.ContentItem"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardRazorHelperExtensions.ConsoleLog(OrchardCore.IOrchardHelper,System.Object)">
+            <summary>
+            Renders an object in the browser's console.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="content">The object to render.</param>
+            <returns>The encoded script rendering the object to the console.</returns>
+        </member>
+    </members>
+</doc>

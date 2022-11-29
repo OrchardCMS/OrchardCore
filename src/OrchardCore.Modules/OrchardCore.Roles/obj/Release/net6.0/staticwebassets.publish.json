@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "W1wW6wsqarn7PAYaSazqdvOunYFUnf+feTbSLOm+u4g=",
+  "Source": "OrchardCore.Roles",
+  "BasePath": "_content/OrchardCore.Roles",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

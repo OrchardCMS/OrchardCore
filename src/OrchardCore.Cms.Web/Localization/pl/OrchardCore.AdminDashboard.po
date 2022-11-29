@@ -1,0 +1,208 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: pl\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.AdminDashboard.pot\n"
+"X-Crowdin-File-ID: 696\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Polish\n"
+"Language: pl_PL\n"
+"PO-Revision-Date: 2022-05-05 18:39\n"
+
+#. data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete this content item?"]"
+#. data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>
+#: OrchardCore.AdminDashboard\Views\Dashboard.DeleteButton.cshtml:3
+#: OrchardCore.AdminDashboard\Views\Dashboard.DeleteButton.cshtml:4
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.DeleteButton"
+msgid "Delete"
+msgstr "Usuń"
+
+#. data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete this content item?"]"
+#: OrchardCore.AdminDashboard\Views\Dashboard.DeleteButton.cshtml:3
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.DeleteButton"
+msgid "Are you sure you want to delete this content item?"
+msgstr "Czy na pewno chcesz usunąć ten element?"
+
+#. data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>
+#: OrchardCore.AdminDashboard\Views\Dashboard.DeleteButton.cshtml:4
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.DeleteButton"
+msgid "Ok"
+msgstr "Ok"
+
+#. data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>
+#: OrchardCore.AdminDashboard\Views\Dashboard.DeleteButton.cshtml:4
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.DeleteButton"
+msgid "Cancel"
+msgstr "Anuluj"
+
+#. data-url-af="UnsafeUrl RemoveUrl" data-title=@T["Discard Draft"] data-message=@T["Are you sure you want to discard this draft?"]
+#. data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary">@T["Discard Draft"]</a>
+#: OrchardCore.AdminDashboard\Views\Dashboard.DiscardDraftButton.cshtml:4
+#: OrchardCore.AdminDashboard\Views\Dashboard.DiscardDraftButton.cshtml:5
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.DiscardDraftButton"
+msgid "Discard Draft"
+msgstr "Odrzuć wersję roboczą"
+
+#. data-url-af="UnsafeUrl RemoveUrl" data-title=@T["Discard Draft"] data-message=@T["Are you sure you want to discard this draft?"]
+#: OrchardCore.AdminDashboard\Views\Dashboard.DiscardDraftButton.cshtml:4
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.DiscardDraftButton"
+msgid "Are you sure you want to discard this draft?"
+msgstr "Na pewno chcesz odrzucić tę wersję roboczą?"
+
+#. data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary">@T["Discard Draft"]</a>
+#: OrchardCore.AdminDashboard\Views\Dashboard.DiscardDraftButton.cshtml:5
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.DiscardDraftButton"
+msgid "Yes"
+msgstr "Tak"
+
+#. data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary">@T["Discard Draft"]</a>
+#: OrchardCore.AdminDashboard\Views\Dashboard.DiscardDraftButton.cshtml:5
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.DiscardDraftButton"
+msgid "No"
+msgstr "Nie"
+
+#. @T["Edit"]
+#: OrchardCore.AdminDashboard\Views\Dashboard.EditButton.cshtml:2
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.EditButton"
+msgid "Edit"
+msgstr "Edytuj"
+
+#. data-url-af="UnsafeUrl">@T["Publish Draft"]</a>
+#: OrchardCore.AdminDashboard\Views\Dashboard.PublishButton.cshtml:3
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.PublishButton"
+msgid "Publish Draft"
+msgstr "Opublikuj wersję roboczą"
+
+#. data-url-af="UnsafeUrl RemoveUrl" data-title=@T["Unpublish"] data-message=@T["Are you sure you want to unpublish this item?"]
+#. data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary">@T["Unpublish"]</a>
+#: OrchardCore.AdminDashboard\Views\Dashboard.UnpublishButton.cshtml:3
+#: OrchardCore.AdminDashboard\Views\Dashboard.UnpublishButton.cshtml:4
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.UnpublishButton"
+msgid "Unpublish"
+msgstr "Cofnij publikacje"
+
+#. data-url-af="UnsafeUrl RemoveUrl" data-title=@T["Unpublish"] data-message=@T["Are you sure you want to unpublish this item?"]
+#: OrchardCore.AdminDashboard\Views\Dashboard.UnpublishButton.cshtml:3
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.UnpublishButton"
+msgid "Are you sure you want to unpublish this item?"
+msgstr "Na pewno chcesz cofnąć opublikowanie tego elementu?"
+
+#. data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary">@T["Unpublish"]</a>
+#: OrchardCore.AdminDashboard\Views\Dashboard.UnpublishButton.cshtml:4
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.UnpublishButton"
+msgid "Yes"
+msgstr "Tak"
+
+#. data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary">@T["Unpublish"]</a>
+#: OrchardCore.AdminDashboard\Views\Dashboard.UnpublishButton.cshtml:4
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.UnpublishButton"
+msgid "No"
+msgstr "Nie"
+
+#. <label asp-for="Position">@T["Position"] </label>
+#: OrchardCore.AdminDashboard\Views\DashboardPart.Edit.cshtml:4
+msgctxt "OrchardCore.AdminDashboard.Views.DashboardPart.Edit"
+msgid "Position"
+msgstr "Pozycja"
+
+#. <label asp-for="Width">@T["Width"] </label>
+#: OrchardCore.AdminDashboard\Views\DashboardPart.Edit.cshtml:9
+msgctxt "OrchardCore.AdminDashboard.Views.DashboardPart.Edit"
+msgid "Width"
+msgstr "Szerokość"
+
+#. <label asp-for="Height">@T["Height"] </label>
+#: OrchardCore.AdminDashboard\Views\DashboardPart.Edit.cshtml:14
+msgctxt "OrchardCore.AdminDashboard.Views.DashboardPart.Edit"
+msgid "Height"
+msgstr "Wysokość"
+
+#. <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Author"]">
+#: OrchardCore.AdminDashboard\Views\DashboardWidget-ContentsMetadata.DetailAdmin.cshtml:28
+msgctxt "OrchardCore.AdminDashboard.Views.DashboardWidget-ContentsMetadata.DetailAdmin"
+msgid "Author"
+msgstr "Autor"
+
+#. <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Status"]">
+#. <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Status"]">
+#: OrchardCore.AdminDashboard\Views\DashboardWidget-ContentsTags.DetailAdmin.cshtml:13
+#: OrchardCore.AdminDashboard\Views\DashboardWidget-ContentsTags.DetailAdmin.cshtml:20
+msgctxt "OrchardCore.AdminDashboard.Views.DashboardWidget-ContentsTags.DetailAdmin"
+msgid "Status"
+msgstr "Status"
+
+#. <i class="fa fa-check text-success" aria-hidden="true"></i> @T["Published"]
+#: OrchardCore.AdminDashboard\Views\DashboardWidget-ContentsTags.DetailAdmin.cshtml:14
+msgctxt "OrchardCore.AdminDashboard.Views.DashboardWidget-ContentsTags.DetailAdmin"
+msgid "Published"
+msgstr "Opublikowano"
+
+#. <i class="fa fa-pencil text-primary" aria-hidden="true"></i> @T["Draft"]
+#: OrchardCore.AdminDashboard\Views\DashboardWidget-ContentsTags.DetailAdmin.cshtml:21
+msgctxt "OrchardCore.AdminDashboard.Views.DashboardWidget-ContentsTags.DetailAdmin"
+msgid "Draft"
+msgstr "Wersja robocza"
+
+#. <div class="btn-group float-end" title="@T["Actions"]">
+#: OrchardCore.AdminDashboard\Views\DashboardWidget.DetailAdmin.cshtml:9
+msgctxt "OrchardCore.AdminDashboard.Views.DashboardWidget.DetailAdmin"
+msgid "Actions"
+msgstr "Czynności"
+
+#. @T["Actions"]
+#: OrchardCore.AdminDashboard\Views\DashboardWidget.SummaryAdmin.cshtml:46
+msgctxt "OrchardCore.AdminDashboard.Views.DashboardWidget.SummaryAdmin"
+msgid "Actions"
+msgstr "Czynności"
+
+#. <span class="icon"><i class="fa fa-tachometer-alt" aria-hidden="true"></i></span><span class="title">@T["Dashboard"]</span>
+#: OrchardCore.AdminDashboard\Views\NavigationItemText-dashboard.Id.cshtml:1
+msgctxt "OrchardCore.AdminDashboard.Views.NavigationItemText-dashboard.Id"
+msgid "Dashboard"
+msgstr "Kokpit"
+
+#. @T["Manage Dashboard"]
+#: OrchardCore.AdminDashboard\Views\Dashboard\Index.cshtml:27
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.Index"
+msgid "Manage Dashboard"
+msgstr "Zarządzanie kokpitami"
+
+#. <zone Name="Title"><h1 class="float-start">@RenderTitleSegments(T["Dashboard"])</h1></zone>
+#: OrchardCore.AdminDashboard\Views\Dashboard\Index.cshtml:32
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.Index"
+msgid "Dashboard"
+msgstr "Kokpit"
+
+#. @T["Close Editor"]
+#: OrchardCore.AdminDashboard\Views\Dashboard\Manage.cshtml:24
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.Manage"
+msgid "Close Editor"
+msgstr "Zamknij edytor"
+
+#. @T["Add Widget"]
+#: OrchardCore.AdminDashboard\Views\Dashboard\Manage.cshtml:30
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.Manage"
+msgid "Add Widget"
+msgstr "Dodaj Widżet"
+
+#. <zone Name="Title"><h1 class="float-start">@RenderTitleSegments(T["Dashboard"])</h1></zone>
+#: OrchardCore.AdminDashboard\Views\Dashboard\Manage.cshtml:41
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.Manage"
+msgid "Dashboard"
+msgstr "Kokpit"
+
+#. @T["Dashboard successfully updated."]&nbsp;<a href="#"><strong>@T["Undo"]</strong></a>.
+#: OrchardCore.AdminDashboard\Views\Dashboard\Manage.cshtml:55
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.Manage"
+msgid "Dashboard successfully updated."
+msgstr "Pomyślnie zaktualizowano szablon."
+
+#. @T["Dashboard successfully updated."]&nbsp;<a href="#"><strong>@T["Undo"]</strong></a>.
+#: OrchardCore.AdminDashboard\Views\Dashboard\Manage.cshtml:55
+msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.Manage"
+msgid "Undo"
+msgstr "Cofnij"
+

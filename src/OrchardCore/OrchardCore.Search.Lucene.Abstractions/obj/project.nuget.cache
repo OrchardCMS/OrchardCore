@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "dgSpecHash": "TlyigFgwMRXK0Ofw/ESUcKgQNW3p57Gcx9V8KaL/gM0w0pgqnzPD6Rcm+b8Mr8VFMRDcIEVhOypVUYdWmCSoIA==",
+  "success": true,
+  "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Search.Lucene.Abstractions\\OrchardCore.Search.Lucene.Abstractions.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\stloethe\\.nuget\\packages\\j2n\\2.0.0\\j2n.2.0.0.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\lucene.net\\4.8.0-beta00016\\lucene.net.4.8.0-beta00016.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.build.tasks.git\\1.1.1\\microsoft.build.tasks.git.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\2.0.0\\microsoft.extensions.configuration.abstractions.2.0.0.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.extensions.primitives\\2.0.0\\microsoft.extensions.primitives.2.0.0.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.sourcelink.common\\1.1.1\\microsoft.sourcelink.common.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.sourcelink.github\\1.1.1\\microsoft.sourcelink.github.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\4.4.0\\system.runtime.compilerservices.unsafe.4.4.0.nupkg.sha512"
+  ],
+  "logs": []
+}

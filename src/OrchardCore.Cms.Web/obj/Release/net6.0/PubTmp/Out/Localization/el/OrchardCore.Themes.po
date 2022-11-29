@@ -1,0 +1,206 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: el\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Themes.pot\n"
+"X-Crowdin-File-ID: 830\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Greek\n"
+"Language: el_GR\n"
+"PO-Revision-Date: 2022-05-05 19:18\n"
+
+#. .Add(S["Design"], NavigationConstants.AdminMenuDesignPosition, design => design
+#: OrchardCore.Themes\AdminMenu.cs:25
+msgctxt "OrchardCore.Themes.AdminMenu"
+msgid "Design"
+msgstr "Σχέδιο"
+
+#. .Add(S["Themes"], S["Themes"].PrefixPosition(), installed => installed
+#. .Add(S["Themes"], S["Themes"].PrefixPosition(), installed => installed
+#: OrchardCore.Themes\AdminMenu.cs:27
+#: OrchardCore.Themes\AdminMenu.cs:27
+msgctxt "OrchardCore.Themes.AdminMenu"
+msgid "Themes"
+msgstr "Θέματα"
+
+#. await _notifier.SuccessAsync(H["{0} was enabled", feature.Name ?? feature.Id]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:146
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "{0} was enabled"
+msgstr "{0} ήταν ενεργοποιημένο"
+
+#. await _notifier.SuccessAsync(H["{0} was set as the default {1} theme", feature.Name ?? feature.Id, isAdmin ? "Admin" : "Site"]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:149
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "{0} was set as the default {1} theme"
+msgstr "{0} ορίστηκε ως το προεπιλεγμένο {1} θέμα"
+
+#. await _notifier.SuccessAsync(H["The Site theme was reset."]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:166
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "The Site theme was reset."
+msgstr "Έγινε επαναφορά στο θέμα του ιστότοπου."
+
+#. await _notifier.SuccessAsync(H["The Admin theme was reset."]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:181
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "The Admin theme was reset."
+msgstr "Έγινε επαναφορά στο θέμα του διαχειριστικού."
+
+#. await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name ?? feature.Id]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:204
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "{0} was disabled."
+msgstr ""
+
+#. await _notifier.SuccessAsync(H["{0} was enabled.", feature.Name ?? feature.Id]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:227
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "{0} was enabled."
+msgstr ""
+
+#. throw new InvalidOperationException(H["The theme \"{0}\" is already in the stack of themes that need features disabled.", themeName].ToString());
+#: OrchardCore.Themes\Services\ThemeService.cs:42
+msgctxt "OrchardCore.Themes.Services.ThemeService"
+msgid "The theme \"{0}\" is already in the stack of themes that need features disabled."
+msgstr "Το θέμα \"{0}\" βρίσκεται ήδη στη στοίβα θεμάτων που χρειάζονται χαρακτηριστικά που είναι απενεργοποιημένα."
+
+#. throw new InvalidOperationException(H["The theme \"{0}\" is already in the stack of themes that need features enabled.", themeName].ToString());
+#: OrchardCore.Themes\Services\ThemeService.cs:73
+msgctxt "OrchardCore.Themes.Services.ThemeService"
+msgid "The theme \"{0}\" is already in the stack of themes that need features enabled."
+msgstr "Το θέμα \"{0}\" βρίσκεται ήδη στη στοίβα θεμάτων που χρειάζονται χαρακτηριστικά που είναι ενεργοποιημένα."
+
+#. await _notifier.SuccessAsync(H["{0} was enabled.", enabledFeature.Name]);
+#: OrchardCore.Themes\Services\ThemeService.cs:114
+msgctxt "OrchardCore.Themes.Services.ThemeService"
+msgid "{0} was enabled."
+msgstr "{0} ήταν ενεργοποιημένο."
+
+#. await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name]);
+#: OrchardCore.Themes\Services\ThemeService.cs:141
+msgctxt "OrchardCore.Themes.Services.ThemeService"
+msgid "{0} was disabled."
+msgstr "{0} ήταν απενεργοποιημένο."
+
+#. <span class="icon"><i class="fas fa-desktop" aria-hidden="true"></i></span><span class="title">@T["Design"]</span>
+#: OrchardCore.Themes\Views\NavigationItemText-themes.Id.cshtml:1
+msgctxt "OrchardCore.Themes.Views.NavigationItemText-themes.Id"
+msgid "Design"
+msgstr "Σχέδιο"
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(T["Themes"])</h1></zone>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:3
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Themes"
+msgstr "Θέματα"
+
+#. <p>@T["There are no themes installed."]</p>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:7
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "There are no themes installed."
+msgstr "Δεν υπάρχουν εγκατεστημένα θέματα."
+
+#. <button type="submit" class="btn btn-sm btn-primary">@T["Make Current"]</button>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:44
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Make Current"
+msgstr "Κάντο τρέχον θέμα"
+
+#. <button type="submit" class="btn btn-sm btn-secondary">@T["Disable"]</button>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:51
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Disable"
+msgstr "Απενεργοποίηση"
+
+#. <button type="submit" class="btn btn-sm btn-secondary">@T["Enable"]</button>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:57
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Enable"
+msgstr "Εργοποίηση"
+
+#. <span class="text-muted">@T["This is the current Admin theme"]</span>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:67
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "This is the current Admin theme"
+msgstr "Αυτό είναι το τρέχον θέμα διαχειριστή"
+
+#. <span class="text-muted">@T["This is the current Site theme"]</span>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:71
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "This is the current Site theme"
+msgstr "Αυτό είναι το τρέχον θέμα του ιστότοπου"
+
+#. <h4>@T["Reset current themes"]</h4>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:81
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Reset current themes"
+msgstr "Επαναφορά τρέχοντων θεμάτων"
+
+#. <p>@T["The following actions reset the themes. It is used for sites that can't use theming."]</p>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:82
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "The following actions reset the themes. It is used for sites that can't use theming."
+msgstr "Οι παρακάτω ενέργειες επαναφέρουν τα θέματα. Χρησιμοποιείται για ιστότοπους που δεν μπορούν να χρησιμοποιήσουν θέματα."
+
+#. <a asp-action="ResetSiteTheme" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Reset Site Theme"]" data-message="@T["Are you sure you want to reset the Site theme?"]" class="btn btn-danger">@T["Reset Site Theme"]</a>
+#. <a asp-action="ResetSiteTheme" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Reset Site Theme"]" data-message="@T["Are you sure you want to reset the Site theme?"]" class="btn btn-danger">@T["Reset Site Theme"]</a>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:83
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:83
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Reset Site Theme"
+msgstr "Επαναφορά Θέματος Ιστότοπου"
+
+#. <a asp-action="ResetSiteTheme" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Reset Site Theme"]" data-message="@T["Are you sure you want to reset the Site theme?"]" class="btn btn-danger">@T["Reset Site Theme"]</a>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:83
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Are you sure you want to reset the Site theme?"
+msgstr "Είστε βέβαιοι ότι θέλετε να επαναφέρετε το θέμα του Ιστοτόπου;"
+
+#. <a asp-action="ResetAdminTheme" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Reset Admin Theme"]" data-message="@T["Are you sure you want to reset the Admin theme?"]" class="btn btn-danger">@T["Reset Admin Theme"]</a>
+#. <a asp-action="ResetAdminTheme" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Reset Admin Theme"]" data-message="@T["Are you sure you want to reset the Admin theme?"]" class="btn btn-danger">@T["Reset Admin Theme"]</a>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:84
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:84
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Reset Admin Theme"
+msgstr "Επαναφορά Θέματος Διαχειριστή"
+
+#. <a asp-action="ResetAdminTheme" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Reset Admin Theme"]" data-message="@T["Are you sure you want to reset the Admin theme?"]" class="btn btn-danger">@T["Reset Admin Theme"]</a>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:84
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Are you sure you want to reset the Admin theme?"
+msgstr "Είστε βέβαιοι ότι θέλετε να επαναφέρετε το θέμα διαχειριστή;"
+
+#. <h5>@T["Themes"]</h5>
+#: OrchardCore.Themes\Views\Items\ThemesDeploymentStep.Edit.cshtml:3
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Edit"
+msgid "Themes"
+msgstr "Θέματα"
+
+#. <h5>@T["Themes"]</h5>
+#: OrchardCore.Themes\Views\Items\ThemesDeploymentStep.Summary.cshtml:3
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Summary"
+msgid "Themes"
+msgstr "Θέματα"
+
+#. <span class="hint">@T["Adds the currently selected site theme and admin theme to the plan."]</span>
+#: OrchardCore.Themes\Views\Items\ThemesDeploymentStep.Summary.cshtml:5
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Summary"
+msgid "Adds the currently selected site theme and admin theme to the plan."
+msgstr "Προσθέτει στο σχέδιο το τρέχων θέμα και το θέμα διαχειριστή που έχει επιλεγεί."
+
+#. <h4 class="card-title">@T["Themes"]</h4>
+#: OrchardCore.Themes\Views\Items\ThemesDeploymentStep.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Thumbnail"
+msgid "Themes"
+msgstr "Θέματα"
+
+#. <p>@T["Exports the currently selected site theme and admin theme."]</p>
+#: OrchardCore.Themes\Views\Items\ThemesDeploymentStep.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Thumbnail"
+msgid "Exports the currently selected site theme and admin theme."
+msgstr "Εξάγει το τρέχων επιλεγμένο θέμα του ιστότοπου και το θέμα διαχειριστή."
+

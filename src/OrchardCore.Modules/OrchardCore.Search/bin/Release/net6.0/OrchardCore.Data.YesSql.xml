@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Data.YesSql</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Data.DbConnectionAccessor">
+            <summary>
+            Represents an accessor to the database connection.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.DbConnectionAccessor.#ctor(YesSql.IStore)">
+            <summary>
+            Creates a new instance of the <see cref="T:OrchardCore.Data.DbConnectionAccessor"/>.
+            </summary>
+            <param name="store">The <see cref="T:YesSql.IStore"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Data.DbConnectionAccessor.CreateConnection">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Data.Documents.DocumentStore">
+            <summary>
+            An <see cref="T:OrchardCore.Data.Documents.IDocumentStore"/> using the <see cref="T:YesSql.ISession"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Documents.DocumentStore.GetOrCreateMutableAsync``1(System.Func{System.Threading.Tasks.Task{``0}})">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Data.Documents.DocumentStore.GetOrCreateImmutableAsync``1(System.Func{System.Threading.Tasks.Task{``0}})">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Data.Documents.DocumentStore.UpdateAsync``1(``0,System.Func{``0,System.Threading.Tasks.Task},System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Data.Documents.DocumentStore.CancelAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Data.Documents.DocumentStore.AfterCommitSuccess``1(OrchardCore.Data.Documents.DocumentStoreCommitSuccessDelegate)">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Data.Documents.DocumentStore.AfterCommitFailure``1(OrchardCore.Data.Documents.DocumentStoreCommitFailureDelegate)">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Data.Documents.DocumentStore.CommitAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:OrchardCore.Data.Migration.DataMigrationManager">
+            <summary>
+            Represents a class that manages the database migrations.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Migration.DataMigrationManager.#ctor(OrchardCore.Environment.Extensions.ITypeFeatureProvider,System.Collections.Generic.IEnumerable{OrchardCore.Data.Migration.IDataMigration},YesSql.ISession,YesSql.IStore,OrchardCore.Environment.Extensions.IExtensionManager,Microsoft.Extensions.Logging.ILogger{OrchardCore.Data.Migration.DataMigrationManager})">
+            <summary>
+            Creates a new instance of the <see cref="T:OrchardCore.Data.Migration.DataMigrationManager"/>.
+            </summary>
+            <param name="typeFeatureProvider">The <see cref="T:OrchardCore.Environment.Extensions.ITypeFeatureProvider"/>.</param>
+            <param name="dataMigrations">A list of <see cref="T:OrchardCore.Data.Migration.IDataMigration"/>.</param>
+            <param name="session">The <see cref="T:YesSql.ISession"/>.</param>
+            <param name="store">The <see cref="T:YesSql.IStore"/>.</param>
+            <param name="extensionManager">The <see cref="T:OrchardCore.Environment.Extensions.IExtensionManager"/>.</param>
+            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Data.Migration.DataMigrationManager.GetDataMigrationRecordAsync">
+            <inheritdocs />
+        </member>
+        <member name="M:OrchardCore.Data.Migration.DataMigrationManager.GetDataMigrations(System.String)">
+            <summary>
+            Returns all the available IDataMigration instances for a specific module, and inject necessary builders
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Migration.DataMigrationManager.CreateUpgradeLookupTable(OrchardCore.Data.Migration.IDataMigration)">
+            <summary>
+            Create a list of all available Update methods from a data migration class, indexed by the version number
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Migration.DataMigrationManager.GetCreateMethod(OrchardCore.Data.Migration.IDataMigration)">
+            <summary>
+            Returns the Create method from a data migration class if it's found
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Migration.DataMigrationManager.GetCreateAsyncMethod(OrchardCore.Data.Migration.IDataMigration)">
+            <summary>
+            Returns the CreateAsync method from a data migration class if it's found
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Migration.DataMigrationManager.GetUninstallMethod(OrchardCore.Data.Migration.IDataMigration)">
+            <summary>
+            Returns the Uninstall method from a data migration class if it's found
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Migration.DataMigrationManager.GetUninstallAsyncMethod(OrchardCore.Data.Migration.IDataMigration)">
+            <summary>
+            Returns the UninstallAsync method from a data migration class if it's found
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Data.SqliteOptions">
+            <summary>
+            Sqlite-specific configuration for the Orchard Core database. 
+            See <see href="https://docs.orchardcore.net/en/latest/docs/reference/core/Data/#sqlite" />
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Data.SqliteOptions.UseConnectionPooling">
+            <summary>
+            <para>By default in .Net 6, <c>Microsoft.Data.Sqlite</c> pools connections to the database. 
+            It achieves this by putting a lock on the database file and leaving connections open to be reused.
+            If the lock is preventing tasks like backups, this functionality can be disabled.</para>
+            
+            <para>There may be a performance penalty associated with disabling connection pooling.</para>
+            <see href="https://docs.microsoft.com/en-us/dotnet/standard/data/sqlite/connection-strings#pooling" />
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Data.PoolingJsonContentSerializer">
+            <summary>
+            Custom YesSql content serializer which forwards to generic pooling JSON serializer with custom settings.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions">
+            <summary>
+            Provides extension methods for <see cref="T:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder"/> to add database access functionality.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddDataAccess(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds tenant level data access services.
+            </summary>
+            <param name="builder">The <see cref="T:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder"/>.</param>
+        </member>
+    </members>
+</doc>

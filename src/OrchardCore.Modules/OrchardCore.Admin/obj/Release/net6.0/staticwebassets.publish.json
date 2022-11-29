@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "ZWc/6FVQ4uYQj0e865RMhvQ6rbcfncW2em68o+VOLRA=",
+  "Source": "OrchardCore.Admin",
+  "BasePath": "_content/OrchardCore.Admin",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

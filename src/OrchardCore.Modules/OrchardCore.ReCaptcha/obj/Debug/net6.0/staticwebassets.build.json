@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "EvHYa66MXUEkD4V+bRJqWNfJ8lgXpItRrC6bwhWoPRE=",
+  "Source": "OrchardCore.ReCaptcha",
+  "BasePath": "_content/OrchardCore.ReCaptcha",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

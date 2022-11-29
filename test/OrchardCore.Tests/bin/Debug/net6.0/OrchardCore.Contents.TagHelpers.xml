@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Contents.TagHelpers</name>
+    </assembly>
+    <members>
+        <member name="P:OrchardCore.Contents.TagHelpers.ContentLinkTagHelper.AdminFor">
+            <summary>
+            Links to the admin page of this content item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Contents.TagHelpers.ContentLinkTagHelper.DisplayFor">
+            <summary>
+            Links to the display page of this content item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Contents.TagHelpers.ContentLinkTagHelper.EditFor">
+            <summary>
+            Links to the edition page of this content item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Contents.TagHelpers.ContentLinkTagHelper.RemoveFor">
+            <summary>
+            Links to the removal page of this content item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Contents.TagHelpers.ContentLinkTagHelper.CreateFor">
+            <summary>
+            Links to the creation page of this content item.
+            </summary>
+        </member>
+    </members>
+</doc>

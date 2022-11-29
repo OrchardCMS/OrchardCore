@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Setup.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Setup.Events.ISetupEventHandler">
+            <summary>
+            Contract that is called when a tenant is set up.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Setup.Services.ISetupService">
+            <summary>
+            Contract that represents the setup service.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Setup.Services.ISetupService.GetSetupRecipesAsync">
+            <summary>
+            Gets the setup recipes.
+            </summary>
+            <returns>A list of <see cref="T:OrchardCore.Recipes.Models.RecipeDescriptor"/>s.</returns>
+        </member>
+        <member name="M:OrchardCore.Setup.Services.ISetupService.SetupAsync(OrchardCore.Setup.Services.SetupContext)">
+            <summary>
+            Set up the tenant.
+            </summary>
+            <param name="context">The <see cref="T:OrchardCore.Setup.Services.SetupContext"/>.</param>
+            <returns> A GUID string the represents a setup execution identifier.</returns>
+        </member>
+        <member name="T:OrchardCore.Setup.Services.SetupContext">
+            <summary>
+            Represents a class that contains setup information.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Setup.Services.SetupContext.ShellSettings">
+            <summary>
+            Gets or sets the shell settings.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Setup.Services.SetupContext.EnabledFeatures">
+            <summary>
+            Gets or sets the features that will be enabled.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Setup.Services.SetupContext.Recipe">
+            <summary>
+            Gets or sets the site recipe.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Setup.Services.SetupContext.Errors">
+            <summary>
+            Gets or sets the errors that occurred during the setup.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Setup.Services.SetupContext.Properties">
+            <summary>
+            Gets additional key/value info.
+            </summary>
+        </member>
+    </members>
+</doc>

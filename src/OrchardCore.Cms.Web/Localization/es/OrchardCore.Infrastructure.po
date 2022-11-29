@@ -1,0 +1,44 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: es-ES\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Infrastructure.pot\n"
+"X-Crowdin-File-ID: 760\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Spanish\n"
+"Language: es_ES\n"
+"PO-Revision-Date: 2021-07-15 19:00\n"
+
+#. throw new Exception(S["Multiple commands found matching arguments \"{0}\". Commands available: {1}.",
+#: OrchardCore.Infrastructure\Commands\DefaultCommandManager.cs:38
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandManager"
+msgid "Multiple commands found matching arguments \"{0}\". Commands available: {1}."
+msgstr "Se han encontrado varios comandos que coinciden con los argumentos \"{0}\". Comandos disponibles: {1}."
+
+#. throw new Exception(S["No command found matching arguments \"{0}\". Commands available: {1}.",
+#: OrchardCore.Infrastructure\Commands\DefaultCommandManager.cs:41
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandManager"
+msgid "No command found matching arguments \"{0}\". Commands available: {1}."
+msgstr "No se hallaron comandos que coinciden con los argumentos \"{0}\". Comandos disponibles: {1}."
+
+#. await Context.Output.WriteLineAsync(S["List of available commands:"]);
+#: OrchardCore.Infrastructure\Commands\Builtin\HelpCommand.cs:25
+msgctxt "OrchardCore.Environment.Commands.Builtin.HelpCommand"
+msgid "List of available commands:"
+msgstr "Lista de comandos disponibles:"
+
+#. await Context.Output.WriteLineAsync(S["Command {0} doesn't exist", command]);
+#: OrchardCore.Infrastructure\Commands\Builtin\HelpCommand.cs:49
+msgctxt "OrchardCore.Environment.Commands.Builtin.HelpCommand"
+msgid "Command {0} doesn't exist"
+msgstr "Comando {0} no existe"
+
+#. return S["{0}.{1}: no help text", descriptor.MethodInfo.DeclaringType?.FullName, descriptor.MethodInfo.Name];
+#: OrchardCore.Infrastructure\Commands\Builtin\HelpCommand.cs:70
+msgctxt "OrchardCore.Environment.Commands.Builtin.HelpCommand"
+msgid "{0}.{1}: no help text"
+msgstr "{0}.{1}: no hay texto de ayuda"
+

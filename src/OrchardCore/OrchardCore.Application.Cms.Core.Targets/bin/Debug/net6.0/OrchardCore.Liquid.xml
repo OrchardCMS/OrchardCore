@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Liquid</name>
+    </assembly>
+    <members>
+        <member name="M:LiquidRazorHelperExtensions.LiquidToHtmlAsync(OrchardCore.IOrchardHelper,System.String)">
+            <summary>
+            Parses a liquid string to HTML.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="liquid"></param>
+        </member>
+        <member name="M:LiquidRazorHelperExtensions.LiquidToHtmlAsync(OrchardCore.IOrchardHelper,System.String,System.Object)">
+            <summary>
+            Parses a liquid string to HTML.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="liquid">The liquid to parse.</param>
+            <param name="model">A model to bind against.</param>
+        </member>
+    </members>
+</doc>

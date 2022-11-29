@@ -1,0 +1,356 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Placements.pot\n"
+"X-Crowdin-File-ID: 788\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Arabic\n"
+"Language: ar_SA\n"
+"PO-Revision-Date: 2022-10-11 20:20\n"
+
+#. .Add(S["Design"], design => design
+#: OrchardCore.Placements\AdminMenu.cs:25
+msgctxt "OrchardCore.Placements.AdminMenu"
+msgid "Design"
+msgstr ""
+
+#. .Add(S["Placements"], S["Placements"].PrefixPosition(), import => import
+#. .Add(S["Placements"], S["Placements"].PrefixPosition(), import => import
+#: OrchardCore.Placements\AdminMenu.cs:26
+#: OrchardCore.Placements\AdminMenu.cs:26
+msgctxt "OrchardCore.Placements.AdminMenu"
+msgid "Placements"
+msgstr ""
+
+#. new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+#: OrchardCore.Placements\Controllers\AdminController.cs:94
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "Delete"
+msgstr ""
+
+#. await _notifier.WarningAsync(H["Placement rules for \"{0}\" already exists. Please edit existing rule.", viewModel.ShapeType]);
+#: OrchardCore.Placements\Controllers\AdminController.cs:180
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "Placement rules for \"{0}\" already exists. Please edit existing rule."
+msgstr ""
+
+#. await _notifier.SuccessAsync(H["The \"{0}\" placement have been saved.", viewModel.ShapeType]);
+#: OrchardCore.Placements\Controllers\AdminController.cs:197
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "The \"{0}\" placement have been saved."
+msgstr ""
+
+#. await _notifier.WarningAsync(H["The \"{0}\" placement is empty.", viewModel.ShapeType]);
+#: OrchardCore.Placements\Controllers\AdminController.cs:201
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "The \"{0}\" placement is empty."
+msgstr ""
+
+#. await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", viewModel.ShapeType]);
+#. await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", shapeType]);
+#: OrchardCore.Placements\Controllers\AdminController.cs:208
+#: OrchardCore.Placements\Controllers\AdminController.cs:240
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "The \"{0}\" placement has been deleted."
+msgstr ""
+
+#. await _notifier.ErrorAsync(H["An error occurred while parsing the placement<br/>{0}", jsonException.Message]);
+#: OrchardCore.Placements\Controllers\AdminController.cs:213
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "An error occurred while parsing the placement<br/>{0}"
+msgstr ""
+
+#. await _notifier.ErrorAsync(H["An error occurred while saving the placement."]);
+#: OrchardCore.Placements\Controllers\AdminController.cs:218
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "An error occurred while saving the placement."
+msgstr ""
+
+#. await _notifier.SuccessAsync(H["Placements successfully removed."]);
+#: OrchardCore.Placements\Controllers\AdminController.cs:265
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "Placements successfully removed."
+msgstr ""
+
+#. Description = S["Placement for a {0} part", displayName]
+#: OrchardCore.Placements\Settings\PlacementContentPartDefinitionDriver.cs:29
+msgctxt "OrchardCore.Placements.Settings.PlacementContentPartDefinitionDriver"
+msgid "Placement for a {0} part"
+msgstr ""
+
+#. Description = S["Placement for a {0} part in detail views", displayName]
+#: OrchardCore.Placements\Settings\PlacementContentPartDefinitionDriver.cs:37
+msgctxt "OrchardCore.Placements.Settings.PlacementContentPartDefinitionDriver"
+msgid "Placement for a {0} part in detail views"
+msgstr ""
+
+#. Description = S["Placement for a {0} part in summary views", displayName]
+#: OrchardCore.Placements\Settings\PlacementContentPartDefinitionDriver.cs:45
+msgctxt "OrchardCore.Placements.Settings.PlacementContentPartDefinitionDriver"
+msgid "Placement for a {0} part in summary views"
+msgstr ""
+
+#. Description = S["Placement in admin editor for a {0} part", displayName]
+#: OrchardCore.Placements\Settings\PlacementContentPartDefinitionDriver.cs:52
+msgctxt "OrchardCore.Placements.Settings.PlacementContentPartDefinitionDriver"
+msgid "Placement in admin editor for a {0} part"
+msgstr ""
+
+#. Description = S["Placement for the {0} field in a {1}", displayName, partName]
+#: OrchardCore.Placements\Settings\PlacementContentPartFieldDefinitionDisplayDriver.cs:32
+msgctxt "OrchardCore.Placements.Settings.PlacementContentPartFieldDefinitionDisplayDriver"
+msgid "Placement for the {0} field in a {1}"
+msgstr ""
+
+#. Description = S["Placement for the {0} field in a {1} in detail views", displayName, partName]
+#: OrchardCore.Placements\Settings\PlacementContentPartFieldDefinitionDisplayDriver.cs:41
+msgctxt "OrchardCore.Placements.Settings.PlacementContentPartFieldDefinitionDisplayDriver"
+msgid "Placement for the {0} field in a {1} in detail views"
+msgstr ""
+
+#. Description = S["Placement for the {0} field in a {1} in summary views", displayName, partName]
+#: OrchardCore.Placements\Settings\PlacementContentPartFieldDefinitionDisplayDriver.cs:50
+msgctxt "OrchardCore.Placements.Settings.PlacementContentPartFieldDefinitionDisplayDriver"
+msgid "Placement for the {0} field in a {1} in summary views"
+msgstr ""
+
+#. Description = S["Placement in admin editor for the {0} field in a {1}", displayName, partName]
+#: OrchardCore.Placements\Settings\PlacementContentPartFieldDefinitionDisplayDriver.cs:58
+msgctxt "OrchardCore.Placements.Settings.PlacementContentPartFieldDefinitionDisplayDriver"
+msgid "Placement in admin editor for the {0} field in a {1}"
+msgstr ""
+
+#. Description = S["Placement for the {0} part in a {1} type", partName, displayName]
+#: OrchardCore.Placements\Settings\PlacementContentTypePartDefinitionDriver.cs:31
+msgctxt "OrchardCore.Placements.Settings.PlacementContentTypePartDefinitionDriver"
+msgid "Placement for the {0} part in a {1} type"
+msgstr ""
+
+#. Description = S["Placement for the {0} part in a {1} type in detail views", partName, displayName]
+#: OrchardCore.Placements\Settings\PlacementContentTypePartDefinitionDriver.cs:40
+msgctxt "OrchardCore.Placements.Settings.PlacementContentTypePartDefinitionDriver"
+msgid "Placement for the {0} part in a {1} type in detail views"
+msgstr ""
+
+#. Description = S["Placement for the {0} part in a {1} type in summary views", partName, displayName]
+#: OrchardCore.Placements\Settings\PlacementContentTypePartDefinitionDriver.cs:49
+msgctxt "OrchardCore.Placements.Settings.PlacementContentTypePartDefinitionDriver"
+msgid "Placement for the {0} part in a {1} type in summary views"
+msgstr ""
+
+#. Description = S["Placement in admin editor for the {0} part in a {1} type", partName, displayName]
+#: OrchardCore.Placements\Settings\PlacementContentTypePartDefinitionDriver.cs:57
+msgctxt "OrchardCore.Placements.Settings.PlacementContentTypePartDefinitionDriver"
+msgid "Placement in admin editor for the {0} part in a {1} type"
+msgstr ""
+
+#. @T["Edit placements"]
+#: OrchardCore.Placements\Views\PlacementSettings.cshtml:5
+msgctxt "OrchardCore.Placements.Views.PlacementSettings"
+msgid "Edit placements"
+msgstr ""
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(Model.Creating ? T["Create Placement"] : T["Edit Placement"])</h1></zone>
+#: OrchardCore.Placements\Views\Admin\Edit.cshtml:12
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Create Placement"
+msgstr ""
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(Model.Creating ? T["Create Placement"] : T["Edit Placement"])</h1></zone>
+#: OrchardCore.Placements\Views\Admin\Edit.cshtml:12
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Edit Placement"
+msgstr ""
+
+#. <label asp-for="ShapeType">@T["Shape type"]</label>
+#: OrchardCore.Placements\Views\Admin\Edit.cshtml:22
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Shape type"
+msgstr ""
+
+#. <span class="hint">@T["The type of the shape."]</span>
+#: OrchardCore.Placements\Views\Admin\Edit.cshtml:25
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "The type of the shape."
+msgstr ""
+
+#. <label asp-for="Nodes">@T["Placement rules"]</label>
+#: OrchardCore.Placements\Views\Admin\Edit.cshtml:29
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Placement rules"
+msgstr ""
+
+#. <button type="submit" name="submit" class="btn btn-primary">@T["Save"]</button>
+#: OrchardCore.Placements\Views\Admin\Edit.cshtml:35
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Save"
+msgstr ""
+
+#. <span class="visually-hidden">@T["Toggle Dropdown"]</span>
+#: OrchardCore.Placements\Views\Admin\Edit.cshtml:37
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Toggle Dropdown"
+msgstr ""
+
+#. <button class="dropdown-item" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
+#: OrchardCore.Placements\Views\Admin\Edit.cshtml:40
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "and continue"
+msgstr ""
+
+#. <a asp-route-action="Delete" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" class="btn btn-danger" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Delete"]</a>
+#: OrchardCore.Placements\Views\Admin\Edit.cshtml:46
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Delete"
+msgstr ""
+
+#. <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+#: OrchardCore.Placements\Views\Admin\Edit.cshtml:49
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Cancel"
+msgstr ""
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(T["Placements"])</h1></zone>
+#: OrchardCore.Placements\Views\Admin\Index.cshtml:7
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "Placements"
+msgstr ""
+
+#. <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+#: OrchardCore.Placements\Views\Admin\Index.cshtml:21
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "Search"
+msgstr ""
+
+#. <a asp-route-action="Create" class="btn btn-secondary create" role="button" asp-route-returnUrl="@FullRequestPath">@T["Add Placement"]</a>
+#: OrchardCore.Placements\Views\Admin\Index.cshtml:25
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "Add Placement"
+msgstr ""
+
+#. <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+#: OrchardCore.Placements\Views\Admin\Index.cshtml:39
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "Select All"
+msgstr ""
+
+#. <label id="items" for="select-all">@T.Plural(Model.ShapePlacements.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+#: OrchardCore.Placements\Views\Admin\Index.cshtml:40
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "1 item"
+msgid_plural "{0} items"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
+#. <label id="items" for="select-all">@T.Plural(Model.ShapePlacements.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+#: OrchardCore.Placements\Views\Admin\Index.cshtml:40
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "Items {0} to {1}"
+msgstr ""
+
+#. <label id="items" for="select-all">@T.Plural(Model.ShapePlacements.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+#: OrchardCore.Placements\Views\Admin\Index.cshtml:40
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid " / {0} item in total"
+msgid_plural " / {0} items in total"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
+#. @T["Actions"]
+#: OrchardCore.Placements\Views\Admin\Index.cshtml:47
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "Actions"
+msgstr ""
+
+#. <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
+#: OrchardCore.Placements\Views\Admin\Index.cshtml:52
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "Bulk Action"
+msgstr ""
+
+#. <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
+#: OrchardCore.Placements\Views\Admin\Index.cshtml:52
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "Are you sure you want to {0} these items?"
+msgstr ""
+
+#. <a asp-action="Edit" asp-route-shapeType="@entry.ShapeType" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
+#: OrchardCore.Placements\Views\Admin\Index.cshtml:68
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "Edit"
+msgstr ""
+
+#. <a asp-action="Delete" asp-route-shapeType="@entry.ShapeType" asp-route-returnUrl="@FullRequestPath" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+#: OrchardCore.Placements\Views\Admin\Index.cshtml:69
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "Delete"
+msgstr ""
+
+#. @T["<strong>Nothing here!</strong> There are no placements at the moment."]
+#: OrchardCore.Placements\Views\Admin\Index.cshtml:80
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "<strong>Nothing here!</strong> There are no placements at the moment."
+msgstr ""
+
+#. selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+#. selectedItems.text(selectedItemsCount + ' @T["selected"]');
+#: OrchardCore.Placements\Views\Admin\Index.cshtml:131
+#: OrchardCore.Placements\Views\Admin\Index.cshtml:142
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "selected"
+msgstr ""
+
+#. <h5>@T["Placements"]</h5>
+#: OrchardCore.Placements\Views\Items\PlacementsDeploymentStep.Edit.cshtml:3
+msgctxt "OrchardCore.Placements.Views.Items.PlacementsDeploymentStep.Edit"
+msgid "Placements"
+msgstr ""
+
+#. <h5>@T["Placements"]</h5>
+#: OrchardCore.Placements\Views\Items\PlacementsDeploymentStep.Summary.cshtml:3
+msgctxt "OrchardCore.Placements.Views.Items.PlacementsDeploymentStep.Summary"
+msgid "Placements"
+msgstr ""
+
+#. <span class="hint">@T["Adds all placements to the plan."]</span>
+#: OrchardCore.Placements\Views\Items\PlacementsDeploymentStep.Summary.cshtml:5
+msgctxt "OrchardCore.Placements.Views.Items.PlacementsDeploymentStep.Summary"
+msgid "Adds all placements to the plan."
+msgstr ""
+
+#. <h4 class="card-title">@T["All Placements"]</h4>
+#: OrchardCore.Placements\Views\Items\PlacementsDeploymentStep.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Placements.Views.Items.PlacementsDeploymentStep.Thumbnail"
+msgid "All Placements"
+msgstr ""
+
+#. <p>@T["Exports placements defined in Placements module."]</p>
+#: OrchardCore.Placements\Views\Items\PlacementsDeploymentStep.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Placements.Views.Items.PlacementsDeploymentStep.Thumbnail"
+msgid "Exports placements defined in Placements module."
+msgstr ""
+
+#. <a asp-route-action="Edit" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+#: OrchardCore.Placements\Views\Shared\DisplayTemplates\ShapePlacementViewModel.cshtml:5
+msgctxt "OrchardCore.Placements.Views.Shared.DisplayTemplates.ShapePlacementViewModel"
+msgid "Edit"
+msgstr ""
+
+#. <a asp-route-action="Delete" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Delete"]</a>
+#: OrchardCore.Placements\Views\Shared\DisplayTemplates\ShapePlacementViewModel.cshtml:6
+msgctxt "OrchardCore.Placements.Views.Shared.DisplayTemplates.ShapePlacementViewModel"
+msgid "Delete"
+msgstr ""
+

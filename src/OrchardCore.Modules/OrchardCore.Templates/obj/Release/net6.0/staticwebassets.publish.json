@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "b5FLcfqu2aaZ82fy3wpz6HPUftfQPmWqFZYjomyo7uQ=",
+  "Source": "OrchardCore.Templates",
+  "BasePath": "_content/OrchardCore.Templates",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

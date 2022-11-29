@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.ContentLocalization.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:ContentLocalizationOrchardHelperExtensions">
+            <summary>
+            Provides an extension methods for <see cref="T:OrchardCore.IOrchardHelper"/>.
+            </summary>
+        </member>
+        <member name="M:ContentLocalizationOrchardHelperExtensions.GetContentCultureAsync(OrchardCore.IOrchardHelper,OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Gets the culture for a given <see cref="T:OrchardCore.ContentManagement.ContentItem"/>.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="contentItem">The <see cref="T:OrchardCore.ContentManagement.ContentItem"/> in which to get its culture.</param>
+            <returns></returns>
+        </member>
+        <member name="T:OrchardCore.ContentLocalization.CultureAspect">
+            <summary>
+            Represents a culture metadata for the content item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentLocalization.CultureAspect.Culture">
+            <summary>
+            Gets or sets the culture.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentLocalization.IContentLocalizationManager.GetItemsForSetAsync(System.String)">
+            <summary>
+            Get the list of items for the localizationSet
+            </summary>
+            <returns>List of all items matching a localizationSet</returns>
+        </member>
+        <member name="M:OrchardCore.ContentLocalization.IContentLocalizationManager.GetContentItemAsync(System.String,System.String)">
+            <summary>
+            Get the content item that matches the localizationSet / culture combination
+            </summary>
+            <returns>ContentItem or null if not found</returns>
+        </member>
+        <member name="M:OrchardCore.ContentLocalization.IContentLocalizationManager.LocalizeAsync(OrchardCore.ContentManagement.ContentItem,System.String)">
+            <summary>
+            Localizes the content item to the target culture.
+            This method will clone the ContentItem of the default locale
+            and set the culture of the LocalizationPart to the targetCulture.
+            </summary>
+            <returns>The localized content item</returns>
+        </member>
+        <member name="M:OrchardCore.ContentLocalization.IContentLocalizationManager.DeduplicateContentItemsAsync(System.Collections.Generic.IEnumerable{OrchardCore.ContentManagement.ContentItem})">
+            <summary>
+            Deduplicate the list of contentItems to only keep a single contentItem per LocalizationSet.
+            Each ContentItem is chosen with the following rules:
+            - ContentItemId of the current culture for the set
+            - OR ContentItemId of the default culture for the set
+            - OR First ContentItemId found in the set
+            </summary>
+            <returns>Cleaned list of ContentItem</returns>
+        </member>
+        <member name="M:OrchardCore.ContentLocalization.IContentLocalizationManager.GetFirstItemIdForSetsAsync(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Gets a list of ContentItemId for the LocalizationSet based on some rules
+            Order of elements is kept.
+            </summary>
+            <returns>
+            List of contentItemId, each chosen with the following rules:
+            - ContentItemId of the current culture for the set
+            - OR ContentItemId of the default culture for the set
+            - OR First ContentItemId found in the set
+            </returns>
+        </member>
+        <member name="M:OrchardCore.ContentLocalization.IContentLocalizationManager.GetItemsForSetsAsync(System.Collections.Generic.IEnumerable{System.String},System.String)">
+            <summary>
+            Get the ContenItems that match the culture and localizationSet.
+            A single ContentItem is returned per set if it exists.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,56 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: tr\n"
+"X-Crowdin-File: /main/Localization/TheTheme.pot\n"
+"X-Crowdin-File-ID: 854\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Turkish\n"
+"Language: tr_TR\n"
+"PO-Revision-Date: 2022-03-17 15:20\n"
+
+#. <a class="dropdown-item" asp-route-area="OrchardCore.Admin" asp-controller="Admin" asp-action="Index"><i class="fa fa-desktop fa-fw" aria-hidden="true"></i> @T["Dashboard"]</a>
+#: TheTheme\Views\LoginMenu.cshtml:21
+msgctxt "TheTheme.Views.LoginMenu"
+msgid "Dashboard"
+msgstr "Gösterge Paneli"
+
+#. <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="ChangeEmail" asp-action="Index"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> @T["Change Email"]</a>
+#: TheTheme\Views\LoginMenu.cshtml:25
+msgctxt "TheTheme.Views.LoginMenu"
+msgid "Change Email"
+msgstr "E-postayı Değiştir"
+
+#. <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="ChangePassword" asp-route-returnUrl="@FullRequestPath"><i class="fa fa-lock fa-fw" aria-hidden="true"></i> @T["Change Password"]</a>
+#: TheTheme\Views\LoginMenu.cshtml:27
+msgctxt "TheTheme.Views.LoginMenu"
+msgid "Change Password"
+msgstr "Parolayı Değiştir"
+
+#. <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="ExternalLogins"><i class="fa fa-user-lock fa-fw" aria-hidden="true"></i> @T["External Logins"]</a>
+#: TheTheme\Views\LoginMenu.cshtml:30
+msgctxt "TheTheme.Views.LoginMenu"
+msgid "External Logins"
+msgstr "Dış Girişler"
+
+#. <button type="submit" class="btn btn-link navbar-btn dropdown-item"><i class="fa fa-sign-out-alt fa-fw" aria-hidden="true"></i> @T["Log off"]</button>
+#: TheTheme\Views\LoginMenu.cshtml:33
+msgctxt "TheTheme.Views.LoginMenu"
+msgid "Log off"
+msgstr "Oturumu Kapat"
+
+#. <li class="nav-item"><a class="nav-link" asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="Login"><i class="fa fa-sign-in-alt fa-fw" aria-hidden="true"></i> @T["Log in"]</a></li>
+#: TheTheme\Views\LoginMenu.cshtml:40
+msgctxt "TheTheme.Views.LoginMenu"
+msgid "Log in"
+msgstr "Oturum Aç"
+
+#. <h4>@T["Welcome to Orchard Core, your site has been successfully set up."]</h4>
+#: TheTheme\Views\Home\Index.cshtml:2
+msgctxt "TheTheme.Views.Home.Index"
+msgid "Welcome to Orchard Core, your site has been successfully set up."
+msgstr "Orchard Framework'e hoş geldiniz, siteniz başarılı bir şekilde oluşturuldu."
+

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Configuration.KeyVault</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.Configuration.KeyVault.Extensions.AzureKeyVaultWebHostBuilderExtension.AddOrchardCoreAzureKeyVault(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Adds Azure Key Vault as a Configuration Source.
+            </summary>
+            <param name="builder">The web host builder to configure.</param>
+            <returns>The web host builder.</returns>
+        </member>
+        <member name="M:OrchardCore.Configuration.KeyVault.Extensions.AzureKeyVaultWebHostBuilderExtension.AddOrchardCoreAzureKeyVault(Microsoft.Extensions.Hosting.IHostBuilder,Azure.Core.TokenCredential)">
+            <summary>
+            Adds Azure Key Vault as a Configuration Source.
+            </summary>
+            <param name="builder">The web host builder to configure.</param>
+            <param name="tokenCredential">The token credential to use for authentication.</param>
+            <returns>The web host builder.</returns>
+        </member>
+    </members>
+</doc>

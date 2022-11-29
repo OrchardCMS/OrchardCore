@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "plBLVtFH4h2q3YIzVpMH5LyuNyk5MT/tYYXVp71YcL4=",
+  "Source": "OrchardCore.Rules",
+  "BasePath": "_content/OrchardCore.Rules",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.Rules\\wwwroot",
+      "Source": "OrchardCore.Rules",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Rules\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Rules",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

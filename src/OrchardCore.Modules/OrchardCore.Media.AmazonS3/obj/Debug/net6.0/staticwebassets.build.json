@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "KznTYS9MutgY9l/TYOVPJOl14xuGMoyImE2GQRraVDM=",
+  "Source": "OrchardCore.Media.AmazonS3",
+  "BasePath": "_content/OrchardCore.Media.AmazonS3",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

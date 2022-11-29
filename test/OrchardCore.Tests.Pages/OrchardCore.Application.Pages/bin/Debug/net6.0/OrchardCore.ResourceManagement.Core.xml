@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.ResourceManagement.Core</name>
+    </assembly>
+    <members>
+        <member name="M:ResourceCdnHelperExtensions.ResourceUrl(OrchardCore.IOrchardHelper,System.String,System.Nullable{System.Boolean})">
+            <summary>
+            Prefixes the Cdn Base URL to the specified resource path.
+            </summary>
+        </member>
+    </members>
+</doc>

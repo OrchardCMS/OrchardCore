@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "v4offpd7H1q7YaSVRskKIVdgwn+GThX2sNXgXphPZqM=",
+  "Source": "OrchardCore.Tenants",
+  "BasePath": "_content/OrchardCore.Tenants",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

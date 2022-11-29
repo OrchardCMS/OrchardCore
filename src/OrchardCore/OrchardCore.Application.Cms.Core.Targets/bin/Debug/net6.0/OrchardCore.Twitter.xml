@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Twitter</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Twitter.Recipes.TwitterSettingsStep">
+            <summary>
+            This recipe step sets Microsoft Account settings.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Shortcodes</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Shortcodes.Recipes.ShortcodeTemplateStep">
+            <summary>
+            This recipe step creates a set of shortcodes.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Shortcodes.Services.DefaultShortcodeContextProvider">
+            <summary>
+            Provides a default context to the shortcode processor.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Shortcodes.Services.ShortcodeTemplatesManager.LoadShortcodeTemplatesDocumentAsync">
+            <summary>
+            Loads the shortcode templates document from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Shortcodes.Services.ShortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync">
+            <summary>
+            Gets the shortcode templates document from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="M:OrchardRazorHelperExtensions.ShortcodesToHtmlAsync(OrchardCore.IOrchardHelper,System.String,System.Object)">
+            <summary>
+            Processes shortcodes contained inside html.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/></param>
+            <param name="html">The html string contained shortcodes.</param>
+            <param name="model">The ambient shape view model.</param>
+        </member>
+    </members>
+</doc>

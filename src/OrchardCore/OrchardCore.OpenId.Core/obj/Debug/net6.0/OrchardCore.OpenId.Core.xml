@@ -1,0 +1,864 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.OpenId.Core</name>
+    </assembly>
+    <members>
+        <member name="P:OrchardCore.OpenId.Abstractions.Descriptors.OpenIdApplicationDescriptor.Roles">
+            <summary>
+            Gets the roles associated with the application.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.OpenId.Abstractions.Managers.IOpenIdApplicationManager">
+            <summary>
+            Provides methods allowing to manage the applications stored in the store.
+            Note: this interface is not meant to be implemented by custom managers,
+            that should inherit from the generic OpenIdApplicationManager class.
+            It is primarily intended to be used by services that cannot easily depend
+            on the generic application manager. The actual application entity type
+            is automatically determined at runtime based on the OpenIddict core options.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.OpenId.Abstractions.Managers.IOpenIdAuthorizationManager">
+            <summary>
+            Provides methods allowing to manage the authorizations stored in the store.
+            Note: this interface is not meant to be implemented by custom managers,
+            that should inherit from the generic OpenIdAuthorizationManager class.
+            It is primarily intended to be used by services that cannot easily depend
+            on the generic authorization manager. The actual authorization entity type
+            is automatically determined at runtime based on the OpenIddict core options.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.OpenId.Abstractions.Managers.IOpenIdScopeManager">
+            <summary>
+            Provides methods allowing to manage the scopes stored in the store.
+            Note: this interface is not meant to be implemented by custom managers,
+            that should inherit from the generic OpenIdScopeManager class.
+            It is primarily intended to be used by services that cannot easily
+            depend on the generic scope manager. The actual scope entity type is
+            automatically determined at runtime based on the OpenIddict core options.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.OpenId.Abstractions.Managers.IOpenIdTokenManager">
+            <summary>
+            Provides methods allowing to manage the tokens stored in the store.
+            Note: this interface is not meant to be implemented by custom managers,
+            that should inherit from the generic OpenIdTokenManager class.
+            It is primarily intended to be used by services that cannot easily
+            depend on the generic token manager. The actual token entity type is
+            automatically determined at runtime based on the OpenIddict core options.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.OpenId.Services.Managers.OpenIdApplicationManager`1.FindByPhysicalIdAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Retrieves an application using its physical identifier.
+            </summary>
+            <param name="identifier">The unique identifier associated with the application.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> that can be used to abort the operation.</param>
+            <returns>
+            A <see cref="T:System.Threading.Tasks.ValueTask`1"/> that can be used to monitor the asynchronous operation,
+            whose result returns the client application corresponding to the identifier.
+            </returns>
+        </member>
+        <member name="M:OrchardCore.OpenId.Services.Managers.OpenIdApplicationManager`1.GetPhysicalIdAsync(`0,System.Threading.CancellationToken)">
+            <summary>
+            Retrieves the physical identifier associated with an application.
+            </summary>
+            <param name="application">The application.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> that can be used to abort the operation.</param>
+            <returns>
+            A <see cref="T:System.Threading.Tasks.ValueTask`1"/> that can be used to monitor the asynchronous operation,
+            whose result returns the physical identifier associated with the application.
+            </returns>
+        </member>
+        <member name="M:OrchardCore.OpenId.Services.Managers.OpenIdAuthorizationManager`1.FindByPhysicalIdAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Retrieves an authorization using its physical identifier.
+            </summary>
+            <param name="identifier">The unique identifier associated with the authorization.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> that can be used to abort the operation.</param>
+            <returns>
+            A <see cref="T:System.Threading.Tasks.ValueTask`1"/> that can be used to monitor the asynchronous operation,
+            whose result returns the authorization corresponding to the identifier.
+            </returns>
+        </member>
+        <member name="M:OrchardCore.OpenId.Services.Managers.OpenIdAuthorizationManager`1.GetPhysicalIdAsync(`0,System.Threading.CancellationToken)">
+            <summary>
+            Retrieves the physical identifier associated with an authorization.
+            </summary>
+            <param name="authorization">The authorization.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> that can be used to abort the operation.</param>
+            <returns>
+            A <see cref="T:System.Threading.Tasks.ValueTask`1"/> that can be used to monitor the asynchronous operation,
+            whose result returns the physical identifier associated with the authorization.
+            </returns>
+        </member>
+        <member name="M:OrchardCore.OpenId.Services.Managers.OpenIdScopeManager`1.FindByPhysicalIdAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Retrieves a scope using its physical identifier.
+            </summary>
+            <param name="identifier">The physical identifier associated with the scope.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> that can be used to abort the operation.</param>
+            <returns>
+            A <see cref="T:System.Threading.Tasks.ValueTask`1"/> that can be used to monitor the asynchronous operation,
+            whose result returns the scope corresponding to the identifier.
+            </returns>
+        </member>
+        <member name="M:OrchardCore.OpenId.Services.Managers.OpenIdScopeManager`1.GetPhysicalIdAsync(`0,System.Threading.CancellationToken)">
+            <summary>
+            Retrieves the physical identifier associated with an authorization.
+            </summary>
+            <param name="scope">The scope.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> that can be used to abort the operation.</param>
+            <returns>
+            A <see cref="T:System.Threading.Tasks.ValueTask`1"/> that can be used to monitor the asynchronous operation,
+            whose result returns the physical identifier associated with the authorization.
+            </returns>
+        </member>
+        <member name="M:OrchardCore.OpenId.Services.Managers.OpenIdTokenManager`1.FindByPhysicalIdAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Retrieves a token using its physical identifier.
+            </summary>
+            <param name="identifier">The physical identifier associated with the token.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> that can be used to abort the operation.</param>
+            <returns>
+            A <see cref="T:System.Threading.Tasks.ValueTask`1"/> that can be used to monitor the asynchronous operation,
+            whose result returns the token corresponding to the physical identifier.
+            </returns>
+        </member>
+        <member name="M:OrchardCore.OpenId.Services.Managers.OpenIdTokenManager`1.GetPhysicalIdAsync(`0,System.Threading.CancellationToken)">
+            <summary>
+            Retrieves the physical identifier associated with a token.
+            </summary>
+            <param name="token">The token.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> that can be used to abort the operation.</param>
+            <returns>
+            A <see cref="T:System.Threading.Tasks.ValueTask`1"/> that can be used to monitor the asynchronous operation,
+            whose result returns the physical identifier associated with the token.
+            </returns>
+        </member>
+        <member name="F:OrchardCore.OpenId.YesSql.Models.OpenIdApplication.OpenIdCollection">
+            <summary>
+            The name of the collection that is used for this type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdApplication.ApplicationId">
+            <summary>
+            Gets or sets the unique identifier associated with the current application.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdApplication.ClientId">
+            <summary>
+            Gets or sets the client identifier associated with the current application.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdApplication.ClientSecret">
+            <summary>
+            Gets or sets the client secret associated with the current application.
+            Note: depending on the application manager used to create this instance,
+            this property may be hashed or encrypted for security reasons.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdApplication.ConsentType">
+            <summary>
+            Gets or sets the consent type associated with the current application.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdApplication.DisplayName">
+            <summary>
+            Gets or sets the display name associated with the current application.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdApplication.DisplayNames">
+            <summary>
+            Gets or sets the localized display names associated with the application.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdApplication.Id">
+            <summary>
+            Gets or sets the physical identifier associated with the current application.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdApplication.Permissions">
+            <summary>
+            Gets or sets the permissions associated with the application.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdApplication.PostLogoutRedirectUris">
+            <summary>
+            Gets the logout callback URLs associated with the current application.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdApplication.Properties">
+            <summary>
+            Gets or sets the additional properties associated with the current application.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdApplication.RedirectUris">
+            <summary>
+            Gets or sets the callback URLs associated with the current application.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdApplication.Requirements">
+            <summary>
+            Gets or sets the requirements associated with the current application.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdApplication.Roles">
+            <summary>
+            Gets or sets the roles associated with the application.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdApplication.Type">
+            <summary>
+            Gets or sets the application type associated with the current application.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.OpenId.YesSql.Models.OpenIdAuthorization.OpenIdCollection">
+            <summary>
+            The name of the collection that is used for this type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdAuthorization.AuthorizationId">
+            <summary>
+            Gets or sets the unique identifier associated with the current application.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdAuthorization.ApplicationId">
+            <summary>
+            Gets or sets the identifier of the client application
+            associated with the current authorization.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdAuthorization.CreationDate">
+            <summary>
+            Gets or sets the creation date of the current authorization.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdAuthorization.Id">
+            <summary>
+            Gets or sets the physical identifier associated with the current authorization.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdAuthorization.Properties">
+            <summary>
+            Gets or sets the additional properties associated with the current authorization.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdAuthorization.Scopes">
+            <summary>
+            Gets or sets the scopes associated with the current authorization.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdAuthorization.Status">
+            <summary>
+            Gets or sets the status of the current authorization.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdAuthorization.Subject">
+            <summary>
+            Gets or sets the subject associated with the current authorization.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdAuthorization.Type">
+            <summary>
+            Gets or sets the type of the current authorization.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.OpenId.YesSql.Models.OpenIdScope.OpenIdCollection">
+            <summary>
+            The name of the collection that is used for this type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdScope.ScopeId">
+            <summary>
+            Gets or sets the unique identifier associated with the current scope.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdScope.Description">
+            <summary>
+            Gets or sets the public description associated with the current scope.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdScope.Descriptions">
+            <summary>
+            Gets or sets the localized descriptions associated with the scope.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdScope.DisplayName">
+            <summary>
+            Gets or sets the display name associated with the current scope.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdScope.DisplayNames">
+            <summary>
+            Gets or sets the localized display names associated with the scope.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdScope.Id">
+            <summary>
+            Gets or sets the physical identifier associated with the current scope.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdScope.Name">
+            <summary>
+            Gets or sets the unique name associated with the current scope.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdScope.Properties">
+            <summary>
+            Gets or sets the additional properties associated with the current scope.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdScope.Resources">
+            <summary>
+            Gets or sets the resources associated with the current scope.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.OpenId.YesSql.Models.OpenIdToken">
+            <summary>
+            Represents an OpenId token.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.OpenId.YesSql.Models.OpenIdToken.OpenIdCollection">
+            <summary>
+            The name of the collection that is used for this type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdToken.TokenId">
+            <summary>
+            Gets or sets the unique identifier associated with the current token.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdToken.ApplicationId">
+            <summary>
+            Gets or sets the identifier of the application associated with the current token.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdToken.AuthorizationId">
+            <summary>
+            Gets or sets the identifier of the authorization associated with the current token.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdToken.CreationDate">
+            <summary>
+            Gets or sets the creation date of the current token.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdToken.ExpirationDate">
+            <summary>
+            Gets or sets the expiration date of the current token.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdToken.Id">
+            <summary>
+            Gets or sets the physical identifier associated with the current token.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdToken.Payload">
+            <summary>
+            Gets or sets the payload of the current token, if applicable.
+            Note: this property is only used for reference tokens
+            and may be encrypted for security reasons.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdToken.Properties">
+            <summary>
+            Gets or sets the additional properties associated with the current token.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdToken.RedemptionDate">
+            <summary>
+            Gets or sets the redemption date of the current token.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdToken.ReferenceId">
+            <summary>
+            Gets or sets the reference identifier associated
+            with the current token, if applicable.
+            Note: this property is only used for reference tokens
+            and may be hashed or encrypted for security reasons.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdToken.Status">
+            <summary>
+            Gets or sets the status of the current token.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdToken.Subject">
+            <summary>
+            Gets or sets the subject associated with the current token.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.OpenId.YesSql.Models.OpenIdToken.Type">
+            <summary>
+            Gets or sets the type of the current token.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.OpenId.YesSql.Resolvers.OpenIdApplicationStoreResolver">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Resolvers.OpenIdApplicationStoreResolver.Get``1">
+            <inheritdoc/>
+        </member>
+        <member name="T:OrchardCore.OpenId.YesSql.Resolvers.OpenIdAuthorizationStoreResolver">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Resolvers.OpenIdAuthorizationStoreResolver.Get``1">
+            <inheritdoc/>
+        </member>
+        <member name="T:OrchardCore.OpenId.YesSql.Resolvers.OpenIdScopeStoreResolver">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Resolvers.OpenIdScopeStoreResolver.Get``1">
+            <inheritdoc/>
+        </member>
+        <member name="T:OrchardCore.OpenId.YesSql.Resolvers.OpenIdTokenStoreResolver">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Resolvers.OpenIdTokenStoreResolver.Get``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.CountAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.CountAsync``1(System.Func{System.Linq.IQueryable{`0},System.Linq.IQueryable{``0}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.CreateAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.DeleteAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.FindByIdAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.FindByClientIdAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.FindByPhysicalIdAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.FindByPostLogoutRedirectUriAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.FindByRedirectUriAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.GetAsync``2(System.Func{System.Linq.IQueryable{`0},``0,System.Linq.IQueryable{``1}},``0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.GetClientIdAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.GetClientSecretAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.GetClientTypeAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.GetConsentTypeAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.GetDisplayNameAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.GetDisplayNamesAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.GetIdAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.GetPermissionsAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.GetPhysicalIdAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.GetPostLogoutRedirectUrisAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.GetPropertiesAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.GetRedirectUrisAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.GetRequirementsAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.InstantiateAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.ListAsync(System.Nullable{System.Int32},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.ListAsync``2(System.Func{System.Linq.IQueryable{`0},``0,System.Linq.IQueryable{``1}},``0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.SetClientIdAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.SetClientSecretAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.SetClientTypeAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.SetConsentTypeAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.SetDisplayNameAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.SetDisplayNamesAsync(`0,System.Collections.Immutable.ImmutableDictionary{System.Globalization.CultureInfo,System.String},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.SetPermissionsAsync(`0,System.Collections.Immutable.ImmutableArray{System.String},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.SetPostLogoutRedirectUrisAsync(`0,System.Collections.Immutable.ImmutableArray{System.String},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.SetPropertiesAsync(`0,System.Collections.Immutable.ImmutableDictionary{System.String,System.Text.Json.JsonElement},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.SetRedirectUrisAsync(`0,System.Collections.Immutable.ImmutableArray{System.String},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.SetRequirementsAsync(`0,System.Collections.Immutable.ImmutableArray{System.String},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.UpdateAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.GetRolesAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.ListInRoleAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdApplicationStore`1.SetRolesAsync(`0,System.Collections.Immutable.ImmutableArray{System.String},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.CountAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.CountAsync``1(System.Func{System.Linq.IQueryable{`0},System.Linq.IQueryable{``0}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.CreateAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.DeleteAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.FindAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.FindAsync(System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.FindAsync(System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.FindAsync(System.String,System.String,System.String,System.String,System.Collections.Immutable.ImmutableArray{System.String},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.FindByApplicationIdAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.FindByIdAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.FindByPhysicalIdAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.FindBySubjectAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.GetApplicationIdAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.GetAsync``2(System.Func{System.Linq.IQueryable{`0},``0,System.Linq.IQueryable{``1}},``0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.GetCreationDateAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.GetIdAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.GetPhysicalIdAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.GetPropertiesAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.GetScopesAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.GetStatusAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.GetSubjectAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.GetTypeAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.InstantiateAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.ListAsync(System.Nullable{System.Int32},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.ListAsync``2(System.Func{System.Linq.IQueryable{`0},``0,System.Linq.IQueryable{``1}},``0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.PruneAsync(System.DateTimeOffset,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.SetApplicationIdAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.SetPropertiesAsync(`0,System.Collections.Immutable.ImmutableDictionary{System.String,System.Text.Json.JsonElement},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.SetScopesAsync(`0,System.Collections.Immutable.ImmutableArray{System.String},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.SetStatusAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.SetSubjectAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.SetTypeAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdAuthorizationStore`1.UpdateAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.CountAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.CountAsync``1(System.Func{System.Linq.IQueryable{`0},System.Linq.IQueryable{``0}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.CreateAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.DeleteAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.FindByIdAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.FindByNameAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.FindByNamesAsync(System.Collections.Immutable.ImmutableArray{System.String},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.FindByPhysicalIdAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.FindByResourceAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.GetAsync``2(System.Func{System.Linq.IQueryable{`0},``0,System.Linq.IQueryable{``1}},``0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.GetDescriptionAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.GetDescriptionsAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.GetDisplayNameAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.GetDisplayNamesAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.GetIdAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.GetNameAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.GetPhysicalIdAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.GetPropertiesAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.GetResourcesAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.InstantiateAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.ListAsync(System.Nullable{System.Int32},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.ListAsync``2(System.Func{System.Linq.IQueryable{`0},``0,System.Linq.IQueryable{``1}},``0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.SetDescriptionAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.SetDescriptionsAsync(`0,System.Collections.Immutable.ImmutableDictionary{System.Globalization.CultureInfo,System.String},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.SetDisplayNameAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.SetDisplayNamesAsync(`0,System.Collections.Immutable.ImmutableDictionary{System.Globalization.CultureInfo,System.String},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.SetNameAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.SetPropertiesAsync(`0,System.Collections.Immutable.ImmutableDictionary{System.String,System.Text.Json.JsonElement},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.SetResourcesAsync(`0,System.Collections.Immutable.ImmutableArray{System.String},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdScopeStore`1.UpdateAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.CountAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.CountAsync``1(System.Func{System.Linq.IQueryable{`0},System.Linq.IQueryable{``0}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.CreateAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.DeleteAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.FindAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.FindAsync(System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.FindAsync(System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.FindByApplicationIdAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.FindByAuthorizationIdAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.FindByReferenceIdAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.FindByIdAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.FindByPhysicalIdAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.FindBySubjectAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.GetAsync``2(System.Func{System.Linq.IQueryable{`0},``0,System.Linq.IQueryable{``1}},``0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.GetApplicationIdAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.GetAuthorizationIdAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.GetCreationDateAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.GetExpirationDateAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.GetIdAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.GetPayloadAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.GetPhysicalIdAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.GetPropertiesAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.GetRedemptionDateAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.GetReferenceIdAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.GetStatusAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.GetSubjectAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.GetTypeAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.InstantiateAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.ListAsync(System.Nullable{System.Int32},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.ListAsync``2(System.Func{System.Linq.IQueryable{`0},``0,System.Linq.IQueryable{``1}},``0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.PruneAsync(System.DateTimeOffset,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.SetApplicationIdAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.SetAuthorizationIdAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.SetCreationDateAsync(`0,System.Nullable{System.DateTimeOffset},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.SetExpirationDateAsync(`0,System.Nullable{System.DateTimeOffset},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.SetPayloadAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.SetPropertiesAsync(`0,System.Collections.Immutable.ImmutableDictionary{System.String,System.Text.Json.JsonElement},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.SetRedemptionDateAsync(`0,System.Nullable{System.DateTimeOffset},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.SetReferenceIdAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.SetStatusAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.SetSubjectAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.SetTypeAsync(`0,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.OpenId.YesSql.Stores.OpenIdTokenStore`1.UpdateAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>

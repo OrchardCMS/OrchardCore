@@ -1,0 +1,98 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: pt-BR\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.ReverseProxy.pot\n"
+"X-Crowdin-File-ID: 802\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Portuguese, Brazilian\n"
+"Language: pt_BR\n"
+"PO-Revision-Date: 2022-05-03 08:28\n"
+
+#. .Add(S["Configuration"], configuration => configuration
+#: OrchardCore.ReverseProxy\AdminMenu.cs:22
+msgctxt "OrchardCore.ReverseProxy.AdminMenu"
+msgid "Configuration"
+msgstr "Configuração"
+
+#. .Add(S["Settings"], settings => settings
+#: OrchardCore.ReverseProxy\AdminMenu.cs:23
+msgctxt "OrchardCore.ReverseProxy.AdminMenu"
+msgid "Settings"
+msgstr "Configurações"
+
+#. .Add(S["Reverse Proxy"], S["Reverse Proxy"].PrefixPosition(), entry => entry
+#. .Add(S["Reverse Proxy"], S["Reverse Proxy"].PrefixPosition(), entry => entry
+#: OrchardCore.ReverseProxy\AdminMenu.cs:24
+#: OrchardCore.ReverseProxy\AdminMenu.cs:24
+msgctxt "OrchardCore.ReverseProxy.AdminMenu"
+msgid "Reverse Proxy"
+msgstr "Proxy reverso"
+
+#. services.AddSiteSettingsPropertyDeploymentStep<ReverseProxySettings, DeploymentStartup>(S => S["Reverse Proxy settings"], S => S["Exports the Reverse Proxy settings."]);
+#: OrchardCore.ReverseProxy\Startup.cs:47
+msgctxt "OrchardCore.ReverseProxy.DeploymentStartup"
+msgid "Reverse Proxy settings"
+msgstr "Configurações de proxy reverso"
+
+#. services.AddSiteSettingsPropertyDeploymentStep<ReverseProxySettings, DeploymentStartup>(S => S["Reverse Proxy settings"], S => S["Exports the Reverse Proxy settings."]);
+#: OrchardCore.ReverseProxy\Startup.cs:47
+msgctxt "OrchardCore.ReverseProxy.DeploymentStartup"
+msgid "Exports the Reverse Proxy settings."
+msgstr "Exporta as configurações de proxy reverso."
+
+#. <span class="icon"><i class="fa fa-sync" aria-hidden="true"></i></span><span class="title">@T["Reverse Proxy"]</span>
+#: OrchardCore.ReverseProxy\Views\NavigationItemText-reverseproxy.Id.cshtml:1
+msgctxt "OrchardCore.ReverseProxy.Views.NavigationItemText-reverseproxy.Id"
+msgid "Reverse Proxy"
+msgstr "Proxy reverso"
+
+#. @T["The current tenant will be reloaded when the settings are saved."]
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:4
+msgctxt "OrchardCore.ReverseProxy.Views.ReverseProxySettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr "O tenant atual será recarregado quando as configurações forem salvas."
+
+#. @T["Enables the forwarding of the HTTP header X-Forwarded-For"]
+#. <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-For"]</span>
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:11
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:14
+msgctxt "OrchardCore.ReverseProxy.Views.ReverseProxySettings.Edit"
+msgid "Enables the forwarding of the HTTP header X-Forwarded-For"
+msgstr "Habilita o encaminhamento do cabeçalho HTTP X-Forwarded-For"
+
+#. <span class="hint">@T["Current request value;"] @Context.Connection.RemoteIpAddress</span>
+#. <span class="hint">@T["Current request value;"] @Context.Request.Scheme</span>
+#. <span class="hint">@T["Current request value;"] @Context.Request.Host</span>
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:15
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:26
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:37
+msgctxt "OrchardCore.ReverseProxy.Views.ReverseProxySettings.Edit"
+msgid "Current request value;"
+msgstr "Valor atual da solicitação:"
+
+#. @T["Enables the forwarding of the HTTP header X-Forwarded-Proto"]
+#. <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-Proto"]</span>
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:22
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:25
+msgctxt "OrchardCore.ReverseProxy.Views.ReverseProxySettings.Edit"
+msgid "Enables the forwarding of the HTTP header X-Forwarded-Proto"
+msgstr "Habilita o encaminhamento do cabeçalho HTTP X-Forwarded-Proto"
+
+#. @T["Enables the forwarding of the HTTP header X-Forwarded-Host"]
+#. <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-Host"]</span>
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:33
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:36
+msgctxt "OrchardCore.ReverseProxy.Views.ReverseProxySettings.Edit"
+msgid "Enables the forwarding of the HTTP header X-Forwarded-Host"
+msgstr "Habilita o encaminhamento do cabeçalho HTTP X-Forwarded-Host"
+
+#. @T["Documentation available at: {0}", "https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-3.0"]
+#: OrchardCore.ReverseProxy\Views\ReverseProxySettings.Edit.cshtml:41
+msgctxt "OrchardCore.ReverseProxy.Views.ReverseProxySettings.Edit"
+msgid "Documentation available at: {0}"
+msgstr "Documentação disponível em: {0}"
+

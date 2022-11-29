@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "3TulvUoG8p+sfUYhwAjlFnbsKNHEPa//WRotaXAbdVY=",
+  "Source": "OrchardCore.Spatial",
+  "BasePath": "_content/OrchardCore.Spatial",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.Spatial\\wwwroot",
+      "Source": "OrchardCore.Spatial",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Spatial\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Spatial",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

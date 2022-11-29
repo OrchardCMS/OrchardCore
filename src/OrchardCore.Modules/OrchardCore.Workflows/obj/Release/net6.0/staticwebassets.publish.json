@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "YndTFTJQnk9GdG5sh68XUEpwVHeQVPgzmzdGOzbWYV8=",
+  "Source": "OrchardCore.Workflows",
+  "BasePath": "_content/OrchardCore.Workflows",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

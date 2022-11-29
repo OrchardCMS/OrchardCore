@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "OM/khvASJwOWFeQ9WRWMrtgiOntE1ycjOKfA+lIkN0w=",
+  "Source": "OrchardCore.Diagnostics",
+  "BasePath": "_content/OrchardCore.Diagnostics",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

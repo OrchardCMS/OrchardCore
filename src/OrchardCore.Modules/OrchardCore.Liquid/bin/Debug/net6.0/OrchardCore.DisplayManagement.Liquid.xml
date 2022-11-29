@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.DisplayManagement.Liquid</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.DisplayManagement.Liquid.Filters.ResourceUrlFilter">
+            <summary>
+            Returns the Cdn Base Url of the specified resource path.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Liquid.LiquidViewOptions">
+            <summary>
+            Provides programmatic configuration for the <see cref="T:OrchardCore.DisplayManagement.Liquid.LiquidViewTemplate"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Liquid.LiquidViewOptions.FileProviders">
+            <summary>
+            Gets the sequence of <see cref="T:Microsoft.Extensions.FileProviders.IFileProvider" /> instances used by <see cref="T:OrchardCore.DisplayManagement.Liquid.LiquidViewTemplate"/> to
+            locate Liquid files.
+            </summary>
+            <remarks>
+            At startup, this is initialized to include an instance of <see cref="T:Microsoft.Extensions.FileProviders.PhysicalFileProvider"/> that is
+            rooted at the application root.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Liquid.LiquidViewOptionsSetup.#ctor(Microsoft.Extensions.Hosting.IHostEnvironment,OrchardCore.Modules.IApplicationContext)">
+            <summary>
+            Initializes a new instance of <see cref="T:OrchardCore.DisplayManagement.Liquid.LiquidViewOptions"/>.
+            </summary>
+            <param name="hostingEnvironment"><see cref="T:Microsoft.Extensions.Hosting.IHostEnvironment"/> for the application.</param>
+            <param name="applicationContext"><see cref="T:OrchardCore.Modules.IApplicationContext"/> for the application.</param>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Liquid.ModuleProjectLiquidFileProvider">
+            <summary>
+            This custom <see cref="T:Microsoft.Extensions.FileProviders.IFileProvider"/> implementation provides the file contents
+            of Module Project Liquid files while in a development environment.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Liquid.TagHelpers.LiquidTagHelperFactory">
+            <summary>
+            Singleton containing shared state for tag helper tags.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Liquid.ViewBufferTextWriterContent">
+            <summary>
+            An <see cref="T:Microsoft.AspNetCore.Html.IHtmlContent"/> implementation that inherits from <see cref="T:System.IO.TextWriter"/> to write to the ASP.NET ViewBufferTextWriter
+            in an optimal way.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Liquid.LiquidCultureAccessor">
+            <summary>
+            This is a placeholder class that allows modules to extend the `Culture` property in the current Liquid scope
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Liquid.LiquidHttpContextAccessor">
+            <summary>
+            This is a placeholder class that allows modules to extend the `HttpContext` property in the current Liquid scope
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Liquid.LiquidRequestAccessor">
+            <summary>
+            This is a placeholder class that allows modules to extend the `HttpRequest` property in the current Liquid scope
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddLiquidViews(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds tenant level services for managing liquid view template files.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,538 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3;\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: cs\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Rules.pot\n"
+"X-Crowdin-File-ID: 806\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Czech\n"
+"Language: cs_CZ\n"
+"PO-Revision-Date: 2022-05-05 19:11\n"
+
+#. (S) => S["Equals"],
+#: OrchardCore.Rules\Services\ConditionOperatorConfigureOptions.cs:14
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Equals"
+msgstr "Rovná se"
+
+#. (S) => S["Does not equal"],
+#: OrchardCore.Rules\Services\ConditionOperatorConfigureOptions.cs:20
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Does not equal"
+msgstr "Nerovná se"
+
+#. (S) => S["Starts with"],
+#: OrchardCore.Rules\Services\ConditionOperatorConfigureOptions.cs:26
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Starts with"
+msgstr "Začíná na"
+
+#. (S) => S["Does not start with"],
+#: OrchardCore.Rules\Services\ConditionOperatorConfigureOptions.cs:32
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Does not start with"
+msgstr "Nezačíná na"
+
+#. (S) => S["Ends with"],
+#: OrchardCore.Rules\Services\ConditionOperatorConfigureOptions.cs:38
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Ends with"
+msgstr "Končí na"
+
+#. (S) => S["Does not end with"],
+#: OrchardCore.Rules\Services\ConditionOperatorConfigureOptions.cs:44
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Does not end with"
+msgstr "Nekončí na"
+
+#. (S) => S["Contains"],
+#: OrchardCore.Rules\Services\ConditionOperatorConfigureOptions.cs:50
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Contains"
+msgstr "Obsahuje"
+
+#. (S) => S["Does not contain"],
+#: OrchardCore.Rules\Services\ConditionOperatorConfigureOptions.cs:56
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Does not contain"
+msgstr "Neobsahuje"
+
+#. @T["Add"]
+#: OrchardCore.Rules\Views\Condition.Summary.cshtml:27
+msgctxt "OrchardCore.Rules.Views.Condition.Summary"
+msgid "Add"
+msgstr "Přidat"
+
+#. class="btn btn-primary btn-sm">@T["Edit"]</a>
+#: OrchardCore.Rules\Views\Condition.Summary.cshtml:32
+msgctxt "OrchardCore.Rules.Views.Condition.Summary"
+msgid "Edit"
+msgstr "Upravit"
+
+#. data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+#: OrchardCore.Rules\Views\Condition.Summary.cshtml:36
+msgctxt "OrchardCore.Rules.Views.Condition.Summary"
+msgid "Delete"
+msgstr "Smazat"
+
+#. <a class="btn btn-primary btn-sm condition-thumbnail" data-target-url="@Model.TargetUrl">@T["Add"]</a>
+#: OrchardCore.Rules\Views\Condition.Thumbnail.cshtml:8
+msgctxt "OrchardCore.Rules.Views.Condition.Thumbnail"
+msgid "Add"
+msgstr "Přidat"
+
+#. <h5 class="modal-title" id="available-rules-title">@T["Available Rules"]</h5>
+#: OrchardCore.Rules\Views\ConditionsModal.cshtml:10
+msgctxt "OrchardCore.Rules.Views.ConditionsModal"
+msgid "Available Rules"
+msgstr "Dostupná pravidla"
+
+#. <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
+#. <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
+#: OrchardCore.Rules\Views\ConditionsModal.cshtml:15
+#: OrchardCore.Rules\Views\ConditionsModal.cshtml:15
+msgctxt "OrchardCore.Rules.Views.ConditionsModal"
+msgid "Filter"
+msgstr "Filtr"
+
+#. <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+#: OrchardCore.Rules\Views\ConditionsModal.cshtml:29
+msgctxt "OrchardCore.Rules.Views.ConditionsModal"
+msgid "Cancel"
+msgstr "Storno"
+
+#. @T["Add"]
+#: OrchardCore.Rules\Views\Rule.Summary.cshtml:10
+msgctxt "OrchardCore.Rules.Views.Rule.Summary"
+msgid "Add"
+msgstr "Přidat"
+
+#. <h5>@T["All"]</h5>
+#: OrchardCore.Rules\Views\Items\AllCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Edit"
+msgid "All"
+msgstr "Vše"
+
+#. <label asp-for="DisplayText">@T["Name"]</label>
+#: OrchardCore.Rules\Views\Items\AllCondition.Fields.Edit.cshtml:6
+msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Edit"
+msgid "Name"
+msgstr "Název"
+
+#. <span>@T["All conditions"]</span><span class="ms-2 hint dashed">@Model.Value.DisplayText</span>
+#: OrchardCore.Rules\Views\Items\AllCondition.Fields.Summary.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Summary"
+msgid "All conditions"
+msgstr "Všechny podmínky"
+
+#. <h4 class="card-title">@T["All condition group"]</h4>
+#: OrchardCore.Rules\Views\Items\AllCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Thumbnail"
+msgid "All condition group"
+msgstr "Všechny podmínky"
+
+#. <p class="hint">@T["An all condition group contains other conditions which are all required to be true."]</p>
+#: OrchardCore.Rules\Views\Items\AllCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Thumbnail"
+msgid "An all condition group contains other conditions which are all required to be true."
+msgstr "Skupina všech podmínek obsahuje další podmínky, které musí být všechny pravdivé."
+
+#. <h5>@T["Any"]</h5>
+#: OrchardCore.Rules\Views\Items\AnyCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Edit"
+msgid "Any"
+msgstr "Jakékoliv"
+
+#. <label asp-for="DisplayText">@T["Name"]</label>
+#: OrchardCore.Rules\Views\Items\AnyCondition.Fields.Edit.cshtml:6
+msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Edit"
+msgid "Name"
+msgstr "Název"
+
+#. <span>@T["Any conditions"]</span><span class="ms-2 hint dashed">@Model.Value.DisplayText</span>
+#: OrchardCore.Rules\Views\Items\AnyCondition.Fields.Summary.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Summary"
+msgid "Any conditions"
+msgstr "Alespoň jedna podmínka"
+
+#. <h4 class="card-title">@T["Any condition"]</h4>
+#: OrchardCore.Rules\Views\Items\AnyCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Thumbnail"
+msgid "Any condition"
+msgstr "Alespoň jedna podmínka"
+
+#. <p class="hint">@T["An any condition group contains other conditions but only requires any condition to be true."]</p>
+#: OrchardCore.Rules\Views\Items\AnyCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Thumbnail"
+msgid "An any condition group contains other conditions but only requires any condition to be true."
+msgstr "Skupina obsahuje další podmínky a ke splnění stačí, aby alespoň jedna byla pravdivá."
+
+#. <h5>@T["Boolean"]</h5>
+#: OrchardCore.Rules\Views\Items\BooleanCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Edit"
+msgid "Boolean"
+msgstr "Logická hodnota"
+
+#. @T["True"]
+#: OrchardCore.Rules\Views\Items\BooleanCondition.Fields.Edit.cshtml:9
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Edit"
+msgid "True"
+msgstr "Pravda"
+
+#. @T["False"]
+#: OrchardCore.Rules\Views\Items\BooleanCondition.Fields.Edit.cshtml:15
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Edit"
+msgid "False"
+msgstr "Nepravda"
+
+#. <span>@T["Boolean condition"]</span><span class="ms-2 hint dashed">@Model.Value.Value.ToString()</span>
+#: OrchardCore.Rules\Views\Items\BooleanCondition.Fields.Summary.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Summary"
+msgid "Boolean condition"
+msgstr "Logická podmínka"
+
+#. <h4 class="card-title">@T["Boolean condition"]</h4>
+#: OrchardCore.Rules\Views\Items\BooleanCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Thumbnail"
+msgid "Boolean condition"
+msgstr "Logická podmínka"
+
+#. <p class="hint">@T["A boolean condition can be either true or false."]</p>
+#: OrchardCore.Rules\Views\Items\BooleanCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Thumbnail"
+msgid "A boolean condition can be either true or false."
+msgstr "Logická podmínka může nabývat hodnot pravda anebo nepravda."
+
+#. <p class="alert message-warning mb-0 ms-0 mt-3 me-3">@T["No conditions found. Please add at least one condition."]</p>
+#: OrchardCore.Rules\Views\Items\ConditionGroup.Fields.Summary.cshtml:19
+msgctxt "OrchardCore.Rules.Views.Items.ConditionGroup.Fields.Summary"
+msgid "No conditions found. Please add at least one condition."
+msgstr "Žádná podmínka nenalezena. Prosím přidejte alespoň jednu podmínku."
+
+#. <h5>@T["Content type"]</h5>
+#: OrchardCore.Rules\Views\Items\ContentTypeCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Edit"
+msgid "Content type"
+msgstr "Typ obsahu"
+
+#. <label asp-for="SelectedOperation">@T["Operation"]</label>
+#: OrchardCore.Rules\Views\Items\ContentTypeCondition.Fields.Edit.cshtml:7
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Edit"
+msgid "Operation"
+msgstr "Operace"
+
+#. <span class="hint">@T["Select the rule operator."]</span>
+#: OrchardCore.Rules\Views\Items\ContentTypeCondition.Fields.Edit.cshtml:11
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Edit"
+msgid "Select the rule operator."
+msgstr "Vyberte operátor pro pravidlo."
+
+#. <label asp-for="Value">@T["Value"]</label>
+#: OrchardCore.Rules\Views\Items\ContentTypeCondition.Fields.Edit.cshtml:16
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Edit"
+msgid "Value"
+msgstr "Hodnota"
+
+#. <span class="hint">@T["The value for the operation."]</span>
+#: OrchardCore.Rules\Views\Items\ContentTypeCondition.Fields.Edit.cshtml:20
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Edit"
+msgid "The value for the operation."
+msgstr "Hodnota operace."
+
+#. <span>@T["Content type"]</span><span class="ms-2 hint dashed">@displayText @Model.Value.Value</span>
+#: OrchardCore.Rules\Views\Items\ContentTypeCondition.Fields.Summary.cshtml:11
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Summary"
+msgid "Content type"
+msgstr "Typ obsahu"
+
+#. <h4 class="card-title">@T["Content type condition"]</h4>
+#: OrchardCore.Rules\Views\Items\ContentTypeCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Thumbnail"
+msgid "Content type condition"
+msgstr "Podmínka dle typu obsahu"
+
+#. <p class="hint">@T["A content type condition evaluates the currently displayed content types against a value."]</p>
+#: OrchardCore.Rules\Views\Items\ContentTypeCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Thumbnail"
+msgid "A content type condition evaluates the currently displayed content types against a value."
+msgstr "Podmínka dle typu obsahu porovnává aktuálně zobrazené typy obsahu oproti hodnotě."
+
+#. <h5>@T["Culture"]</h5>
+#: OrchardCore.Rules\Views\Items\CultureCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
+msgid "Culture"
+msgstr "Jazyková verze"
+
+#. <label asp-for="SelectedOperation">@T["Operation"]</label>
+#: OrchardCore.Rules\Views\Items\CultureCondition.Fields.Edit.cshtml:7
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
+msgid "Operation"
+msgstr "Operace"
+
+#. <span class="hint">@T["Select the condition operator."]</span>
+#: OrchardCore.Rules\Views\Items\CultureCondition.Fields.Edit.cshtml:11
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
+msgid "Select the condition operator."
+msgstr "Vyberte operátor pro podmínku."
+
+#. <label asp-for="Value">@T["Value"]</label>
+#: OrchardCore.Rules\Views\Items\CultureCondition.Fields.Edit.cshtml:16
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
+msgid "Value"
+msgstr "Hodnota"
+
+#. <span class="hint">@T["The value for the operation."]</span>
+#: OrchardCore.Rules\Views\Items\CultureCondition.Fields.Edit.cshtml:20
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
+msgid "The value for the operation."
+msgstr "Hodnota operace."
+
+#. <span>@T["Culture"]</span><span class="ms-2 hint dashed">@displayText @Model.Value.Value</span>
+#: OrchardCore.Rules\Views\Items\CultureCondition.Fields.Summary.cshtml:10
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Summary"
+msgid "Culture"
+msgstr "Jazyková verze"
+
+#. <h4 class="card-title">@T["Culture condition"]</h4>
+#: OrchardCore.Rules\Views\Items\CultureCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Thumbnail"
+msgid "Culture condition"
+msgstr "Podmínka dle jazykové verze"
+
+#. <p class="hint">@T["A culture condition evaluates the current ui culture against a value."]</p>
+#: OrchardCore.Rules\Views\Items\CultureCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Thumbnail"
+msgid "A culture condition evaluates the current ui culture against a value."
+msgstr "Podmínka dle jazykové verze porovnává nastavenou jazykovou verzi oproti hodnotě."
+
+#. <h5>@T["Homepage"]</h5>
+#: OrchardCore.Rules\Views\Items\HomepageCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Edit"
+msgid "Homepage"
+msgstr "Domovská stránka"
+
+#. @T["Is homepage"]
+#: OrchardCore.Rules\Views\Items\HomepageCondition.Fields.Edit.cshtml:9
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Edit"
+msgid "Is homepage"
+msgstr "Je domovská stránka"
+
+#. @T["Is not homepage"]
+#: OrchardCore.Rules\Views\Items\HomepageCondition.Fields.Edit.cshtml:15
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Edit"
+msgid "Is not homepage"
+msgstr "Není domovská stránka"
+
+#. <span>@T["Is homepage"]</span>
+#: OrchardCore.Rules\Views\Items\HomepageCondition.Fields.Summary.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Summary"
+msgid "Is homepage"
+msgstr "Je domovská stránka"
+
+#. <span>@T["Is not homepage"]</span>
+#: OrchardCore.Rules\Views\Items\HomepageCondition.Fields.Summary.cshtml:8
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Summary"
+msgid "Is not homepage"
+msgstr "Není domovská stránka"
+
+#. <h4 class="card-title">@T["Homepage condition"]</h4>
+#: OrchardCore.Rules\Views\Items\HomepageCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Thumbnail"
+msgid "Homepage condition"
+msgstr "Podmínka dle domovské stránky"
+
+#. <p class="hint">@T["Whether the current page is the site homepage."]</p>
+#: OrchardCore.Rules\Views\Items\HomepageCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Thumbnail"
+msgid "Whether the current page is the site homepage."
+msgstr "Zda je aktuální stránka domovskou stránkou."
+
+#. <span>@T["Is anonymous condition"]</span>
+#: OrchardCore.Rules\Views\Items\IsAnonymousCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.IsAnonymousCondition.Fields.Edit"
+msgid "Is anonymous condition"
+msgstr "Podmínka dle anonymního uživatele"
+
+#. <span>@T["Is anonymous"]</span>
+#: OrchardCore.Rules\Views\Items\IsAnonymousCondition.Fields.Summary.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.IsAnonymousCondition.Fields.Summary"
+msgid "Is anonymous"
+msgstr "Je anonymní"
+
+#. <h4 class="card-title">@T["Is anonymous condition"]</h4>
+#: OrchardCore.Rules\Views\Items\IsAnonymousCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.IsAnonymousCondition.Fields.Thumbnail"
+msgid "Is anonymous condition"
+msgstr "Podmínka dle anonymního uživatele"
+
+#. <p class="hint">@T["Whether the current user is anonymous, i.e. not authenticated."]</p>
+#: OrchardCore.Rules\Views\Items\IsAnonymousCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.IsAnonymousCondition.Fields.Thumbnail"
+msgid "Whether the current user is anonymous, i.e. not authenticated."
+msgstr "Zda je aktuální uživatel anonymní, tzn. není ověřen."
+
+#. <span>@T["Is authenticated condition"]</span>
+#: OrchardCore.Rules\Views\Items\IsAuthenticatedCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.IsAuthenticatedCondition.Fields.Edit"
+msgid "Is authenticated condition"
+msgstr "Podmínka dle ověřeného uživatele"
+
+#. <span>@T["Is authenticated"]</span>
+#: OrchardCore.Rules\Views\Items\IsAuthenticatedCondition.Fields.Summary.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.IsAuthenticatedCondition.Fields.Summary"
+msgid "Is authenticated"
+msgstr "Je ověřený"
+
+#. <h4 class="card-title">@T["Is authenticated condition"]</h4>
+#: OrchardCore.Rules\Views\Items\IsAuthenticatedCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.IsAuthenticatedCondition.Fields.Thumbnail"
+msgid "Is authenticated condition"
+msgstr "Podmínka dle ověřeného uživatele"
+
+#. <p class="hint">@T["Whether the current user is authenticated."]</p>
+#: OrchardCore.Rules\Views\Items\IsAuthenticatedCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.IsAuthenticatedCondition.Fields.Thumbnail"
+msgid "Whether the current user is authenticated."
+msgstr "Zda je aktuální uživatel ověřen."
+
+#. <h5>@T["Javascript"]</h5>
+#: OrchardCore.Rules\Views\Items\JavascriptCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Edit"
+msgid "Javascript"
+msgstr "JavaScript"
+
+#. <label asp-for="Script">@T["Script"]</label>
+#: OrchardCore.Rules\Views\Items\JavascriptCondition.Fields.Edit.cshtml:14
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Edit"
+msgid "Script"
+msgstr "Skript"
+
+#. <span class="hint">@T["The script must return true or false."]</span>
+#: OrchardCore.Rules\Views\Items\JavascriptCondition.Fields.Edit.cshtml:16
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Edit"
+msgid "The script must return true or false."
+msgstr "Skript musí vrátit pravdivou nebo nepravdivou hodnotu."
+
+#. <span>@T["Javascript condition"]</span><span class="ms-2 hint dashed">@Model.Value.Script.Ellipsize(50)</span>
+#: OrchardCore.Rules\Views\Items\JavascriptCondition.Fields.Summary.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Summary"
+msgid "Javascript condition"
+msgstr "Javascriptová podmínka"
+
+#. <h4 class="card-title">@T["Javascript condition"]</h4>
+#: OrchardCore.Rules\Views\Items\JavascriptCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Thumbnail"
+msgid "Javascript condition"
+msgstr "Javascriptová podmínka"
+
+#. <p class="hint">@T["A script condition written in javascript."]</p>
+#: OrchardCore.Rules\Views\Items\JavascriptCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Thumbnail"
+msgid "A script condition written in javascript."
+msgstr "Skriptová podmínka napsaná v javascriptu."
+
+#. <h5>@T["Role"]</h5>
+#: OrchardCore.Rules\Views\Items\RoleCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
+msgid "Role"
+msgstr "Role"
+
+#. <label asp-for="SelectedOperation">@T["Operation"]</label>
+#: OrchardCore.Rules\Views\Items\RoleCondition.Fields.Edit.cshtml:7
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
+msgid "Operation"
+msgstr "Operace"
+
+#. <span class="hint">@T["Select the condition operator."]</span>
+#: OrchardCore.Rules\Views\Items\RoleCondition.Fields.Edit.cshtml:11
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
+msgid "Select the condition operator."
+msgstr "Vyberte operátor pro podmínku."
+
+#. <label asp-for="Value">@T["Value"]</label>
+#: OrchardCore.Rules\Views\Items\RoleCondition.Fields.Edit.cshtml:16
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
+msgid "Value"
+msgstr "Hodnota"
+
+#. <span class="hint">@T["The value for the operation."]</span>
+#: OrchardCore.Rules\Views\Items\RoleCondition.Fields.Edit.cshtml:20
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
+msgid "The value for the operation."
+msgstr "Hodnota operace."
+
+#. <span>@T["Role"]</span><span class="ms-2 hint dashed">@displayText @Model.Value.Value</span>
+#: OrchardCore.Rules\Views\Items\RoleCondition.Fields.Summary.cshtml:10
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Summary"
+msgid "Role"
+msgstr "Role"
+
+#. <h4 class="card-title">@T["Role condition"]</h4>
+#: OrchardCore.Rules\Views\Items\RoleCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Thumbnail"
+msgid "Role condition"
+msgstr "Podmínka dle role"
+
+#. <p class="hint">@T["A role condition evaluates the current users roles against a value."]</p>
+#: OrchardCore.Rules\Views\Items\RoleCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Thumbnail"
+msgid "A role condition evaluates the current users roles against a value."
+msgstr "Podmínka dle role porovnává uživatelovy role oproti hodnotě."
+
+#. <h5>@T["Rules"]</h5>
+#: OrchardCore.Rules\Views\Items\Rule.Fields.Summary.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.Rule.Fields.Summary"
+msgid "Rules"
+msgstr "Pravidla"
+
+#. <h5>@T["Url"]</h5>
+#: OrchardCore.Rules\Views\Items\UrlCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
+msgid "Url"
+msgstr "URL"
+
+#. <label asp-for="SelectedOperation">@T["Operation"]</label>
+#: OrchardCore.Rules\Views\Items\UrlCondition.Fields.Edit.cshtml:7
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
+msgid "Operation"
+msgstr "Operace"
+
+#. <span class="hint">@T["Select the condition operator."]</span>
+#: OrchardCore.Rules\Views\Items\UrlCondition.Fields.Edit.cshtml:11
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
+msgid "Select the condition operator."
+msgstr "Vyberte operátor pro podmínku."
+
+#. <label asp-for="Value">@T["Value"]</label>
+#: OrchardCore.Rules\Views\Items\UrlCondition.Fields.Edit.cshtml:16
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
+msgid "Value"
+msgstr "Hodnota"
+
+#. <span class="hint">@T["The value for the operation."]</span>
+#: OrchardCore.Rules\Views\Items\UrlCondition.Fields.Edit.cshtml:20
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
+msgid "The value for the operation."
+msgstr "Hodnota operace."
+
+#. <span>@T["Url"]</span><span class="ms-2 hint dashed">@displayText @Model.Value.Value</span>
+#: OrchardCore.Rules\Views\Items\UrlCondition.Fields.Summary.cshtml:10
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Summary"
+msgid "Url"
+msgstr "URL"
+
+#. <h4 class="card-title">@T["Url condition"]</h4>
+#: OrchardCore.Rules\Views\Items\UrlCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Thumbnail"
+msgid "Url condition"
+msgstr "Podmínka dle Url"
+
+#. <p class="hint">@T["A url condition evaluates the current url against a value."]</p>
+#: OrchardCore.Rules\Views\Items\UrlCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Thumbnail"
+msgid "A url condition evaluates the current url against a value."
+msgstr "Podmínka dle Url porovnává současnou Url oproti hodnotě."
+

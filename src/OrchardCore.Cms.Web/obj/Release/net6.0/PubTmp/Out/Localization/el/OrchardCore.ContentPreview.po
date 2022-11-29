@@ -1,0 +1,50 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: el\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.ContentPreview.pot\n"
+"X-Crowdin-File-ID: 716\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Greek\n"
+"Language: el_GR\n"
+"PO-Revision-Date: 2022-05-05 18:45\n"
+
+#. context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+#: OrchardCore.ContentPreview\Settings\PreviewPartSettingsDisplayDriver.cs:45
+msgctxt "OrchardCore.ContentPreview.Settings.PreviewPartSettingsDisplayDriver"
+msgid "Pattern doesn't contain a valid Liquid expression. Details: {0}"
+msgstr "Το μοτίβο δεν περιέχει μια έγκυρη έκφραση Liquid. Λεπτομέρειες: {0}"
+
+#. <a id="previewButton" target="_blank" class="btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.ContentPreview", id = previewId })">@T["Preview"]</a>
+#: OrchardCore.ContentPreview\Views\ContentPreview.Button.cshtml:13
+msgctxt "OrchardCore.ContentPreview.Views.ContentPreview.Button"
+msgid "Preview"
+msgstr "Προεπισκόπηση"
+
+#. <label asp-for="Pattern">@T["Pattern"]</label>
+#: OrchardCore.ContentPreview\Views\PreviewPartSettings.Edit.cshtml:15
+msgctxt "OrchardCore.ContentPreview.Views.PreviewPartSettings.Edit"
+msgid "Pattern"
+msgstr "Μοτίβο"
+
+#. <span class="hint">@T["The pattern used to render the custom preview url of this content type."]</span>
+#: OrchardCore.ContentPreview\Views\PreviewPartSettings.Edit.cshtml:17
+msgctxt "OrchardCore.ContentPreview.Views.PreviewPartSettings.Edit"
+msgid "The pattern used to render the custom preview url of this content type."
+msgstr "Το μοτίβο χρησιμοποιείται για την απόδοση προσαρμοσμένης προεπισκόπησης της διεύθυνσης url γι αυτον τον τύπου περιεχομένου."
+
+#. <span>@T["Preview Disconnected"] </span>
+#: OrchardCore.ContentPreview\Views\Preview\Index.cshtml:14
+msgctxt "OrchardCore.ContentPreview.Views.Preview.Index"
+msgid "Preview Disconnected"
+msgstr "Αποσυνδεδεμένη Προεπισκόπηση"
+
+#. <p>@T["Preview Error"] </p>
+#: OrchardCore.ContentPreview\Views\Preview\Index.cshtml:19
+msgctxt "OrchardCore.ContentPreview.Views.Preview.Index"
+msgid "Preview Error"
+msgstr "Προεπισκόπηση Σφάλματος"
+

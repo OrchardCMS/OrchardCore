@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.XmlRpc</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.XmlRpc.Services.XmlRpcReader">
+            <summary>
+            Abstraction to read XML and convert it to rpc entities.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.XmlRpc.Services.XmlRpcReader._dispatch">
+            <summary>
+            Provides the mapping function based on a type name.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.XmlRpc.Services.XmlRpcReader.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:OrchardCore.XmlRpc.Services.XmlRpcReader"/> class.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.XmlRpc.Services.XmlRpcReader.MapToMethodCall(System.Xml.Linq.XElement)">
+            <summary>
+            Maps an XML element to a rpc method call.
+            </summary>
+            <param name="source">The XML element to be mapped.</param>
+            <returns>The rpc method call.</returns>
+        </member>
+        <member name="M:OrchardCore.XmlRpc.Services.XmlRpcReader.MapToData(System.Xml.Linq.XElement)">
+            <summary>
+            Maps an XML element to rpc data.
+            </summary>
+            <param name="source">The XML element to be mapped.</param>
+            <returns>The rpc data.</returns>
+        </member>
+        <member name="M:OrchardCore.XmlRpc.Services.XmlRpcReader.MapToStruct(System.Xml.Linq.XElement)">
+            <summary>
+            Maps an XML element to a rpc struct.
+            </summary>
+            <param name="source">The XML element to be mapped.</param>
+            <returns>The rpc struct.</returns>
+        </member>
+        <member name="M:OrchardCore.XmlRpc.Services.XmlRpcReader.MapToArray(System.Xml.Linq.XElement)">
+            <summary>
+            Maps an XML element to a rpc array.
+            </summary>
+            <param name="source">The XML element to be mapped.</param>
+            <returns>The rpc array.</returns>
+        </member>
+        <member name="M:OrchardCore.XmlRpc.Services.XmlRpcReader.MapValue(System.Xml.Linq.XContainer)">
+            <summary>
+            Maps an XML container to rpc data.
+            </summary>
+            <param name="source">The XML container to be mapped.</param>
+            <returns>The rpc data.</returns>
+        </member>
+        <member name="T:OrchardCore.XmlRpc.Services.XmlRpcWriter">
+            <summary>
+            Abstraction to write XML based on rpc entities.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.XmlRpc.Services.XmlRpcWriter._dispatch">
+            <summary>
+            Provides the mapping function based on a type.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.XmlRpc.Services.XmlRpcWriter.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:OrchardCore.XmlRpc.Services.XmlRpcWriter"/> class.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.XmlRpc.Services.XmlRpcWriter.MapMethodResponse(OrchardCore.XmlRpc.Models.XRpcMethodResponse)">
+            <summary>
+            Maps a method response to XML.
+            </summary>
+            <param name="rpcMethodResponse">The method response to be mapped.</param>
+            <returns>The XML element.</returns>
+        </member>
+        <member name="M:OrchardCore.XmlRpc.Services.XmlRpcWriter.MapData(OrchardCore.XmlRpc.Models.XRpcData)">
+            <summary>
+            Maps rpc data to XML.
+            </summary>
+            <param name="rpcData">The rpc data.</param>
+            <returns>The XML element.</returns>
+        </member>
+        <member name="M:OrchardCore.XmlRpc.Services.XmlRpcWriter.MapStruct(OrchardCore.XmlRpc.Models.XRpcStruct)">
+            <summary>
+            Maps a rpc struct to XML.
+            </summary>
+            <param name="rpcStruct">The rpc struct.</param>
+            <returns>The XML element.</returns>
+        </member>
+        <member name="M:OrchardCore.XmlRpc.Services.XmlRpcWriter.MapArray(OrchardCore.XmlRpc.Models.XRpcArray)">
+            <summary>
+            Maps a rpc array to XML.
+            </summary>
+            <param name="rpcArray">The rpc array.</param>
+            <returns>The XML element.</returns>
+        </member>
+        <member name="M:OrchardCore.XmlRpc.Services.XmlRpcWriter.MapValue(OrchardCore.XmlRpc.Models.XRpcData)">
+            <summary>
+            Maps rpc data to XML.
+            </summary>
+            <param name="rpcData">The rpc data.</param>
+            <returns>The XML element.</returns>
+        </member>
+    </members>
+</doc>

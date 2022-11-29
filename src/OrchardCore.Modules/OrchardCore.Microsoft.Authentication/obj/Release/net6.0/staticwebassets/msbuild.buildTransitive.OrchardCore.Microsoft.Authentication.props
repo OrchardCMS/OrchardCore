@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\OrchardCore.Microsoft.Authentication.props" />
+</Project>

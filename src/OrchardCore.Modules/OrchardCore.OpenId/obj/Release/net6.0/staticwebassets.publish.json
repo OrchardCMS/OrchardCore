@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "Sl0xk6AjHthGkE+pn4MO31ffFjxUA+YXYi/WoZnz1dA=",
+  "Source": "OrchardCore.OpenId",
+  "BasePath": "_content/OrchardCore.OpenId",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

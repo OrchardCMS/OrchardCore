@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Demo</name>
+    </assembly>
+    <members>
+        <member name="P:OrchardCore.Demo.TagHelpers.Intellisense.BazTagHelper.Text">
+            <summary>
+            The text to render
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Demo.TagHelpers.Intellisense.BazTagHelper.Count">
+            <summary>
+            the number of times to repeat the text
+            </summary>
+        </member>
+    </members>
+</doc>

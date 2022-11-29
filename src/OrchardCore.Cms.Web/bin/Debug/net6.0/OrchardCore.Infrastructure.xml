@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Infrastructure</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Environment.Cache.CacheContextProviders.KnownValueCacheContextProvider">
+            <summary>
+            Adds all context values as they are to the cache entries. This allows for known value variation
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Data.Descriptors.ShellDescriptorManager">
+            <summary>
+            Implements <see cref="T:OrchardCore.Environment.Shell.Descriptor.IShellDescriptorManager"/> by providing the list of features store in the database.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Documents.DefaultDocumentSerializer">
+            <summary>
+            Serializes and deserializes an <see cref="T:OrchardCore.Data.Documents.IDocument"/> into and from a sequence of bytes.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Documents.DocumentEntityManager`1">
+            <summary>
+            A generic service to keep in sync any single <see cref="T:OrchardCore.Documents.IDocumentEntity"/> between an <see cref="T:OrchardCore.Data.Documents.IDocumentStore"/> and a multi level cache.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Documents.DocumentEntityManager`2">
+            <summary>
+            A <see cref="T:OrchardCore.Documents.DocumentEntityManager`1"/> using a given type of <see cref="T:OrchardCore.Data.Documents.IDocumentStore"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Documents.DocumentManager`1">
+            <summary>
+            A generic service to keep in sync any single <see cref="T:OrchardCore.Data.Documents.IDocument"/> between an <see cref="T:OrchardCore.Data.Documents.IDocumentStore"/> and a multi level cache.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Documents.DocumentManager`2">
+            <summary>
+            A <see cref="T:OrchardCore.Documents.DocumentManager`1"/> using a given type of <see cref="T:OrchardCore.Data.Documents.IDocumentStore"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Documents.VolatileDocumentEntityManager`1">
+            <summary>
+            A <see cref="T:OrchardCore.Documents.DocumentEntityManager`1"/> using a multi level cache but without any persistent storage.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Documents.VolatileDocumentManager`1">
+            <summary>
+            A <see cref="T:OrchardCore.Documents.DocumentManager`1"/> using a multi level cache but without any persistent storage.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Email.EmailAddressValidator">
+            <summary>
+            Represents a service for e-mail address validation.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Email.EmailAddressValidator.Validate(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="F:OrchardCore.Scripting.CommonGeneratorMethods.GZip">
+            <summary>
+            Converts a Base64 encoded gzip stream to an uncompressed Base64 string.
+            See http://www.txtwizard.net/compression
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Scripting.Files.FilesScriptEngine">
+            <summary>
+            Provides
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Security.ApiAuthenticationHandler">
+            <summary>
+            Provides a delegating logic for API authentication.
+            If no specific scheme handler is found it returns an anonymous user.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Security.AuthorizationHandlers.PermissionHandler">
+            <summary>
+            This authorization handler ensures that the user has the required permission.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Security.DefaultPermissionGrantingService">
+            <summary>
+            Default implementation if <see cref="T:OrchardCore.Security.IPermissionGrantingService"/>.
+            It is responsible for checking implied permissions.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions">
+            <summary>
+            Provides an extension method for <see cref="T:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder"/>.
+            </summary>
+            <summary>
+            Provides an extension method for <see cref="T:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder"/>.
+            </summary>
+            <summary>
+            Provides an extension method for <see cref="T:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddCaching(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds tenant level caching services.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddCommands(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds host level services to provide CLI commands.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddDocumentManagement(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds tenant level services to keep in sync any single <see cref="T:OrchardCore.Data.Documents.IDocument"/> between an <see cref="T:OrchardCore.Data.Documents.IDocumentStore"/> and a multi level cache.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddEmailAddressValidator(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds e-mail address validator service.
+            </summary>
+            <param name="builder">The <see cref="T:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder"/>.</param>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddIdGeneration(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds IdGeneration services.
+            </summary>
+            <param name="builder">The <see cref="T:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder"/>.</param>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddHtmlSanitizer(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds html script sanitization services.
+            </summary>
+            <param name="builder">The <see cref="T:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder"/>.</param>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddScripting(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds scripting services.
+            </summary>
+            <param name="builder">The <see cref="T:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder"/>.</param>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddSecurity(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds tenant level services.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.HtmlSanitizerOptionsExtensions.ConfigureHtmlSanitizer(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Ganss.Xss.HtmlSanitizer})">
+            <summary>
+            Adds a configuration action to the html sanitizer.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.DatabaseShellsOrchardCoreBuilderExtensions.AddDatabaseShellsConfiguration(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Host services to load shells settings and configuration from database.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ShellOrchardCoreBuilderExtensions.AddDataStorage(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds services at the host level to load site settings from the file system
+            and tenant level services to store states and descriptors in the database.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ShellOrchardCoreBuilderExtensions.AddSitesFolder(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Host services to load site settings from the file system
+            </summary>
+        </member>
+        <member name="M:HtmlSanitizerRazorExtensions.SanitizeHtml(OrchardCore.IOrchardHelper,System.String)">
+            <summary>
+            Sanitizes a string of html.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="html">The html to sanitize.</param>
+        </member>
+    </members>
+</doc>

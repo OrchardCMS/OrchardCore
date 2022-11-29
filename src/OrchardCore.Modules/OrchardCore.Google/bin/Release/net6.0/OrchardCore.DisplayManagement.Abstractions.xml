@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.DisplayManagement.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.Mvc.ModelBinding.ModelStateDictionaryExtensions.AddModelError(Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary,System.String,System.String,System.String)">
+            <summary>
+            Adds the specified error message to the errors collection for the model-state dictionary that is associated with the specified key.
+            </summary>
+            <param name="modelState">The model state.</param>
+            <param name="prefix">The prefix of the key.</param>
+            <param name="key">The key.</param>
+            <param name="errorMessage">The error message.</param>
+        </member>
+        <member name="M:OrchardCore.Mvc.ModelBinding.ModelStateDictionaryExtensions.BindValidationResults(Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary,System.String,System.Collections.Generic.IEnumerable{System.ComponentModel.DataAnnotations.ValidationResult})">
+            <summary>
+            Adds the specified error message to the errors collection for the model-state dictionary that is associated with the specified key.
+            </summary>
+            <param name="modelState">The model state.</param>
+            <param name="prefix">The prefix of the key.</param>
+            <param name="validationResults">The <see cref="T:System.ComponentModel.DataAnnotations.ValidationResult"/>.</param>
+        </member>
+    </members>
+</doc>

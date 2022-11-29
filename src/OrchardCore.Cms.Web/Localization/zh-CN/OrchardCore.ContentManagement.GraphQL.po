@@ -1,0 +1,40 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.ContentManagement.GraphQL.pot\n"
+"X-Crowdin-File-ID: 714\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"PO-Revision-Date: 2022-10-11 20:01\n"
+
+#. Description = S["Content items are instances of content types, just like objects are instances of classes."],
+#: OrchardCore.ContentManagement.GraphQL\Queries\ContentItemQuery.cs:34
+msgctxt "OrchardCore.ContentManagement.GraphQL.Queries.ContentItemQuery"
+msgid "Content items are instances of content types, just like objects are instances of classes."
+msgstr "内容项是内容类型的实例, 就像对象是类的实例一样。"
+
+#. Description = S["Content item id"]
+#: OrchardCore.ContentManagement.GraphQL\Queries\ContentItemQuery.cs:40
+msgctxt "OrchardCore.ContentManagement.GraphQL.Queries.ContentItemQuery"
+msgid "Content item id"
+msgstr "内容项 id"
+
+#. Description = S["Represents a {0}.", typeDefinition.DisplayName]
+#. Description = S["Represents a {0}.", typeDefinition.DisplayName],
+#: OrchardCore.ContentManagement.GraphQL\Queries\ContentTypeQuery.cs:56
+#: OrchardCore.ContentManagement.GraphQL\Queries\ContentTypeQuery.cs:62
+msgctxt "OrchardCore.ContentManagement.GraphQL.Queries.ContentTypeQuery"
+msgid "Represents a {0}."
+msgstr "表示 {0}。"
+
+#. description: S["Represents a {0}.", part.PartDefinition.Name],
+#: OrchardCore.ContentManagement.GraphQL\Queries\Types\DynamicContentTypeBuilder.cs:104
+msgctxt "OrchardCore.ContentManagement.GraphQL.Queries.Types.DynamicContentTypeBuilder"
+msgid "Represents a {0}."
+msgstr "表示 {0}。"
+

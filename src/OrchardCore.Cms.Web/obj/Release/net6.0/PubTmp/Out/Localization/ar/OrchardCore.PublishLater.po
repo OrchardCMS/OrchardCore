@@ -1,0 +1,38 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.PublishLater.pot\n"
+"X-Crowdin-File-ID: 792\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Arabic\n"
+"Language: ar_SA\n"
+"PO-Revision-Date: 2021-07-15 18:54\n"
+
+#. <button class="btn btn-primary btn-publish-later" type="submit" name="submit.Save" value="submit.PublishLater">@T["Publish Later"]</button>
+#: OrchardCore.PublishLater\Views\PublishLaterPart.Edit.cshtml:13
+msgctxt "OrchardCore.PublishLater.Views.PublishLaterPart.Edit"
+msgid "Publish Later"
+msgstr "النشر لاحقا"
+
+#. <button class="btn btn-primary btn-publish-later" type="submit" name="submit.Save" value="submit.CancelPublishLater">@T["Cancel Publish Later"]</button>
+#: OrchardCore.PublishLater\Views\PublishLaterPart.Edit.cshtml:18
+msgctxt "OrchardCore.PublishLater.Views.PublishLaterPart.Edit"
+msgid "Cancel Publish Later"
+msgstr "إلغاء النشر لاحقاً"
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentEditor)">@T["Standard"]</option>
+#: OrchardCore.PublishLater\Views\PublishLaterPart.Option.cshtml:4
+msgctxt "OrchardCore.PublishLater.Views.PublishLaterPart.Option"
+msgid "Standard"
+msgstr "قياسي"
+
+#. <span class="hint">@T["Scheduled to be published on {0}", (object)(await DisplayAsync(await New.DateTime(Utc: Model.ScheduledPublishUtc)))]</span>
+#: OrchardCore.PublishLater\Views\PublishLaterPart.SummaryAdmin.cshtml:6
+msgctxt "OrchardCore.PublishLater.Views.PublishLaterPart.SummaryAdmin"
+msgid "Scheduled to be published on {0}"
+msgstr "مجدول ليتم نشره في {0}"
+

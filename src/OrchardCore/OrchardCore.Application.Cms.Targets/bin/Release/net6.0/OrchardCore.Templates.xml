@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Templates</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Templates.Deployment.AllAdminTemplatesDeploymentStep">
+            <summary>
+            Adds templates to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Templates.Deployment.AllTemplatesDeploymentStep">
+            <summary>
+            Adds templates to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Templates.Recipes.AdminTemplateStep">
+            <summary>
+            This recipe step creates a set of templates.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Templates.Recipes.TemplateStep">
+            <summary>
+            This recipe step creates a set of templates.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Templates.Services.AdminPreviewTemplatesProvider">
+            <summary>
+            And instance of this class provides custom templates to use while previewing a page.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Templates.Services.AdminTemplatesManager.LoadTemplatesDocumentAsync">
+            <summary>
+            Loads the templates document from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Templates.Services.AdminTemplatesManager.GetTemplatesDocumentAsync">
+            <summary>
+            Gets the background task document from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Templates.Services.PreviewTemplatesProvider">
+            <summary>
+            And instance of this class provides custom templates to use while previewing a page.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Templates.Services.TemplatesManager.LoadTemplatesDocumentAsync">
+            <summary>
+            Loads the templates document from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Templates.Services.TemplatesManager.GetTemplatesDocumentAsync">
+            <summary>
+            Gets the templates document from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "ZBpaflK4ygYUIxZ+UYwgMeVGF09sKjGo8QIZRDtdIgU=",
+  "Source": "OrchardCore.AdminDashboard",
+  "BasePath": "_content/OrchardCore.AdminDashboard",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.AdminDashboard\\wwwroot",
+      "Source": "OrchardCore.AdminDashboard",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.AdminDashboard\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.AdminDashboard",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

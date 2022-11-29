@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Logging.NLog</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Logging.TenantLayoutRenderer">
+            <summary>
+            Print the tenant name
+            </summary>
+        </member>
+    </members>
+</doc>

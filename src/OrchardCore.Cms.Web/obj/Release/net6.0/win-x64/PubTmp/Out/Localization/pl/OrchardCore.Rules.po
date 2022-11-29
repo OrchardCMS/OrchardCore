@@ -1,0 +1,538 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: pl\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Rules.pot\n"
+"X-Crowdin-File-ID: 806\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Polish\n"
+"Language: pl_PL\n"
+"PO-Revision-Date: 2022-05-05 19:11\n"
+
+#. (S) => S["Equals"],
+#: OrchardCore.Rules\Services\ConditionOperatorConfigureOptions.cs:14
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Equals"
+msgstr ""
+
+#. (S) => S["Does not equal"],
+#: OrchardCore.Rules\Services\ConditionOperatorConfigureOptions.cs:20
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Does not equal"
+msgstr ""
+
+#. (S) => S["Starts with"],
+#: OrchardCore.Rules\Services\ConditionOperatorConfigureOptions.cs:26
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Starts with"
+msgstr ""
+
+#. (S) => S["Does not start with"],
+#: OrchardCore.Rules\Services\ConditionOperatorConfigureOptions.cs:32
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Does not start with"
+msgstr ""
+
+#. (S) => S["Ends with"],
+#: OrchardCore.Rules\Services\ConditionOperatorConfigureOptions.cs:38
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Ends with"
+msgstr ""
+
+#. (S) => S["Does not end with"],
+#: OrchardCore.Rules\Services\ConditionOperatorConfigureOptions.cs:44
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Does not end with"
+msgstr ""
+
+#. (S) => S["Contains"],
+#: OrchardCore.Rules\Services\ConditionOperatorConfigureOptions.cs:50
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Contains"
+msgstr ""
+
+#. (S) => S["Does not contain"],
+#: OrchardCore.Rules\Services\ConditionOperatorConfigureOptions.cs:56
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Does not contain"
+msgstr ""
+
+#. @T["Add"]
+#: OrchardCore.Rules\Views\Condition.Summary.cshtml:27
+msgctxt "OrchardCore.Rules.Views.Condition.Summary"
+msgid "Add"
+msgstr ""
+
+#. class="btn btn-primary btn-sm">@T["Edit"]</a>
+#: OrchardCore.Rules\Views\Condition.Summary.cshtml:32
+msgctxt "OrchardCore.Rules.Views.Condition.Summary"
+msgid "Edit"
+msgstr ""
+
+#. data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+#: OrchardCore.Rules\Views\Condition.Summary.cshtml:36
+msgctxt "OrchardCore.Rules.Views.Condition.Summary"
+msgid "Delete"
+msgstr ""
+
+#. <a class="btn btn-primary btn-sm condition-thumbnail" data-target-url="@Model.TargetUrl">@T["Add"]</a>
+#: OrchardCore.Rules\Views\Condition.Thumbnail.cshtml:8
+msgctxt "OrchardCore.Rules.Views.Condition.Thumbnail"
+msgid "Add"
+msgstr ""
+
+#. <h5 class="modal-title" id="available-rules-title">@T["Available Rules"]</h5>
+#: OrchardCore.Rules\Views\ConditionsModal.cshtml:10
+msgctxt "OrchardCore.Rules.Views.ConditionsModal"
+msgid "Available Rules"
+msgstr ""
+
+#. <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
+#. <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
+#: OrchardCore.Rules\Views\ConditionsModal.cshtml:15
+#: OrchardCore.Rules\Views\ConditionsModal.cshtml:15
+msgctxt "OrchardCore.Rules.Views.ConditionsModal"
+msgid "Filter"
+msgstr ""
+
+#. <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+#: OrchardCore.Rules\Views\ConditionsModal.cshtml:29
+msgctxt "OrchardCore.Rules.Views.ConditionsModal"
+msgid "Cancel"
+msgstr ""
+
+#. @T["Add"]
+#: OrchardCore.Rules\Views\Rule.Summary.cshtml:10
+msgctxt "OrchardCore.Rules.Views.Rule.Summary"
+msgid "Add"
+msgstr ""
+
+#. <h5>@T["All"]</h5>
+#: OrchardCore.Rules\Views\Items\AllCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Edit"
+msgid "All"
+msgstr ""
+
+#. <label asp-for="DisplayText">@T["Name"]</label>
+#: OrchardCore.Rules\Views\Items\AllCondition.Fields.Edit.cshtml:6
+msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Edit"
+msgid "Name"
+msgstr ""
+
+#. <span>@T["All conditions"]</span><span class="ms-2 hint dashed">@Model.Value.DisplayText</span>
+#: OrchardCore.Rules\Views\Items\AllCondition.Fields.Summary.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Summary"
+msgid "All conditions"
+msgstr ""
+
+#. <h4 class="card-title">@T["All condition group"]</h4>
+#: OrchardCore.Rules\Views\Items\AllCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Thumbnail"
+msgid "All condition group"
+msgstr ""
+
+#. <p class="hint">@T["An all condition group contains other conditions which are all required to be true."]</p>
+#: OrchardCore.Rules\Views\Items\AllCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Thumbnail"
+msgid "An all condition group contains other conditions which are all required to be true."
+msgstr ""
+
+#. <h5>@T["Any"]</h5>
+#: OrchardCore.Rules\Views\Items\AnyCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Edit"
+msgid "Any"
+msgstr ""
+
+#. <label asp-for="DisplayText">@T["Name"]</label>
+#: OrchardCore.Rules\Views\Items\AnyCondition.Fields.Edit.cshtml:6
+msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Edit"
+msgid "Name"
+msgstr ""
+
+#. <span>@T["Any conditions"]</span><span class="ms-2 hint dashed">@Model.Value.DisplayText</span>
+#: OrchardCore.Rules\Views\Items\AnyCondition.Fields.Summary.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Summary"
+msgid "Any conditions"
+msgstr ""
+
+#. <h4 class="card-title">@T["Any condition"]</h4>
+#: OrchardCore.Rules\Views\Items\AnyCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Thumbnail"
+msgid "Any condition"
+msgstr ""
+
+#. <p class="hint">@T["An any condition group contains other conditions but only requires any condition to be true."]</p>
+#: OrchardCore.Rules\Views\Items\AnyCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Thumbnail"
+msgid "An any condition group contains other conditions but only requires any condition to be true."
+msgstr ""
+
+#. <h5>@T["Boolean"]</h5>
+#: OrchardCore.Rules\Views\Items\BooleanCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Edit"
+msgid "Boolean"
+msgstr ""
+
+#. @T["True"]
+#: OrchardCore.Rules\Views\Items\BooleanCondition.Fields.Edit.cshtml:9
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Edit"
+msgid "True"
+msgstr ""
+
+#. @T["False"]
+#: OrchardCore.Rules\Views\Items\BooleanCondition.Fields.Edit.cshtml:15
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Edit"
+msgid "False"
+msgstr ""
+
+#. <span>@T["Boolean condition"]</span><span class="ms-2 hint dashed">@Model.Value.Value.ToString()</span>
+#: OrchardCore.Rules\Views\Items\BooleanCondition.Fields.Summary.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Summary"
+msgid "Boolean condition"
+msgstr ""
+
+#. <h4 class="card-title">@T["Boolean condition"]</h4>
+#: OrchardCore.Rules\Views\Items\BooleanCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Thumbnail"
+msgid "Boolean condition"
+msgstr ""
+
+#. <p class="hint">@T["A boolean condition can be either true or false."]</p>
+#: OrchardCore.Rules\Views\Items\BooleanCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Thumbnail"
+msgid "A boolean condition can be either true or false."
+msgstr ""
+
+#. <p class="alert message-warning mb-0 ms-0 mt-3 me-3">@T["No conditions found. Please add at least one condition."]</p>
+#: OrchardCore.Rules\Views\Items\ConditionGroup.Fields.Summary.cshtml:19
+msgctxt "OrchardCore.Rules.Views.Items.ConditionGroup.Fields.Summary"
+msgid "No conditions found. Please add at least one condition."
+msgstr ""
+
+#. <h5>@T["Content type"]</h5>
+#: OrchardCore.Rules\Views\Items\ContentTypeCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Edit"
+msgid "Content type"
+msgstr ""
+
+#. <label asp-for="SelectedOperation">@T["Operation"]</label>
+#: OrchardCore.Rules\Views\Items\ContentTypeCondition.Fields.Edit.cshtml:7
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Edit"
+msgid "Operation"
+msgstr ""
+
+#. <span class="hint">@T["Select the rule operator."]</span>
+#: OrchardCore.Rules\Views\Items\ContentTypeCondition.Fields.Edit.cshtml:11
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Edit"
+msgid "Select the rule operator."
+msgstr ""
+
+#. <label asp-for="Value">@T["Value"]</label>
+#: OrchardCore.Rules\Views\Items\ContentTypeCondition.Fields.Edit.cshtml:16
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Edit"
+msgid "Value"
+msgstr ""
+
+#. <span class="hint">@T["The value for the operation."]</span>
+#: OrchardCore.Rules\Views\Items\ContentTypeCondition.Fields.Edit.cshtml:20
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Edit"
+msgid "The value for the operation."
+msgstr ""
+
+#. <span>@T["Content type"]</span><span class="ms-2 hint dashed">@displayText @Model.Value.Value</span>
+#: OrchardCore.Rules\Views\Items\ContentTypeCondition.Fields.Summary.cshtml:11
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Summary"
+msgid "Content type"
+msgstr ""
+
+#. <h4 class="card-title">@T["Content type condition"]</h4>
+#: OrchardCore.Rules\Views\Items\ContentTypeCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Thumbnail"
+msgid "Content type condition"
+msgstr ""
+
+#. <p class="hint">@T["A content type condition evaluates the currently displayed content types against a value."]</p>
+#: OrchardCore.Rules\Views\Items\ContentTypeCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Thumbnail"
+msgid "A content type condition evaluates the currently displayed content types against a value."
+msgstr ""
+
+#. <h5>@T["Culture"]</h5>
+#: OrchardCore.Rules\Views\Items\CultureCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
+msgid "Culture"
+msgstr ""
+
+#. <label asp-for="SelectedOperation">@T["Operation"]</label>
+#: OrchardCore.Rules\Views\Items\CultureCondition.Fields.Edit.cshtml:7
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
+msgid "Operation"
+msgstr ""
+
+#. <span class="hint">@T["Select the condition operator."]</span>
+#: OrchardCore.Rules\Views\Items\CultureCondition.Fields.Edit.cshtml:11
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
+msgid "Select the condition operator."
+msgstr ""
+
+#. <label asp-for="Value">@T["Value"]</label>
+#: OrchardCore.Rules\Views\Items\CultureCondition.Fields.Edit.cshtml:16
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
+msgid "Value"
+msgstr ""
+
+#. <span class="hint">@T["The value for the operation."]</span>
+#: OrchardCore.Rules\Views\Items\CultureCondition.Fields.Edit.cshtml:20
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
+msgid "The value for the operation."
+msgstr ""
+
+#. <span>@T["Culture"]</span><span class="ms-2 hint dashed">@displayText @Model.Value.Value</span>
+#: OrchardCore.Rules\Views\Items\CultureCondition.Fields.Summary.cshtml:10
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Summary"
+msgid "Culture"
+msgstr ""
+
+#. <h4 class="card-title">@T["Culture condition"]</h4>
+#: OrchardCore.Rules\Views\Items\CultureCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Thumbnail"
+msgid "Culture condition"
+msgstr ""
+
+#. <p class="hint">@T["A culture condition evaluates the current ui culture against a value."]</p>
+#: OrchardCore.Rules\Views\Items\CultureCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Thumbnail"
+msgid "A culture condition evaluates the current ui culture against a value."
+msgstr ""
+
+#. <h5>@T["Homepage"]</h5>
+#: OrchardCore.Rules\Views\Items\HomepageCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Edit"
+msgid "Homepage"
+msgstr ""
+
+#. @T["Is homepage"]
+#: OrchardCore.Rules\Views\Items\HomepageCondition.Fields.Edit.cshtml:9
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Edit"
+msgid "Is homepage"
+msgstr ""
+
+#. @T["Is not homepage"]
+#: OrchardCore.Rules\Views\Items\HomepageCondition.Fields.Edit.cshtml:15
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Edit"
+msgid "Is not homepage"
+msgstr ""
+
+#. <span>@T["Is homepage"]</span>
+#: OrchardCore.Rules\Views\Items\HomepageCondition.Fields.Summary.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Summary"
+msgid "Is homepage"
+msgstr ""
+
+#. <span>@T["Is not homepage"]</span>
+#: OrchardCore.Rules\Views\Items\HomepageCondition.Fields.Summary.cshtml:8
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Summary"
+msgid "Is not homepage"
+msgstr ""
+
+#. <h4 class="card-title">@T["Homepage condition"]</h4>
+#: OrchardCore.Rules\Views\Items\HomepageCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Thumbnail"
+msgid "Homepage condition"
+msgstr ""
+
+#. <p class="hint">@T["Whether the current page is the site homepage."]</p>
+#: OrchardCore.Rules\Views\Items\HomepageCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Thumbnail"
+msgid "Whether the current page is the site homepage."
+msgstr ""
+
+#. <span>@T["Is anonymous condition"]</span>
+#: OrchardCore.Rules\Views\Items\IsAnonymousCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.IsAnonymousCondition.Fields.Edit"
+msgid "Is anonymous condition"
+msgstr ""
+
+#. <span>@T["Is anonymous"]</span>
+#: OrchardCore.Rules\Views\Items\IsAnonymousCondition.Fields.Summary.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.IsAnonymousCondition.Fields.Summary"
+msgid "Is anonymous"
+msgstr ""
+
+#. <h4 class="card-title">@T["Is anonymous condition"]</h4>
+#: OrchardCore.Rules\Views\Items\IsAnonymousCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.IsAnonymousCondition.Fields.Thumbnail"
+msgid "Is anonymous condition"
+msgstr ""
+
+#. <p class="hint">@T["Whether the current user is anonymous, i.e. not authenticated."]</p>
+#: OrchardCore.Rules\Views\Items\IsAnonymousCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.IsAnonymousCondition.Fields.Thumbnail"
+msgid "Whether the current user is anonymous, i.e. not authenticated."
+msgstr ""
+
+#. <span>@T["Is authenticated condition"]</span>
+#: OrchardCore.Rules\Views\Items\IsAuthenticatedCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.IsAuthenticatedCondition.Fields.Edit"
+msgid "Is authenticated condition"
+msgstr ""
+
+#. <span>@T["Is authenticated"]</span>
+#: OrchardCore.Rules\Views\Items\IsAuthenticatedCondition.Fields.Summary.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.IsAuthenticatedCondition.Fields.Summary"
+msgid "Is authenticated"
+msgstr ""
+
+#. <h4 class="card-title">@T["Is authenticated condition"]</h4>
+#: OrchardCore.Rules\Views\Items\IsAuthenticatedCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.IsAuthenticatedCondition.Fields.Thumbnail"
+msgid "Is authenticated condition"
+msgstr ""
+
+#. <p class="hint">@T["Whether the current user is authenticated."]</p>
+#: OrchardCore.Rules\Views\Items\IsAuthenticatedCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.IsAuthenticatedCondition.Fields.Thumbnail"
+msgid "Whether the current user is authenticated."
+msgstr ""
+
+#. <h5>@T["Javascript"]</h5>
+#: OrchardCore.Rules\Views\Items\JavascriptCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Edit"
+msgid "Javascript"
+msgstr ""
+
+#. <label asp-for="Script">@T["Script"]</label>
+#: OrchardCore.Rules\Views\Items\JavascriptCondition.Fields.Edit.cshtml:14
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Edit"
+msgid "Script"
+msgstr ""
+
+#. <span class="hint">@T["The script must return true or false."]</span>
+#: OrchardCore.Rules\Views\Items\JavascriptCondition.Fields.Edit.cshtml:16
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Edit"
+msgid "The script must return true or false."
+msgstr ""
+
+#. <span>@T["Javascript condition"]</span><span class="ms-2 hint dashed">@Model.Value.Script.Ellipsize(50)</span>
+#: OrchardCore.Rules\Views\Items\JavascriptCondition.Fields.Summary.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Summary"
+msgid "Javascript condition"
+msgstr ""
+
+#. <h4 class="card-title">@T["Javascript condition"]</h4>
+#: OrchardCore.Rules\Views\Items\JavascriptCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Thumbnail"
+msgid "Javascript condition"
+msgstr ""
+
+#. <p class="hint">@T["A script condition written in javascript."]</p>
+#: OrchardCore.Rules\Views\Items\JavascriptCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Thumbnail"
+msgid "A script condition written in javascript."
+msgstr ""
+
+#. <h5>@T["Role"]</h5>
+#: OrchardCore.Rules\Views\Items\RoleCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
+msgid "Role"
+msgstr ""
+
+#. <label asp-for="SelectedOperation">@T["Operation"]</label>
+#: OrchardCore.Rules\Views\Items\RoleCondition.Fields.Edit.cshtml:7
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
+msgid "Operation"
+msgstr ""
+
+#. <span class="hint">@T["Select the condition operator."]</span>
+#: OrchardCore.Rules\Views\Items\RoleCondition.Fields.Edit.cshtml:11
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
+msgid "Select the condition operator."
+msgstr ""
+
+#. <label asp-for="Value">@T["Value"]</label>
+#: OrchardCore.Rules\Views\Items\RoleCondition.Fields.Edit.cshtml:16
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
+msgid "Value"
+msgstr ""
+
+#. <span class="hint">@T["The value for the operation."]</span>
+#: OrchardCore.Rules\Views\Items\RoleCondition.Fields.Edit.cshtml:20
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
+msgid "The value for the operation."
+msgstr ""
+
+#. <span>@T["Role"]</span><span class="ms-2 hint dashed">@displayText @Model.Value.Value</span>
+#: OrchardCore.Rules\Views\Items\RoleCondition.Fields.Summary.cshtml:10
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Summary"
+msgid "Role"
+msgstr ""
+
+#. <h4 class="card-title">@T["Role condition"]</h4>
+#: OrchardCore.Rules\Views\Items\RoleCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Thumbnail"
+msgid "Role condition"
+msgstr ""
+
+#. <p class="hint">@T["A role condition evaluates the current users roles against a value."]</p>
+#: OrchardCore.Rules\Views\Items\RoleCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Thumbnail"
+msgid "A role condition evaluates the current users roles against a value."
+msgstr ""
+
+#. <h5>@T["Rules"]</h5>
+#: OrchardCore.Rules\Views\Items\Rule.Fields.Summary.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.Rule.Fields.Summary"
+msgid "Rules"
+msgstr ""
+
+#. <h5>@T["Url"]</h5>
+#: OrchardCore.Rules\Views\Items\UrlCondition.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
+msgid "Url"
+msgstr ""
+
+#. <label asp-for="SelectedOperation">@T["Operation"]</label>
+#: OrchardCore.Rules\Views\Items\UrlCondition.Fields.Edit.cshtml:7
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
+msgid "Operation"
+msgstr ""
+
+#. <span class="hint">@T["Select the condition operator."]</span>
+#: OrchardCore.Rules\Views\Items\UrlCondition.Fields.Edit.cshtml:11
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
+msgid "Select the condition operator."
+msgstr ""
+
+#. <label asp-for="Value">@T["Value"]</label>
+#: OrchardCore.Rules\Views\Items\UrlCondition.Fields.Edit.cshtml:16
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
+msgid "Value"
+msgstr ""
+
+#. <span class="hint">@T["The value for the operation."]</span>
+#: OrchardCore.Rules\Views\Items\UrlCondition.Fields.Edit.cshtml:20
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
+msgid "The value for the operation."
+msgstr ""
+
+#. <span>@T["Url"]</span><span class="ms-2 hint dashed">@displayText @Model.Value.Value</span>
+#: OrchardCore.Rules\Views\Items\UrlCondition.Fields.Summary.cshtml:10
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Summary"
+msgid "Url"
+msgstr ""
+
+#. <h4 class="card-title">@T["Url condition"]</h4>
+#: OrchardCore.Rules\Views\Items\UrlCondition.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Thumbnail"
+msgid "Url condition"
+msgstr ""
+
+#. <p class="hint">@T["A url condition evaluates the current url against a value."]</p>
+#: OrchardCore.Rules\Views\Items\UrlCondition.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Thumbnail"
+msgid "A url condition evaluates the current url against a value."
+msgstr ""
+

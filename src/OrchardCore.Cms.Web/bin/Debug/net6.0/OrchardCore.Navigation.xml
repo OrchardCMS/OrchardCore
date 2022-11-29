@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Navigation</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.Navigation.NavigationShapes.EncodeAlternateElement(System.String)">
+            <summary>
+            Encodes dashed and dots so that they don't conflict in filenames
+            </summary>
+            <param name="alternateElement"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

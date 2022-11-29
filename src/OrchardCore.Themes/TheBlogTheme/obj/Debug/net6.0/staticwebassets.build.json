@@ -1,0 +1,31 @@
+{
+  "Version": 1,
+  "Hash": "yiSPQJxKPWNygssRE+e0Mv/Ja+K8zvgXBrL/R5X6tyI=",
+  "Source": "TheBlogTheme",
+  "BasePath": "_content/TheBlogTheme",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Queries\\OrchardCore.Queries.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Queries",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "RuntimeIdentifier;SelfContained"
+    }
+  ],
+  "DiscoveryPatterns": [
+    {
+      "Name": "TheBlogTheme\\wwwroot",
+      "Source": "TheBlogTheme",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Themes\\TheBlogTheme\\wwwroot\\",
+      "BasePath": "_content/TheBlogTheme",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

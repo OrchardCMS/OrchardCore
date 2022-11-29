@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "reb/pu412PNIa67rlCKLnDAPIUPjb4QRxK4tmiCA2jU=",
+  "Source": "OrchardCore.Https",
+  "BasePath": "_content/OrchardCore.Https",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

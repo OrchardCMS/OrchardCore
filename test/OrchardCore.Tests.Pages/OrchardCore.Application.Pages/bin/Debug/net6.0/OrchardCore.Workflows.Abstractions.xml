@@ -1,0 +1,429 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Workflows.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.Workflows.Activities.IActivity.GetPossibleOutcomes(OrchardCore.Workflows.Models.WorkflowExecutionContext,OrchardCore.Workflows.Models.ActivityContext)">
+            <summary>
+            List of possible outcomes when the activity is executed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Activities.IActivity.CanExecuteAsync(OrchardCore.Workflows.Models.WorkflowExecutionContext,OrchardCore.Workflows.Models.ActivityContext)">
+            <summary>
+            Whether the activity can transition to the next outcome. Can prevent the activity from being transitioned
+            because a condition is not valid.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Activities.IActivity.ExecuteAsync(OrchardCore.Workflows.Models.WorkflowExecutionContext,OrchardCore.Workflows.Models.ActivityContext)">
+            <summary>
+            Executes the specified activity.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Activities.IActivity.ResumeAsync(OrchardCore.Workflows.Models.WorkflowExecutionContext,OrchardCore.Workflows.Models.ActivityContext)">
+            <summary>
+            Resumes the specified activity.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Activities.IActivity.OnInputReceivedAsync(OrchardCore.Workflows.Models.WorkflowExecutionContext,System.Collections.Generic.IDictionary{System.String,System.Object})">
+            <summary>
+            Executes before a workflow starts or resumes, giving activities an opportunity to read and store any values of interest.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Activities.IActivity.OnWorkflowStartingAsync(OrchardCore.Workflows.Models.WorkflowExecutionContext,System.Threading.CancellationToken)">
+            <summary>
+            Called on each activity when a workflow is about to start.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Activities.IActivity.OnWorkflowStartedAsync(OrchardCore.Workflows.Models.WorkflowExecutionContext)">
+            <summary>
+            Called on each activity when a workflow has started.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Activities.IActivity.OnWorkflowResumingAsync(OrchardCore.Workflows.Models.WorkflowExecutionContext,System.Threading.CancellationToken)">
+            <summary>
+            Called on each activity when a workflow is about to be resumed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Activities.IActivity.OnWorkflowResumedAsync(OrchardCore.Workflows.Models.WorkflowExecutionContext)">
+            <summary>
+            Called on each activity when a workflow is resumed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Activities.IActivity.OnActivityExecutingAsync(OrchardCore.Workflows.Models.WorkflowExecutionContext,OrchardCore.Workflows.Models.ActivityContext,System.Threading.CancellationToken)">
+            <summary>
+            Called on each activity when an activity is about to be executed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Activities.IActivity.OnActivityExecutedAsync(OrchardCore.Workflows.Models.WorkflowExecutionContext,OrchardCore.Workflows.Models.ActivityContext)">
+            <summary>
+            Called on each activity when an activity has been executed.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Workflows.Abstractions.Converters.LocalizedStringConverter">
+            <summary>
+            Serializes the <see cref="T:Microsoft.Extensions.Localization.LocalizedString"/> to a simple string using the translated text.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Workflows.Display.ActivityDisplayDriver`1">
+            <summary>
+            Base class for activity drivers.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Workflows.Display.ActivityDisplayDriver`2">
+            <summary>
+            Base class for activity drivers using a strongly typed view model.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Display.ActivityDisplayDriver`2.EditActivityAsync(`0,`1)">
+            <summary>
+            Edit the view model before it's used in the editor.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Display.ActivityDisplayDriver`2.EditActivity(`0,`1)">
+            <summary>
+            Edit the view model before it's used in the editor.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Display.ActivityDisplayDriver`2.UpdateActivityAsync(`1,`0)">
+            <summary>
+            Updates the activity when the view model is validated.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Display.ActivityDisplayDriver`2.UpdateActivity(`1,`0)">
+            <summary>
+            Updates the activity when the view model is validated.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Helpers.DictionaryExtensions.GetValue``2(System.Collections.Generic.IDictionary{``0,``1},``0)">
+            <summary>
+            Safely tries and returns a value by the specified key. If the specified key does not exist, null is returned.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Helpers.DictionaryExtensions.GetValue``1(System.Collections.Generic.IDictionary{System.String,System.Object},System.String)">
+            <summary>
+            Safely tries and returns a value by the specified key. If the specified key does not exist, null is returned.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Helpers.DictionaryExtensions.Merge``2(System.Collections.Generic.IDictionary{``0,``1},System.Collections.Generic.IDictionary{``0,``1})">
+            <summary>
+            Merges the specified other dictionary into this dictionary.
+            Existing entries are overwritten.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Helpers.DistributedLockExtensions.TryAcquireWorkflowLockAsync(OrchardCore.Locking.Distributed.IDistributedLock,OrchardCore.Workflows.Models.Workflow)">
+            <summary>
+            Tries to acquire a lock before resuming this workflow instance, but only
+            if it is an atomic workflow, otherwise returns true with a null locker.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Helpers.DistributedLockExtensions.TryAcquireWorkflowTypeLockAsync(OrchardCore.Locking.Distributed.IDistributedLock,OrchardCore.Workflows.Models.WorkflowType,System.Boolean)">
+            <summary>
+            Tries to acquire a lock before starting an instance of this workflow type, if it is
+            a singleton or if the event is exclusive, otherwise returns true with a null locker.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Workflows.Models.ActivityMetadata">
+            <summary>
+            Provides additional information about an activity.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.ActivityMetadata.Title">
+            <summary>
+            A custom title that can be set by the user.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.ActivityRecord.Name">
+            <summary>
+            The type of the activity.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.ActivityRecord.X">
+            <summary>
+            The left coordinate of the activity.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.ActivityRecord.Y">
+            <summary>
+            The top coordinate of the activity.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.ActivityRecord.IsStart">
+            <summary>
+            Whether the activity is a start state for a <see cref="T:OrchardCore.Workflows.Models.WorkflowType"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Workflows.Models.Transition">
+            <summary>
+            Represents a transition between two activities.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.Transition.SourceActivityId">
+            <summary>
+            The source <see cref="P:OrchardCore.Workflows.Models.ActivityRecord.ActivityId"/>
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.Transition.SourceOutcomeName">
+            <summary>
+            The name of the outcome on the source <see cref="T:OrchardCore.Workflows.Models.ActivityRecord"/>
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.Transition.DestinationActivityId">
+            <summary>
+            The destination <see cref="P:OrchardCore.Workflows.Models.ActivityRecord.ActivityId"/>
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Workflows.Models.Workflow">
+            <summary>
+            Represents a workflow instance.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.Workflow.WorkflowId">
+            <summary>
+            A unique identifier for this workflow.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.Workflow.CorrelationId">
+            <summary>
+            The correlation ID can be used to resume workflows that are associated with specific objects, such as content items.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.Workflow.State">
+            <summary>
+            Serialized state of the workflow.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.Workflow.LockTimeout">
+            <summary>
+            The timeout in milliseconds to acquire a lock before resuming this workflow instance.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.Workflow.LockExpiration">
+            <summary>
+            The expiration in milliseconds of the lock acquired before resuming this workflow instance.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.Workflow.BlockingActivities">
+            <summary>
+            List of activities the current workflow instance is waiting on
+            for continuing its process.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.Workflow.IsAtomic">
+            <summary>
+            Whether this workflow instance needs to be resumed atomically.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowExecutionContext.Input">
+            <summary>
+            A dictionary of re-hydrated values provided by the initiator of the workflow.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowExecutionContext.Output">
+            <summary>
+            A dictionary of re-hydrated values provided to the initiator of the workflow.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowExecutionContext.Properties">
+            <summary>
+            A dictionary of re-hydrated values provided by the workflow activities.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowExecutionContext.LastResult">
+            <summary>
+            The value returned from the previous activity, if any.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowExecutionContext.ExecutedActivities">
+            <summary>
+            Keeps track of which activities executed in which order.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Models.WorkflowExecutionContext.GetInboundActivityPath(System.String)">
+            <summary>
+            Returns the full path of incoming activities.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Workflows.Models.WorkflowState">
+            <summary>
+            Represents a workflow's serializable runtime state.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowState.LastResult">
+            <summary>
+            The stack of values pushed onto by individual activities.
+            Can be used by subsequent activities to pop the last value and do something with it.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowState.Input">
+            <summary>
+            A dictionary of input values provided by the caller of the workflow.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowState.Output">
+            <summary>
+            A dictionary of output values provided by activities of the workflow.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowState.Properties">
+            <summary>
+            A dictionary of values that activities within a running workflow can read and write information from and to.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowState.ActivityStates">
+            <summary>
+            A dictionary of activity states. Each entry contains runtime state for a particular activity.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowState.ExecutedActivities">
+            <summary>
+            The list of executed activities.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Workflows.Models.WorkflowType">
+            <summary>
+            Represents a workflow type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowType.Name">
+            <summary>
+            The name of this workflow.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowType.IsEnabled">
+            <summary>
+            Whether this workflow definition is enabled or not.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowType.IsSingleton">
+            <summary>
+            Controls whether this workflow can spawn one or multiple instances.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowType.LockTimeout">
+            <summary>
+            The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowType.LockExpiration">
+            <summary>
+            The expiration in milliseconds of the lock acquired before resuming a workflow instance of this type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowType.DeleteFinishedWorkflows">
+            <summary>
+            Controls whether workflow instances will be deleted upon completion.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowType.Activities">
+            <summary>
+            A complete list of all activities that are part of this workflow.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Models.WorkflowType.Transitions">
+            <summary>
+            A complete list of the transitions between the activities on this workflow.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Workflows.Options.WorkflowOptions.ActivityDictionary">
+            <summary>
+            The set of activities available to workflows.
+            Modules can register and unregister activities.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Services.IActivityLibrary.ListActivities">
+            <summary>
+            Returns a list of instances of all available <see cref="T:OrchardCore.Workflows.Activities.IActivity"/> implementations.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Services.IActivityLibrary.ListCategories">
+            <summary>
+            Returns a list of all available activity categories.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.Workflows.Services.IActivityLibrary.GetActivityByName(System.String)">
+            <summary>
+            Returns an activity instance with the specified name from the library.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Services.IActivityLibrary.InstantiateActivity(System.String)">
+            <summary>
+            Returns a new instance of the activity with the specified name.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Services.IActivityLibrary.InstantiateActivities(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Returns new instances the specified activities.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Services.ISecurityTokenService.CreateToken``1(``0,System.TimeSpan)">
+            <summary>
+            Creates a SAS (Shared Access Signature) token containing the specified data.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Services.ISecurityTokenService.TryDecryptToken``1(System.String,``0@)">
+            <summary>
+            Decrypts the specified SAS token.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Services.IWorkflowManager.NewWorkflow(OrchardCore.Workflows.Models.WorkflowType,System.String)">
+            <summary>
+            Creates a new workflow instance for the specified workflow definition.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Services.IWorkflowManager.CreateWorkflowExecutionContextAsync(OrchardCore.Workflows.Models.WorkflowType,OrchardCore.Workflows.Models.Workflow,System.Collections.Generic.IDictionary{System.String,System.Object})">
+            <summary>
+            Creates a new <see cref="T:OrchardCore.Workflows.Models.WorkflowExecutionContext"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Services.IWorkflowManager.CreateActivityExecutionContextAsync(OrchardCore.Workflows.Models.ActivityRecord,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Creates a new <see cref="T:OrchardCore.Workflows.Models.ActivityContext"/>.
+            </summary>
+            <param name="activityRecord"></param>
+            <param name="properties"></param>
+        </member>
+        <member name="M:OrchardCore.Workflows.Services.IWorkflowManager.TriggerEventAsync(System.String,System.Collections.Generic.IDictionary{System.String,System.Object},System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Triggers a specific <see cref="T:OrchardCore.Workflows.Activities.IEvent"/>.
+            </summary>
+            <param name="name">The type of the event to trigger, e.g. ContentPublishedEvent.</param>
+            <param name="input">An object containing context for the event.</param>
+            <param name="correlationId">Optionally specify a application-specific value to associate the workflow instance with. For example, a content item ID.</param>
+            <param name="isExclusive">
+            If true, a new workflow instance is not created if an existing one is already halted on a starting activity related to this event. False by default.
+            </param>
+            <param name="isAlwaysCorrelated">
+            If true, to be correlated a workflow instance only needs to be halted on an event activity of the related type, regardless the 'correlationId'. False by default.
+            </param>
+        </member>
+        <member name="M:OrchardCore.Workflows.Services.IWorkflowManager.StartWorkflowAsync(OrchardCore.Workflows.Models.WorkflowType,OrchardCore.Workflows.Models.ActivityRecord,System.Collections.Generic.IDictionary{System.String,System.Object},System.String)">
+            <summary>
+            Starts a new workflow using the specified workflow definition.
+            </summary>
+            <param name="workflowType">The workflow definition to start.</param>
+            <param name="startActivity">If a workflow definition contains multiple start activities, you can specify which one to use. If none specified, the first one will be used.</param>
+            <param name="input">Optionally specify any inputs to be used by the workflow.</param>
+            <param name="correlationId">Optionally specify an application-specific value to associate the workflow instance with. For example, a content item ID.</param>
+            <returns>Returns the created workflow context. Can be used for further inspection of the workflow state.</returns>
+        </member>
+        <member name="M:OrchardCore.Workflows.Services.IWorkflowManager.ResumeWorkflowAsync(OrchardCore.Workflows.Models.Workflow,OrchardCore.Workflows.Models.BlockingActivity,System.Collections.Generic.IDictionary{System.String,System.Object})">
+            <summary>
+            Resumes the specified workflow instance at the specified activity.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Workflows.Services.IWorkflowManager.ExecuteWorkflowAsync(OrchardCore.Workflows.Models.WorkflowExecutionContext,OrchardCore.Workflows.Models.ActivityRecord)">
+            <summary>
+            Executes the specified workflow starting at the specified activity.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Workflows.Services.IWorkflowValueSerializer">
+            <summary>
+            Implementors serialize complex external stimuli into a serializable format.
+            for example, when triggering a workflow and passing in a content item, only the content item's ID is persisted and re-hydrated
+            when the workflow is resumed.
+            </summary>
+        </member>
+    </members>
+</doc>

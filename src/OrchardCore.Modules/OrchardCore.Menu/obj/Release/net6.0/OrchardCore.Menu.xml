@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Menu</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.Menu.Drivers.MenuPartDisplayDriver.GetMenuItemAt(OrchardCore.Menu.Models.MenuItemsListPart,System.Int32[])">
+            <summary>
+            Clone the content items at the specific index.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Menu.MenuShapes.EncodeAlternateElement(System.String)">
+            <summary>
+            Encodes dashed and dots so that they don't conflict in filenames
+            </summary>
+            <param name="alternateElement"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.Menu.MenuShapes.FormatName(System.String)">
+            <summary>
+            Converts "foo-ba r" to "FooBaR"
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Menu.Models.HtmlMenuItemPart.Url">
+            <summary>
+            The url of the link to create.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Menu.Models.HtmlMenuItemPart.Html">
+            <summary>
+            The raw html to display for this link.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Menu.Models.LinkMenuItemPart.Url">
+            <summary>
+            The url of the link to create.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Menu.Settings.HtmlMenuItemPartSettings.SanitizeHtml">
+            <summary>
+            Whether to sanitize the html input
+            </summary>
+        </member>
+    </members>
+</doc>

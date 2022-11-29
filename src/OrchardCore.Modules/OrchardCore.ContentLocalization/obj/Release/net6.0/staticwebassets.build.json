@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "KhhVOziBjK7ac4TneN3xg81HEr9UiuBj10khl6k6xWw=",
+  "Source": "OrchardCore.ContentLocalization",
+  "BasePath": "_content/OrchardCore.ContentLocalization",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.ContentLocalization\\wwwroot",
+      "Source": "OrchardCore.ContentLocalization",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.ContentLocalization\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.ContentLocalization",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

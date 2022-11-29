@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "wfrOIyh1qGCPCZs+5v/aDX+NDbJStEqN4vUbNgn9YpY=",
+  "Source": "OrchardCore.BackgroundTasks",
+  "BasePath": "_content/OrchardCore.BackgroundTasks",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

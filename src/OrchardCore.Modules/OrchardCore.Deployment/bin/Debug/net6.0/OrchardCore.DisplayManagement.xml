@@ -1,0 +1,1163 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.DisplayManagement</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.DisplayManagement.Descriptors.DefaultShapeTableManager">
+            <summary>
+            This class needs to use a cache which is a singleton per tenant as it can contain different shapes
+            for each tenant, even if they share the same theme.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Descriptors.IShapeAttributeProvider">
+            <summary>
+            Represents a marker interface for classes that have Shape methods tagged with <see cref="T:OrchardCore.DisplayManagement.ShapeAttribute"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Descriptors.IShapePlacementProvider">
+            <summary>
+            Represents a marker interface for classes that provide Shape placement informations
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.IShapePlacementProvider.BuildPlacementInfoResolverAsync(OrchardCore.DisplayManagement.Handlers.IBuildShapeContext)">
+            <summary>
+            Builds a contextualized <see cref="T:OrchardCore.DisplayManagement.Descriptors.IPlacementInfoResolver"/>
+            </summary>
+            <param name="context">The <see cref="T:OrchardCore.DisplayManagement.Handlers.IBuildShapeContext"/> for which we need a placement resolver</param>
+            <returns>An instance of <see cref="T:OrchardCore.DisplayManagement.Descriptors.IPlacementInfoResolver"/> for the current context or <see langword="null"/> if this provider is not concerned.</returns>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Descriptors.IPlacementInfoResolver">
+            <summary>
+            Represents a class capable of resolving <see cref="T:OrchardCore.DisplayManagement.Descriptors.PlacementInfo"/> of Shapes
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.IPlacementInfoResolver.ResolvePlacement(OrchardCore.DisplayManagement.Descriptors.ShapePlacementContext)">
+            <summary>
+            Resolves <see cref="T:OrchardCore.DisplayManagement.Descriptors.PlacementInfo"/> for the provided <see cref="T:OrchardCore.DisplayManagement.Descriptors.ShapePlacementContext"/>
+            </summary>
+            <param name="placementContext">The <see cref="T:OrchardCore.DisplayManagement.Descriptors.ShapePlacementContext"/></param>
+            <returns>An <see cref="T:OrchardCore.DisplayManagement.Descriptors.PlacementInfo"/> or <see langword="null"/> if not concerned.</returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.PlacementInfo.GetZones">
+            <summary>
+            Returns the list of zone names.
+            e.g., <code>Content.Metadata:1</code> will return 'Content', 'Metadata'
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.PlacementInfo.GetGroup">
+            <summary>
+            Extracts the group information from a location string, or <c>null</c> if it is not present.
+            e.g., Content:12@search
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.PlacementInfo.GetCard">
+            <summary>
+            Extracts the card information from a location string, or <c>null</c> if it is not present.
+            e.g., Content:12%search
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.PlacementInfo.GetColumn">
+            <summary>
+            Extracts the column information from a location string, or <c>null</c> if it is not present.
+            e.g., Content:12!search
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.PlacementInfoExtensions.Combine(OrchardCore.DisplayManagement.Descriptors.PlacementInfo,OrchardCore.DisplayManagement.Descriptors.PlacementInfo)">
+            <summary>
+            Combines two <see cref="T:OrchardCore.DisplayManagement.Descriptors.PlacementInfo"/>.
+            </summary>
+            <remarks>
+            Second overrides first. First and second can be null.
+            </remarks>
+            <param name="first">First placement.</param>
+            <param name="second">Second placement.</param>
+            <returns>Combined <see cref="T:OrchardCore.DisplayManagement.Descriptors.PlacementInfo"/>.</returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.PlacementInfoExtensions.Combine(OrchardCore.DisplayManagement.Shapes.AlternatesCollection,OrchardCore.DisplayManagement.Shapes.AlternatesCollection)">
+            <summary>
+            Combines two <see cref="T:OrchardCore.DisplayManagement.Shapes.AlternatesCollection"/>.
+            </summary>
+            <remarks>
+            First and second can be null.
+            </remarks>
+            <param name="first">First collection.</param>
+            <param name="second">Second collection.</param>
+            <returns>Combined <see cref="T:OrchardCore.DisplayManagement.Shapes.AlternatesCollection"/>.</returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.ShapeAlterationBuilder.OnCreating(System.Action{OrchardCore.DisplayManagement.Implementation.ShapeCreatingContext})">
+            <summary>
+            Called when the shape is being created.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.ShapeAlterationBuilder.OnCreating(System.Func{OrchardCore.DisplayManagement.Implementation.ShapeCreatingContext,System.Threading.Tasks.Task})">
+            <summary>
+            Called when the shape is being created.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.ShapeAlterationBuilder.OnCreated(System.Action{OrchardCore.DisplayManagement.Implementation.ShapeCreatedContext})">
+            <summary>
+            Called when the shape is created.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.ShapeAlterationBuilder.OnCreated(System.Func{OrchardCore.DisplayManagement.Implementation.ShapeCreatedContext,System.Threading.Tasks.Task})">
+            <summary>
+            Called when the shape is being created.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.ShapeAlterationBuilder.OnDisplaying(System.Action{OrchardCore.DisplayManagement.Implementation.ShapeDisplayContext})">
+            <summary>
+            Called whenever the shape is displayed, even if it's content is cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.ShapeAlterationBuilder.OnDisplaying(System.Func{OrchardCore.DisplayManagement.Implementation.ShapeDisplayContext,System.Threading.Tasks.Task})">
+            <summary>
+            Called whenever the shape is displayed, even if it's content is cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.ShapeAlterationBuilder.OnProcessing(System.Action{OrchardCore.DisplayManagement.Implementation.ShapeDisplayContext})">
+            <summary>
+            Called when the shape is actually rendered and state needs to be loaded.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.ShapeAlterationBuilder.OnProcessing(System.Func{OrchardCore.DisplayManagement.Implementation.ShapeDisplayContext,System.Threading.Tasks.Task})">
+            <summary>
+            Called when the shape is actually rendered and state needs to be loaded.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.ShapeAlterationBuilder.OnDisplayed(System.Action{OrchardCore.DisplayManagement.Implementation.ShapeDisplayContext})">
+            <summary>
+            Called when the shape is done being rendered.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.ShapeAlterationBuilder.OnDisplayed(System.Func{OrchardCore.DisplayManagement.Implementation.ShapeDisplayContext,System.Threading.Tasks.Task})">
+            <summary>
+            Called when the shape is done being rendered.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Descriptors.ShapePlacementContext.Source">
+            <summary>
+            Debug information explaining where the final placement is coming from.
+            Used by tooling.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Descriptors.ShapeDescriptorIndex.BindingSource">
+            <summary>
+            The BindingSource is informational text about the source of the Binding delegate. Not used except for
+            troubleshooting.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Descriptors.ShapeDescriptor.BindingSource">
+            <summary>
+            The BindingSource is informational text about the source of the Binding delegate. Not used except for
+            troubleshooting.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy.ShapePlacementParsingStrategy">
+            <summary>
+            This component discovers and announces the shape alterations implied by the contents of the Placement.json files
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.IShapeTemplateFileProviderAccessor">
+            <summary>
+            Accessor to the <see cref="T:Microsoft.Extensions.FileProviders.IFileProvider"/> used by <see cref="T:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.ShapeTemplateBindingStrategy"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.IShapeTemplateFileProviderAccessor.FileProvider">
+            <summary>
+            Gets the <see cref="T:Microsoft.Extensions.FileProviders.IFileProvider"/> used to look up Template files.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.IShapeTemplateHarvester">
+            <summary>
+            This service determines which paths to examine, and provides
+            the shape type based on the template file paths discovered
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.ShapeTemplateFileProviderAccessor">
+            <summary>
+            Default implementation of <see cref="T:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.IShapeTemplateFileProviderAccessor"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.ShapeTemplateFileProviderAccessor.#ctor(Microsoft.Extensions.Options.IOptions{OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.ShapeTemplateOptions})">
+            <summary>
+            Initializes a new instance of <see cref="T:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.ShapeTemplateFileProviderAccessor"/>.
+            </summary>
+            <param name="optionsAccessor">Accessor to <see cref="T:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.ShapeTemplateOptions"/>.</param>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.ShapeTemplateFileProviderAccessor.FileProvider">
+            <summary>
+            Gets the <see cref="T:Microsoft.Extensions.FileProviders.IFileProvider"/> used to look up Templates files.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.ShapeTemplateOptions">
+            <summary>
+            Provides programmatic configuration for the <see cref="T:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.ShapeTemplateBindingStrategy"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.ShapeTemplateOptions.FileProviders">
+            <summary>
+            Gets the sequence of <see cref="T:Microsoft.Extensions.FileProviders.IFileProvider" /> instances used by <see cref="T:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.ShapeTemplateBindingStrategy"/> to
+            locate Fluid files.
+            </summary>
+            <remarks>
+            At startup, this is initialized to include an instance of <see cref="T:Microsoft.Extensions.FileProviders.PhysicalFileProvider"/> that is
+            rooted at the application root.
+            </remarks>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.ShapeTemplateOptionsSetup">
+            <summary>
+            Sets up default options for <see cref="T:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.ShapeTemplateOptions"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.ShapeTemplateOptionsSetup.#ctor(Microsoft.Extensions.Hosting.IHostEnvironment,OrchardCore.Modules.IApplicationContext)">
+            <summary>
+            Initializes a new instance of <see cref="T:OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy.ShapeTemplateOptions"/>.
+            </summary>
+            <param name="hostingEnvironment"><see cref="T:Microsoft.Extensions.Hosting.IHostEnvironment"/> for the application.</param>
+            <param name="applicationContext"><see cref="T:OrchardCore.Modules.IApplicationContext"/> for the application.</param>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Entities.SectionDisplayDriver`2">
+            <summary>
+            A concrete implementation of this class will be able to take part in the rendering of an <see cref="T:OrchardCore.Entities.IEntity"/>
+            shape instance for a specific section of the object. A section represents a property of an entity instance
+            where the name of the property is the type of the section.
+            </summary>
+            <typeparam name="TModel">The type of model this driver handles.</typeparam>
+            <typeparam name="TSection">The type of the section this driver handles.</typeparam>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Entities.SectionDisplayDriver`2.PropertyName">
+            <summary>
+            Gets the property name that the <typeparamref name="TSection"/> is stored on the <typeparamref name="TModel"/>.
+            </summary>
+            <remarks>
+            Overriding this property allows changing the name of the property that the section is stored in from the
+            default, which is <c>typeof(TSection).Name</c>.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Handlers.DisplayDriver`4.CanHandleModel(`0)">
+            <summary>
+            Returns <c>true</c> if the model can be handle by the current driver.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Handlers.DisplayDriver`5.CanHandleModel(`0)">
+            <summary>
+            Returns <c>true</c> if the model can be handle by the current driver.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Handlers.DisplayDriverBase.Initialize``1(System.Action{``0})">
+            <summary>
+            Creates a new strongly typed shape and initializes it if it needs to be rendered.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Handlers.DisplayDriverBase.Initialize``1(System.Func{``0,System.Threading.Tasks.ValueTask})">
+            <summary>
+            Creates a new strongly typed shape and initializes it if it needs to be rendered.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Handlers.DisplayDriverBase.Initialize``1(System.String,System.Func{``0,System.Threading.Tasks.ValueTask})">
+            <summary>
+            Creates a new strongly typed shape and initializes it if it needs to be rendered.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Handlers.DisplayDriverBase.Copy``1(System.String,``0)">
+            <summary>
+            Creates a dynamic proxy for the specified model. Properties are copied to the new object.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Handlers.DisplayDriverBase.Initialize``1(System.String,System.Action{``0})">
+            <summary>
+            Creates a new strongly typed shape and initializes it if it needs to be rendered.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Handlers.DisplayDriverBase.Dynamic(System.String,System.Func{System.Object,System.Threading.Tasks.Task})">
+            <summary>
+            Creates a new loosely typed shape and initializes it if it needs to be rendered.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Handlers.DisplayDriverBase.Dynamic(System.String,System.Action{System.Object})">
+            <summary>
+            Creates a new loosely typed shape and initializes it if it needs to be rendered.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Handlers.DisplayDriverBase.Dynamic(System.String)">
+            <summary>
+            If the shape needs to be rendered, it is created automatically from its type name.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Handlers.DisplayDriverBase.View``1(System.String,``0)">
+            <summary>
+            Creates a <see cref="T:OrchardCore.DisplayManagement.Views.ShapeViewModel`1"/> for the specific model.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Handlers.DisplayDriverBase.Shape(System.String,OrchardCore.DisplayManagement.IShape)">
+            <summary>
+            If the shape needs to be rendered, it is created automatically from its type name and initialized.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Handlers.DisplayDriverBase.Factory(System.String,System.Func{OrchardCore.DisplayManagement.Handlers.IBuildShapeContext,System.Threading.Tasks.ValueTask{OrchardCore.DisplayManagement.IShape}})">
+            <summary>
+            Creates a shape lazily.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Handlers.DisplayDriverBase.Factory(System.String,System.Func{OrchardCore.DisplayManagement.Handlers.IBuildShapeContext,OrchardCore.DisplayManagement.IShape})">
+            <summary>
+            Creates a shape lazily.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Handlers.DisplayDriverBase.Factory(System.String,System.Func{OrchardCore.DisplayManagement.Handlers.IBuildShapeContext,System.Threading.Tasks.ValueTask{OrchardCore.DisplayManagement.IShape}},System.Func{OrchardCore.DisplayManagement.IShape,System.Threading.Tasks.Task})">
+            <summary>
+            If the shape needs to be rendered, it is created by the delegate.
+            </summary>
+            <remarks>
+            This method is ultimately called by all drivers to create a shape. It's made virtual
+            so that any concrete driver can use it as a way to alter any returning shape from the drivers.
+            </remarks>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Handlers.FindPlacementDelegate">
+            <summary>
+            A function that provides a <see cref="T:OrchardCore.DisplayManagement.Descriptors.PlacementInfo"/> instance for a shape.
+            </summary>
+            <param name="shapeType">The shape type to render.</param>
+            <param name="differentiator">
+            A discriminator that differentiates this specific shape to the others of the same type.
+            For instance multiple field shape smight be displayed in different locations even though
+            they are of the same type.
+            </param>
+            <param name="displayType">The display type the content item owning the shape is rendered with.</param>
+            <param name="context">The <see cref="T:OrchardCore.DisplayManagement.Handlers.IBuildShapeContext"/> in which the shape is placed.</param>
+            <returns>The <see cref="T:OrchardCore.DisplayManagement.Descriptors.PlacementInfo"/> to use or <see langword="null"/> if this function is not concerned.</returns>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Handlers.IBuildShapeContext">
+            <summary>
+            Represents a context object that is used to build and place a list of shape representing
+            something that has to be displayed.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Html.HtmlContentString">
+            <summary>
+            An optimization of <see cref="T:Microsoft.AspNetCore.Mvc.ViewFeatures.StringHtmlContent"/> that uses 'writer.Write(encoder.Encode(_value))', in place of using
+            'encoder.Encode(writer, _value)' that calls 'writer.Write' on each char if the string has even a single char to encode.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Html.HtmlContentString.#ctor(System.String)">
+            <summary>
+            Creates a new instance of <see cref="T:OrchardCore.DisplayManagement.Html.HtmlContentString"/>
+            </summary>
+            <param name="value"><see cref="T:System.String"/> to be HTML encoded when <see cref="M:OrchardCore.DisplayManagement.Html.HtmlContentString.WriteTo(System.IO.TextWriter,System.Text.Encodings.Web.HtmlEncoder)"/> is called.</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Html.HtmlContentString.WriteTo(System.IO.TextWriter,System.Text.Encodings.Web.HtmlEncoder)">
+            <inheritdoc />
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Implementation.IHtmlDisplay">
+            <summary>
+            Coordinates the rendering of shapes.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Implementation.IShapeDisplayEvents.DisplayingFinalizedAsync(OrchardCore.DisplayManagement.Implementation.ShapeDisplayContext)">
+            <summary>
+            Guaranteed to be called, even in the event of an exception when rendering the shape.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.IShape">
+            <summary>
+            Interface present on dynamic shapes.
+            May be used to access attributes in a strongly typed fashion.
+            Note: Anything on this interface is a reserved word for the purpose of shape properties
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.IShapeBindingResolver">
+            <summary>
+            An implementation of this interface is called whenever a shape template
+            is seeked. it can be used to provide custom dynamic templates, for instance to override
+            any view engine based ones.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.IShapeFactory">
+            <summary>
+            Service that creates new instances of dynamic shape objects
+            This may be used directly, or through the IShapeHelperFactory.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.ShapeFactoryExtensions.CreateAsync``1(OrchardCore.DisplayManagement.IShapeFactory,System.String,``0)">
+            <summary>
+            Creates a new shape by copying the properties of the specific model.
+            </summary>
+            <param name="factory">The <see cref="T:OrchardCore.DisplayManagement.IShapeFactory"/>.</param>
+            <param name="shapeType">The type of shape to create.</param>
+            <param name="model">The model to copy.</param>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.ShapeFactoryExtensions.CreateAsync``1(OrchardCore.DisplayManagement.IShapeFactory,System.String,System.Func{``0,System.Threading.Tasks.ValueTask})">
+            <summary>
+            Creates a dynamic proxy instance for the type and initializes it.
+            </summary>
+            <typeparam name="TModel">The type to instantiate.</typeparam>
+            <param name="factory">The <see cref="T:OrchardCore.DisplayManagement.IShapeFactory"/>.</param>
+            <param name="shapeType">The shape type to create.</param>
+            <param name="initializeAsync">The initialization method.</param>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.ShapeFactoryExtensions.CreateAsync``1(OrchardCore.DisplayManagement.IShapeFactory,System.String,System.Action{``0})">
+            <summary>
+            Creates a dynamic proxy instance for the type and initializes it.
+            </summary>
+            <typeparam name="TModel">The type to instantiate.</typeparam>
+            <param name="factory">The <see cref="T:OrchardCore.DisplayManagement.IShapeFactory"/>.</param>
+            <param name="shapeType">The shape type to create.</param>
+            <param name="initialize">The initialization method.</param>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.LocationExpander.ThemeViewLocationExpanderProvider.PopulateValues(Microsoft.AspNetCore.Mvc.Razor.ViewLocationExpanderContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.LocationExpander.ThemeViewLocationExpanderProvider.ExpandViewLocations(Microsoft.AspNetCore.Mvc.Razor.ViewLocationExpanderContext,System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc />
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Manifest.ThemeAttribute">
+            <summary>
+            Defines a Theme which is a dedicated Module for theming purposes.
+            If the Theme has only one default feature, it may be defined there.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.DisplayManagement.Manifest.ThemeAttribute.DefaultBaseTheme">
+            <summary>
+            &quot;&quot;
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Manifest.ThemeAttribute.#ctor">
+            <summary>
+            Default parameterless ctor.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Manifest.ThemeAttribute.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Ctor allowing <paramref name="author"/>, as well as defaults for
+            <paramref name="websiteUrl"/>, <paramref name="semVer"/>, and <paramref name="tags"/>.
+            </summary>
+            <param name="id">The identifier for the Module.</param>
+            <param name="baseTheme">The base theme.</param>
+            <param name="description">A simple feature description.</param>
+            <param name="author">The module author name.</param>
+            <param name="semVer">Semantic Version string.</param>
+            <param name="websiteUrl">The module website URL.</param>
+            <param name="featureDependencies">Zero or more delimited feature dependencies,
+            corresponding to each of the feature <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Name"/>
+            properties.</param>
+            <param name="tags">Tags associated with the Module.</param>
+            <param name="defaultTenant">Whether considered default tenant only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <param name="alwaysEnabled">Whether feature is always enabled.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <see cref="!:https://semver.org">Semantic Versioning</see>
+            <remarks>At least <paramref name="author" /> expected herein to differentiate with
+            parameterless ctor.</remarks>
+            <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Manifest.ThemeAttribute.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Ctor allowing <paramref name="author"/>, as well as defaults for
+            <paramref name="websiteUrl"/>, <paramref name="semVer"/>, and <paramref name="tags"/>.
+            </summary>
+            <param name="id">The identifier for the Module.</param>
+            <param name="name">The feature name, defaults to <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Id"/>
+            when null or blank.</param>
+            <param name="baseTheme">The base theme.</param>
+            <param name="description">A simple feature description.</param>
+            <param name="author">The module author name.</param>
+            <param name="semVer">Semantic Version string.</param>
+            <param name="websiteUrl">The module website URL.</param>
+            <param name="featureDependencies">Zero or more delimited feature dependencies,
+            corresponding to each of the feature <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Name"/>
+            properties.</param>
+            <param name="tags">Tags associated with the Module.</param>
+            <param name="defaultTenant">Whether considered default tenant only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <param name="alwaysEnabled">Whether feature is always enabled.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <see cref="!:https://semver.org">Semantic Versioning</see>
+            <remarks>At least <paramref name="author" /> expected herein to differentiate with
+            parameterless ctor.</remarks>
+            <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Manifest.ThemeAttribute.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Ctor allowing <paramref name="author"/>, as well as defaults for
+            <paramref name="websiteUrl"/>, <paramref name="semVer"/>, and <paramref name="tags"/>.
+            </summary>
+            <param name="id">The identifier for the Module.</param>
+            <param name="name">The feature name, defaults to <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Id"/>
+            when null or blank.</param>
+            <param name="baseTheme">The base theme.</param>
+            <param name="category">A simple feature category.</param>
+            <param name="priority">Priority for the Module.</param>
+            <param name="description">A simple feature description.</param>
+            <param name="author">The module author name.</param>
+            <param name="semVer">Semantic Version string.</param>
+            <param name="websiteUrl">The module website URL.</param>
+            <param name="featureDependencies">Zero or more delimited feature dependencies,
+            corresponding to each of the feature <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Name"/>
+            properties.</param>
+            <param name="tags">Tags associated with the Module.</param>
+            <param name="defaultTenant">Whether considered default tenant only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <param name="alwaysEnabled">Whether feature is always enabled.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <see cref="!:https://semver.org">Semantic Versioning</see>
+            <remarks>At least <paramref name="author" /> expected herein to differentiate with
+            parameterless ctor.</remarks>
+            <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Manifest.ThemeAttribute.BaseTheme">
+            <summary>
+            Gets or sets the Base Theme if the theme is derived from an existing one.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Notify.INotifier">
+            <summary>
+            Notification manager for UI notifications
+            </summary>
+            <remarks>
+            Where such notifications are displayed depends on the theme used. Default themes contain a
+            Messages zone for this.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Notify.INotifier.Add(OrchardCore.DisplayManagement.Notify.NotifyType,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)">
+            <summary>
+            Adds a new UI notification
+            </summary>
+            <param name="type">
+            The type of the notification (notifications with different types can be displayed differently)</param>
+            <param name="message">A localized message to display</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Notify.INotifier.AddAsync(OrchardCore.DisplayManagement.Notify.NotifyType,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)">
+            <summary>
+            Adds a new UI notification asynchronously.
+            </summary>
+            <param name="type">
+            The type of the notification (notifications with different types can be displayed differently)</param>
+            <param name="message">A localized message to display</param>
+            <remarks>
+            Added with a default interface implementation for backwards compatability.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Notify.INotifier.List">
+            <summary>
+            Get all notifications added
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Notify.NotifierExtensions.Information(OrchardCore.DisplayManagement.Notify.INotifier,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)">
+            <summary>
+            Adds a new UI notification of type Information
+            </summary>
+            <seealso cref="M:OrchardCore.DisplayManagement.Notify.INotifier.Add(OrchardCore.DisplayManagement.Notify.NotifyType,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)"/>
+            <param name="notifier">The <see cref="T:OrchardCore.DisplayManagement.Notify.INotifier"/></param>
+            <param name="message">A localized message to display</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Notify.NotifierExtensions.InformationAsync(OrchardCore.DisplayManagement.Notify.INotifier,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)">
+            <summary>
+            Adds a new UI notification of type Information
+            </summary>
+            <seealso cref="M:OrchardCore.DisplayManagement.Notify.INotifier.AddAsync(OrchardCore.DisplayManagement.Notify.NotifyType,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)"/>
+            <param name="notifier">The <see cref="T:OrchardCore.DisplayManagement.Notify.INotifier"/></param>
+            <param name="message">A localized message to display</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Notify.NotifierExtensions.Warning(OrchardCore.DisplayManagement.Notify.INotifier,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)">
+            <summary>
+            Adds a new UI notification of type Warning
+            </summary>
+            <seealso cref="M:OrchardCore.DisplayManagement.Notify.INotifier.Add(OrchardCore.DisplayManagement.Notify.NotifyType,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)"/>
+            <param name="notifier">The <see cref="T:OrchardCore.DisplayManagement.Notify.INotifier"/></param>
+            <param name="message">A localized message to display</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Notify.NotifierExtensions.WarningAsync(OrchardCore.DisplayManagement.Notify.INotifier,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)">
+            <summary>
+            Adds a new UI notification of type Warning
+            </summary>
+            <seealso cref="M:OrchardCore.DisplayManagement.Notify.INotifier.AddAsync(OrchardCore.DisplayManagement.Notify.NotifyType,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)"/>
+            <param name="notifier">The <see cref="T:OrchardCore.DisplayManagement.Notify.INotifier"/></param>
+            <param name="message">A localized message to display</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Notify.NotifierExtensions.Error(OrchardCore.DisplayManagement.Notify.INotifier,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)">
+            <summary>
+            Adds a new UI notification of type Error
+            </summary>
+            <seealso cref="M:OrchardCore.DisplayManagement.Notify.INotifier.Add(OrchardCore.DisplayManagement.Notify.NotifyType,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)"/>
+            <param name="notifier">The <see cref="T:OrchardCore.DisplayManagement.Notify.INotifier"/></param>
+            <param name="message">A localized message to display</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Notify.NotifierExtensions.ErrorAsync(OrchardCore.DisplayManagement.Notify.INotifier,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)">
+            <summary>
+            Adds a new UI notification of type Error
+            </summary>
+            <seealso cref="M:OrchardCore.DisplayManagement.Notify.INotifier.AddAsync(OrchardCore.DisplayManagement.Notify.NotifyType,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)"/>
+            <param name="notifier">The <see cref="T:OrchardCore.DisplayManagement.Notify.INotifier"/></param>
+            <param name="message">A localized message to display</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Notify.NotifierExtensions.Success(OrchardCore.DisplayManagement.Notify.INotifier,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)">
+            <summary>
+            Adds a new UI notification of type Success
+            </summary>
+            <seealso cref="M:OrchardCore.DisplayManagement.Notify.INotifier.Add(OrchardCore.DisplayManagement.Notify.NotifyType,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)"/>
+            <param name="notifier">The <see cref="T:OrchardCore.DisplayManagement.Notify.INotifier"/></param>
+            <param name="message">A localized message to display</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Notify.NotifierExtensions.SuccessAsync(OrchardCore.DisplayManagement.Notify.INotifier,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)">
+            <summary>
+            Adds a new UI notification of type Success
+            </summary>
+            <seealso cref="M:OrchardCore.DisplayManagement.Notify.INotifier.AddAsync(OrchardCore.DisplayManagement.Notify.NotifyType,Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString)"/>
+            <param name="notifier">The <see cref="T:OrchardCore.DisplayManagement.Notify.INotifier"/></param>
+            <param name="message">A localized message to display</param>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.ObjectPool`1">
+             <summary>
+             Generic implementation of object pooling pattern with predefined pool size limit. The main
+             purpose is that limited number of frequently used objects can be kept in the pool for
+             further recycling.
+            
+             Notes:
+             1) it is not the goal to keep all returned objects. Pool is not meant for storage. If there
+                is no space in the pool, extra returned objects will be dropped.
+            
+             2) it is implied that if object was obtained from a pool, the caller will return it back in
+                a relatively short time. Keeping checked out objects for long durations is ok, but
+                reduces usefulness of pooling. Just new up your own.
+            
+             Not returning objects to the pool in not detrimental to the pool's work, but is a bad practice.
+             Rationale:
+                If there is no intent for reusing the object, do not use pool - just use "new".
+             </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.ObjectPool`1.Factory">
+            <remarks>
+            Not using System.Func{T} because this file is linked into the (debugger) Formatter,
+            which does not have that type (since it compiles against .NET 2.0).
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.ObjectPool`1.Allocate">
+            <summary>
+            Produces an instance.
+            </summary>
+            <remarks>
+            Search strategy is a simple linear probing which is chosen for it cache-friendliness.
+            Note that Free will try to store recycled objects close to the start thus statistically
+            reducing how far we will typically search.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.ObjectPool`1.Free(`0)">
+            <summary>
+            Returns objects to the pool.
+            </summary>
+            <remarks>
+            Search strategy is a simple linear probing which is chosen for it cache-friendliness.
+            Note that Free will try to store recycled objects close to the start thus statistically
+            reducing how far we will typically search in Allocate.
+            </remarks>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.StringBuilderPool">
+            <summary>
+            The usage is:
+                   var inst = PooledStringBuilder.GetInstance();
+                   var sb = inst.builder;
+                   ... Do Stuff...
+                   ... sb.ToString() ...
+                   inst.Free();
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Razor.RazorPage`1.New">
+            <summary>
+            Gets a dynamic shape factory to create new shapes.
+            </summary>
+            <example>
+            Usage:
+            <code>
+            await New.MyShape()
+            await New.MyShape(A: 1, B: "Some text")
+            (await New.MyShape()).A(1).B("Some text")
+            </code>
+            </example>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Razor.RazorPage`1.Factory">
+            <summary>
+            Gets an <see cref="T:OrchardCore.DisplayManagement.IShapeFactory"/> to create new shapes.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Razor.RazorPage`1.DisplayAsync(System.Object)">
+            <summary>
+            Renders a shape.
+            </summary>
+            <param name="shape">The shape.</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Razor.RazorPage`1.DisplayAsync(OrchardCore.DisplayManagement.IShape)">
+            <summary>
+            Renders a shape.
+            </summary>
+            <param name="shape">The shape.</param>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Razor.RazorPage`1.T">
+            <summary>
+            The <see cref="T:Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer"/> instance for the current view.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Razor.RazorPage`1.RenderTitleSegments(Microsoft.AspNetCore.Html.IHtmlContent,System.String,Microsoft.AspNetCore.Html.IHtmlContent)">
+            <summary>
+            Adds a segment to the title and returns all segments.
+            </summary>
+            <param name="segment">The segment to add to the title.</param>
+            <param name="position">Optional. The position of the segment in the title.</param>
+            <param name="separator">The html string that should separate all segments.</param>
+            <returns>And <see cref="T:Microsoft.AspNetCore.Html.IHtmlContent"/> instance representing the full title.</returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Razor.RazorPage`1.RenderTitleSegments(System.String,System.String,Microsoft.AspNetCore.Html.IHtmlContent)">
+            <summary>
+            Adds a segment to the title and returns all segments.
+            </summary>
+            <param name="segment">The segment to add to the title.</param>
+            <param name="position">Optional. The position of the segment in the title.</param>
+            <param name="separator">The html string that should separate all segments.</param>
+            <returns>And <see cref="T:Microsoft.AspNetCore.Html.IHtmlContent"/> instance representing the full title.</returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Razor.RazorPage`1.RenderLayoutBody">
+            <summary>
+            Renders the content zone of the layout.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Razor.RazorPage`1.Tag(OrchardCore.DisplayManagement.IShape)">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.TagBuilder"/> to render a shape.
+            </summary>
+            <param name="shape">The shape.</param>
+            <returns>A new <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.TagBuilder"/>.</returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Razor.RazorPage`1.Tag(OrchardCore.DisplayManagement.IShape,System.String)">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.TagBuilder"/> to render a shape.
+            </summary>
+            <param name="shape">The shape.</param>
+            <param name="tag">The tag name to use.</param>
+            <returns>A new <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.TagBuilder"/>.</returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Razor.RazorPage`1.RenderBodyAsync">
+            <summary>
+            In a Razor layout page, renders the portion of a content page that is not within a named zone.
+            </summary>
+            <returns>The HTML content to render.</returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Razor.RazorPage`1.IsSectionDefined(System.String)">
+            <summary>
+            Check if a zone is defined in the layout or it has items.
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Razor.RazorPage`1.RenderSection(System.String)">
+            <summary>
+            Renders a zone from the layout.
+            </summary>
+            <param name="name">The name of the zone to render.</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Razor.RazorPage`1.RenderSection(System.String,System.Boolean)">
+            <summary>
+            Renders a zone from the layout.
+            </summary>
+            <param name="name">The name of the zone to render.</param>
+            <param name="required">Whether the zone is required or not.</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Razor.RazorPage`1.RenderSectionAsync(System.String)">
+            <summary>
+            Renders a zone from the layout.
+            </summary>
+            <param name="name">The name of the zone to render.</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Razor.RazorPage`1.RenderSectionAsync(System.String,System.Boolean)">
+            <summary>
+            Renders a zone from the layout.
+            </summary>
+            <param name="name">The name of the zone to render.</param>
+            <param name="required">Whether the zone is required or not.</param>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Razor.RazorPage`1.FullRequestPath">
+            <summary>
+            Returns the full escaped path of the current request.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Razor.RazorPage`1.Site">
+            <summary>
+            Gets the <see cref="T:OrchardCore.Settings.ISite"/> instance.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Razor.RazorViewActionFilter">
+            <summary>
+            Inject commonly used data through an HttpContext feature <see cref="T:OrchardCore.DisplayManagement.Razor.RazorViewFeature"/> such that
+            e.g a <see cref="T:OrchardCore.DisplayManagement.Razor.RazorPage"/> can reuse them when it's executed.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Razor.RazorViewFeature">
+            <summary>
+            Used to capture commonly used data that can be retrieved e.g by a <see cref="T:OrchardCore.DisplayManagement.Razor.RazorPage"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Razor.RazorViewFeature.Site">
+            <summary>
+            The <see cref="T:OrchardCore.Settings.ISite"/> instance.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Razor.RazorViewFeature.ThemeLayout">
+            <summary>
+            The current theme layout.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Razor.RazorViewFeature.Theme">
+            <summary>
+            The current theme.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.RazorPages.Page.New">
+            <summary>
+            Gets a dynamic shape factory to create new shapes.
+            </summary>
+            <example>
+            Usage:
+            <code>
+            await New.MyShape()
+            await New.MyShape(A: 1, B: "Some text")
+            (await New.MyShape()).A(1).B("Some text")
+            </code>
+            </example>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.RazorPages.Page.Factory">
+            <summary>
+            Gets an <see cref="T:OrchardCore.DisplayManagement.IShapeFactory"/> to create new shapes.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.RazorPages.Page.DisplayAsync(System.Object)">
+            <summary>
+            Renders a shape.
+            </summary>
+            <param name="shape">The shape.</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.RazorPages.Page.DisplayAsync(OrchardCore.DisplayManagement.IShape)">
+            <summary>
+            Renders a shape.
+            </summary>
+            <param name="shape">The shape.</param>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.RazorPages.Page.T">
+            <summary>
+            The <see cref="T:Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer"/> instance for the current view.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.RazorPages.Page.RenderTitleSegments(Microsoft.AspNetCore.Html.IHtmlContent,System.String,Microsoft.AspNetCore.Html.IHtmlContent)">
+            <summary>
+            Adds a segment to the title and returns all segments.
+            </summary>
+            <param name="segment">The segment to add to the title.</param>
+            <param name="position">Optional. The position of the segment in the title.</param>
+            <param name="separator">The html string that should separate all segments.</param>
+            <returns>And <see cref="T:Microsoft.AspNetCore.Html.IHtmlContent"/> instance representing the full title.</returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.RazorPages.Page.RenderTitleSegments(System.String,System.String,Microsoft.AspNetCore.Html.IHtmlContent)">
+            <summary>
+            Adds a segment to the title and returns all segments.
+            </summary>
+            <param name="segment">The segment to add to the title.</param>
+            <param name="position">Optional. The position of the segment in the title.</param>
+            <param name="separator">The html string that should separate all segments.</param>
+            <returns>And <see cref="T:Microsoft.AspNetCore.Html.IHtmlContent"/> instance representing the full title.</returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.RazorPages.Page.Tag(OrchardCore.DisplayManagement.IShape)">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.TagBuilder"/> to render a shape.
+            </summary>
+            <param name="shape">The shape.</param>
+            <returns>A new <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.TagBuilder"/>.</returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.RazorPages.Page.Tag(OrchardCore.DisplayManagement.IShape,System.String)">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.TagBuilder"/> to render a shape.
+            </summary>
+            <param name="shape">The shape.</param>
+            <param name="tag">The tag name to use.</param>
+            <returns>A new <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.TagBuilder"/>.</returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.RazorPages.Page.IsSectionDefined(System.String)">
+            <summary>
+            Check if a zone is defined in the layout or it has items.
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.RazorPages.Page.RenderSectionAsync(System.String)">
+            <summary>
+            Renders a zone from the RazorPages.
+            </summary>
+            <param name="name">The name of the zone to render.</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.RazorPages.Page.RenderSectionAsync(System.String,System.Boolean)">
+            <summary>
+            Renders a zone from the RazorPages.
+            </summary>
+            <param name="name">The name of the zone to render.</param>
+            <param name="required">Whether the zone is required or not.</param>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.RazorPages.Page.FullRequestPath">
+            <summary>
+            Returns the full escaped path of the current request.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.RazorPages.Page.Site">
+            <summary>
+            Gets the <see cref="T:OrchardCore.Settings.ISite"/> instance.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Shapes.AlternatesCollection">
+            <summary>
+            An ordered collection optimized for lookups.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Shapes.ShapeMetadata.Displaying">
+            <summary>
+            Event use for a specific shape instance.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Shapes.ShapeMetadata.ProcessingAsync">
+            <summary>
+            Event use for a specific shape instance.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.Shapes.ShapeMetadata.Displayed">
+            <summary>
+            Event use for a specific shape instance.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Shapes.ShapeMetadata.Cache(System.String)">
+            <summary>
+            Marks this shape to be cached
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Shapes.ShapeMetadata.Cache">
+            <summary>
+            Returns the <see cref="T:OrchardCore.Environment.Cache.CacheContext"/> instance if the shape is cached.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Shapes.ShapeSerializer">
+            <summary>
+            Safely serializes a shape to Json.
+            </summary>
+            <remarks>
+            A new instance should be created for each <see cref="T:OrchardCore.DisplayManagement.IShape"/>
+            </remarks>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.TagHelpers.BaseShapeTagHelper.Properties">
+            <summary>
+            Additional properties for the shape.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.TagHelpers.ValidationMessageTagHelper">
+            <summary>
+            <see cref="T:Microsoft.AspNetCore.Razor.TagHelpers.ITagHelper"/> implementation targeting any HTML element with an <c>asp-validation-for</c>
+            attribute.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.TagHelpers.ValidationMessageTagHelper.Order">
+            <inheritdoc />
+        </member>
+        <member name="P:OrchardCore.DisplayManagement.TagHelpers.ValidationMessageTagHelper.For">
+            <summary>
+            Name to be validated on the current model.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.TagHelpers.ValidationMessageTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext,Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput)">
+            <inheritdoc />
+            <remarks>Does nothing if <see cref="P:OrchardCore.DisplayManagement.TagHelpers.ValidationMessageTagHelper.For"/> is <c>null</c>.</remarks>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Theming.IThemeSelector">
+            <summary>
+            When implemented, defines a way to provide specific themes for the current request.
+            The results of all implementations are then ordered by priority, and the result
+            with the highest priority is selected as the current theme.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Theming.IThemeSelector.GetThemeAsync">
+            <summary>
+            Returns a <see cref="T:OrchardCore.DisplayManagement.Theming.ThemeSelectorResult"/> representing a specific theme
+            and a priority order. The highest priority value will be used.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Theming.ThemeLayout">
+             <summary>
+             This class represents a precompiled _Layout.cshtml view that renders a
+             Layout shape and the View's body in its Content zone.
+            
+             1- Views look for any _ViewStart.cshtml
+             2- <see cref="T:OrchardCore.DisplayManagement.Theming.ThemingViewsFeatureProvider"/> has registered <see cref="T:OrchardCore.DisplayManagement.Theming.ThemeViewStart"/> as the top one
+             3- <see cref="T:OrchardCore.DisplayManagement.Theming.ThemeViewStart"/> then set a special Layout filename as the default View's Layout.
+             4- <see cref="T:OrchardCore.DisplayManagement.Theming.ThemingViewsFeatureProvider"/> has registered <see cref="T:OrchardCore.DisplayManagement.Theming.ThemeLayout"/> for this special filename.
+             5- <see cref="T:OrchardCore.DisplayManagement.Theming.ThemeLayout"/> evaluates the Body of the view, and renders a Layout shape with this Body in the Content zone.
+             </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Theming.ThemeViewStart">
+            <summary>
+            A precompiled view that resets the View's Layout to the <see cref="T:OrchardCore.DisplayManagement.Theming.ThemeLayout"/>
+            class to ensure the Layout shape is used.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Theming.ThemingViewsFeatureProvider">
+            <summary>
+            Provides Theming precompiled views when specific Layout and ViewStart files are seeked on the filesystem.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Title.IPageTitleBuilder.SetFixedTitle(Microsoft.AspNetCore.Html.IHtmlContent)">
+            <summary>
+            Sets a fixed title that will be used instead of any segmented titles added later.
+            Can be cleared with <see cref="M:OrchardCore.DisplayManagement.Title.IPageTitleBuilder.Clear"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Title.IPageTitleBuilder.Clear">
+            <summary>
+            Clears the current list of segments.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Title.IPageTitleBuilder.AddSegment(Microsoft.AspNetCore.Html.IHtmlContent,System.String)">
+            <summary>
+            Adds a segment to the title.
+            </summary>
+            <param name="segment">A segments to add at the specific location in the title.</param>
+            <param name="position">The position, defaults to 0.</param>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Title.IPageTitleBuilder.GenerateTitle(Microsoft.AspNetCore.Html.IHtmlContent)">
+            <summary>
+            Concatenates every title segments using the separator defined in settings.
+            </summary>
+            <param name="separator">The html string that should separate all segments.</param>
+            <returns>A string representing the aggregate title for the current page.</returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Title.PageTitleBuilderExtensions.GenerateTitle(OrchardCore.DisplayManagement.Title.IPageTitleBuilder)">
+            <summary>
+            Concatenates every title segments using the separator defined in settings.
+            </summary>
+            <returns>A string representing the aggregate title for the current page.</returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Views.ShapeResult.Prefix(System.String)">
+            <summary>
+            Sets the prefix of the form elements rendered in the shape.
+            </summary>
+            <remarks>
+            The goal is to isolate each shape when edited together.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Views.ShapeResult.Location(System.String)">
+            <summary>
+            Sets the default location of the shape when no specific placement applies.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Views.ShapeResult.Location(System.String,System.String)">
+            <summary>
+            Sets the location to use for a matching display type.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Views.ShapeResult.Displaying(System.Action{OrchardCore.DisplayManagement.Implementation.ShapeDisplayContext})">
+            <summary>
+            Sets the location to use for a matching display type.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Views.ShapeResult.Name(System.String)">
+            <summary>
+            Sets the shape name regardless its 'Differentiator'.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Views.ShapeResult.Differentiator(System.String)">
+            <summary>
+            Sets a discriminator that is used to find the location of the shape when two shapes of the same type are displayed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Views.ShapeResult.OnGroup(System.String)">
+            <summary>
+            Sets the group identifier the shape will be rendered in.
+            </summary>
+            <param name="groupId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Views.ShapeResult.Cache(System.String,System.Action{OrchardCore.Environment.Cache.CacheContext})">
+            <summary>
+            Sets the caching properties of the shape to render.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.DisplayManagement.Views.ShapeResult.RenderWhen(System.Func{System.Threading.Tasks.Task{System.Boolean}})">
+            <summary>
+            Sets a condition that must return true for the shape to render.
+            The condition is only evaluated if the shape has been placed.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Zones.ZoneHolding">
+             <summary>
+             Provides the behavior of shapes that have a Zones property.
+             Examples include Layout and Item
+            
+             * Returns a fake parent object for zones
+             Foo.Zones
+            
+             *
+             Foo.Zones.Alpha :
+             Foo.Zones["Alpha"]
+             Foo.Alpha :same
+            
+             </summary>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Zones.Zones">
+            <remarks>
+            Returns a ZoneOnDemand object the first time the indexer is invoked.
+            If an item is added to the ZoneOnDemand then the zoneFactory is invoked to create a zone shape and this item is added to the zone.
+            Then the zone shape is assigned in place of the ZoneOnDemand. A ZoneOnDemand returns true when compared to null such that we can
+            do Zones["Foo"] == null to see if anything has been added to a zone, without instantiating a zone when accessing the indexer.
+            </remarks>
+        </member>
+        <member name="T:OrchardCore.DisplayManagement.Zones.ZoneOnDemand">
+            <remarks>
+            InterfaceProxyBehavior()
+            NilBehavior() => return Nil on GetMember and GetIndex in all cases
+            ZoneOnDemandBehavior(_zoneFactory, _parent, name)  => when a zone (Shape) is
+            created, replace itself with the zone so that Layout.ZoneName is no more equal to Nil
+            </remarks>
+        </member>
+        <member name="M:RazorHelperExtensions.CultureDir(OrchardCore.IOrchardHelper)">
+            <summary>
+            Returns the text writing directionality or the current request.
+            </summary>
+            <returns><c>"rtl"</c> if the current culture is Left To Right, <c>"ltr"</c> otherwise.</returns>
+        </member>
+        <member name="M:RazorHelperExtensions.CultureName(OrchardCore.IOrchardHelper)">
+            <summary>
+            Returns the current culture name.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddTagHelpers(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly)">
+            <summary>
+            Adds tag helper services.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddTagHelpers``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds tag helper services.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddTheming(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds host and tenant level services for managing themes.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddThemingHost(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds host level services for managing themes.
+            </summary>
+        </member>
+    </members>
+</doc>

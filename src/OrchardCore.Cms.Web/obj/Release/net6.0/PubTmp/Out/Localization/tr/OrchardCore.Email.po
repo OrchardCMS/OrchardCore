@@ -1,0 +1,508 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: tr\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Email.pot\n"
+"X-Crowdin-File-ID: 740\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Turkish\n"
+"Language: tr_TR\n"
+"PO-Revision-Date: 2022-10-11 20:08\n"
+
+#. .Add(S["Configuration"], configuration => configuration
+#: OrchardCore.Email\AdminMenu.cs:24
+msgctxt "OrchardCore.Email.AdminMenu"
+msgid "Configuration"
+msgstr "Konfigürasyon"
+
+#. .Add(S["Settings"], settings => settings
+#: OrchardCore.Email\AdminMenu.cs:25
+msgctxt "OrchardCore.Email.AdminMenu"
+msgid "Settings"
+msgstr "Ayarlar"
+
+#. .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
+#. .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
+#: OrchardCore.Email\AdminMenu.cs:26
+#: OrchardCore.Email\AdminMenu.cs:26
+msgctxt "OrchardCore.Email.AdminMenu"
+msgid "Email"
+msgstr "E-Posta"
+
+#. await _notifier.SuccessAsync(H["Message sent successfully."]);
+#: OrchardCore.Email\Controllers\AdminController.cs:65
+msgctxt "OrchardCore.Email.Controllers.AdminController"
+msgid "Message sent successfully."
+msgstr "Mesaj başarıyla gönderildi."
+
+#. [EmailAddress(ErrorMessage = "Invalid Email.")]
+#: OrchardCore.Email\ViewModels\SmtpSettingsViewModel.cs:10
+msgctxt "OrchardCore.Email.ViewModels.SmtpSettingsViewModel"
+msgid "Invalid Email."
+msgstr ""
+
+#. public override LocalizedString DisplayText => S["Email Task"];
+#: OrchardCore.Email\Workflows\Activities\EmailTask.cs:34
+msgctxt "OrchardCore.Email.Workflows.Activities.EmailTask"
+msgid "Email Task"
+msgstr "E-posta Görevi"
+
+#. public override LocalizedString Category => S["Messaging"];
+#: OrchardCore.Email\Workflows\Activities\EmailTask.cs:35
+msgctxt "OrchardCore.Email.Workflows.Activities.EmailTask"
+msgid "Messaging"
+msgstr "Mesajlaşma"
+
+#. return Outcomes(S["Done"], S["Failed"]);
+#: OrchardCore.Email\Workflows\Activities\EmailTask.cs:106
+msgctxt "OrchardCore.Email.Workflows.Activities.EmailTask"
+msgid "Done"
+msgstr "Bitti"
+
+#. return Outcomes(S["Done"], S["Failed"]);
+#: OrchardCore.Email\Workflows\Activities\EmailTask.cs:106
+msgctxt "OrchardCore.Email.Workflows.Activities.EmailTask"
+msgid "Failed"
+msgstr "Başarısız"
+
+#. <span class="icon"><i class="fa fa-envelope" aria-hidden="true"></i></span><span class="title">@T["Email"]</span>
+#: OrchardCore.Email\Views\NavigationItemText-email.Id.cshtml:1
+msgctxt "OrchardCore.Email.Views.NavigationItemText-email.Id"
+msgid "Email"
+msgstr "E-Posta"
+
+#. <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:4
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr "Ayarlar kaydedildiğinde mevcut kiracı yeniden yüklenir."
+
+#. <label asp-for="DefaultSender">@T["Sender email address"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:7
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Sender email address"
+msgstr "Göndericinin email adresi"
+
+#. <span class="hint">@T["The default email address to use as a sender, unless the email sender is set."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:10
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The default email address to use as a sender, unless the email sender is set."
+msgstr "Varsayılan e-posta adresi, e-posta göndereni ayarlanmadığı sürece gönderen olarak kullanılacak."
+
+#. <label asp-for="DeliveryMethod">@T["Delivery method"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:14
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Delivery method"
+msgstr "Teslimat Şekli"
+
+#. @T["Network"]
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:17
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Network"
+msgstr "Ağ"
+
+#. @T["Specified pickup directory"]
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:20
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Specified pickup directory"
+msgstr "Belirtilen toplama dizini"
+
+#. <span class="hint">@T["The delivery method used when sending email. Use Network in production. The other options can be useful when developing and testing."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:24
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The delivery method used when sending email. Use Network in production. The other options can be useful when developing and testing."
+msgstr "E-posta gönderirken kullanılan dağıtım yöntemi. Canlı Ortamda Ağı kullanın. Diğer seçenekler geliştirip test ederken faydalı olabilir."
+
+#. <h2 class="card-title">@T["Network delivery options"]</h2>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:32
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Network delivery options"
+msgstr "Ağ dağıtım seçenekleri"
+
+#. <label asp-for="Host">@T["Host name"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:38
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Host name"
+msgstr "Sunucu adı"
+
+#. <span class="hint">@T["The SMTP server domain, e.g. <i>smtp.mailprovider.com</i>."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:41
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The SMTP server domain, e.g. <i>smtp.mailprovider.com</i>."
+msgstr "SMTP sunucusu alanı, örn. <İ> smtp.mailprovider.com </ i>."
+
+#. <label asp-for="Port">@T["Port number"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:48
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Port number"
+msgstr "Port numarası"
+
+#. <span class="hint">@T["The SMTP server port, usually 25."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:51
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The SMTP server port, usually 25."
+msgstr "SMTP sunucusu bağlantı noktası, genellikle 25."
+
+#. <label asp-for="ProxyHost">@T["Proxy host name"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:61
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Proxy host name"
+msgstr "Proxy host ismi"
+
+#. <span class="hint">@T["The proxy server is optional."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:64
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The proxy server is optional."
+msgstr "Proxy sunucuları opsiyonel."
+
+#. <label asp-for="ProxyPort">@T["Proxy port number"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:71
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Proxy port number"
+msgstr "Proxy bağlantı noktası numarası"
+
+#. <span class="hint">@T["The proxy port is optional."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:74
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The proxy port is optional."
+msgstr "Proxy bağlantı noktası opsiyoneldir."
+
+#. <label asp-for="EncryptionMethod">@T["Encryption method to use"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:81
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Encryption method to use"
+msgstr "Kullanmak için şifreleme yöntemi"
+
+#. @T["None"] - @T["Connect to server using insecure connection."]
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:84
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. @T["None"] - @T["Connect to server using insecure connection."]
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:84
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Connect to server using insecure connection."
+msgstr "Güvensiz bağlantı kullanarak sunucuya bağlanın."
+
+#. @T["SSL/TLS"] - @T["Connect to server using SSL/TSL secure connection"]
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:87
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "SSL/TLS"
+msgstr "SSL/TLS"
+
+#. @T["SSL/TLS"] - @T["Connect to server using SSL/TSL secure connection"]
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:87
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Connect to server using SSL/TSL secure connection"
+msgstr "SSL/TLS güvenli bağlantı kullanarak sunucuya bağlanın"
+
+#. @T["STARTTLS"] - @T["Connect to server using insecure connection and upgrade to secure using SSL/TLS"]
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:90
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "STARTTLS"
+msgstr "STARTTLS"
+
+#. @T["STARTTLS"] - @T["Connect to server using insecure connection and upgrade to secure using SSL/TLS"]
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:90
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Connect to server using insecure connection and upgrade to secure using SSL/TLS"
+msgstr "Güvenli olmayan bağlantı kullanarak sunucuya bağlanın ve SSL / TLS kullanarak güvenli hale getirmek için yükseltme yapın"
+
+#. <span class="hint">@T["The encryption method used when connecting to mail server."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:94
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The encryption method used when connecting to mail server."
+msgstr "Eposta sunucusuna bağlanırken şifreleme metodu kullanıldı."
+
+#. <label class="form-check-label" asp-for="AutoSelectEncryption">@T["Auto Select Encryption method"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:100
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Auto Select Encryption method"
+msgstr "Otomatik Seçim Şifreleme yöntemi"
+
+#. <span class="hint dashed">@T["Check to let the system select the encryption method based on port."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:101
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Check to let the system select the encryption method based on port."
+msgstr "Sistemin bağlantı noktasına göre şifreleme yöntemini seçmesine izin verin."
+
+#. <label class="form-check-label" asp-for="RequireCredentials">@T["Require credentials"] </label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:107
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Require credentials"
+msgstr "Kimlik Bilgisi zorunlu"
+
+#. <label class="form-check-label" asp-for="UseDefaultCredentials">@T["Use Windows authentication"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:114
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Use Windows authentication"
+msgstr "Windows Doğrulamasını kullan"
+
+#. <span class="hint d-block">@T["When this option is selected, the application pool or host-process identity is used to authenticate with the mail server."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:115
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "When this option is selected, the application pool or host-process identity is used to authenticate with the mail server."
+msgstr "Bu seçenek belirlendiğinde, posta sunucusuyla kimlik doğrulaması yapmak için uygulama havuzu veya ana bilgisayar işlemi kimliği kullanılır."
+
+#. <label asp-for="UserName">@T["User name"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:120
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "User name"
+msgstr "Kullanıcı adı"
+
+#. <span class="hint">@T["The username for authentication."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:123
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The username for authentication."
+msgstr "Kimlik doğrulama için kullanıcı adı."
+
+#. <label asp-for="Password">@T["Password"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:127
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Password"
+msgstr "Şifre"
+
+#. <span class="hint">@T["The password for authentication."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:130
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The password for authentication."
+msgstr "Kimlik doğrulama için şifre."
+
+#. <h2 class="card-title">@T["Specified pickup directory delivery options"]</h2>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:141
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Specified pickup directory delivery options"
+msgstr "Belirtilen teslim alma dizini teslim seçenekleri"
+
+#. <label asp-for="PickupDirectoryLocation">@T["Pickup directory location"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:144
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Pickup directory location"
+msgstr "Alma dizini konumu"
+
+#. <span class="hint">@T[@"E.g. <i>C:\Path\To\This\Site\PickedUpEmail</i> to place emails in a <i>PickedUpEmail</i> directory on the C drive."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:147
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "E.g. <i>C:\\Path\\To\\This\\Site\\PickedUpEmail</i> to place emails in a <i>PickedUpEmail</i> directory on the C drive."
+msgstr "Örneğin. <i> C: \\Yol\\Kime\\Bu\\Site\\PickedUpEmail </i>, e-postaları C sürücüsündeki <i> PickedUpEmail </i> dizinine yerleştirmek için."
+
+#. <a href="@Url.Action("Index", "Admin", new { area = "OrchardCore.Email" })" class="btn btn-secondary">@T["Test settings"]</a>
+#: OrchardCore.Email\Views\SmtpSettings.TestButton.cshtml:1
+msgctxt "OrchardCore.Email.Views.SmtpSettings.TestButton"
+msgid "Test settings"
+msgstr "Test Ayarları"
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(T["Settings"])</h1></zone>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:3
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "Settings"
+msgstr "Ayarlar"
+
+#. <label asp-for="To">@T["To"]</label>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:10
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "To"
+msgstr "Alıcı"
+
+#. <label asp-for="Sender">@T["Sender"]</label>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:17
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "Sender"
+msgstr "Gönderen"
+
+#. <span class="hint">@T["The sender is optional, it is useful when the email author is different than the email submitter."]</span>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:20
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "The sender is optional, it is useful when the email author is different than the email submitter."
+msgstr "Gönderici isteğe bağlıdır, e-posta yazarı e-postayı gönderenden farklı olduğunda kullanılabilir."
+
+#. <label asp-for="Bcc">@T["Bcc"]</label>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:25
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "Bcc"
+msgstr "Gizli Kopya"
+
+#. <label asp-for="Cc">@T["Cc"]</label>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:32
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "Cc"
+msgstr "Bilgi"
+
+#. <label asp-for="ReplyTo">@T["Reply To"]</label>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:39
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "Reply To"
+msgstr "Yanıtla"
+
+#. <label asp-for="Subject">@T["Subject"]</label>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:46
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "Subject"
+msgstr "Konu"
+
+#. <label asp-for="Body">@T["Body"]</label>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:53
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "Body"
+msgstr "Gövde"
+
+#. <button type="submit" id="emailtestsend" class="button grey">@T["Send"]</button>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:59
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "Send"
+msgstr "Gönder"
+
+#. <h4><i class="fa fa-envelope" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Send Email"])</h4>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Design.cshtml:6
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Design"
+msgid "Send Email"
+msgstr "E-posta Gönder"
+
+#. <label asp-for="AuthorExpression">@T["From"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:5
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "From"
+msgstr "Kimden"
+
+#. <span class="hint">@T["The author's email address that defines who the email is from. Leave blank to use the configured email address. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:8
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The author's email address that defines who the email is from. Leave blank to use the configured email address. With Liquid support."
+msgstr "E-postanın kimden geldiğini tanımlayan yazarın e-posta adresi. Yapılandırılan e-posta adresini kullanmak için boş bırakın. Liquid desteklenir."
+
+#. <label asp-for="SenderExpression">@T["Sender"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:12
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Sender"
+msgstr "Gönderen"
+
+#. <span class="hint">@T["The sender's email address. Required if not the same than the \"From\" email address. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:15
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The sender's email address. Required if not the same than the \"From\" email address. With Liquid support."
+msgstr "Gönderenin e-posta adresi. Gelen e-posta adresiyle aynı değilse gereklidir. Liquid destekler."
+
+#. <label asp-for="SenderExpression">@T["ReplyTo"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:19
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "ReplyTo"
+msgstr "Yanıtla"
+
+#. <span class="hint">@T["The \"reply to\" email address. Required if you want email replies be sent to a different address than the \"From\" address. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:22
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The \"reply to\" email address. Required if you want email replies be sent to a different address than the \"From\" address. With Liquid support."
+msgstr "\"Yanıtla\" e-posta adresi. E-posta yanıtlarının Gelen adresinden farklı bir adrese gönderilmesini istiyorsanız gereklidir. Liquid destekler."
+
+#. <label asp-for="RecipientsExpression">@T["Recipients"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:26
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Recipients"
+msgstr "Alıcılar"
+
+#. <span class="hint">@T["The comma-separated list of recipient email addresses. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:29
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The comma-separated list of recipient email addresses. With Liquid support."
+msgstr "Alıcı e-posta adreslerinin virgülle ayrılmış listesi. Liquid desteği ile."
+
+#. <label asp-for="CcExpression">@T["Cc"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:33
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Cc"
+msgstr "Cc"
+
+#. <span class="hint">@T["The comma-separated list of carbon copy email addresses. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:36
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The comma-separated list of carbon copy email addresses. With Liquid support."
+msgstr "Karbon kopya e-posta adreslerinin virgülle ayrılmış listesi. Liquid destekli."
+
+#. <label asp-for="BccExpression">@T["Bcc"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:40
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Bcc"
+msgstr "Bcc"
+
+#. <span class="hint">@T["The comma-separated list of blind copy email addresses. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:43
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The comma-separated list of blind copy email addresses. With Liquid support."
+msgstr "Gizli kopya e-posta adreslerinin virgülle ayrılmış listesi. Liquid destekler."
+
+#. <label asp-for="SubjectExpression">@T["Subject"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:47
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Subject"
+msgstr "Konu"
+
+#. <span class="hint">@T["The subject of the email message. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:50
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The subject of the email message. With Liquid support."
+msgstr "E-posta mesajının konusu. Liquid desteği ile."
+
+#. <label class="form-check-label" asp-for="IsBodyHtml">@T["Does the Body contain HTML?"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:56
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Does the Body contain HTML?"
+msgstr "Vücut HTML içeriyor mu?"
+
+#. <span class="hint dashed">@T["If checked, indicates the body of the email message will be sent as HTML."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:57
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "If checked, indicates the body of the email message will be sent as HTML."
+msgstr "E-posta mesajının gövdesinin HTML olarak gönderileceğini belirtir."
+
+#. <label class="form-check-label" asp-for="IsBodyText">@T["Does the Body contain plain text?"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:64
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Does the Body contain plain text?"
+msgstr "Gövde düz metin içeriyor mu?"
+
+#. <span class="hint dashed">@T["If checked, indicates the body of the email message will be sent as plain text."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:65
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "If checked, indicates the body of the email message will be sent as plain text."
+msgstr "E-posta mesajının gövdesinin düz metin olarak gönderileceğini belirtir."
+
+#. <label asp-for="Body">@T["Body"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:70
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Body"
+msgstr "Gövde"
+
+#. <span class="hint">@T["The body of the email message. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:72
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The body of the email message. With Liquid support."
+msgstr "E-posta mesajının gövdesi. Liquid desteği ile."
+
+#. <label asp-for="Body">@T["Body Plain Text"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:76
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Body Plain Text"
+msgstr "Gövde Düz Metin"
+
+#. <span class="hint">@T["The plain text body of the email message. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:78
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The plain text body of the email message. With Liquid support."
+msgstr "E-posta mesajının düz metin gövdesi Liquid destekli."
+
+#. <h4 class="card-title"><i class="fa fa-envelope" aria-hidden="true"></i>@T["Send Email"]</h4>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Thumbnail.cshtml:1
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Thumbnail"
+msgid "Send Email"
+msgstr "E-posta Gönder"
+
+#. <p>@T["Send an email."]</p>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Thumbnail.cshtml:2
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Thumbnail"
+msgid "Send an email."
+msgstr "E-posta gönderin."
+

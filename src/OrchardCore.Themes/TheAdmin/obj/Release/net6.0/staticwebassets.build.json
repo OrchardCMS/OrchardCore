@@ -1,0 +1,56 @@
+{
+  "Version": 1,
+  "Hash": "KTL5LFXVbk83YoIgfu5SpUqDRJo+rztpfJc7qtdC6HE=",
+  "Source": "TheAdmin",
+  "BasePath": "_content/TheAdmin",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Admin\\OrchardCore.Admin.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Admin",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Themes\\OrchardCore.Themes.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Themes",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "RuntimeIdentifier;SelfContained"
+    }
+  ],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.Admin\\wwwroot",
+      "Source": "OrchardCore.Admin",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Admin\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Admin",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Themes\\wwwroot",
+      "Source": "OrchardCore.Themes",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Themes\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Themes",
+      "Pattern": "**"
+    },
+    {
+      "Name": "TheAdmin\\wwwroot",
+      "Source": "TheAdmin",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Themes\\TheAdmin\\wwwroot\\",
+      "BasePath": "_content/TheAdmin",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

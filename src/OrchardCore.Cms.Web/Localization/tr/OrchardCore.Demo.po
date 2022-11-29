@@ -1,0 +1,120 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: tr\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Demo.pot\n"
+"X-Crowdin-File-ID: 726\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Turkish\n"
+"Language: tr_TR\n"
+"PO-Revision-Date: 2022-03-24 15:52\n"
+
+#. .Add(S["Demo"], "10", demo => demo
+#: OrchardCore.Demo\AdminMenu.cs:25
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "Demo"
+msgstr "Demo"
+
+#. .Add(S["This Menu Item 1"], "0", item => item
+#: OrchardCore.Demo\AdminMenu.cs:27
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This Menu Item 1"
+msgstr "Bu Menü Öğesi 1"
+
+#. .Add(S["This is Menu Item 1.1"], subItem => subItem
+#: OrchardCore.Demo\AdminMenu.cs:28
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This is Menu Item 1.1"
+msgstr "Bu Menü Öğesi 1.1"
+
+#. .Add(S["This is Menu Item 1.2"], subItem => subItem
+#. .Add(S["This is Menu Item 1.2"], subItem => subItem
+#: OrchardCore.Demo\AdminMenu.cs:30
+#: OrchardCore.Demo\AdminMenu.cs:32
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This is Menu Item 1.2"
+msgstr "Bu Menü Öğesi 1.2"
+
+#. .Add(S["This Menu Item 2"], "0", item => item
+#: OrchardCore.Demo\AdminMenu.cs:35
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This Menu Item 2"
+msgstr "Bu Menü Öğesi 2"
+
+#. .Add(S["This is Menu Item 2.1"], subItem => subItem
+#: OrchardCore.Demo\AdminMenu.cs:36
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This is Menu Item 2.1"
+msgstr "Bu Menü Öğesi 2.1"
+
+#. .Add(S["This is Menu Item 2.2"], subItem => subItem
+#: OrchardCore.Demo\AdminMenu.cs:38
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This is Menu Item 2.2"
+msgstr "Bu Menü Öğesi 2.2"
+
+#. .Add(S["This is Menu Item 3.2"], subItem => subItem
+#. .Add(S["This is Menu Item 3.2"], subItem => subItem
+#: OrchardCore.Demo\AdminMenu.cs:40
+#: OrchardCore.Demo\AdminMenu.cs:46
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This is Menu Item 3.2"
+msgstr "Bu Menü Öğesi 3.2"
+
+#. .Add(S["This Menu Item 3"], "0", item => item
+#: OrchardCore.Demo\AdminMenu.cs:43
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This Menu Item 3"
+msgstr "Bu Menü Öğesi 3"
+
+#. .Add(S["This is Menu Item 3.1"], subItem => subItem
+#: OrchardCore.Demo\AdminMenu.cs:44
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "This is Menu Item 3.1"
+msgstr "Bu Menü Öğesi 3.1"
+
+#. .Add(S["Todo (Liquid - Frontend)"], "0", item => item
+#: OrchardCore.Demo\AdminMenu.cs:50
+msgctxt "OrchardCore.Demo.AdminMenu"
+msgid "Todo (Liquid - Frontend)"
+msgstr "Todo (Liquid - Frontend)"
+
+#. <span class="icon"><i class="fa fa-hashtag" aria-hidden="true"></i></span><span class="title">@T["Demo"]</span>
+#: OrchardCore.Demo\Views\NavigationItemText-demo.Id.cshtml:1
+msgctxt "OrchardCore.Demo.Views.NavigationItemText-demo.Id"
+msgid "Demo"
+msgstr "Demo"
+
+#. <label asp-for="FirstName">@T["First Name"]</label>
+#. <input asp-for="FirstName" type="text" class="form-control" placeholder="@T["First Name"]" />
+#: OrchardCore.Demo\Views\UserProfile.Edit.cshtml:4
+#: OrchardCore.Demo\Views\UserProfile.Edit.cshtml:5
+msgctxt "OrchardCore.Demo.Views.UserProfile.Edit"
+msgid "First Name"
+msgstr "Ad"
+
+#. <label asp-for="LastName">@T["Last Name"]</label>
+#. <input asp-for="LastName" type="text" class="form-control" placeholder="@T["Last Name"]" />
+#: OrchardCore.Demo\Views\UserProfile.Edit.cshtml:9
+#: OrchardCore.Demo\Views\UserProfile.Edit.cshtml:10
+msgctxt "OrchardCore.Demo.Views.UserProfile.Edit"
+msgid "Last Name"
+msgstr "Soyad"
+
+#. <label asp-for="Age">@T["Age"]</label>
+#. <input asp-for="Age" type="text" class="form-control" placeholder="@T["Age"]" />
+#: OrchardCore.Demo\Views\UserProfile.Edit.cshtml:14
+#: OrchardCore.Demo\Views\UserProfile.Edit.cshtml:15
+msgctxt "OrchardCore.Demo.Views.UserProfile.Edit"
+msgid "Age"
+msgstr "Yaş"
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(T["Edit {0}", (string)Model.ContentItem.ContentType])</h1></zone>
+#: OrchardCore.Demo\Views\Content\Edit.cshtml:2
+msgctxt "OrchardCore.Demo.Views.Content.Edit"
+msgid "Edit {0}"
+msgstr "{0} Düzenle"
+

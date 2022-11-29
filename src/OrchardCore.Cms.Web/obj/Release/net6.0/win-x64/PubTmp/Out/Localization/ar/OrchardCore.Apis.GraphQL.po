@@ -1,0 +1,40 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Apis.GraphQL.pot\n"
+"X-Crowdin-File-ID: 702\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Arabic\n"
+"Language: ar_SA\n"
+"PO-Revision-Date: 2022-10-11 19:57\n"
+
+#. .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, design => design
+#: OrchardCore.Apis.GraphQL\AdminMenu.cs:25
+msgctxt "OrchardCore.Apis.GraphQL.AdminMenu"
+msgid "Configuration"
+msgstr "إعدادات"
+
+#. .Add(S["GraphiQL"], S["GraphiQL"].PrefixPosition(), deployment => deployment
+#. .Add(S["GraphiQL"], S["GraphiQL"].PrefixPosition(), deployment => deployment
+#: OrchardCore.Apis.GraphQL\AdminMenu.cs:27
+#: OrchardCore.Apis.GraphQL\AdminMenu.cs:27
+msgctxt "OrchardCore.Apis.GraphQL.AdminMenu"
+msgid "GraphiQL"
+msgstr "GraphiQL"
+
+#. S["Authorization is required to access {0}.", operationName],
+#: OrchardCore.Apis.GraphQL\ValidationRules\RequiresPermissionValidationRule.cs:67
+msgctxt "OrchardCore.Apis.GraphQL.ValidationRules.RequiresPermissionValidationRule"
+msgid "Authorization is required to access {0}."
+msgstr ""
+
+#. S["Authorization is required to access the node. {0}", nodeName],
+#: OrchardCore.Apis.GraphQL\ValidationRules\RequiresPermissionValidationRule.cs:113
+msgctxt "OrchardCore.Apis.GraphQL.ValidationRules.RequiresPermissionValidationRule"
+msgid "Authorization is required to access the node. {0}"
+msgstr ""
+

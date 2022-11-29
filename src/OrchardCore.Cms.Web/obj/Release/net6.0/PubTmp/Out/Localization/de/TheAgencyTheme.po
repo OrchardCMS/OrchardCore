@@ -1,0 +1,49 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: de\n"
+"X-Crowdin-File: /main/Localization/TheAgencyTheme.pot\n"
+"X-Crowdin-File-ID: 850\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"PO-Revision-Date: 2022-09-28 07:06\n"
+
+#: TheAgencyTheme\Views\Layout.liquid:0
+msgctxt "TheAgencyTheme.Views.Layout"
+msgid "Menu"
+msgstr "Menü"
+
+#: TheAgencyTheme\Views\SearchForm.liquid:0
+msgctxt "TheAgencyTheme.Views.SearchForm"
+msgid "Enter your search term(s)"
+msgstr "Suchbegriff(e) eingeben"
+
+#: TheAgencyTheme\Views\SearchForm.liquid:0
+msgctxt "TheAgencyTheme.Views.SearchForm"
+msgid "Search"
+msgstr "Suchen"
+
+#: TheAgencyTheme\Views\SearchResults.liquid:0
+msgctxt "TheAgencyTheme.Views.SearchResults"
+msgid "There are no such results."
+msgstr "Solche Ergebnisse gibt es nicht."
+
+#: TheAgencyTheme\Views\Shared\NotFound.liquid:0
+msgctxt "TheAgencyTheme.Views.Shared.NotFound"
+msgid "Page Not Found"
+msgstr "Seite nicht gefunden"
+
+#: TheAgencyTheme\Views\Shared\NotFound.liquid:0
+msgctxt "TheAgencyTheme.Views.Shared.NotFound"
+msgid "The page you requested could not be found."
+msgstr "Die angeforderte Seite konnte nicht gefunden werden."
+
+#: TheAgencyTheme\Views\Shared\Search.liquid:0
+msgctxt "TheAgencyTheme.Views.Shared.Search"
+msgid "Search"
+msgstr "Suchen"
+

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.MiniProfiler</name>
+    </assembly>
+    <members>
+        <member name="P:OrchardCore.MiniProfiler.MiniProfilerOptions.AllowOnAdmin">
+            <summary>
+            Gets or sets whether to allow Mini Profiler on the admin too when the feature is enabled, not just on the
+            frontend. Defaults to <c>false</c>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.MiniProfilerOrchardCoreBuilderExtensions.AllowMiniProfilerOnAdmin(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Allow Mini Profiler on the admin too when the feature is enabled, not just on the frontend.
+            </summary>
+        </member>
+    </members>
+</doc>

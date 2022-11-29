@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "4K0/S9X1dHEHNTJWs4te3N0SozH6EpBnSHCuCVCcQgY=",
+  "Source": "OrchardCore.Cors",
+  "BasePath": "_content/OrchardCore.Cors",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

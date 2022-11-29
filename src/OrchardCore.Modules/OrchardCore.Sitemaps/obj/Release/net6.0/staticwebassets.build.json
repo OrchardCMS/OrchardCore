@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "wYZ013MQ9UXDiTwF1qe3T+xFuiYO99OO0M/KA+CzJmQ=",
+  "Source": "OrchardCore.Sitemaps",
+  "BasePath": "_content/OrchardCore.Sitemaps",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

@@ -1,0 +1,117 @@
+is_global = true
+build_property.TargetFramework = net6.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = OrchardCore.Taxonomies
+build_property.RootNamespace = OrchardCore.Taxonomies
+build_property.ProjectDir = C:\repos\loethenweb\src\OrchardCore.Modules\OrchardCore.Taxonomies\
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\repos\loethenweb\src\OrchardCore.Modules\OrchardCore.Taxonomies
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/Admin/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/Admin/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/Content.TermAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVudC5UZXJtQWRtaW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/ContentPart.TermAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVudFBhcnQuVGVybUFkbWluLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/ContentsAdminListTaxonomyFilter.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVudHNBZG1pbkxpc3RUYXhvbm9teUZpbHRlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/NavigationItemText-taxonomyfilters.Id.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTmF2aWdhdGlvbkl0ZW1UZXh0LXRheG9ub215ZmlsdGVycy5JZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TaxonomyContentsAdminListSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4b25vbXlDb250ZW50c0FkbWluTGlzdFNldHRpbmdzLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TaxonomyField-Tags.Display.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4b25vbXlGaWVsZC1UYWdzLkRpc3BsYXkuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TaxonomyField-Tags.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4b25vbXlGaWVsZC1UYWdzLkRpc3BsYXlPcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TaxonomyField-Tags.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4b25vbXlGaWVsZC1UYWdzLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TaxonomyField-Tags.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4b25vbXlGaWVsZC1UYWdzLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TaxonomyField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4b25vbXlGaWVsZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TaxonomyField.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4b25vbXlGaWVsZC5EaXNwbGF5T3B0aW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TaxonomyField.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4b25vbXlGaWVsZC5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TaxonomyField.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4b25vbXlGaWVsZC5PcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TaxonomyFieldSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4b25vbXlGaWVsZFNldHRpbmdzLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TaxonomyFieldTagsEditorSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4b25vbXlGaWVsZFRhZ3NFZGl0b3JTZXR0aW5ncy5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TaxonomyPart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4b25vbXlQYXJ0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TaxonomyPart.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4b25vbXlQYXJ0LkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TaxonomyPart.Empty.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4b25vbXlQYXJ0LkVtcHR5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/Term.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVybS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TermContentItem.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVybUNvbnRlbnRJdGVtLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TermItem.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVybUl0ZW0uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/TermPart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVybVBhcnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Taxonomies/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 

@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Search.Lucene.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Search.Lucene.ILuceneAnalyzer">
+            <summary>
+            Represents an <see cref="T:Lucene.Net.Analysis.Analyzer"/> instance that is available in the system.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Lucene.ILuceneQueryService.SearchAsync(OrchardCore.Search.Lucene.LuceneQueryContext,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            <para>Provides a way to execute a search request in Lucene based on a JSON object.</para>
+            <para>OC implementation serializes that JSON object to a Lucene Query based on its <see cref="T:OrchardCore.Search.Lucene.ILuceneQueryProvider"/> implementations.</para>
+            </summary>
+            <param name="context"></param>
+            <param name="queryObj"></param>
+            <returns><see cref="T:OrchardCore.Search.Lucene.LuceneTopDocs"/></returns>
+        </member>
+        <member name="M:OrchardCore.Search.Lucene.ILuceneSearchQueryService.ExecuteQueryAsync(Lucene.Net.Search.Query,System.String,System.Int32,System.Int32)">
+            <summary>
+            Provides a way to execute a search request in Lucene based on a Lucene Query.
+            </summary>
+            <param name="query"></param>
+            <param name="indexName"></param>
+            <param name="start"></param>
+            <param name="end"></param>
+            <returns><see cref="T:System.Collections.Generic.IList`1">IList&lt;string&gt;</see></returns>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.Indexing.Index">
+            <summary>
+            Represents the settings of a Lucene index.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Lucene.Indexing.Index.Name">
+            <summary>
+            Gets or sets the technical name of the index.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Lucene.Indexing.Index.DefaultAnalyzer">
+            <summary>
+            Gets or sets the name of the default analyzer.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Lucene.Indexing.Index.DefaultSearchFields">
+            <summary>
+            Gets or sets the list of default search fields.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Lucene.Indexing.Index.Mappings">
+            <summary>
+            Gets the list of types to index indexed by name.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.Indexing.Mapping">
+            <summary>
+            Represents the information of a content type in a Lucene index.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Lucene.Indexing.Mapping.Properties">
+            <summary>
+            Gets the list properties to index indexed by name.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.Indexing.Property">
+            <summary>
+            Represents the Lucene index settings of a property.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Lucene.Indexing.Property.Type">
+            <summary>
+            Gets or sets the data type in the Lucene index.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Lucene.Indexing.Property.Index">
+            <summary>
+            Gets or sets whether the field should be searchable or not. Default is <code>true</code>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Lucene.Indexing.Property.Store">
+            <summary>
+            Gets or sets whether the field value should be stored and retrievable. Default is <code>false</code>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Lucene.Indexing.Property.IncludeInAll">
+            <summary>
+            Gets or sets whether the field value should included in the <code>_all</code> field. Default is <code>false</code>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Lucene.Indexing.Property.ScalingFactor">
+            <summary>
+            Gets or sets the scaling factor of the field. Values will be multiplied by this factor at index time
+            and rounded to the closest value.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Lucene.Indexing.Property.Analyzer">
+            <summary>
+            Gets or sets the analyzer to be used at both index-time and search-time unless overridden by the
+            <see cref="P:OrchardCore.Search.Lucene.Indexing.Property.SearchAnalyzer"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Lucene.Indexing.Property.SearchAnalyzer">
+            <summary>
+            Gets or sets the analyzer to be used at search-time.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Lucene.Indexing.Property.Fields">
+            <summary>
+            Gets the list of supplemental values to be indexed.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Lucene.Indexing.Property.Boost">
+            <summary>
+            Gets or sets the query time boosting.
+            </summary>
+        </member>
+    </members>
+</doc>

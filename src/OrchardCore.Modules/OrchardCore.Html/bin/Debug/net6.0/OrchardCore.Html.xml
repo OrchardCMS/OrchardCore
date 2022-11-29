@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Html</name>
+    </assembly>
+    <members>
+        <member name="P:OrchardCore.Html.Settings.HtmlBodyPartSettings.SanitizeHtml">
+            <summary>
+            Whether to sanitize the html input.
+            When true liquid templating is disabled.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Microsoft.Authentication</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Microsoft.Authentication.Deployment.AzureADDeploymentStep">
+            <summary>
+            Adds Google Analytics settings to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Microsoft.Authentication.Recipes.AzureADSettingsStep">
+            <summary>
+            This recipe step sets general OpenID Connect Client settings.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Microsoft.Authentication.Recipes.MicrosoftAccountSettingsStep">
+            <summary>
+            This recipe step sets Microsoft Account settings.
+            </summary>
+        </member>
+    </members>
+</doc>

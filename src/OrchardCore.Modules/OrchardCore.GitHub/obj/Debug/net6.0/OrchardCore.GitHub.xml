@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.GitHub</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.GitHub.Configuration.GitHubHandler.ExchangeCodeAsync(Microsoft.AspNetCore.Authentication.OAuth.OAuthCodeExchangeContext)">
+            <summary>
+            This code was copied from the aspnetcore repository . We should keep it in sync with it.
+            https://github.com/dotnet/aspnetcore/blob/fcd4ed7c46083cc408417763867637f232928f9b/src/Security/Authentication/OAuth/src/OAuthHandler.cs#L193
+            This can be removed or modified when the https://github.com/dotnet/aspnetcore/issues/33351 is resolved
+            </summary>
+        </member>
+        <member name="T:OrchardCore.GitHub.Configuration.GitHubOptions">
+            <summary>
+            Configuration options for <see cref="T:OrchardCore.GitHub.Configuration.GitHubHandler"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.GitHub.Configuration.GitHubOptions.#ctor">
+            <summary>
+            Initializes a new <see cref="T:OrchardCore.GitHub.Configuration.GitHubOptions"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.GitHub.Recipes.GitHubAuthenticationSettingsStep">
+            <summary>
+            This recipe step sets GitHub Account settings.
+            </summary>
+        </member>
+    </members>
+</doc>

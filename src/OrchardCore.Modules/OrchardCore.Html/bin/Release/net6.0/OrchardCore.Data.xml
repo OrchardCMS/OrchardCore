@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Data</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Data.Documents.FileDocumentStore">
+            <summary>
+            A singleton service using the file system to store document files under the tenant folder, and that is in sync
+            with the ambient transaction, any file is updated after a successful <see cref="M:OrchardCore.Data.Documents.IDocumentStore.CommitAsync"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Documents.FileDocumentStore.GetOrCreateMutableAsync``1(System.Func{System.Threading.Tasks.Task{``0}})">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Data.Documents.FileDocumentStore.GetOrCreateImmutableAsync``1(System.Func{System.Threading.Tasks.Task{``0}})">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Data.Documents.FileDocumentStore.UpdateAsync``1(``0,System.Func{``0,System.Threading.Tasks.Task},System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="T:OrchardCore.Data.Migration.AutomaticDataMigrations">
+            <summary>
+            Represents a tenant event that will be registered to OrchardShell.Activated in order to run migrations automatically.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Migration.AutomaticDataMigrations.#ctor(System.IServiceProvider,OrchardCore.Environment.Shell.ShellSettings,Microsoft.Extensions.Logging.ILogger{OrchardCore.Data.Migration.AutomaticDataMigrations})">
+            <summary>
+            Creates a new instance of the <see cref="T:OrchardCore.Data.Migration.AutomaticDataMigrations"/>.
+            </summary>
+            <param name="serviceProvider">The <see cref="T:System.IServiceProvider"/>.</param>
+            <param name="shellSettings">The <see cref="T:OrchardCore.Environment.Shell.ShellSettings"/>.</param>
+            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Data.Migration.AutomaticDataMigrations.ActivatingAsync">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Data.Migration.Records.DataMigration">
+            <summary>
+            Represents a database migration.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Data.Migration.Records.DataMigration.DataMigrationClass">
+            <summary>
+            Gets or sets a class for the database migration.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Data.Migration.Records.DataMigration.Version">
+            <summary>
+            Gets or sets the version of the database migration.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Data.Migration.Records.DataMigrationRecord">
+            <summary>
+            Represents a record in the database migration.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Data.Migration.Records.DataMigrationRecord.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:OrchardCore.Data.Migration.Records.DataMigrationRecord"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Data.Migration.Records.DataMigrationRecord.Id">
+            <summary>
+            Gete or sets the record Id.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Data.Migration.Records.DataMigrationRecord.DataMigrations">
+            <summary>
+            Gets or sets the database migrations.
+            </summary>
+        </member>
+    </members>
+</doc>

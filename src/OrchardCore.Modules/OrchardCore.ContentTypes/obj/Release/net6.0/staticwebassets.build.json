@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "Bx2qbh9v2XlQ+OwKH5joTKJ94pkAzW0DrMH7bft8YG8=",
+  "Source": "OrchardCore.ContentTypes",
+  "BasePath": "_content/OrchardCore.ContentTypes",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

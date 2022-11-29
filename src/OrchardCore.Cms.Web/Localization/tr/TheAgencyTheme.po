@@ -1,0 +1,49 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: tr\n"
+"X-Crowdin-File: /main/Localization/TheAgencyTheme.pot\n"
+"X-Crowdin-File-ID: 850\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Turkish\n"
+"Language: tr_TR\n"
+"PO-Revision-Date: 2022-03-18 08:48\n"
+
+#: TheAgencyTheme\Views\Layout.liquid:0
+msgctxt "TheAgencyTheme.Views.Layout"
+msgid "Menu"
+msgstr "Menü"
+
+#: TheAgencyTheme\Views\SearchForm.liquid:0
+msgctxt "TheAgencyTheme.Views.SearchForm"
+msgid "Enter your search term(s)"
+msgstr "Aranacak terimleri girin"
+
+#: TheAgencyTheme\Views\SearchForm.liquid:0
+msgctxt "TheAgencyTheme.Views.SearchForm"
+msgid "Search"
+msgstr "Arama"
+
+#: TheAgencyTheme\Views\SearchResults.liquid:0
+msgctxt "TheAgencyTheme.Views.SearchResults"
+msgid "There are no such results."
+msgstr "Hiçbir sonuç bulunamadı."
+
+#: TheAgencyTheme\Views\Shared\NotFound.liquid:0
+msgctxt "TheAgencyTheme.Views.Shared.NotFound"
+msgid "Page Not Found"
+msgstr "Sayfa Bulunamadı"
+
+#: TheAgencyTheme\Views\Shared\NotFound.liquid:0
+msgctxt "TheAgencyTheme.Views.Shared.NotFound"
+msgid "The page you requested could not be found."
+msgstr "İstediğin sayfa bulunamadı."
+
+#: TheAgencyTheme\Views\Shared\Search.liquid:0
+msgctxt "TheAgencyTheme.Views.Shared.Search"
+msgid "Search"
+msgstr "Ara"
+

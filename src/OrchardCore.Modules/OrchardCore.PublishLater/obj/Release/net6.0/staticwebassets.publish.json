@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "Ar9/eMQMfE2jXGui40xSwzB6n5NBTftajrHXpwQQC4c=",
+  "Source": "OrchardCore.PublishLater",
+  "BasePath": "_content/OrchardCore.PublishLater",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

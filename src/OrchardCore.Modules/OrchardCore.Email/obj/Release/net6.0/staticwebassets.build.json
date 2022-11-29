@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "Rc/tFuz5o3PM7Q6jGA6mjOM9l8M1bADcTB3a30PVR0o=",
+  "Source": "OrchardCore.Email",
+  "BasePath": "_content/OrchardCore.Email",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

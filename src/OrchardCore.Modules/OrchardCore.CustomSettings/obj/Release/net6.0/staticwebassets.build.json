@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "R46UPWbagtX4Q49GZXfqpLI+9/sS3UeR3yplekZgEug=",
+  "Source": "OrchardCore.CustomSettings",
+  "BasePath": "_content/OrchardCore.CustomSettings",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

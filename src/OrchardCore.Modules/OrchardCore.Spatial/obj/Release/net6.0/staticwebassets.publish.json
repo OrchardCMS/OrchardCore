@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "GZ0hcAreDlmPG3+28TS5FSgqKyeo2c14OrS/OdmWzCw=",
+  "Source": "OrchardCore.Spatial",
+  "BasePath": "_content/OrchardCore.Spatial",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

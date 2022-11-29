@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Layers</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Layers.Deployment.AllLayersDeploymentStep">
+            <summary>
+            Adds layers to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Layers.Models.Layer.Rule">
+            <summary>
+            This property is obsolete and layer rules should be used instead.
+            It can be removed in a future version.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Layers.Recipes.LayerStep">
+            <summary>
+            This recipe step creates or updates a layer.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Layers.Services.ILayerService.LoadLayersAsync">
+            <summary>
+            Loads the layers document from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Layers.Services.ILayerService.GetLayersAsync">
+            <summary>
+            Gets the layers document from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Layers.Services.ILayerService.UpdateAsync(OrchardCore.Layers.Models.LayersDocument)">
+            <summary>
+            Updates the store with the provided layers document and then updates the cache.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Layers.Services.LayerService.LoadLayersAsync">
+            <summary>
+            Loads the layers document from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Layers.Services.LayerService.GetLayersAsync">
+            <summary>
+            Gets the layers document from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Layers.Services.LayerService.UpdateAsync(OrchardCore.Layers.Models.LayersDocument)">
+            <summary>
+            Updates the store with the provided layers document and then updates the cache.
+            </summary>
+        </member>
+    </members>
+</doc>

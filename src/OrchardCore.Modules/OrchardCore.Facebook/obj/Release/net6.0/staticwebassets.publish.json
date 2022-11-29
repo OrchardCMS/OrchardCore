@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "SiHlg2K3sRVznjFkHDMSrQ1PoNVgyTxvukoZ2wLVxbw=",
+  "Source": "OrchardCore.Facebook",
+  "BasePath": "_content/OrchardCore.Facebook",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

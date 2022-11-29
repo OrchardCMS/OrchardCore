@@ -1,0 +1,38 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.ArchiveLater.pot\n"
+"X-Crowdin-File-ID: 862\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Arabic\n"
+"Language: ar_SA\n"
+"PO-Revision-Date: 2022-10-11 20:39\n"
+
+#. <button class="btn btn-primary btn-archive-later" type="submit" name="submit.Publish" value="submit.ArchiveLater">@T["Archive Later"]</button>
+#: OrchardCore.ArchiveLater\Views\ArchiveLaterPart.Edit.cshtml:13
+msgctxt "OrchardCore.ArchiveLater.Views.ArchiveLaterPart.Edit"
+msgid "Archive Later"
+msgstr ""
+
+#. <button class="btn btn-primary btn-archive-later" type="submit" name="submit.Publish" value="submit.CancelArchiveLater">@T["Cancel Archive Later"]</button>
+#: OrchardCore.ArchiveLater\Views\ArchiveLaterPart.Edit.cshtml:18
+msgctxt "OrchardCore.ArchiveLater.Views.ArchiveLaterPart.Edit"
+msgid "Cancel Archive Later"
+msgstr ""
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentEditor)">@T["Standard"]</option>
+#: OrchardCore.ArchiveLater\Views\ArchiveLaterPart.Option.cshtml:4
+msgctxt "OrchardCore.ArchiveLater.Views.ArchiveLaterPart.Option"
+msgid "Standard"
+msgstr ""
+
+#. <span class="hint">@T["Scheduled to be archived on {0}", (object)(await DisplayAsync(await New.DateTime(Utc: Model.ScheduledArchiveUtc)))]</span>
+#: OrchardCore.ArchiveLater\Views\ArchiveLaterPart.SummaryAdmin.cshtml:6
+msgctxt "OrchardCore.ArchiveLater.Views.ArchiveLaterPart.SummaryAdmin"
+msgid "Scheduled to be archived on {0}"
+msgstr ""
+

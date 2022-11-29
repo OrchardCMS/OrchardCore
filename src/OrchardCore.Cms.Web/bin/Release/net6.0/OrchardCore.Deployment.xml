@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Deployment</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.Deployment.Deployment.DeploymentPlanDeploymentSource.GetStepType(System.Collections.Generic.IDictionary{System.String,OrchardCore.Deployment.IDeploymentStepFactory},OrchardCore.Deployment.DeploymentStep)">
+            <summary>
+            A Site Settings Step is generic and the name is mapped to the <see cref="P:OrchardCore.Deployment.IDeploymentStepFactory.Name"/> so its 'Type' should be determined though a lookup.
+            A normal steps name is not mapped to the <see cref="P:OrchardCore.Deployment.IDeploymentStepFactory.Name"/> and should use its type.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Deployment.Deployment.DeploymentPlanDeploymentStep">
+            <summary>
+            Adds deployment plans to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Deployment.Recipes.DeploymentPlansRecipeStep">
+            <summary>
+            This recipe step creates a deployment plan.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Deployment.Steps.CustomFileDeploymentStep">
+            <summary>
+            Adds a custom file to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Deployment.Steps.JsonRecipeDeploymentStep">
+            <summary>
+            Adds a JSON recipe to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Deployment.Steps.JsonRecipeDeploymentStepDriver.Schema">
+            <summary>
+            A limited schema for recipe steps. Does not include any step data.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Deployment.Steps.RecipeFileDeploymentStep">
+            <summary>
+            Adds a Recipe file to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+    </members>
+</doc>

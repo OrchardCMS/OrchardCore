@@ -1,0 +1,74 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.CustomSettings.pot\n"
+"X-Crowdin-File-ID: 724\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"PO-Revision-Date: 2022-05-05 18:48\n"
+
+#. .Add(S["Configuration"], configuration => configuration
+#: OrchardCore.CustomSettings\AdminMenu.cs:32
+msgctxt "OrchardCore.CustomSettings.AdminMenu"
+msgid "Configuration"
+msgstr "配置"
+
+#. .Add(S["Settings"], settings => settings
+#: OrchardCore.CustomSettings\AdminMenu.cs:33
+msgctxt "OrchardCore.CustomSettings.AdminMenu"
+msgid "Settings"
+msgstr "设置"
+
+#. <h5>@T["Custom Settings"]</h5>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Edit.cshtml:8
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Edit"
+msgid "Custom Settings"
+msgstr "自定义设置"
+
+#. @T["Include all custom settings."]
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Edit.cshtml:17
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Edit"
+msgid "Include all custom settings."
+msgstr "包含所有自定义设置。"
+
+#. <span class="hint">@T["The custom settings to add as part of the plan."]</span>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Edit.cshtml:27
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Edit"
+msgid "The custom settings to add as part of the plan."
+msgstr "要添加为计划的一部分的自定义设置。"
+
+#. <h5>@T["Custom Settings"]</h5>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Summary.cshtml:8
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Summary"
+msgid "Custom Settings"
+msgstr "自定义设置"
+
+#. <span class="badge bg-success">@T["All"]</span>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Summary.cshtml:12
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Summary"
+msgid "All"
+msgstr "全部"
+
+#. <span class="badge bg-warning">@T["No custom settings selected."]</span>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Summary.cshtml:23
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Summary"
+msgid "No custom settings selected."
+msgstr "未选择自定义设置。"
+
+#. <h4 class="card-title">@T["Custom Settings"]</h4>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Custom Settings"
+msgstr "自定义设置"
+
+#. <p>@T["Exports all or specified custom settings."]</p>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Exports all or specified custom settings."
+msgstr "导出所有或指定的自定义设置。"
+

@@ -1,0 +1,49 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: zh-TW\n"
+"X-Crowdin-File: /main/Localization/TheAgencyTheme.pot\n"
+"X-Crowdin-File-ID: 850\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Chinese Traditional\n"
+"Language: zh_TW\n"
+"PO-Revision-Date: 2021-12-01 04:15\n"
+
+#: TheAgencyTheme\Views\Layout.liquid:0
+msgctxt "TheAgencyTheme.Views.Layout"
+msgid "Menu"
+msgstr ""
+
+#: TheAgencyTheme\Views\SearchForm.liquid:0
+msgctxt "TheAgencyTheme.Views.SearchForm"
+msgid "Enter your search term(s)"
+msgstr ""
+
+#: TheAgencyTheme\Views\SearchForm.liquid:0
+msgctxt "TheAgencyTheme.Views.SearchForm"
+msgid "Search"
+msgstr "搜尋"
+
+#: TheAgencyTheme\Views\SearchResults.liquid:0
+msgctxt "TheAgencyTheme.Views.SearchResults"
+msgid "There are no such results."
+msgstr ""
+
+#: TheAgencyTheme\Views\Shared\NotFound.liquid:0
+msgctxt "TheAgencyTheme.Views.Shared.NotFound"
+msgid "Page Not Found"
+msgstr ""
+
+#: TheAgencyTheme\Views\Shared\NotFound.liquid:0
+msgctxt "TheAgencyTheme.Views.Shared.NotFound"
+msgid "The page you requested could not be found."
+msgstr ""
+
+#: TheAgencyTheme\Views\Shared\Search.liquid:0
+msgctxt "TheAgencyTheme.Views.Shared.Search"
+msgid "Search"
+msgstr "搜尋"
+

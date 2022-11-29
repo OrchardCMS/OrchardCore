@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Alias</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.Alias.Handlers.AliasPartHandler.GetPattern(OrchardCore.Alias.Models.AliasPart)">
+            <summary>
+            Get the pattern from the AliasPartSettings property for its type
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Alias.Settings.AliasPartSettings.Options">
+            <summary>
+            Gets or sets whether a user can define a custom alias
+            </summary>
+        </member>
+        <member name="M:AliasPartRazorHelperExtensions.GetContentItemIdByAliasAsync(OrchardCore.IOrchardHelper,System.String)">
+            <summary>
+            Returns a content item id by its alias.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="alias">The alias.</param>
+            <example>GetContentItemIdByAliasAsync("carousel")</example>
+            <returns>A content item id or <c>null</c> if it was not found.</returns>
+        </member>
+        <member name="M:AliasPartRazorHelperExtensions.GetContentItemByAliasAsync(OrchardCore.IOrchardHelper,System.String,System.Boolean)">
+            <summary>
+            Loads a content item by its alias.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="alias">The alias to load.</param>
+            <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
+            <example>GetContentItemIdByAliasAsync("carousel")</example>
+            <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,170 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Html.pot\n"
+"X-Crowdin-File-ID: 754\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Arabic\n"
+"Language: ar_SA\n"
+"PO-Revision-Date: 2022-10-11 20:12\n"
+
+#. updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+#: OrchardCore.Html\Drivers\HtmlBodyPartDisplayDriver.cs:73
+msgctxt "OrchardCore.Html.Drivers.HtmlBodyPartDisplayDriver"
+msgid "{0} doesn't contain a valid Liquid expression. Details: {1}"
+msgstr "{0} لا يحتوي على عبارة Liquid صحيحة. للتفاصيل: {1}"
+
+#. Description = S["Content stored as HTML."];
+#: OrchardCore.Html\GraphQL\HtmlBodyQueryObjectType.cs:26
+msgctxt "OrchardCore.Html.GraphQL.HtmlBodyQueryObjectType"
+msgid "Content stored as HTML."
+msgstr "المحتوى المخزن كـ HTML."
+
+#. .Description(S["the HTML content"])
+#: OrchardCore.Html\GraphQL\HtmlBodyQueryObjectType.cs:30
+msgctxt "OrchardCore.Html.GraphQL.HtmlBodyQueryObjectType"
+msgid "the HTML content"
+msgstr "محتوى HTML"
+
+#. context.Updater.ModelState.AddModelError(Prefix + "." + nameof(MonacoSettingsViewModel.Options), S["The options are written in an incorrect format."]);
+#: OrchardCore.Html\Settings\HtmlBodyPartMonacoEditorSettingsDriver.cs:49
+msgctxt "OrchardCore.Html.Settings.HtmlBodyPartMonacoEditorSettingsDriver"
+msgid "The options are written in an incorrect format."
+msgstr ""
+
+#. context.Updater.ModelState.AddModelError(Prefix + "." + nameof(TrumbowygSettingsViewModel.Options), S["The options are written in an incorrect format."]);
+#: OrchardCore.Html\Settings\HtmlBodyPartTrumbowygEditorSettingsDriver.cs:45
+msgctxt "OrchardCore.Html.Settings.HtmlBodyPartTrumbowygEditorSettingsDriver"
+msgid "The options are written in an incorrect format."
+msgstr "تم كتابة الخيارات بصيغة خاطئة."
+
+#. <span class="hint">@T["The body of the content item."]</span>
+#: OrchardCore.Html\Views\HtmlBodyPart-Monaco.Edit.cshtml:14
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Monaco.Edit"
+msgid "The body of the content item."
+msgstr ""
+
+#. <option value="Monaco" selected="@(currentEditor == "Monaco")">@T["Monaco editor"]</option>
+#: OrchardCore.Html\Views\HtmlBodyPart-Monaco.Option.cshtml:4
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Monaco.Option"
+msgid "Monaco editor"
+msgstr ""
+
+#. <span class="hint">@T["The body of the content item."]</span>
+#: OrchardCore.Html\Views\HtmlBodyPart-Trumbowyg.Edit.cshtml:35
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Trumbowyg.Edit"
+msgid "The body of the content item."
+msgstr "المحتوى لعنصر المحتوى."
+
+#. <option value="Trumbowyg" selected="@(currentEditor == "Trumbowyg")">@T["Trumbowyg editor"]</option>
+#: OrchardCore.Html\Views\HtmlBodyPart-Trumbowyg.Option.cshtml:4
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Trumbowyg.Option"
+msgid "Trumbowyg editor"
+msgstr "محرر Trumbowyg"
+
+#. <span class="hint">@T["The body of the content item."]</span>
+#: OrchardCore.Html\Views\HtmlBodyPart-Wysiwyg.Edit.cshtml:26
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Wysiwyg.Edit"
+msgid "The body of the content item."
+msgstr "المحتوى لعنصر المحتوى."
+
+#. <option value="Wysiwyg" selected="@(currentEditor == "Wysiwyg")">@T["Wysiwyg editor"]</option>
+#: OrchardCore.Html\Views\HtmlBodyPart-Wysiwyg.Option.cshtml:4
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Wysiwyg.Option"
+msgid "Wysiwyg editor"
+msgstr "محرر Wysiwyg"
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentDisplayMode)">@T["Standard"]</option>
+#: OrchardCore.Html\Views\HtmlBodyPart.DisplayOption.cshtml:4
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart.DisplayOption"
+msgid "Standard"
+msgstr "قياسي"
+
+#. <span class="hint">@T["The body of the content item."]</span>
+#: OrchardCore.Html\Views\HtmlBodyPart.Edit.cshtml:13
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart.Edit"
+msgid "The body of the content item."
+msgstr "المحتوى لعنصر المحتوى."
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentEditor)">@T["Standard"]</option>
+#: OrchardCore.Html\Views\HtmlBodyPart.Option.cshtml:4
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart.Option"
+msgid "Standard"
+msgstr "قياسي"
+
+#. <label asp-for="Options">@T["Enter the editor options, language is always set to `html` when saved."]</label>
+#: OrchardCore.Html\Views\HtmlBodyPartMonacoSettings.Edit.cshtml:10
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartMonacoSettings.Edit"
+msgid "Enter the editor options, language is always set to `html` when saved."
+msgstr ""
+
+#. <span class="hint"><a href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.IStandaloneEditorConstructionOptions.html" target="_blank">@T["Documentation for options"]</a></span>
+#: OrchardCore.Html\Views\HtmlBodyPartMonacoSettings.Edit.cshtml:12
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartMonacoSettings.Edit"
+msgid "Documentation for options"
+msgstr ""
+
+#. <label class="form-check-label" asp-for="SanitizeHtml">@T["Sanitize Html"]</label>
+#: OrchardCore.Html\Views\HtmlBodyPartSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartSettings.Edit"
+msgid "Sanitize Html"
+msgstr "تطهير الـ Html"
+
+#. @T["Whether the Html is sanitized to prevent custom scripts."]
+#: OrchardCore.Html\Views\HtmlBodyPartSettings.Edit.cshtml:8
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartSettings.Edit"
+msgid "Whether the Html is sanitized to prevent custom scripts."
+msgstr "ما إذا كان Html قد تم تطهيره لمنع السكربتات المخصصة."
+
+#. <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/core/Sanitizer" target="_blank">@T["See documentation"]</a>
+#: OrchardCore.Html\Views\HtmlBodyPartSettings.Edit.cshtml:9
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartSettings.Edit"
+msgid "See documentation"
+msgstr ""
+
+#. <label class="form-check-label" asp-for="InsertMediaWithUrl">@T["Insert Media with url"]</label>
+#: OrchardCore.Html\Views\HtmlBodyPartTrumbowygSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartTrumbowygSettings.Edit"
+msgid "Insert Media with url"
+msgstr "ادرج وسائط متعددة مع الرابط"
+
+#. <span class="hint dashed">@T["Whether the url is used when selected from Insert Media (By default, the Shortcode is inserted)."]</span>
+#: OrchardCore.Html\Views\HtmlBodyPartTrumbowygSettings.Edit.cshtml:7
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartTrumbowygSettings.Edit"
+msgid "Whether the url is used when selected from Insert Media (By default, the Shortcode is inserted)."
+msgstr ""
+
+#. <label asp-for="Options">@T["Enter the editor options"]</label>
+#: OrchardCore.Html\Views\HtmlBodyPartTrumbowygSettings.Edit.cshtml:12
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartTrumbowygSettings.Edit"
+msgid "Enter the editor options"
+msgstr "ادخل خيارات المحرر"
+
+#. <span class="hint"><a href="https://alex-d.github.io/Trumbowyg/documentation/#button-pane" target="_blank">@T["Documentation for options"]</a></span>
+#: OrchardCore.Html\Views\HtmlBodyPartTrumbowygSettings.Edit.cshtml:13
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartTrumbowygSettings.Edit"
+msgid "Documentation for options"
+msgstr "توثيق الخيارات"
+
+#. <h5 class="modal-title">@T["Select Media"]</h5>
+#: OrchardCore.Html\Views\Media-HtmlBodyPart.Modal.cshtml:5
+msgctxt "OrchardCore.Html.Views.Media-HtmlBodyPart.Modal"
+msgid "Select Media"
+msgstr "إختر وسائط"
+
+#. <button type="button" class="btn btn-primary" id="mediaBodySelectButton">@T["OK"]</button>
+#: OrchardCore.Html\Views\Media-HtmlBodyPart.Modal.cshtml:11
+msgctxt "OrchardCore.Html.Views.Media-HtmlBodyPart.Modal"
+msgid "OK"
+msgstr "موافق"
+
+#. <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+#: OrchardCore.Html\Views\Media-HtmlBodyPart.Modal.cshtml:12
+msgctxt "OrchardCore.Html.Views.Media-HtmlBodyPart.Modal"
+msgid "Cancel"
+msgstr "إلغاء"
+

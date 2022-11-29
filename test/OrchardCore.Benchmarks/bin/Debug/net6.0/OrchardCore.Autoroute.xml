@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Autoroute</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.Autoroute.Handlers.AutoroutePartHandler.GetPattern(OrchardCore.Autoroute.Models.AutoroutePart)">
+            <summary>
+            Get the pattern from the AutoroutePartSettings property for its type
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Autoroute.Models.AutoroutePartSettings.AllowCustomPath">
+            <summary>
+            Gets or sets whether a user can define a custom path.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Autoroute.Models.AutoroutePartSettings.Pattern">
+            <summary>
+            The pattern used to build the Path.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Autoroute.Models.AutoroutePartSettings.ShowHomepageOption">
+            <summary>
+            Whether to display an option to set the content item as the homepage.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Autoroute.Models.AutoroutePartSettings.AllowUpdatePath">
+            <summary>
+            Whether a user can request a new path if some data has changed.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Autoroute.Models.AutoroutePartSettings.AllowDisabled">
+            <summary>
+            Whether a user is allowed to disable autoute generation to content items of this type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Autoroute.Models.AutoroutePartSettings.AllowRouteContainedItems">
+            <summary>
+            Whether to allow routing of contained content items.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Autoroute.Models.AutoroutePartSettings.ManageContainedItemRoutes">
+            <summary>
+            Whether this part is managing contained item routes.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Autoroute.Models.AutoroutePartSettings.AllowAbsolutePath">
+            <summary>
+            Whether to allow routing of contained content items to absolute paths.
+            </summary>
+        </member>
+        <member name="M:AutoroutePartRazorHelperExtensions.GetContentItemIdBySlugAsync(OrchardCore.IOrchardHelper,System.String)">
+            <summary>
+            Returns a content item id by its slug.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="slug">The slug.</param>
+            <example>GetContentItemIdBySlugAsync("myblog/my-blog-post")</example>
+            <returns>A content item id or <c>null</c> if it was not found.</returns>
+        </member>
+        <member name="M:AutoroutePartRazorHelperExtensions.GetContentItemBySlugAsync(OrchardCore.IOrchardHelper,System.String,System.Boolean)">
+            <summary>
+            Loads a content item by its slug.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="slug">The slug to load.</param>
+            <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
+            <example>GetContentItemBySlugAsync("myblog/my-blog-post")</example>
+            <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
+        </member>
+    </members>
+</doc>

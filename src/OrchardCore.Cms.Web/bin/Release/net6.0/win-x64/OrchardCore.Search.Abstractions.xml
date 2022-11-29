@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Search.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Search.Abstractions.SearchProvider">
+            <summary>
+            Provides a way to determine registered SearchProviders for a tenant
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Abstractions.SearchProvider.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of a <see cref="T:OrchardCore.Search.Abstractions.SearchProvider"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Abstractions.SearchProvider.Name">
+            <summary>
+            Gets the technical name of the SearchProvider.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Abstractions.SearchProvider.AreaName">
+            <summary>
+            Gets the Area name of the SearchProvider.
+            </summary>
+        </member>
+    </members>
+</doc>

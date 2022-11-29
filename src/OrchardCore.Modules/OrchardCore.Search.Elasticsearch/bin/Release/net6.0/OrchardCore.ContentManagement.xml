@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.ContentManagement</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.ContentManagement.ContentDefinitionManager.LoadContentDefinitionRecord">
+            <summary>
+            Loads the document from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentDefinitionManager.GetContentDefinitionRecord">
+            <summary>
+            Gets the document from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentDefinitionManager.CheckDocumentIdentifier(OrchardCore.ContentManagement.Metadata.Records.ContentDefinitionRecord)">
+            <summary>
+            Checks the document identifier and then clears the cached built definitions if it has changed.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.ContentFieldFactory">
+            <summary>
+            Implements <see cref="T:OrchardCore.ContentManagement.ITypeActivatorFactory`1"/> by resolving all registered <see cref="T:OrchardCore.ContentManagement.ContentField"/> types
+            and memoizing a statically typed <see cref="T:OrchardCore.ContentManagement.ITypeActivator`1"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentFieldFactory.GetTypeActivator(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:OrchardCore.ContentManagement.ContentPartFactory">
+            <summary>
+            Implements <see cref="T:OrchardCore.ContentManagement.ITypeActivatorFactory`1"/> by resolving all registered <see cref="T:OrchardCore.ContentManagement.ContentPart"/> types
+            and memoizing a statically typed <see cref="T:OrchardCore.ContentManagement.ITypeActivator`1"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentPartFactory.GetTypeActivator(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.ContentManagement.DatabaseContentDefinitionStore.LoadContentDefinitionAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.ContentManagement.DatabaseContentDefinitionStore.GetContentDefinitionAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.ContentManagement.DatabaseContentDefinitionStore.SaveContentDefinitionAsync(OrchardCore.ContentManagement.Metadata.Records.ContentDefinitionRecord)">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.ContentManagement.FileContentDefinitionStore.LoadContentDefinitionAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.ContentManagement.FileContentDefinitionStore.GetContentDefinitionAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.ContentManagement.FileContentDefinitionStore.SaveContentDefinitionAsync(OrchardCore.ContentManagement.Metadata.Records.ContentDefinitionRecord)">
+            <inheritdoc />
+        </member>
+        <member name="P:OrchardCore.ContentManagement.GenericTypeActivator`2.Type">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.ContentManagement.GenericTypeActivator`2.CreateInstance">
+            <inheritdoc />
+        </member>
+        <member name="T:OrchardCore.ContentManagement.Handlers.ContentPartHandlerCoordinator">
+            <summary>
+            This component coordinates how parts are affecting content items.
+            </summary>
+        </member>
+    </members>
+</doc>

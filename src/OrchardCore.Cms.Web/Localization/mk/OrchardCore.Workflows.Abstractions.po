@@ -1,0 +1,62 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n%10==1 && n%100 != 11 ? 0 : 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: mk\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Workflows.Abstractions.pot\n"
+"X-Crowdin-File-ID: 842\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Macedonian\n"
+"Language: mk_MK\n"
+"PO-Revision-Date: 2021-07-15 19:11\n"
+
+#. WorkflowStatus.Aborted => H["Aborted"],
+#: OrchardCore.Workflows.Abstractions\Helpers\ActivityExtensions.cs:31
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Aborted"
+msgstr "Прекинато"
+
+#. WorkflowStatus.Executing => H["Executing"],
+#: OrchardCore.Workflows.Abstractions\Helpers\ActivityExtensions.cs:32
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Executing"
+msgstr "Се извршува"
+
+#. WorkflowStatus.Faulted => H["Faulted"],
+#: OrchardCore.Workflows.Abstractions\Helpers\ActivityExtensions.cs:33
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Faulted"
+msgstr "Извршено со грешки"
+
+#. WorkflowStatus.Finished => H["Finished"],
+#: OrchardCore.Workflows.Abstractions\Helpers\ActivityExtensions.cs:34
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Finished"
+msgstr "Завршено"
+
+#. WorkflowStatus.Halted => H["Halted"],
+#: OrchardCore.Workflows.Abstractions\Helpers\ActivityExtensions.cs:35
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Halted"
+msgstr "Паузирано"
+
+#. WorkflowStatus.Idle => H["Idle"],
+#: OrchardCore.Workflows.Abstractions\Helpers\ActivityExtensions.cs:36
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Idle"
+msgstr "Во мирување"
+
+#. WorkflowStatus.Resuming => H["Resuming"],
+#: OrchardCore.Workflows.Abstractions\Helpers\ActivityExtensions.cs:37
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Resuming"
+msgstr "Продолжува"
+
+#. WorkflowStatus.Starting => H["Starting"],
+#: OrchardCore.Workflows.Abstractions\Helpers\ActivityExtensions.cs:38
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Starting"
+msgstr "Почнува"
+

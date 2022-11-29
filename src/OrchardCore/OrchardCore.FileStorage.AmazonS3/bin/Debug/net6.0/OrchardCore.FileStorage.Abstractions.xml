@@ -1,0 +1,173 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.FileStorage.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.FileStorage.IFileStore">
+             <summary>
+             Represents a generic abstraction over a virtual file store.
+             </summary>
+             <remarks>
+             The virtual file store uses forward slash (/) as the path delimiter, and has no concept of
+             volumes or drives. All paths are specified and returned as relative to the root of the virtual
+             file store. Absolute paths using a leading slash or leading period, and parent traversal
+             using "../", are not supported.
+            
+             This abstraction does not dictate any case sensitivity semantics. Case sensitivity is left to
+             the underlying storage system of concrete implementations. For example, the Windows file system
+             is case insensitive, while Linux file system and Azure Blob Storage are case sensitive.
+             </remarks>
+        </member>
+        <member name="M:OrchardCore.FileStorage.IFileStore.GetFileInfoAsync(System.String)">
+            <summary>
+            Retrieves information about the given file within the file store.
+            </summary>
+            <param name="path">The path within the file store.</param>
+            <returns>A <see cref="T:OrchardCore.FileStorage.IFileStoreEntry"/> object representing the file, or <c>null</c> if the file does not exist.</returns>
+        </member>
+        <member name="M:OrchardCore.FileStorage.IFileStore.GetDirectoryInfoAsync(System.String)">
+            <summary>
+            Retrieves information about the given directory within the file store.
+            </summary>
+            <param name="path">The path within the file store.</param>
+            <returns>A <see cref="T:OrchardCore.FileStorage.IFileStoreEntry"/> object representing the directory, or <c>null</c> if the directory does not exist.</returns>
+        </member>
+        <member name="M:OrchardCore.FileStorage.IFileStore.GetDirectoryContentAsync(System.String,System.Boolean)">
+            <summary>
+            Enumerates the content (files and directories) in a given directory within the file store.
+            </summary>
+            <param name="path">The path of the directory to enumerate, or <c>null</c> to enumerate the root of the file store.</param>
+            <param name="includeSubDirectories">A flag to indicate whether to get the contents from just the top directory or from all sub-directories as well.</param>
+            <returns>The list of files and directories in the given directory.</returns>
+            <exception cref="T:OrchardCore.FileStorage.FileStoreException">Thrown if the specified directory does not exist.</exception>
+            <remarks>
+            Results are grouped by entry type, where directories are followed by files.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.FileStorage.IFileStore.TryCreateDirectoryAsync(System.String)">
+            <summary>
+            Creates a directory in the file store if it doesn't already exist.
+            </summary>
+            <param name="path">The path of the directory to be created.</param>
+            <returns><c>true</c> if the directory was created; <c>false</c> if the directory already existed.</returns>
+            <exception cref="T:OrchardCore.FileStorage.FileStoreException">Thrown if the specified path exists but is not a directory.</exception>
+        </member>
+        <member name="M:OrchardCore.FileStorage.IFileStore.TryDeleteFileAsync(System.String)">
+            <summary>
+            Deletes a file in the file store if it exists.
+            </summary>
+            <param name="path">The path of the file to be deleted.</param>
+            <returns><c>true</c> if the file was deleted; <c>false</c> if the file did not exist.</returns>
+        </member>
+        <member name="M:OrchardCore.FileStorage.IFileStore.TryDeleteDirectoryAsync(System.String)">
+            <summary>
+            Deletes a directory in the file store if it exists.
+            </summary>
+            <param name="path">The path of the directory to be deleted.</param>
+            <returns><c>true</c> if the directory was deleted; <c>false</c> if the directory did not exist.</returns>
+        </member>
+        <member name="M:OrchardCore.FileStorage.IFileStore.MoveFileAsync(System.String,System.String)">
+            <summary>
+            Renames or moves a file to another location in the file store.
+            </summary>
+            <param name="oldPath">The path of the file to be renamed/moved.</param>
+            <param name="newPath">The new path of the file after the rename/move.</param>
+            <exception cref="T:OrchardCore.FileStorage.FileStoreException">Thrown if the specified file does not exist or if the <paramref name="newPath"/> path already exists.</exception>
+        </member>
+        <member name="M:OrchardCore.FileStorage.IFileStore.CopyFileAsync(System.String,System.String)">
+            <summary>
+            Creates a copy of a file in the file store.
+            </summary>
+            <param name="srcPath">The path of the source file to be copied.</param>
+            <param name="dstPath">The path of the destination file to be created.</param>
+            <exception cref="T:OrchardCore.FileStorage.FileStoreException">Thrown if the specified file does not exist or if the <paramref name="dstPath"/> path already exists.</exception>
+        </member>
+        <member name="M:OrchardCore.FileStorage.IFileStore.GetFileStreamAsync(System.String)">
+            <summary>
+            Creates a stream to read the contents of a file in the file store.
+            </summary>
+            <param name="path">The path of the file to be read.</param>
+            <returns>An instance of <see cref="T:System.IO.Stream"/> that can be used to read the contents of the file. The caller must close the stream when finished.</returns>
+            <exception cref="T:OrchardCore.FileStorage.FileStoreException">Thrown if the specified file does not exist.</exception>
+        </member>
+        <member name="M:OrchardCore.FileStorage.IFileStore.GetFileStreamAsync(OrchardCore.FileStorage.IFileStoreEntry)">
+            <summary>
+            Creates a stream to read the contents of a file in the file store.
+            </summary>
+            <param name="fileStoreEntry">The IFileStoreEntry to be read.</param>
+            <returns>An instance of <see cref="T:System.IO.Stream"/> that can be used to read the contents of the file. The caller must close the stream when finished.</returns>
+            <exception cref="T:OrchardCore.FileStorage.FileStoreException">Thrown if the specified file does not exist.</exception>
+        </member>
+        <member name="M:OrchardCore.FileStorage.IFileStore.CreateFileFromStreamAsync(System.String,System.IO.Stream,System.Boolean)">
+            <summary>
+            Creates a new file in the file store from the contents of an input stream.
+            </summary>
+            <param name="path">The path of the file to be created.</param>
+            <param name="inputStream">The stream whose contents to write to the new file.</param>
+            <param name="overwrite"><c>true</c> to overwrite if a file already exists; <c>false</c> to throw an exception if the file already exists.</param>
+            <exception cref="T:OrchardCore.FileStorage.FileStoreException">Thrown if the specified file already exists and <paramref name="overwrite"/> was not set to <c>true</c>, or if the specified path exists but is not a file.</exception>
+            <remarks>
+            If the specified path contains one or more directories, then those directories are
+            created if they do not already exist.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.FileStorage.IFileStoreExtensions.Combine(OrchardCore.FileStorage.IFileStore,System.String[])">
+            <summary>
+            Combines multiple path parts using the path delimiter semantics of the abstract virtual file store.
+            </summary>
+            <param name="fileStore">The <see cref="T:OrchardCore.FileStorage.IFileStore"/>.</param>
+            <param name="paths">The path parts to combine.</param>
+            <returns>The full combined path.</returns>
+        </member>
+        <member name="M:OrchardCore.FileStorage.IFileStoreExtensions.NormalizePath(OrchardCore.FileStorage.IFileStore,System.String)">
+            <summary>
+            Normalizes a path using the path delimiter semantics of the abstract virtual file store.
+            </summary>
+            <remarks>
+            Backslash is converted to forward slash and any leading or trailing slashes
+            are removed.
+            </remarks>
+        </member>
+        <member name="T:OrchardCore.FileStorage.IFileStoreCache">
+            <summary>
+            Cache a file store.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.FileStorage.IFileStoreEntry">
+            <summary>
+            Represents an abstract entry (file or directory) in a virtual file store.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.FileStorage.IFileStoreEntry.Path">
+            <summary>
+            Gets the full path of the file store entry within the file store.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.FileStorage.IFileStoreEntry.Name">
+            <summary>
+            Gets the name of the file store entry.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.FileStorage.IFileStoreEntry.DirectoryPath">
+            <summary>
+            Gets the full path of the file store entry's containing directory within the file store.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.FileStorage.IFileStoreEntry.Length">
+            <summary>
+            Gets the length of the file (0 if the file story entry is a directory).
+            </summary>
+        </member>
+        <member name="P:OrchardCore.FileStorage.IFileStoreEntry.LastModifiedUtc">
+            <summary>
+            Gets the date and time in UTC when the file store entry was last modified.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.FileStorage.IFileStoreEntry.IsDirectory">
+            <summary>
+            Gets a boolean indicating whether the file store entry is a directory.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "5fNqDXysCWjh9yPBU95tjoGbE5CmLAqS/JSU4lLktGc=",
+  "Source": "OrchardCore.Security",
+  "BasePath": "_content/OrchardCore.Security",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

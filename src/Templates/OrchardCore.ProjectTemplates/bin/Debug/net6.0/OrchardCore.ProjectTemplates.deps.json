@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "OrchardCore.ProjectTemplates/1.6.0-preview": {
+        "runtime": {
+          "OrchardCore.ProjectTemplates.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "OrchardCore.ProjectTemplates/1.6.0-preview": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

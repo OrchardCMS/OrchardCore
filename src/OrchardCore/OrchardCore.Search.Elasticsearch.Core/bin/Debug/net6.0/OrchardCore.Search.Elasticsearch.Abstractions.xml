@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Search.Elasticsearch.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Search.Elasticsearch.IElasticAnalyzer">
+            <summary>
+            Represents an <see cref="T:Nest.IAnalyzer"/> instance that is available in the system.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.IElasticQueryService.SearchAsync(System.String,System.String)">
+            <summary>
+            <para>Provides a way to execute an OC <see cref="T:OrchardCore.Queries.Query"/> in Elasticsearch.</para>
+            <para>OC implementation deserializes the <see cref="T:OrchardCore.Queries.Query"/> JSON string to an Elasticsearch SearchRequest.</para>
+            <para>Also provides a way to return only specific fields:
+            <see href="https://www.elastic.co/guide/en/elasticsearch/reference/7.17/search-fields.html#search-fields">The fields option</see>.
+            </para>
+            <para>Also provides a way to return only specific _source fields:
+            <see href="https://www.elastic.co/guide/en/elasticsearch/reference/7.17/search-fields.html#source-filtering">The _source option</see>.
+            </para>
+            </summary>
+            <returns><see cref="T:OrchardCore.Search.Elasticsearch.ElasticTopDocs"/></returns>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.IElasticSearchQueryService.ExecuteQueryAsync(System.String,Nest.QueryContainer,System.Collections.Generic.List{Nest.ISort},System.Int32,System.Int32)">
+            <summary>
+            Provides a way to execute a search request in Elasticsearch based on a <see cref="T:Nest.QueryContainer"/>. 
+            </summary>
+            <returns><see cref="T:System.Collections.Generic.IList`1">IList&lt;string&gt;</see></returns>
+        </member>
+    </members>
+</doc>

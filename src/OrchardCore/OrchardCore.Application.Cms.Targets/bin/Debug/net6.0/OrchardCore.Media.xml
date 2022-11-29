@@ -1,0 +1,257 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Media</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Media.Deployment.AllMediaProfilesDeploymentStep">
+            <summary>
+            Adds media profiles to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.Deployment.MediaDeploymentStep">
+            <summary>
+            Adds layers to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.Fields.Anchor">
+            <summary>
+            An anchor represents two floats with an <see cref="P:OrchardCore.Media.Fields.Anchor.X"/> and <see cref="P:OrchardCore.Media.Fields.Anchor.Y"/> position.
+            When anchoring is enabled the position defaults to the center of the media.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Media.Fields.MediaFieldAnchorExtensions.GetAnchors(OrchardCore.Media.Fields.MediaField)">
+            <summary>
+            Anchors are a less well known property of a media field.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Media.Fields.MediaFieldAnchorExtensions.SetAnchors(OrchardCore.Media.Fields.MediaField,OrchardCore.Media.Fields.Anchor[])">
+            <summary>
+            Tags names are a less well known property of a media field.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Media.Fields.MediaFieldAttachedFileNameExtensions.GetAttachedFileNames(OrchardCore.Media.Fields.MediaField)">
+            <summary>
+            Gets the names of <see cref="T:OrchardCore.Media.Fields.MediaField"/> attached files.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Media.Fields.MediaFieldAttachedFileNameExtensions.SetAttachedFileNames(OrchardCore.Media.Fields.MediaField,System.String[])">
+            <summary>
+            Sets the names of <see cref="T:OrchardCore.Media.Fields.MediaField"/> attached files.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.Handlers.AttachedMediaFieldContentHandler">
+            <summary>
+            Content Handler to delete files used on attached media fields once the content item is deleted.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.Processing.BackwardsCompatibleCacheKey">
+            <summary>
+            Backwards compatible absolute url cache key.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Media.Processing.BackwardsCompatibleCacheKey.Create(Microsoft.AspNetCore.Http.HttpContext,SixLabors.ImageSharp.Web.Commands.CommandCollection)">
+            <inheritdoc/>
+        </member>
+        <member name="T:OrchardCore.Media.Processing.ImageVersionProcessor">
+            <summary>
+            Pass through processor which allows inclusion of a version query string in the cache key.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Media.Processing.ImageVersionProcessor.VersionCommand">
+            <summary>
+            The command constant for a version query string.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.Processing.MediaImageSharpConfiguration">
+            <summary>
+            Provides default configuration for ImageSharp.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Media.Processing.MediaResizingFileProvider._match">
+            <summary>
+            A match function used by the resolver to identify itself as the correct resolver to use.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.Processing.MediaResizingFileProvider.Match">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.Media.Processing.MediaResizingFileProvider.IsValidRequest(Microsoft.AspNetCore.Http.HttpContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.Media.Processing.MediaResizingFileProvider.GetAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.Media.Processing.MediaTokenService.CreateQueryStringTokenKey(System.Collections.Generic.Dictionary{System.String,Microsoft.Extensions.Primitives.StringValues})">
+            <summary>
+            Specialized version with fast enumeration and no StringValues string allocation.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Media.Processing.MediaTokenService.AddQueryString(System.ReadOnlySpan{System.Char},System.Collections.Generic.Dictionary{System.String,Microsoft.Extensions.Primitives.StringValues})">
+            <summary>
+            Custom version of <see cref="M:Microsoft.AspNetCore.WebUtilities.QueryHelpers.AddQueryString(System.String,System.String,System.String)"/> that takes our pre-built
+            dictionary, uri as ReadOnlySpan&lt;char&gt; and uses ZString. Otherwise same logic.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.Processing.MediaTokenSettingsUpdater">
+            <summary>
+            Generates a random key for media token hashing.
+            To regenerate the key disabled and enable the feature.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.Processing.TokenCommandProcessor">
+            <summary>
+            Pass through processor which allows inclusion of a tokenized query string.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Media.Processing.TokenCommandProcessor.TokenCommand">
+            <summary>
+            The command constant for a tokenized query string.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.Recipes.MediaProfileStep">
+            <summary>
+            This recipe step creates or updates a media profile.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.Recipes.MediaStep">
+            <summary>
+            This recipe step creates a set of queries.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.Recipes.MediaStep.MediaStepModel.Files">
+            <summary>
+            Collection of <see cref="T:OrchardCore.Media.Recipes.MediaStep.MediaStepFile"/> objects.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.Recipes.MediaStep.MediaStepFile.Path">
+            <summary>
+            Path where the content will be written.
+            Use inter-changeably with <see cref="P:OrchardCore.Media.Recipes.MediaStep.MediaStepFile.TargetPath"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.Recipes.MediaStep.MediaStepFile.TargetPath">
+            <summary>
+            Path where the content will be written.
+            Use inter-changeably with <see cref="P:OrchardCore.Media.Recipes.MediaStep.MediaStepFile.Path"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.Recipes.MediaStep.MediaStepFile.Base64">
+            <summary>
+            Base64 encoded content. Use when the source file will
+            not be available in this recipe step's file provider.
+            If both this and SourcePath properties are set with
+            non-null values, this property will be used.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.Recipes.MediaStep.MediaStepFile.SourcePath">
+            <summary>
+            Path where the content is read from. Use when the file
+            will be available in this recipe step's file provider.
+            If both this and Base64 properties are set with
+            non-null values, the Base64 property will be used.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.Recipes.MediaStep.MediaStepFile.SourceUrl">
+            <summary>
+            URL where the content is read from. Use when the file
+            will be available on a remote website.
+            If Base64 property or SourcePath property are set, they take
+            precedence over SourceUrl.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.Services.AttachedMediaFieldFileService">
+            <summary>
+            Handles file management operations related to the attached media field
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Media.Services.AttachedMediaFieldFileService.DeleteContentItemFolderAsync(OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Removes the assets attached to a content item through an attached media field.
+            </summary>
+            <remarks>
+            To be used by content handlers when the content item is deleted
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.Media.Services.AttachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(System.Collections.Generic.List{OrchardCore.Media.ViewModels.EditMediaFieldItemInfo},OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Moves uploaded files to a folder specific for the content item
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.Services.ManageMediaFolderAuthorizationHandler">
+            <summary>
+            Checks if the user has related permission to manage the path resource which is passed from AuthorizationHandler
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.Services.MediaFileStoreResolverMiddleware">
+            <summary>
+            Provides local caching for remote file store files.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Media.Services.MediaFileStoreResolverMiddleware.Invoke(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Processes a request to determine if it matches a known file from the media file store, and cache it locally.
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:OrchardCore.Media.Services.MediaProfilesManager.LoadMediaProfilesDocumentAsync">
+            <summary>
+            Loads the media profiles document from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Media.Services.MediaProfilesManager.GetMediaProfilesDocumentAsync">
+            <summary>
+            Gets the media profiles document from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.TagHelpers.AnchorTagHelper.AppendVersion">
+            <summary>
+            Value indicating if file version should be appended to href url.
+            </summary>
+            <remarks>
+            If <c>true</c> then a query string "v" with the encoded content of the file is added.
+            </remarks>
+        </member>
+        <member name="P:OrchardCore.Media.TagHelpers.ImageTagHelper.AppendVersion">
+            <summary>
+            Value indicating if file version should be appended to the src url.
+            </summary>
+            <remarks>
+            If <c>true</c> then a query string "v" with the encoded content of the file is added.
+            </remarks>
+        </member>
+        <member name="T:MediaOrchardHelperExtensions">
+            <summary>
+            Provides an extension methods for <see cref="T:OrchardCore.IOrchardHelper"/>.
+            </summary>
+        </member>
+        <member name="M:MediaOrchardHelperExtensions.IsImageFile(OrchardCore.IOrchardHelper,System.String)">
+            <summary>
+            Determines if a path is an image file.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="path">The path.</param>
+            <returns>true if the path is an image file. Otherwise false.</returns>
+        </member>
+        <member name="M:OrchardRazorHelperExtensions.AssetUrl(OrchardCore.IOrchardHelper,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},OrchardCore.Media.Processing.ResizeMode,System.Boolean,System.Nullable{System.Int32},OrchardCore.Media.Processing.Format,OrchardCore.Media.Fields.Anchor,System.String)">
+            <summary>
+            Returns the relative URL of the specified asset path with optional resizing parameters.
+            </summary>
+        </member>
+        <member name="M:OrchardRazorHelperExtensions.AssetProfileUrlAsync(OrchardCore.IOrchardHelper,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},OrchardCore.Media.Processing.ResizeMode,System.Boolean,System.Nullable{System.Int32},OrchardCore.Media.Processing.Format,OrchardCore.Media.Fields.Anchor,System.String)">
+            <summary>
+            Returns the relative URL of the specified asset path for a media profile with optional resizing parameters.
+            </summary>
+        </member>
+        <member name="M:OrchardRazorHelperExtensions.ImageResizeUrl(OrchardCore.IOrchardHelper,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},OrchardCore.Media.Processing.ResizeMode,System.Nullable{System.Int32},OrchardCore.Media.Processing.Format,OrchardCore.Media.Fields.Anchor,System.String)">
+            <summary>
+            Returns a URL with custom resizing parameters for an existing image path.
+            </summary>
+        </member>
+        <member name="M:OrchardRazorHelperExtensions.ImageProfileResizeUrlAsync(OrchardCore.IOrchardHelper,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},OrchardCore.Media.Processing.ResizeMode,System.Nullable{System.Int32},OrchardCore.Media.Processing.Format,OrchardCore.Media.Fields.Anchor,System.String)">
+            <summary>
+            Returns a URL with custom resizing parameters for a media profile for an existing image path.
+            </summary>
+        </member>
+    </members>
+</doc>

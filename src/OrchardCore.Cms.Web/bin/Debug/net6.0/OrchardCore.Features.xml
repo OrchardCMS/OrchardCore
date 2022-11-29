@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Features</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Features.Deployment.AllFeaturesDeploymentStep">
+            <summary>
+            Adds enabled and disabled features to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Features.Models.ModuleEntry">
+            <summary>
+            Represents a module.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Features.Models.ModuleEntry.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Features.Models.ModuleEntry.Descriptor">
+            <summary>
+            The module's extension descriptor.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Features.Models.ModuleEntry.NeedsVersionUpdate">
+            <summary>
+            Boolean value indicating if the module needs a version update.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Features.Models.ModuleEntry.IsRecentlyInstalled">
+            <summary>
+            Boolean value indicating if the feature was recently installed.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Features.Models.ModuleEntry.Notifications">
+            <summary>
+            List of module notifications.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Features.Models.ModuleEntry.CanUninstall">
+            <summary>
+            Indicates whether the module can be uninstalled by the user.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Features.Recipes.Executors.FeatureStep">
+            <summary>
+            This recipe step enables or disables a set of features.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Features.Services.IModuleService.GetAvailableFeaturesAsync">
+            <summary>
+            Retrieves an enumeration of the available features together with its state (enabled / disabled).
+            </summary>
+            <returns>An enumeration of the available features together with its state (enabled / disabled).</returns>
+        </member>
+        <member name="M:OrchardCore.Features.Services.IModuleService.EnableFeaturesAsync(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Enables a list of features.
+            </summary>
+            <param name="featureIds">The IDs for the features to be enabled.</param>
+        </member>
+        <member name="M:OrchardCore.Features.Services.IModuleService.EnableFeaturesAsync(System.Collections.Generic.IEnumerable{System.String},System.Boolean)">
+            <summary>
+            Enables a list of features.
+            </summary>
+            <param name="featureIds">The IDs for the features to be enabled.</param>
+            <param name="force">Boolean parameter indicating if the feature should enable it's dependencies if required or fail otherwise.</param>
+        </member>
+        <member name="M:OrchardCore.Features.Services.IModuleService.DisableFeaturesAsync(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Disables a list of features.
+            </summary>
+            <param name="featureIds">The IDs for the features to be disabled.</param>
+        </member>
+        <member name="M:OrchardCore.Features.Services.IModuleService.DisableFeaturesAsync(System.Collections.Generic.IEnumerable{System.String},System.Boolean)">
+            <summary>
+            Disables a list of features.
+            </summary>
+            <param name="featureIds">The IDs for the features to be disabled.</param>
+            <param name="force">Boolean parameter indicating if the feature should disable the features which depend on it if required or fail otherwise.</param>
+        </member>
+        <member name="M:OrchardCore.Features.Services.ModuleService.GetAvailableFeaturesAsync">
+            <summary>
+            Retrieves an enumeration of the available features together with its state (enabled / disabled).
+            </summary>
+            <returns>An enumeration of the available features together with its state (enabled / disabled).</returns>
+        </member>
+        <member name="M:OrchardCore.Features.Services.ModuleService.EnableFeaturesAsync(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Enables a list of features.
+            </summary>
+            <param name="featureIds">The IDs for the features to be enabled.</param>
+        </member>
+        <member name="M:OrchardCore.Features.Services.ModuleService.EnableFeaturesAsync(System.Collections.Generic.IEnumerable{System.String},System.Boolean)">
+            <summary>
+            Enables a list of features.
+            </summary>
+            <param name="featureIds">The IDs for the features to be enabled.</param>
+            <param name="force">Boolean parameter indicating if the feature should enable it's dependencies if required or fail otherwise.</param>
+        </member>
+        <member name="M:OrchardCore.Features.Services.ModuleService.DisableFeaturesAsync(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Disables a list of features.
+            </summary>
+            <param name="featureIds">The IDs for the features to be disabled.</param>
+        </member>
+        <member name="M:OrchardCore.Features.Services.ModuleService.DisableFeaturesAsync(System.Collections.Generic.IEnumerable{System.String},System.Boolean)">
+            <summary>
+            Disables a list of features.
+            </summary>
+            <param name="featureIds">The IDs for the features to be disabled.</param>
+            <param name="force">Boolean parameter indicating if the feature should disable the features which depend on it if required or fail otherwise.</param>
+        </member>
+        <member name="T:OrchardCore.Features.Startup">
+            <summary>
+            These services are registered on the tenant service collection
+            </summary>
+        </member>
+    </members>
+</doc>

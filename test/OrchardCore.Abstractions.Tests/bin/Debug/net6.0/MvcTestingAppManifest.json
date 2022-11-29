@@ -1,0 +1,23 @@
+{
+  "Examples.Features.AssyAttrib, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\test\\OrchardCore.Tests.Features\\Examples.Features.AssyAttrib",
+  "Examples.Modules.AssyAttrib.Alpha, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\test\\OrchardCore.Tests.Modules\\Examples.Modules.AssyAttrib.Alpha",
+  "Examples.Modules.AssyAttrib.Bravo, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\test\\OrchardCore.Tests.Modules\\Examples.Modules.AssyAttrib.Bravo",
+  "Examples.Modules.AssyAttrib.Charlie, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\test\\OrchardCore.Tests.Modules\\Examples.Modules.AssyAttrib.Charlie",
+  "Examples.OrchardCoreModules.Alpha, Version=7.8.9.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\test\\OrchardCore.Tests.Modules\\Examples.OrchardCoreModules.Alpha",
+  "Examples.OrchardCoreThemes.Alpha, Version=8.9.10.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\test\\OrchardCore.Tests.Themes\\Examples.OrchardCoreThemes.Alpha",
+  "Examples.Themes.AssyAttrib.Alpha, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\test\\OrchardCore.Tests.Themes\\Examples.Themes.AssyAttrib.Alpha",
+  "Examples.Themes.AssyAttrib.Bravo, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\test\\OrchardCore.Tests.Themes\\Examples.Themes.AssyAttrib.Bravo",
+  "Examples.Themes.AssyAttrib.Charlie, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\test\\OrchardCore.Tests.Themes\\Examples.Themes.AssyAttrib.Charlie",
+  "OrchardCore.Abstractions, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Abstractions",
+  "OrchardCore.Data.Abstractions, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Data.Abstractions",
+  "OrchardCore.DisplayManagement.Abstractions, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.DisplayManagement.Abstractions",
+  "OrchardCore.DisplayManagement, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.DisplayManagement",
+  "OrchardCore.Infrastructure.Abstractions, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Infrastructure.Abstractions",
+  "OrchardCore.Liquid.Abstractions, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Liquid.Abstractions",
+  "OrchardCore.Localization.Abstractions, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Localization.Abstractions",
+  "OrchardCore.Module.Targets, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Module.Targets",
+  "OrchardCore.Mvc.Core, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Mvc.Core",
+  "OrchardCore.Queries.Abstractions, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Queries.Abstractions",
+  "OrchardCore.ResourceManagement.Abstractions, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.ResourceManagement.Abstractions",
+  "OrchardCore.Theme.Targets, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Theme.Targets"
+}

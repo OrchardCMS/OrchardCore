@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Placements</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Placements.Deployment.PlacementsDeploymentStep">
+            <summary>
+            Adds placements to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Placements.Recipes.PlacementStep">
+            <summary>
+            This recipe step creates a set of placements.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Placements.Services.DatabasePlacementsStore.LoadPlacementsAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Placements.Services.DatabasePlacementsStore.GetPlacementsAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Placements.Services.DatabasePlacementsStore.SavePlacementsAsync(OrchardCore.Placements.Models.PlacementsDocument)">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Placements.Services.FilePlacementsStore.LoadPlacementsAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Placements.Services.FilePlacementsStore.GetPlacementsAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Placements.Services.FilePlacementsStore.SavePlacementsAsync(OrchardCore.Placements.Models.PlacementsDocument)">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Placements.Services.IPlacementStore.LoadPlacementsAsync">
+            <summary>
+            Loads the placements document from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Placements.Services.IPlacementStore.GetPlacementsAsync">
+            <summary>
+            Gets the placements document from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Placements.Services.IPlacementStore.SavePlacementsAsync(OrchardCore.Placements.Models.PlacementsDocument)">
+            <summary>
+            Updates the store with the provided placements document and then updates the cache.
+            </summary>
+        </member>
+    </members>
+</doc>

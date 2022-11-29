@@ -1,0 +1,44 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: pt-BR\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Diagnostics.pot\n"
+"X-Crowdin-File-ID: 732\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Portuguese, Brazilian\n"
+"Language: pt_BR\n"
+"PO-Revision-Date: 2021-07-15 18:36\n"
+
+#. <h1>@T["Your browser sent a request that this server could not understand."]</h1>
+#: OrchardCore.Diagnostics\Views\Diagnostics\BadRequest.cshtml:1
+msgctxt "OrchardCore.Diagnostics.Views.Diagnostics.BadRequest"
+msgid "Your browser sent a request that this server could not understand."
+msgstr "Seu navegador enviou uma solicitação que o servidor não consegue interpretar."
+
+#. <h1>@T["An error occurred while executing this request."]</h1>
+#: OrchardCore.Diagnostics\Views\Diagnostics\Error.cshtml:1
+msgctxt "OrchardCore.Diagnostics.Views.Diagnostics.Error"
+msgid "An error occurred while executing this request."
+msgstr "Ocorreu um erro ao executar esta solicitação."
+
+#. <h1>@T["You do not have access to this resource."]</h1>
+#: OrchardCore.Diagnostics\Views\Diagnostics\Forbidden.cshtml:1
+msgctxt "OrchardCore.Diagnostics.Views.Diagnostics.Forbidden"
+msgid "You do not have access to this resource."
+msgstr "Você não tem acesso a este recurso."
+
+#. <h1>@T["The page could not be found."]</h1>
+#: OrchardCore.Diagnostics\Views\Diagnostics\NotFound.cshtml:1
+msgctxt "OrchardCore.Diagnostics.Views.Diagnostics.NotFound"
+msgid "The page could not be found."
+msgstr "A página não pode ser encontrada."
+
+#. <h1>@T["You are not authorized to view this content."]</h1>
+#: OrchardCore.Diagnostics\Views\Diagnostics\Unauthorized.cshtml:1
+msgctxt "OrchardCore.Diagnostics.Views.Diagnostics.Unauthorized"
+msgid "You are not authorized to view this content."
+msgstr "Você não está autorizado a visualizar este conteúdo."
+

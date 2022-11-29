@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Media.Core</name>
+    </assembly>
+    <members>
+        <member name="F:OrchardCore.Media.Core.DefaultMediaFileStoreCacheFileProvider.AssetsCachePath">
+            <summary>
+            The path in the wwwroot folder containing the asset cache.
+            The tenants name will be appended to this path.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.Services.MediaSizeLimitAttribute.IsReusable">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Media.Services.MediaSizeLimitAttribute.CreateInstance(System.IServiceProvider)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

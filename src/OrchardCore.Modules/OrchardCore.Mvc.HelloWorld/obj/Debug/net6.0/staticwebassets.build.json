@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "ROAJOaltV81cHfs2w52ROtdLiyixANBYafmgEv+xM7g=",
+  "Source": "OrchardCore.Mvc.HelloWorld",
+  "BasePath": "_content/OrchardCore.Mvc.HelloWorld",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

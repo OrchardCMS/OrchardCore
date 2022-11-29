@@ -1,0 +1,508 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: el\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Email.pot\n"
+"X-Crowdin-File-ID: 740\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Greek\n"
+"Language: el_GR\n"
+"PO-Revision-Date: 2022-10-11 20:08\n"
+
+#. .Add(S["Configuration"], configuration => configuration
+#: OrchardCore.Email\AdminMenu.cs:24
+msgctxt "OrchardCore.Email.AdminMenu"
+msgid "Configuration"
+msgstr "Παραμετροποίηση"
+
+#. .Add(S["Settings"], settings => settings
+#: OrchardCore.Email\AdminMenu.cs:25
+msgctxt "OrchardCore.Email.AdminMenu"
+msgid "Settings"
+msgstr "Ρυθμίσεις"
+
+#. .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
+#. .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
+#: OrchardCore.Email\AdminMenu.cs:26
+#: OrchardCore.Email\AdminMenu.cs:26
+msgctxt "OrchardCore.Email.AdminMenu"
+msgid "Email"
+msgstr "Email"
+
+#. await _notifier.SuccessAsync(H["Message sent successfully."]);
+#: OrchardCore.Email\Controllers\AdminController.cs:65
+msgctxt "OrchardCore.Email.Controllers.AdminController"
+msgid "Message sent successfully."
+msgstr "Το μήνυμα εστάλη με επιτυχία."
+
+#. [EmailAddress(ErrorMessage = "Invalid Email.")]
+#: OrchardCore.Email\ViewModels\SmtpSettingsViewModel.cs:10
+msgctxt "OrchardCore.Email.ViewModels.SmtpSettingsViewModel"
+msgid "Invalid Email."
+msgstr ""
+
+#. public override LocalizedString DisplayText => S["Email Task"];
+#: OrchardCore.Email\Workflows\Activities\EmailTask.cs:34
+msgctxt "OrchardCore.Email.Workflows.Activities.EmailTask"
+msgid "Email Task"
+msgstr "Εργασία Email"
+
+#. public override LocalizedString Category => S["Messaging"];
+#: OrchardCore.Email\Workflows\Activities\EmailTask.cs:35
+msgctxt "OrchardCore.Email.Workflows.Activities.EmailTask"
+msgid "Messaging"
+msgstr "Μηνύματα"
+
+#. return Outcomes(S["Done"], S["Failed"]);
+#: OrchardCore.Email\Workflows\Activities\EmailTask.cs:106
+msgctxt "OrchardCore.Email.Workflows.Activities.EmailTask"
+msgid "Done"
+msgstr "Τέλος"
+
+#. return Outcomes(S["Done"], S["Failed"]);
+#: OrchardCore.Email\Workflows\Activities\EmailTask.cs:106
+msgctxt "OrchardCore.Email.Workflows.Activities.EmailTask"
+msgid "Failed"
+msgstr "Απέτυχε"
+
+#. <span class="icon"><i class="fa fa-envelope" aria-hidden="true"></i></span><span class="title">@T["Email"]</span>
+#: OrchardCore.Email\Views\NavigationItemText-email.Id.cshtml:1
+msgctxt "OrchardCore.Email.Views.NavigationItemText-email.Id"
+msgid "Email"
+msgstr "Email"
+
+#. <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:4
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr "Ο τρέχων ενοικιαστής θα φορτωθεί ξανά όταν αποθηκευτούν οι ρυθμίσεις."
+
+#. <label asp-for="DefaultSender">@T["Sender email address"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:7
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Sender email address"
+msgstr "Διεύθυνση αποστολέας email"
+
+#. <span class="hint">@T["The default email address to use as a sender, unless the email sender is set."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:10
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The default email address to use as a sender, unless the email sender is set."
+msgstr "Η προεπιλεγμένη διεύθυνση email για χρήση ως αποστολέας, εκτός εάν έχει οριστεί ο αποστολέας email."
+
+#. <label asp-for="DeliveryMethod">@T["Delivery method"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:14
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Delivery method"
+msgstr "Μέθοδος παράδοσης"
+
+#. @T["Network"]
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:17
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Network"
+msgstr "Δίκτυο"
+
+#. @T["Specified pickup directory"]
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:20
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Specified pickup directory"
+msgstr "Ορισμένος κατάλογος παραλαβής"
+
+#. <span class="hint">@T["The delivery method used when sending email. Use Network in production. The other options can be useful when developing and testing."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:24
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The delivery method used when sending email. Use Network in production. The other options can be useful when developing and testing."
+msgstr "Η μέθοδος παράδοσης που χρησιμοποιείται κατά την αποστολή μηνυμάτων ηλεκτρονικού ταχυδρομείου. Στην παραγωγή χρησιμοποίησε το Δίκτυο. Οι άλλες επιλογές μπορεί να είναι χρήσιμες κατά την ανάπτυξη και τη δοκιμή."
+
+#. <h2 class="card-title">@T["Network delivery options"]</h2>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:32
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Network delivery options"
+msgstr "Επιλογές παροχής δικτύου"
+
+#. <label asp-for="Host">@T["Host name"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:38
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Host name"
+msgstr "Όνομα εξυπηρετητή"
+
+#. <span class="hint">@T["The SMTP server domain, e.g. <i>smtp.mailprovider.com</i>."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:41
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The SMTP server domain, e.g. <i>smtp.mailprovider.com</i>."
+msgstr "Ο τομέας διακομιστή SMTP, π.χ. <i>smtp.mailprovider.com</i>."
+
+#. <label asp-for="Port">@T["Port number"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:48
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Port number"
+msgstr "Αριθμός θύρας"
+
+#. <span class="hint">@T["The SMTP server port, usually 25."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:51
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The SMTP server port, usually 25."
+msgstr "Η θύρα διακομιστή SMTP, συνήθως 25."
+
+#. <label asp-for="ProxyHost">@T["Proxy host name"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:61
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Proxy host name"
+msgstr ""
+
+#. <span class="hint">@T["The proxy server is optional."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:64
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The proxy server is optional."
+msgstr ""
+
+#. <label asp-for="ProxyPort">@T["Proxy port number"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:71
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Proxy port number"
+msgstr ""
+
+#. <span class="hint">@T["The proxy port is optional."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:74
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The proxy port is optional."
+msgstr ""
+
+#. <label asp-for="EncryptionMethod">@T["Encryption method to use"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:81
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Encryption method to use"
+msgstr "Η μέθοδο κρυπτογράφησης που θα Χρησιμοποιήσετε"
+
+#. @T["None"] - @T["Connect to server using insecure connection."]
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:84
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "None"
+msgstr "Κανένα"
+
+#. @T["None"] - @T["Connect to server using insecure connection."]
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:84
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Connect to server using insecure connection."
+msgstr "Συνδεθείτε στο διακομιστή χρησιμοποιώντας μη ασφαλείς συνδέσεις."
+
+#. @T["SSL/TLS"] - @T["Connect to server using SSL/TSL secure connection"]
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:87
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "SSL/TLS"
+msgstr "SSL/TLS"
+
+#. @T["SSL/TLS"] - @T["Connect to server using SSL/TSL secure connection"]
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:87
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Connect to server using SSL/TSL secure connection"
+msgstr "Συνδεθείτε στο διακομιστή χρησιμοποιώντας SSL/TSL ασφαλείς συνδέσεις"
+
+#. @T["STARTTLS"] - @T["Connect to server using insecure connection and upgrade to secure using SSL/TLS"]
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:90
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "STARTTLS"
+msgstr "STARTTLS"
+
+#. @T["STARTTLS"] - @T["Connect to server using insecure connection and upgrade to secure using SSL/TLS"]
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:90
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Connect to server using insecure connection and upgrade to secure using SSL/TLS"
+msgstr "Συνδεθείτε στο διακομιστή χρησιμοποιώντας μη ασφαλής σύνδεση και κάντε αναβάθμιση για να εξασφαλίσετε τη χρήση SSL/TLS"
+
+#. <span class="hint">@T["The encryption method used when connecting to mail server."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:94
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The encryption method used when connecting to mail server."
+msgstr "Η μέθοδος κρυπτογράφησης που χρησιμοποιείται κατά τη σύνδεση με το διακομιστή αλληλογραφίας."
+
+#. <label class="form-check-label" asp-for="AutoSelectEncryption">@T["Auto Select Encryption method"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:100
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Auto Select Encryption method"
+msgstr "Αυτόματη μέθοδος Κρυπτογράφησης"
+
+#. <span class="hint dashed">@T["Check to let the system select the encryption method based on port."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:101
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Check to let the system select the encryption method based on port."
+msgstr "Επιλέξτε για να επιτρέψετε στο σύστημα να επιλέξει τη μέθοδο κρυπτογράφησης βάσει θύρας."
+
+#. <label class="form-check-label" asp-for="RequireCredentials">@T["Require credentials"] </label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:107
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Require credentials"
+msgstr "Απαραίτητη πιστοποίηση"
+
+#. <label class="form-check-label" asp-for="UseDefaultCredentials">@T["Use Windows authentication"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:114
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Use Windows authentication"
+msgstr "Χρησιμοποίησε τον έλεγχο ταυτότητας των Windows"
+
+#. <span class="hint d-block">@T["When this option is selected, the application pool or host-process identity is used to authenticate with the mail server."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:115
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "When this option is selected, the application pool or host-process identity is used to authenticate with the mail server."
+msgstr "Όταν είναι επιλεγμένη αυτή η επιλογή, η ομάδα εφαρμογών ή η ταυτότητα διεργασίας κεντρικού υπολογιστή χρησιμοποιείται για έλεγχο ταυτότητας με τον διακομιστή αλληλογραφίας."
+
+#. <label asp-for="UserName">@T["User name"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:120
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "User name"
+msgstr "Όνομα χρήστη"
+
+#. <span class="hint">@T["The username for authentication."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:123
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The username for authentication."
+msgstr "Το όνομα χρήστη για έλεγχο ταυτότητας."
+
+#. <label asp-for="Password">@T["Password"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:127
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Password"
+msgstr "Κωδικός"
+
+#. <span class="hint">@T["The password for authentication."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:130
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "The password for authentication."
+msgstr "Ο κωδικός πρόσβασης για τον έλεγχο ταυτότητας."
+
+#. <h2 class="card-title">@T["Specified pickup directory delivery options"]</h2>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:141
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Specified pickup directory delivery options"
+msgstr "Επιλογές Καθορισμένου καταλόγου συλλογής για παράδοση"
+
+#. <label asp-for="PickupDirectoryLocation">@T["Pickup directory location"]</label>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:144
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "Pickup directory location"
+msgstr "Τοποθεσία καταλόγου παραλαβής"
+
+#. <span class="hint">@T[@"E.g. <i>C:\Path\To\This\Site\PickedUpEmail</i> to place emails in a <i>PickedUpEmail</i> directory on the C drive."]</span>
+#: OrchardCore.Email\Views\SmtpSettings.Edit.cshtml:147
+msgctxt "OrchardCore.Email.Views.SmtpSettings.Edit"
+msgid "E.g. <i>C:\\Path\\To\\This\\Site\\PickedUpEmail</i> to place emails in a <i>PickedUpEmail</i> directory on the C drive."
+msgstr "Π.χ. <i>C:\\Path\\To\\This\\Site\\PickedUpEmail</i> για να τοποθετήσετε μηνύματα ηλεκτρονικού ταχυδρομείου σε έναν κατάλογο <i>PickedUpEmail</i> στη μονάδα C."
+
+#. <a href="@Url.Action("Index", "Admin", new { area = "OrchardCore.Email" })" class="btn btn-secondary">@T["Test settings"]</a>
+#: OrchardCore.Email\Views\SmtpSettings.TestButton.cshtml:1
+msgctxt "OrchardCore.Email.Views.SmtpSettings.TestButton"
+msgid "Test settings"
+msgstr "Έλεγχος Ρυθμίσεων"
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(T["Settings"])</h1></zone>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:3
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "Settings"
+msgstr "Ρυθμίσεις"
+
+#. <label asp-for="To">@T["To"]</label>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:10
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "To"
+msgstr "Προς"
+
+#. <label asp-for="Sender">@T["Sender"]</label>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:17
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "Sender"
+msgstr "Αποστολέας"
+
+#. <span class="hint">@T["The sender is optional, it is useful when the email author is different than the email submitter."]</span>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:20
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "The sender is optional, it is useful when the email author is different than the email submitter."
+msgstr "Ο αποστολέας είναι προαιρετικός, είναι χρήσιμο όταν ο συντάκτης email είναι διαφορετικός από τον αποστολέα email."
+
+#. <label asp-for="Bcc">@T["Bcc"]</label>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:25
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "Bcc"
+msgstr "Κρυφ. κοιν."
+
+#. <label asp-for="Cc">@T["Cc"]</label>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:32
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "Cc"
+msgstr "Κοινοποίηση"
+
+#. <label asp-for="ReplyTo">@T["Reply To"]</label>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:39
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "Reply To"
+msgstr "Απάντηση Σε"
+
+#. <label asp-for="Subject">@T["Subject"]</label>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:46
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "Subject"
+msgstr "Θέμα"
+
+#. <label asp-for="Body">@T["Body"]</label>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:53
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "Body"
+msgstr "Σώμα"
+
+#. <button type="submit" id="emailtestsend" class="button grey">@T["Send"]</button>
+#: OrchardCore.Email\Views\Admin\Index.cshtml:59
+msgctxt "OrchardCore.Email.Views.Admin.Index"
+msgid "Send"
+msgstr "Αποστολή"
+
+#. <h4><i class="fa fa-envelope" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Send Email"])</h4>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Design.cshtml:6
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Design"
+msgid "Send Email"
+msgstr "Αποστολή Email"
+
+#. <label asp-for="AuthorExpression">@T["From"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:5
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "From"
+msgstr "Aπό"
+
+#. <span class="hint">@T["The author's email address that defines who the email is from. Leave blank to use the configured email address. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:8
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The author's email address that defines who the email is from. Leave blank to use the configured email address. With Liquid support."
+msgstr "Η διεύθυνση email του συγγραφέα που καθορίζει από ποιον είναι το email. Άφησε κενό για να χρησιμοποιήσεις τη διαμορφωμένη διεύθυνση email. Με υποστήριξη Liquid."
+
+#. <label asp-for="SenderExpression">@T["Sender"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:12
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Sender"
+msgstr "Αποστολέας"
+
+#. <span class="hint">@T["The sender's email address. Required if not the same than the \"From\" email address. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:15
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The sender's email address. Required if not the same than the \"From\" email address. With Liquid support."
+msgstr "Η διεύθυνση email του αποστολέα. Απαιτείται αν είναι διαφορική από τη διεύθυνση email \"Από\". Με υποστήριξη Liquid."
+
+#. <label asp-for="SenderExpression">@T["ReplyTo"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:19
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "ReplyTo"
+msgstr "Απάντηση Σε"
+
+#. <span class="hint">@T["The \"reply to\" email address. Required if you want email replies be sent to a different address than the \"From\" address. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:22
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The \"reply to\" email address. Required if you want email replies be sent to a different address than the \"From\" address. With Liquid support."
+msgstr "Το διεύθυνση email \"απάντηση σε\". Εάν θέλετε οι απαντήσεις μέσω email να αποστέλλονται σε διαφορετική διεύθυνση από τη διεύθυνση \"Από\", τότε πρέπει να συμπληρωθεί. Με υποστήριξη Liquid."
+
+#. <label asp-for="RecipientsExpression">@T["Recipients"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:26
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Recipients"
+msgstr "Παραλήπτες"
+
+#. <span class="hint">@T["The comma-separated list of recipient email addresses. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:29
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The comma-separated list of recipient email addresses. With Liquid support."
+msgstr "Η λίστα διευθύνσεων ηλεκτρονικού ταχυδρομείου προορισμού που είναι διαχωρισμένη με κόμματα. Με υποστήριξη Liquid."
+
+#. <label asp-for="CcExpression">@T["Cc"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:33
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Cc"
+msgstr "Κοινοποίηση"
+
+#. <span class="hint">@T["The comma-separated list of carbon copy email addresses. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:36
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The comma-separated list of carbon copy email addresses. With Liquid support."
+msgstr "Η λίστα διευθύνσεων ηλεκτρονικού ταχυδρομείου διαχωρισμένη με κόμματα. Με υποστήριξη Liquid."
+
+#. <label asp-for="BccExpression">@T["Bcc"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:40
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Bcc"
+msgstr "Κρυφ. κοιν."
+
+#. <span class="hint">@T["The comma-separated list of blind copy email addresses. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:43
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The comma-separated list of blind copy email addresses. With Liquid support."
+msgstr "Η λίστα διαχωρισμένων με κόμματα διευθύνσεων email κρυφών αντιγράφων. Με υποστήριξη Liquid."
+
+#. <label asp-for="SubjectExpression">@T["Subject"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:47
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Subject"
+msgstr "Θέμα"
+
+#. <span class="hint">@T["The subject of the email message. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:50
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The subject of the email message. With Liquid support."
+msgstr "Το θέμα του μηνύματος ηλεκτρονικού ταχυδρομείου. Με υποστήριξη Liquid."
+
+#. <label class="form-check-label" asp-for="IsBodyHtml">@T["Does the Body contain HTML?"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:56
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Does the Body contain HTML?"
+msgstr "Το σώμα περιέχει HTML;"
+
+#. <span class="hint dashed">@T["If checked, indicates the body of the email message will be sent as HTML."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:57
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "If checked, indicates the body of the email message will be sent as HTML."
+msgstr "Εάν επιλεγεί, υποδεικνύει ότι το σώμα του μηνύματος email θα σταλεί ως HTML."
+
+#. <label class="form-check-label" asp-for="IsBodyText">@T["Does the Body contain plain text?"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:64
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Does the Body contain plain text?"
+msgstr "Το σώμα περιέχει απλό κείμενο;"
+
+#. <span class="hint dashed">@T["If checked, indicates the body of the email message will be sent as plain text."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:65
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "If checked, indicates the body of the email message will be sent as plain text."
+msgstr "Εάν επιλεγεί, υποδεικνύει ότι το σώμα του μηνύματος email θα σταλεί ως απλό κείμενο."
+
+#. <label asp-for="Body">@T["Body"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:70
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Body"
+msgstr "Σώμα"
+
+#. <span class="hint">@T["The body of the email message. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:72
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The body of the email message. With Liquid support."
+msgstr "Το σώμα του μηνύματος ηλεκτρονικού ταχυδρομείου. Με υποστήριξη Liquid."
+
+#. <label asp-for="Body">@T["Body Plain Text"]</label>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:76
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "Body Plain Text"
+msgstr "Σώμα απλού κειμένου"
+
+#. <span class="hint">@T["The plain text body of the email message. With Liquid support."]</span>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Edit.cshtml:78
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
+msgid "The plain text body of the email message. With Liquid support."
+msgstr "Το σώμα απλού κειμένου του μηνύματος email. Με υποστήριξη Liquid."
+
+#. <h4 class="card-title"><i class="fa fa-envelope" aria-hidden="true"></i>@T["Send Email"]</h4>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Thumbnail.cshtml:1
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Thumbnail"
+msgid "Send Email"
+msgstr "Αποστολή Email"
+
+#. <p>@T["Send an email."]</p>
+#: OrchardCore.Email\Views\Items\EmailTask.Fields.Thumbnail.cshtml:2
+msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Thumbnail"
+msgid "Send an email."
+msgstr "Στείλτε ένα email."
+

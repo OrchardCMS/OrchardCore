@@ -1,0 +1,74 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.CustomSettings.pot\n"
+"X-Crowdin-File-ID: 724\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Arabic\n"
+"Language: ar_SA\n"
+"PO-Revision-Date: 2022-05-05 18:38\n"
+
+#. .Add(S["Configuration"], configuration => configuration
+#: OrchardCore.CustomSettings\AdminMenu.cs:32
+msgctxt "OrchardCore.CustomSettings.AdminMenu"
+msgid "Configuration"
+msgstr "الإعدادات"
+
+#. .Add(S["Settings"], settings => settings
+#: OrchardCore.CustomSettings\AdminMenu.cs:33
+msgctxt "OrchardCore.CustomSettings.AdminMenu"
+msgid "Settings"
+msgstr "الإعدادات"
+
+#. <h5>@T["Custom Settings"]</h5>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Edit.cshtml:8
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Edit"
+msgid "Custom Settings"
+msgstr "إعدادات مخصصة"
+
+#. @T["Include all custom settings."]
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Edit.cshtml:17
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Edit"
+msgid "Include all custom settings."
+msgstr "تضمين كافة الإعدادات المخصصة."
+
+#. <span class="hint">@T["The custom settings to add as part of the plan."]</span>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Edit.cshtml:27
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Edit"
+msgid "The custom settings to add as part of the plan."
+msgstr "الإعدادات المخصصة المراد إضافتها كجزء من الخطة."
+
+#. <h5>@T["Custom Settings"]</h5>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Summary.cshtml:8
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Summary"
+msgid "Custom Settings"
+msgstr "إعدادات مخصصة"
+
+#. <span class="badge bg-success">@T["All"]</span>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Summary.cshtml:12
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Summary"
+msgid "All"
+msgstr "الكل"
+
+#. <span class="badge bg-warning">@T["No custom settings selected."]</span>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Summary.cshtml:23
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Summary"
+msgid "No custom settings selected."
+msgstr "لا توجد إعدادات مخصصة محددة."
+
+#. <h4 class="card-title">@T["Custom Settings"]</h4>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Custom Settings"
+msgstr "إعدادات مخصصة"
+
+#. <p>@T["Exports all or specified custom settings."]</p>
+#: OrchardCore.CustomSettings\Views\Items\CustomSettingsDeploymentStep.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Exports all or specified custom settings."
+msgstr "تصدير كل الإعدادات المخصصة أو المحددة."
+

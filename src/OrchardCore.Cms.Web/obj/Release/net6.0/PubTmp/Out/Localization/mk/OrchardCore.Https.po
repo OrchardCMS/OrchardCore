@@ -1,0 +1,112 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n%10==1 && n%100 != 11 ? 0 : 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: mk\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Https.pot\n"
+"X-Crowdin-File-ID: 756\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Macedonian\n"
+"Language: mk_MK\n"
+"PO-Revision-Date: 2022-05-05 18:56\n"
+
+#. .Add(S["Security"], security => security
+#: OrchardCore.Https\AdminMenu.cs:25
+msgctxt "OrchardCore.Https.AdminMenu"
+msgid "Security"
+msgstr "Безбедност"
+
+#. .Add(S["Settings"], settings => settings
+#: OrchardCore.Https\AdminMenu.cs:26
+msgctxt "OrchardCore.Https.AdminMenu"
+msgid "Settings"
+msgstr "Подесувања"
+
+#. .Add(S["HTTPS"], S["HTTPS"].PrefixPosition(), entry => entry
+#. .Add(S["HTTPS"], S["HTTPS"].PrefixPosition(), entry => entry
+#: OrchardCore.Https\AdminMenu.cs:27
+#: OrchardCore.Https\AdminMenu.cs:27
+msgctxt "OrchardCore.Https.AdminMenu"
+msgid "HTTPS"
+msgstr ""
+
+#. services.AddSiteSettingsPropertyDeploymentStep<HttpsSettings, DeploymentStartup>(S => S["Https settings"], S => S["Exports the Https settings."]);
+#: OrchardCore.Https\Startup.cs:70
+msgctxt "OrchardCore.Https.DeploymentStartup"
+msgid "Https settings"
+msgstr "Подесувања за https"
+
+#. services.AddSiteSettingsPropertyDeploymentStep<HttpsSettings, DeploymentStartup>(S => S["Https settings"], S => S["Exports the Https settings."]);
+#: OrchardCore.Https\Startup.cs:70
+msgctxt "OrchardCore.Https.DeploymentStartup"
+msgid "Exports the Https settings."
+msgstr "Експорт на подесувања за https."
+
+#. await _notifier.WarningAsync(H["For safety, Enabling require HTTPS over HTTP has been prevented."]);
+#: OrchardCore.Https\Drivers\HttpsSettingsDisplayDriver.cs:55
+msgctxt "OrchardCore.Https.Drivers.HttpsSettingsDisplayDriver"
+msgid "For safety, Enabling require HTTPS over HTTP has been prevented."
+msgstr "За безбедност, овозможувањето на „задолжително користење HTTPS преку HTTP“ е прекинато."
+
+#. <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:3
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr "Тековниот „потстанар“ ќе биде повторно вчитан, кога ќе бидат сочувани подесувањата."
+
+#. <label class="form-check-label" asp-for="RequireHttps">@T["Require HTTPS"]</label>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:8
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Require HTTPS"
+msgstr "Задолжително користење HTTPS"
+
+#. <span class="hint dashed">@T["Require HTTPS for all requests"]</span>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:9
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Require HTTPS for all requests"
+msgstr "Задолжително користење HTTPS за сите побарувања"
+
+#. <label class="form-check-label" asp-for="EnableStrictTransportSecurity">@T["Enable HSTS"]</label>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:16
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Enable HSTS"
+msgstr "Овозможи HSTS"
+
+#. <span class="hint dashed">@T["Indicates to browsers that connecting without transport security (e.g SSL or TLS) isn't allowed."]</span>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:17
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Indicates to browsers that connecting without transport security (e.g SSL or TLS) isn't allowed."
+msgstr "Им посочува на прелистувачите дека поврзувањето без обезбедување на транспортот (н.п. SSL или TLS) не е дозволено."
+
+#. <div class="alert alert-danger">@T["This option should be enabled with caution, as it may prevent users from connecting if HTTPS was later disabled or wasn't available."]</div>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:20
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "This option should be enabled with caution, as it may prevent users from connecting if HTTPS was later disabled or wasn't available."
+msgstr "Оваа опција треба да биде овозможена со внимание, бидејќи може да спречи корисници да се поврзат, ако HTTPS е подоцна оневозможено или не е достапно."
+
+#. <label class="form-check-label" asp-for="RequireHttpsPermanent">@T["Require HTTPS Permanent"]</label>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:26
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Require HTTPS Permanent"
+msgstr "Задолжително постојано користење на HTTPS"
+
+#. <span class="hint dashed">@T["Specifies whether a permanent redirect, 308 Moved Permanently, should be used instead of a temporary redirect, 307 Found, when redirecting to HTTPS"]</span>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:27
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Specifies whether a permanent redirect, 308 Moved Permanently, should be used instead of a temporary redirect, 307 Found, when redirecting to HTTPS"
+msgstr "Покажува, дали статус за постојано пренасочено „308 Moved Permanently“, треба да биде користен, наместо статус на привремено пренасочено „307 Found“, кога се пренасочува кон HTTPS"
+
+#. <label asp-for="SslPort">@T["SSL Port"]</label>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:32
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "SSL Port"
+msgstr "SSL порта"
+
+#. <span class="hint">@T["The SSL Port Number, leave empty to let the middleware try to determinate it."]</span>
+#: OrchardCore.Https\Views\HttpsSettings.Edit.cshtml:35
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "The SSL Port Number, leave empty to let the middleware try to determinate it."
+msgstr "Бројот на SSL портата. Остави празно за да дозволиш „middlware“ софтверот да се обиде сам да ја одреди."
+

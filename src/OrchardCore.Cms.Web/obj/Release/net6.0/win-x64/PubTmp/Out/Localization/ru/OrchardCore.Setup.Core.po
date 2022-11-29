@@ -1,0 +1,44 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: ru\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Setup.Core.pot\n"
+"X-Crowdin-File-ID: 812\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Russian\n"
+"Language: ru_RU\n"
+"PO-Revision-Date: 2022-10-11 20:27\n"
+
+#. context.Errors.Add(String.Empty, S["DatabaseProvider setting is required."]);
+#: OrchardCore.Setup.Core\SetupService.cs:177
+msgctxt "OrchardCore.Setup.Services.SetupService"
+msgid "DatabaseProvider setting is required."
+msgstr ""
+
+#. context.Errors.Add(String.Empty, S["The provided database provider is not supported."]);
+#: OrchardCore.Setup.Core\SetupService.cs:180
+msgctxt "OrchardCore.Setup.Services.SetupService"
+msgid "The provided database provider is not supported."
+msgstr ""
+
+#. context.Errors.Add(String.Empty, S["The provided connection string is invalid or server is unreachable."]);
+#: OrchardCore.Setup.Core\SetupService.cs:183
+msgctxt "OrchardCore.Setup.Services.SetupService"
+msgid "The provided connection string is invalid or server is unreachable."
+msgstr ""
+
+#. context.Errors.Add(String.Empty, S["The provided database and table prefix are already in use."]);
+#: OrchardCore.Setup.Core\SetupService.cs:186
+msgctxt "OrchardCore.Setup.Services.SetupService"
+msgid "The provided database and table prefix are already in use."
+msgstr ""
+
+#. context.Errors.Add(String.Empty, S["An error occurred while initializing the datastore: {0}", e.Message]);
+#: OrchardCore.Setup.Core\SetupService.cs:225
+msgctxt "OrchardCore.Setup.Services.SetupService"
+msgid "An error occurred while initializing the datastore: {0}"
+msgstr "Произошла ошибка при инициализации хранилища данных: {0}"
+

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Roles.Core</name>
+    </assembly>
+    <members>
+        <member name="F:OrchardCore.Roles.CommonPermissions.AssignRole">
+            <summary>
+            Dynamic permission template for assign role
+            </summary>
+        </member>
+    </members>
+</doc>

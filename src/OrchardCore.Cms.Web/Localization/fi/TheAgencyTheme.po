@@ -1,0 +1,49 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: fi\n"
+"X-Crowdin-File: /main/Localization/TheAgencyTheme.pot\n"
+"X-Crowdin-File-ID: 850\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Finnish\n"
+"Language: fi_FI\n"
+"PO-Revision-Date: 2021-07-15 19:14\n"
+
+#: TheAgencyTheme\Views\Layout.liquid:0
+msgctxt "TheAgencyTheme.Views.Layout"
+msgid "Menu"
+msgstr "Valikko"
+
+#: TheAgencyTheme\Views\SearchForm.liquid:0
+msgctxt "TheAgencyTheme.Views.SearchForm"
+msgid "Enter your search term(s)"
+msgstr "Kirjoita hakutermi"
+
+#: TheAgencyTheme\Views\SearchForm.liquid:0
+msgctxt "TheAgencyTheme.Views.SearchForm"
+msgid "Search"
+msgstr "Hae"
+
+#: TheAgencyTheme\Views\SearchResults.liquid:0
+msgctxt "TheAgencyTheme.Views.SearchResults"
+msgid "There are no such results."
+msgstr "Ei tuloksia."
+
+#: TheAgencyTheme\Views\Shared\NotFound.liquid:0
+msgctxt "TheAgencyTheme.Views.Shared.NotFound"
+msgid "Page Not Found"
+msgstr ""
+
+#: TheAgencyTheme\Views\Shared\NotFound.liquid:0
+msgctxt "TheAgencyTheme.Views.Shared.NotFound"
+msgid "The page you requested could not be found."
+msgstr "Pyytämääsi sivua ei löytynyt."
+
+#: TheAgencyTheme\Views\Shared\Search.liquid:0
+msgctxt "TheAgencyTheme.Views.Shared.Search"
+msgid "Search"
+msgstr "Hae"
+

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "nv68FlLrZiutAjGBixAspp/QbbwgWB0VAx23iR6r6ew=",
+  "Source": "OrchardCore.Recipes",
+  "BasePath": "_content/OrchardCore.Recipes",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

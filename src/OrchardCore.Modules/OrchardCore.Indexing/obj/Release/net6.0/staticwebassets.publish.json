@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "LGZWTW+smdshsVzNunQVMrjjBcLP3ZzvN/3YXaSYONY=",
+  "Source": "OrchardCore.Indexing",
+  "BasePath": "_content/OrchardCore.Indexing",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

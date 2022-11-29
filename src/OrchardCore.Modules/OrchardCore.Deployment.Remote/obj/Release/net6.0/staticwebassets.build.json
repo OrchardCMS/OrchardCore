@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "egwMaW6vDvMJWq8yUhi34u/gPFHK1WzDTFH2UPGMl38=",
+  "Source": "OrchardCore.Deployment.Remote",
+  "BasePath": "_content/OrchardCore.Deployment.Remote",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Settings.Core</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.Settings.Deployment.ServiceCollectionExtensions.AddSiteSettingsPropertyDeploymentStep``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{Microsoft.Extensions.Localization.IStringLocalizer,Microsoft.Extensions.Localization.LocalizedString},System.Func{Microsoft.Extensions.Localization.IStringLocalizer,System.String})">
+            <summary>
+            Registers a <see cref="T:OrchardCore.Settings.Deployment.SiteSettingsPropertyDeploymentSource`1"/> step.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Settings.Deployment.SiteSettingsPropertyDeploymentStep`1">
+            <summary>
+            Adds a site setting from the properties dictionary to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.ResourceManagement.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="P:OrchardCore.ResourceManagement.IResourceManager.InlineManifest">
+            <summary>
+            Returns an inline manifest.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.FindResource(OrchardCore.ResourceManagement.RequireSettings)">
+            <summary>
+            Returns the resource matching the specific settings.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.NotRequired(System.String,System.String)">
+            <summary>
+            Removes a resource from the registrations.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.RegisterUrl(System.String,System.String,System.String)">
+            <summary>
+            Registers a specific resource url.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.RegisterResource(System.String,System.String)">
+            <summary>
+            Registers a named resource.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.RegisterHeadScript(Microsoft.AspNetCore.Html.IHtmlContent)">
+            <summary>
+            Registers a custom script tag at the head.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.RegisterFootScript(Microsoft.AspNetCore.Html.IHtmlContent)">
+            <summary>
+            Registers a custom script tag at the foot.
+            </summary>
+            <param name="script"></param>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.RegisterStyle(Microsoft.AspNetCore.Html.IHtmlContent)">
+            <summary>
+            Registers a custom style tag at the head.
+            </summary>
+            <param name="style"></param>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.RegisterLink(OrchardCore.ResourceManagement.LinkEntry)">
+            <summary>
+            Registers a link tag.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.RegisterMeta(OrchardCore.ResourceManagement.MetaEntry)">
+            <summary>
+            Registers a meta tag.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.AppendMeta(OrchardCore.ResourceManagement.MetaEntry,System.String)">
+            <summary>
+            Appends a value to the current content of a meta tag, separated by a custom separator.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.GetRequiredResources(System.String)">
+            <summary>
+            Returns the required resources of the specified type.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.GetRegisteredLinks">
+            <summary>
+            Returns the registered link resources.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.GetRegisteredMetas">
+            <summary>
+            Returns the registered meta resources.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.GetRegisteredHeadScripts">
+            <summary>
+            Returns the registered header script resources.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.GetRegisteredFootScripts">
+            <summary>
+            Returns the registered footer script resources.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.GetRegisteredStyles">
+            <summary>
+            Returns the registered style resources.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.RenderMeta(System.IO.TextWriter)">
+            <summary>
+            Renders the registered meta tags.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.RenderHeadLink(System.IO.TextWriter)">
+            <summary>
+            Renders the registered header link tags.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.RenderStylesheet(System.IO.TextWriter)">
+            <summary>
+            Renders the registered stylesheets.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.RenderHeadScript(System.IO.TextWriter)">
+            <summary>
+            Renders the registered header script tags.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.RenderFootScript(System.IO.TextWriter)">
+            <summary>
+            Renders the registered footer script tags.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.RenderLocalScript(OrchardCore.ResourceManagement.RequireSettings,System.IO.TextWriter)">
+            <summary>
+            Renders the registered local script tags.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.IResourceManager.RenderLocalStyle(OrchardCore.ResourceManagement.RequireSettings,System.IO.TextWriter)">
+            <summary>
+            Renders the registered local style tags.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.RequireSettings.AtHead">
+            <summary>
+            The resource will be displayed in the head of the page
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.RequireSettings.AtFoot">
+            <summary>
+            The resource will be displayed at the foot of the page
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.RequireSettings.AtLocation(OrchardCore.ResourceManagement.ResourceLocation)">
+            <summary>
+            The resource will be displayed at the specified location
+            </summary>
+            <param name="location">The location where the resource should be displayed</param>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.ResourceDefinition.SetVersion(System.String)">
+            <summary>
+            Sets the version of the resource.
+            </summary>
+            <param name="version">The version to set, in the form of <code>major.minor[.build[.revision]]</code></param>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.ResourceDefinition.ShouldAppendVersion(System.Nullable{System.Boolean})">
+            <summary>
+            Should a file version be appended to the resource.
+            </summary>
+            <param name="appendVersion"></param>
+        </member>
+        <member name="M:OrchardCore.ResourceManagement.ResourceDefinition.SetPosition(OrchardCore.ResourceManagement.ResourcePosition)">
+            <summary>
+            Position a resource first, last or by dependency.
+            </summary>
+            <param name="position"></param>
+        </member>
+        <member name="P:OrchardCore.ResourceManagement.ResourceManagementOptions.ContentBasePath">
+            <summary>
+            The prefix path that is used when a url starts with "~/".
+            </summary>
+        </member>
+    </members>
+</doc>

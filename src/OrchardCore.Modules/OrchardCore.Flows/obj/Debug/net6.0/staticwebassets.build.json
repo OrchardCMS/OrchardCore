@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "wgbbJo1nrJdv8Oai1yZ+KjDaXmlqBp7bw5CHmuhwfGE=",
+  "Source": "OrchardCore.Flows",
+  "BasePath": "_content/OrchardCore.Flows",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.Flows\\wwwroot",
+      "Source": "OrchardCore.Flows",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Flows\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Flows",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

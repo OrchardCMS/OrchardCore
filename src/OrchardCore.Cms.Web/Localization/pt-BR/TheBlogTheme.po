@@ -1,0 +1,139 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: pt-BR\n"
+"X-Crowdin-File: /main/Localization/TheBlogTheme.pot\n"
+"X-Crowdin-File-ID: 852\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Portuguese, Brazilian\n"
+"Language: pt_BR\n"
+"PO-Revision-Date: 2021-07-15 19:15\n"
+
+#: TheBlogTheme\Views\Blog-ListPart.liquid:0
+msgctxt "TheBlogTheme.Views.Blog-ListPart"
+msgid "← Newer Posts"
+msgstr "← Publicações mais recentes"
+
+#: TheBlogTheme\Views\Blog-ListPart.liquid:0
+msgctxt "TheBlogTheme.Views.Blog-ListPart"
+msgid "Older Posts →"
+msgstr "Publicações mais antigas →"
+
+#: TheBlogTheme\Views\Blog-ListPart.liquid:0
+msgctxt "TheBlogTheme.Views.Blog-ListPart"
+msgid "previous"
+msgstr "anterior"
+
+#: TheBlogTheme\Views\Blog-ListPart.liquid:0
+msgctxt "TheBlogTheme.Views.Blog-ListPart"
+msgid "next"
+msgstr "próximo"
+
+#: TheBlogTheme\Views\Category-TermPart.liquid:0
+msgctxt "TheBlogTheme.Views.Category-TermPart"
+msgid "← Newer Posts"
+msgstr "← Publicações mais recentes"
+
+#: TheBlogTheme\Views\Category-TermPart.liquid:0
+msgctxt "TheBlogTheme.Views.Category-TermPart"
+msgid "Older Posts →"
+msgstr "Publicações mais antigas →"
+
+#: TheBlogTheme\Views\Category-TermPart.liquid:0
+msgctxt "TheBlogTheme.Views.Category-TermPart"
+msgid "previous"
+msgstr "anterior"
+
+#: TheBlogTheme\Views\Category-TermPart.liquid:0
+msgctxt "TheBlogTheme.Views.Category-TermPart"
+msgid "next"
+msgstr "próximo"
+
+#: TheBlogTheme\Views\Content-BlogPost.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost"
+msgid "MMMM dd, yyyy"
+msgstr "dd 'de' MMMM 'de' yyyy"
+
+#: TheBlogTheme\Views\Content-BlogPost.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost"
+msgid "Posted by"
+msgstr "Publicado por"
+
+#: TheBlogTheme\Views\Content-BlogPost.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost"
+msgid "on {0}"
+msgstr "em {0}"
+
+#: TheBlogTheme\Views\Content-BlogPost.Summary.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost.Summary"
+msgid "MMMM dd, yyyy"
+msgstr "dd 'de' MMMM 'de' yyyy"
+
+#: TheBlogTheme\Views\Content-BlogPost.Summary.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost.Summary"
+msgid "Posted by"
+msgstr "Publicado por"
+
+#: TheBlogTheme\Views\Content-BlogPost.Summary.liquid:0
+msgctxt "TheBlogTheme.Views.Content-BlogPost.Summary"
+msgid "on {0}"
+msgstr "em {0}"
+
+#: TheBlogTheme\Views\Layout.liquid:0
+msgctxt "TheBlogTheme.Views.Layout"
+msgid "Toggle navigation"
+msgstr "Alternar navegação"
+
+#: TheBlogTheme\Views\Layout.liquid:0
+msgctxt "TheBlogTheme.Views.Layout"
+msgid "Menu"
+msgstr ""
+
+#: TheBlogTheme\Views\Search-Form.liquid:0
+msgctxt "TheBlogTheme.Views.Search-Form"
+msgid "Enter your search term(s)"
+msgstr "Digite seu(s) termo(s) de pesquisa"
+
+#: TheBlogTheme\Views\Search-Form.liquid:0
+msgctxt "TheBlogTheme.Views.Search-Form"
+msgid "Search"
+msgstr "Pesquisar"
+
+#: TheBlogTheme\Views\Search-Results.liquid:0
+msgctxt "TheBlogTheme.Views.Search-Results"
+msgid "There are no such results."
+msgstr "Nenhum resultado encontrado."
+
+#: TheBlogTheme\Views\Tag-TermPart.liquid:0
+msgctxt "TheBlogTheme.Views.Tag-TermPart"
+msgid "← Newer Posts"
+msgstr "← Publicações mais recentes"
+
+#: TheBlogTheme\Views\Tag-TermPart.liquid:0
+msgctxt "TheBlogTheme.Views.Tag-TermPart"
+msgid "Older Posts →"
+msgstr "Publicações mais antigas →"
+
+#: TheBlogTheme\Views\Tag-TermPart.liquid:0
+msgctxt "TheBlogTheme.Views.Tag-TermPart"
+msgid "previous"
+msgstr "anterior"
+
+#: TheBlogTheme\Views\Tag-TermPart.liquid:0
+msgctxt "TheBlogTheme.Views.Tag-TermPart"
+msgid "next"
+msgstr "próximo"
+
+#: TheBlogTheme\Views\Shared\NotFound.liquid:0
+msgctxt "TheBlogTheme.Views.Shared.NotFound"
+msgid "Page Not Found"
+msgstr "Página não encontrada"
+
+#: TheBlogTheme\Views\Shared\Search.liquid:0
+msgctxt "TheBlogTheme.Views.Shared.Search"
+msgid "Search"
+msgstr ""
+

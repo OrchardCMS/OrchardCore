@@ -1,0 +1,890 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.ContentManagement.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.ContentManagement.ContentElement">
+            <summary>
+            Common traits of <see cref="P:OrchardCore.ContentManagement.ContentElement.ContentItem"/>, <see cref="T:OrchardCore.ContentManagement.ContentPart"/>
+            and <see cref="T:OrchardCore.ContentManagement.ContentField"/>
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentElement.Has(System.String)">
+            <summary>
+            Whether the content has a named property or not.
+            </summary>
+            <param name="name">The name of the property to look for.</param>
+        </member>
+        <member name="F:OrchardCore.ContentManagement.ContentExtensions.JsonMergeSettings">
+            <summary>
+            These settings instruct merge to replace current value, even for null values.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentExtensions.Get``1(OrchardCore.ContentManagement.ContentElement,System.String)">
+            <summary>
+            Gets a content element by its name.
+            </summary>
+            <param name="contentElement">The <see cref="T:OrchardCore.ContentManagement.ContentElement"/>.</param>
+            <param name="name">The name of the content element.</param>
+            <typeparam name="TElement">The expected type of the content element.</typeparam>
+            <returns>The content element instance or <code>null</code> if it doesn't exist.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentExtensions.Has``1(OrchardCore.ContentManagement.ContentElement)">
+            <summary>
+            Gets whether a content element has a specific element attached.
+            </summary>
+            <param name="contentElement">The <see cref="T:OrchardCore.ContentManagement.ContentElement"/>.</param>
+            <typeparam name="TElement">The expected type of the content element.</typeparam>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentExtensions.Get(OrchardCore.ContentManagement.ContentElement,System.Type,System.String)">
+            <summary>
+            Gets a content element by its name.
+            </summary>
+            <param name="contentElement">The <see cref="T:OrchardCore.ContentManagement.ContentElement"/>.</param>
+            <param name="contentElementType">The expected type of the content element.</param>
+            <param name="name">The name of the content element.</param>
+            <returns>The content element instance or <code>null</code> if it doesn't exist.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentExtensions.Remove(OrchardCore.ContentManagement.ContentElement,System.String)">
+            <summary>
+            Removes a content element by its name.
+            </summary>
+            <param name="contentElement">The <see cref="T:OrchardCore.ContentManagement.ContentElement"/>.</param>
+            <param name="name">The name of the content element.</param>
+            <returns><see langword="True"/> is successfully found and removed; otherwise. <see langword="False"/> This method returns false if the name is not found.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentExtensions.GetOrCreate``1(OrchardCore.ContentManagement.ContentElement,System.String)">
+            <summary>
+            Gets a content element by its name or create a new one.
+            </summary>
+            <param name="contentElement">The <see cref="T:OrchardCore.ContentManagement.ContentElement"/>.</param>
+            <param name="name">The name of the content element.</param>
+            <typeparam name="TElement">The expected type of the content element.</typeparam>
+            <returns>The content element instance or a new one if it doesn't exist.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentExtensions.Weld(OrchardCore.ContentManagement.ContentElement,System.String,OrchardCore.ContentManagement.ContentElement)">
+            <summary>
+            Adds a content element by name.
+            </summary>
+            <param name="contentElement">The <see cref="T:OrchardCore.ContentManagement.ContentElement"/>.</param>
+            <param name="name">The name of the content element.</param>
+            <param name="element">The element to add to the <see cref="T:OrchardCore.ContentManagement.ContentItem"/>.</param>
+            <returns>The current <see cref="T:OrchardCore.ContentManagement.ContentItem"/> instance.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentExtensions.Weld``1(OrchardCore.ContentManagement.ContentElement,System.Object)">
+            <summary>
+            Welds a new part to the content item. If a part of the same type is already welded nothing is done.
+            This part can be not defined in Content Definitions.
+            </summary>
+            <typeparam name="TElement">The type of the part to be welded.</typeparam>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentExtensions.Apply(OrchardCore.ContentManagement.ContentElement,System.String,OrchardCore.ContentManagement.ContentElement)">
+            <summary>
+            Updates the content element with the specified name.
+            </summary>
+            <param name="contentElement">The <see cref="T:OrchardCore.ContentManagement.ContentElement"/>.</param>
+            <param name="name">The name of the element to update.</param>
+            <param name="element">The content element instance to update.</param>
+            <returns>The current <see cref="T:OrchardCore.ContentManagement.ContentItem"/> instance.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentExtensions.Apply(OrchardCore.ContentManagement.ContentElement,OrchardCore.ContentManagement.ContentElement)">
+            <summary>
+            Updates the whole content.
+            </summary>
+            <param name="contentElement">The <see cref="T:OrchardCore.ContentManagement.ContentElement"/>.</param>
+            <param name="element">The content element instance to update.</param>
+            <returns>The current <see cref="T:OrchardCore.ContentManagement.ContentItem"/> instance.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentExtensions.Alter``1(OrchardCore.ContentManagement.ContentElement,System.String,System.Action{``0})">
+            <summary>
+            Modifies a new or existing content element by name.
+            </summary>
+            <param name="contentElement">The <see cref="T:OrchardCore.ContentManagement.ContentElement"/>.</param>
+            <param name="name">The name of the content element to update.</param>
+            <param name="action">An action to apply on the content element.</param>
+            <typeparam name="TElement">The type of the part to be altered.</typeparam>
+            <returns>The current <see cref="T:OrchardCore.ContentManagement.ContentElement"/> instance.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentExtensions.Apply(OrchardCore.ContentManagement.ContentPart)">
+            <summary>
+            Updates the content item data.
+            </summary>
+            <returns>The current <see cref="T:OrchardCore.ContentManagement.ContentPart"/> instance.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentExtensions.IsPublished(OrchardCore.ContentManagement.IContent)">
+            <summary>
+            Whether the content element is published or not.
+            </summary>
+            <param name="content">The content to check.</param>
+            <returns><c>True</c> if the content is published, <c>False</c> otherwise.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentExtensions.HasDraft(OrchardCore.ContentManagement.IContent)">
+            <summary>
+            Whether the content element has a draft or not.
+            </summary>
+            <param name="content">The content to check.</param>
+            <returns><c>True</c> if the content has a draft, <c>False</c> otherwise.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentExtensions.OfType``1(OrchardCore.ContentManagement.ContentElement)">
+            <summary>
+            Gets all content elements of a specific type.
+            </summary>
+            <typeparam name="TElement">The expected type of the content elements.</typeparam>
+            <returns>The content element instances or empty sequence if no entries exist.</returns>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.ContentItem">
+            <summary>
+            Represents a content item version.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.ContentItem.Id">
+            <summary>
+            The primary key in the database.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.ContentItem.ContentItemId">
+            <summary>
+            The logical identifier of the content item across versions.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.ContentItem.ContentItemVersionId">
+            <summary>
+            The logical identifier of the versioned content item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.ContentItem.ContentType">
+            <summary>
+            The content type of the content item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.ContentItem.Published">
+            <summary>
+            Whether the version is published or not.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.ContentItem.Latest">
+            <summary>
+            Whether the version is the latest version of the content item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.ContentItem.ModifiedUtc">
+            <summary>
+            When the content item version has been updated.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.ContentItem.PublishedUtc">
+            <summary>
+            When the content item has been published.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.ContentItem.CreatedUtc">
+            <summary>
+            When the content item has been created or first published.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.ContentItem.Owner">
+            <summary>
+            The user id of the user who first created this content item version.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.ContentItem.Author">
+            <summary>
+            The name of the user who last modified this content item version.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.ContentItem.DisplayText">
+            <summary>
+            The text representing this content item.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentItemExtensions.As``1(OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Gets a content part by its type.
+            </summary>
+            <param name="contentItem">The <see cref="T:OrchardCore.ContentManagement.ContentItem"/>.</param>
+            <typeparam name="TPart">The type of the content part.</typeparam>
+            <returns>The content part or <code>null</code> if it doesn't exist.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentItemExtensions.GetOrCreate``1(OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Gets a content part by its type or create a new one.
+            </summary>
+            <param name="contentItem">The <see cref="T:OrchardCore.ContentManagement.ContentItem"/>.</param>
+            <typeparam name="TPart">The type of the content part.</typeparam>
+            <returns>The content part instance or a new one if it doesn't exist.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentItemExtensions.Remove``1(OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Removes a content part by its type.
+            </summary>
+            <param name="contentItem">The <see cref="T:OrchardCore.ContentManagement.ContentItem"/>.</param>
+            <typeparam name="TPart">The type of the content part.</typeparam>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentItemExtensions.Weld``1(OrchardCore.ContentManagement.ContentItem,``0)">
+            <summary>
+            Adds a content part by its type.
+            </summary>
+            <param name="contentItem">The <see cref="T:OrchardCore.ContentManagement.ContentItem"/>.</param>
+            <param name="part">The content part to weld.</param>
+            <typeparam name="TPart">The type of the content part.</typeparam>
+            <returns>The current <see cref="T:OrchardCore.ContentManagement.ContentItem"/> instance.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentItemExtensions.Apply``1(OrchardCore.ContentManagement.ContentItem,``0)">
+            <summary>
+            Updates the content part with the specified type.
+            </summary>
+            <param name="contentItem">The <see cref="T:OrchardCore.ContentManagement.ContentItem"/>.</param>
+            <param name="part">The content part to update.</param>
+            <typeparam name="TPart">The type of the content part.</typeparam>
+            <returns>The current <see cref="T:OrchardCore.ContentManagement.ContentItem"/> instance.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentItemExtensions.Alter``1(OrchardCore.ContentManagement.ContentItem,System.Action{``0})">
+            <summary>
+            Modifies a new or existing content part by name.
+            </summary>
+            <param name="contentItem">The <see cref="T:OrchardCore.ContentManagement.ContentItem"/>.</param>
+            <param name="action">An action to apply on the content part.</param>
+            <typeparam name="TPart">The type of the content part.</typeparam>
+            <returns>The current <see cref="T:OrchardCore.ContentManagement.ContentPart"/> instance.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentItemExtensions.AlterAsync``1(OrchardCore.ContentManagement.ContentItem,System.Func{``0,System.Threading.Tasks.Task})">
+            <summary>
+            Modifies a new or existing content part by name.
+            </summary>
+            <param name="contentItem">The <see cref="T:OrchardCore.ContentManagement.ContentItem"/>.</param>
+            <param name="action">An action to apply on the content part.</param>
+            <typeparam name="TPart">The type of the content part.</typeparam>
+            <returns>The current <see cref="T:OrchardCore.ContentManagement.ContentItem"/> instance.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentItemExtensions.Merge(OrchardCore.ContentManagement.ContentItem,System.Object,Newtonsoft.Json.Linq.JsonMergeSettings)">
+            <summary>
+            Merges properties to the contents of a content item.
+            </summary>
+            <param name="contentItem">The <see cref="T:OrchardCore.ContentManagement.ContentItem"/>.</param>
+            <param name="properties">The object to merge.</param>
+            <param name="jsonMergeSettings">The <see cref="T:Newtonsoft.Json.Linq.JsonMergeSettings"/> to use.</param>
+            <returns>The current <see cref="T:OrchardCore.ContentManagement.ContentItem"/> instance.</returns>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.ContentOptions">
+            <summary>
+            Provides a way to register code based content parts and fields.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.ContentQueryExtensions">
+            <summary>
+            Allows to execute an <see cref="T:YesSql.IQuery`1"/> to return matching <see cref="T:OrchardCore.ContentManagement.ContentItem"/>s
+            but after having invoked the load events on them by using the <see cref="T:OrchardCore.ContentManagement.IContentManager"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentQueryExtensions.FirstOrDefaultAsync(YesSql.IQuery{OrchardCore.ContentManagement.ContentItem},OrchardCore.ContentManagement.IContentManager)">
+            <summary>
+            Executes this <see cref="T:YesSql.IQuery`1"/> to return the first matching <see cref="T:OrchardCore.ContentManagement.ContentItem"/>
+            but after having invoked the load events on it by using the <see cref="T:OrchardCore.ContentManagement.IContentManager"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentQueryExtensions.ListAsync(YesSql.IQuery{OrchardCore.ContentManagement.ContentItem},OrchardCore.ContentManagement.IContentManager)">
+            <summary>
+            Executes this <see cref="T:YesSql.IQuery`1"/> to return all matching <see cref="T:OrchardCore.ContentManagement.ContentItem"/>s
+            but after having invoked the load events on them by using the <see cref="T:OrchardCore.ContentManagement.IContentManager"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentQueryExtensions.ToAsyncEnumerable(YesSql.IQuery{OrchardCore.ContentManagement.ContentItem},OrchardCore.ContentManagement.IContentManager)">
+            <summary>
+            Executes this <see cref="T:YesSql.IQuery`1"/> to return all matching <see cref="T:OrchardCore.ContentManagement.ContentItem"/>s
+            but after having invoked the load events on them by using the <see cref="T:OrchardCore.ContentManagement.IContentManager"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.ContentQueryOfTIndexExtensions">
+            <summary>
+            Allows to execute an <see cref="T:YesSql.IQuery`2"/> to return matching <see cref="T:OrchardCore.ContentManagement.ContentItem"/>s
+            but after having invoked the load events on them by using the <see cref="T:OrchardCore.ContentManagement.IContentManager"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentQueryOfTIndexExtensions.FirstOrDefaultAsync``1(YesSql.IQuery{OrchardCore.ContentManagement.ContentItem,``0},OrchardCore.ContentManagement.IContentManager)">
+            <summary>
+            Executes this <see cref="T:YesSql.IQuery`1"/> to return the first matching <see cref="T:OrchardCore.ContentManagement.ContentItem"/>
+            but after having invoked the load events on it by using the <see cref="T:OrchardCore.ContentManagement.IContentManager"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentQueryOfTIndexExtensions.ListAsync``1(YesSql.IQuery{OrchardCore.ContentManagement.ContentItem,``0},OrchardCore.ContentManagement.IContentManager)">
+            <summary>
+            Executes this <see cref="T:YesSql.IQuery`2"/> to return all matching <see cref="T:OrchardCore.ContentManagement.ContentItem"/>s
+            but after having invoked the load events on them by using the <see cref="T:OrchardCore.ContentManagement.IContentManager"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentQueryOfTIndexExtensions.ToAsyncEnumerable``1(YesSql.IQuery{OrchardCore.ContentManagement.ContentItem,``0},OrchardCore.ContentManagement.IContentManager)">
+            <summary>
+            Executes this <see cref="T:YesSql.IQuery`2"/> to return all matching <see cref="T:OrchardCore.ContentManagement.ContentItem"/>s
+            but after having invoked the load events on them by using the <see cref="T:OrchardCore.ContentManagement.IContentManager"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.GroupInfo">
+            <summary>
+            Describes a group and its position relative to other groups.
+            It's used in <see cref="T:OrchardCore.ContentManagement.ContentItemMetadata"/> to describe the potential
+            groups that a content item can be displayed in.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Handlers.ContentItemAspectContext.ForAsync``1(System.Func{``0,System.Threading.Tasks.Task})">
+            <summary>
+            Provides a value for a specific aspect type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Handlers.ContentValidateResult.Succeeded">
+            <summary>
+            Success may be altered by a handler during the validated async event.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.Handlers.IContentPartHandler">
+            <summary>
+            An implementation of this class is called for all the parts of a content item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Handlers.ImportContentContext.OriginalContentItem">
+            <summary>
+            When importing an item may exist in the database.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.Metadata.IContentDefinitionManager">
+            <summary>
+            This interface provides each client with
+            a different copy of <see cref="T:OrchardCore.ContentManagement.Metadata.Models.ContentTypeDefinition"/> to work with in case
+            multiple clients do modifications.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Metadata.IContentDefinitionManager.GetIdentifierAsync">
+            <summary>
+            Returns an unique identifier that is updated when content definitions have changed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Metadata.ContentDefinitionManagerExtensions.MigratePartSettings``2(OrchardCore.ContentManagement.Metadata.IContentDefinitionManager)">
+            <summary>
+            Migrate existing ContentPart settings to WithSettings<typeparamref name="TSettings"/>
+            This method will be removed in a future release.
+            </summary>
+            <typeparam name="TPart"></typeparam>
+            <typeparam name="TSettings"></typeparam>
+            <param name="manager"></param>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Metadata.ContentDefinitionManagerExtensions.MigrateFieldSettings``2(OrchardCore.ContentManagement.Metadata.IContentDefinitionManager)">
+            <summary>
+            Migrate existing ContentField settings to WithSettings<typeparamref name="TSettings"/>
+            This method will be removed in a future release.
+            </summary>
+            <typeparam name="TField"></typeparam>
+            <typeparam name="TSettings"></typeparam>
+            <param name="manager"></param>
+        </member>
+        <member name="F:OrchardCore.ContentManagement.Metadata.Builders.ContentBuilderSettings.JsonMergeSettings">
+            <summary>
+            Replace current value, even for null values, union arrays.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.ContentManagement.Metadata.Builders.ContentBuilderSettings.IgnoreDefaultValuesSerializer">
+            <summary>
+            A Json serializer that ignores properties which have their default values.
+            To be able to have a default value : use [DefaultValue(true)] on a class property for example.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Models.ContentDefinition.Settings">
+            <summary>
+            Do not access this property directly. Migrate to use GetSettings and PopulateSettings.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Metadata.Models.ContentTypeDefinition.ToString">
+            <summary>
+            Returns the <see cref="P:OrchardCore.ContentManagement.Metadata.Models.ContentTypeDefinition.DisplayName"/> value of the type if defined,
+            or the <see cref="P:OrchardCore.ContentManagement.Metadata.Models.ContentDefinition.Name"/> otherwise.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Metadata.Models.MetaDataExtensions.Populate(Newtonsoft.Json.Linq.JObject,System.Object)">
+            <summary>
+            Populates an object with the values from a <see cref="T:Newtonsoft.Json.Linq.JObject"/> instance.
+            </summary>
+            <param name="settings"></param>
+            <param name="target"></param>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.Metadata.Records.ContentFieldDefinitionRecord">
+            <summary>
+            Represents a field name.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Records.ContentPartDefinitionRecord.Settings">
+            <summary>
+            Gets or sets the settings of a part, like description, or any property that a module would attach
+            to a part.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.Metadata.Records.ContentPartFieldDefinitionRecord">
+            <summary>
+            Represents a field and its settings in a part.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Records.ContentPartFieldDefinitionRecord.FieldName">
+            <summary>
+            Gets or sets the field name, e.g. BooleanField.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Records.ContentPartFieldDefinitionRecord.Name">
+            <summary>
+            Gets or sets the name of the field, e.g. Age.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Records.ContentPartFieldDefinitionRecord.Settings">
+            <summary>
+            Gets or sets the settings of the field for this part.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.Metadata.Records.ContentTypePartDefinitionRecord">
+            <summary>
+            Represents a part and its settings in a type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Records.ContentTypePartDefinitionRecord.PartName">
+            <summary>
+            Gets or sets the part name.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Records.ContentTypePartDefinitionRecord.Name">
+            <summary>
+            Gets or sets the name of the part.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Records.ContentTypePartDefinitionRecord.Settings">
+            <summary>
+            Gets or sets the settings of the part for this type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentPartFieldSettings.DisplayName">
+            <summary>
+            Gets or sets the displayed name of the part field.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentPartFieldSettings.Description">
+            <summary>
+            Gets or sets the description of the part field.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentPartFieldSettings.Editor">
+            <summary>
+            Gets or sets the editor of the part field.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentPartFieldSettings.DisplayMode">
+            <summary>
+            Gets or sets the display mode of the part field.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentPartFieldSettings.Position">
+            <summary>
+            Gets or sets the position of the part field in the editor.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentPartSettings.Attachable">
+            <summary>
+            Gets or sets whether this part can be manually attached to a content type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentPartSettings.Reusable">
+            <summary>
+            Gets or sets whether the part can be attached multiple times to a content type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentPartSettings.DisplayName">
+            <summary>
+            Gets or sets the displayed name of the part.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentPartSettings.Description">
+            <summary>
+            Gets or sets the description of the part.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentPartSettings.DefaultPosition">
+            <summary>
+            Gets or sets the default position of the part when attached to a type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentTypePartSettings.DisplayName">
+            <summary>
+            Gets or sets the displayed name of the type part.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentTypePartSettings.Description">
+            <summary>
+            Gets or sets the description name of the type part.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentTypePartSettings.Position">
+            <summary>
+            Gets or sets the position of the type part in the editor.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentTypePartSettings.DisplayMode">
+            <summary>
+            Gets or sets the display mode of the type part.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentTypePartSettings.Editor">
+            <summary>
+            Gets or sets the editor of the type part.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentTypeSettings.Creatable">
+            <summary>
+            Used to determine if an instance of this content type can be created through the UI
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentTypeSettings.Listable">
+            <summary>
+            Used to determine if an instance of this content type can be listed in the contents page
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentTypeSettings.Draftable">
+            <summary>
+            Used to determine if this content type supports draft versions
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentTypeSettings.Versionable">
+            <summary>
+            Used to determine if this content type supports versioning
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentTypeSettings.Stereotype">
+            <summary>
+            Defines the stereotype of the type
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentTypeSettings.Securable">
+            <summary>
+            Used to determine if this content type supports custom permissions
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Metadata.Settings.ContentTypeSettings.Description">
+            <summary>
+            Gets or sets the description name of this content type.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentDefinitionStore.LoadContentDefinitionAsync">
+            <summary>
+            Loads the content definition from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentDefinitionStore.GetContentDefinitionAsync">
+            <summary>
+            Gets the content definition from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentDefinitionStore.SaveContentDefinitionAsync(OrchardCore.ContentManagement.Metadata.Records.ContentDefinitionRecord)">
+            <summary>
+            Updates the store with the provided content definition and then updates the cache.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.IContentManager">
+            <summary>
+            Content management functionality to deal with Orchard content items and their parts
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.NewAsync(System.String)">
+            <summary>
+            Creates a new content item with the specified type
+            </summary>
+            <remarks>
+            The content item is not yet persisted!
+            </remarks>
+            <param name="contentType">The name of the content type</param>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.UpdateAsync(OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Updates a content item without creating a new version.
+            </summary>
+            <param name="contentItem">The existing content item with updated data</param>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.CreateAsync(OrchardCore.ContentManagement.ContentItem,OrchardCore.ContentManagement.VersionOptions)">
+            <summary>
+            Creates (persists) a new content item with the specified version
+            </summary>
+            <param name="contentItem">The content instance filled with all necessary data</param>
+            <param name="options">The version to create the item with</param>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.CreateContentItemVersionAsync(OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Creates (puts) a new content item and manages removing and updating existing published or draft items.
+            </summary>
+            <param name="contentItem"></param>
+            <returns>The validation <see cref="T:OrchardCore.ContentManagement.Handlers.ContentValidateResult"/> result.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.UpdateContentItemVersionAsync(OrchardCore.ContentManagement.ContentItem,OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Updates (patches) a content item version.
+            </summary>
+            <param name="updatingVersion"></param>
+            <param name="updatedVersion"></param>
+            <returns>The validation <see cref="T:OrchardCore.ContentManagement.Handlers.ContentValidateResult"/> result.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.ImportAsync(System.Collections.Generic.IEnumerable{OrchardCore.ContentManagement.ContentItem})">
+            <summary>
+            Imports content items.
+            </summary>
+            <param name="contentItems"></param>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.ValidateAsync(OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Validates a content item
+            </summary>
+            <param name="contentItem"></param>
+            <returns>The validation <see cref="T:OrchardCore.ContentManagement.Handlers.ContentValidateResult"/> result.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.RestoreAsync(OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Restores a content item
+            </summary>
+            <param name="contentItem"></param>
+            <returns>The validation <see cref="T:OrchardCore.ContentManagement.Handlers.ContentValidateResult"/> result.</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.GetAsync(System.String)">
+            <summary>
+            Gets the published content item with the specified id
+            </summary>
+            <param name="id">The content item id to load</param>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.GetAsync(System.String,OrchardCore.ContentManagement.VersionOptions)">
+            <summary>
+            Gets the content item with the specified id and version
+            </summary>
+            <param name="id">The id content item id to load</param>
+            <param name="options">The version option</param>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.GetAsync(System.Collections.Generic.IEnumerable{System.String},System.Boolean)">
+            <summary>
+            Gets the published content items with the specified ids
+            </summary>
+            <param name="contentItemIds">The content item ids to load</param>
+            <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
+            <remarks>
+            This method will always issue a database query.
+            This means that it should be used only to get a list of content items that have not been loaded.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.GetVersionAsync(System.String)">
+            <summary>
+            Gets the content item with the specified version id
+            </summary>
+            <param name="contentItemVersionId">The content item version id</param>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.LoadAsync(OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Triggers the Load events for a content item that was queried directly from the database.
+            </summary>
+            <param name="contentItem">The content item </param>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.RemoveAsync(OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Removes <see cref="P:OrchardCore.ContentManagement.ContentItem.Latest"/> and <see cref="P:OrchardCore.ContentManagement.ContentItem.Published"/> flags
+            from a content item, making it invisible from the system. It doesn't physically delete
+            the content item.
+            </summary>
+            <param name="contentItem"></param>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.DiscardDraftAsync(OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Deletes the draft version of a content item.
+            </summary>
+            <param name="contentItem"></param>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.SaveDraftAsync(OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Saves the content item if it is a draft version.
+            </summary>
+            <param name="contentItem"></param>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.IContentManager.CloneAsync(OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Makes a clone of the content item
+            </summary>
+            <param name="contentItem">The content item to clone</param>
+            <returns>Clone of the item</returns>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentManagerExtensions.CreateAsync(OrchardCore.ContentManagement.IContentManager,OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Creates (persists) a new Published content item
+            </summary>
+            <param name="contentManager">The <see cref="T:OrchardCore.ContentManagement.IContentManager"/> instance.</param>
+            <param name="contentItem">The content instance filled with all necessary data</param>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentManagerExtensions.GetAsync(OrchardCore.ContentManagement.IContentManager,System.String,System.String)">
+            <summary>
+            Gets either the published container content item with the specified id, or if the json path supplied gets the contained content item. 
+            </summary>
+            <param name="contentManager">The <see cref="T:OrchardCore.ContentManagement.IContentManager"/> instance.</param>
+            <param name="id">The content item id to load</param>
+            <param name="jsonPath">The json path of the contained content item</param>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ContentManagerExtensions.GetAsync(OrchardCore.ContentManagement.IContentManager,System.String,System.String,OrchardCore.ContentManagement.VersionOptions)">
+            <summary>
+            Gets either the container content item with the specified id and version, or if the json path supplied gets the contained content item.
+            </summary>
+            <param name="contentManager">The <see cref="T:OrchardCore.ContentManagement.IContentManager"/> instance.</param>
+            <param name="id">The id content item id to load</param>
+            <param name="options">The version option</param>
+            <param name="jsonPath">The json path of the contained content item</param>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.VersionOptions.Latest">
+            <summary>
+            Gets the latest version.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.VersionOptions.Published">
+            <summary>
+            Gets the latest published version.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.VersionOptions.Draft">
+            <summary>
+            Gets the latest draft version.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.VersionOptions.DraftRequired">
+            <summary>
+            Gets the latest version and creates a new version draft based on it.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.VersionOptions.AllVersions">
+            <summary>
+            Gets all versions.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.ITypeActivatorFactory`1">
+            <summary>
+            Represents a service that can provide an <see cref="T:OrchardCore.ContentManagement.ITypeActivator`1"/> instance.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentManagement.ITypeActivator`1">
+            <summary>
+            Represents the type information for a content element.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.ITypeActivator`1.Type">
+            <summary>
+            The <see cref="P:OrchardCore.ContentManagement.ITypeActivator`1.Type"/> of the content element represented by the activator.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ITypeActivator`1.CreateInstance">
+            <summary>
+            Creates an instance of the content element type represented by the activator.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Models.FullTextAspect.Segments">
+            <summary>
+            Gets the list of all string segments the aspect is made of.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.ContentManagement.Routing.AutorouteEntry.DocumentId">
+            <summary>
+            The id of the document.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.ContentManagement.Routing.AutorouteEntry.ContentItemId">
+            <summary>
+            The id of the content item.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.ContentManagement.Routing.AutorouteEntry.Path">
+            <summary>
+            The path of the entry.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.ContentManagement.Routing.AutorouteEntry.ContainedContentItemId">
+            <summary>
+            The id of an item contained within the document.
+            May be null.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.ContentManagement.Routing.AutorouteEntry.JsonPath">
+            <summary>
+            The json path of an item contained within the document.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Routing.ContainedContentItemsAspect.Accessors">
+            <summary>
+            Json accessors to provide a list of contained content items.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Routing.RouteHandlerAspect.Path">
+            <summary>
+            Route path.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Routing.RouteHandlerAspect.Absolute">
+            <summary>
+            Whether route is absolute to the parent content item route.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentManagement.Routing.RouteHandlerAspect.Disabled">
+            <summary>
+            Whether this contained content item can be routed to.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ServiceCollectionExtensions.AddContentPart``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Registers a content part type. This method may be called multiple times safely,
+            to reconfigure an existing part.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ServiceCollectionExtensions.AddContentPart(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type)">
+            <summary>
+            Registers a content part type. This method may be called multiple times safely,
+            to reconfigure an existing part.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ServiceCollectionExtensions.AddContentField``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Registers a content field type. This method may be called multiple times safely,
+            to reconfigure an existing part.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ServiceCollectionExtensions.AddContentField(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type)">
+            <summary>
+            Registers a content field type. This method may be called multiple times safely,
+            to reconfigure an existing part.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ServiceCollectionExtensions.AddHandler``1(OrchardCore.ContentManagement.ContentPartOptionBuilder)">
+            <summary>
+            Register a handler for use with a content part.
+            </summary>
+            <typeparam name="TContentPartHandler"></typeparam>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ServiceCollectionExtensions.AddHandler(OrchardCore.ContentManagement.ContentPartOptionBuilder,System.Type)">
+            <summary>
+            Register a handler for use with a content part.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ServiceCollectionExtensions.RemoveHandler``1(OrchardCore.ContentManagement.ContentPartOptionBuilder)">
+            <summary>
+            Remove a handler registration from a content part.
+            </summary>
+            <typeparam name="TContentPartHandler"></typeparam>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.ServiceCollectionExtensions.RemoveHandler(OrchardCore.ContentManagement.ContentPartOptionBuilder,System.Type)">
+            <summary>
+            Remove a handler registration from a content part.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Utilities.StringExtensions.ToSafeName(System.String)">
+            <summary>
+            Generates a valid technical name.
+            </summary>
+            <remarks>
+            Uses a white list set of chars.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.ContentManagement.Utilities.StringExtensions.IsLetter(System.Char)">
+            <summary>
+            Whether the char is a letter between A and Z or not
+            </summary>
+        </member>
+    </members>
+</doc>

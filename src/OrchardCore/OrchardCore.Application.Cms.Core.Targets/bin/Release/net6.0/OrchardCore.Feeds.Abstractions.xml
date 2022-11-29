@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Feeds.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Feeds.Models.FeedMetadata">
+            <summary>
+            Used to gather custom Feed properties for a content item.
+            </summary>
+        </member>
+    </members>
+</doc>

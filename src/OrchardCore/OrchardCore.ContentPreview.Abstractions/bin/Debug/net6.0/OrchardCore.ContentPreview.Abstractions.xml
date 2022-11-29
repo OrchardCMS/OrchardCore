@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.ContentPreview.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.ContentPreview.ContentPreviewFeature">
+            <summary>
+            Used when a content item is being previewed.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,112 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Localization.pot\n"
+"X-Crowdin-File-ID: 770\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Arabic\n"
+"Language: ar_SA\n"
+"PO-Revision-Date: 2022-10-11 20:16\n"
+
+#. .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, localization => localization
+#: OrchardCore.Localization\AdminMenu.cs:31
+msgctxt "OrchardCore.Localization.AdminMenu"
+msgid "Configuration"
+msgstr "الضبط"
+
+#. .Add(S["Settings"], settings => settings
+#: OrchardCore.Localization\AdminMenu.cs:32
+msgctxt "OrchardCore.Localization.AdminMenu"
+msgid "Settings"
+msgstr "الإعدادات"
+
+#. .Add(S["Localization"], localization => localization
+#: OrchardCore.Localization\AdminMenu.cs:33
+msgctxt "OrchardCore.Localization.AdminMenu"
+msgid "Localization"
+msgstr ""
+
+#. .Add(S["Cultures"], S["Cultures"].PrefixPosition(), entry => entry
+#. .Add(S["Cultures"], S["Cultures"].PrefixPosition(), entry => entry
+#: OrchardCore.Localization\AdminMenu.cs:35
+#: OrchardCore.Localization\AdminMenu.cs:35
+msgctxt "OrchardCore.Localization.AdminMenu"
+msgid "Cultures"
+msgstr "اللغات"
+
+#. services.AddSiteSettingsPropertyDeploymentStep<LocalizationSettings, LocalizationDeploymentStartup>(S => S["Culture settings"], S => S["Exports the culture settings."]);
+#: OrchardCore.Localization\Startup.cs:64
+msgctxt "OrchardCore.Localization.LocalizationDeploymentStartup"
+msgid "Culture settings"
+msgstr ""
+
+#. services.AddSiteSettingsPropertyDeploymentStep<LocalizationSettings, LocalizationDeploymentStartup>(S => S["Culture settings"], S => S["Exports the culture settings."]);
+#: OrchardCore.Localization\Startup.cs:64
+msgctxt "OrchardCore.Localization.LocalizationDeploymentStartup"
+msgid "Exports the culture settings."
+msgstr ""
+
+#. context.Updater.ModelState.AddModelError("SupportedCultures", S["A culture is required"]);
+#: OrchardCore.Localization\Drivers\LocalizationSettingsDisplayDriver.cs:108
+msgctxt "OrchardCore.Localization.Drivers.LocalizationSettingsDisplayDriver"
+msgid "A culture is required"
+msgstr "اللغة مطلوبة"
+
+#. await _notifier.WarningAsync(H["The site has been restarted for the settings to take effect."]);
+#: OrchardCore.Localization\Drivers\LocalizationSettingsDisplayDriver.cs:128
+msgctxt "OrchardCore.Localization.Drivers.LocalizationSettingsDisplayDriver"
+msgid "The site has been restarted for the settings to take effect."
+msgstr ""
+
+#. Description = S["The active cultures configured for the site."],
+#: OrchardCore.Localization\GraphQL\SiteCulturesQuery.cs:38
+msgctxt "OrchardCore.Localization.GraphQL.SiteCulturesQuery"
+msgid "The active cultures configured for the site."
+msgstr "اللغات النشطة لضبط الموقع."
+
+#. <p class="alert alert-warning col-xl-6">@T["The current tenant will be reloaded when the settings are saved."]</p>
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:5
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr "ستتم إعادة تحميل الـ tenant الحالية عند حفظ الإعدادات."
+
+#. <th>@T["Culture"]</th>
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:26
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Culture"
+msgstr "اللغة"
+
+#. <th>@T["Default culture"]</th>
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:27
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Default culture"
+msgstr "اللغة الافتراضية"
+
+#. <a v-on:click="remove(index)" title="@T["Remove culture"]" href="javascript:void(0)" class="btn btn-secondary btn-sm" style="cursor:pointer">
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:45
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Remove culture"
+msgstr "حذف لغة"
+
+#. <a v-on:click="add()" href="javascript:void(0)" class="btn btn-success"><i class="fas fa-plus small" aria-hidden="true"></i> @T["Add culture"]</a>
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:62
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Add culture"
+msgstr "إضافة لغة"
+
+#. <label>@T["Define which cultures are supported by the site."]</label>
+#: OrchardCore.Localization\Views\LocalizationSettings.Edit.cshtml:75
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Define which cultures are supported by the site."
+msgstr "تعريف أي اللغات سيتم دعمها في الموقع."
+
+#. <span class="icon"><i class="fa fa-globe" aria-hidden="true"></i></span><span class="title">@T["Localization"]</span>
+#: OrchardCore.Localization\Views\NavigationItemText-localization.Id.cshtml:1
+msgctxt "OrchardCore.Localization.Views.NavigationItemText-localization.Id"
+msgid "Localization"
+msgstr ""
+

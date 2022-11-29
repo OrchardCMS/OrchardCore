@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\OrchardCore.Lists.props" />
+</Project>

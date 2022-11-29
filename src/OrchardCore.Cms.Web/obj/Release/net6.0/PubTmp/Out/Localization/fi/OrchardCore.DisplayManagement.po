@@ -1,0 +1,138 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: fi\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.DisplayManagement.pot\n"
+"X-Crowdin-File-ID: 734\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Finnish\n"
+"Language: fi_FI\n"
+"PO-Revision-Date: 2021-07-15 18:36\n"
+
+#. return H.Plural(time.TotalYears(), "1 year ago", "{0} years ago");
+#: OrchardCore.DisplayManagement\Shapes\DateTimeShapes.cs:44
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 year ago"
+msgid_plural "{0} years ago"
+msgstr[0] "1 vuosi sitten"
+msgstr[1] "{0} vuotta sitten"
+
+#. return H.Plural(-time.TotalYears(), "in 1 year", "in {0} years");
+#: OrchardCore.DisplayManagement\Shapes\DateTimeShapes.cs:46
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "in 1 year"
+msgid_plural "in {0} years"
+msgstr[0] "1 vuoden sisällä"
+msgstr[1] "{0} vuoden sisällä"
+
+#. return H.Plural(time.TotalMonths(), "1 month ago", "{0} months ago");
+#: OrchardCore.DisplayManagement\Shapes\DateTimeShapes.cs:49
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 month ago"
+msgid_plural "{0} months ago"
+msgstr[0] "kuukausi sitten"
+msgstr[1] "{0} kuukautta sitten"
+
+#. return H.Plural(-time.TotalMonths(), "in 1 month", "in {0} months");
+#: OrchardCore.DisplayManagement\Shapes\DateTimeShapes.cs:51
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "in 1 month"
+msgid_plural "in {0} months"
+msgstr[0] "kuukauden sisällä"
+msgstr[1] "{0} kuukauden sisällä"
+
+#. return H.Plural(time.TotalWeeks(), "1 week ago", "{0} weeks ago");
+#: OrchardCore.DisplayManagement\Shapes\DateTimeShapes.cs:54
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 week ago"
+msgid_plural "{0} weeks ago"
+msgstr[0] "Viikko sitten"
+msgstr[1] "{0} viikkoa sitten"
+
+#. return H.Plural(-time.TotalWeeks(), "in 1 week", "in {0} weeks");
+#: OrchardCore.DisplayManagement\Shapes\DateTimeShapes.cs:56
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "in 1 week"
+msgid_plural "in {0} weeks"
+msgstr[0] "1 viikon sisällä"
+msgstr[1] "{0} viikkoa sitten"
+
+#. return H.Plural(time.Days, "1 day ago", "{0} days ago");
+#: OrchardCore.DisplayManagement\Shapes\DateTimeShapes.cs:59
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 day ago"
+msgid_plural "{0} days ago"
+msgstr[0] "päivä sitten"
+msgstr[1] "{0} päivää sitten"
+
+#. return H.Plural(-time.Days, "in 1 day", "in {0} days");
+#: OrchardCore.DisplayManagement\Shapes\DateTimeShapes.cs:61
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "in 1 day"
+msgid_plural "in {0} days"
+msgstr[0] "päivän kuluttua"
+msgstr[1] "{0} päivän kuluttua"
+
+#. return H.Plural(time.Hours, "1 hour ago", "{0} hours ago");
+#: OrchardCore.DisplayManagement\Shapes\DateTimeShapes.cs:64
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 hour ago"
+msgid_plural "{0} hours ago"
+msgstr[0] "tunti sitten"
+msgstr[1] "{0} tuntia sitten"
+
+#. return H.Plural(-time.Hours, "in 1 hour", "in {0} hours");
+#: OrchardCore.DisplayManagement\Shapes\DateTimeShapes.cs:66
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "in 1 hour"
+msgid_plural "in {0} hours"
+msgstr[0] "tunnin sisällä"
+msgstr[1] "{0} tunnin sisällä"
+
+#. return H.Plural(time.Minutes, "1 minute ago", "{0} minutes ago");
+#: OrchardCore.DisplayManagement\Shapes\DateTimeShapes.cs:69
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 minute ago"
+msgid_plural "{0} minutes ago"
+msgstr[0] "minuutti sitten"
+msgstr[1] "{0} minuuttia sitten"
+
+#. return H.Plural(-time.Minutes, "in 1 minute", "in {0} minutes");
+#: OrchardCore.DisplayManagement\Shapes\DateTimeShapes.cs:71
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "in 1 minute"
+msgid_plural "in {0} minutes"
+msgstr[0] "minuutin sisällä"
+msgstr[1] "{0} minuutin sisällä"
+
+#. return H.Plural(time.Seconds, "1 second ago", "{0} seconds ago"); //aware that the singular won't be used
+#: OrchardCore.DisplayManagement\Shapes\DateTimeShapes.cs:74
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 second ago"
+msgid_plural "{0} seconds ago"
+msgstr[0] "sekunti sitten"
+msgstr[1] "{0} sekuntia sitten"
+
+#. return H.Plural(-time.Seconds, "in 1 second", "in {0} seconds");
+#: OrchardCore.DisplayManagement\Shapes\DateTimeShapes.cs:76
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "in 1 second"
+msgid_plural "in {0} seconds"
+msgstr[0] "sekunnin kuluessa"
+msgstr[1] "{0} sekunnin sisällä"
+
+#. ? H["a moment ago"]
+#: OrchardCore.DisplayManagement\Shapes\DateTimeShapes.cs:79
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "a moment ago"
+msgstr "hetki sitten"
+
+#. : H["in a moment"];
+#: OrchardCore.DisplayManagement\Shapes\DateTimeShapes.cs:80
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "in a moment"
+msgstr "hetken kuluttua"
+

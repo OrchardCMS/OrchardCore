@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Taxonomies</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.Taxonomies.Drivers.TaxonomyFieldDriverHelper.PopulateTermEntries(System.Collections.Generic.List{OrchardCore.Taxonomies.ViewModels.TermEntry},OrchardCore.Taxonomies.Fields.TaxonomyField,System.Collections.Generic.IEnumerable{OrchardCore.ContentManagement.ContentItem},System.Int32)">
+            <summary>
+            Populates a list of <see cref="T:OrchardCore.Taxonomies.ViewModels.TermEntry"/> with the hierarchy of terms.
+            The list is ordered so that roots appear right before their child terms.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Taxonomies.Drivers.TaxonomyPartDisplayDriver.GetTaxonomyItemAt(System.Collections.Generic.List{OrchardCore.ContentManagement.ContentItem},System.Int32[])">
+            <summary>
+            Clone the content items at the specific index.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Taxonomies.Fields.TagNamesExtensions.GetTagNames(OrchardCore.Taxonomies.Fields.TaxonomyField)">
+            <summary>
+            Tag names are a less well known property of a taxonomy field
+            managed by the tags editor and tags display mode. 
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Taxonomies.Fields.TagNamesExtensions.SetTagNames(OrchardCore.Taxonomies.Fields.TaxonomyField,System.String[])">
+            <summary>
+            Tags names are a less well known property of a taxonomy field
+            managed by the tags editor and tags display mode.
+            They are updated only when saving the content item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Taxonomies.Settings.TaxonomyFieldSettings.Required">
+            <summary>
+            Whether a selection is required
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Taxonomies.Settings.TaxonomyFieldSettings.TaxonomyContentItemId">
+            <summary>
+            The content item id of the taxonomy to choose from
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Taxonomies.Settings.TaxonomyFieldSettings.Unique">
+            <summary>
+            Whether the user can select only one term or not
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Taxonomies.Settings.TaxonomyFieldSettings.LeavesOnly">
+            <summary>
+            Whether the user can only select leaves in the taxonomy
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Taxonomies.Settings.TaxonomyFieldSettings.Open">
+            <summary>
+            Whether the field allows the user to add new Terms to the taxonomy (similar to tags)
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Taxonomies.Settings.TaxonomyFieldTagsEditorSettings">
+            <summary>
+            When transitioning a tag to a taxonomy editor these settings will need to be reset.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Taxonomies.Settings.TaxonomyFieldTagsEditorSettings.Open">
+            <summary>
+            Whether the field allows the user to add new tags to the taxonomy
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Taxonomies.TermShapes.EncodeAlternateElement(System.String)">
+            <summary>
+            Encodes dashed and dots so that they don't conflict in filenames
+            </summary>
+            <param name="alternateElement"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.Taxonomies.TermShapes.FormatName(System.String)">
+            <summary>
+            Converts "foo-ba r" to "FooBaR"
+            </summary>
+        </member>
+        <member name="M:TaxonomyOrchardHelperExtensions.GetTaxonomyTermAsync(OrchardCore.IOrchardHelper,System.String,System.String)">
+            <summary>
+            Returns a term from its content item id and taxonomy.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="taxonomyContentItemId">The taxonomy content item id.</param>
+            <param name="termContentItemId">The term content item id.</param>
+            <returns>A content item id <c>null</c> if it was not found.</returns>
+        </member>
+        <member name="M:TaxonomyOrchardHelperExtensions.GetInheritedTermsAsync(OrchardCore.IOrchardHelper,System.String,System.String)">
+            <summary>
+            Returns the list of terms including their parents.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="taxonomyContentItemId">The taxonomy content item id.</param>
+            <param name="termContentItemId">The term content item id.</param>
+            <returns>A list content items.</returns>
+        </member>
+        <member name="M:TaxonomyOrchardHelperExtensions.QueryCategorizedContentItemsAsync(OrchardCore.IOrchardHelper,System.Func{YesSql.IQuery{OrchardCore.ContentManagement.ContentItem,OrchardCore.Taxonomies.Indexing.TaxonomyIndex},YesSql.IQuery{OrchardCore.ContentManagement.ContentItem}})">
+            <summary>
+            Query content items.
+            </summary>
+        </member>
+    </members>
+</doc>

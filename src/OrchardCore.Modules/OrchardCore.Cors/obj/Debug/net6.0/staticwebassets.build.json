@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "I8mXs5eYlw8m04fPy5UO3Z642Q5xoFRCGmqqUGUN6ik=",
+  "Source": "OrchardCore.Cors",
+  "BasePath": "_content/OrchardCore.Cors",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.Cors\\wwwroot",
+      "Source": "OrchardCore.Cors",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Cors\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Cors",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Localization.Core</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Localization.PortableObject.ContentRootPoFileLocationProvider">
+            <summary>
+            provides a localization files from the content root folder.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.PortableObject.ContentRootPoFileLocationProvider.#ctor(Microsoft.Extensions.Hosting.IHostEnvironment,Microsoft.Extensions.Options.IOptions{Microsoft.Extensions.Localization.LocalizationOptions})">
+            <summary>
+            Creates a new instance of <see cref="T:OrchardCore.Localization.PortableObject.ContentRootPoFileLocationProvider"/>.
+            </summary>
+            <param name="hostingEnvironment">The <see cref="T:Microsoft.Extensions.Hosting.IHostEnvironment"/>.</param>
+            <param name="localizationOptions">The <see cref="T:Microsoft.Extensions.Localization.LocalizationOptions"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.PortableObject.ContentRootPoFileLocationProvider.GetLocations(System.String)">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Localization.PortableObject.PoFilesTranslationsProvider">
+            <summary>
+            Represents a provider that provides a translations for .po files.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.PortableObject.PoFilesTranslationsProvider.#ctor(OrchardCore.Localization.ILocalizationFileLocationProvider)">
+            <summary>
+            Creates a new instance of <see cref="T:OrchardCore.Localization.PortableObject.PoFilesTranslationsProvider"/>.
+            </summary>
+            <param name="poFileLocationProvider">The <see cref="T:OrchardCore.Localization.ILocalizationFileLocationProvider"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.PortableObject.PoFilesTranslationsProvider.LoadTranslations(System.String,OrchardCore.Localization.CultureDictionary)">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Localization.PortableObject.PoParser">
+            <summary>
+            Represents a parser for portable objects.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.PortableObject.PoParser.Parse(System.IO.TextReader)">
+            <summary>
+            Parses a .po file.
+            </summary>
+            <param name="reader">The <see cref="T:System.IO.TextReader"/>.</param>
+            <returns>A list of culture records.</returns>
+        </member>
+        <member name="T:OrchardCore.Localization.PortableObject.PortableObjectHtmlLocalizer">
+            <summary>
+            Represents an <see cref="T:Microsoft.AspNetCore.Mvc.Localization.HtmlLocalizer"/> for portable objects.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.PortableObject.PortableObjectHtmlLocalizer.#ctor(Microsoft.Extensions.Localization.IStringLocalizer)">
+            <summary>
+            Creates a new instance of <see cref="T:OrchardCore.Localization.PortableObject.PortableObjectHtmlLocalizer"/>.
+            </summary>
+            <param name="localizer"></param>
+        </member>
+        <member name="P:OrchardCore.Localization.PortableObject.PortableObjectHtmlLocalizer.Item(System.String)">
+            <inheritdocs />
+        </member>
+        <member name="P:OrchardCore.Localization.PortableObject.PortableObjectHtmlLocalizer.Item(System.String,System.Object[])">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Localization.PortableObject.PortableObjectHtmlLocalizerFactory">
+            <summary>
+            Represents an <see cref="T:Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizerFactory"/> for portable objects.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.PortableObject.PortableObjectHtmlLocalizerFactory.#ctor(Microsoft.Extensions.Localization.IStringLocalizerFactory)">
+            <summary>
+            Creates a new instance of <see cref="T:OrchardCore.Localization.PortableObject.PortableObjectHtmlLocalizerFactory"/>.
+            </summary>
+            <param name="stringLocalizerFactory">The <see cref="T:Microsoft.Extensions.Localization.IStringLocalizerFactory"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.PortableObject.PortableObjectHtmlLocalizerFactory.Create(System.Type)">
+            <inheritdocs />
+        </member>
+        <member name="M:OrchardCore.Localization.PortableObject.PortableObjectHtmlLocalizerFactory.Create(System.String,System.String)">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Localization.PortableObject.PortableObjectStringLocalizer">
+            <summary>
+            Represents <see cref="T:OrchardCore.Localization.IPluralStringLocalizer"/> for portable objects.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.PortableObject.PortableObjectStringLocalizer.#ctor(System.String,OrchardCore.Localization.ILocalizationManager,System.Boolean,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Creates a new instance of <see cref="T:OrchardCore.Localization.PortableObject.PortableObjectStringLocalizer"/>.
+            </summary>
+            <param name="context"></param>
+            <param name="localizationManager"></param>
+            <param name="fallBackToParentCulture"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="P:OrchardCore.Localization.PortableObject.PortableObjectStringLocalizer.Item(System.String)">
+            <inheritdocs />
+        </member>
+        <member name="P:OrchardCore.Localization.PortableObject.PortableObjectStringLocalizer.Item(System.String,System.Object[])">
+            <inheritdocs />
+        </member>
+        <member name="M:OrchardCore.Localization.PortableObject.PortableObjectStringLocalizer.GetAllStrings(System.Boolean)">
+            <inheritdocs />
+        </member>
+        <member name="M:OrchardCore.Localization.PortableObject.PortableObjectStringLocalizer.GetTranslation(System.String,System.Object[])">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Localization.PortableObject.PortableObjectStringLocalizerFactory">
+            <summary>
+            Represents a <see cref="T:Microsoft.Extensions.Localization.IStringLocalizerFactory"/> for portable objects.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.PortableObject.PortableObjectStringLocalizerFactory.#ctor(OrchardCore.Localization.ILocalizationManager,Microsoft.Extensions.Options.IOptions{Microsoft.AspNetCore.Builder.RequestLocalizationOptions},Microsoft.Extensions.Logging.ILogger{OrchardCore.Localization.PortableObject.PortableObjectStringLocalizerFactory})">
+            <summary>
+            Creates a new instance of <see cref="T:OrchardCore.Localization.PortableObject.PortableObjectStringLocalizerFactory"/>.
+            </summary>
+            <param name="localizationManager"></param>
+            <param name="requestLocalizationOptions"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="M:OrchardCore.Localization.PortableObject.PortableObjectStringLocalizerFactory.Create(System.Type)">
+            <inheritedoc />
+        </member>
+        <member name="M:OrchardCore.Localization.PortableObject.PortableObjectStringLocalizerFactory.Create(System.String,System.String)">
+            <inheritedoc />
+        </member>
+        <member name="T:OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages">
+            <summary>
+            This is just a marker class to allow the POExtractor to extract the default error messages for data annotations attributes.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Localization.DataAnnotations.LocalizedValidationMetadataProvider">
+            <summary>
+            Provides a validation for a <see cref="T:Microsoft.AspNetCore.Mvc.ModelBinding.Metadata.DefaultModelMetadata"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.DataAnnotations.LocalizedValidationMetadataProvider.#ctor(Microsoft.Extensions.Localization.IStringLocalizer)">
+            <summary>
+            Initializes a new instance of a <see cref="T:OrchardCore.Localization.DataAnnotations.LocalizedValidationMetadataProvider"/> with string localizer.
+            </summary>
+            <param name="stringLocalizer">The <see cref="T:Microsoft.Extensions.Localization.IStringLocalizer"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.DataAnnotations.LocalizedValidationMetadataProvider.CreateValidationMetadata(Microsoft.AspNetCore.Mvc.ModelBinding.Metadata.ValidationMetadataProviderContext)">
+            <remarks>This will localize the default data annotations error message if it is exist, otherwise will try to look for a parameterized version.</remarks>
+            <example>
+            A property named 'UserName' that decorated with <see cref="T:System.ComponentModel.DataAnnotations.RequiredAttribute"/> will be localized using
+            "The {0} field is required." and "The UserName field is required." error messages.
+            </example>
+        </member>
+        <member name="T:OrchardCore.Localization.DefaultPluralRuleProvider">
+            <summary>
+            Provides pluralization rules based on the Unicode Common Locale Data Repository.
+            c.f. http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
+            c.f. https://github.com/unicode-org/cldr/blob/master/common/supplemental/plurals.xml
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.DefaultPluralRuleProvider.Order">
+            <inheritdocs />
+        </member>
+        <member name="M:OrchardCore.Localization.DefaultPluralRuleProvider.TryGetRule(System.Globalization.CultureInfo,OrchardCore.Localization.PluralizationRuleDelegate@)">
+            <inheritdocs />
+        </member>
+        <member name="M:OrchardCore.Localization.DefaultPluralRuleProvider.GetBaseCulture(System.Globalization.CultureInfo)">
+            <example>zh-Hans-CN -> zh-Hans -> zh</example>
+        </member>
+        <member name="T:OrchardCore.Localization.LocalizationManager">
+            <summary>
+            Represents a manager that manage the localization resources.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.LocalizationManager.#ctor(System.Collections.Generic.IEnumerable{OrchardCore.Localization.IPluralRuleProvider},System.Collections.Generic.IEnumerable{OrchardCore.Localization.ITranslationProvider},Microsoft.Extensions.Caching.Memory.IMemoryCache)">
+            <summary>
+            Creates a new instance of <see cref="T:OrchardCore.Localization.LocalizationManager"/>.
+            </summary>
+            <param name="pluralRuleProviders">A list of <see cref="T:OrchardCore.Localization.IPluralRuleProvider"/>s.</param>
+            <param name="translationProviders">The list of available <see cref="T:OrchardCore.Localization.ITranslationProvider"/>.</param>
+            <param name="cache">The <see cref="T:Microsoft.Extensions.Caching.Memory.IMemoryCache"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.LocalizationManager.GetDictionary(System.Globalization.CultureInfo)">
+            <inheritdoc />
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.LocalizationServiceCollectionExtensions">
+            <summary>
+            Provides extension methods for <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.LocalizationServiceCollectionExtensions.AddPortableObjectLocalization(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Registers the services to enable localization using Portable Object files.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.LocalizationServiceCollectionExtensions.AddPortableObjectLocalization(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Microsoft.Extensions.Localization.LocalizationOptions})">
+            <summary>
+            Registers the services to enable localization using Portable Object files.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <param name="setupAction">An action to configure the Microsoft.Extensions.Localization.LocalizationOptions.</param>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.LocalizationServiceCollectionExtensions.AddDataAnnotationsPortableObjectLocalization(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Localize data annotations attributes from portable object files.  
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+        </member>
+    </members>
+</doc>

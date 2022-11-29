@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Setup.Core</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Setup.ServiceCollectionExtensions">
+            <summary>
+            Provides extension methods for <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Setup.ServiceCollectionExtensions.AddSetup(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds tenant level services.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Setup.Services.SetupService">
+            <summary>
+            Represents a setup service.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Setup.Services.SetupService.#ctor(OrchardCore.Environment.Shell.IShellHost,Microsoft.Extensions.Hosting.IHostEnvironment,OrchardCore.Environment.Shell.Builders.IShellContextFactory,OrchardCore.Setup.Services.ISetupUserIdGenerator,System.Collections.Generic.IEnumerable{OrchardCore.Recipes.Services.IRecipeHarvester},Microsoft.Extensions.Logging.ILogger{OrchardCore.Setup.Services.SetupService},Microsoft.Extensions.Localization.IStringLocalizer{OrchardCore.Setup.Services.SetupService},Microsoft.Extensions.Hosting.IHostApplicationLifetime,Microsoft.AspNetCore.Http.IHttpContextAccessor,OrchardCore.Data.IDbConnectionValidator)">
+            <summary>
+            Creates a new instance of <see cref="T:OrchardCore.Setup.Services.SetupService"/>.
+            </summary>
+            <param name="shellHost">The <see cref="T:OrchardCore.Environment.Shell.IShellHost"/>.</param>
+            <param name="hostingEnvironment">The <see cref="T:Microsoft.Extensions.Hosting.IHostEnvironment"/>.</param>
+            <param name="shellContextFactory">The <see cref="T:OrchardCore.Environment.Shell.Builders.IShellContextFactory"/>.</param>
+            <param name="setupUserIdGenerator">The <see cref="T:OrchardCore.Setup.Services.ISetupUserIdGenerator"/>.</param>
+            <param name="recipeHarvesters">A list of <see cref="T:OrchardCore.Recipes.Services.IRecipeHarvester"/>s.</param>
+            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
+            <param name="stringLocalizer">The <see cref="T:Microsoft.Extensions.Localization.IStringLocalizer"/>.</param>
+            <param name="applicationLifetime">The <see cref="T:Microsoft.Extensions.Hosting.IHostApplicationLifetime"/>.</param>
+            <param name="httpContextAccessor">The <see cref="T:Microsoft.AspNetCore.Http.IHttpContextAccessor"/>.</param>
+            <param name="dbConnectionValidator">The <see cref="T:OrchardCore.Data.IDbConnectionValidator"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Setup.Services.SetupService.GetSetupRecipesAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Setup.Services.SetupService.SetupAsync(OrchardCore.Setup.Services.SetupContext)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,49 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-File: /main/Localization/TheAgencyTheme.pot\n"
+"X-Crowdin-File-ID: 850\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Arabic\n"
+"Language: ar_SA\n"
+"PO-Revision-Date: 2021-09-24 21:30\n"
+
+#: TheAgencyTheme\Views\Layout.liquid:0
+msgctxt "TheAgencyTheme.Views.Layout"
+msgid "Menu"
+msgstr "القائمة"
+
+#: TheAgencyTheme\Views\SearchForm.liquid:0
+msgctxt "TheAgencyTheme.Views.SearchForm"
+msgid "Enter your search term(s)"
+msgstr "أدخل نص البحث"
+
+#: TheAgencyTheme\Views\SearchForm.liquid:0
+msgctxt "TheAgencyTheme.Views.SearchForm"
+msgid "Search"
+msgstr "بحث"
+
+#: TheAgencyTheme\Views\SearchResults.liquid:0
+msgctxt "TheAgencyTheme.Views.SearchResults"
+msgid "There are no such results."
+msgstr "لا توجد أي نتائج."
+
+#: TheAgencyTheme\Views\Shared\NotFound.liquid:0
+msgctxt "TheAgencyTheme.Views.Shared.NotFound"
+msgid "Page Not Found"
+msgstr "لم يتم العثور على الصفحة"
+
+#: TheAgencyTheme\Views\Shared\NotFound.liquid:0
+msgctxt "TheAgencyTheme.Views.Shared.NotFound"
+msgid "The page you requested could not be found."
+msgstr "لا يمكن العقور على الصفحة التي طلبتها."
+
+#: TheAgencyTheme\Views\Shared\Search.liquid:0
+msgctxt "TheAgencyTheme.Views.Shared.Search"
+msgid "Search"
+msgstr "بحث"
+

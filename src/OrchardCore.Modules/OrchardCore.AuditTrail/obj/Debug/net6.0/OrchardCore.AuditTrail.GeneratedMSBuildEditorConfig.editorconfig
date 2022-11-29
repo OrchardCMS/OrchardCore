@@ -1,0 +1,113 @@
+is_global = true
+build_property.TargetFramework = net6.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = OrchardCore.AuditTrail
+build_property.RootNamespace = OrchardCore.AuditTrail
+build_property.ProjectDir = C:\repos\loethenweb\src\OrchardCore.Modules\OrchardCore.AuditTrail\
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\repos\loethenweb\src\OrchardCore.Modules\OrchardCore.AuditTrail
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/Admin/Display.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cRGlzcGxheS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/Admin/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/AuditTrailAdminFilters-Card.Thumbnail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXVkaXRUcmFpbEFkbWluRmlsdGVycy1DYXJkLlRodW1ibmFpbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/AuditTrailAdminList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXVkaXRUcmFpbEFkbWluTGlzdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/AuditTrailAdminListFilters.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXVkaXRUcmFpbEFkbWluTGlzdEZpbHRlcnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/AuditTrailAdminListSearch.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXVkaXRUcmFpbEFkbWluTGlzdFNlYXJjaC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/AuditTrailAdminListSummary.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXVkaXRUcmFpbEFkbWluTGlzdFN1bW1hcnkuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/AuditTrailEvent.DetailAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXVkaXRUcmFpbEV2ZW50LkRldGFpbEFkbWluLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/AuditTrailEvent.SummaryAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXVkaXRUcmFpbEV2ZW50LlN1bW1hcnlBZG1pbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/AuditTrailEventActions.SummaryAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXVkaXRUcmFpbEV2ZW50QWN0aW9ucy5TdW1tYXJ5QWRtaW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/AuditTrailEventDetail.DetailAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXVkaXRUcmFpbEV2ZW50RGV0YWlsLkRldGFpbEFkbWluLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/AuditTrailEventMeta.SummaryAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXVkaXRUcmFpbEV2ZW50TWV0YS5TdW1tYXJ5QWRtaW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/AuditTrailEventTags.SummaryAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXVkaXRUcmFpbEV2ZW50VGFncy5TdW1tYXJ5QWRtaW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/AuditTrailIndexOptions.Thumbnail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXVkaXRUcmFpbEluZGV4T3B0aW9ucy5UaHVtYm5haWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/AuditTrailSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXVkaXRUcmFpbFNldHRpbmdzLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/AuditTrailTrimmingSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXVkaXRUcmFpbFRyaW1taW5nU2V0dGluZ3MuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/Items/AuditTrailAdminFilters-Category.Thumbnail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSXRlbXNcQXVkaXRUcmFpbEFkbWluRmlsdGVycy1DYXRlZ29yeS5UaHVtYm5haWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/Items/AuditTrailAdminFilters-CorrelationId.Thumbnail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSXRlbXNcQXVkaXRUcmFpbEFkbWluRmlsdGVycy1Db3JyZWxhdGlvbklkLlRodW1ibmFpbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/Items/AuditTrailAdminFilters-Date.Thumbnail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSXRlbXNcQXVkaXRUcmFpbEFkbWluRmlsdGVycy1EYXRlLlRodW1ibmFpbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/Items/AuditTrailAdminFilters-Event.Thumbnail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSXRlbXNcQXVkaXRUcmFpbEFkbWluRmlsdGVycy1FdmVudC5UaHVtYm5haWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/Items/AuditTrailAdminFilters-UserId.Thumbnail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSXRlbXNcQXVkaXRUcmFpbEFkbWluRmlsdGVycy1Vc2VySWQuVGh1bWJuYWlsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/Items/AuditTrailAdminFilters-UserName.Thumbnail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSXRlbXNcQXVkaXRUcmFpbEFkbWluRmlsdGVycy1Vc2VyTmFtZS5UaHVtYm5haWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/NavigationItemText-audittrail.Id.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTmF2aWdhdGlvbkl0ZW1UZXh0LWF1ZGl0dHJhaWwuSWQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.AuditTrail/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 

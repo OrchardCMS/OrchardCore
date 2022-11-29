@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Deployment.Remote</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.Deployment.Remote.Controllers.ImportRemoteInstanceController.Import(OrchardCore.Deployment.Remote.ViewModels.ImportViewModel)">
+            <remarks>
+            We ignore the AFT as the service is called from external applications (they can't have valid ones) and
+            we use a private API key to secure its calls.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.Deployment.Remote.Services.RemoteInstanceService.LoadRemoteInstanceListAsync">
+            <summary>
+            Loads the remote instances document from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Deployment.Remote.Services.RemoteInstanceService.GetRemoteInstanceListAsync">
+            <summary>
+            Gets the remote instances document from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+    </members>
+</doc>

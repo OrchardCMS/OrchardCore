@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "aPP+iByvGOJKBvPLaohPTE05kerdOcgmmFG5HRpsVBU=",
+  "Source": "OrchardCore.Menu",
+  "BasePath": "_content/OrchardCore.Menu",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "dgSpecHash": "+P1Q0gyGO5k+Wl6DFiuA0XPbod65ySIBoR/j5Bg65Xn/r4lcJzlct+Ol0YE67KlTSe8xyWonfTPxsCRYONwhSQ==",
+  "success": true,
+  "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Search.Lucene.Core\\OrchardCore.Search.Lucene.Core.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\stloethe\\.nuget\\packages\\geoapi\\1.7.5\\geoapi.1.7.5.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\geoapi.coordinatesystems\\1.7.5\\geoapi.coordinatesystems.1.7.5.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\geoapi.core\\1.7.5\\geoapi.core.1.7.5.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\j2n\\2.0.0\\j2n.2.0.0.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\lucene.net\\4.8.0-beta00016\\lucene.net.4.8.0-beta00016.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\lucene.net.analysis.common\\4.8.0-beta00016\\lucene.net.analysis.common.4.8.0-beta00016.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\lucene.net.queries\\4.8.0-beta00016\\lucene.net.queries.4.8.0-beta00016.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\lucene.net.queryparser\\4.8.0-beta00016\\lucene.net.queryparser.4.8.0-beta00016.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\lucene.net.sandbox\\4.8.0-beta00016\\lucene.net.sandbox.4.8.0-beta00016.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\lucene.net.spatial\\4.8.0-beta00016\\lucene.net.spatial.4.8.0-beta00016.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.build.tasks.git\\1.1.1\\microsoft.build.tasks.git.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\2.0.0\\microsoft.extensions.configuration.abstractions.2.0.0.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.extensions.primitives\\2.0.0\\microsoft.extensions.primitives.2.0.0.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.sourcelink.common\\1.1.1\\microsoft.sourcelink.common.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.sourcelink.github\\1.1.1\\microsoft.sourcelink.github.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\nettopologysuite\\1.15.0\\nettopologysuite.1.15.0.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\nettopologysuite.coordinatesystems\\1.15.0\\nettopologysuite.coordinatesystems.1.15.0.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\nettopologysuite.core\\1.15.0\\nettopologysuite.core.1.15.0.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\spatial4n\\0.4.1.1\\spatial4n.0.4.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\4.4.0\\system.runtime.compilerservices.unsafe.4.4.0.nupkg.sha512"
+  ],
+  "logs": []
+}

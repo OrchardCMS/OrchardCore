@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Liquid.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Liquid.ILiquidTemplateManager">
+            <summary>
+            Provides services to render Liquid templates.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Liquid.ILiquidTemplateManager.RenderStringAsync(System.String,System.Text.Encodings.Web.TextEncoder,System.Object,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,Fluid.Values.FluidValue}})">
+            <summary>
+            Renders a Liquid template as a <see cref="T:System.String"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Liquid.ILiquidTemplateManager.RenderHtmlContentAsync(System.String,System.Text.Encodings.Web.TextEncoder,System.Object,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,Fluid.Values.FluidValue}})">
+            <summary>
+            Renders a Liquid template as a <see cref="T:Microsoft.AspNetCore.Html.IHtmlContent"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Liquid.ILiquidTemplateManager.RenderAsync(System.String,System.IO.TextWriter,System.Text.Encodings.Web.TextEncoder,System.Object,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,Fluid.Values.FluidValue}})">
+            <summary>
+            Renders a Liquid template on a <see cref="T:System.IO.TextWriter"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Liquid.ILiquidTemplateManager.Validate(System.String,System.Collections.Generic.IEnumerable{System.String}@)">
+            <summary>
+            Validates a Liquid template.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Liquid.LiquidContentAccessor">
+            <summary>
+            This is a placeholder class that allows modules to extend the `Content` property in the current Liquid scope.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Liquid.LiquidPropertyAccessor">
+             <summary>
+             Can be used to provide a factory to return a value based on a property name
+             that is unknown at registration time.
+            
+             e.g. {{ LiquidPropertyAccessor.MyPropertyName }} (MyPropertyName will be passed as the identifier argument to the factory)
+             </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,1714 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.BackgroundJobs.HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(System.String,System.Func{OrchardCore.Environment.Shell.Scope.ShellScope,System.Threading.Tasks.Task})">
+            <summary>
+            Executes a background job in an isolated <see cref="T:OrchardCore.Environment.Shell.Scope.ShellScope"/> after the current HTTP request is completed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.BackgroundTasks.DistributedLockExtensions.TryAcquireBackgroundTaskLockAsync(OrchardCore.Locking.Distributed.IDistributedLock,OrchardCore.BackgroundTasks.BackgroundTaskSettings)">
+            <summary>
+            Tries to acquire a lock on the background task if it is atomic and if the lock service is not a local lock, otherwise returns true with a null locker.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.BackgroundTasks.IBackgroundTaskEventHandler">
+            <summary>
+            Provides methods that get called around the execution of any <see cref="T:OrchardCore.BackgroundTasks.IBackgroundTask"/>.
+            Implement this interface to hook into background task execution.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.BackgroundTasks.IBackgroundTaskEventHandler.ExecutingAsync(OrchardCore.BackgroundTasks.BackgroundTaskEventContext,System.Threading.CancellationToken)">
+            <summary>
+            This method get called just before the execution of any <see cref="T:OrchardCore.BackgroundTasks.IBackgroundTask"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.BackgroundTasks.IBackgroundTaskEventHandler.ExecutedAsync(OrchardCore.BackgroundTasks.BackgroundTaskEventContext,System.Threading.CancellationToken)">
+            <summary>
+            This method get called just after the execution of any <see cref="T:OrchardCore.BackgroundTasks.IBackgroundTask"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Cache.SignalExtensions.DeferredSignalToken(OrchardCore.Environment.Cache.ISignal,System.String)">
+            <summary>
+            Adds a Signal (if not already present) to be sent at the end of the shell scope.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Extensions.Features.IFeatureHash">
+            <summary>
+            An implementation of this interface provide efficient access to the state
+            of the enabled feature in order to provide hashes used for caching.
+            Because its state should be cached, the instance should not have any state
+            thus is declared as transient.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Extensions.Features.IFeatureHash.GetFeatureHashAsync">
+            <summary>
+            Returns a serial number representing the list of available features for the current tenant.
+            </summary>
+            <returns>
+            An <see cref="T:System.Int32"/> value that changes every time the list of features changes.
+            The implementation is efficient in order to be called frequently.
+            </returns>
+        </member>
+        <member name="M:OrchardCore.Environment.Extensions.Features.IFeatureHash.GetFeatureHashAsync(System.String)">
+            <summary>
+            Returns a serial number representing the list of available features for the current tenant.
+            </summary>
+            <returns>
+            A <see cref="T:System.Int32"/> value that changes every time a specific feature is enabled.
+            The implementation is efficient in order to be called frequently.
+            </returns>
+        </member>
+        <member name="T:OrchardCore.Environment.Extensions.Features.IFeaturesProvider">
+            <summary>
+            Provides opportunities to work with the Module Feature set.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Extensions.Features.IFeaturesProvider.GetFeatures(OrchardCore.Environment.Extensions.IExtensionInfo,OrchardCore.Environment.Extensions.IManifestInfo)">
+            <summary>
+            Returns the Features corresponding with the Extension, Manifest, etc.
+            </summary>
+            <param name="extensionInfo"></param>
+            <param name="manifestInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="T:OrchardCore.Environment.Extensions.ITypeFeatureProvider">
+            <summary>
+            An implementation of this service is able to provide the <see cref="T:OrchardCore.Environment.Extensions.Features.IFeatureInfo"/> that
+            any services was harvested from.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Extensions.IExtensionInfo.Id">
+            <summary>
+            The id of the extension
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Extensions.IExtensionInfo.SubPath">
+            <summary>
+            The path to the extension
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Extensions.IExtensionInfo.Manifest">
+            <summary>
+            The manifest info of the extension
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Extensions.IExtensionInfo.Features">
+            <summary>
+            List of features in extension
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Extensions.IExtensionInfo.Exists">
+            <summary>
+            Whether this extension info exists
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Extensions.Utility.DependencyOrdering.OrderByDependenciesAndPriorities``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``0,System.Boolean},System.Func{``0,System.Int32})">
+            <summary>
+            Linearizes a dependency graph so that items are positioned after their dependencies.
+            This by using a function which determines if an item has a direct dependency on another.
+            Then, items are moved up whenever it is possible without breaking the dependency graph.
+            This by using a function which gives for each item a priority used as an order value.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Builders.ServiceProviderExtensions.CreateInstance``1(System.IServiceProvider)">
+            <summary>
+            Instantiates a new object of the specified type, but with support for constructor injection.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Builders.ServiceProviderExtensions.CreateInstance``1(System.IServiceProvider,System.Type)">
+            <summary>
+            Instantiates a new object of the specified type, but with support for constructor injection.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Builders.ICompositionStrategy">
+            <summary>
+            Service at the host level to transform the cacheable descriptor into the loadable blueprint.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Builders.ICompositionStrategy.ComposeAsync(OrchardCore.Environment.Shell.ShellSettings,OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor)">
+            <summary>
+            Using information from the IExtensionManager, transforms and populates all of the
+            blueprint model the shell builders will need to correctly initialize a tenant IoC container.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Builders.IShellContextFactory">
+            <summary>
+            High-level coordinator that exercises other component capabilities to
+            build all of the artifacts for a running shell given a tenant settings.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Builders.IShellContextFactory.CreateShellContextAsync(OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Builds a shell context given a specific tenant settings structure
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Builders.IShellContextFactory.CreateSetupContextAsync(OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Builds a shell context for an uninitialized Orchard instance. Needed
+            to display setup user interface.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Builders.IShellContextFactory.CreateDescribedContextAsync(OrchardCore.Environment.Shell.ShellSettings,OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor)">
+            <summary>
+            Builds a shell context given a specific description of features and parameters.
+            Shell's actual current descriptor has no effect. Does not use or update descriptor cache.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Builders.IShellPipeline.Invoke(System.Object)">
+            <summary>
+            Executes this shell pipeline.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Builders.Models.ShellBlueprint">
+            <summary>
+            Contains the information necessary to initialize an IoC container
+            for a particular tenant. This model is created by the ICompositionStrategy
+            and is passed into the IShellContainerFactory.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Builders.ShellContext">
+            <summary>
+            The shell context represents the shell's state that is kept alive
+            for the whole life of the application
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Builders.ShellContext.IsActivated">
+            <summary>
+            Whether the shell is activated.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Builders.ShellContext.Pipeline">
+            <summary>
+            The Pipeline built for this shell.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Builders.ShellContext.PlaceHolder.#ctor">
+            <summary>
+            Used as a place holder for a shell that will be lazily created.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Builders.ShellContext.CreateScope">
+            <summary>
+            Creates a <see cref="T:OrchardCore.Environment.Shell.Scope.ShellScope"/> on this shell context.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Builders.ShellContext.Released">
+            <summary>
+            Whether the <see cref="T:OrchardCore.Environment.Shell.Builders.ShellContext"/> instance is not yet built or has been released, for instance when a tenant is changed.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Builders.ShellContext.ActiveScopes">
+            <summary>
+            Returns the number of active scopes on this tenant.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Builders.ShellContext.Release">
+            <summary>
+            Mark the <see cref="T:OrchardCore.Environment.Shell.Builders.ShellContext"/> as released and then a candidate to be disposed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Builders.ShellContext.AddDependentShell(OrchardCore.Environment.Shell.Builders.ShellContext)">
+            <summary>
+            Registers the specified shellContext as dependent such that it is also released when the current shell context is released.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Builders.ShellContextExtensions.TryAcquireShellActivateLockAsync(OrchardCore.Environment.Shell.Builders.ShellContext)">
+            <summary>
+            Tries to acquire a lock for shell activation, a local lock if it is initializing, otherwise a distributed lock.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Builders.ShellContextOptions.ShellActivateLockTimeout">
+            <summary>
+            The timeout in milliseconds to acquire a distributed lock before activating a given shell.
+            Note: Only used if the current distributed lock implementation is not a local lock.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Builders.ShellContextOptions.ShellActivateLockExpiration">
+            <summary>
+            The expiration in milliseconds of the distributed lock acquired before activating a shell.
+            Note: Only used if the current distributed lock implementation is not a local lock.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Configuration.ConfigurationSectionExtensions">
+            <summary>
+            A helper class that gets a configuration section using the new format (using single underscore) while being backward compatible with the dot-notation.
+            Not to be used by new code - new code should always use a single underscore when naming configuration keys that require separating segments.
+            Examples:
+            Good: "OrchardCore_Media_Azure".
+            Bad: "OrchardCore.Media.Azure".
+            See https://github.com/OrchardCMS/OrchardCore/issues/3766.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Configuration.ShellConfiguration">
+            <summary>
+            Holds the tenant <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/> which is lazily built
+            from the application configuration 'appsettings.json', the 'App_Data/appsettings.json'
+            file and then the 'App_Data/Sites/{tenant}/appsettings.json' file.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Configuration.ShellConfiguration.Configuration">
+            <summary>
+            The tenant lazily built <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Descriptor.IShellDescriptorManager">
+            <summary>
+            Service resolved out of the shell container. Primarily used by host.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Descriptor.IShellDescriptorManager.GetShellDescriptorAsync">
+            <summary>
+            Uses shell-specific database or other resources to return
+            the current "correct" configuration. The host will use this information
+            to reinitialize the shell.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Descriptor.IShellDescriptorManager.UpdateShellDescriptorAsync(System.Int32,System.Collections.Generic.IEnumerable{OrchardCore.Environment.Shell.Descriptor.Models.ShellFeature})">
+            <summary>
+            Alters databased information to match information passed as arguments.
+            Prior SerialNumber used for optimistic concurrency, and an exception
+            should be thrown if the number in storage doesn't match what's provided.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor">
+            <summary>
+            Contains a snapshot of a tenant's enabled features.
+            The information is drawn out of the shell via IShellDescriptorManager
+            and is passed to the ICompositionStrategy to build the ShellBlueprint.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor.SerialNumber">
+            <summary>
+            Gets or sets the version number of the shell descriptor.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor.Features">
+            <summary>
+            Gets or sets the list of features in the shell.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor.Installed">
+            <summary>
+            Gets or sets the list of installed features in the shell.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Events.IShellEvents.LoadingAsync">
+            <summary>
+            The <see cref="T:OrchardCore.Environment.Shell.Events.ShellsEvent"/> delegate that will get called before loading all shells.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Events.IShellEvents.ReleasingAsync">
+            <summary>
+            The <see cref="T:OrchardCore.Environment.Shell.Events.ShellEvent"/> delegate that will get called before releasing a given shell.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Events.IShellEvents.ReloadingAsync">
+            <summary>
+            The <see cref="T:OrchardCore.Environment.Shell.Events.ShellEvent"/> delegate that will get called before reloading a given shell.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Events.ShellEvent">
+            <summary>
+            The type of the delegate that will get called before releasing or reloading a given shell.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Events.ShellsEvent">
+            <summary>
+            The type of the delegate that will get called before loading all shells.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHostExtensions.GetScopeAsync(OrchardCore.Environment.Shell.IShellHost,System.String)">
+            <summary>
+            Creates a standalone service scope that can be used to resolve local services.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHostExtensions.ReloadAllShellContextsAsync(OrchardCore.Environment.Shell.IShellHost)">
+            <summary>
+            Reloads all shell settings and releases all shells so that new ones will be
+            built for subsequent requests, while existing requests get flushed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHostExtensions.ReleaseAllShellContextsAsync(OrchardCore.Environment.Shell.IShellHost)">
+            <summary>
+            Releases all shells so that new ones will be built for subsequent requests.
+            Note: Can be used to free up resources after a given period of inactivity.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHostExtensions.GetSettings(OrchardCore.Environment.Shell.IShellHost,System.String)">
+            <summary>
+            Retrieves the shell settings associated with the specified tenant.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.IFeatureValidationProvider">
+            <summary>
+            Provides validation for whether features are allowed to be disabled on a per tenant basis.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.IShellDescriptorManagerEventHandler">
+            <summary>
+            Represent an event handler for shell descriptor.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.IShellDescriptorManagerEventHandler.ChangedAsync(OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor,OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Triggered whenever a shell descriptor has changed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.IShellHost.InitializeAsync">
+            <summary>
+            Ensure that all the <see cref="T:OrchardCore.Environment.Shell.Builders.ShellContext"/> are pre-created and available to process requests.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.IShellHost.GetOrCreateShellContextAsync(OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Returns an existing <see cref="T:OrchardCore.Environment.Shell.Builders.ShellContext"/> or creates a new one if necessary.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.IShellHost.GetScopeAsync(OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Creates a standalone service scope that can be used to resolve local services.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.IShellHost.UpdateShellSettingsAsync(OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Updates an existing shell configuration and then reloads the shell.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.IShellHost.ReloadShellContextAsync(OrchardCore.Environment.Shell.ShellSettings,System.Boolean)">
+            <summary>
+            Reloads the settings and releases the shell so that a new one will be
+            built for subsequent requests, while existing requests get flushed.
+            </summary>
+            <param name="settings">The <see cref="T:OrchardCore.Environment.Shell.ShellSettings"/> to reload.</param>
+            <param name="eventSource">
+            Whether the related <see cref="T:OrchardCore.Environment.Shell.Events.ShellEvent"/> is invoked.
+            </param>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.IShellHost.ReleaseShellContextAsync(OrchardCore.Environment.Shell.ShellSettings,System.Boolean)">
+            <summary>
+            Releases a shell so that a new one will be built for subsequent requests.
+            Note: Can be used to free up resources after a given time of inactivity.
+            </summary>
+            <param name="settings">The <see cref="T:OrchardCore.Environment.Shell.ShellSettings"/> to reload.</param>
+            <param name="eventSource">
+            Whether the related <see cref="T:OrchardCore.Environment.Shell.Events.ShellEvent"/> is invoked.
+            </param>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.IShellHost.ListShellContexts">
+            <summary>
+            Lists all available <see cref="T:OrchardCore.Environment.Shell.Builders.ShellContext"/> instances.
+            A shell might have been released or not yet built, if so 'shell.Released' is true and
+            'shell.CreateScope()' return null, but you can still use 'GetScopeAsync(shell.Settings)'.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.IShellHost.TryGetShellContext(System.String,OrchardCore.Environment.Shell.Builders.ShellContext@)">
+            <summary>
+            Tries to retrieve the shell context associated with the specified tenant.
+            The shell may have been temporarily removed while releasing or reloading.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.IShellHost.TryGetSettings(System.String,OrchardCore.Environment.Shell.ShellSettings@)">
+            <summary>
+            Tries to retrieve the shell settings associated with the specified tenant.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.IShellHost.GetAllSettings">
+            <summary>
+            Retrieves all shell settings.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.IShellSettingsManager.CreateDefaultSettings">
+            <summary>
+            Creates a default shell settings based on the configuration.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.IShellSettingsManager.LoadSettingsAsync">
+            <summary>
+            Retrieves all shell settings stored.
+            </summary>
+            <returns>All shell settings.</returns>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.IShellSettingsManager.LoadSettingsNamesAsync">
+            <summary>
+            Retrieves all shell settings names.
+            </summary>
+            <returns>All shell settings names.</returns>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.IShellSettingsManager.LoadSettingsAsync(System.String)">
+            <summary>
+            Retrieves the settings of a given tenant
+            </summary>
+            <returns>The shell settings.</returns>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.IShellSettingsManager.SaveSettingsAsync(OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Persists shell settings to the storage.
+            </summary>
+            <param name="settings">The shell settings to store.</param>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Models.FeatureProfilesRuleOptions">
+            <summary>
+            Provides options for validating features through profiles.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Models.TenantState">
+            <summary>
+            The different states of a Tenant.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Environment.Shell.Models.TenantState.Uninitialized">
+            <summary>
+            The tenant is not yet initialized.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Environment.Shell.Models.TenantState.Initializing">
+            <summary>
+            The tenant is being initialized.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Environment.Shell.Models.TenantState.Running">
+            <summary>
+            The tenant is initialized and running.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Environment.Shell.Models.TenantState.Disabled">
+            <summary>
+            The tenant is initialized and disabled.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Environment.Shell.Models.TenantState.Invalid">
+            <summary>
+            The tenant settings are invalid.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Scope.ShellScope">
+            <summary>
+            Custom 'IServiceScope' managing the shell state and the execution flow.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Scope.ShellScope.Context">
+            <summary>
+            Retrieve the 'ShellContext' of the current shell scope.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Scope.ShellScope.Services">
+            <summary>
+            Retrieve the 'IServiceProvider' of the current shell scope.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Scope.ShellScope.Current">
+            <summary>
+            Retrieve the current shell scope from the async flow.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.Set(System.Object,System.Object)">
+            <summary>
+            Sets a shared item to the current shell scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.Get(System.Object)">
+            <summary>
+            Gets a shared item from the current shell scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.Get``1(System.Object)">
+            <summary>
+            Gets a shared item of a given type from the current shell scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.GetOrCreate``1(System.Object,System.Func{``0})">
+            <summary>
+            Gets (or creates) a shared item of a given type from the current shell scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.GetOrCreate``1(System.Object)">
+            <summary>
+            Gets (or creates) a shared item of a given type from the current shell scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.SetFeature``1(``0)">
+            <summary>
+            Sets a shared feature to the current shell scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.GetFeature``1">
+            <summary>
+            Gets a shared feature from the current shell scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.GetOrCreateFeature``1(System.Func{``0})">
+            <summary>
+            Gets (or creates) a shared feature from the current shell scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.GetOrCreateFeature``1">
+            <summary>
+            Gets (or creates) a shared feature from the current shell scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.CreateChildScopeAsync">
+            <summary>
+            Creates a child scope from the current one.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.CreateChildScopeAsync(OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Creates a child scope from the current one.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.CreateChildScopeAsync(System.String)">
+            <summary>
+            Creates a child scope from the current one.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.UsingChildScopeAsync(System.Func{OrchardCore.Environment.Shell.Scope.ShellScope,System.Threading.Tasks.Task},System.Boolean)">
+            <summary>
+            Execute a delegate using a child scope created from the current one.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.UsingChildScopeAsync(OrchardCore.Environment.Shell.ShellSettings,System.Func{OrchardCore.Environment.Shell.Scope.ShellScope,System.Threading.Tasks.Task},System.Boolean)">
+            <summary>
+            Execute a delegate using a child scope created from the current one.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.UsingChildScopeAsync(System.String,System.Func{OrchardCore.Environment.Shell.Scope.ShellScope,System.Threading.Tasks.Task},System.Boolean)">
+            <summary>
+            Execute a delegate using a child scope created from the current one.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.StartAsyncFlow">
+            <summary>
+            Start holding this shell scope along the async flow.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.UsingServiceScopeAsync(System.Func{OrchardCore.Environment.Shell.Scope.ShellScope,System.Threading.Tasks.Task})">
+            <summary>
+            Executes a delegate using this shell scope in an isolated async flow,
+            but only as a service scope without managing the shell state and
+            without invoking any tenant event.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.UsingAsync(System.Func{OrchardCore.Environment.Shell.Scope.ShellScope,System.Threading.Tasks.Task},System.Boolean)">
+            <summary>
+            Executes a delegate using this shell scope in an isolated async flow,
+            while managing the shell state and invoking tenant events.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.TerminateShellAsync">
+            <summary>
+            Terminates a shell using this shell scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.ActivateShellInternalAsync">
+            <summary>
+            Activate the shell, if not yet done, by calling the related tenant event handlers.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.BeforeDispose(System.Func{OrchardCore.Environment.Shell.Scope.ShellScope,System.Threading.Tasks.Task})">
+            <summary>
+            Registers a delegate to be invoked when 'BeforeDisposeAsync()' is called on this scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.DeferredSignal(System.String)">
+            <summary>
+            Adds a Signal (if not already present) to be sent just after 'BeforeDisposeAsync()'.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.DeferredTask(System.Func{OrchardCore.Environment.Shell.Scope.ShellScope,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a Task to be executed in a new scope after 'BeforeDisposeAsync()'.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.ExceptionHandler(System.Func{OrchardCore.Environment.Shell.Scope.ShellScope,System.Exception,System.Threading.Tasks.Task})">
+            <summary>
+            Adds an handler to be invoked if an exception is thrown while executing in this shell scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.RegisterBeforeDispose(System.Func{OrchardCore.Environment.Shell.Scope.ShellScope,System.Threading.Tasks.Task})">
+            <summary>
+            Registers a delegate to be invoked before the current shell scope will be disposed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.AddDeferredSignal(System.String)">
+            <summary>
+            Adds a Signal (if not already present) to be sent just before the current shell scope will be disposed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.AddDeferredTask(System.Func{OrchardCore.Environment.Shell.Scope.ShellScope,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a Task to be executed in a new scope once the current shell scope has been disposed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.AddExceptionHandler(System.Func{OrchardCore.Environment.Shell.Scope.ShellScope,System.Exception,System.Threading.Tasks.Task})">
+            <summary>
+            Adds an handler to be invoked if an exception is thrown while executing in this shell scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScope.TerminateShellInternalAsync">
+            <summary>
+            Terminates the shell, if released and in its last scope, by calling the related event handlers,
+            and specifies if the shell context should be disposed consequently to this scope being disposed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScopeExtensions.RegisterBeforeDispose(OrchardCore.Environment.Shell.Scope.ShellScope,System.Func{OrchardCore.Environment.Shell.Scope.ShellScope,System.Threading.Tasks.Task})">
+            <summary>
+            Registers a delegate task to be invoked before this shell scope will be disposed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScopeExtensions.RegisterBeforeDispose(OrchardCore.Environment.Shell.Scope.ShellScope,System.Action{OrchardCore.Environment.Shell.Scope.ShellScope})">
+            <summary>
+            Registers a delegate action to be invoked before this shell scope will be disposed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScopeExtensions.AddDeferredSignal(OrchardCore.Environment.Shell.Scope.ShellScope,System.String)">
+            <summary>
+            Adds a Signal (if not already present) to be sent just before this shell scope will be disposed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScopeExtensions.AddDeferredTask(OrchardCore.Environment.Shell.Scope.ShellScope,System.Func{OrchardCore.Environment.Shell.Scope.ShellScope,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a Task to be executed in a new scope once this shell scope has been disposed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScopeExtensions.AddDeferredTask(OrchardCore.Environment.Shell.Scope.ShellScope,System.Action{OrchardCore.Environment.Shell.Scope.ShellScope})">
+            <summary>
+            Adds an Action to be executed in a new scope once this shell scope has been disposed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScopeExtensions.AddExceptionHandler(OrchardCore.Environment.Shell.Scope.ShellScope,System.Func{OrchardCore.Environment.Shell.Scope.ShellScope,System.Exception,System.Threading.Tasks.Task})">
+            <summary>
+            Adds an handler task to be invoked if an exception is thrown while executing in this shell scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScopeExtensions.AddExceptionHandler(OrchardCore.Environment.Shell.Scope.ShellScope,System.Action{OrchardCore.Environment.Shell.Scope.ShellScope,System.Exception})">
+            <summary>
+            Adds an handler action to be invoked if an exception is thrown while executing in this shell scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Scope.ShellScopeServices.#ctor(System.IServiceProvider)">
+            <summary>
+            Makes an 'IServiceProvider' aware of the current 'ShellScope'.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.ShellContextFeature">
+            <summary>
+            Used to capture the shell context and original path infos.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.ShellContextFeature.ShellContext">
+            <summary>
+            The current shell context.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.ShellContextFeature.OriginalPathBase">
+            <summary>
+            The original path base.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.ShellContextFeature.OriginalPath">
+            <summary>
+            The original path.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.ShellHostReloadException">
+            <summary>
+            The <see cref="T:System.Exception"/> that is thrown if <see cref="M:OrchardCore.Environment.Shell.IShellHost.ReloadShellContextAsync(OrchardCore.Environment.Shell.ShellSettings,System.Boolean)"/> fails.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHostReloadException.#ctor(System.String)">
+            <summary>
+            Creates a new instance of <see cref="T:OrchardCore.Environment.Shell.ShellHostReloadException"/> with the specified
+            exception message.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.ShellOptions.ShellsApplicationDataPath">
+            <summary>
+            The root container
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.ShellOptions.ShellsContainerName">
+            <summary>
+            The container for shells
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.ShellSettings">
+            <summary>
+            Represents the minimalistic set of fields stored for each tenant. This model
+            is obtained from the 'IShellSettingsManager', which by default reads this
+            from the 'App_Data/tenants.json' file.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.State.ShellFeatureState">
+            <summary>
+            Represents the state of a feature in a tenant.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.State.ShellState">
+            <summary>
+            Represents the transitive list of features a tenant is made of at a specific moment.
+            It's used to differentiate new features from existing ones in order to trigger events like
+            Installed/Uninstalled compared to only Enabled/Disabled.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Localization.CalendarName">
+            <summary>
+            Represents an enum for calendar names
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Localization.CalendarSelectorResult">
+            <summary>
+            Represents a result for the selected calendar.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.CalendarSelectorResult.Priority">
+            <summary>
+            Gets or sets the priority.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.CalendarSelectorResult.CalendarName">
+            <summary>
+            Gets or sets a calendar name.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Localization.CultureOptions">
+            <summary>
+            Represents a programmable options for localization culture.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.CultureOptions.IgnoreSystemSettings">
+            <summary>
+            Gets or sets whether to ignore the system culture settings or not.
+            </summary>
+            <remarks>
+            The current culture should not depend on local computer settings by default.
+            For more information refer to https://github.com/OrchardCMS/OrchardCore/issues/11228
+            </remarks>
+        </member>
+        <member name="T:OrchardCore.Localization.CultureScope">
+            <summary>
+            Represents a scope that you can change the current culture within.
+            </summary>
+            <remarks>
+            The scope disallow the current culture depends on local computer settings by default.
+            For more information refer to https://github.com/OrchardCMS/OrchardCore/issues/11228
+            </remarks>
+        </member>
+        <member name="P:OrchardCore.Localization.CultureScope.Culture">
+            <summary>
+            Gets the current culture.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.CultureScope.UICulture">
+            <summary>
+            Get the current UI culture.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.CultureScope.Create(System.String,System.Boolean)">
+            <summary>
+            Creates a scope with a given culture.
+            </summary>
+            <param name="culture">The culture that will be used within the scope.</param>
+            <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.CultureScope.Create(System.String,System.String,System.Boolean)">
+            <summary>
+            Creates a scope with a given culture.
+            </summary>
+            <param name="culture">The culture that will be used within the scope.</param>
+            <param name="uiCulture">The UI culture that will be used within the scope.</param>
+            <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.CultureScope.Create(System.Globalization.CultureInfo,System.Boolean)">
+            <summary>
+            Creates a scope with a given culture.
+            </summary>
+            <param name="culture">The culture that will be used within the scope.</param>
+            <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.CultureScope.Create(System.Globalization.CultureInfo,System.Globalization.CultureInfo,System.Boolean)">
+            <summary>
+            Creates a scope with a given culture.
+            </summary>
+            <param name="culture">The culture that will be used within the scope.</param>
+            <param name="uiCulture">The UI culture that will be used within the scope.</param>
+            <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.CultureScope.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:OrchardCore.Localization.ICalendarManager">
+            <summary>
+            Represents a contract for manage calendars.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.ICalendarManager.GetCurrentCalendar">
+            <summary>
+            Gets the current calendar.
+            </summary>
+            <returns>The current calendar name.</returns>
+        </member>
+        <member name="T:OrchardCore.Localization.ICalendarSelector">
+            <summary>
+            Represents a contract for selection a calendar.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.ICalendarSelector.GetCalendarAsync">
+            <summary>
+            Gets a calendar.
+            </summary>
+            <returns>The selected calendar.</returns>
+        </member>
+        <member name="T:OrchardCore.Localization.ILocalizationService">
+            <summary>
+            Represents a contract for a localization service.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.ILocalizationService.GetDefaultCultureAsync">
+            <summary>
+            Returns the default culture of the site.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.ILocalizationService.GetSupportedCulturesAsync">
+            <summary>
+            Returns all the supported cultures of the site. It also contains the default culture.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Locking.ILock.AcquireLockAsync(System.String,System.Nullable{System.TimeSpan})">
+            <summary>
+            Waits indefinitely until acquiring a named lock with a given expiration for the current tenant.
+            After 'expiration' the lock is auto released, a null value is equivalent to 'TimeSpan.MaxValue'.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Locking.ILock.TryAcquireLockAsync(System.String,System.TimeSpan,System.Nullable{System.TimeSpan})">
+            <summary>
+            Tries to acquire a named lock in a given timeout with a given expiration for the current tenant.
+            After 'expiration' the lock is auto released, a null value is equivalent to 'TimeSpan.MaxValue'.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Locking.ILock.IsLockAcquiredAsync(System.String)">
+            <summary>
+            Whether a named lock is already acquired.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Modules.StartupActionsStartup">
+            <summary>
+            Represents a fake Startup class that is composed of Configure and ConfigureServices lambdas.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.HttpContextExtensions.UseShellScopeServices(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Makes <see cref="P:Microsoft.AspNetCore.Http.HttpContext.RequestServices"/> aware of the current <see cref="T:OrchardCore.Environment.Shell.Scope.ShellScope"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.InvokeExtensions.Invoke``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0},Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Safely invoke methods by catching non fatal exceptions and logging them
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.InvokeExtensions.Invoke``2(System.Collections.Generic.IEnumerable{``0},System.Action{``0,``1},``1,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Safely invoke methods by catching non fatal exceptions and logging them
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.InvokeExtensions.InvokeAsync``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Threading.Tasks.Task},Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Safely invoke methods by catching non fatal exceptions and logging them
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.InvokeExtensions.InvokeAsync``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1,System.Threading.Tasks.Task},``1,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Safely invoke methods by catching non fatal exceptions and logging them
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.InvokeExtensions.InvokeAsync``3(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1,``2,System.Threading.Tasks.Task},``1,``2,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Safely invoke methods by catching non fatal exceptions and logging them
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.InvokeExtensions.InvokeAsync``4(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1,``2,``3,System.Threading.Tasks.Task},``1,``2,``3,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Safely invoke methods by catching non fatal exceptions and logging them
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.InvokeExtensions.InvokeAsync``5(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1,``2,``3,``4,System.Threading.Tasks.Task},``1,``2,``3,``4,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Safely invoke methods by catching non fatal exceptions and logging them
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.InvokeExtensions.InvokeAsync``6(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1,``2,``3,``4,``5,System.Threading.Tasks.Task},``1,``2,``3,``4,``5,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Safely invoke methods by catching non fatal exceptions and logging them
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Modules.FeatureAttribute">
+            <summary>
+            An attribute that can associate a service or component with
+            a specific feature by its name. This component will only
+            be used if the feature is enabled.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.FeatureAttribute.FeatureName">
+            <summary>
+            The name of the feature to assign the component to.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Modules.FileProviders.EmbeddedDirectoryInfo">
+            <summary>
+            Represents a directory on a physical filesystem
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.FileProviders.EmbeddedDirectoryInfo.#ctor(System.String)">
+            <summary>
+            Initializes an instance of <see cref="T:OrchardCore.Modules.FileProviders.EmbeddedDirectoryInfo"/>
+            </summary>
+            <param name="name">The directory</param>
+        </member>
+        <member name="P:OrchardCore.Modules.FileProviders.EmbeddedDirectoryInfo.Exists">
+            <summary>
+            Always true.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.FileProviders.EmbeddedDirectoryInfo.Length">
+            <summary>
+            Always equals -1.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.FileProviders.EmbeddedDirectoryInfo.PhysicalPath">
+            <summary>
+            Always null.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.FileProviders.EmbeddedDirectoryInfo.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:OrchardCore.Modules.FileProviders.EmbeddedDirectoryInfo.LastModified">
+            <summary>
+            The time when the directory was last written to.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.FileProviders.EmbeddedDirectoryInfo.IsDirectory">
+            <summary>
+            Always true.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.FileProviders.EmbeddedDirectoryInfo.CreateReadStream">
+            <summary>
+            Always throws an exception because read streams are not support on directories.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">Always thrown</exception>
+            <returns>Never returns</returns>
+        </member>
+        <member name="T:OrchardCore.Modules.FileProviders.IStaticFileProvider">
+            <summary>
+            This custom <see cref="T:Microsoft.Extensions.FileProviders.IFileProvider"/> implementation provides Di registration identification
+            for IStaticFileProviders that should be served via UseStaticFiles.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.FileProviders.NormalizedPaths.ResolveFolderContents(System.String,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String}@,System.Collections.Generic.IEnumerable{System.String}@)">
+            <summary>
+            Use a collection of file paths to resolve files and subfolders directly under a given folder.
+            Paths need to be normalized by using '/' for the directory separator and with no leading '/'.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Modules.IModuleStaticFileProvider">
+            <summary>
+            This custom <see cref="T:Microsoft.Extensions.FileProviders.IFileProvider"/> implementation provides Di registration identification
+            for IStaticFileProviders that should be served via UseStaticFiles.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Modules.IStartup">
+            <summary>
+            An implementation of this interface is used to initialize the services and HTTP request
+            pipeline of a module.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.IStartup.Order">
+            <summary>
+            Get the value to use to order startups to configure services. The default is 0.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.IStartup.ConfigureOrder">
+            <summary>
+            Get the value to use to order startups to build the pipeline. The default is the 'Order' property.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.IStartup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
+            </summary>
+            <param name="services">The collection of service descriptors.</param>
+        </member>
+        <member name="M:OrchardCore.Modules.IStartup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Routing.IEndpointRouteBuilder,System.IServiceProvider)">
+            <summary>
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="builder"></param>
+            <param name="routes"></param>
+            <param name="serviceProvider"></param>
+        </member>
+        <member name="T:OrchardCore.Modules.Manifest.FeatureAttribute">
+            <summary>
+            Defines a Feature in a Module, can be used multiple times.
+            If at least one Feature is defined, the Module default feature is ignored.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Modules.Manifest.FeatureAttribute.DefaultName">
+            <summary>
+            &quot;&quot;
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Modules.Manifest.FeatureAttribute.DefaultDescription">
+            <summary>
+            &quot;&quot;
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Modules.Manifest.FeatureAttribute.Uncategorized">
+            <summary>
+            &quot;Uncategorized&quot;
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Modules.Manifest.FeatureAttribute.DefaultCategory">
+            <summary>
+            &quot;&quot;
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Modules.Manifest.FeatureAttribute.DefaultFeatureDependencies">
+            <summary>
+            &quot;&quot;
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Modules.Manifest.FeatureAttribute.DefaultDefaultTenantOnly">
+            <summary>
+            <c>false</c>
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Modules.Manifest.FeatureAttribute.DefaultAlwaysEnabled">
+            <summary>
+            <c>false</c>
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.Manifest.FeatureAttribute.#ctor">
+            <summary>
+            Default parameterless ctor.
+            </summary>
+            <remarks>Cannot route to <c>this(...)</c> in any form here due to restrictions on the Id property setter.</remarks>
+        </member>
+        <member name="M:OrchardCore.Modules.Manifest.FeatureAttribute.#ctor(System.String,System.String,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Constructs an instance of the attribute with some default values.
+            </summary>
+            <param name="id">An identifier overriding the Name.</param>
+            <param name="description">A simple feature description.</param>
+            <param name="featureDependencies">Zero or more delimited feature dependencies,
+            corresponding to each of the feature <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Name"/> properties.</param>
+            <param name="defaultTenant">Whether considered default tenant only.</param>
+            <param name="alwaysEnabled">Whether feature is always enabled.</param>
+            <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+        </member>
+        <member name="M:OrchardCore.Modules.Manifest.FeatureAttribute.#ctor(System.String,System.String,System.String,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Constructs an instance of the attribute with some default values.
+            </summary>
+            <param name="id">An identifier overriding the Name.</param>
+            <param name="name">The feature name, defaults to <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Id"/> when null or
+            blank.</param>
+            <param name="description">A simple feature description.</param>
+            <param name="featureDependencies">Zero or more delimited feature dependencies,
+            corresponding to each of the feature <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Name"/> properties.</param>
+            <param name="defaultTenant">Whether considered default tenant only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <param name="alwaysEnabled">Whether feature is always enabled.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+        </member>
+        <member name="M:OrchardCore.Modules.Manifest.FeatureAttribute.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Constructs an instance of the attribute with some default values.
+            </summary>
+            <param name="id">An identifier overriding the Name.</param>
+            <param name="name">The feature name, defaults to <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Id"/> when null or
+            blank.</param>
+            <param name="category">A simple feature category.</param>
+            <param name="priority">The priority of the Feature.</param>
+            <param name="description">A simple feature description.</param>
+            <param name="featureDependencies">Zero or more delimited feature dependencies,
+            corresponding to each of the feature <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Name"/> properties.</param>
+            <param name="defaultTenant">Whether considered default tenant only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <param name="alwaysEnabled">Whether feature is always enabled.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.FeatureAttribute.Exists">
+            <summary>
+            Whether the feature exists based on the <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Id"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.FeatureAttribute.Id">
+            <summary>
+            Gets or sets the feature identifier. Identifier is required.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.Manifest.FeatureAttribute.StringOrNull(System.String)">
+            <summary>
+            Returns the <see cref="T:System.String"/> <paramref name="s"/> as is, or <c>null</c> when that
+            or <see cref="F:System.String.Empty"/>.
+            </summary>
+            <param name="s">The string value to consider.</param>
+            <returns>The <paramref name="s"/> value as is, or Null when either that or Empty.</returns>
+            <see cref="M:System.String.IsNullOrEmpty(System.String)"/>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.FeatureAttribute.Name">
+            <summary>
+            Gets or sets the human readable or canonical feature name. <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Id"/> will be
+            returned when not provided or blank.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.Manifest.FeatureAttribute.GetValues``1(``0[])">
+            <summary>
+            Yields return of the <paramref name="values"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="values"></param>
+            <returns></returns>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.FeatureAttribute.Description">
+            <summary>
+            Gets or sets a brief summary of what the feature does.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.Manifest.FeatureAttribute.Describe(OrchardCore.Modules.Manifest.FeatureAttribute[])">
+            <summary>
+            Describes the first or default Feature starting with This instance,
+            which defines a <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Description"/>.
+            </summary>
+            <param name="additionalFeatures">Additional Features to consider in the aggregate.</param>
+            <returns>The first or default Description with optional back stop features.</returns>
+        </member>
+        <member name="F:OrchardCore.Modules.Manifest.FeatureAttribute.DefaultSplitOptions">
+            <summary>
+            <see cref="F:System.StringSplitOptions.TrimEntries"/> | <see cref="F:System.StringSplitOptions.RemoveEmptyEntries"/>, trim the entries, and
+            remove the empty ones.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.FeatureAttribute.ListDelims">
+            <summary>
+            Gets the default known ListDelims supporting <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Dependencies"/> splits, etc.
+            Semi-colon (&apos;;&apos;) delimiters are most common, expected from a <em>CSPROJ</em>
+            perspective. Also common are comma (&apos;,&apos;) and space (&apos; &apos;)
+            delimiters.
+            </summary>
+            <see cref="M:System.String.Split(System.Char[],System.StringSplitOptions)"/>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.FeatureAttribute.DelimitedDependencies">
+            <summary>
+            Set-only <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Dependencies"/> property.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.FeatureAttribute.Dependencies">
+            <summary>
+            Gets or sets an array of Feature Dependencies. Used to arrange drivers, handlers
+            invoked during startup and so forth.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Modules.Manifest.FeatureAttribute.DefaultPriority">
+            <summary>
+            0
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.FeatureAttribute.Priority">
+            <summary>
+            Gets or sets the feature priority without breaking the <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Dependencies"/>
+            order. The higher is the priority, the later the drivers / handlers are invoked.
+            </summary>
+            <remarks>The default value is aligned with <see cref="F:OrchardCore.Modules.Manifest.FeatureAttribute.DefaultPriority"/>, consistent
+            with the baseline, however, could be nullified, which would in turn favor the parent
+            <see cref="T:OrchardCore.Modules.Manifest.ModuleAttribute"/>.</remarks>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.FeatureAttribute.InternalPriority">
+            <summary>
+            Gets the <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Priority"/>, parsed and ready to go for Internal use. May yield
+            <c>null</c> when failing to <see cref="M:System.Int32.TryParse(System.String,System.Int32@)"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.Manifest.FeatureAttribute.Prioritize(OrchardCore.Modules.Manifest.FeatureAttribute[])">
+            <summary>
+            Prioritizes the Features starting with This one, concatenating
+            <paramref name="additionalFeatures"/>, and lifting the <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.InternalPriority"/>
+            from there. We prefer the first non Null Priority, default
+            <see cref="F:OrchardCore.Modules.Manifest.FeatureAttribute.DefaultPriority"/>.
+            </summary>
+            <param name="additionalFeatures"></param>
+            <returns></returns>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.FeatureAttribute.Category">
+            <summary>
+            Gets or sets the Category for use with the Module.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.Manifest.FeatureAttribute.Categorize(OrchardCore.Modules.Manifest.FeatureAttribute[])">
+            <summary>
+            Categorizes This <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Category"/> using <paramref name="additionalFeatures"/> as
+            back stops, presents the <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Category"/> that is not Null nor Empty, or returns
+            <see cref="F:OrchardCore.Modules.Manifest.FeatureAttribute.DefaultCategory"/> by default.
+            </summary>
+            <param name="additionalFeatures">Additional Feature instances to use as potential back stops.</param>
+            <returns>The Category normalized across This instance and optional Module.</returns>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.FeatureAttribute.DefaultTenantOnly">
+            <summary>
+            Set to <c>true</c> to only allow the <em>Default tenant to enable or disable</em> the feature.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.FeatureAttribute.IsAlwaysEnabled">
+            <summary>
+            Once enabled, check whether the feature cannot be disabled. Defaults to <c>false</c>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.FeatureAttribute.EnabledByDependencyOnly">
+            <summary>
+            Set to <c>true</c> to make the feature available by dependency only.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Modules.Manifest.ModuleAssetAttribute">
+            <summary>
+            Maps a module asset to its project location while in debug mode, auto generated on building.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.ModuleAssetAttribute.Asset">
+            <Summary>
+            A module asset in the form of '{ModuleAssetPath}|{ProjectAssetPath}'.
+            </Summary>
+        </member>
+        <member name="T:OrchardCore.Modules.Manifest.ModuleAttribute">
+            <summary>
+            Defines a Module which is composed of features. If the Module has only one default
+            feature, it may be defined there.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Modules.Manifest.ModuleAttribute.DefaultAuthor">
+            <summary>
+            &quot;&quot;
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Modules.Manifest.ModuleAttribute.DefaultWebsiteUrl">
+            <summary>
+            &quot;&quot;
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Modules.Manifest.ModuleAttribute.DefaultVersionZero">
+            <summary>
+            &quot;0.0&quot;
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Modules.Manifest.ModuleAttribute.DefaultTags">
+            <summary>
+            &quot;&quot;
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.Manifest.ModuleAttribute.#ctor">
+            <summary>
+            Default parameterless ctor.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.Manifest.ModuleAttribute.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Ctor allowing <paramref name="author"/>, as well as defaults for
+            <paramref name="websiteUrl"/>, <paramref name="semVer"/>, and <paramref name="tags"/>.
+            </summary>
+            <param name="id">The identifier for the Module.</param>
+            <param name="description">A simple feature description.</param>
+            <param name="author">The module author name.</param>
+            <param name="semVer">Semantic Version string.</param>
+            <param name="websiteUrl">The module website URL.</param>
+            <param name="featureDependencies">Zero or more delimited feature dependencies,
+            corresponding to each of the feature <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Name"/>
+            properties.</param>
+            <param name="tags">Tags associated with the Module.</param>
+            <param name="defaultTenant">Whether considered default tenant only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <param name="alwaysEnabled">Whether feature is always enabled.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <see cref="!:https://semver.org">Semantic Versioning</see>
+            <remarks>At least <paramref name="author" /> expected herein to differentiate with
+            parameterless ctor.</remarks>
+            <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+        </member>
+        <member name="M:OrchardCore.Modules.Manifest.ModuleAttribute.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Ctor allowing <paramref name="author"/>, as well as defaults for
+            <paramref name="websiteUrl"/>, <paramref name="semVer"/>, and <paramref name="tags"/>.
+            </summary>
+            <param name="id">The identifier for the Module.</param>
+            <param name="name">The feature name, defaults to <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Id"/>
+            when null or blank.</param>
+            <param name="description">A simple feature description.</param>
+            <param name="author">The module author name.</param>
+            <param name="semVer">Semantic Version string.</param>
+            <param name="websiteUrl">The module website URL.</param>
+            <param name="featureDependencies">Zero or more delimited feature dependencies,
+            corresponding to each of the feature <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Name"/>
+            properties.</param>
+            <param name="tags">Tags associated with the Module.</param>
+            <param name="defaultTenant">Whether considered default tenant only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <param name="alwaysEnabled">Whether feature is always enabled.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <see cref="!:https://semver.org">Semantic Versioning</see>
+            <remarks>At least <paramref name="author" /> expected herein to differentiate with
+            parameterless ctor.</remarks>
+            <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+        </member>
+        <member name="M:OrchardCore.Modules.Manifest.ModuleAttribute.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Ctor allowing <paramref name="author"/>, as well as defaults for
+            <paramref name="websiteUrl"/>, <paramref name="semVer"/>, and <paramref name="tags"/>.
+            </summary>
+            <param name="id">The identifier for the Module.</param>
+            <param name="name">The feature name, defaults to <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Id"/>
+            when null or blank.</param>
+            <param name="category">A simple feature category.</param>
+            <param name="priority">Priority for the Module.</param>
+            <param name="description">A simple feature description.</param>
+            <param name="author">The module author name.</param>
+            <param name="semVer">Semantic Version string.</param>
+            <param name="featureDependencies">Zero or more delimited feature dependencies,
+            corresponding to each of the feature <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Name"/>
+            properties.</param>
+            <param name="websiteUrl">The module website URL.</param>
+            <param name="tags">Tags associated with the Module.</param>
+            <param name="defaultTenant">Whether considered default tenant only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <param name="alwaysEnabled">Whether feature is always enabled.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <see cref="!:https://semver.org">Semantic Versioning</see>
+            <remarks>At least <paramref name="author" /> expected herein to differentiate with
+            parameterless ctor.</remarks>
+            <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+        </member>
+        <member name="M:OrchardCore.Modules.Manifest.ModuleAttribute.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Ctor allowing <paramref name="author"/>, as well as defaults for
+            <paramref name="websiteUrl"/>, <paramref name="semVer"/>, and <paramref name="tags"/>.
+            </summary>
+            <param name="id">The identifier for the Module.</param>
+            <param name="name">The feature name, defaults to <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Id"/>
+            when null or blank.</param>
+            <param name="type">User provided type of the Module.</param>
+            <param name="category">A simple feature category.</param>
+            <param name="priority">Priority for the Module.</param>
+            <param name="description">A simple feature description.</param>
+            <param name="author">The module author name.</param>
+            <param name="semVer">Semantic Version string.</param>
+            <param name="featureDependencies">Zero or more delimited feature dependencies,
+            corresponding to each of the feature <see cref="P:OrchardCore.Modules.Manifest.FeatureAttribute.Name"/>
+            properties.</param>
+            <param name="websiteUrl">The module website URL.</param>
+            <param name="tags">Tags associated with the Module.</param>
+            <param name="defaultTenant">Whether considered default tenant only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <param name="alwaysEnabled">Whether feature is always enabled.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+            <see cref="!:https://semver.org">Semantic Versioning</see>
+            <remarks>At least <paramref name="author" /> expected herein to differentiate with
+            parameterless ctor.</remarks>
+            <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+            Supported types are <see cref="T:System.String"/> and <see cref="T:System.Boolean"/> only.</param>
+        </member>
+        <member name="M:OrchardCore.Modules.Manifest.ModuleAttribute.GetAttributePrefix(System.Type)">
+            <summary>
+            Returns the <see cref="P:System.Reflection.MemberInfo.Name"/> less the
+            <see cref="T:System.Attribute"/> suffix when present.
+            </summary>
+            <param name="attributeType"></param>
+            <returns></returns>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.ModuleAttribute.Type">
+            <summary>
+            Gets or sets the Type. Allows authors to identify the attribute by a logical,
+            human-readable Type. Defaults to the abbreviated <see cref="T:System.Attribute"/> class name,
+            sans suffix.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.ModuleAttribute.Author">
+            <summary>
+            Gets or sets the name of the developer.
+            </summary>
+            <see cref="F:OrchardCore.Modules.Manifest.ModuleAttribute.DefaultAuthor" />
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.ModuleAttribute.Website">
+            <summary>
+            Gets or sets the URL for the website of the developer.
+            </summary>
+            <see cref="F:OrchardCore.Modules.Manifest.ModuleAttribute.DefaultWebsiteUrl" />
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.ModuleAttribute.Version">
+            <summary>
+            Gets or sets the Semantic Version string.
+            </summary>
+            <see cref="!:https://semver.org">Semantic Versioning</see>
+            <see cref="F:OrchardCore.Modules.Manifest.ModuleAttribute.DefaultVersionZero" />
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.ModuleAttribute.DelimitedTags">
+            <summary>
+            Set-only <see cref="P:OrchardCore.Modules.Manifest.ModuleAttribute.Tags"/> property.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.ModuleAttribute.Tags">
+            <summary>
+            Gets or sets an array of enumerated Tags.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.ModuleAttribute.Features">
+            <summary>
+            Gets a list of Features attributes associated with the Module.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Modules.Manifest.ModuleMarkerAttribute">
+            <summary>
+            Marks an assembly as a module of a given type, auto generated on building.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.Manifest.ModuleMarkerAttribute.#ctor(System.String,System.String)">
+            <summary>
+            Constructs the attribute given <paramref name="id"/> and <paramref name="type"/>.
+            </summary>
+            <param name="id">The identifier for the Module.</param>
+            <param name="type">Allows authors to specify a module specific Type.</param>
+        </member>
+        <member name="T:OrchardCore.Modules.Manifest.ModuleNameAttribute">
+            <summary>
+            Enlists the package or project name of a referenced module, auto generated on building.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.Manifest.ModuleNameAttribute.Name">
+            <Summary>
+            The package or project name of the referenced module.
+            </Summary>
+        </member>
+        <member name="T:OrchardCore.Modules.ITimeZone">
+            <summary>
+            Represents a time zone.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.Module.#ctor(System.String,System.Boolean)">
+            <summary>
+            Constructs an instance of the Module.
+            </summary>
+            <param name="assyName">The assembly name to use when loading itself.</param>
+            <param name="isApplication">Whether the Module may be considered to be the &quot;Application&quot;.</param>
+        </member>
+        <member name="T:OrchardCore.Modules.ModuleCompositeStaticFileProvider">
+            <summary>
+            This custom <see cref="T:Microsoft.Extensions.FileProviders.IFileProvider"/> implementation provides Di registration identification
+            for IStaticFileProviders that should be served via UseStaticFiles.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Modules.ModuleEmbeddedFileProvider">
+            <summary>
+            This custom <see cref="T:Microsoft.Extensions.FileProviders.IFileProvider"/> implementation provides the file contents
+            of embedded files in Module assemblies.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Modules.ModuleEmbeddedStaticFileProvider">
+            <summary>
+            This custom <see cref="T:Microsoft.Extensions.FileProviders.IFileProvider"/> implementation provides the file contents
+            of embedded files in Module assemblies whose path is under a Module 'wwwroot' folder.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Modules.ModuleProjectStaticFileProvider">
+            <summary>
+            This custom <see cref="T:Microsoft.Extensions.FileProviders.IFileProvider"/> implementation provides the file contents of files
+            whose path is under a Module Project 'wwwroot' folder, and while in a development environment.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Modules.RequireFeaturesAttribute">
+            <summary>
+            When used on a class, it will include the service only
+            if the specific features are enabled.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.RequireFeaturesAttribute.RequiredFeatureNames">
+            <summary>
+            The names of the required features.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.ClockExtensions.ConvertToTimeZone(OrchardCore.Modules.IClock,System.DateTime,OrchardCore.Modules.ITimeZone)">
+            <summary>
+            Converts a <see cref="T:System.DateTime" /> to the specified <see cref="T:OrchardCore.Modules.ITimeZone" /> instance.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.ClockExtensions.ConvertToLocalAsync(OrchardCore.Modules.ILocalClock,System.DateTime)">
+            <summary>
+            Converts a <see cref="T:System.DateTime" /> to the specified <see cref="T:OrchardCore.Modules.ITimeZone" /> instance.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Modules.IClock">
+            <summary>
+            Provides the current UTC <see cref="T:System.DateTime"/>, and timezone related methods.
+            This service should be used whenever the current date and time are needed, instead of <seealso cref="T:System.DateTime"/> directly.
+            If local date time and timezones are needed use <see cref="T:OrchardCore.Modules.ILocalClock" /> instead.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.IClock.UtcNow">
+            <summary>
+            Gets the current <see cref="T:System.DateTime"/> of the system, expressed in UTC.
+            </summary>
+            <remarks>
+            A <see cref="T:System.DateTime"/> as this property is usually used to store the current date time in UTC and a <see cref="T:System.DateTimeOffset" />
+            would affect usability.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.Modules.IClock.GetTimeZones">
+            <summary>
+            Returns the list of all available <see cref="T:OrchardCore.Modules.ITimeZone" />.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.IClock.GetTimeZone(System.String)">
+            <summary>
+            Returns a <see cref="T:OrchardCore.Modules.ITimeZone" /> from a time zone id or the local system's one if not found.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.IClock.GetSystemTimeZone">
+            <summary>
+            Returns a default <see cref="T:OrchardCore.Modules.ITimeZone" /> for the system.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.IClock.ConvertToTimeZone(System.DateTimeOffset,OrchardCore.Modules.ITimeZone)">
+            <summary>
+            Converts a <see cref="T:System.DateTimeOffset" /> to the specified <see cref="T:OrchardCore.Modules.ITimeZone" /> instance.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Modules.ILocalClock">
+            <summary>
+            Provides local values of the current time and time zone.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.ILocalClock.LocalNowAsync">
+            <summary>
+            Gets the time for the local time zone.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.ILocalClock.GetLocalTimeZoneAsync">
+            <summary>
+            Returns the local time zone.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.ILocalClock.ConvertToLocalAsync(System.DateTimeOffset)">
+            <summary>
+            Converts a <see cref="T:System.DateTimeOffset" /> to the specified <see cref="T:OrchardCore.Modules.ITimeZone" /> instance.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.ILocalClock.ConvertToUtcAsync(System.DateTime)">
+            <summary>
+            Converts a <see cref="T:System.DateTime" /> representing a local time to the UTC value.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Modules.Services.ISlugService.Slugify(System.String)">
+            <summary>
+            Transforms specified text to the form suitable for URL slugs.
+            </summary>
+            <param name="text">The text to transform.</param>
+            <returns>The slug created from the input text.</returns>
+        </member>
+        <member name="M:OrchardCore.Modules.Services.ISlugService.Slugify(System.String,System.Char)">
+            <summary>
+            Transforms specified text to a custom form generally not suitable for URL slugs.
+            Allows you to use a specified separator char.
+            </summary>
+            <param name="text">The text to transform.</param>
+            <param name="separator">The separator char</param>
+            <returns>The slug created from the input text.</returns>
+        </member>
+        <member name="T:OrchardCore.Modules.ITimeZoneSelector">
+            <summary>
+            Provides the timezone for the current request.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.StartupBase.Order">
+            <inheritdoc />
+        </member>
+        <member name="P:OrchardCore.Modules.StartupBase.ConfigureOrder">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Modules.StartupBase.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Modules.StartupBase.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Routing.IEndpointRouteBuilder,System.IServiceProvider)">
+            <inheritdoc />
+        </member>
+        <member name="T:OrchardCore.Abstractions.Pooling.JsonArrayPool`1">
+            <summary>
+            An adapter for JSON.NET to allow usage of ArrayPool.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Abstractions.Pooling.PoolingJsonSerializer">
+            <summary>
+            Handles JSON.NET serialization utilizing pooled array buffers and string builders.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Abstractions.Pooling.ZStringWriter">
+            <summary>
+            Based StringWriter but made to use ZString as backing implementation.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Routing.IShellRouteValuesAddressScheme">
+            <summary>
+            Marker interface to retrieve tenant 'RouteValuesAddress' schemes used for link generation.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Routing.ShellRouteValuesAddressScheme">
+            <summary>
+            Allows a tenant to add its own 'RouteValuesAddress' schemes used for link generation.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder.ConfigureServices(System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection,System.IServiceProvider},System.Int32)">
+            <summary>
+            This method gets called for each tenant. Use this method to add services to the container.
+            For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
+            </summary>
+            <param name="configure">The action to execute when configuring the services for a tenant.</param>
+            <param name="order">The order of the action to execute. Lower values will be executed first.</param>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder.ConfigureServices(System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection},System.Int32)">
+            <summary>
+            This method gets called for each tenant. Use this method to add services to the container.
+            For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
+            </summary>
+            <param name="configure">The action to execute when configuring the services for a tenant.</param>
+            <param name="order">The order of the action to execute. Lower values will be executed first.</param>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder.Configure(System.Action{Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Routing.IEndpointRouteBuilder,System.IServiceProvider},System.Int32)">
+            <summary>
+            This method gets called for each tenant. Use this method to configure the request's pipeline.
+            </summary>
+            <param name="configure">The action to execute when configuring the request's pipeline for a tenant.</param>
+            <param name="order">The order of the action to execute. Lower values will be executed first.</param>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder.Configure(System.Action{Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Routing.IEndpointRouteBuilder},System.Int32)">
+            <summary>
+            This method gets called for each tenant. Use this method to configure the request's pipeline.
+            </summary>
+            <param name="configure">The action to execute when configuring the request's pipeline for a tenant.</param>
+            <param name="order">The order of the action to execute. Lower values will be executed first.</param>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder.Configure(System.Action{Microsoft.AspNetCore.Builder.IApplicationBuilder},System.Int32)">
+            <summary>
+            This method gets called for each tenant. Use this method to configure the request's pipeline.
+            </summary>
+            <param name="configure">The action to execute when configuring the request's pipeline for a tenant.</param>
+            <param name="order">The order of the action to execute. Lower values will be executed first.</param>
+        </member>
+    </members>
+</doc>

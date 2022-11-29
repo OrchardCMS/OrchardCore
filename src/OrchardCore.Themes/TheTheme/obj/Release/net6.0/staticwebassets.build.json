@@ -1,0 +1,56 @@
+{
+  "Version": 1,
+  "Hash": "qIDzecRFwOFIo5aX6KTemXAL6GZerfQeDLqrLKKMtGQ=",
+  "Source": "TheTheme",
+  "BasePath": "_content/TheTheme",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Menu\\OrchardCore.Menu.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Menu",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "RuntimeIdentifier;SelfContained"
+    },
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Users\\OrchardCore.Users.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Users",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "RuntimeIdentifier;SelfContained"
+    }
+  ],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.Menu\\wwwroot",
+      "Source": "OrchardCore.Menu",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Menu\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Menu",
+      "Pattern": "**"
+    },
+    {
+      "Name": "OrchardCore.Users\\wwwroot",
+      "Source": "OrchardCore.Users",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Users\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Users",
+      "Pattern": "**"
+    },
+    {
+      "Name": "TheTheme\\wwwroot",
+      "Source": "TheTheme",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Themes\\TheTheme\\wwwroot\\",
+      "BasePath": "_content/TheTheme",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

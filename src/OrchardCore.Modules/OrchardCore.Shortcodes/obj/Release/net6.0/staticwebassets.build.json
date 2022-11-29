@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "N5Y6mojV7jI93VcXTEAuYJGizUynZAQwnFU5106SR2E=",
+  "Source": "OrchardCore.Shortcodes",
+  "BasePath": "_content/OrchardCore.Shortcodes",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.Shortcodes\\wwwroot",
+      "Source": "OrchardCore.Shortcodes",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Shortcodes\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Shortcodes",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "9GAhx5yElsDGY2wVnaa0EvY2LCgRmelHm9eqvOlvPQE=",
+  "Source": "OrchardCore.Taxonomies",
+  "BasePath": "_content/OrchardCore.Taxonomies",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.Taxonomies\\wwwroot",
+      "Source": "OrchardCore.Taxonomies",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Taxonomies\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Taxonomies",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

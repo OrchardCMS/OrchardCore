@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Examples.Features.AssyAttrib</name>
+    </assembly>
+    <members>
+        <member name="T:Examples.Features.AssyAttrib.Root">
+            <summary>
+            Hooks provided for purposes of identifying the class and assembly context.
+            </summary>
+        </member>
+    </members>
+</doc>

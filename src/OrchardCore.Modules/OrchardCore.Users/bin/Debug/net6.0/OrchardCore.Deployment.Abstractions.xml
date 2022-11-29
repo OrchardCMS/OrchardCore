@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Deployment.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Deployment.DeploymentPlan">
+            <summary>
+            The state of a deployment plan built by sources.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Deployment.DeploymentPlanResult">
+            <summary>
+            The state of a deployment plan built by sources.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Deployment.IDeploymentSource">
+            <summary>
+            Interprets steps from a deployment plan to build the result package.
+            </summary>
+        </member>
+    </members>
+</doc>

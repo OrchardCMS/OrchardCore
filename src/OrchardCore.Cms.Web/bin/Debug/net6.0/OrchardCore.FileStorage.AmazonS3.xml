@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.FileStorage.AmazonS3</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.FileStorage.AmazonS3.AwsFileStore">
+            <summary>
+            Provides an <see cref="T:OrchardCore.FileStorage.IFileStore"/> implementation that targets an underlying Amazon S3 Bucket account.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.FileStorage.AmazonS3.AwsStorageOptions">
+            <summary>
+            AWS storage options.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.FileStorage.AmazonS3.AwsStorageOptions.BucketName">
+            <summary>
+            AWS S3 bucket name.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.FileStorage.AmazonS3.AwsStorageOptions.BasePath">
+            <summary>
+            The base directory path to use inside the container for this store's contents.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.FileStorage.AmazonS3.AwsStorageOptions.CreateBucket">
+            <summary>
+            Indicates if bucket should be created on module startup
+            </summary>
+        </member>
+        <member name="P:OrchardCore.FileStorage.AmazonS3.AwsStorageOptions.AwsOptions">
+            <summary>
+            Gets or sets the AWS Options.
+            </summary>
+        </member>
+    </members>
+</doc>

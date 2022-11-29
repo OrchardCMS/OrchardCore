@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.FileStorage.FileSystem</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.FileStorage.FileSystem.FileSystemStore.GetPhysicalPath(System.String)">
+            <summary>
+            Translates a relative path in the virtual file store to a physical path in the underlying file system.
+            </summary>
+            <param name="path">The relative path within the file store.</param>
+            <returns></returns>
+            <remarks>The resulting physical path is verified to be inside designated root file system path.</remarks>
+        </member>
+    </members>
+</doc>

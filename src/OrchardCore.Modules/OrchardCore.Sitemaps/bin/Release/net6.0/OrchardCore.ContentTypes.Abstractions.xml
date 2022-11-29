@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.ContentTypes.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.ContentTypes.Editors.ContentPartFieldDefinitionDisplayDriver">
+            <summary>
+            A concrete implementation of <see cref="T:OrchardCore.ContentTypes.Editors.ContentPartFieldDefinitionDisplayDriver"/> provides a driver for all field definitions.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentTypes.Editors.ContentPartFieldDefinitionDisplayDriver`1">
+            <summary>
+            A concrete implementation of <see cref="T:OrchardCore.ContentTypes.Editors.ContentPartFieldDefinitionDisplayDriver`1"/> provides a driver for field definitions
+            of the type <c>TField</c>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentTypes.Editors.ContentTypePartDefinitionDisplayDriver`1">
+            <summary>
+            A concrete implementation of <see cref="T:OrchardCore.ContentTypes.Editors.ContentTypePartDefinitionDisplayDriver`1"/> provides a driver for part definitions
+            of the type <c>TPart</c>.
+            </summary>
+        </member>
+    </members>
+</doc>

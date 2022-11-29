@@ -1,0 +1,48 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Email.Core.pot\n"
+"X-Crowdin-File-ID: 738\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Arabic\n"
+"Language: ar_SA\n"
+"PO-Revision-Date: 2022-10-11 20:07\n"
+
+#. return SmtpResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
+#: OrchardCore.Email.Core\Services\SmtpService.cs:58
+msgctxt "OrchardCore.Email.Services.SmtpService"
+msgid "SMTP settings must be configured before an email can be sent."
+msgstr "يجب ضبط إعدادات بروتوكول SMTP قبل إرسال رسائل البريد الإلكتروني."
+
+#. return SmtpResult.Failed(S["The mail message should have at least one of these headers: To, Cc or Bcc."]);
+#: OrchardCore.Email.Core\Services\SmtpService.cs:86
+msgctxt "OrchardCore.Email.Services.SmtpService"
+msgid "The mail message should have at least one of these headers: To, Cc or Bcc."
+msgstr ""
+
+#. result = SmtpResult.Failed(S["An error occurred while sending an email: '{0}'", ex.Message]);
+#: OrchardCore.Email.Core\Services\SmtpService.cs:105
+msgctxt "OrchardCore.Email.Services.SmtpService"
+msgid "An error occurred while sending an email: '{0}'"
+msgstr ""
+
+#. errors.Add(S["Invalid email address: '{0}'", submitterAddress]);
+#. errors.Add(S["Invalid email address: '{0}'", address]);
+#. errors.Add(S["Invalid email address: '{0}'", address]);
+#. errors.Add(S["Invalid email address: '{0}'", address]);
+#. errors.Add(S["Invalid email address: '{0}'", address]);
+#. errors.Add(S["Invalid email address: '{0}'", address]);
+#: OrchardCore.Email.Core\Services\SmtpService.cs:130
+#: OrchardCore.Email.Core\Services\SmtpService.cs:144
+#: OrchardCore.Email.Core\Services\SmtpService.cs:159
+#: OrchardCore.Email.Core\Services\SmtpService.cs:174
+#: OrchardCore.Email.Core\Services\SmtpService.cs:189
+#: OrchardCore.Email.Core\Services\SmtpService.cs:211
+msgctxt "OrchardCore.Email.Services.SmtpService"
+msgid "Invalid email address: '{0}'"
+msgstr ""
+

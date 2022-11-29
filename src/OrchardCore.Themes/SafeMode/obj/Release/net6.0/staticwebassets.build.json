@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "qOGXtqkl27OUn2sJvYlnSR2GRXknb9SSmyNeXzhh4o8=",
+  "Source": "SafeMode",
+  "BasePath": "_content/SafeMode",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "SafeMode\\wwwroot",
+      "Source": "SafeMode",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Themes\\SafeMode\\wwwroot\\",
+      "BasePath": "_content/SafeMode",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

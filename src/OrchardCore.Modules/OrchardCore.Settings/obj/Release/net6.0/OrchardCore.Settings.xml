@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Settings</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Settings.Deployment.SiteSettingsDeploymentStep">
+            <summary>
+            Adds the current site settings to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Settings.Recipes.SettingsStep">
+            <summary>
+            This recipe step updates the site settings.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Settings.Services.DefaultTimeZoneSelector">
+            <summary>
+            Provides the timezone defined in the site configuration for the current scope (request).
+            The same <see cref="T:OrchardCore.Modules.TimeZoneSelectorResult"/> is returned if called multiple times
+            during the same scope.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Settings.Services.SetupEventHandler">
+            <summary>
+            During setup, registers the Super User.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Settings.Services.SiteService">
+            <summary>
+            Implements <see cref="T:OrchardCore.Settings.ISiteService"/> by storing the site settings as a document.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Settings.Services.SiteService.LoadSiteSettingsAsync">
+            <summary>
+            Loads the site settings from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Settings.Services.SiteService.GetSiteSettingsAsync">
+            <summary>
+            Gets the site settings from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Settings.Services.SiteService.UpdateSiteSettingsAsync(OrchardCore.Settings.ISite)">
+            <summary>
+            Updates the store with the provided site settings and then updates the cache.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Settings.Services.SuperUserHandler">
+            <summary>
+            This authorization handler validates any permission when the user is the site owner.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Settings.Startup">
+            <summary>
+            These services are registered on the tenant service collection
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Liquid.LiquidSiteSettingsAccessor">
+            <summary>
+            This is a placeholder class that allows modules to extend the `Site` property in the current Liquid scope
+            </summary>
+        </member>
+    </members>
+</doc>

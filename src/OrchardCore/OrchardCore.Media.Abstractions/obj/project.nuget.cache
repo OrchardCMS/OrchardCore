@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "dgSpecHash": "SdH9KJcbsidTKF6Znbx/1+PTE4sYsa9dfi25sQ+resf4fvSNwtcz8k4HRR2MuWOFtfKUoD+Y5P0Im9b+HC47VQ==",
+  "success": true,
+  "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Media.Abstractions\\OrchardCore.Media.Abstractions.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.build.tasks.git\\1.1.1\\microsoft.build.tasks.git.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\3.1.0\\microsoft.extensions.logging.abstractions.3.1.0.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.sourcelink.common\\1.1.1\\microsoft.sourcelink.common.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.sourcelink.github\\1.1.1\\microsoft.sourcelink.github.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\yessql.abstractions\\3.2.0\\yessql.abstractions.3.2.0.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\zstring\\2.5.0\\zstring.2.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "RYcQNUXMBLBL3Aa6VGySyVP2F0ahE3C2ePvIiC8cy4JJCm1bz9mQd8DQdGIykJZzYgUa6aBl1BDkTdCmySRiMA==",
+  "success": true,
+  "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Feeds.Abstractions\\OrchardCore.Feeds.Abstractions.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.build.tasks.git\\1.1.1\\microsoft.build.tasks.git.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.sourcelink.common\\1.1.1\\microsoft.sourcelink.common.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.sourcelink.github\\1.1.1\\microsoft.sourcelink.github.1.1.1.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Recipes.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Recipes.Events.IRecipeEventHandler">
+            <summary>
+            Note: The recipe executor creates for each step a scope that may be based on a new shell if the features have changed,
+            so an 'IRecipeEventHandler', that is also used in each step scope, can't be a tenant level service, otherwise it may
+            be used in a shell container it doesn't belong, so it should be an application level transient or singleton service.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Recipes.Models.RecipeDescriptor.BasePath">
+            <summary>
+            The path of the recipe file for the <see cref="P:OrchardCore.Recipes.Models.RecipeDescriptor.FileProvider"/> property
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Recipes.Services.IRecipeStepHandler">
+            <summary>
+            An implementation of this interface will be used every time a recipe step is processed.
+            Each implementation is responsible for processing only the steps that it targets.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Recipes.Services.IRecipeStepHandler.ExecuteAsync(OrchardCore.Recipes.Models.RecipeExecutionContext)">
+            <summary>
+            Processes a recipe step.
+            </summary>
+            <param name="context">The context object representing the processed step.</param>
+        </member>
+        <member name="M:OrchardCore.Recipes.Services.IRecipeHarvester.HarvestRecipesAsync">
+            <summary>
+            Returns a collection of all recipes.
+            </summary>
+        </member>
+    </members>
+</doc>

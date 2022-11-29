@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "biC8FT/N4Orc1ErIYtg1RQyujrLE4CQ+dEu9F4ZZS04=",
+  "Source": "OrchardCore.Users",
+  "BasePath": "_content/OrchardCore.Users",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.Users\\wwwroot",
+      "Source": "OrchardCore.Users",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Users\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Users",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

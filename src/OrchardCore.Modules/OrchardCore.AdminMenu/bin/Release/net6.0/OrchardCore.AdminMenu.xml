@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.AdminMenu</name>
+    </assembly>
+    <members>
+        <member name="P:OrchardCore.AdminMenu.AdminNodes.LinkAdminNode.PermissionNames">
+            <summary>
+            The names of the permissions required to view this admin menu node
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNode.PermissionNames">
+            <summary>
+            The names of the permissions required to view this admin menu node
+            </summary>
+        </member>
+        <member name="T:OrchardCore.AdminMenu.Deployment.AdminMenuDeploymentStep">
+            <summary>
+            Adds all admin menus to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.AdminMenu.Models.AdminMenuList">
+            <summary>
+            The list of all the AdminMenu stored on the system.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.AdminMenu.Recipes.AdminMenuStep">
+            <summary>
+            This recipe step creates a set of admin menus.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AdminMenu.Services.AdminMenuService.LoadAdminMenuListAsync">
+            <summary>
+            Loads the admin menus from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AdminMenu.Services.AdminMenuService.GetAdminMenuListAsync">
+            <summary>
+            Gets the admin menus from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.AdminMenu.Services.IAdminMenuService">
+            <summary>
+            Provides services to manage the admin menus.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AdminMenu.Services.IAdminMenuService.LoadAdminMenuListAsync">
+            <summary>
+            Loads the admin menus from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AdminMenu.Services.IAdminMenuService.GetAdminMenuListAsync">
+            <summary>
+            Gets the admin menus from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AdminMenu.Services.IAdminMenuService.SaveAsync(OrchardCore.AdminMenu.Models.AdminMenu)">
+            <summary>
+            Persist an admin menu
+            </summary>
+            <param name="tree"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.AdminMenu.Services.IAdminMenuService.GetAdminMenuById(OrchardCore.AdminMenu.Models.AdminMenuList,System.String)">
+            <summary>
+            Returns an admin menu.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AdminMenu.Services.IAdminMenuService.DeleteAsync(OrchardCore.AdminMenu.Models.AdminMenu)">
+            <summary>
+            Deletes an admin menu
+            </summary>
+            <param name="tree"></param>
+            <returns>The count of deleted items</returns>
+        </member>
+    </members>
+</doc>

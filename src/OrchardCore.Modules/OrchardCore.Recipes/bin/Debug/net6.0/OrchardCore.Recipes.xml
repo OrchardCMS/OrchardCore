@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Recipes</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Recipes.RecipeSteps.CommandStep">
+            <summary>
+            This recipe step executes a set of commands.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Recipes.RecipeSteps.RecipesStep">
+            <summary>
+            This recipe step executes a set of external recipes.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Recipes.Startup">
+            <summary>
+            These services are registered on the tenant service collection
+            </summary>
+        </member>
+    </members>
+</doc>

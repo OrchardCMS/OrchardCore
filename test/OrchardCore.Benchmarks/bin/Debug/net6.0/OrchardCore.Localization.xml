@@ -1,0 +1,205 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Localization</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Localization.AdminMenu">
+            <summary>
+            Represents a localization menu in the admin site.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.AdminMenu.#ctor(Microsoft.Extensions.Localization.IStringLocalizer{OrchardCore.Localization.AdminMenu})">
+            <summary>
+            Creates a new instance of the <see cref="T:OrchardCore.Localization.AdminMenu"/>.
+            </summary>
+            <param name="localizer">The <see cref="T:Microsoft.Extensions.Localization.IStringLocalizer"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.AdminMenu.BuildNavigationAsync(System.String,OrchardCore.Navigation.NavigationBuilder)">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Localization.Drivers.LocalizationSettingsDisplayDriver">
+            <summary>
+            Represents a <see cref="T:OrchardCore.DisplayManagement.Entities.SectionDisplayDriver`2"/> for the localization settings section in the admin site.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.Drivers.LocalizationSettingsDisplayDriver.EditAsync(OrchardCore.Localization.Models.LocalizationSettings,OrchardCore.DisplayManagement.Handlers.BuildEditorContext)">
+            <inheritdocs />
+        </member>
+        <member name="M:OrchardCore.Localization.Drivers.LocalizationSettingsDisplayDriver.UpdateAsync(OrchardCore.Localization.Models.LocalizationSettings,OrchardCore.DisplayManagement.Handlers.BuildEditorContext)">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Localization.GraphQL.CultureQueryObjectType">
+            <summary>
+            Represents a culture object for Graph QL.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.GraphQL.CultureQueryObjectType.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:OrchardCore.Localization.GraphQL.CultureQueryObjectType"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Localization.GraphQL.SiteCulture">
+            <summary>
+            Represents a culture for the site.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.GraphQL.SiteCulture.Culture">
+            <summary>
+            Gets or sets a culture.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.GraphQL.SiteCulture.IsDefault">
+            <summary>
+            Gets or sets whether the <see cref="P:OrchardCore.Localization.GraphQL.SiteCulture.Culture"/> is used as default one.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Localization.GraphQL.SiteCulturesQuery">
+            <summary>
+            Represents a site cultures for Graph QL.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.GraphQL.SiteCulturesQuery.#ctor(Microsoft.Extensions.Localization.IStringLocalizer{OrchardCore.Localization.GraphQL.SiteCulturesQuery},Microsoft.Extensions.Options.IOptions{OrchardCore.ContentManagement.GraphQL.Options.GraphQLContentOptions})">
+            <summary>
+            Creates a new instance of the <see cref="T:OrchardCore.Localization.GraphQL.SiteCulturesQuery"/>.
+            </summary>
+            <param name="localizer">The <see cref="T:Microsoft.Extensions.Localization.IStringLocalizer"/>.</param>
+            <param name="graphQLContentOptions">The <see cref="T:OrchardCore.ContentManagement.GraphQL.Options.GraphQLContentOptions"/>.</param>
+            
+        </member>
+        <member name="M:OrchardCore.Localization.GraphQL.SiteCulturesQuery.BuildAsync(GraphQL.Types.ISchema)">
+            <inheritdocs/>
+        </member>
+        <member name="T:OrchardCore.Localization.GraphQL.Startup">
+            <summary>
+            Represents the localization module entry point for Graph QL.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.GraphQL.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Localization.Models.CultureEntry">
+            <summary>
+            Represents a culture entry.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.Models.CultureEntry.CultureInfo">
+            <summary>
+            Gets or sets the <see cref="P:OrchardCore.Localization.Models.CultureEntry.CultureInfo"/> instance for the current culture entry.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.Models.CultureEntry.IsDefault">
+            <summary>
+            Gets or sets whether the culture is the default one.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.Models.CultureEntry.Supported">
+            <summary>
+            Gets or sets whether the culture is supported.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Localization.Models.LocalizationSettings">
+            <summary>
+            Represents an object to store the localization settings.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.Models.LocalizationSettings.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:OrchardCore.Localization.Models.LocalizationSettings"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.Models.LocalizationSettings.DefaultCulture">
+            <summary>
+            Gets or sets the default culture of the site.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.Models.LocalizationSettings.SupportedCultures">
+            <summary>
+            Gets or sets all the supported cultures of the site. It also contains the default culture.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Localization.ModularPoFileLocationProvider">
+            <summary>
+            Represents a localization provider to provide the locations of the modules PO files.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.ModularPoFileLocationProvider.#ctor(OrchardCore.Environment.Extensions.IExtensionManager,Microsoft.Extensions.Hosting.IHostEnvironment,Microsoft.Extensions.Options.IOptions{OrchardCore.Environment.Shell.ShellOptions},Microsoft.Extensions.Options.IOptions{Microsoft.Extensions.Localization.LocalizationOptions},OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Creates a new intance of the <see cref="T:OrchardCore.Localization.ModularPoFileLocationProvider"/>.
+            </summary>
+            <param name="extensionsManager">The <see cref="T:OrchardCore.Environment.Extensions.IExtensionManager"/>.</param>
+            <param name="hostingEnvironment">The <see cref="T:Microsoft.Extensions.Hosting.IHostEnvironment"/>.</param>
+            <param name="shellOptions">The <see cref="T:OrchardCore.Environment.Shell.ShellOptions"/>.</param>
+            <param name="localizationOptions">The <see cref="T:Microsoft.Extensions.Localization.LocalizationOptions"/>.</param>
+            <param name="shellSettings">The <see cref="T:OrchardCore.Environment.Shell.ShellSettings"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.ModularPoFileLocationProvider.GetLocations(System.String)">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Localization.Permissions">
+            <summary>
+            Represents the localization module permissions.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Localization.Permissions.ManageCultures">
+            <summary>
+            Gets a permission for managing the cultures.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.Permissions.GetPermissionsAsync">
+            <inheritdocs />
+        </member>
+        <member name="M:OrchardCore.Localization.Permissions.GetDefaultStereotypes">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Localization.Services.LocalizationService">
+            <summary>
+            Represents a localization service.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.Services.LocalizationService.#ctor(OrchardCore.Settings.ISiteService)">
+            <summary>
+            Creates a new instance of <see cref="T:OrchardCore.Localization.Services.LocalizationService"/>.
+            </summary>
+            <param name="siteService">The <see cref="T:OrchardCore.Settings.ISiteService"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.Services.LocalizationService.GetDefaultCultureAsync">
+            <inheritdocs />
+        </member>
+        <member name="M:OrchardCore.Localization.Services.LocalizationService.GetSupportedCulturesAsync">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Localization.Startup">
+            <summary>
+            Represents a localization module entry point.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <inheritdocs />
+        </member>
+        <member name="M:OrchardCore.Localization.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Routing.IEndpointRouteBuilder,System.IServiceProvider)">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Localization.ViewModels.LocalizationSettingsViewModel">
+            <summary>
+            Represents a view model for the localization settings.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.ViewModels.LocalizationSettingsViewModel.Cultures">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="P:OrchardCore.Localization.ViewModels.LocalizationSettingsViewModel.SupportedCultures">
+            <summary>
+            Gets or sets all the supported cultures of the site. It also contains the default culture.
+            </summary>
+            <remarks>This property is a json array that is set in the editor</remarks>
+        </member>
+        <member name="P:OrchardCore.Localization.ViewModels.LocalizationSettingsViewModel.DefaultCulture">
+            <summary>
+            Gets or sets the default culture of the site.
+            </summary>
+        </member>
+    </members>
+</doc>

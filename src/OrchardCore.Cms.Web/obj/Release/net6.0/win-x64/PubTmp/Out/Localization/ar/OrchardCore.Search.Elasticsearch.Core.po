@@ -1,0 +1,22 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Search.Elasticsearch.Core.pot\n"
+"X-Crowdin-File-ID: 868\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Arabic\n"
+"Language: ar_SA\n"
+"PO-Revision-Date: 2022-10-11 20:40\n"
+
+#. return new HtmlString($"<option value=\"Elasticsearch\" selected=\"selected\">{S["Elasticsearch"]}</option>");
+#. return new HtmlString($"<option value=\"Elasticsearch\">{S["Elasticsearch"]}</option>");
+#: OrchardCore.Search.Elasticsearch.Core\Shapes\ElasticContentPickerShapeProvider.cs:26
+#: OrchardCore.Search.Elasticsearch.Core\Shapes\ElasticContentPickerShapeProvider.cs:28
+msgctxt "OrchardCore.Search.Elasticsearch.ElasticContentPickerShapeProvider"
+msgid "Elasticsearch"
+msgstr ""
+

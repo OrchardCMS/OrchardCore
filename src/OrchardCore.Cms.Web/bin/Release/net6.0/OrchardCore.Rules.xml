@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Rules</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Rules.Drivers.ContentTypeConditionEvaluatorDriver">
+            <summary>
+            Saves references to content types which have been displayed during a request.
+            </summary>
+        </member>
+    </members>
+</doc>

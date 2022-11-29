@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.ContentLocalization</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.ContentLocalization.ContentRequestCultureProvider">
+            <summary>
+            RequestCultureProvider that automatically sets the Culture of a request from the LocalizationPart.Culture property.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ContentLocalization.DefaultContentLocalizationManager.GetSingleContentItemIdPerSet(System.Collections.Generic.IEnumerable{OrchardCore.ContentLocalization.Records.LocalizedContentItemIndex},System.String,System.String)">
+            <summary>
+            ContentItemId chosen with the following rules:
+            ContentItemId of the current culture for the set
+            OR ContentItemId of the default culture for the set
+            OR First ContentItemId found in the set
+            OR null if nothing found
+            </summary>
+            <returns>List of ContentItemId</returns>
+        </member>
+        <member name="M:OrchardCore.ContentLocalization.Services.IContentCulturePickerService.GetContentItemIdFromRouteAsync(Microsoft.AspNetCore.Http.PathString)">
+            <summary>
+            Get the ContentItemId that matches the url.
+            </summary>
+            <returns>ContentItemId or null if not found</returns>
+        </member>
+        <member name="M:OrchardCore.ContentLocalization.Services.IContentCulturePickerService.GetLocalizationFromRouteAsync(Microsoft.AspNetCore.Http.PathString)">
+            <summary>
+            Get the Localization of the ContentItem from an url.
+            </summary>
+            <returns>Culture or null if not found</returns>
+        </member>
+        <member name="M:OrchardCore.ContentLocalization.Services.IContentCulturePickerService.GetLocalizationsFromRouteAsync(Microsoft.AspNetCore.Http.PathString)">
+            <summary>
+            Get the Localizations of the LocalizationSet from a URL
+            </summary>
+            <returns>List of Localization for the url or null if not found</returns>
+        </member>
+        <member name="M:OrchardCore.ContentLocalization.Services.IContentCulturePickerService.SetContentCulturePickerCookie(System.String)">
+            <summary>
+            Sets the culture cookie to the target culture
+            </summary>
+        </member>
+    </members>
+</doc>

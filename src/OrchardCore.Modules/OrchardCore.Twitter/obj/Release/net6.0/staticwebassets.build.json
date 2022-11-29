@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "DqanGCQbreWX5K2OP2Woqx4w2zlfzDrmhPe3mS6hAcg=",
+  "Source": "OrchardCore.Twitter",
+  "BasePath": "_content/OrchardCore.Twitter",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

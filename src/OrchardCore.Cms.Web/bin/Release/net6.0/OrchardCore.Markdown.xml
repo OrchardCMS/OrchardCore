@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Markdown</name>
+    </assembly>
+    <members>
+        <member name="M:ContentRazorHelperExtensions.MarkdownToHtmlAsync(OrchardCore.IOrchardHelper,System.String,System.Boolean)">
+            <summary>
+            Converts Markdown string to HTML.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="markdown">The markdown to convert.</param>
+            <param name="sanitize">Whether to sanitze the markdown. Defaults to <see langword="true"/>.</param>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.MarkdownPipelineOptionsExtensions.ConfigureMarkdownPipeline(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Markdig.MarkdownPipelineBuilder})">
+            <summary>
+            Adds a configuration action to the markdown pipeline builder.
+            </summary>
+        </member>
+    </members>
+</doc>

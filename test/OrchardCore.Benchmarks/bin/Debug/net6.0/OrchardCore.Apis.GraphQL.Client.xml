@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Apis.GraphQL.Client</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Apis.GraphQL.Client.HttpRequestExtensions">
+            <summary>
+            The http request extensions.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Apis.GraphQL.Client.HttpRequestExtensions.PatchAsJsonAsync``1(System.Net.Http.HttpClient,System.String,``0,Newtonsoft.Json.JsonSerializerSettings)">
+            <summary>
+            The patch as json async.
+            </summary>
+            <param name="client">
+            The client.
+            </param>
+            <param name="requestUri">
+            The request uri.
+            </param>
+            <param name="value">
+            The value.
+            </param>
+            <param name="settings">
+            The formatter.
+            </param>
+            <typeparam name="T">
+            </typeparam>
+            <returns>
+            The <see cref="T:System.Threading.Tasks.Task"/>.
+            </returns>
+        </member>
+        <member name="M:OrchardCore.Apis.GraphQL.Client.HttpRequestExtensions.PatchAsync(System.Net.Http.HttpClient,System.String,System.Net.Http.HttpContent)">
+            <summary>
+            The patch async.
+            </summary>
+            <param name="client">
+            The client.
+            </param>
+            <param name="requestUri">
+            The request uri.
+            </param>
+            <param name="content">
+            The content.
+            </param>
+            <returns>
+            The <see cref="T:System.Threading.Tasks.Task"/>.
+            </returns>
+        </member>
+        <member name="M:OrchardCore.Apis.GraphQL.Client.HttpRequestExtensions.PutAsJsonAsync``1(System.Net.Http.HttpClient,System.String,``0,Newtonsoft.Json.JsonSerializerSettings)">
+            <summary>
+            The put as json async.
+            </summary>
+            <param name="client">
+            The client.
+            </param>
+            <param name="requestUri">
+            The request uri.
+            </param>
+            <param name="value">
+            The value.
+            </param>
+            <param name="settings">
+            The formatter.
+            </param>
+            <typeparam name="T">
+            </typeparam>
+            <returns>
+            The <see cref="T:System.Threading.Tasks.Task"/>.
+            </returns>
+        </member>
+        <member name="M:OrchardCore.Apis.GraphQL.Client.HttpRequestExtensions.PostAsJsonAsync``1(System.Net.Http.HttpClient,System.String,``0,Newtonsoft.Json.JsonSerializerSettings)">
+            <summary>
+            PostAsJsonAsync
+            </summary>
+            <param name="client">
+            The client.
+            </param>
+            <param name="requestUri">
+            The request uri.
+            </param>
+            <param name="value">
+            The value.
+            </param>
+            <param name="settings">
+            The formatter.
+            </param>
+            <typeparam name="T">
+            </typeparam>
+            <returns>
+            The <see cref="T:System.Threading.Tasks.Task"/>.
+            </returns>
+        </member>
+    </members>
+</doc>

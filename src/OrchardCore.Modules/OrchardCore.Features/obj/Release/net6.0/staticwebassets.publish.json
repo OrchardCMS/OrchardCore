@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "wjUUZ+YNyfJX9V8n56B9HpkgybNjAmJWLxEKQwuYwtM=",
+  "Source": "OrchardCore.Features",
+  "BasePath": "_content/OrchardCore.Features",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "O4aL2+eIebdnY7/7lixwFHRlKXVjfCyBSdTOd9KPfP0=",
+  "Source": "OrchardCore.Search.Lucene",
+  "BasePath": "_content/OrchardCore.Search.Lucene",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

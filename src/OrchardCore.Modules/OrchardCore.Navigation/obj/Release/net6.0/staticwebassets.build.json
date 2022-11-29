@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "bfOyg7dDSVXi4i4hD4l+TtDqGU+iA9KKabgVlLWGlqg=",
+  "Source": "OrchardCore.Navigation",
+  "BasePath": "_content/OrchardCore.Navigation",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

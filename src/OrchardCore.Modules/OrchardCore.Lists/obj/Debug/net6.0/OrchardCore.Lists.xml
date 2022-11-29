@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Lists</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.Lists.Drivers.ContainedPartLocalizationHandler.LocalizingAsync(OrchardCore.ContentLocalization.Handlers.LocalizationContentContext,OrchardCore.ContentLocalization.Models.LocalizationPart)">
+            <summary>
+            Assign the Localized version of the List when localizing the Contained Item
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Lists.Drivers.LocalizationContainedPartHandler.CreatingAsync(OrchardCore.ContentManagement.Handlers.CreateContentContext,OrchardCore.ContentLocalization.Models.LocalizationPart)">
+            <summary>
+            Need to override CreatingAsync to set the right parent on Creation.
+            This will attach the item to the right list when the item is created from a list of another culture
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Lists.Drivers.ListPartLocalizationHandler.LocalizedAsync(OrchardCore.ContentLocalization.Handlers.LocalizationContentContext,OrchardCore.Lists.Models.ListPart)">
+            <summary>
+            Select Contained ContentItems that are already in the target culture
+            but attached to the original list and reassign their ListContenItemId.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Lists.Models.ContainedPart">
+            <summary>
+            Attached to a content item instance when it's part of a list.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Lists.Models.ContainedPart.ListContentItemId">
+            <summary>
+            The content item id of the list owning this content item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Lists.Models.ContainedPart.ListContentType">
+            <summary>
+            The content type of the list owning this content item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Lists.Models.ContainedPart.Order">
+            <summary>
+            The order of this content item in the list.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Lists.Services.IContainerService.QueryContainedItemsAsync(System.String,System.Boolean,OrchardCore.Navigation.PagerSlim,OrchardCore.Lists.Models.ContainedItemOptions)">
+            <summary>
+            Query contained items by page either order by the created utc or order value.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Lists.Services.IContainerService.UpdateContentItemOrdersAsync(System.Collections.Generic.IEnumerable{OrchardCore.ContentManagement.ContentItem},System.Int32)">
+            <summary>
+            Update the orders of the content items.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Lists.Services.IContainerService.GetNextOrderNumberAsync(System.String)">
+            <summary>
+            Get the next order number.
+            New or cloned content items are added to the bottom of the list.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Lists.Services.IContainerService.SetInitialOrder(System.String)">
+            <summary>
+            Update order of the content items when ordering is enabled.
+            </summary>
+        </member>
+        <member name="M:ListOrchardHelperExtensions.QueryListItemsCountAsync(OrchardCore.IOrchardHelper,System.String,System.Linq.Expressions.Expression{System.Func{OrchardCore.ContentManagement.Records.ContentItemIndex,System.Boolean}})">
+            <summary>
+            Returns list count.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="listContentItemId">The list content item id.</param>
+            <param name="itemPredicate">The optional predicate applied to each item. By defult published items only.</param>
+            <returns>A number of list items satisfying given predicate.</returns>
+        </member>
+        <member name="M:ListOrchardHelperExtensions.QueryListItemsAsync(OrchardCore.IOrchardHelper,System.String,System.Linq.Expressions.Expression{System.Func{OrchardCore.ContentManagement.Records.ContentItemIndex,System.Boolean}})">
+            <summary>
+            Returns list items.
+            </summary>
+            <param name="orchardHelper">The <see cref="T:OrchardCore.IOrchardHelper"/>.</param>
+            <param name="listContentItemId">The list content item id.</param>
+            <param name="itemPredicate">The optional predicate applied to each item. By defult published items only.</param>
+            <returns>An enumerable of list items satisfying given predicate.</returns>
+        </member>
+    </members>
+</doc>

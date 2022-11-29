@@ -1,0 +1,85 @@
+is_global = true
+build_property.TargetFramework = net6.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = OrchardCore.Lists
+build_property.RootNamespace = OrchardCore.Lists
+build_property.ProjectDir = C:\repos\loethenweb\src\OrchardCore.Modules\OrchardCore.Lists\
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\repos\loethenweb\src\OrchardCore.Modules\OrchardCore.Lists
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/ContentsAdminList-ListPartFilter.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVudHNBZG1pbkxpc3QtTGlzdFBhcnRGaWx0ZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/Items/ListsAdminNode.Fields.TreeEdit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSXRlbXNcTGlzdHNBZG1pbk5vZGUuRmllbGRzLlRyZWVFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/Items/ListsAdminNode.Fields.TreeSummary.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSXRlbXNcTGlzdHNBZG1pbk5vZGUuRmllbGRzLlRyZWVTdW1tYXJ5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/Items/ListsAdminNode.Fields.TreeThumbnail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSXRlbXNcTGlzdHNBZG1pbk5vZGUuRmllbGRzLlRyZWVUaHVtYm5haWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/ListPart.ContainerId.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlzdFBhcnQuQ29udGFpbmVySWQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/ListPart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlzdFBhcnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/ListPart.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlzdFBhcnQuRGlzcGxheU9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/ListPart.RemotePublishing.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlzdFBhcnQuUmVtb3RlUHVibGlzaGluZy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/ListPart.Sortable.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlzdFBhcnQuU29ydGFibGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/ListPartDetailAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlzdFBhcnREZXRhaWxBZG1pbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/ListPartFeed.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlzdFBhcnRGZWVkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/ListPartFeed.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlzdFBhcnRGZWVkLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/ListPartHeaderAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlzdFBhcnRIZWFkZXJBZG1pbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/ListPartNavigationAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlzdFBhcnROYXZpZ2F0aW9uQWRtaW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/ListPartSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlzdFBhcnRTZXR0aW5ncy5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/ListPartSummaryAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlzdFBhcnRTdW1tYXJ5QWRtaW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Lists/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 

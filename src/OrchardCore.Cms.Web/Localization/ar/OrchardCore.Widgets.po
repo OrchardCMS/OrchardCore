@@ -1,0 +1,68 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Widgets.pot\n"
+"X-Crowdin-File-ID: 840\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Arabic\n"
+"Language: ar_SA\n"
+"PO-Revision-Date: 2022-10-11 20:34\n"
+
+#. <button type="button" title="@T["Insert Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+#: OrchardCore.Widgets\Views\ContentCard-WidgetsListPart.Edit.cshtml:24
+msgctxt "OrchardCore.Widgets.Views.ContentCard-WidgetsListPart.Edit"
+msgid "Insert Widget"
+msgstr "إدراج مربع جانبي"
+
+#. <button type="button" class="btn btn-danger widget-list-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>
+#: OrchardCore.Widgets\Views\ContentCard-WidgetsListPart.Edit.cshtml:53
+msgctxt "OrchardCore.Widgets.Views.ContentCard-WidgetsListPart.Edit"
+msgid "Delete"
+msgstr "حذف"
+
+#. <button type="button" class="btn btn-danger widget-list-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>
+#: OrchardCore.Widgets\Views\ContentCard-WidgetsListPart.Edit.cshtml:53
+msgctxt "OrchardCore.Widgets.Views.ContentCard-WidgetsListPart.Edit"
+msgid "Are you sure you want to remove this item?"
+msgstr "هل أنت متأكد من حذف هذا العنصر؟"
+
+#. <span data-content-type-display-text="@contentTypeDisplayText" class="widget-editor-header-text">@T["{0} {1}", contentItemDisplayText, contentTypeDisplayText]</span>
+#: OrchardCore.Widgets\Views\ContentCard.Preview.cshtml:16
+msgctxt "OrchardCore.Widgets.Views.ContentCard.Preview"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. <span>@T["Actions"]</span>
+#: OrchardCore.Widgets\Views\Widget.SummaryAdmin.cshtml:60
+msgctxt "OrchardCore.Widgets.Views.Widget.SummaryAdmin"
+msgid "Actions"
+msgstr "الإجراءت"
+
+#. <button type="button" title="@T["Add Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+#: OrchardCore.Widgets\Views\WidgetsListPart.Edit.cshtml:134
+msgctxt "OrchardCore.Widgets.Views.WidgetsListPart.Edit"
+msgid "Add Widget"
+msgstr "اضافة ودجت"
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentEditor)">@T["Standard"]</option>
+#: OrchardCore.Widgets\Views\WidgetsListPart.Option.cshtml:4
+msgctxt "OrchardCore.Widgets.Views.WidgetsListPart.Option"
+msgid "Standard"
+msgstr "قياسي"
+
+#. <label asp-for="Zones">@T["Available widgets zones"]</label>
+#: OrchardCore.Widgets\Views\WidgetsPartSettings.Edit.cshtml:4
+msgctxt "OrchardCore.Widgets.Views.WidgetsPartSettings.Edit"
+msgid "Available widgets zones"
+msgstr "مناطق الودجت المتاحة"
+
+#. <span class="hint">@T["A comma separated list of values, representing the available zones for widgets."]</span>
+#: OrchardCore.Widgets\Views\WidgetsPartSettings.Edit.cshtml:7
+msgctxt "OrchardCore.Widgets.Views.WidgetsPartSettings.Edit"
+msgid "A comma separated list of values, representing the available zones for widgets."
+msgstr "قائمة قيم مفصولة بفواصل, تعبر عن المناطق المتاحة للودجت."
+

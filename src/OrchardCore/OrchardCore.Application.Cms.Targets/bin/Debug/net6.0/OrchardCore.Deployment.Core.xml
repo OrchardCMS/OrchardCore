@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Deployment.Core</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Deployment.CommonPermissions">
+            <summary>
+            This class contains the source references to the OrchardCore.Deployment module permissions so they can be used in other modules
+            without having to reference the OrchardCore.Deployment by itself.
+            </summary>
+        </member>
+    </members>
+</doc>

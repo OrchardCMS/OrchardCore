@@ -1,0 +1,31 @@
+{
+  "Version": 1,
+  "Hash": "lr2v3lgh5KavZE/4yF58SjiFHiAyGcT7BrGPzLG8qrQ=",
+  "Source": "OrchardCore.Search",
+  "BasePath": "_content/OrchardCore.Search",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [
+    {
+      "Identity": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Deployment\\OrchardCore.Deployment.csproj",
+      "Version": 2,
+      "Source": "OrchardCore.Deployment",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalPublishPropertiesToRemove": "RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Release;Platform=AnyCPU;TargetFramework=net6.0",
+      "AdditionalBuildPropertiesToRemove": "RuntimeIdentifier;SelfContained"
+    }
+  ],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.Deployment\\wwwroot",
+      "Source": "OrchardCore.Deployment",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Deployment\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Deployment",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

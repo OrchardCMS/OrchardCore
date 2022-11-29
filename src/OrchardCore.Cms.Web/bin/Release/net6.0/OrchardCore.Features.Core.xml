@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Features.Core</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Features.Models.ModuleFeature">
+            <summary>
+            Represents a module's feature.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Features.Models.ModuleFeature.Descriptor">
+            <summary>
+            The feature descriptor.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Features.Models.ModuleFeature.IsEnabled">
+            <summary>
+            Boolean value indicating if the feature is enabled.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Features.Models.ModuleFeature.IsAlwaysEnabled">
+            <summary>
+            Boolean value indicating if the feature is always enabled.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Features.Models.ModuleFeature.NeedsUpdate">
+            <summary>
+            Boolean value indicating if the feature needs a data update / migration.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Features.Models.ModuleFeature.NeedsVersionUpdate">
+            <summary>
+            Boolean value indicating if the module needs a version update.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Features.Models.ModuleFeature.IsRecentlyInstalled">
+            <summary>
+            Boolean value indicating if the feature was recently installed.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Features.Models.ModuleFeature.EnabledByDependencyOnly">
+            <summary>
+            Boolean value indicating if the feature is enabled by dependency only.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Features.Models.ModuleFeature.EnabledDependentFeatures">
+            <summary>
+            List of enabled features that depend on this feature.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Features.Models.ModuleFeature.FeatureDependencies">
+            <summary>
+            List of features that this feature depends on.
+            </summary>
+        </member>
+    </members>
+</doc>

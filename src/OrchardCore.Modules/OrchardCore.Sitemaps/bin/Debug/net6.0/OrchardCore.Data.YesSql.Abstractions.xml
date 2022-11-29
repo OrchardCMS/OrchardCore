@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Data.YesSql.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Data.Migration.DataMigration">
+            <summary>
+            A <see cref="T:OrchardCore.Data.Migration.DataMigration"/> is discovered through method reflection
+            and runs sequentially from the Create() method through UpdateFromX().
+            </summary>
+            <example>
+            Usage of method implementations:
+            <code>
+            public class Migrations : DataMigration
+            {
+                public int Create() { return 1; } // or
+                public Task&lt;int&gt; CreateAsync() { return 1; }
+                public int UpdateFrom1() { return 2; } // or
+                public Task&lt;int&gt; UpdateFrom1Async() { return 2; }
+                public void Uninstall() { } // or
+                public Task UninstallAsync() { }
+            }
+            </code>
+            </example>
+        </member>
+        <member name="P:OrchardCore.Data.Migration.DataMigration.SchemaBuilder">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Data.Migration.IDataMigration">
+            <summary>
+            Represents a contract for a database migration.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Data.Migration.IDataMigration.SchemaBuilder">
+            <summary>
+            Gets or sets the database schema builder.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Data.Migration.ServiceCollectionExtensions">
+            <summary>
+            Provides extension methods for <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to add YesSql migration <see cref="T:OrchardCore.Data.Migration.IDataMigration"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Data.DbConnectionValidatorResult">
+            <summary>
+            The result from validating a database connection using <see cref="T:OrchardCore.Data.IDbConnectionValidator"/>.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Data.DbConnectionValidatorResult.Unknown">
+            <summary>
+            The connection string status is unknown or was not validated.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Data.DbConnectionValidatorResult.NoProvider">
+            <summary>
+            The database provider is missing.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Data.DbConnectionValidatorResult.DocumentTableNotFound">
+            <summary>
+            The connection string is valid and the 'Document' table does not exists.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Data.DbConnectionValidatorResult.DocumentTableFound">
+            <summary>
+            The connection string is valid and the 'Document' table exists.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Data.DbConnectionValidatorResult.ShellDescriptorDocumentNotFound">
+            <summary>
+            The 'Document' table exists with no 'ShellDescriptor' document.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Data.DbConnectionValidatorResult.InvalidConnection">
+            <summary>
+            Unable to open a connection with the given database connection string.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Data.DbConnectionValidatorResult.UnsupportedProvider">
+            <summary>
+            Unsupported database provider.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Data.IScopedIndexProvider">
+            <summary>
+            Represents a contract that used to denote an <see cref="T:YesSql.Indexes.IIndexProvider"/> that needs to be resolved by the DI and registered
+            at the <see cref="T:YesSql.ISession"/> level.
+            </summary>
+        </member>
+    </members>
+</doc>

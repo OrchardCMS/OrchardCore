@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Facebook</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Facebook.Deployment.FacebookLoginDeploymentStep">
+            <summary>
+            Adds Facebook Login settings to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Facebook.Login.Recipes.FacebookLoginSettingsStep">
+            <summary>
+            This recipe step sets general Facebook Login settings.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Facebook.Recipes.FacebookSettingsStep">
+            <summary>
+            This recipe step sets general Facebook Login settings.
+            </summary>
+        </member>
+    </members>
+</doc>

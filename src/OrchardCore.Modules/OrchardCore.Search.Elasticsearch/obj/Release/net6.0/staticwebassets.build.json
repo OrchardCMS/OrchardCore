@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "TF4ZVhsiggofwPRdAWJANLohhErBcEap7Rkevu9q8is=",
+  "Source": "OrchardCore.Search.Elasticsearch",
+  "BasePath": "_content/OrchardCore.Search.Elasticsearch",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

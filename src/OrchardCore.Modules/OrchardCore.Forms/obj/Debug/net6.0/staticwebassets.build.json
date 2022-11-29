@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "h5ZE4bn6Ts9ZkKQQdWjc4YhDBLcMzWShvPx+9DHa9aQ=",
+  "Source": "OrchardCore.Forms",
+  "BasePath": "_content/OrchardCore.Forms",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.Forms\\wwwroot",
+      "Source": "OrchardCore.Forms",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Forms\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Forms",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

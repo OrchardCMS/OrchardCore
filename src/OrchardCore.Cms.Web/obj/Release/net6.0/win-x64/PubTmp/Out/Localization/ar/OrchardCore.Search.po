@@ -1,0 +1,102 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Search.pot\n"
+"X-Crowdin-File-ID: 874\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Arabic\n"
+"Language: ar_SA\n"
+"PO-Revision-Date: 2022-10-11 20:42\n"
+
+#. .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
+#. .Add(S["Search"], S["Search"].PrefixPosition(), entry => entry
+#. .Add(S["Search"], S["Search"].PrefixPosition(), entry => entry
+#: OrchardCore.Search\AdminMenu.cs:26
+#: OrchardCore.Search\AdminMenu.cs:29
+#: OrchardCore.Search\AdminMenu.cs:29
+msgctxt "OrchardCore.Search.AdminMenu"
+msgid "Search"
+msgstr ""
+
+#. .Add(S["Settings"], settings => settings
+#: OrchardCore.Search\AdminMenu.cs:28
+msgctxt "OrchardCore.Search.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#. <h3>@T["Search Module"]</h3>
+#: OrchardCore.Search\Views\Search-Form.cshtml:4
+msgctxt "OrchardCore.Search.Views.Search-Form"
+msgid "Search Module"
+msgstr ""
+
+#. <input name="Terms" type="text" value="@Model.Terms" class="form-control form-control-lg" placeholder="@T["Enter your search term(s)"]" autofocus />
+#: OrchardCore.Search\Views\Search-Form.cshtml:7
+msgctxt "OrchardCore.Search.Views.Search-Form"
+msgid "Enter your search term(s)"
+msgstr ""
+
+#. <button type="submit" class="btn btn-primary btn-sm">@T["Search"]</button>
+#: OrchardCore.Search\Views\Search-Form.cshtml:8
+msgctxt "OrchardCore.Search.Views.Search-Form"
+msgid "Search"
+msgstr ""
+
+#. <p class="alert alert-warning">@T["There are no such results."]</p>
+#: OrchardCore.Search\Views\Search-Results.cshtml:18
+msgctxt "OrchardCore.Search.Views.Search-Results"
+msgid "There are no such results."
+msgstr ""
+
+#. <label asp-for="SearchProviderAreaName">@T["Default search provider"]</label>
+#: OrchardCore.Search\Views\SearchSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Search.Views.SearchSettings.Edit"
+msgid "Default search provider"
+msgstr ""
+
+#. <span class="hint">@T["The default search provider to use for the search page."]</span>
+#: OrchardCore.Search\Views\SearchSettings.Edit.cshtml:14
+msgctxt "OrchardCore.Search.Views.SearchSettings.Edit"
+msgid "The default search provider to use for the search page."
+msgstr ""
+
+#. <div class="alert alert-warning">@T["You need to enable at least one search provider (Lucene, Elasticsearch)."]</div>
+#: OrchardCore.Search\Views\SearchSettings.Edit.cshtml:19
+msgctxt "OrchardCore.Search.Views.SearchSettings.Edit"
+msgid "You need to enable at least one search provider (Lucene, Elasticsearch)."
+msgstr ""
+
+#. <h5>@T["Search Settings"]</h5>
+#: OrchardCore.Search\Views\Items\SearchSettingsDeploymentStep.Fields.Edit.cshtml:3
+msgctxt "OrchardCore.Search.Views.Items.SearchSettingsDeploymentStep.Fields.Edit"
+msgid "Search Settings"
+msgstr ""
+
+#. <h5>@T["Search Settings"]</h5>
+#: OrchardCore.Search\Views\Items\SearchSettingsDeploymentStep.Fields.Summary.cshtml:3
+msgctxt "OrchardCore.Search.Views.Items.SearchSettingsDeploymentStep.Fields.Summary"
+msgid "Search Settings"
+msgstr ""
+
+#. <span class="hint">@T["Adds search settings to the plan."]</span>
+#: OrchardCore.Search\Views\Items\SearchSettingsDeploymentStep.Fields.Summary.cshtml:5
+msgctxt "OrchardCore.Search.Views.Items.SearchSettingsDeploymentStep.Fields.Summary"
+msgid "Adds search settings to the plan."
+msgstr ""
+
+#. <h4 class="card-title">@T["Search Settings"]</h4>
+#: OrchardCore.Search\Views\Items\SearchSettingsDeploymentStep.Fields.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Search.Views.Items.SearchSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Search Settings"
+msgstr ""
+
+#. <p>@T["Exports search settings."]</p>
+#: OrchardCore.Search\Views\Items\SearchSettingsDeploymentStep.Fields.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Search.Views.Items.SearchSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Exports search settings."
+msgstr ""
+

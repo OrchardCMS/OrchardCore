@@ -1,0 +1,94 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: fa\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Media.Azure.pot\n"
+"X-Crowdin-File-ID: 776\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Persian\n"
+"Language: fa_IR\n"
+"PO-Revision-Date: 2022-05-17 07:48\n"
+
+#. builder.Add(S["Configuration"], configuration => configuration
+#: OrchardCore.Media.Azure\AdminMenu.cs:24
+msgctxt "OrchardCore.Media.Azure.AdminMenu"
+msgid "Configuration"
+msgstr "پیکربندی"
+
+#. .Add(S["Media"], S["Media"].PrefixPosition(), media => media
+#. .Add(S["Media"], S["Media"].PrefixPosition(), media => media
+#: OrchardCore.Media.Azure\AdminMenu.cs:25
+#: OrchardCore.Media.Azure\AdminMenu.cs:25
+msgctxt "OrchardCore.Media.Azure.AdminMenu"
+msgid "Media"
+msgstr "رسانه"
+
+#. .Add(S["Azure Blob Options"], S["Azure Blob Options"].PrefixPosition(), options => options
+#. .Add(S["Azure Blob Options"], S["Azure Blob Options"].PrefixPosition(), options => options
+#: OrchardCore.Media.Azure\AdminMenu.cs:26
+#: OrchardCore.Media.Azure\AdminMenu.cs:26
+msgctxt "OrchardCore.Media.Azure.AdminMenu"
+msgid "Azure Blob Options"
+msgstr "گزینه های Azure Blob"
+
+#. <h1>@RenderTitleSegments(T["Azure Blob storage options"])</h1>
+#: OrchardCore.Media.Azure\Views\Admin\Options.cshtml:2
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Azure Blob storage options"
+msgstr "پیکربندی ذخیره سازی Azure Blob"
+
+#. @T["Azure Blob storage is configured with appsettings.json."]
+#: OrchardCore.Media.Azure\Views\Admin\Options.cshtml:5
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Azure Blob storage is configured with appsettings.json."
+msgstr "حافظه Azure Blob با appsettings.json پیکربندی شده است."
+
+#. <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Media.Azure/#configuration" target="_blank">@T["See documentation"]</a>
+#: OrchardCore.Media.Azure\Views\Admin\Options.cshtml:6
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "See documentation"
+msgstr "مستندات را ببینید"
+
+#. <label asp-for="ConnectionString" class="col-sm-2 col-form-label">@T["Connection String"]</label>
+#: OrchardCore.Media.Azure\Views\Admin\Options.cshtml:10
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Connection String"
+msgstr "اطلاعات اتصال به پایگاه داده"
+
+#: OrchardCore.Media.Azure\Views\Admin\Options.cshtml:0
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Configured"
+msgstr "پیکربندی شده است"
+
+#: OrchardCore.Media.Azure\Views\Admin\Options.cshtml:0
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Not Configured"
+msgstr "پیکربندی نشده است"
+
+#. <label asp-for="ContainerName" class="col-sm-2 col-form-label">@T["Container Name"]</label>
+#: OrchardCore.Media.Azure\Views\Admin\Options.cshtml:26
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Container Name"
+msgstr "نام نگهدارنده"
+
+#. <label asp-for="BasePath" class="col-sm-2 col-form-label">@T["Base Path"]</label>
+#: OrchardCore.Media.Azure\Views\Admin\Options.cshtml:33
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Base Path"
+msgstr "مسیر پایه"
+
+#. <label class="form-check-label" asp-for="CreateContainer">@T["Create Container"]</label>
+#: OrchardCore.Media.Azure\Views\Admin\Options.cshtml:42
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Create Container"
+msgstr "نگهدارنده ایجاد کنید"
+
+#. <span class="hint">@T["Whether a blob container is created on startup if it does not exist."]</span>
+#: OrchardCore.Media.Azure\Views\Admin\Options.cshtml:43
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Whether a blob container is created on startup if it does not exist."
+msgstr "اگر یک نگهدارنده blob در هنگام راه‌اندازی وجود نداشته باشد ایجاد می‌شود."
+

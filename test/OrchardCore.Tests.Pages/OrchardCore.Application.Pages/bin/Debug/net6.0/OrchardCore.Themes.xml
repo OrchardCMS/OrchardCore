@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Themes</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Themes.Deployment.ThemesDeploymentStep">
+            <summary>
+            Adds the currently selected admin theme and site theme to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Themes.Models.ThemeEntry">
+            <summary>
+            Represents a theme.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Themes.Models.ThemeEntry.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Themes.Models.ThemeEntry.#ctor(OrchardCore.Environment.Extensions.IExtensionInfo)">
+            <summary>
+            Instantiates a theme based on an extension info.
+            </summary>
+            <param name="extensionInfo">The extension info.</param>
+        </member>
+        <member name="P:OrchardCore.Themes.Models.ThemeEntry.Extension">
+            <summary>
+            The theme's extension info.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Themes.Models.ThemeEntry.Enabled">
+            <summary>
+            Boolean value indicating whether the theme is enabled.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Themes.Models.ThemeEntry.NeedsUpdate">
+            <summary>
+            Boolean value indicating whether the theme needs a data update / migration.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Themes.Models.ThemeEntry.NeedsVersionUpdate">
+            <summary>
+            Boolean value indicating if the module needs a version update.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Themes.Models.ThemeEntry.IsRecentlyInstalled">
+            <summary>
+            Boolean value indicating if the feature was recently installed.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Themes.Models.ThemeEntry.CanUninstall">
+            <summary>
+            Boolean value indicating if the theme can be uninstalled.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Themes.Models.ThemeEntry.Notifications">
+            <summary>
+            List of theme notifications.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Themes.Models.ThemeEntry.Name">
+            <summary>
+            The theme's name.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Themes.Models.ThemeEntry.IsAdmin">
+            <summary>
+            Boolean value indicating whether this is an admin theme.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Themes.Models.ThemeEntry.IsCurrent">
+            <summary>
+            Boolean value indicating whether this is the current theme.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Themes.Recipes.ThemesStep">
+            <summary>
+            This recipe step defines the site and admin current themes.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Themes.Services.SiteThemeSelector">
+            <summary>
+            Provides the theme defined in the site configuration for the current scope (request).
+            The same <see cref="T:OrchardCore.DisplayManagement.Theming.ThemeSelectorResult"/> is returned if called multiple times
+            during the same scope.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Themes.Services.ThemeService.EnableFeaturesAsync(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Enables a list of features.
+            </summary>
+            <param name="featureIds">The IDs for the features to be enabled.</param>
+        </member>
+        <member name="M:OrchardCore.Themes.Services.ThemeService.EnableFeaturesAsync(System.Collections.Generic.IEnumerable{System.String},System.Boolean)">
+            <summary>
+            Enables a list of features.
+            </summary>
+            <param name="featureIds">The IDs for the features to be enabled.</param>
+            <param name="force">Boolean parameter indicating if the feature should enable it's dependencies if required or fail otherwise.</param>
+        </member>
+        <member name="M:OrchardCore.Themes.Services.ThemeService.DisableFeaturesAsync(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Disables a list of features.
+            </summary>
+            <param name="featureIds">The IDs for the features to be disabled.</param>
+        </member>
+        <member name="M:OrchardCore.Themes.Services.ThemeService.DisableFeaturesAsync(System.Collections.Generic.IEnumerable{System.String},System.Boolean)">
+            <summary>
+            Disables a list of features.
+            </summary>
+            <param name="featureIds">The IDs for the features to be disabled.</param>
+            <param name="force">Boolean parameter indicating if the feature should disable the features which depend on it if required or fail otherwise.</param>
+        </member>
+        <member name="T:OrchardCore.Themes.Startup">
+            <summary>
+            These services are registered on the tenant service collection
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.HealthChecks</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.HealthChecks.HealthChecksOptions">
+            <summary>
+            Represents a programmable health chekcs options.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.HealthChecks.HealthChecksOptions.Url">
+            <summary>
+            Gets or sets the health check URL. Default to "/health/live".
+            </summary>
+        </member>
+    </members>
+</doc>

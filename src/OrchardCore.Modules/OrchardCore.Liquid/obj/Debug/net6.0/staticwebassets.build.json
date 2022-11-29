@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "/i7/eXKz9Ss9A/IDpDEojMfSMZQi246bwJ9T3Zjt7bw=",
+  "Source": "OrchardCore.Liquid",
+  "BasePath": "_content/OrchardCore.Liquid",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.Liquid\\wwwroot",
+      "Source": "OrchardCore.Liquid",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Liquid\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Liquid",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

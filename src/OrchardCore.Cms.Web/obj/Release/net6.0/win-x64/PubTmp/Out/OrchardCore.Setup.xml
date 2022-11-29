@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Setup</name>
+    </assembly>
+    <members>
+        <member name="P:OrchardCore.Setup.ViewModels.SetupViewModel.DatabaseConfigurationPreset">
+            <summary>
+            True if the database configuration is preset and can't be changed or displayed on the Setup screen.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Localization.ModularPoFileLocationProvider">
+            <summary>
+            Represents a localization provider to provide the locations of the modules PO files.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.ModularPoFileLocationProvider.#ctor(OrchardCore.Environment.Extensions.IExtensionManager,Microsoft.Extensions.Hosting.IHostEnvironment,Microsoft.Extensions.Options.IOptions{OrchardCore.Environment.Shell.ShellOptions},Microsoft.Extensions.Options.IOptions{Microsoft.Extensions.Localization.LocalizationOptions},OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Creates a new intance of the <see cref="T:OrchardCore.Localization.ModularPoFileLocationProvider"/>.
+            </summary>
+            <param name="extensionsManager">The <see cref="T:OrchardCore.Environment.Extensions.IExtensionManager"/>.</param>
+            <param name="hostingEnvironment">The <see cref="T:Microsoft.Extensions.Hosting.IHostEnvironment"/>.</param>
+            <param name="shellOptions">The <see cref="T:OrchardCore.Environment.Shell.ShellOptions"/>.</param>
+            <param name="localizationOptions">The <see cref="T:Microsoft.Extensions.Localization.LocalizationOptions"/>.</param>
+            <param name="shellSettings">The <see cref="T:OrchardCore.Environment.Shell.ShellSettings"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.ModularPoFileLocationProvider.GetLocations(System.String)">
+            <inheritdocs />
+        </member>
+    </members>
+</doc>

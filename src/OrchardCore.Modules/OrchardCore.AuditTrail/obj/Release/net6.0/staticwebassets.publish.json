@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "s1dQ34ezc14zje7TfpP3GS9UyMH37ARTxB6JQicMkmM=",
+  "Source": "OrchardCore.AuditTrail",
+  "BasePath": "_content/OrchardCore.AuditTrail",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

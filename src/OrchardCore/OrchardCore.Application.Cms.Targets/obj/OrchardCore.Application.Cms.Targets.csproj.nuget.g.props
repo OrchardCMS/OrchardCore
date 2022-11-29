@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <RestoreSuccess Condition=" '$(RestoreSuccess)' == '' ">True</RestoreSuccess>
+    <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
+    <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">C:\Users\stloethe\.nuget\packages\;C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages</NuGetPackageFolders>
+    <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
+    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">6.5.0</NuGetToolVersion>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <SourceRoot Include="C:\Users\stloethe\.nuget\packages\" />
+    <SourceRoot Include="C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages\" />
+  </ItemGroup>
+  <ImportGroup Condition=" '$(TargetFramework)' == '' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.common\1.1.1\buildMultiTargeting\Microsoft.SourceLink.Common.props" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.common\1.1.1\buildMultiTargeting\Microsoft.SourceLink.Common.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.build.tasks.git\1.1.1\buildMultiTargeting\Microsoft.Build.Tasks.Git.props" Condition="Exists('$(NuGetPackageRoot)microsoft.build.tasks.git\1.1.1\buildMultiTargeting\Microsoft.Build.Tasks.Git.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.github\1.1.1\buildMultiTargeting\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.github\1.1.1\buildMultiTargeting\Microsoft.SourceLink.GitHub.props')" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(TargetFramework)' == 'net6.0' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.common\1.1.1\build\Microsoft.SourceLink.Common.props" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.common\1.1.1\build\Microsoft.SourceLink.Common.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.build.tasks.git\1.1.1\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('$(NuGetPackageRoot)microsoft.build.tasks.git\1.1.1\build\Microsoft.Build.Tasks.Git.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.github\1.1.1\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.github\1.1.1\build\Microsoft.SourceLink.GitHub.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.zh-tw\1.5.0\buildTransitive\OrchardCore.Translations.zh-TW.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.zh-tw\1.5.0\buildTransitive\OrchardCore.Translations.zh-TW.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.zh-cn\1.5.0\buildTransitive\OrchardCore.Translations.zh-CN.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.zh-cn\1.5.0\buildTransitive\OrchardCore.Translations.zh-CN.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.vi\1.5.0\buildTransitive\OrchardCore.Translations.vi.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.vi\1.5.0\buildTransitive\OrchardCore.Translations.vi.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.tr\1.5.0\buildTransitive\OrchardCore.Translations.tr.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.tr\1.5.0\buildTransitive\OrchardCore.Translations.tr.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.sv\1.5.0\buildTransitive\OrchardCore.Translations.sv.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.sv\1.5.0\buildTransitive\OrchardCore.Translations.sv.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.ru\1.5.0\buildTransitive\OrchardCore.Translations.ru.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.ru\1.5.0\buildTransitive\OrchardCore.Translations.ru.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.pt-br\1.5.0\buildTransitive\OrchardCore.Translations.pt-BR.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.pt-br\1.5.0\buildTransitive\OrchardCore.Translations.pt-BR.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.pl\1.5.0\buildTransitive\OrchardCore.Translations.pl.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.pl\1.5.0\buildTransitive\OrchardCore.Translations.pl.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.mk\1.5.0\buildTransitive\OrchardCore.Translations.mk.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.mk\1.5.0\buildTransitive\OrchardCore.Translations.mk.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.ja\1.5.0\buildTransitive\OrchardCore.Translations.ja.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.ja\1.5.0\buildTransitive\OrchardCore.Translations.ja.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.it\1.5.0\buildTransitive\OrchardCore.Translations.it.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.it\1.5.0\buildTransitive\OrchardCore.Translations.it.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.fr\1.5.0\buildTransitive\OrchardCore.Translations.fr.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.fr\1.5.0\buildTransitive\OrchardCore.Translations.fr.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.fi\1.5.0\buildTransitive\OrchardCore.Translations.fi.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.fi\1.5.0\buildTransitive\OrchardCore.Translations.fi.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.fa\1.5.0\buildTransitive\OrchardCore.Translations.fa.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.fa\1.5.0\buildTransitive\OrchardCore.Translations.fa.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.es\1.5.0\buildTransitive\OrchardCore.Translations.es.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.es\1.5.0\buildTransitive\OrchardCore.Translations.es.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.el\1.5.0\buildTransitive\OrchardCore.Translations.el.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.el\1.5.0\buildTransitive\OrchardCore.Translations.el.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.de\1.5.0\buildTransitive\OrchardCore.Translations.de.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.de\1.5.0\buildTransitive\OrchardCore.Translations.de.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.cs\1.5.0\buildTransitive\OrchardCore.Translations.cs.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.cs\1.5.0\buildTransitive\OrchardCore.Translations.cs.props')" />
+    <Import Project="$(NuGetPackageRoot)orchardcore.translations.ar\1.5.0\buildTransitive\OrchardCore.Translations.ar.props" Condition="Exists('$(NuGetPackageRoot)orchardcore.translations.ar\1.5.0\buildTransitive\OrchardCore.Translations.ar.props')" />
+  </ImportGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+    <PkgMicrosoft_SourceLink_Common Condition=" '$(PkgMicrosoft_SourceLink_Common)' == '' ">C:\Users\stloethe\.nuget\packages\microsoft.sourcelink.common\1.1.1</PkgMicrosoft_SourceLink_Common>
+    <PkgMicrosoft_Build_Tasks_Git Condition=" '$(PkgMicrosoft_Build_Tasks_Git)' == '' ">C:\Users\stloethe\.nuget\packages\microsoft.build.tasks.git\1.1.1</PkgMicrosoft_Build_Tasks_Git>
+    <PkgMicrosoft_SourceLink_GitHub Condition=" '$(PkgMicrosoft_SourceLink_GitHub)' == '' ">C:\Users\stloethe\.nuget\packages\microsoft.sourcelink.github\1.1.1</PkgMicrosoft_SourceLink_GitHub>
+    <PkgMicrosoft_CodeAnalysis_Analyzers Condition=" '$(PkgMicrosoft_CodeAnalysis_Analyzers)' == '' ">C:\Users\stloethe\.nuget\packages\microsoft.codeanalysis.analyzers\3.3.2</PkgMicrosoft_CodeAnalysis_Analyzers>
+    <PkgLucene_Net Condition=" '$(PkgLucene_Net)' == '' ">C:\Users\stloethe\.nuget\packages\lucene.net\4.8.0-beta00016</PkgLucene_Net>
+    <PkgAWSSDK_Core Condition=" '$(PkgAWSSDK_Core)' == '' ">C:\Users\stloethe\.nuget\packages\awssdk.core\3.7.11.10</PkgAWSSDK_Core>
+    <PkgAWSSDK_SecurityToken Condition=" '$(PkgAWSSDK_SecurityToken)' == '' ">C:\Users\stloethe\.nuget\packages\awssdk.securitytoken\3.7.1.159</PkgAWSSDK_SecurityToken>
+    <PkgAWSSDK_S3 Condition=" '$(PkgAWSSDK_S3)' == '' ">C:\Users\stloethe\.nuget\packages\awssdk.s3\3.7.9.10</PkgAWSSDK_S3>
+  </PropertyGroup>
+</Project>

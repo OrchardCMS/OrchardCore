@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "dgSpecHash": "uiJfk/a10JhyGb4aaAlMpMT0nqn5rC/bxm4/C0fC0AKQ/4mSP/5dH50B8tebbu8LH7XbsI9wjpDjB/F3i29jng==",
+  "success": true,
+  "projectFilePath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Application.Targets\\OrchardCore.Application.Targets.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.build.tasks.git\\1.1.1\\microsoft.build.tasks.git.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.sourcelink.common\\1.1.1\\microsoft.sourcelink.common.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\microsoft.sourcelink.github\\1.1.1\\microsoft.sourcelink.github.1.1.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\ncrontab\\3.3.1\\ncrontab.3.3.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\nodatime\\3.1.5\\nodatime.3.1.5.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "C:\\Users\\stloethe\\.nuget\\packages\\zstring\\2.5.0\\zstring.2.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Redis.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Redis.RedisOptions">
+            <summary>
+            Configuration options for <see cref="T:OrchardCore.Redis.IRedisService"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Redis.RedisOptions.ConfigurationOptions">
+            <summary>
+            The configuration used to connect to Redis.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Redis.RedisOptions.Configuration">
+            <summary>
+            The configuration string used to connect to Redis.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Redis.RedisOptions.InstancePrefix">
+            <summary>
+            Prefix alowing a Redis instance to be shared.
+            </summary>
+        </member>
+    </members>
+</doc>

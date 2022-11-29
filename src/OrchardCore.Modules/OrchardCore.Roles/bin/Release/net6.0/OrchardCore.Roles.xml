@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Roles</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Roles.Deployment.AllRolesDeploymentStep">
+            <summary>
+            Adds roles to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Roles.Recipes.RolesStep">
+            <summary>
+            This recipe step creates a set of roles.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Roles.Services.RoleStore.LoadRolesAsync">
+            <summary>
+            Loads the roles document from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Roles.Services.RoleStore.GetRolesAsync">
+            <summary>
+            Gets the roles document from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Roles.Services.RoleStore.UpdateRolesAsync(OrchardCore.Roles.Models.RolesDocument)">
+            <summary>
+            Updates the store with the provided roles document and then updates the cache.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Roles.RolesPermissionsHandler">
+            <summary>
+            This authorization handler ensures that Anonymous and Authenticated permissions are checked.
+            </summary>
+        </member>
+    </members>
+</doc>

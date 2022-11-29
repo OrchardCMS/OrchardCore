@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "1aOEF9IGqksMd8e7O2/C38xxK28hf8KvqbAimuqVJ9k=",
+  "Source": "OrchardCore.Flows",
+  "BasePath": "_content/OrchardCore.Flows",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

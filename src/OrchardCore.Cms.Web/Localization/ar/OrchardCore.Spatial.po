@@ -1,0 +1,90 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Spatial.pot\n"
+"X-Crowdin-File-ID: 820\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Arabic\n"
+"Language: ar_SA\n"
+"PO-Revision-Date: 2022-10-11 20:29\n"
+
+#. updater.ModelState.AddModelError(Prefix, nameof(field.Latitude), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
+#. updater.ModelState.AddModelError(Prefix, nameof(field.Longitude), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
+#: OrchardCore.Spatial\Drivers\GeoPointFieldDisplayDriver.cs:68
+#: OrchardCore.Spatial\Drivers\GeoPointFieldDisplayDriver.cs:88
+msgctxt "OrchardCore.Spatial.Drivers.GeoPointFieldDisplayDriver"
+msgid "The {0} field is required."
+msgstr ""
+
+#. updater.ModelState.AddModelError(Prefix, nameof(viewModel.Latitude), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
+#. updater.ModelState.AddModelError(Prefix, nameof(viewModel.Longitude), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
+#: OrchardCore.Spatial\Drivers\GeoPointFieldDisplayDriver.cs:77
+#: OrchardCore.Spatial\Drivers\GeoPointFieldDisplayDriver.cs:97
+msgctxt "OrchardCore.Spatial.Drivers.GeoPointFieldDisplayDriver"
+msgid "{0} is an invalid number."
+msgstr ""
+
+#. <label asp-for="Latitude">@T["Latitude"]</label>
+#: OrchardCore.Spatial\Views\GeoPointField-Leaflet.Edit.cshtml:11
+msgctxt "OrchardCore.Spatial.Views.GeoPointField-Leaflet.Edit"
+msgid "Latitude"
+msgstr ""
+
+#. <label asp-for="Longitude">@T["Longitude"]</label>
+#: OrchardCore.Spatial\Views\GeoPointField-Leaflet.Edit.cshtml:19
+msgctxt "OrchardCore.Spatial.Views.GeoPointField-Leaflet.Edit"
+msgid "Longitude"
+msgstr ""
+
+#. <option value="Leaflet" selected="@(currentEditor == "Leaflet")">@T["Leaflet editor"]</option>
+#: OrchardCore.Spatial\Views\GeoPointField-Leaflet.Option.cshtml:4
+msgctxt "OrchardCore.Spatial.Views.GeoPointField-Leaflet.Option"
+msgid "Leaflet editor"
+msgstr ""
+
+#. <label asp-for="Latitude">@T["Latitude"]</label>
+#: OrchardCore.Spatial\Views\GeoPointField.Edit.cshtml:12
+msgctxt "OrchardCore.Spatial.Views.GeoPointField.Edit"
+msgid "Latitude"
+msgstr ""
+
+#. <label asp-for="Longitude">@T["Longitude"]</label>
+#: OrchardCore.Spatial\Views\GeoPointField.Edit.cshtml:20
+msgctxt "OrchardCore.Spatial.Views.GeoPointField.Edit"
+msgid "Longitude"
+msgstr ""
+
+#. <option value="" selected="@string.IsNullOrEmpty(currentEditor)">@T["Standard"]</option>
+#: OrchardCore.Spatial\Views\GeoPointField.Option.cshtml:4
+msgctxt "OrchardCore.Spatial.Views.GeoPointField.Option"
+msgid "Standard"
+msgstr ""
+
+#. <label class="form-check-label" asp-for="Required">@T["Required"]</label>
+#: OrchardCore.Spatial\Views\GeoPointFieldSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Spatial.Views.GeoPointFieldSettings.Edit"
+msgid "Required"
+msgstr ""
+
+#. <span class="hint dashed">@T["Whether a value is required."]</span>
+#: OrchardCore.Spatial\Views\GeoPointFieldSettings.Edit.cshtml:7
+msgctxt "OrchardCore.Spatial.Views.GeoPointFieldSettings.Edit"
+msgid "Whether a value is required."
+msgstr ""
+
+#. <label asp-for="Hint">@T["Hint"]</label>
+#: OrchardCore.Spatial\Views\GeoPointFieldSettings.Edit.cshtml:13
+msgctxt "OrchardCore.Spatial.Views.GeoPointFieldSettings.Edit"
+msgid "Hint"
+msgstr ""
+
+#. <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+#: OrchardCore.Spatial\Views\GeoPointFieldSettings.Edit.cshtml:16
+msgctxt "OrchardCore.Spatial.Views.GeoPointFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr ""
+

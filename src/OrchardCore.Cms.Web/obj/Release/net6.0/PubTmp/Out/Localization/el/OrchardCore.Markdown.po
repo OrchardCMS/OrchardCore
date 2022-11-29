@@ -1,0 +1,182 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: el\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Markdown.pot\n"
+"X-Crowdin-File-ID: 774\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Greek\n"
+"Language: el_GR\n"
+"PO-Revision-Date: 2022-10-11 20:16\n"
+
+#. updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+#: OrchardCore.Markdown\Drivers\MarkdownBodyPartDisplayDriver.cs:75
+msgctxt "OrchardCore.Markdown.Drivers.MarkdownBodyPartDisplayDriver"
+msgid "{0} doesn't contain a valid Liquid expression. Details: {1}"
+msgstr "Το {0} δεν περιέχει έγκυρη Liquid έκφραση. Λεπτομέρειες: {1}"
+
+#. updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} field doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
+#: OrchardCore.Markdown\Drivers\MarkdownFieldDriver.cs:105
+msgctxt "OrchardCore.Markdown.Drivers.MarkdownFieldDisplayDriver"
+msgid "{0} field doesn't contain a valid Liquid expression. Details: {1}"
+msgstr "Το πεδίο {0} δεν περιέχει μια έγκυρη έκφραση Liquid. Λεπτομέρειες: {1}"
+
+#. Description = S["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
+#: OrchardCore.Markdown\GraphQL\MarkdownBodyQueryObjectType.cs:28
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownBodyQueryObjectType"
+msgid "Content stored as Markdown. You can also query the HTML interpreted version of Markdown."
+msgstr "Το περιεχόμενο αποθηκεύεται ως Markdown. Μπορείτε επίσης να αναζητήσετε την ερμηνευμένη έκδοση HTML του Markdown."
+
+#. .Description(S["the markdown value"]);
+#: OrchardCore.Markdown\GraphQL\MarkdownBodyQueryObjectType.cs:31
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownBodyQueryObjectType"
+msgid "the markdown value"
+msgstr "η τιμή markdown"
+
+#. .Description(S["the HTML representation of the markdown content"])
+#: OrchardCore.Markdown\GraphQL\MarkdownBodyQueryObjectType.cs:34
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownBodyQueryObjectType"
+msgid "the HTML representation of the markdown content"
+msgstr "την αναπαράσταση HTML του markdown περιεχομένου"
+
+#. Description = S["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
+#: OrchardCore.Markdown\GraphQL\MarkdownFieldQueryObjectType.cs:30
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownFieldQueryObjectType"
+msgid "Content stored as Markdown. You can also query the HTML interpreted version of Markdown."
+msgstr "Το περιεχόμενο αποθηκεύεται ως Markdown. Μπορείτε επίσης να αναζητήσετε την ερμηνευμένη έκδοση HTML του Markdown."
+
+#. .Description(S["the markdown value"]);
+#: OrchardCore.Markdown\GraphQL\MarkdownFieldQueryObjectType.cs:33
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownFieldQueryObjectType"
+msgid "the markdown value"
+msgstr "η τιμή markdown"
+
+#. .Description(S["the HTML representation of the markdown content"])
+#: OrchardCore.Markdown\GraphQL\MarkdownFieldQueryObjectType.cs:36
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownFieldQueryObjectType"
+msgid "the HTML representation of the markdown content"
+msgstr "την αναπαράσταση HTML του περιεχομένου markdown"
+
+#. <span class="hint">@T["The markdown text of the content item."]</span>
+#: OrchardCore.Markdown\Views\MarkdownBodyPart-Wysiwyg.Edit.cshtml:19
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart-Wysiwyg.Edit"
+msgid "The markdown text of the content item."
+msgstr "Το κείμενο markdown του στοιχείου περιεχομένου."
+
+#. <option value="Wysiwyg" selected="@(currentEditor == "Wysiwyg")">@T["Wysiwyg editor"]</option>
+#: OrchardCore.Markdown\Views\MarkdownBodyPart-Wysiwyg.Option.cshtml:4
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart-Wysiwyg.Option"
+msgid "Wysiwyg editor"
+msgstr "Επεξεργαστή Κειμένου Wysiwyg"
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentDisplayMode)">@T["Standard"]</option>
+#: OrchardCore.Markdown\Views\MarkdownBodyPart.DisplayOption.cshtml:4
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart.DisplayOption"
+msgid "Standard"
+msgstr "Καθιερωμένο"
+
+#. <span class="hint">@T["The body of the content item, in Markdown format."]</span>
+#: OrchardCore.Markdown\Views\MarkdownBodyPart.Edit.cshtml:17
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart.Edit"
+msgid "The body of the content item, in Markdown format."
+msgstr "Το σώμα του στοιχείου περιεχομένου, σε μορφή Markdown."
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentEditor)">@T["Standard"]</option>
+#: OrchardCore.Markdown\Views\MarkdownBodyPart.Option.cshtml:4
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart.Option"
+msgid "Standard"
+msgstr "Τυπικό"
+
+#. <label class="form-check-label" asp-for="SanitizeHtml">@T["Sanitize Html"]</label>
+#: OrchardCore.Markdown\Views\MarkdownBodyPartSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPartSettings.Edit"
+msgid "Sanitize Html"
+msgstr "Απολύμανση Html"
+
+#. @T["Whether the Html output from the Markdown is sanitized to prevent custom scripts."]
+#: OrchardCore.Markdown\Views\MarkdownBodyPartSettings.Edit.cshtml:8
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPartSettings.Edit"
+msgid "Whether the Html output from the Markdown is sanitized to prevent custom scripts."
+msgstr "Εάν η έξοδος Html από το Markdown απολυμαίνεται για την αποτροπή προσαρμοσμένων σεναρίων scripts."
+
+#. <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/core/Sanitizer" target="_blank">@T["See documentation"]</a>
+#: OrchardCore.Markdown\Views\MarkdownBodyPartSettings.Edit.cshtml:9
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPartSettings.Edit"
+msgid "See documentation"
+msgstr "Δείτε την τεκμηρίωση"
+
+#. <option value="TextArea" selected="@(currentEditor == "TextArea")">@T["Multi-line"]</option>
+#: OrchardCore.Markdown\Views\MarkdownField-TextArea.Option.cshtml:4
+msgctxt "OrchardCore.Markdown.Views.MarkdownField-TextArea.Option"
+msgid "Multi-line"
+msgstr "Πολλαπλών γραμμών"
+
+#. <option value="Wysiwyg" selected="@(currentEditor == "Wysiwyg")">@T["Wysiwyg editor"]</option>
+#: OrchardCore.Markdown\Views\MarkdownField-Wysiwyg.Option.cshtml:4
+msgctxt "OrchardCore.Markdown.Views.MarkdownField-Wysiwyg.Option"
+msgid "Wysiwyg editor"
+msgstr "Επεξεργαστή Κειμένου Wysiwyg"
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentDisplayMode)">@T["Standard"]</option>
+#: OrchardCore.Markdown\Views\MarkdownField.DisplayOption.cshtml:4
+msgctxt "OrchardCore.Markdown.Views.MarkdownField.DisplayOption"
+msgid "Standard"
+msgstr "Καθιερωμένο"
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentEditor)">@T["Standard"]</option>
+#: OrchardCore.Markdown\Views\MarkdownField.Option.cshtml:4
+msgctxt "OrchardCore.Markdown.Views.MarkdownField.Option"
+msgid "Standard"
+msgstr "Τυπικό"
+
+#. <label asp-for="Hint">@T["Hint"]</label>
+#: OrchardCore.Markdown\Views\MarkdownFieldSettings.Edit.cshtml:5
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
+msgid "Hint"
+msgstr "Υπόδειξη"
+
+#. <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+#: OrchardCore.Markdown\Views\MarkdownFieldSettings.Edit.cshtml:7
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr "Το κείμενο υπόδειξης που θα εμφανιστεί για αυτό το πεδίο στον editor."
+
+#. <label class="form-check-label" asp-for="SanitizeHtml">@T["Sanitize Html"]</label>
+#: OrchardCore.Markdown\Views\MarkdownFieldSettings.Edit.cshtml:14
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
+msgid "Sanitize Html"
+msgstr "Απολύμανση Html"
+
+#. @T["Whether the Html output is sanitized to prevent custom scripts."]
+#: OrchardCore.Markdown\Views\MarkdownFieldSettings.Edit.cshtml:16
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
+msgid "Whether the Html output is sanitized to prevent custom scripts."
+msgstr "Εάν η έξοδος Html απολυμαίνεται για την αποτροπή προσαρμοσμένων σεναρίων scripts."
+
+#. <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/core/Sanitizer" target="_blank">@T["See documentation"]</a>
+#: OrchardCore.Markdown\Views\MarkdownFieldSettings.Edit.cshtml:17
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
+msgid "See documentation"
+msgstr "Δείτε την τεκμηρίωση"
+
+#. <h5 class="modal-title">@T["Select Media"]</h5>
+#: OrchardCore.Markdown\Views\Media-MarkdownBodyPart.Modal.cshtml:7
+msgctxt "OrchardCore.Markdown.Views.Media-MarkdownBodyPart.Modal"
+msgid "Select Media"
+msgstr "Επιλογή Πολυμέσων"
+
+#. <button type="button" class="btn btn-primary" id="mediaMarkdownSelectButton">@T["OK"]</button>
+#: OrchardCore.Markdown\Views\Media-MarkdownBodyPart.Modal.cshtml:13
+msgctxt "OrchardCore.Markdown.Views.Media-MarkdownBodyPart.Modal"
+msgid "OK"
+msgstr "Εντάξει"
+
+#. <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+#: OrchardCore.Markdown\Views\Media-MarkdownBodyPart.Modal.cshtml:14
+msgctxt "OrchardCore.Markdown.Views.Media-MarkdownBodyPart.Modal"
+msgid "Cancel"
+msgstr "Άκυρο"
+

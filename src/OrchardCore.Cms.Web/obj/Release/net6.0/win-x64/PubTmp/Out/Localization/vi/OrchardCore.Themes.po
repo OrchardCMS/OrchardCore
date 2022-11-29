@@ -1,0 +1,206 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: vi\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Themes.pot\n"
+"X-Crowdin-File-ID: 830\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"PO-Revision-Date: 2022-05-05 19:18\n"
+
+#. .Add(S["Design"], NavigationConstants.AdminMenuDesignPosition, design => design
+#: OrchardCore.Themes\AdminMenu.cs:25
+msgctxt "OrchardCore.Themes.AdminMenu"
+msgid "Design"
+msgstr "Thiết kế"
+
+#. .Add(S["Themes"], S["Themes"].PrefixPosition(), installed => installed
+#. .Add(S["Themes"], S["Themes"].PrefixPosition(), installed => installed
+#: OrchardCore.Themes\AdminMenu.cs:27
+#: OrchardCore.Themes\AdminMenu.cs:27
+msgctxt "OrchardCore.Themes.AdminMenu"
+msgid "Themes"
+msgstr "Chủ đề"
+
+#. await _notifier.SuccessAsync(H["{0} was enabled", feature.Name ?? feature.Id]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:146
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "{0} was enabled"
+msgstr "{0} đã được kích hoạt"
+
+#. await _notifier.SuccessAsync(H["{0} was set as the default {1} theme", feature.Name ?? feature.Id, isAdmin ? "Admin" : "Site"]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:149
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "{0} was set as the default {1} theme"
+msgstr "{0} đã được đặt là chủ đề {1} mặc định"
+
+#. await _notifier.SuccessAsync(H["The Site theme was reset."]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:166
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "The Site theme was reset."
+msgstr "Chủ đề trang web đã được đặt lại."
+
+#. await _notifier.SuccessAsync(H["The Admin theme was reset."]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:181
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "The Admin theme was reset."
+msgstr "Chủ đề quản trị đã được đặt lại."
+
+#. await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name ?? feature.Id]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:204
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "{0} was disabled."
+msgstr ""
+
+#. await _notifier.SuccessAsync(H["{0} was enabled.", feature.Name ?? feature.Id]);
+#: OrchardCore.Themes\Controllers\AdminController.cs:227
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "{0} was enabled."
+msgstr ""
+
+#. throw new InvalidOperationException(H["The theme \"{0}\" is already in the stack of themes that need features disabled.", themeName].ToString());
+#: OrchardCore.Themes\Services\ThemeService.cs:42
+msgctxt "OrchardCore.Themes.Services.ThemeService"
+msgid "The theme \"{0}\" is already in the stack of themes that need features disabled."
+msgstr "Chủ đề \"{0}\" đã ở trong số các chủ đề cần những tính năng đã vô hiệu hóa."
+
+#. throw new InvalidOperationException(H["The theme \"{0}\" is already in the stack of themes that need features enabled.", themeName].ToString());
+#: OrchardCore.Themes\Services\ThemeService.cs:73
+msgctxt "OrchardCore.Themes.Services.ThemeService"
+msgid "The theme \"{0}\" is already in the stack of themes that need features enabled."
+msgstr "Chủ đề \"{0}\" đã ở trong số các chủ đề cần những tính năng đã kích hoạt."
+
+#. await _notifier.SuccessAsync(H["{0} was enabled.", enabledFeature.Name]);
+#: OrchardCore.Themes\Services\ThemeService.cs:114
+msgctxt "OrchardCore.Themes.Services.ThemeService"
+msgid "{0} was enabled."
+msgstr "{0} đã được kích hoạt."
+
+#. await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name]);
+#: OrchardCore.Themes\Services\ThemeService.cs:141
+msgctxt "OrchardCore.Themes.Services.ThemeService"
+msgid "{0} was disabled."
+msgstr "{0} đã bị vô hiệu hoá."
+
+#. <span class="icon"><i class="fas fa-desktop" aria-hidden="true"></i></span><span class="title">@T["Design"]</span>
+#: OrchardCore.Themes\Views\NavigationItemText-themes.Id.cshtml:1
+msgctxt "OrchardCore.Themes.Views.NavigationItemText-themes.Id"
+msgid "Design"
+msgstr "Thiết kế"
+
+#. <zone Name="Title"><h1>@RenderTitleSegments(T["Themes"])</h1></zone>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:3
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Themes"
+msgstr "Các mẫu giao diện"
+
+#. <p>@T["There are no themes installed."]</p>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:7
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "There are no themes installed."
+msgstr "Chưa có chủ đề nào được cài đặt."
+
+#. <button type="submit" class="btn btn-sm btn-primary">@T["Make Current"]</button>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:44
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Make Current"
+msgstr ""
+
+#. <button type="submit" class="btn btn-sm btn-secondary">@T["Disable"]</button>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:51
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Disable"
+msgstr "Vô hiệu hoá"
+
+#. <button type="submit" class="btn btn-sm btn-secondary">@T["Enable"]</button>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:57
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Enable"
+msgstr "Kích hoạt"
+
+#. <span class="text-muted">@T["This is the current Admin theme"]</span>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:67
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "This is the current Admin theme"
+msgstr "Đây là chủ đề Quản trị hiện tại"
+
+#. <span class="text-muted">@T["This is the current Site theme"]</span>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:71
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "This is the current Site theme"
+msgstr "Đây là chủ đề Website hiện tại"
+
+#. <h4>@T["Reset current themes"]</h4>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:81
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Reset current themes"
+msgstr "Đặt lại chủ đề hiện tại"
+
+#. <p>@T["The following actions reset the themes. It is used for sites that can't use theming."]</p>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:82
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "The following actions reset the themes. It is used for sites that can't use theming."
+msgstr "Các hành động sau đây thiết lập lại các chủ đề. Nó được sử dụng cho các website không thể sử dụng chủ đề."
+
+#. <a asp-action="ResetSiteTheme" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Reset Site Theme"]" data-message="@T["Are you sure you want to reset the Site theme?"]" class="btn btn-danger">@T["Reset Site Theme"]</a>
+#. <a asp-action="ResetSiteTheme" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Reset Site Theme"]" data-message="@T["Are you sure you want to reset the Site theme?"]" class="btn btn-danger">@T["Reset Site Theme"]</a>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:83
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:83
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Reset Site Theme"
+msgstr "Thiết lập lại Chủ đề Website"
+
+#. <a asp-action="ResetSiteTheme" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Reset Site Theme"]" data-message="@T["Are you sure you want to reset the Site theme?"]" class="btn btn-danger">@T["Reset Site Theme"]</a>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:83
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Are you sure you want to reset the Site theme?"
+msgstr "Bạn có chắc muốn đặt lại chủ đề Website?"
+
+#. <a asp-action="ResetAdminTheme" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Reset Admin Theme"]" data-message="@T["Are you sure you want to reset the Admin theme?"]" class="btn btn-danger">@T["Reset Admin Theme"]</a>
+#. <a asp-action="ResetAdminTheme" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Reset Admin Theme"]" data-message="@T["Are you sure you want to reset the Admin theme?"]" class="btn btn-danger">@T["Reset Admin Theme"]</a>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:84
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:84
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Reset Admin Theme"
+msgstr "Đặt lại Chủ đề Trang quản trị"
+
+#. <a asp-action="ResetAdminTheme" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Reset Admin Theme"]" data-message="@T["Are you sure you want to reset the Admin theme?"]" class="btn btn-danger">@T["Reset Admin Theme"]</a>
+#: OrchardCore.Themes\Views\Admin\Index.cshtml:84
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Are you sure you want to reset the Admin theme?"
+msgstr "Bạn có chắc muốn đặt lại chủ đề trang Quản trị?"
+
+#. <h5>@T["Themes"]</h5>
+#: OrchardCore.Themes\Views\Items\ThemesDeploymentStep.Edit.cshtml:3
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Edit"
+msgid "Themes"
+msgstr "Chủ đề"
+
+#. <h5>@T["Themes"]</h5>
+#: OrchardCore.Themes\Views\Items\ThemesDeploymentStep.Summary.cshtml:3
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Summary"
+msgid "Themes"
+msgstr "Chủ đề"
+
+#. <span class="hint">@T["Adds the currently selected site theme and admin theme to the plan."]</span>
+#: OrchardCore.Themes\Views\Items\ThemesDeploymentStep.Summary.cshtml:5
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Summary"
+msgid "Adds the currently selected site theme and admin theme to the plan."
+msgstr "Thêm chủ đề website đã chọn và chủ đề trang quản trị vào kế hoạch."
+
+#. <h4 class="card-title">@T["Themes"]</h4>
+#: OrchardCore.Themes\Views\Items\ThemesDeploymentStep.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Thumbnail"
+msgid "Themes"
+msgstr "Chủ đề"
+
+#. <p>@T["Exports the currently selected site theme and admin theme."]</p>
+#: OrchardCore.Themes\Views\Items\ThemesDeploymentStep.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Thumbnail"
+msgid "Exports the currently selected site theme and admin theme."
+msgstr "Xuất chủ đề website đã chọn và chủ đề trang admin."
+

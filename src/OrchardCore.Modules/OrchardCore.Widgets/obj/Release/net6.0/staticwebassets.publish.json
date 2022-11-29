@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "dvcs69XPI9IMudI75xmcIK5JZyrVnxH7J7AA7GQOTL4=",
+  "Source": "OrchardCore.Widgets",
+  "BasePath": "_content/OrchardCore.Widgets",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

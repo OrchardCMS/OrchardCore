@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Title</name>
+    </assembly>
+    <members>
+        <member name="P:OrchardCore.Title.Models.TitlePartSettings.Options">
+            <summary>
+            Gets or sets whether a user can define a custom title
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Title.Models.TitlePartSettings.Pattern">
+            <summary>
+            The pattern used to build the Title.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Title.Models.TitlePartSettings.RenderTitle">
+            <summary>
+            Gets or sets whether to render the title in display views.
+            </summary>
+        </member>
+    </members>
+</doc>

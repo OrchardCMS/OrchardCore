@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Search</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Search.Deployment.SearchSettingsDeploymentStep">
+            <summary>
+            Adds layers to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Startup">
+            <summary>
+            These services are registered on the tenant service collection
+            </summary>
+        </member>
+    </members>
+</doc>

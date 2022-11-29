@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Shortcodes.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Shortcodes.Services.IShortcodeContextProvider">
+            <summary>
+            Implementations are able to provide a default context to the shortcode service.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Shortcodes.ShortcodeDescriptor.Name">
+            <summary>
+            The shortcode name.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Shortcodes.ShortcodeDescriptor.DefaultValue">
+            <summary>
+            The default value of the shortcode when selected.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Shortcodes.ShortcodeDescriptor.Hint">
+            <summary>
+            The hint text for the shortcode.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Shortcodes.ShortcodeDescriptor.Usage">
+            <summary>
+            The HTML usage description for the shortcode.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Shortcodes.ShortcodeDescriptor.Categories">
+            <summary>
+            The categories for the shortcode.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Shortcodes.ShortcodeOption.Name">
+            <summary>
+            The shortcode name.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Shortcodes.ShortcodeOption.DefaultValue">
+            <summary>
+            The default value of the shortcode when selected.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Shortcodes.ShortcodeOption.Hint">
+            <summary>
+            The hint text for the shortcode.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Shortcodes.ShortcodeOption.Usage">
+            <summary>
+            The HTML usage description for the shortcode.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Shortcodes.ShortcodeOption.Categories">
+            <summary>
+            The categories for the shortcode.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Shortcodes.ShortcodeOptions">
+            <summary>
+            Provides a way to register shortcodes for discovery.
+            </summary>
+        </member>
+    </members>
+</doc>

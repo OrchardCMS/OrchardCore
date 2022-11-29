@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Search.Elasticsearch</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Search.Elasticsearch.GraphQL.Startup">
+            <summary>
+            These services are registered on the tenant service collection
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Elasticsearch.Providers.ElasticSearchProvider">
+            <summary>
+            Creates an Elasticsearch SearchProvider.
+            </summary>
+        </member>
+    </members>
+</doc>

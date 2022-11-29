@@ -1,0 +1,140 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3;\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: cs\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Users.Core.pot\n"
+"X-Crowdin-File-ID: 836\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Czech\n"
+"Language: cs_CZ\n"
+"PO-Revision-Date: 2021-08-20 09:08\n"
+
+#. reportError("UserName", S["A user name is required."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:47
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "A user name is required."
+msgstr "Uživatelské jméno je povinné."
+
+#. reportError("Password", S["A password is required."]);
+#. reportError("Password", S["A password is required."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:53
+#: OrchardCore.Users.Core\Services\UserService.cs:182
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "A password is required."
+msgstr "Heslo je povinné."
+
+#. reportError(string.Empty, S["The specified username/password couple is invalid."]);
+#. reportError(string.Empty, S["The specified username/password couple is invalid."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:60
+#: OrchardCore.Users.Core\Services\UserService.cs:83
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "The specified username/password couple is invalid."
+msgstr "Zadané uživatelské jméno nebo heslo je neplatné."
+
+#. reportError(string.Empty, S["The user is locked out."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:68
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "The user is locked out."
+msgstr "Uživatel je uzamčen."
+
+#. reportError(string.Empty, S["The specified user is not allowed to sign in."]);
+#. reportError(string.Empty, S["The specified user is not allowed to sign in."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:73
+#: OrchardCore.Users.Core\Services\UserService.cs:89
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "The specified user is not allowed to sign in."
+msgstr "Zadaný uživatel nemá oprávnění přihlásit se."
+
+#. reportError(string.Empty, S["The specified user is not allowed to sign in using password authentication."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:78
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "The specified user is not allowed to sign in using password authentication."
+msgstr "Zadaný uživatel nemá oprávnění přihlásit se pomocí hesla."
+
+#. reportError("UserName", S["A email address is required."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:176
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "A email address is required."
+msgstr "E-mailová adresa je povinná."
+
+#. reportError("Token", S["A token is required."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:188
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "A token is required."
+msgstr "Token je povinný."
+
+#. reportError("Password", S["Passwords must have at least one digit character ('0'-'9')."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:243
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must have at least one digit character ('0'-'9')."
+msgstr "Heslo musí obsahovat alespoň jednu číslici ('0'-'9')."
+
+#. reportError("Password", S["Passwords must have at least one lowercase character ('a'-'z')."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:246
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must have at least one lowercase character ('a'-'z')."
+msgstr "Heslo musí obsahovat alespoň jedno malé písmeno ('a'-'z')."
+
+#. reportError("Password", S["Passwords must have at least one uppercase character ('A'-'Z')."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:249
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must have at least one uppercase character ('A'-'Z')."
+msgstr "Heslo musí obsahovat alespoň jedno velké písmeno ('A'-'Z')."
+
+#. reportError("Password", S["Passwords must have at least one non letter or digit character."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:252
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must have at least one non letter or digit character."
+msgstr "Heslo musí obsahovat alespoň jeden speciální znak."
+
+#. reportError("Password", S["Passwords must be at least {0} characters.", _identityOptions.Value.Password.RequiredLength]);
+#: OrchardCore.Users.Core\Services\UserService.cs:255
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must be at least {0} characters."
+msgstr "Heslo musí obsahovat alespoň {0} znaků."
+
+#. reportError("Password", S["Passwords must contain at least {0} unique characters.", _identityOptions.Value.Password.RequiredUniqueChars]);
+#: OrchardCore.Users.Core\Services\UserService.cs:258
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must contain at least {0} unique characters."
+msgstr "Heslo musí obsahovat alespoň {0} jedinečných znaků."
+
+#. reportError("CurrentPassword", S["Incorrect password."]);
+#: OrchardCore.Users.Core\Services\UserService.cs:263
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Incorrect password."
+msgstr "Chybné heslo."
+
+#. reportError("UserName", S["User name '{0}' is invalid, can only contain letters or digits.", user.UserName]);
+#: OrchardCore.Users.Core\Services\UserService.cs:268
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "User name '{0}' is invalid, can only contain letters or digits."
+msgstr "Uživatelské jméno \"{0}\" je neplatné, může obsahovat pouze písmena a číslice."
+
+#. reportError("UserName", S["User name '{0}' is already used.", user.UserName]);
+#: OrchardCore.Users.Core\Services\UserService.cs:271
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "User name '{0}' is already used."
+msgstr "Uživatelské jméno \"{0}\" se již používá."
+
+#. reportError("Email", S["Email '{0}' is already used.", user.Email]);
+#: OrchardCore.Users.Core\Services\UserService.cs:276
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Email '{0}' is already used."
+msgstr "Email \"{0}\" se již používá."
+
+#. reportError("Email", S["Email '{0}' is invalid.", user.Email]);
+#: OrchardCore.Users.Core\Services\UserService.cs:279
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Email '{0}' is invalid."
+msgstr "E-mail '{0}' je neplatný."
+
+#. reportError(string.Empty, S["Unexpected error: '{0}'.", error.Code]);
+#: OrchardCore.Users.Core\Services\UserService.cs:283
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Unexpected error: '{0}'."
+msgstr "Neočekávaná chyba: '{0}'."
+

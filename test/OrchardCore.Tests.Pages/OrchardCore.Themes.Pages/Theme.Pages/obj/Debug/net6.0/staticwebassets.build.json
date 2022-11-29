@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "yMjfrgobE8V+G3YJsjTlYHyyoud/MIalm6IsQXxFuQk=",
+  "Source": "Theme.Pages",
+  "BasePath": "_content/Theme.Pages",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "Theme.Pages\\wwwroot",
+      "Source": "Theme.Pages",
+      "ContentRoot": "C:\\repos\\loethenweb\\test\\OrchardCore.Tests.Pages\\OrchardCore.Themes.Pages\\Theme.Pages\\wwwroot\\",
+      "BasePath": "_content/Theme.Pages",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

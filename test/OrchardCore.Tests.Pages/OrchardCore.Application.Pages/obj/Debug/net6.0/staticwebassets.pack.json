@@ -1,0 +1,25 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\repos\\loethenweb\\test\\OrchardCore.Tests.Pages\\OrchardCore.Application.Pages\\wwwroot\\.placeholder",
+      "PackagePath": "staticwebassets\\.placeholder"
+    },
+    {
+      "Id": "obj\\Debug\\net6.0\\staticwebassets\\msbuild.OrchardCore.Application.Pages.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net6.0\\staticwebassets\\msbuild.build.OrchardCore.Application.Pages.props",
+      "PackagePath": "build\\OrchardCore.Application.Pages.props"
+    },
+    {
+      "Id": "obj\\Debug\\net6.0\\staticwebassets\\msbuild.buildMultiTargeting.OrchardCore.Application.Pages.props",
+      "PackagePath": "buildMultiTargeting\\OrchardCore.Application.Pages.props"
+    },
+    {
+      "Id": "obj\\Debug\\net6.0\\staticwebassets\\msbuild.buildTransitive.OrchardCore.Application.Pages.props",
+      "PackagePath": "buildTransitive\\OrchardCore.Application.Pages.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

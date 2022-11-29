@@ -1,0 +1,97 @@
+is_global = true
+build_property.TargetFramework = net6.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = OrchardCore.Markdown
+build_property.RootNamespace = OrchardCore.Markdown
+build_property.ProjectDir = C:\repos\loethenweb\src\OrchardCore.Modules\OrchardCore.Markdown\
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\repos\loethenweb\src\OrchardCore.Modules\OrchardCore.Markdown
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownBodyPart-Wysiwyg.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25Cb2R5UGFydC1XeXNpd3lnLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownBodyPart-Wysiwyg.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25Cb2R5UGFydC1XeXNpd3lnLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownBodyPart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25Cb2R5UGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownBodyPart.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25Cb2R5UGFydC5EaXNwbGF5T3B0aW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownBodyPart.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25Cb2R5UGFydC5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownBodyPart.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25Cb2R5UGFydC5PcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownBodyPart.Summary.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25Cb2R5UGFydC5TdW1tYXJ5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownBodyPartSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25Cb2R5UGFydFNldHRpbmdzLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownField-TextArea.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25GaWVsZC1UZXh0QXJlYS5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownField-TextArea.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25GaWVsZC1UZXh0QXJlYS5PcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownField-Wysiwyg.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25GaWVsZC1XeXNpd3lnLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownField-Wysiwyg.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25GaWVsZC1XeXNpd3lnLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25GaWVsZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownField.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25GaWVsZC5EaXNwbGF5T3B0aW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownField.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25GaWVsZC5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownField.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25GaWVsZC5PcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/MarkdownFieldSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2Rvd25GaWVsZFNldHRpbmdzLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/Media-MarkdownBodyPart.Modal.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVkaWEtTWFya2Rvd25Cb2R5UGFydC5Nb2RhbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/Media-MarkdownBodyPart.Wrapper.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVkaWEtTWFya2Rvd25Cb2R5UGFydC5XcmFwcGVyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.Markdown/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 

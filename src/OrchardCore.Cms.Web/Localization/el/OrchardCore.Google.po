@@ -1,0 +1,296 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: el\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Google.pot\n"
+"X-Crowdin-File-ID: 752\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Greek\n"
+"Language: el_GR\n"
+"PO-Revision-Date: 2022-05-05 18:56\n"
+
+#. builder.Add(S["Security"], security => security
+#: OrchardCore.Google\AdminMenu.cs:23
+msgctxt "OrchardCore.Google.GoogleAuthenticationAdminMenu"
+msgid "Security"
+msgstr "Ασφάλεια"
+
+#. .Add(S["Authentication"], authentication => authentication
+#: OrchardCore.Google\AdminMenu.cs:24
+msgctxt "OrchardCore.Google.GoogleAuthenticationAdminMenu"
+msgid "Authentication"
+msgstr "Ταυτοποίηση"
+
+#. .Add(S["Google"], S["Google"].PrefixPosition(), settings => settings
+#. .Add(S["Google"], S["Google"].PrefixPosition(), settings => settings
+#: OrchardCore.Google\AdminMenu.cs:25
+#: OrchardCore.Google\AdminMenu.cs:25
+msgctxt "OrchardCore.Google.GoogleAuthenticationAdminMenu"
+msgid "Google"
+msgstr "Google"
+
+#. builder.Add(S["Configuration"], configuration => configuration
+#: OrchardCore.Google\AdminMenu.cs:50
+msgctxt "OrchardCore.Google.GoogleAnalyticsAdminMenu"
+msgid "Configuration"
+msgstr "Παραμετροποίηση"
+
+#. .Add(S["Settings"], settings => settings
+#: OrchardCore.Google\AdminMenu.cs:51
+msgctxt "OrchardCore.Google.GoogleAnalyticsAdminMenu"
+msgid "Settings"
+msgstr "Ρυθμίσεις"
+
+#. .Add(S["Google Analytics"], S["Google Analytics"].PrefixPosition(), settings => settings
+#. .Add(S["Google Analytics"], S["Google Analytics"].PrefixPosition(), settings => settings
+#: OrchardCore.Google\AdminMenu.cs:52
+#: OrchardCore.Google\AdminMenu.cs:52
+msgctxt "OrchardCore.Google.GoogleAnalyticsAdminMenu"
+msgid "Google Analytics"
+msgstr "Google Analytics"
+
+#. builder.Add(S["Configuration"], configuration => configuration
+#: OrchardCore.Google\AdminMenu.cs:78
+msgctxt "OrchardCore.Google.GoogleTagManagerAdminMenu"
+msgid "Configuration"
+msgstr "Διαμόρφωση"
+
+#. .Add(S["Settings"], settings => settings
+#: OrchardCore.Google\AdminMenu.cs:79
+msgctxt "OrchardCore.Google.GoogleTagManagerAdminMenu"
+msgid "Settings"
+msgstr "Ρυθμίσεις"
+
+#. .Add(S["Google Tag Manager"], S["Google Tag Manager"].PrefixPosition(), settings => settings
+#. .Add(S["Google Tag Manager"], S["Google Tag Manager"].PrefixPosition(), settings => settings
+#: OrchardCore.Google\AdminMenu.cs:80
+#: OrchardCore.Google\AdminMenu.cs:80
+msgctxt "OrchardCore.Google.GoogleTagManagerAdminMenu"
+msgid "Google Tag Manager"
+msgstr "Διαχειριστής ετικετών Google"
+
+#. services.AddSiteSettingsPropertyDeploymentStep<GoogleAuthenticationSettings, GoogleAuthenticationDeploymentStartup>(S => S["Google Authentication Settings"], S => S["Exports the Google Authentication settings."]);
+#: OrchardCore.Google\Startup.cs:89
+msgctxt "OrchardCore.Google.GoogleAuthenticationDeploymentStartup"
+msgid "Google Authentication Settings"
+msgstr "Ρυθμίσεις Google Authentication"
+
+#. services.AddSiteSettingsPropertyDeploymentStep<GoogleAuthenticationSettings, GoogleAuthenticationDeploymentStartup>(S => S["Google Authentication Settings"], S => S["Exports the Google Authentication settings."]);
+#: OrchardCore.Google\Startup.cs:89
+msgctxt "OrchardCore.Google.GoogleAuthenticationDeploymentStartup"
+msgid "Exports the Google Authentication settings."
+msgstr "Εξάγει τις ρυθμίσεις Google Authentication."
+
+#. services.AddSiteSettingsPropertyDeploymentStep<GoogleAnalyticsSettings, GoogleAnalyticsDeploymentStartup>(S => S["Google Analytics Settings"], S => S["Exports the Google Analytics settings."]);
+#: OrchardCore.Google\Startup.cs:99
+msgctxt "OrchardCore.Google.GoogleAnalyticsDeploymentStartup"
+msgid "Google Analytics Settings"
+msgstr "Ρυθμίσεις Google Analytics"
+
+#. services.AddSiteSettingsPropertyDeploymentStep<GoogleAnalyticsSettings, GoogleAnalyticsDeploymentStartup>(S => S["Google Analytics Settings"], S => S["Exports the Google Analytics settings."]);
+#: OrchardCore.Google\Startup.cs:99
+msgctxt "OrchardCore.Google.GoogleAnalyticsDeploymentStartup"
+msgid "Exports the Google Analytics settings."
+msgstr "Εξάγει τις ρυθμίσεις του Google Analytics."
+
+#. services.AddSiteSettingsPropertyDeploymentStep<GoogleTagManagerSettings, GoogleTagManagerDeploymentStartup>(S => S["Google Tag Manager Settings"], S => S["Exports the Google Tag Manager settings."]);
+#: OrchardCore.Google\Startup.cs:109
+msgctxt "OrchardCore.Google.GoogleTagManagerDeploymentStartup"
+msgid "Google Tag Manager Settings"
+msgstr "Ρυθμίσεις Διαχειριστή ετικετών Google"
+
+#. services.AddSiteSettingsPropertyDeploymentStep<GoogleTagManagerSettings, GoogleTagManagerDeploymentStartup>(S => S["Google Tag Manager Settings"], S => S["Exports the Google Tag Manager settings."]);
+#: OrchardCore.Google\Startup.cs:109
+msgctxt "OrchardCore.Google.GoogleTagManagerDeploymentStartup"
+msgid "Exports the Google Tag Manager settings."
+msgstr "Εξάγει τις ρυθμίσεις του Διαχειριστή ετικετών Google."
+
+#. [Required(AllowEmptyStrings = false, ErrorMessage = "ClientID key is required")]
+#: OrchardCore.Google\Authentication\ViewModels\GoogleAuthenticationSettingsViewModel.cs:7
+msgctxt "OrchardCore.Google.Authentication.ViewModels.GoogleAuthenticationSettingsViewModel"
+msgid "ClientID key is required"
+msgstr "Το κλειδί ClientID είναι υποχρεωτικό"
+
+#. [Required(AllowEmptyStrings = false, ErrorMessage = "ClientSecret is required")]
+#: OrchardCore.Google\Authentication\ViewModels\GoogleAuthenticationSettingsViewModel.cs:10
+msgctxt "OrchardCore.Google.Authentication.ViewModels.GoogleAuthenticationSettingsViewModel"
+msgid "ClientSecret is required"
+msgstr "Το ClientSecret είναι υποχρεωτικό"
+
+#. [RegularExpression(@"\/[-A-Za-z0-9+&@#\/%?=~_|!:,.;]+[-A-Za-z0-9+&@#\/%=~_|]", ErrorMessage = "Invalid path")]
+#: OrchardCore.Google\Authentication\ViewModels\GoogleAuthenticationSettingsViewModel.cs:13
+msgctxt "OrchardCore.Google.Authentication.ViewModels.GoogleAuthenticationSettingsViewModel"
+msgid "Invalid path"
+msgstr "Μη έγκυρη διαδρομή"
+
+#. <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Google/#google-analytics" target="_blank">@T["See documentation"]</a>
+#: OrchardCore.Google\Views\GoogleAnalyticsSettings.Edit.cshtml:5
+msgctxt "OrchardCore.Google.Views.GoogleAnalyticsSettings.Edit"
+msgid "See documentation"
+msgstr "Δείτε την τεκμηρίωση"
+
+#. <h3>@T["Google Analytics Settings"]</h3>
+#: OrchardCore.Google\Views\GoogleAnalyticsSettings.Edit.cshtml:8
+msgctxt "OrchardCore.Google.Views.GoogleAnalyticsSettings.Edit"
+msgid "Google Analytics Settings"
+msgstr "Ρυθμίσεις Google Analytics"
+
+#. <label asp-for="TrackingID">@T["Tracking ID"]</label>
+#: OrchardCore.Google\Views\GoogleAnalyticsSettings.Edit.cshtml:12
+msgctxt "OrchardCore.Google.Views.GoogleAnalyticsSettings.Edit"
+msgid "Tracking ID"
+msgstr ""
+
+#. <span class="hint">@T["The tracking ID defined in your Google Analytics account."]</span>
+#: OrchardCore.Google\Views\GoogleAnalyticsSettings.Edit.cshtml:15
+msgctxt "OrchardCore.Google.Views.GoogleAnalyticsSettings.Edit"
+msgid "The tracking ID defined in your Google Analytics account."
+msgstr "Το ID παρακολούθησης που έχει οριστεί στο λογαριασμό σας στο Google Analytics."
+
+#. @T["The current tenant will be reloaded when the settings are saved."]
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:5
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr "Ο τρέχων ενοικιαστής θα φορτωθεί ξανά όταν αποθηκευτούν οι ρυθμίσεις."
+
+#. <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Google/#google-authentication" target="_blank">@T["See documentation"]</a>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "See documentation"
+msgstr "Δείτε την τεκμηρίωση"
+
+#. <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:11
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "An error occurred while decrypting a setting. Please apply and save."
+msgstr "Παρουσιάστηκε σφάλμα κατά την αποκρυπτογράφηση μιας ρύθμισης. Κάντε αίτηση και αποθηκεύστε."
+
+#. <h3>@T["Google Authentication Settings"]</h3>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:14
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "Google Authentication Settings"
+msgstr "Ρυθμίσεις Google Authentication"
+
+#. <label asp-for="ClientID">@T["Client ID"]</label>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:18
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "Client ID"
+msgstr "ID Πελάτη"
+
+#. <span class="hint">@T["The client id defined in Google API console for the application."]</span>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:21
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "The client id defined in Google API console for the application."
+msgstr "Το id πελάτη που ορίζεται στην κονσόλα API Google για την εφαρμογή."
+
+#. <label asp-for="ClientSecret">@T["API secret key"]</label>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:27
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "API secret key"
+msgstr "Μυστικό κλειδί API"
+
+#. <span class="hint">@T["The client secret defined in Google API console for the application."]</span>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:30
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "The client secret defined in Google API console for the application."
+msgstr "Το μυστικό πελάτη που ορίζεται στην κονσόλα API Google για την εφαρμογή."
+
+#. <label asp-for="CallbackPath">@T["CallbackPath"]</label>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:36
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "CallbackPath"
+msgstr ""
+
+#. <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:39
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."
+msgstr "Η διαδρομή αιτήματος μέσα στη βάσική διαδρομή της εφαρμογής όπου ο user-agent θα επιστραφεί. H διαδικασία middleware θα επεξεργαστεί αυτό το αίτημα όταν αφιχθεί."
+
+#. <label class="form-check-label" asp-for="SaveTokens">@T["Store tokens"]</label>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:46
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "Store tokens"
+msgstr "Αποθήκη συμβόλων (tokens)"
+
+#. <span class="hint dashed">@T["Store external authentication tokens for reuse"]</span>
+#: OrchardCore.Google\Views\GoogleAuthenticationSettings.Edit.cshtml:47
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "Store external authentication tokens for reuse"
+msgstr "Αποθηκεύστε εξωτερικά σύμβολα (tokens) αυθεντικοποίησης για επαναχρησιμοποίηση"
+
+#. <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Google/#google-tag-manager" target="_blank">@T["See documentation"]</a>
+#: OrchardCore.Google\Views\GoogleTagManagerSettings.Edit.cshtml:5
+msgctxt "OrchardCore.Google.Views.GoogleTagManagerSettings.Edit"
+msgid "See documentation"
+msgstr "Δείτε την τεκμηρίωση"
+
+#. <h3>@T["Google Tag Manager Settings"]</h3>
+#: OrchardCore.Google\Views\GoogleTagManagerSettings.Edit.cshtml:8
+msgctxt "OrchardCore.Google.Views.GoogleTagManagerSettings.Edit"
+msgid "Google Tag Manager Settings"
+msgstr "Ρυθμίσεις Διαχειριστή ετικετών Google"
+
+#. <label asp-for="ContainerID">@T["Container ID"]</label>
+#: OrchardCore.Google\Views\GoogleTagManagerSettings.Edit.cshtml:12
+msgctxt "OrchardCore.Google.Views.GoogleTagManagerSettings.Edit"
+msgid "Container ID"
+msgstr ""
+
+#. <span class="hint">@T["The container ID defined in your Google Tag Manager account."]</span>
+#: OrchardCore.Google\Views\GoogleTagManagerSettings.Edit.cshtml:15
+msgctxt "OrchardCore.Google.Views.GoogleTagManagerSettings.Edit"
+msgid "The container ID defined in your Google Tag Manager account."
+msgstr "Το αναγνωριστικό περιεχομένου ID που ορίζεται στον λογαριασμό σας στο Google Tag Manager."
+
+#. <span class="icon"><i class="fa fa-google" aria-hidden="true"></i></span><span class="title">@T["Google"]</span>
+#: OrchardCore.Google\Views\NavigationItemText-google.Id.cshtml:1
+msgctxt "OrchardCore.Google.Views.NavigationItemText-google.Id"
+msgid "Google"
+msgstr "Google"
+
+#. <span class="icon"><i class="fa fa-google" aria-hidden="true"></i></span><span class="title">@T["Google Analytics"]</span>
+#: OrchardCore.Google\Views\NavigationItemText-googleAnalytics.Id.cshtml:1
+msgctxt "OrchardCore.Google.Views.NavigationItemText-googleAnalytics.Id"
+msgid "Google Analytics"
+msgstr "Google Analytics"
+
+#. <span class="icon"><i class="fa fa-google" aria-hidden="true"></i></span><span class="title">@T["Google Tag Manager"]</span>
+#: OrchardCore.Google\Views\NavigationItemText-googleTagManager.Id.cshtml:1
+msgctxt "OrchardCore.Google.Views.NavigationItemText-googleTagManager.Id"
+msgid "Google Tag Manager"
+msgstr "Διαχειριστής ετικετών Google"
+
+#. <h5>@T["Google Analytics Settings"]</h5>
+#: OrchardCore.Google\Views\Items\GoogleAnalyticsDeploymentStep.Edit.cshtml:3
+msgctxt "OrchardCore.Google.Views.Items.GoogleAnalyticsDeploymentStep.Edit"
+msgid "Google Analytics Settings"
+msgstr "Ρυθμίσεις Google Analytics"
+
+#. <h5>@T["Google Analytics Settings"]</h5>
+#: OrchardCore.Google\Views\Items\GoogleAnalyticsDeploymentStep.Summary.cshtml:3
+msgctxt "OrchardCore.Google.Views.Items.GoogleAnalyticsDeploymentStep.Summary"
+msgid "Google Analytics Settings"
+msgstr "Ρυθμίσεις Google Analytics"
+
+#. <span class="hint">@T["Adds Google Analytics settings to the plan."]</span>
+#: OrchardCore.Google\Views\Items\GoogleAnalyticsDeploymentStep.Summary.cshtml:5
+msgctxt "OrchardCore.Google.Views.Items.GoogleAnalyticsDeploymentStep.Summary"
+msgid "Adds Google Analytics settings to the plan."
+msgstr "Προσθέτει τις ρυθμίσεις του Google Analytics στο πλάνο."
+
+#. <h4 class="card-title">@T["Google Analytics Settings"]</h4>
+#: OrchardCore.Google\Views\Items\GoogleAnalyticsDeploymentStep.Thumbnail.cshtml:3
+msgctxt "OrchardCore.Google.Views.Items.GoogleAnalyticsDeploymentStep.Thumbnail"
+msgid "Google Analytics Settings"
+msgstr "Ρυθμίσεις Google Analytics"
+
+#. <p>@T["Exports the Google Analytics settings."]</p>
+#: OrchardCore.Google\Views\Items\GoogleAnalyticsDeploymentStep.Thumbnail.cshtml:4
+msgctxt "OrchardCore.Google.Views.Items.GoogleAnalyticsDeploymentStep.Thumbnail"
+msgid "Exports the Google Analytics settings."
+msgstr "Εξάγει τις ρυθμίσεις του Google Analytics."
+

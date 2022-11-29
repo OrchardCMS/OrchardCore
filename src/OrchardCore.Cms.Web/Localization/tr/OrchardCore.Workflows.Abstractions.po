@@ -1,0 +1,62 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: tr\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Workflows.Abstractions.pot\n"
+"X-Crowdin-File-ID: 842\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Turkish\n"
+"Language: tr_TR\n"
+"PO-Revision-Date: 2021-07-15 19:11\n"
+
+#. WorkflowStatus.Aborted => H["Aborted"],
+#: OrchardCore.Workflows.Abstractions\Helpers\ActivityExtensions.cs:31
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Aborted"
+msgstr "İptal edildi"
+
+#. WorkflowStatus.Executing => H["Executing"],
+#: OrchardCore.Workflows.Abstractions\Helpers\ActivityExtensions.cs:32
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Executing"
+msgstr "Yürütülüyor"
+
+#. WorkflowStatus.Faulted => H["Faulted"],
+#: OrchardCore.Workflows.Abstractions\Helpers\ActivityExtensions.cs:33
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Faulted"
+msgstr "Hata"
+
+#. WorkflowStatus.Finished => H["Finished"],
+#: OrchardCore.Workflows.Abstractions\Helpers\ActivityExtensions.cs:34
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Finished"
+msgstr "Tamamlandı"
+
+#. WorkflowStatus.Halted => H["Halted"],
+#: OrchardCore.Workflows.Abstractions\Helpers\ActivityExtensions.cs:35
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Halted"
+msgstr "Durduruldu"
+
+#. WorkflowStatus.Idle => H["Idle"],
+#: OrchardCore.Workflows.Abstractions\Helpers\ActivityExtensions.cs:36
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Idle"
+msgstr "Boşta"
+
+#. WorkflowStatus.Resuming => H["Resuming"],
+#: OrchardCore.Workflows.Abstractions\Helpers\ActivityExtensions.cs:37
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Resuming"
+msgstr "Devam Ediyor"
+
+#. WorkflowStatus.Starting => H["Starting"],
+#: OrchardCore.Workflows.Abstractions\Helpers\ActivityExtensions.cs:38
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Starting"
+msgstr "Başlatılıyor"
+

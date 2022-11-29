@@ -1,0 +1,179 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Mvc.Core</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Mvc.ApplicationViewFileProvider">
+            <summary>
+            This custom <see cref="T:Microsoft.Extensions.FileProviders.IFileProvider"/> implementation provides the file contents of
+            the Application's module view files while in a development or production environment.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Mvc.ModelBinding.CheckMarkModelBinderProvider">
+            <summary>
+            An <see cref="T:Microsoft.AspNetCore.Mvc.ModelBinding.IModelBinderProvider"/> for <see cref="T:OrchardCore.Mvc.ModelBinding.CheckMarkModelBinder"/>
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Mvc.ModelBinding.CheckMarkModelBinderProvider.GetBinder(Microsoft.AspNetCore.Mvc.ModelBinding.ModelBinderProviderContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Mvc.LocationExpander.ComponentViewLocationExpanderProvider.PopulateValues(Microsoft.AspNetCore.Mvc.Razor.ViewLocationExpanderContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Mvc.LocationExpander.ComponentViewLocationExpanderProvider.ExpandViewLocations(Microsoft.AspNetCore.Mvc.Razor.ViewLocationExpanderContext,System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Mvc.LocationExpander.SharedViewLocationExpanderProvider.PopulateValues(Microsoft.AspNetCore.Mvc.Razor.ViewLocationExpanderContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Mvc.LocationExpander.SharedViewLocationExpanderProvider.ExpandViewLocations(Microsoft.AspNetCore.Mvc.Razor.ViewLocationExpanderContext,System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc />
+        </member>
+        <member name="T:OrchardCore.Mvc.ModularApplicationModelProvider">
+            <summary>
+            Adds an area route constraint using the name of the module.
+            And filters all controller actions of disabled features.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Mvc.ModuleProjectRazorFileProvider">
+            <summary>
+            This custom <see cref="T:Microsoft.Extensions.FileProviders.IFileProvider"/> implementation provides the file contents
+            of Module Project Razor files while in a development environment.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Mvc.SharedViewCompilerProvider">
+            <summary>
+            Shares across tenants the same <see cref="T:Microsoft.AspNetCore.Mvc.Razor.Compilation.IViewCompiler"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Mvc.ShellFeatureApplicationPart">
+            <summary>
+            An <see cref="T:Microsoft.AspNetCore.Mvc.ApplicationParts.ApplicationPart"/> backed by an <see cref="T:System.Reflection.Assembly"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Mvc.ShellFeatureApplicationPart.#ctor">
+            <summary>
+            Initalizes a new <see cref="T:Microsoft.AspNetCore.Mvc.ApplicationParts.AssemblyPart"/> instance.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Mvc.ShellFeatureApplicationPart.Types">
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Mvc.ShellFeatureApplicationPart.GetReferencePaths">
+            <inheritdoc />
+        </member>
+        <member name="T:OrchardCore.Mvc.ShellFileVersionProvider">
+            <summary>
+            Provides version hash for a specified file.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Mvc.Utilities.StringExtensions.ToSafeName(System.String)">
+            <summary>
+            Generates a valid technical name.
+            </summary>
+            <remarks>
+            Uses a white list set of chars.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.Mvc.Utilities.StringExtensions.IsLetter(System.Char)">
+            <summary>
+            Whether the char is a letter between A and Z or not
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Mvc.Utilities.StringExtensions.ReplaceDiacritics(System.String)">
+            <summary>
+            Transforms the culture of a letter to its equivalent representation in the 0-127 ascii table, such as the letter 'é' is substituted by an 'e'
+            </summary>
+            <param name="s"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.Mvc.Utilities.StringExtensions.ToPascalCaseUnderscore(System.String)">
+            <summary>
+            Converts a liquid attribute to pascal case
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Mvc.Utilities.StringExtensions.ToPascalCaseDash(System.String)">
+            <summary>
+            Converts an html attribute to pascal case
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Mvc.Utilities.StringExtensions.ToPascalCase(System.String,System.Char)">
+            <summary>
+            Converts a string to pascal case.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Mvc.Utilities.StringExtensions.IsJson(System.String)">
+            <summary>
+            Tests if a string is valid json.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Mvc.ControllerExtensions.ChallengeOrForbid(Microsoft.AspNetCore.Mvc.Controller)">
+            <summary>
+            Returns the proper actionresult for unauthorized or unauthenticated users.
+            Will return a forbid when the user is authenticated.
+            Will return a challenge when the user is not authenticated.
+            </summary>
+            <param name="controller"></param>
+            <returns>The proper actionresult based upon if the user is authenticated</returns>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Mvc.ControllerExtensions.ChallengeOrForbid(Microsoft.AspNetCore.Mvc.Controller,System.String[])">
+            <summary>
+            Returns the proper actionresult for unauthorized or unauthenticated users
+            with the specified authenticationSchemes.
+            Will return a forbid when the user is authenticated.
+            Will return a challenge when the user is not authenticated.
+            If authentication schemes are specified, will return a challenge to them.
+            </summary>
+            <param name="controller"></param>
+            <param name="authenticationSchemes">The authentication schemes to challenge.</param>
+            <returns>The proper actionresult based upon if the user is authenticated</returns>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Mvc.ControllerExtensions.InternalServerError(Microsoft.AspNetCore.Mvc.Controller,System.Object)">
+            <summary>
+            Creates <see cref="T:Microsoft.AspNetCore.Mvc.ObjectResult"/> that produces a <see cref="F:System.Net.HttpStatusCode.InternalServerError"/> response.
+            </summary>
+            <param name="controller">The <see cref="T:Microsoft.AspNetCore.Mvc.Controller"/>.</param>
+            <param name="value">An optional value to set on <see cref="T:Microsoft.AspNetCore.Mvc.ObjectResult"/>.</param>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Mvc.ControllerExtensions.LocalRedirect(Microsoft.AspNetCore.Mvc.Controller,System.String,System.Boolean)">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Mvc.LocalRedirectResult"/> object that redirects to the specified local localUrl
+            </summary>
+            <param name="controller"></param>
+            <param name="localUrl">The local URL to redirect to.</param>
+            <param name="escapeUrl">Whether to escape the url.</param>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Mvc.ControllerExtensions.Redirect(Microsoft.AspNetCore.Mvc.Controller,System.String,System.Boolean)">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Mvc.RedirectResult"/> object that redirects to the specified url
+            </summary>
+            <param name="controller"></param>
+            <param name="url">The URL to redirect to.</param>
+            <param name="escapeUrl">Whether to escape the url.</param>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Mvc.ApplicationModels.PageConventionCollectionExtensions.AddAreaFolderRoute(Microsoft.AspNetCore.Mvc.ApplicationModels.PageConventionCollection,System.String,System.String,System.String)">
+            <summary>
+            Adds a folder route for all pages in the specified area and under the specified area folder.
+            These pages can be routed via their names prefixed by folder route in addition to the default
+            set of path based routes. Links generated for these pages will use the specified folder route.
+            Note: Applied to all pages whose razor view file path doesn't contain any '/Admin/' segment
+            and whose route model properties doesn't contains an 'Admin' key.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Mvc.ApplicationModels.PageConventionCollectionExtensions.AddAdminAreaFolderRoute(Microsoft.AspNetCore.Mvc.ApplicationModels.PageConventionCollection,System.String,System.String,System.String)">
+            <summary>
+            Adds a folder route for all pages in the specified area and under the specified area folder.
+            These pages can be routed via their names prefixed by folder route in addition to the default
+            set of path based routes. Links generated for these pages will use the specified folder route.
+            Note: Applied to all pages whose razor view file path contains an '/Admin/' segment
+            or whose route model properties contains an 'Admin' key.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddMvc(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds tenant level MVC services and configuration.
+            </summary>
+        </member>
+    </members>
+</doc>

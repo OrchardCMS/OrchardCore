@@ -1,0 +1,461 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Caching.Distributed.DistributedSignal">
+            <summary>
+            Distributed implementation of <see cref="T:OrchardCore.Environment.Cache.Signal"/> using an <see cref="T:OrchardCore.Caching.Distributed.IMessageBus"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Cache.Signal">
+            <summary>
+            This component is a singleton that holds all the existing signal tokens for a tenant.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Extensions.Features.FeaturesProvider">
+            <inheritdoc/>
+        </member>
+        <member name="M:OrchardCore.Environment.Extensions.Features.FeaturesProvider.#ctor(System.Collections.Generic.IEnumerable{OrchardCore.Environment.Extensions.Features.IFeatureBuilderEvents})">
+            <summary>
+            Constructs a provider instance.
+            </summary>
+            <param name="featureBuilderEvents"></param>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Builders.ServiceProviderExtensions.CreateChildContainer(System.IServiceProvider,Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Creates a child container.
+            </summary>
+            <param name="serviceProvider">The service provider to create a child container for.</param>
+            <param name="serviceCollection">The services to clone.</param>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Builders.FeatureAwareServiceCollection">
+            <summary>
+            A service collection that keeps track of the <see cref="T:OrchardCore.Environment.Extensions.Features.IFeatureInfo"/> for each added service.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Builders.FeatureAwareServiceCollection.FeatureCollections">
+            <summary>
+            A collection of services grouped by their feature information.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Builders.FeatureAwareServiceCollection.SetCurrentFeature(OrchardCore.Environment.Extensions.Features.IFeatureInfo)">
+            <summary>
+            Sets the current feature that services will be assigned when added to this collection.
+            </summary>
+            <param name="feature">The feature for services to be assigned.</param>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Builders.ShellContextFactory.MinimumShellDescriptor">
+            <summary>
+            The minimum shell descriptor is used to bootstrap the first container that will be used
+            to call all module IStartup implementation. It's composed of module names that reference
+            core components necessary for the desired scenario.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Builders.StartupBaseMock.Order">
+            <inheritdoc />
+        </member>
+        <member name="P:OrchardCore.Environment.Shell.Builders.StartupBaseMock.ConfigureOrder">
+            <inheritdoc />
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Descriptor.Settings.AllFeaturesShellDescriptorManager">
+            <summary>
+            Implements <see cref="T:OrchardCore.Environment.Shell.Descriptor.IShellDescriptorManager"/> by returning a single tenant with all the available
+            extensions.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Descriptor.Settings.ConfiguredFeaturesShellDescriptorManager">
+            <summary>
+            Implements <see cref="T:OrchardCore.Environment.Shell.Descriptor.IShellDescriptorManager"/> by returning the features from configuration.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Descriptor.Settings.SetFeaturesShellDescriptorManager">
+            <summary>
+            Implements <see cref="T:OrchardCore.Environment.Shell.Descriptor.IShellDescriptorManager"/> by returning a single tenant with a specified set
+            of features. This class can be registered as a singleton as its state never changes.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.Distributed.DistributedShellHostedService">
+            <summary>
+            Keep in sync tenants by sharing shell identifiers through an <see cref="T:Microsoft.Extensions.Caching.Distributed.IDistributedCache"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Distributed.DistributedShellHostedService.ExecuteAsync(System.Threading.CancellationToken)">
+            <summary>
+            Keep in sync tenants by sharing shell identifiers through an <see cref="T:Microsoft.Extensions.Caching.Distributed.IDistributedCache"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Distributed.DistributedShellHostedService.LoadingAsync">
+            <summary>
+            Called before loading all tenants to initialize the local shell identifiers from the distributed cache.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Distributed.DistributedShellHostedService.ReleasingAsync(System.String)">
+            <summary>
+            Called before releasing a tenant to update the related shell identifiers, locally and in the distributed cache.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Distributed.DistributedShellHostedService.ReloadingAsync(System.String)">
+            <summary>
+            Called before reloading a tenant to update the related shell identifiers, locally and in the distributed cache.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Distributed.DistributedShellHostedService.CreateDistributedContextAsync(OrchardCore.Environment.Shell.Builders.ShellContext)">
+            <summary>
+            Creates a distributed context based on the default tenant settings and descriptor.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Distributed.DistributedShellHostedService.CreateDistributedContextAsync(OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Creates a distributed context based on the default tenant settings.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Distributed.DistributedShellHostedService.GetOrCreateDistributedContextAsync(OrchardCore.Environment.Shell.Builders.ShellContext)">
+            <summary>
+            Gets the distributed context or creates a new one if the default tenant has changed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Distributed.DistributedShellHostedService.AcquireOrCreateDistributedContextAsync(OrchardCore.Environment.Shell.Builders.ShellContext)">
+            <summary>
+            Acquires the distributed context or creates a new one if not yet initialized.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Distributed.DistributedShellHostedService.NextIdleTimeBeforeRetry(System.TimeSpan,System.Exception)">
+            <summary>
+            Gets the next idle time before retrying to read the distributed cache.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Distributed.DistributedShellHostedService.TryWaitAfterBusyTime(System.Threading.CancellationToken)">
+            <summary>
+            Tries to wait for the min idle time after the max busy time, returns false if it was cancelled.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.Distributed.DistributedShellHostedService.TryWaitAsync(System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            Tries to wait for a given delay, returns false if it was cancelled.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellDescriptorFeaturesManager.GetFeaturesToEnable(OrchardCore.Environment.Extensions.Features.IFeatureInfo,System.Collections.Generic.IEnumerable{System.String},System.Boolean)">
+            <summary>
+            Enables a feature.
+            </summary>
+            <param name="featureInfo">The info of the feature to be enabled.</param>
+            <param name="enabledFeatureIds">The list of feature ids which are currently enabled.</param>
+            <param name="force">Boolean parameter indicating if the feature should enable it's dependencies.</param>
+            <returns>An enumeration of the features to disable, empty if 'force' = true and a dependency is disabled</returns>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellDescriptorFeaturesManager.GetFeaturesToDisable(OrchardCore.Environment.Extensions.Features.IFeatureInfo,System.Collections.Generic.IEnumerable{System.String},System.Boolean)">
+            <summary>
+            Disables a feature.
+            </summary>
+            <param name="featureInfo">The info of the feature to be disabled.</param>
+            <param name="enabledFeatureIds">The list of feature ids which are currently enabled.</param>
+            <param name="force">Boolean parameter indicating if the feature should disable it's dependents.</param>
+            <returns>An enumeration of the features to enable, empty if 'force' = true and a dependent is enabled</returns>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.ShellHost">
+            <summary>
+            All <see cref="T:OrchardCore.Environment.Shell.Builders.ShellContext"/> are pre-created when <see cref="M:OrchardCore.Environment.Shell.ShellHost.InitializeAsync"/> is called on startup and where we first load
+            all <see cref="T:OrchardCore.Environment.Shell.ShellSettings"/> that we also need to register in the <see cref="T:OrchardCore.Environment.Shell.IRunningShellTable"/> to serve incoming requests.
+            For each <see cref="T:OrchardCore.Environment.Shell.Builders.ShellContext"/> a service container and then a request pipeline are only built on the first matching request.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHost.ChangedAsync(OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor,OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            A feature is enabled / disabled, the tenant needs to be released so that a new shell will be built.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHost.ReloadShellContextAsync(OrchardCore.Environment.Shell.ShellSettings,System.Boolean)">
+            <summary>
+            Reloads the settings and releases the shell so that a new one will be
+            built for subsequent requests, while existing requests get flushed.
+            </summary>
+            <param name="settings">The <see cref="T:OrchardCore.Environment.Shell.ShellSettings"/> to reload.</param>
+            <param name="eventSource">
+            Whether the related <see cref="T:OrchardCore.Environment.Shell.Events.ShellEvent"/> is invoked.
+            </param>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHost.ReleaseShellContextAsync(OrchardCore.Environment.Shell.ShellSettings,System.Boolean)">
+            <summary>
+            Releases a shell so that a new one will be built for subsequent requests.
+            Note: Can be used to free up resources after a given time of inactivity.
+            </summary>
+            <param name="settings">The <see cref="T:OrchardCore.Environment.Shell.ShellSettings"/> to reload.</param>
+            <param name="eventSource">
+            Whether the related <see cref="T:OrchardCore.Environment.Shell.Events.ShellEvent"/> is invoked.
+            </param>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHost.TryGetShellContext(System.String,OrchardCore.Environment.Shell.Builders.ShellContext@)">
+            <summary>
+            Tries to retrieve the shell context associated with the specified tenant.
+            The shell may have been temporarily removed while releasing or reloading.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHost.TryGetSettings(System.String,OrchardCore.Environment.Shell.ShellSettings@)">
+            <summary>
+            Tries to retrieve the shell settings associated with the specified tenant.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHost.GetAllSettings">
+            <summary>
+            Retrieves all shell settings.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHost.CreateShellContextAsync(OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Creates a shell context based on shell settings
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHost.CreateSetupContextAsync(OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Creates a transient shell for the default tenant's setup.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHost.AddAndRegisterShell(OrchardCore.Environment.Shell.Builders.ShellContext)">
+            <summary>
+            Adds the shell and registers its settings in RunningShellTable
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHost.CanRegisterShell(OrchardCore.Environment.Shell.Builders.ShellContext)">
+            <summary>
+            Whether or not a shell can be activated and added to the running shells.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHost.RegisterShellSettings(OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Registers the shell settings in RunningShellTable
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHost.CanCreateShell(OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Whether or not a shell can be added to the list of available shells.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHost.CanRegisterShell(OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Whether or not a shell can be activated and added to the running shells.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Shell.ShellHost.CanReleaseShell(OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Whether or not a shell can be released and removed from the list, false if disabled and still in use.
+            Note: A disabled shell still in use will be released by its last scope, and keeping it in the list
+            prevents a consumer from creating a new one that would have a null service provider.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Shell.ShellOptionsSetup">
+            <summary>
+            Sets up default options for <see cref="T:OrchardCore.Environment.Shell.ShellOptions"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Localization.DefaultCalendarManager">
+            <summary>
+            Represents a default implementation to manage the calendars.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.DefaultCalendarManager.#ctor(System.Collections.Generic.IEnumerable{OrchardCore.Localization.ICalendarSelector})">
+            <summary>
+            Creates a new instance of <see cref="T:OrchardCore.Localization.DefaultCalendarManager"/>.
+            </summary>
+            <param name="calendarSelectors">A list of <see cref="T:OrchardCore.Localization.ICalendarSelector"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Localization.DefaultCalendarManager.GetCurrentCalendar">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Localization.DefaultCalendarSelector">
+            <summary>
+            Represents a default implementation for <see cref="T:OrchardCore.Localization.ICalendarSelector"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.DefaultCalendarSelector.GetCalendarAsync">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Localization.DefaultLocalizationService">
+            <summary>
+            Represents a default implementation for <see cref="T:OrchardCore.Localization.ILocalizationService"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Localization.DefaultLocalizationService.GetDefaultCultureAsync">
+            <inheritdocs />
+        </member>
+        <member name="M:OrchardCore.Localization.DefaultLocalizationService.GetSupportedCulturesAsync">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Localization.NullHtmlLocalizerFactory">
+            Represents a null <see cref="T:Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizerFactory"/> which is used by default when the localization module is disabled.
+            <remarks>
+            LocalizedHtmlString's arguments will be HTML encoded and not the main string. So the result
+            should just contain the localized string containing the formatting placeholders {0...} as is.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.Localization.NullHtmlLocalizerFactory.Create(System.String,System.String)">
+            <inheritdocs />
+        </member>
+        <member name="M:OrchardCore.Localization.NullHtmlLocalizerFactory.Create(System.Type)">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Localization.NullStringLocalizerFactory">
+            Represents a null <see cref="T:Microsoft.Extensions.Localization.IStringLocalizerFactory"/> which is used by default when the localization module is disabled.
+            <remarks>
+            A LocalizedString is not encoded, so it can contain the formatted string
+            including the argument values.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.Localization.NullStringLocalizerFactory.Create(System.Type)">
+            <inheritdocs />
+        </member>
+        <member name="M:OrchardCore.Localization.NullStringLocalizerFactory.Create(System.String,System.String)">
+            <inheritdocs />
+        </member>
+        <member name="T:OrchardCore.Locking.LocalLock">
+            <summary>
+            This component is a tenant singleton which allows to acquire named locks for a given tenant.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Locking.LocalLock.AcquireLockAsync(System.String,System.Nullable{System.TimeSpan})">
+            <summary>
+            Waits indefinitely until acquiring a named lock with a given expiration for the current tenant.
+            After 'expiration' the lock is auto released, a null value is equivalent to 'TimeSpan.MaxValue'.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Locking.LocalLock.TryAcquireLockAsync(System.String,System.TimeSpan,System.Nullable{System.TimeSpan})">
+            <summary>
+            Tries to acquire a named lock in a given timeout with a given expiration for the current tenant.
+            After 'expiration' the lock is auto released, a null value is equivalent to 'TimeSpan.MaxValue'.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Modules.ModularTenantContainerMiddleware">
+            <summary>
+            This middleware replaces the default service provider by the one for the current tenant
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Modules.ModularTenantRouterMiddleware">
+            <summary>
+            Handles a request by forwarding it to the tenant specific pipeline.
+            It also initializes the middlewares for the requested tenant on the first request.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Modules.PoweredByMiddleware">
+            <summary>
+            Adds the X-Powered-By header with values OrchardCore.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Modules.Clock.UtcNow">
+            <summary>
+            Returns a Datetime Kind.Utc that is "Now"
+            </summary>
+            <inheritdoc />
+        </member>
+        <member name="M:OrchardCore.Modules.Clock.GetTimeZones">
+            <summary>
+            Returns a list of valid timezones as a ITimeZone[], where the key is
+            the timezone id(string), and the value can be used for display. The list is filtered to contain only
+            choices that are reasonably valid for the present and near future for real places. The list is
+            also sorted first by UTC Offset and then by timezone name.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.ApplicationBuilderExtensions.UseOrchardCore(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.Action{Microsoft.AspNetCore.Builder.IApplicationBuilder})">
+            <summary>
+            Enables multi-tenant requests support for the current path.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.PoweredByOrchardCoreExtensions.UsePoweredByOrchardCore(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.Boolean)">
+            <summary>
+            Configures whether use or not the Header X-Powered-By.
+            Default value is OrchardCore.
+            </summary>
+            <param name="app">The modular application builder</param>
+            <param name="enabled">Boolean indicating if the header should be included in the response or not</param>
+            <returns>The modular application builder</returns>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.PoweredByOrchardCoreExtensions.UsePoweredBy(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.Boolean,System.String)">
+            <summary>
+            Configures whether use or not the Header X-Powered-By and its value.
+            Default value is OrchardCore.
+            </summary>
+            <param name="app">The modular application builder</param>
+            <param name="enabled">Boolean indicating if the header should be included in the response or not</param>
+            <param name="headerValue">Header's value</param>
+            <returns>The modular application builder</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddGlobalFeatures(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder,System.String[])">
+            <summary>
+            Registers at the host level a set of features which are always enabled for any tenant.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddTenantFeatures(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder,System.String[])">
+            <summary>
+            Registers at the tenant level a set of features which are always enabled.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddSetupFeatures(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder,System.String[])">
+            <summary>
+            Registers a default tenant with a set of features that are used to setup and configure the actual tenants.
+            For instance you can use this to add a custom Setup module.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.WithTenants(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Registers tenants defined in configuration.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.WithFeatures(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder,System.String[])">
+            <summary>
+            Registers a single tenant with the specified set of features.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.OrchardCoreBuilderExtensions.AddBackgroundService(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Registers and configures a background hosted service to manage tenant background tasks.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddOrchardCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds OrchardCore services to the host service collection.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddOrchardCore(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder})">
+            <summary>
+            Adds OrchardCore services to the host service collection and let the app change
+            the default behavior and set of features through a configure action.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddStaticFiles(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds tenant level configuration to serve static files from modules
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddRouting(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds isolated tenant level routing services.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddEndpointsApiExplorer(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Configures ApiExplorer at the tenant level using <see cref="P:Microsoft.AspNetCore.Http.Endpoint.Metadata"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddAntiForgery(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds host and tenant level antiforgery services.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddSameSiteCookieBackwardsCompatibility(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds backwards compatibility to the handling of SameSite cookies.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddAuthentication(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds host and tenant level authentication services and configuration.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddDataProtection(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Adds tenant level data protection services.
+            </summary>
+        </member>
+    </members>
+</doc>

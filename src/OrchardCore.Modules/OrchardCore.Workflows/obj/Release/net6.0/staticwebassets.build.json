@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "iyHNiPzdjjOafd1TELNIRuh8FkLyqpec62VNug9nXdw=",
+  "Source": "OrchardCore.Workflows",
+  "BasePath": "_content/OrchardCore.Workflows",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.Workflows\\wwwroot",
+      "Source": "OrchardCore.Workflows",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.Workflows\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.Workflows",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "njWL1yAIGL2cvFJ7PlJlKnTLrXV+PLNbUH54fMDXCwU=",
+  "Source": "OrchardCore.ReverseProxy",
+  "BasePath": "_content/OrchardCore.ReverseProxy",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

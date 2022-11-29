@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "TAqrxxIaqOYyxN47t/rQqJFb1UYejJRyzlVzAi09IO0=",
+  "Source": "OrchardCore.Apis.GraphQL",
+  "BasePath": "_content/OrchardCore.Apis.GraphQL",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

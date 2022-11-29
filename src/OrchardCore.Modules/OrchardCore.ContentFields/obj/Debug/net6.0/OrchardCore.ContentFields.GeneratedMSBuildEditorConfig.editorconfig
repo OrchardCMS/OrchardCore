@@ -1,0 +1,485 @@
+is_global = true
+build_property.TargetFramework = net6.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = OrchardCore.ContentFields
+build_property.RootNamespace = OrchardCore.ContentFields
+build_property.ProjectDir = C:\repos\loethenweb\src\OrchardCore.Modules\OrchardCore.ContentFields\
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\repos\loethenweb\src\OrchardCore.Modules\OrchardCore.ContentFields
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/BooleanField-Switch.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9vbGVhbkZpZWxkLVN3aXRjaC5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/BooleanField-Switch.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9vbGVhbkZpZWxkLVN3aXRjaC5PcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/BooleanField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9vbGVhbkZpZWxkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/BooleanField.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9vbGVhbkZpZWxkLkRpc3BsYXlPcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/BooleanField.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9vbGVhbkZpZWxkLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/BooleanField.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9vbGVhbkZpZWxkLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/BooleanFieldSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9vbGVhbkZpZWxkU2V0dGluZ3MuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/ContentPickerField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVudFBpY2tlckZpZWxkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/ContentPickerField.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVudFBpY2tlckZpZWxkLkRpc3BsYXlPcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/ContentPickerField.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVudFBpY2tlckZpZWxkLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/ContentPickerField.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVudFBpY2tlckZpZWxkLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/ContentPickerFieldSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVudFBpY2tlckZpZWxkU2V0dGluZ3MuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/DateField-Localized.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGF0ZUZpZWxkLUxvY2FsaXplZC5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/DateField-Localized.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGF0ZUZpZWxkLUxvY2FsaXplZC5PcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/DateField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGF0ZUZpZWxkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/DateField.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGF0ZUZpZWxkLkRpc3BsYXlPcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/DateField.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGF0ZUZpZWxkLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/DateField.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGF0ZUZpZWxkLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/DateFieldSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGF0ZUZpZWxkU2V0dGluZ3MuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/DateTimeField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGF0ZVRpbWVGaWVsZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/DateTimeField.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGF0ZVRpbWVGaWVsZC5EaXNwbGF5T3B0aW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/DateTimeField.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGF0ZVRpbWVGaWVsZC5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/DateTimeField.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGF0ZVRpbWVGaWVsZC5PcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/DateTimeFieldSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGF0ZVRpbWVGaWVsZFNldHRpbmdzLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/HtmlField-Monaco.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbEZpZWxkLU1vbmFjby5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/HtmlField-Monaco.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbEZpZWxkLU1vbmFjby5PcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/HtmlField-Multiline.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbEZpZWxkLU11bHRpbGluZS5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/HtmlField-Multiline.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbEZpZWxkLU11bHRpbGluZS5PcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/HtmlField-Trumbowyg.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbEZpZWxkLVRydW1ib3d5Zy5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/HtmlField-Trumbowyg.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbEZpZWxkLVRydW1ib3d5Zy5PcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/HtmlField-Wysiwyg.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbEZpZWxkLVd5c2l3eWcuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/HtmlField-Wysiwyg.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbEZpZWxkLVd5c2l3eWcuT3B0aW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/HtmlField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbEZpZWxkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/HtmlField.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbEZpZWxkLkRpc3BsYXlPcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/HtmlField.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbEZpZWxkLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/HtmlField.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbEZpZWxkLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/HtmlFieldMonacoEditorSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbEZpZWxkTW9uYWNvRWRpdG9yU2V0dGluZ3MuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/HtmlFieldSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbEZpZWxkU2V0dGluZ3MuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/HtmlFieldTrumbowygEditorSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSHRtbEZpZWxkVHJ1bWJvd3lnRWRpdG9yU2V0dGluZ3MuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/LinkField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlua0ZpZWxkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/LinkField.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlua0ZpZWxkLkRpc3BsYXlPcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/LinkField.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlua0ZpZWxkLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/LinkFieldSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlua0ZpZWxkU2V0dGluZ3MuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/LocalizationSetContentPickerField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9jYWxpemF0aW9uU2V0Q29udGVudFBpY2tlckZpZWxkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/LocalizationSetContentPickerField.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9jYWxpemF0aW9uU2V0Q29udGVudFBpY2tlckZpZWxkLkRpc3BsYXlPcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/LocalizationSetContentPickerField.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9jYWxpemF0aW9uU2V0Q29udGVudFBpY2tlckZpZWxkLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/LocalizationSetContentPickerField.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9jYWxpemF0aW9uU2V0Q29udGVudFBpY2tlckZpZWxkLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/LocalizationSetContentPickerFieldSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9jYWxpemF0aW9uU2V0Q29udGVudFBpY2tlckZpZWxkU2V0dGluZ3MuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/Media-HtmlField.Modal.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVkaWEtSHRtbEZpZWxkLk1vZGFsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/Media-HtmlField.Wrapper.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVkaWEtSHRtbEZpZWxkLldyYXBwZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/MultiTextField-CheckboxList.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTXVsdGlUZXh0RmllbGQtQ2hlY2tib3hMaXN0LkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/MultiTextField-CheckboxList.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTXVsdGlUZXh0RmllbGQtQ2hlY2tib3hMaXN0Lk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/MultiTextField-Picker.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTXVsdGlUZXh0RmllbGQtUGlja2VyLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/MultiTextField-Picker.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTXVsdGlUZXh0RmllbGQtUGlja2VyLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/MultiTextField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTXVsdGlUZXh0RmllbGQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/MultiTextField.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTXVsdGlUZXh0RmllbGQuRGlzcGxheU9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/MultiTextField.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTXVsdGlUZXh0RmllbGQuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/MultiTextField.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTXVsdGlUZXh0RmllbGQuT3B0aW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/MultiTextFieldSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTXVsdGlUZXh0RmllbGRTZXR0aW5ncy5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/NumericField-Range.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTnVtZXJpY0ZpZWxkLVJhbmdlLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/NumericField-Range.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTnVtZXJpY0ZpZWxkLVJhbmdlLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/NumericField-Select.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTnVtZXJpY0ZpZWxkLVNlbGVjdC5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/NumericField-Select.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTnVtZXJpY0ZpZWxkLVNlbGVjdC5PcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/NumericField-Slider.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTnVtZXJpY0ZpZWxkLVNsaWRlci5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/NumericField-Slider.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTnVtZXJpY0ZpZWxkLVNsaWRlci5PcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/NumericField-Spinner.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTnVtZXJpY0ZpZWxkLVNwaW5uZXIuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/NumericField-Spinner.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTnVtZXJpY0ZpZWxkLVNwaW5uZXIuT3B0aW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/NumericField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTnVtZXJpY0ZpZWxkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/NumericField.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTnVtZXJpY0ZpZWxkLkRpc3BsYXlPcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/NumericField.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTnVtZXJpY0ZpZWxkLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/NumericField.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTnVtZXJpY0ZpZWxkLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/NumericFieldSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTnVtZXJpY0ZpZWxkU2V0dGluZ3MuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-CodeMirror.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLUNvZGVNaXJyb3IuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-CodeMirror.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLUNvZGVNaXJyb3IuT3B0aW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-Color.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLUNvbG9yLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-Color.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLUNvbG9yLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-Email.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLUVtYWlsLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-Email.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLUVtYWlsLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-Header.Display.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLUhlYWRlci5EaXNwbGF5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-Header.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLUhlYWRlci5EaXNwbGF5T3B0aW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-IconPicker.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLUljb25QaWNrZXIuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-IconPicker.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLUljb25QaWNrZXIuT3B0aW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-Monaco.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLU1vbmFjby5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-Monaco.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLU1vbmFjby5PcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-PredefinedList.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLVByZWRlZmluZWRMaXN0LkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-PredefinedList.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLVByZWRlZmluZWRMaXN0Lk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-Tel.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLVRlbC5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-Tel.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLVRlbC5PcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-TextArea.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLVRleHRBcmVhLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-TextArea.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLVRleHRBcmVhLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-Url.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLVVybC5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField-Url.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLVVybC5PcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLkRpc3BsYXlPcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextField.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextFieldHeaderDisplaySettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkSGVhZGVyRGlzcGxheVNldHRpbmdzLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextFieldMonacoEditorSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkTW9uYWNvRWRpdG9yU2V0dGluZ3MuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextFieldPredefinedListEditorSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkUHJlZGVmaW5lZExpc3RFZGl0b3JTZXR0aW5ncy5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TextFieldSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGV4dEZpZWxkU2V0dGluZ3MuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TimeField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGltZUZpZWxkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TimeField.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGltZUZpZWxkLkRpc3BsYXlPcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TimeField.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGltZUZpZWxkLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TimeField.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGltZUZpZWxkLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/TimeFieldSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGltZUZpZWxkU2V0dGluZ3MuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/UserPickerField-UserNames.Display.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclBpY2tlckZpZWxkLVVzZXJOYW1lcy5EaXNwbGF5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/UserPickerField-UserNames.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclBpY2tlckZpZWxkLVVzZXJOYW1lcy5EaXNwbGF5T3B0aW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/UserPickerField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclBpY2tlckZpZWxkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/UserPickerField.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclBpY2tlckZpZWxkLkRpc3BsYXlPcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/UserPickerField.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclBpY2tlckZpZWxkLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/UserPickerField.Option.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclBpY2tlckZpZWxkLk9wdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/UserPickerFieldSettings.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclBpY2tlckZpZWxkU2V0dGluZ3MuRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/YoutubeField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcWW91dHViZUZpZWxkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/YoutubeField.DisplayOption.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcWW91dHViZUZpZWxkLkRpc3BsYXlPcHRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/YoutubeField.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcWW91dHViZUZpZWxkLkVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/YoutubeFieldSetting.Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcWW91dHViZUZpZWxkU2V0dGluZy5FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/repos/loethenweb/src/OrchardCore.Modules/OrchardCore.ContentFields/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 

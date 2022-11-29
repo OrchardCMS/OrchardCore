@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "NPzF0zLgu0d+C5VahZhGYjk7WycEStfTYuO307NDBxU=",
+  "Source": "OrchardCore.Https",
+  "BasePath": "_content/OrchardCore.Https",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

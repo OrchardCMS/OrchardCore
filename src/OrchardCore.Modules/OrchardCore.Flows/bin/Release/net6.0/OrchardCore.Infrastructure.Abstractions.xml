@@ -1,0 +1,343 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Infrastructure.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.Environment.Cache.CacheContext.WithExpiryOn(System.DateTimeOffset)">
+            <summary>
+            Defines the absolute time the value should be cached for.
+            If not called a sliding value will be used.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Cache.CacheContext.WithExpiryAfter(System.TimeSpan)">
+            <summary>
+            Defines the absolute time (relative from now) the value should be cached for.
+            If not called a sliding value will be used.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Cache.CacheContext.WithExpirySliding(System.TimeSpan)">
+            <summary>
+            Defines the sliding expiry time the value should be cached for.
+            If not called a default sliding value will be used (unless an absolute expiry time has been specified).
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Cache.CacheContext.AddContext(System.String[])">
+            <summary>
+            Defines a dimension to cache the shape for. For instance by using <code>"user"</code>
+            each user will get a different value.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Cache.CacheContext.RemoveContext(System.String)">
+            <summary>
+            Removes a specific context.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Cache.ICacheContextManager.GetDiscriminatorsAsync(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Provides the discriminator for a specific cache context by requesting all <see cref="T:OrchardCore.Environment.Cache.ICacheContextProvider"/>
+            implementations.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Environment.Cache.ICacheContextProvider">
+            <summary>
+            Returns a set of values describing the discriminators of the context and a value
+            which changes whenever the state of the discriminator changes, for instance a serial
+            number of a timestamp.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Cache.ICacheScopeManager.AddDependencies(System.String[])">
+            <summary>
+            Adds the given dependencies to the current innermost cache context
+            </summary>
+            <param name="dependencies">The dependencies to add</param>
+        </member>
+        <member name="M:OrchardCore.Environment.Cache.ICacheScopeManager.AddContexts(System.String[])">
+            <summary>
+            Adds the given contexts to the current innermost cache context
+            </summary>
+            <param name="contexts">The contexts to add</param>
+        </member>
+        <member name="T:OrchardCore.Environment.Commands.CommandReturnCodes">
+            <summary>
+            Different return codes for a command execution.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Environment.Commands.Parameters.CommandParser.SplitArgs(System.String)">
+            <summary>
+            Implement the same logic as found at
+            http://msdn.microsoft.com/en-us/library/17w5ykft.aspx
+            The 3 special characters are quote, backslash and whitespaces, in order
+            of priority.
+            The semantics of a quote is: whatever the state of the lexer, copy
+            all characters verbatim until the next quote or EOF.
+            The semantics of backslash is: If the next character is a backslash or a quote,
+            copy the next character. Otherwise, copy the backslash and the next character.
+            The semantics of whitespace is: end the current argument and move on to the next one.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Documents.DocumentEntity">
+            <summary>
+            A <see cref="T:OrchardCore.Data.Documents.Document"/> being an <see cref="T:OrchardCore.Documents.IDocumentEntity"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Documents.IDocumentEntity">
+            <summary>
+            An <see cref="T:OrchardCore.Data.Documents.IDocument"/> being an <see cref="T:OrchardCore.Entities.IEntity"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Documents.IDocumentEntityManager`1">
+            <summary>
+            A generic service to keep in sync any single <see cref="T:OrchardCore.Documents.IDocumentEntity"/> between a document store and a shared cache.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Documents.IDocumentEntityManager`1.GetAsync``1(System.String)">
+            <summary>
+            Gets a persistent property of a given type.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Documents.IDocumentEntityManager`1.SetAsync``1(System.String,``0)">
+            <summary>
+            Sets a persistent property once the ambient session is committed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Documents.IDocumentEntityManager`1.RemoveAsync(System.String)">
+            <summary>
+            Removes a persistent property once the ambient session is committed.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Documents.IDocumentEntityManager`2">
+            <summary>
+            An <see cref="T:OrchardCore.Documents.IDocumentEntityManager`1"/> using a given type of <see cref="T:OrchardCore.Data.Documents.IDocumentStore"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Documents.IDocumentManager`1">
+            <summary>
+            A generic service to keep in sync any single <see cref="T:OrchardCore.Data.Documents.IDocument"/> between a document store and a shared cache.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Documents.IDocumentManager`1.GetOrCreateMutableAsync(System.Func{System.Threading.Tasks.Task{`0}})">
+            <summary>
+            Loads a single document from the store (or create a new one) for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Documents.IDocumentManager`1.GetOrCreateImmutableAsync(System.Func{System.Threading.Tasks.Task{`0}})">
+            <summary>
+            Gets a single document from the cache (or create a new one) for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Documents.IDocumentManager`1.UpdateAsync(`0,System.Func{`0,System.Threading.Tasks.Task})">
+            <summary>
+            Updates the store with the provided document and then updates the cache after the session is committed.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Documents.IDocumentManager`2">
+            <summary>
+            An <see cref="T:OrchardCore.Documents.IDocumentManager`1"/> using a given type of <see cref="T:OrchardCore.Data.Documents.IDocumentStore"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Documents.IDocumentSerialiser">
+            <summary>
+            Serializes and deserializes an <see cref="T:OrchardCore.Data.Documents.IDocument"/> into and from a sequence of bytes.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Documents.IDocumentSerialiser.SerializeAsync``1(``0,System.Int32)">
+            <summary>
+            Serializes an <see cref="T:OrchardCore.Data.Documents.IDocument"/> into a sequence of bytes.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Documents.IDocumentSerialiser.DeserializeAsync``1(System.Byte[])">
+            <summary>
+            Deserializes an <see cref="T:OrchardCore.Data.Documents.IDocument"/> from a sequence of bytes.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Documents.IVolatileDocumentEntityManager`1">
+            <summary>
+            An <see cref="T:OrchardCore.Documents.IDocumentEntityManager`1"/> using a shared cache but without any persistent storage.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Documents.IVolatileDocumentManager`1">
+            <summary>
+            An <see cref="T:OrchardCore.Documents.IDocumentManager`1"/> using a shared cache but without any persistent storage.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Documents.IVolatileDocumentManager`1.UpdateAtomicAsync(System.Func{System.Threading.Tasks.Task{`0}},System.Func{`0,System.Threading.Tasks.Task})">
+            <summary>
+            Executes the provided delegate and updates the cache, the whole being done atomically and after the session is committed,
+            this only if a lock can be acquired (default timeout to 10s), and atomically if the lock doesn't expire (default to 10s).
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Email.EmailAddressAttribute">
+            <summary>
+            Validates an email address.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Email.EmailAddressAttribute.IsValid(System.Object,System.ComponentModel.DataAnnotations.ValidationContext)">
+            <inheritdoc/>
+        </member>
+        <member name="T:OrchardCore.Email.IEmailAddressValidator">
+            <summary>
+            Contract for e-mail address validation service.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Email.IEmailAddressValidator.Validate(System.String)">
+            <summary>
+            Validates an e-mail address.
+            </summary>
+            <param name="emailAddress">The e-mail address to be validated.</param>
+            <returns><c>true</c> if the email is valid, otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:OrchardCore.Entities.EntityExtensions.As``1(OrchardCore.Entities.IEntity)">
+            <summary>
+            Extracts the specified type of property.
+            </summary>
+            <param name="entity">The <see cref="T:OrchardCore.Entities.IEntity"/>.</param>
+            <typeparam name="T">The type of the property to extract.</typeparam>
+            <returns>A new instance of the requested type if the property was not found.</returns>
+        </member>
+        <member name="M:OrchardCore.Entities.EntityExtensions.As``1(OrchardCore.Entities.IEntity,System.String)">
+            <summary>
+            Extracts the specified named property.
+            </summary>
+            <typeparam name="T">The type of the property to extract.</typeparam>
+            <param name="entity">The <see cref="T:OrchardCore.Entities.IEntity"/>.</param>
+            <param name="name">The name of the property to extract.</param>
+            <returns>A new instance of the requested type if the property was not found.</returns>
+        </member>
+        <member name="M:OrchardCore.Entities.EntityExtensions.Has``1(OrchardCore.Entities.IEntity)">
+            <summary>
+            Indicates if the specified type of property is attached to the <see cref="T:OrchardCore.Entities.IEntity"/> instance.
+            </summary>
+            <typeparam name="T">The type of the property to check.</typeparam>
+            <param name="entity">The <see cref="T:OrchardCore.Entities.IEntity"/>.</param>
+            <returns>True if the property was found, otherwise false.</returns>
+        </member>
+        <member name="M:OrchardCore.Entities.EntityExtensions.Has(OrchardCore.Entities.IEntity,System.String)">
+            <summary>
+            Indicates if the specified property is attached to the <see cref="T:OrchardCore.Entities.IEntity"/> instance.
+            </summary>
+            <param name="entity">The <see cref="T:OrchardCore.Entities.IEntity"/>.</param>
+            <param name="name">The name of the property to check.</param>
+            <returns>True if the property was found, otherwise false.</returns>
+        </member>
+        <member name="M:OrchardCore.Entities.EntityExtensions.Alter``1(OrchardCore.Entities.IEntity,System.String,System.Action{``0})">
+            <summary>
+            Modifies or create an aspect.
+            </summary>
+            <param name="entity">The <see cref="T:OrchardCore.Entities.IEntity"/>.</param>
+            <param name="name">The name of the aspect.</param>
+            <param name="action">An action to apply on the aspect.</param>
+            <returns>The current <see cref="T:OrchardCore.Entities.IEntity"/> instance.</returns>
+        </member>
+        <member name="T:OrchardCore.Scripting.IGlobalMethodProvider">
+            <summary>
+            An implementation of <see cref="T:OrchardCore.Scripting.IGlobalMethodProvider"/> provides custom methods for
+            an <see cref="T:OrchardCore.Scripting.IScriptingManager"/> instance.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Scripting.IGlobalMethodProvider.GetMethods">
+            <summary>
+            Gets the list of methods to provide to the <see cref="T:OrchardCore.Scripting.IScriptingManager"/>.
+            </summary>
+            <returns>A list of <see cref="T:OrchardCore.Scripting.GlobalMethod"/> instances.</returns>
+        </member>
+        <member name="T:OrchardCore.Scripting.IScriptingManager">
+            <summary>
+            An implementation of <see cref="T:OrchardCore.Scripting.IScriptingManager"/> provides services to evaluate
+            custom scripts.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Scripting.IScriptingManager.GetScriptingEngine(System.String)">
+            <summary>
+            Gets the scripting engine with the specified prefix.
+            </summary>
+            <param name="prefix">A string representing the engine to return.</param>
+            <returns>A scripting engine or <code>null</code> if it couldn't be found.</returns>
+        </member>
+        <member name="M:OrchardCore.Scripting.IScriptingManager.Evaluate(System.String,Microsoft.Extensions.FileProviders.IFileProvider,System.String,System.Collections.Generic.IEnumerable{OrchardCore.Scripting.IGlobalMethodProvider})">
+            <summary>
+            Executes some prefixed script by looking for a matching scripting engine.
+            </summary>
+            <param name="directive">The directive to execute. A directive is made of a </param>
+            <param name="fileProvider">An optional <see cref="T:Microsoft.Extensions.FileProviders.IFileProvider"/> instance.</param>
+            <param name="basePath">The base path.</param>
+            <param name="scopedMethodProviders">A list of method providers scoped to the script evaluation.</param>
+            <returns>The result of the script if any.</returns>
+        </member>
+        <member name="P:OrchardCore.Scripting.IScriptingManager.GlobalMethodProviders">
+            <summary>
+            The list of available method providers for this <see cref="T:OrchardCore.Scripting.IScriptingManager"/>
+            instance.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Security.IPermissionGrantingService.IsGranted(OrchardCore.Security.PermissionRequirement,System.Collections.Generic.IEnumerable{System.Security.Claims.Claim})">
+            <summary>
+            Evaluates if the specified <see cref="T:OrchardCore.Security.PermissionRequirement"/> is granted by provided claims.
+            </summary>
+            <param name="requirement">The <see cref="T:OrchardCore.Security.PermissionRequirement"/> to challenge</param>
+            <param name="claims">Provided claims.</param>
+            <returns>True if the permission is granted, otherwise false.</returns>
+        </member>
+        <member name="T:OrchardCore.Security.Permissions.IPermissionProvider">
+            <summary>
+            Implemented by modules to enumerate the types of permissions
+            the which may be granted
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Security.RoleClaim">
+            <summary>
+            Represents a claim that is granted to all users within a role.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Security.RoleClaim.ClaimType">
+            <summary>
+            Gets or sets the claim type for this claim.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Security.RoleClaim.ClaimValue">
+            <summary>
+            Gets or sets the claim value for this claim.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Settings.ISiteService">
+            <summary>
+            Provides services to manage the sites settings.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Settings.ISiteService.LoadSiteSettingsAsync">
+            <summary>
+            Loads the site settings from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Settings.ISiteService.GetSiteSettingsAsync">
+            <summary>
+            Gets the site settings from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Settings.ISiteService.UpdateSiteSettingsAsync(OrchardCore.Settings.ISite)">
+            <summary>
+            Updates the store with the provided site settings and then updates the cache.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.FileProviders.FileProviderExtensions.GetRelativeFileInfo(Microsoft.Extensions.FileProviders.IFileProvider,System.String,System.String)">
+            <summary>
+            Locate a file at the give relative paths
+            </summary>
+        </member>
+        <member name="M:System.IO.PathExtensions.Combine(System.String,System.String)">
+            <summary>
+            Combines two path parts
+            </summary>
+        </member>
+        <member name="M:System.IO.PathExtensions.Combine(System.String,System.String[])">
+            <summary>
+            Combines multiple path parts
+            </summary>
+        </member>
+        <member name="M:System.IO.PathExtensions.ResolvePath(System.String)">
+            <summary>
+            Resolves relative segments in a path
+            </summary>
+        </member>
+    </members>
+</doc>

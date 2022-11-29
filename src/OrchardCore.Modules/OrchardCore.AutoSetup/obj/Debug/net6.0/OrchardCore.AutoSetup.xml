@@ -1,0 +1,318 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.AutoSetup</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.AutoSetup.AutoSetupMiddleware">
+            <summary>
+            The auto setup middleware.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.AutoSetup.AutoSetupMiddleware._next">
+            <summary>
+            The next middleware in the execution pipeline.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.AutoSetup.AutoSetupMiddleware._shellHost">
+            <summary>
+            The shell host.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.AutoSetup.AutoSetupMiddleware._shellSettings">
+            <summary>
+            The shell settings.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.AutoSetup.AutoSetupMiddleware._shellSettingsManager">
+            <summary>
+            The shell settings manager.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.AutoSetup.AutoSetupMiddleware._distributedLock">
+            <summary>
+            A distributed lock guaranties an atomic setup in multi instances environment.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.AutoSetup.AutoSetupMiddleware._options">
+            <summary>
+            The auto setup options.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.AutoSetup.AutoSetupMiddleware._logger">
+            <summary>
+            The logger.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.AutoSetup.AutoSetupMiddleware._lockOptions">
+            <summary>
+            The auto setup lock options.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.AutoSetup.AutoSetupMiddleware._setupOptions">
+            <summary>
+            The tenant setup options.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AutoSetup.AutoSetupMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,OrchardCore.Environment.Shell.IShellHost,OrchardCore.Environment.Shell.ShellSettings,OrchardCore.Environment.Shell.IShellSettingsManager,OrchardCore.Locking.Distributed.IDistributedLock,Microsoft.Extensions.Options.IOptions{OrchardCore.AutoSetup.Options.AutoSetupOptions},Microsoft.Extensions.Logging.ILogger{OrchardCore.AutoSetup.AutoSetupMiddleware})">
+            <summary>
+            Initializes a new instance of the <see cref="T:OrchardCore.AutoSetup.AutoSetupMiddleware"/> class.
+            </summary>
+            <param name="next">The next middleware in the execution pipeline.</param>
+            <param name="shellHost">The shell host.</param>
+            <param name="shellSettings">The shell settings.</param>
+            <param name="shellSettingsManager">The shell settings manager.</param>
+            <param name="distributedLock">The distributed lock.</param>
+            <param name="options">The auto setup options.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="M:OrchardCore.AutoSetup.AutoSetupMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            The auto setup middleware invoke.
+            </summary>
+            <param name="httpContext">
+            The http context.
+            </param>
+            <returns>
+            The <see cref="T:System.Threading.Tasks.Task"/>.
+            </returns>
+        </member>
+        <member name="M:OrchardCore.AutoSetup.AutoSetupMiddleware.SetupTenantAsync(OrchardCore.Setup.Services.ISetupService,OrchardCore.AutoSetup.Options.TenantSetupOptions,OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Sets up a tenant.
+            </summary>
+            <param name="setupService">The setup service.</param>
+            <param name="setupOptions">The tenant setup options.</param>
+            <param name="shellSettings">The tenant shell settings.</param>
+            <returns>
+            Returns <c>true</c> if successfully setup.
+            </returns>
+        </member>
+        <member name="M:OrchardCore.AutoSetup.AutoSetupMiddleware.CreateTenantSettingsAsync(OrchardCore.AutoSetup.Options.TenantSetupOptions)">
+            <summary>
+            Creates a tenant shell settings.
+            </summary>
+            <param name="setupOptions">The setup options.</param>
+            <returns>The <see cref="T:OrchardCore.Environment.Shell.ShellSettings"/>.</returns>
+        </member>
+        <member name="M:OrchardCore.AutoSetup.AutoSetupMiddleware.GetSetupContextAsync(OrchardCore.AutoSetup.Options.TenantSetupOptions,OrchardCore.Setup.Services.ISetupService,OrchardCore.Environment.Shell.ShellSettings)">
+            <summary>
+            Gets a setup context from the configuration.
+            </summary>
+            <param name="options">The tenant setup options.</param>
+            <param name="setupService">The setup service.</param>
+            <param name="shellSettings">The tenant shell settings.</param>
+            <returns> The <see cref="T:OrchardCore.Setup.Services.SetupContext"/> used to setup the site.</returns>
+        </member>
+        <member name="T:OrchardCore.AutoSetup.Extensions.DistributedLockExtensions">
+            <summary>
+            The distributed lock extensions for auto setup.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AutoSetup.Extensions.DistributedLockExtensions.TryAcquireAutoSetupLockAsync(OrchardCore.Locking.Distributed.IDistributedLock,OrchardCore.AutoSetup.Options.LockOptions)">
+            <summary>
+            Tries to acquire an auto setup lock.
+            </summary>
+            <param name="distributedLock">
+            The distributed lock.
+            </param>
+            <param name="lockOptions">
+            The auto setup lock options.
+            </param>
+            <returns>
+            The <see cref="T:OrchardCore.Locking.ILocker"/> and <c>true</c> if successfully acquired.
+            </returns>
+        </member>
+        <member name="T:OrchardCore.AutoSetup.Options.AutoSetupOptions">
+            <summary>
+            The auto setup options.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.AutoSetupOptions.AutoSetupPath">
+            <summary>
+            Gets or sets the url which will trigger the auto setup.
+            Leave it empty if you want to trigger the auto setup on any request.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.AutoSetupOptions.LockOptions">
+            <summary>
+            Auto setup lock options.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.AutoSetupOptions.Tenants">
+            <summary>
+            Gets or sets the tenants to install.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.AutoSetupOptions.ConfigurationExists">
+            <summary>
+            Whether the configuration section exists.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AutoSetup.Options.AutoSetupOptions.Validate(System.ComponentModel.DataAnnotations.ValidationContext)">
+            <summary>
+            Auto setup options validation logic.
+            </summary>
+            <param name="validationContext">The validation context.</param>
+            <returns>The collection of errors.</returns>
+        </member>
+        <member name="T:OrchardCore.AutoSetup.Options.LockOptions">
+            <summary>
+            The auto setup lock options.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.LockOptions.LockTimeout">
+            <summary>
+            The timeout in milliseconds to acquire a distributed setup lock.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.LockOptions.LockExpiration">
+            <summary>
+            The expiration in milliseconds of the distributed setup lock.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.AutoSetup.Options.TenantSetupOptions">
+            <summary>
+            The tenant setup options.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.TenantSetupOptions.ShellName">
+            <summary>
+            The Shell Name
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.TenantSetupOptions.SiteName">
+            <summary>
+            Gets or sets the user friendly Tenant/Site Name.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.TenantSetupOptions.AdminUsername">
+            <summary>
+            Gets or sets the admin username.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.TenantSetupOptions.AdminEmail">
+            <summary>
+            Gets or sets the admin email.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.TenantSetupOptions.AdminPassword">
+            <summary>
+            Gets or sets the admin password.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.TenantSetupOptions.DatabaseProvider">
+            <summary>
+            Gets or sets the database provider.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.TenantSetupOptions.DatabaseConnectionString">
+            <summary>
+            Gets or sets the database connection string.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.TenantSetupOptions.DatabaseTablePrefix">
+            <summary>
+            Gets or sets the database table prefix.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.TenantSetupOptions.RecipeName">
+            <summary>
+            Gets or sets the recipe name.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.TenantSetupOptions.SiteTimeZone">
+            <summary>
+            Gets or sets the site time zone.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.TenantSetupOptions.RequestUrlHost">
+            <summary>
+            Gets or sets the tenants request url host.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.TenantSetupOptions.RequestUrlPrefix">
+            <summary>
+            Gets or sets the tenant request url prefix.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.TenantSetupOptions.FeatureProfile">
+            <summary>
+            Gets or sets the name of the feature profile applied to the tenant. May be <see langword="null"/> or empty
+            for no profile being selected.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AutoSetup.Options.TenantSetupOptions.IsDefault">
+            <summary>
+            Gets the Flag which indicates a Default/Root shell/tenant.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.AutoSetup.Options.TenantSetupOptions.RequiredErrorMessageFormat">
+            <summary>
+            Error Message Format
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AutoSetup.Options.TenantSetupOptions.Validate(System.ComponentModel.DataAnnotations.ValidationContext)">
+            <summary>
+            Tenant validation.
+            </summary>
+            <param name="validationContext"> The validation context. </param>
+            <returns> The collection of errors. </returns>
+        </member>
+        <member name="T:OrchardCore.AutoSetup.Startup">
+            <summary>
+            The AutoSetup feature startup.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.AutoSetup.Startup.ConfigSectionName">
+            <summary>
+            AutoSetup Configuration Section Name.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.AutoSetup.Startup._shellSettings">
+            <summary>
+            The Shell settings.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.AutoSetup.Startup._shellConfiguration">
+            <summary>
+            The Shell/Tenant configuration.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.AutoSetup.Startup._logger">
+            <summary>
+            The logger.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AutoSetup.Startup.#ctor(OrchardCore.Environment.Shell.ShellSettings,OrchardCore.Environment.Shell.Configuration.IShellConfiguration,Microsoft.Extensions.Logging.ILogger{OrchardCore.AutoSetup.Startup})">
+            <summary>
+            Initializes a new instance of the <see cref="T:OrchardCore.AutoSetup.Startup"/> class.
+            </summary>
+            <param name="shellSettings">The Shell settings.</param>
+            <param name="shellConfiguration">The shell configuration.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="M:OrchardCore.AutoSetup.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            The configure services.
+            </summary>
+            <param name="services">
+            The services.
+            </param>
+        </member>
+        <member name="M:OrchardCore.AutoSetup.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Routing.IEndpointRouteBuilder,System.IServiceProvider)">
+            <summary>
+            Configure application pipeline.
+            </summary>
+            <param name="app">
+            The app.
+            </param>
+            <param name="routes">
+            The routes.
+            </param>
+            <param name="serviceProvider">
+            The "Shell Scope" service provider.
+            </param>
+        </member>
+    </members>
+</doc>

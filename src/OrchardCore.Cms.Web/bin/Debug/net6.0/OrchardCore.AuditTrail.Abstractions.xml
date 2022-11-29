@@ -1,0 +1,173 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.AuditTrail.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.AuditTrail.Drivers.AuditTrailEventSectionDisplayDriver`1">
+            <summary>
+            A concrete implementation of this class will be able to take part in the rendering of an <see cref="T:OrchardCore.AuditTrail.Models.AuditTrailEvent"/>
+            shape instance for a specific section of the <see cref="T:OrchardCore.AuditTrail.Models.AuditTrailEvent"/>. A section represents a property of an entity instance
+            where the name of the property is the type of the section.
+            </summary>
+            <typeparam name="TSection">The type of the section this driver handles.</typeparam>
+        </member>
+        <member name="T:OrchardCore.AuditTrail.Indexes.AuditTrailEventIndex">
+            <summary>
+            Used to index the generic Audit Trail Events.
+            </summary>
+        </member>
+        <member name="F:OrchardCore.AuditTrail.Models.AuditTrailEvent.Collection">
+            <summary>
+            The name of the collection that is used for this type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AuditTrail.Models.AuditTrailEvent.EventId">
+            <summary>
+            The ID of the event.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AuditTrail.Models.AuditTrailEvent.Name">
+            <summary>
+            The event name.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AuditTrail.Models.AuditTrailEvent.Category">
+            <summary>
+            The category the event belongs to.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AuditTrail.Models.AuditTrailEvent.CorrelationId">
+            <summary>
+            The correlation id used to associate an event to e.g. a content item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AuditTrail.Models.AuditTrailEvent.UserId">
+            <summary>
+            The user id of the user who caused the event to occur.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AuditTrail.Models.AuditTrailEvent.UserName">
+            <summary>
+            The user name of the user who caused the event to occur.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AuditTrail.Models.AuditTrailEvent.NormalizedUserName">
+            <summary>
+            The normalized user name of the user who caused the event to occur.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AuditTrail.Models.AuditTrailEvent.ClientIpAddress">
+            <summary>
+            The IP address of the user who caused the event to occur.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AuditTrail.Models.AuditTrailEvent.CreatedUtc">
+            <summary>
+            The date and time when the event occurred.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AuditTrail.Services.IAuditTrailAdminListQueryService.QueryAsync(System.Int32,System.Int32,OrchardCore.AuditTrail.ViewModels.AuditTrailIndexOptions)">
+            <summary>
+            Queries a page of audit trail events.
+            </summary>
+            <param name="page">The page number to get events from.</param>
+            <param name="pageSize">The number of events to get.</param>
+            <param name="options">The filter options.</param>
+        </member>
+        <member name="T:OrchardCore.AuditTrail.Services.IAuditTrailEventHandler">
+            <summary>
+            Describes an event handler participating in Audit Trail management.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AuditTrail.Services.IAuditTrailEventHandler.CreateAsync(OrchardCore.AuditTrail.Services.Models.AuditTrailCreateContext)">
+            <summary>
+            Modifies the context when creating an Audit Trail event.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AuditTrail.Services.IAuditTrailEventHandler.AlterAsync(OrchardCore.AuditTrail.Services.Models.AuditTrailCreateContext,OrchardCore.AuditTrail.Models.AuditTrailEvent)">
+            <summary>
+            Alters an Audit Trail event after it has been built and before saving it.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.AuditTrail.Services.IAuditTrailManager">
+            <summary>
+            Describes a service managing audit trail events.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AuditTrail.Services.IAuditTrailManager.RecordEventAsync``1(OrchardCore.AuditTrail.Services.Models.AuditTrailContext{``0})">
+            <summary>
+            Records an audit trail event.
+            </summary>
+            <param name="context">The <see cref="T:OrchardCore.AuditTrail.Services.Models.AuditTrailContext`1"/> used to create a new event.</param>
+        </member>
+        <member name="M:OrchardCore.AuditTrail.Services.IAuditTrailManager.GetEventAsync(System.String)">
+            <summary>
+            Gets a single audit trail event by ID.
+            </summary>
+            <param name="eventId">The event ID.</param>
+            <returns>The <see cref="T:OrchardCore.AuditTrail.Models.AuditTrailEvent"/>.</returns>
+        </member>
+        <member name="M:OrchardCore.AuditTrail.Services.IAuditTrailManager.TrimEventsAsync(System.TimeSpan)">
+            <summary>
+            Trims the audit trail by deleting all events older than the specified retention period.
+            </summary>
+            <returns>The number of the deleted events.</returns>
+        </member>
+        <member name="M:OrchardCore.AuditTrail.Services.IAuditTrailManager.DescribeEvent(OrchardCore.AuditTrail.Models.AuditTrailEvent)">
+            <summary>
+            Describes a single audit trail event.
+            </summary>
+            <param name="auditTrailEvent">The <see cref="T:OrchardCore.AuditTrail.Models.AuditTrailEvent"/> to describe.</param>
+            <returns>The <see cref="T:OrchardCore.AuditTrail.Services.Models.AuditTrailEventDescriptor"/>.</returns>
+        </member>
+        <member name="M:OrchardCore.AuditTrail.Services.IAuditTrailManager.DescribeCategories">
+            <summary>
+            Describes all audit trail event categories.
+            </summary>
+            <returns>The list of <see cref="T:OrchardCore.AuditTrail.Services.Models.AuditTrailCategoryDescriptor"/>.</returns>
+        </member>
+        <member name="M:OrchardCore.AuditTrail.Services.IAuditTrailManager.DescribeCategory(System.String)">
+            <summary>
+            Describes a single audit trail event category.
+            </summary>
+            <param name="name">The category name.</param>
+            <returns>The <see cref="T:OrchardCore.AuditTrail.Services.Models.AuditTrailCategoryDescriptor"/>.</returns>
+        </member>
+        <member name="M:OrchardCore.AuditTrail.Services.Models.AuditTrailAdminListOptionBuilder.WithQuery(System.Func{System.String,YesSql.IQuery{OrchardCore.AuditTrail.Models.AuditTrailEvent},YesSql.IQuery{OrchardCore.AuditTrail.Models.AuditTrailEvent}})">
+            <summary>
+            Specifies the query that will be invoked when this option is selected.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AuditTrail.Services.Models.AuditTrailAdminListOptionBuilder.WithQuery(System.Func{System.String,YesSql.IQuery{OrchardCore.AuditTrail.Models.AuditTrailEvent},YesSql.Filters.Query.Services.QueryExecutionContext{OrchardCore.AuditTrail.Models.AuditTrailEvent},System.Threading.Tasks.ValueTask{YesSql.IQuery{OrchardCore.AuditTrail.Models.AuditTrailEvent}}})">
+            <summary>
+            Specifies the query that will be invoked when this option is selected.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AuditTrail.Services.Models.AuditTrailAdminListOptionBuilder.WithSelectListItem``1(System.Func{Microsoft.Extensions.Localization.IStringLocalizer,OrchardCore.AuditTrail.Services.Models.AuditTrailAdminListOption,OrchardCore.AuditTrail.ViewModels.AuditTrailIndexOptions,Microsoft.AspNetCore.Mvc.Rendering.SelectListItem})">
+            <summary>
+            Optionally adds a select list item to the option
+            </summary>
+        </member>
+        <member name="M:OrchardCore.AuditTrail.Services.Models.AuditTrailAdminListOptionBuilder.AsDefault">
+            <summary>
+            Sets this query option as the default which will be applied when no option has been selected.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AuditTrail.ViewModels.AuditTrailIndexOptions.Event">
+            <summary>
+            Event is a supported UI filter if a <see cref="P:OrchardCore.AuditTrail.ViewModels.AuditTrailIndexOptions.CorrelationId"/> is provided from the route
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AuditTrail.ViewModels.AuditTrailIndexOptions.CorrelationIdFromRoute">
+            <summary>
+            Marks a <see cref="P:OrchardCore.AuditTrail.ViewModels.AuditTrailIndexOptions.CorrelationId"/> as provided from the route, rather than a filter
+            </summary>
+        </member>
+        <member name="P:OrchardCore.AuditTrail.ViewModels.AuditTrailIndexOptions.Events">
+            <summary>
+            Events for the current category when a <see cref="P:OrchardCore.AuditTrail.ViewModels.AuditTrailIndexOptions.CorrelationId"/> is set from the route.
+            </summary>
+        </member>
+    </members>
+</doc>

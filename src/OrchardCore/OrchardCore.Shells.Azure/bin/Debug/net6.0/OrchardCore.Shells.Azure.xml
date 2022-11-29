@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Shells.Azure</name>
+    </assembly>
+    <members>
+        <member name="M:Microsoft.Extensions.DependencyInjection.BlobShellsOrchardCoreBuilderExtensions.AddAzureShellsConfiguration(Microsoft.Extensions.DependencyInjection.OrchardCoreBuilder)">
+            <summary>
+            Host services to load site and shell settings from Azure Blob Storage.
+            </summary>
+        </member>
+    </members>
+</doc>

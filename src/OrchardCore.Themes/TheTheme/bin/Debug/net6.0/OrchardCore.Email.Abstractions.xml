@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Email.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Email.ISmtpService">
+            <summary>
+            Represents a contract for SMTP service.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Email.ISmtpService.SendAsync(OrchardCore.Email.MailMessage)">
+            <summary>
+            Sends the specified message to an SMTP server for delivery.
+            </summary>
+            <param name="message">The message to be sent.</param>
+            <returns>A <see cref="T:OrchardCore.Email.SmtpResult"/> that holds information about the sent message, for instance if it has sent successfully or if it has failed.</returns>
+        </member>
+        <member name="T:OrchardCore.Email.MailMessage">
+            <summary>
+            Represents a class that contains information of the mail message.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.MailMessage.From">
+            <summary>
+            Gets or sets the author of the email.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.MailMessage.To">
+            <summary>
+            Gets or sets the recipients.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.MailMessage.Cc">
+            <summary>
+            Gets or sets the carbon copy emails.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.MailMessage.Bcc">
+            <summary>
+            Gets or sets a blind copy emails.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.MailMessage.ReplyTo">
+            <summary>
+            Gets or sets the replied to emails.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.MailMessage.Sender">
+            <summary>
+            Gets or sets the actual submitter of the email.
+            </summary>
+            <remark>
+            This property is required if not the same as <see cref="P:OrchardCore.Email.MailMessage.From"/>, for more information please refer to https://ietf.org/rfc/rfc822.txt.
+            </remark>
+        </member>
+        <member name="P:OrchardCore.Email.MailMessage.Subject">
+            <summary>
+            Gets or sets the message subject.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.MailMessage.Body">
+            <summary>
+            Gets or sets the message content aka body.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.MailMessage.BodyText">
+            <summary>
+            Gets or sets the message content as plain text.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.MailMessage.IsBodyHtml">
+            <summary>
+            Gets or sets whether the message body is an HTML.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.MailMessage.IsBodyText">
+            <summary>
+            Gets or sets whether the message body is plain text.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.MailMessage.Attachments">
+            <summary>
+            The collection of message attachments.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Email.MailMessageAttachment">
+            <summary>
+            Represents a class that contains information for a mail message attachment.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.MailMessageAttachment.Filename">
+            <summary>
+            Gets or sets the attachment filename.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.MailMessageAttachment.Stream">
+            <summary>
+            Gets or sets the attachment file stream.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Email.SmtpDeliveryMethod">
+            <summary>
+            Represents an enumeration for the mail delivery methods.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Email.SmtpEncryptionMethod">
+            <summary>
+            Represents an enumeration for mail encryption methods.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Email.SmtpResult">
+            <summary>
+            Represents the result of sending an email.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpResult.Success">
+            <summary>
+            Returns an <see cref="T:OrchardCore.Email.SmtpResult"/> indicating a successful Smtp operation.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpResult.Errors">
+            <summary>
+            An <see cref="T:System.Collections.Generic.IEnumerable`1"/> containing an errors that occurred during the Smtp operation.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpResult.Response">
+            <summary>
+            Get or sets thet response text from the SMTP server.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpResult.Succeeded">
+            <summary>
+            Whether if the operation succeeded or not.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Email.SmtpResult.Failed(Microsoft.Extensions.Localization.LocalizedString[])">
+            <summary>
+            Creates an <see cref="T:OrchardCore.Email.SmtpResult"/> indicating a failed Smtp operation, with a list of errors if applicable.
+            </summary>
+            <param name="errors">An optional array of <see cref="T:Microsoft.Extensions.Localization.LocalizedString"/> which caused the operation to fail.</param>
+        </member>
+        <member name="T:OrchardCore.Email.SmtpSettings">
+            <summary>
+            Represents a settings for SMTP.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpSettings.DefaultSender">
+            <summary>
+            Gets or sets the default sender mail.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpSettings.DeliveryMethod">
+            <summary>
+            Gets or sets the mail delivery method.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpSettings.PickupDirectoryLocation">
+            <summary>
+            Gets or sets the mailbox directory, this used for <see cref="F:OrchardCore.Email.SmtpDeliveryMethod.SpecifiedPickupDirectory"/> option.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpSettings.Host">
+            <summary>
+            Gets or sets the SMTP server/host.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpSettings.Port">
+            <summary>
+            Gets or sets the SMTP port number. Defaults to <c>25</c>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpSettings.AutoSelectEncryption">
+            <summary>
+            Gets or sets whether the encryption is automatically selected.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpSettings.RequireCredentials">
+            <summary>
+            Gets or sets whether the user credentials is required.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpSettings.UseDefaultCredentials">
+            <summary>
+            Gets or sets whether to use the default user credentials.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpSettings.EncryptionMethod">
+            <summary>
+            Gets or sets the mail encryption method.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpSettings.UserName">
+            <summary>
+            Gets or sets the user name.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpSettings.Password">
+            <summary>
+            Gets or sets the user password
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpSettings.ProxyHost">
+            <summary>
+            Gets or sets the proxy server.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Email.SmtpSettings.ProxyPort">
+            <summary>
+            Gets or sets the proxy port number.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Email.SmtpSettings.Validate(System.ComponentModel.DataAnnotations.ValidationContext)">
+            <inheritdocs />
+        </member>
+    </members>
+</doc>

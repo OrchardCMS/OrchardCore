@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "B1VmoTjbWMqOH+KQ6kh3WF4o9Z3H18pUuyPXBLr0aUY=",
+  "Source": "OrchardCore.AdminMenu",
+  "BasePath": "_content/OrchardCore.AdminMenu",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OrchardCore.AdminMenu\\wwwroot",
+      "Source": "OrchardCore.AdminMenu",
+      "ContentRoot": "C:\\repos\\loethenweb\\src\\OrchardCore.Modules\\OrchardCore.AdminMenu\\wwwroot\\",
+      "BasePath": "_content/OrchardCore.AdminMenu",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

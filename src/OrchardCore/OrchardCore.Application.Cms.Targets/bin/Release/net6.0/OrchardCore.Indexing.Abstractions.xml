@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Indexing.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Indexing.ContentFieldIndexHandler`1">
+            <summary>
+            An implementation of <see cref="T:OrchardCore.Indexing.ContentFieldIndexHandler`1"/> is able to take part in the rendering of
+            a <see typeparamref="TField"/> instance.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Indexing.ContentIndexSettings">
+            <summary>
+            Represents the indexing settings for a content part or a field.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Indexing.ContentIndexSettings.Included">
+            <summary>
+            Set the content to be added in the index document. Will be indexed based on CLR Type.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Indexing.ContentIndexSettings.Keyword">
+            <summary>
+            Set the content to be indexed in the index as a keyword (tokenized as a single term).
+            See Lucene StringField.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Indexing.ContentIndexSettings.Stored">
+            <summary>
+            Set the content to be stored in the index document. The original value will be stored.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Indexing.ContentPartIndexHandler`1">
+            <summary>
+            An implementation of <see cref="T:OrchardCore.Indexing.ContentPartIndexHandler`1"/> is able to take part in the rendering of
+            a <see typeparamref="TPart"/> instance.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Indexing.DocumentIndexOptions">
+            <summary>
+            Store means that the value will be stored in the index.
+            Keyword means that the value will be indexed and tokenized as a single term. See Lucene StringField.
+            We should use keyword and store options together for technical values. This way it will be using a StringField but also be stored.
+            Stored and Keyword are not the same.
+            If you absolutely need to only store the original value of a field then you should use a Lucene StoredField.
+            See Elasticsearch documentation : <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-store.html#mapping-store"/>
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Indexing.IContentFieldIndexHandler">
+            <summary>
+            An implementation of <see cref="T:OrchardCore.Indexing.IContentFieldIndexHandler"/> is able to take part in the rendering of
+            a <see cref="T:OrchardCore.ContentManagement.ContentField"/> instance.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Indexing.IContentIndexSettings">
+            <summary>
+            Represents the indexing settings for a content part or a field.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Indexing.IContentItemIndexHandler">
+            <summary>
+            An implementation of <see cref="T:OrchardCore.Indexing.IContentItemIndexHandler"/> can provide property values for an index document.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Indexing.IContentPartIndexHandler">
+            <summary>
+            An implementation of <see cref="T:OrchardCore.Indexing.IContentPartIndexHandler"/> is able to take part in the rendering of
+            a <see cref="T:OrchardCore.ContentManagement.ContentPart"/> instance.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Indexing.IIndexingTaskManager">
+            <summary>
+            Provides services to create and retrieve <see cref="T:OrchardCore.Indexing.IndexingTask"/> instances.
+            It is used by indexers to track all content items that have to be indexed or re-indexed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Indexing.IIndexingTaskManager.GetIndexingTasksAsync(System.Int32,System.Int32)">
+            <summary>
+            Returns a page of <see cref="T:OrchardCore.Indexing.IndexingTask"/>.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Indexing.IIndexingTaskManager.CreateTaskAsync(OrchardCore.ContentManagement.ContentItem,OrchardCore.Indexing.IndexingTaskTypes)">
+            <summary>
+            Creates a new <see cref="T:OrchardCore.Indexing.IndexingTask"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Indexing.IndexingTask.Id">
+            <summary>
+            The unique identifier of the <see cref="T:OrchardCore.Indexing.IndexingTask"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Indexing.IndexingTask.ContentItemId">
+            <summary>
+            The id of the content item that is represented by the <see cref="T:OrchardCore.Indexing.IndexingTask"/> instance.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Indexing.IndexingTask.CreatedUtc">
+            <summary>
+            The <see cref="T:System.DateTime"/> value the task was created.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Indexing.IndexingTask.Type">
+            <summary>
+            The type of task.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.ContentTypes</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.ContentTypes.Deployment.ContentDefinitionDeploymentStep">
+            <summary>
+            Adds selected content definitions to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentTypes.Deployment.DeleteContentDefinitionDeploymentStep">
+            <summary>
+            Deletes selected content definitions to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentTypes.RecipeSteps.ContentDefinitionStep">
+            <summary>
+            This recipe step creates content definitions.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentTypes.RecipeSteps.DeleteContentDefinitionStep">
+            <summary>
+            This recipe step deletes content definition records.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentTypes.RecipeSteps.ReplaceContentDefinitionStep">
+            <summary>
+            This recipe step replaces content definition records.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentTypes.LuceneRecipeEventHandler">
+            <summary>
+            This handler provides backward compatibility with ContentIndexSettings that have been migrated to LuceneContentIndexSettings.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentTypes.ViewModels.AddFieldViewModel.Name">
+            <summary>
+            The technical name of the field
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentTypes.ViewModels.AddFieldViewModel.DisplayName">
+            <summary>
+            The display name of the field
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentTypes.ViewModels.AddFieldViewModel.FieldTypeName">
+            <summary>
+            The selected field type
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentTypes.ViewModels.AddFieldViewModel.Part">
+            <summary>
+            The part to add the field to
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentTypes.ViewModels.AddFieldViewModel.Fields">
+            <summary>
+            List of the available Field types
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentTypes.ViewModels.EditFieldViewModel.Name">
+            <summary>
+            The technical name of the field
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentTypes.ViewModels.EditFieldViewModel.DisplayName">
+            <summary>
+            The display name of the field
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentTypes.ViewModels.EditFieldViewModel.Editor">
+            <summary>
+            The editor name of the field
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentTypes.ViewModels.EditFieldViewModel.DisplayMode">
+            <summary>
+            The display mode of the field
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentTypes.ViewModels.EditTypePartViewModel.Name">
+            <summary>
+            The technical name of the part
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentTypes.ViewModels.EditTypePartViewModel.DisplayName">
+            <summary>
+            The display name of the part
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentTypes.ViewModels.EditTypePartViewModel.Editor">
+            <summary>
+            The editor name of the part
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentTypes.ViewModels.EditTypePartViewModel.DisplayMode">
+            <summary>
+            The display mode of the part
+            </summary>
+        </member>
+    </members>
+</doc>

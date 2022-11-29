@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Admin</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Admin.AdminFilter">
+            <summary>
+            Intercepts any request to check whether it applies to the admin site.
+            If so it marks the request as such and ensures the user as the right to access it.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Admin.AdminMenuFilter">
+            <summary>
+            This filter inject a Navigation shape in the Navigation zone of the Layout
+            for any ViewResult returned from an Admin controller.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Admin.AdminThemeSelector">
+            <summary>
+            Provides the theme defined in the site configuration for the current scope (request).
+            The same <see cref="T:OrchardCore.DisplayManagement.Theming.ThemeSelectorResult"/> is returned if called multiple times
+            during the same scope.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Admin.AdminZoneFilter">
+            <summary>
+            This filter makes an controller that starts with Admin and Razor Pages in /Pages/Admin folder behave as
+            it had the <see cref="T:OrchardCore.Admin.AdminAttribute"/>.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,112 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: es-ES\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Admin.pot\n"
+"X-Crowdin-File-ID: 694\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Spanish\n"
+"Language: es_ES\n"
+"PO-Revision-Date: 2022-05-05 18:38\n"
+
+#. .Add(S["Configuration"], design => design
+#: OrchardCore.Admin\AdminMenu.cs:26
+msgctxt "OrchardCore.Admin.AdminMenu"
+msgid "Configuration"
+msgstr "Configuración"
+
+#. .Add(S["Settings"], settings => settings
+#: OrchardCore.Admin\AdminMenu.cs:27
+msgctxt "OrchardCore.Admin.AdminMenu"
+msgid "Settings"
+msgstr "Ajustes"
+
+#. .Add(S["Admin"], S["Admin"].PrefixPosition(), admin => admin
+#. .Add(S["Admin"], S["Admin"].PrefixPosition(), admin => admin
+#: OrchardCore.Admin\AdminMenu.cs:28
+#: OrchardCore.Admin\AdminMenu.cs:28
+msgctxt "OrchardCore.Admin.AdminMenu"
+msgid "Admin"
+msgstr "Admin"
+
+#. services.AddSiteSettingsPropertyDeploymentStep<AdminSettings, DeploymentStartup>(S => S["Admin settings"], S => S["Exports the admin settings."]);
+#: OrchardCore.Admin\Startup.cs:92
+msgctxt "OrchardCore.Admin.DeploymentStartup"
+msgid "Admin settings"
+msgstr "Ajustes de Admin"
+
+#. services.AddSiteSettingsPropertyDeploymentStep<AdminSettings, DeploymentStartup>(S => S["Admin settings"], S => S["Exports the admin settings."]);
+#: OrchardCore.Admin\Startup.cs:92
+msgctxt "OrchardCore.Admin.DeploymentStartup"
+msgid "Exports the admin settings."
+msgstr "Exportar los ajustes de Administración."
+
+#. <h4>@T["Welcome to Orchard Core"]</h4>
+#: OrchardCore.Admin\Views\AdminDashboard.cshtml:2
+msgctxt "OrchardCore.Admin.Views.AdminDashboard"
+msgid "Welcome to Orchard Core"
+msgstr "Bienvenido a Orchard"
+
+#. <p>@T["Feel free to browse the menu and discover all its possibilities."]</p>
+#: OrchardCore.Admin\Views\AdminDashboard.cshtml:3
+msgctxt "OrchardCore.Admin.Views.AdminDashboard"
+msgid "Feel free to browse the menu and discover all its possibilities."
+msgstr "No dude en consultar el menú de la izquierda y descubrir todas sus posibilidades."
+
+#. <label asp-for="DisplayDarkMode" class="form-check-label">@T["Enable dark mode admin theme"]</label>
+#: OrchardCore.Admin\Views\AdminSettings.Edit.cshtml:6
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Enable dark mode admin theme"
+msgstr "Establecer modo oscuro al tema"
+
+#. <span class="hint">@T["Whether a dark mode admin theme can be displayed."]</span>
+#: OrchardCore.Admin\Views\AdminSettings.Edit.cshtml:8
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Whether a dark mode admin theme can be displayed."
+msgstr "Si se puede mostrar un tema de administración en modo oscuro."
+
+#. <label asp-for="DisplayMenuFilter" class="form-check-label">@T["Enable Admin Menu filter"]</label>
+#: OrchardCore.Admin\Views\AdminSettings.Edit.cshtml:14
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Enable Admin Menu filter"
+msgstr "Activar filtro de menú Admin"
+
+#. <span class="hint">@T["Whether a quick search to filter the admin menu is displayed."]</span>
+#: OrchardCore.Admin\Views\AdminSettings.Edit.cshtml:16
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Whether a quick search to filter the admin menu is displayed."
+msgstr "Si se muestra una búsqueda rápida para filtrar el menú de administración."
+
+#. <label asp-for="DisplayNewMenu" class="form-check-label">@T["Display New menu"]</label>
+#: OrchardCore.Admin\Views\AdminSettings.Edit.cshtml:22
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Display New menu"
+msgstr "Mostrar nuevo menú"
+
+#. <span class="hint">@T["Whether a New menu is displayed in the admin menu."]</span>
+#: OrchardCore.Admin\Views\AdminSettings.Edit.cshtml:24
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Whether a New menu is displayed in the admin menu."
+msgstr "Si se muestra un nuevo menú en el menú de administración."
+
+#. <label asp-for="DisplayTitlesInTopbar" class="form-check-label">@T["Display titles in top bar"]</label>
+#: OrchardCore.Admin\Views\AdminSettings.Edit.cshtml:30
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Display titles in top bar"
+msgstr "Mostrar títulos en la barra superior"
+
+#. <span class="hint">@T["Whether the titles are displayed in the top bar."]</span>
+#: OrchardCore.Admin\Views\AdminSettings.Edit.cshtml:32
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Whether the titles are displayed in the top bar."
+msgstr "Si los títulos se muestran en la barra superior."
+
+#. <span class="icon"><i class="fa fa-tachometer" aria-hidden="true"></i></span><span class="title">@T["Admin"]</span>
+#: OrchardCore.Admin\Views\NavigationItemText-admin.Id.cshtml:1
+msgctxt "OrchardCore.Admin.Views.NavigationItemText-admin.Id"
+msgid "Admin"
+msgstr "Admin"
+

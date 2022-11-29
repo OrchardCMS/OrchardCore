@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Contents.Core</name>
+    </assembly>
+    <members>
+        <member name="M:Microsoft.AspNetCore.Authorization.AuthorizationServiceExtensions.AuthorizeContentTypeDefinitionsAsync(Microsoft.AspNetCore.Authorization.IAuthorizationService,System.Security.Claims.ClaimsPrincipal,OrchardCore.Security.Permissions.Permission,System.Collections.Generic.IEnumerable{OrchardCore.ContentManagement.Metadata.Models.ContentTypeDefinition},OrchardCore.ContentManagement.IContentManager)">
+            <summary>
+            Evaluate if we have a specific owner variation permission to at least one content type
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Contents.CommonPermissions">
+            <summary>
+            This class contains the source references to the OrchardCore.Contents module permissions so they can be used in other modules
+            without having to reference the OrchardCore.Contents by itself.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Contents.Security.ContentTypePermissionsHelper">
+            <summary>
+            The content type permissions helper generates dynamic permissions per content type.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Contents.Security.ContentTypePermissionsHelper.ConvertToDynamicPermission(OrchardCore.Security.Permissions.Permission)">
+            <summary>
+            Returns a dynamic permission for a content type, based on a global content permission template
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Contents.Security.ContentTypePermissionsHelper.CreateDynamicPermission(OrchardCore.Security.Permissions.Permission,OrchardCore.ContentManagement.Metadata.Models.ContentTypeDefinition)">
+            <summary>
+            Generates a permission dynamically for a content type
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Contents.Security.ContentTypePermissionsHelper.CreateDynamicPermission(OrchardCore.Security.Permissions.Permission,System.String)">
+            <summary>
+            Generates a permission dynamically for a content type, without a display name or category
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Contents.Services.IContentsAdminListFilter">
+            <summary>
+            Provides custom filters to the content items admin listing.
+            <see cref="T:OrchardCore.Contents.Services.IContentsAdminListFilterProvider"/> is the preferred way to extend the contents list.
+            This abstraction remains to support backwards compatability, and alternate extension points.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Contents.Services.IContentsAdminListFilterProvider">
+            <summary>
+            Provides a custom parsing engine rule set for filtering content items in the contents admin list.
+            </summary>
+        </member>
+    </members>
+</doc>

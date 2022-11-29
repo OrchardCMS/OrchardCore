@@ -1,0 +1,260 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Navigation.Core</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Navigation.MenuItem">
+            <summary>
+            Represents a menu item described by an <see cref="T:OrchardCore.Navigation.INavigationProvider"/> implementation.
+            A menu item can describe child menu items.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.MenuItem.Text">
+            <summary>
+            The text to display with the menu item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.MenuItem.Id">
+            <summary>
+            The html id of the menu item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.MenuItem.Href">
+            <summary>
+            The final url that the menu item will link to. This property is computed
+            based on <see cref="P:OrchardCore.Navigation.MenuItem.Url"/> or <see cref="P:OrchardCore.Navigation.MenuItem.RouteValues"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.MenuItem.Url">
+            <summary>
+            The optional url the menu item should link to.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.MenuItem.Position">
+            <summary>
+            The relative position of the menu item among its siblings. e.g., 10, 0, "after".
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.MenuItem.Priority">
+            <summary>
+            The priority of the menu item in case there are other menu items that could be marked as selected for the request.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.MenuItem.LinkToFirstChild">
+            <summary>
+            Whether the menu item should link to the same url as its first child.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.MenuItem.LocalNav">
+            <summary>
+            <c>True</c> if the menu item is local to the page, like a tab.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.MenuItem.Culture">
+            <summary>
+            The culture for which this menu item is used.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.MenuItem.Resource">
+            <summary>
+            The resource the permission is protecting.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.MenuItem.Items">
+            <summary>
+            The child menu items.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.MenuItem.RouteValues">
+            <summary>
+            The optional route values for this menu item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.MenuItem.Permissions">
+            <summary>
+            The list of <see cref="T:OrchardCore.Security.Permissions.Permission"/> objects the user must have in order to see this menu item.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.MenuItem.Classes">
+            <summary>
+            The css classes to render with the menu item.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Navigation.NavigationHelper.PopulateMenuAsync(System.Object,System.Object,System.Object,System.Collections.Generic.IEnumerable{OrchardCore.Navigation.MenuItem},Microsoft.AspNetCore.Mvc.Rendering.ViewContext)">
+            <summary>
+            Populates the menu shapes.
+            </summary>
+            <param name="shapeFactory">The shape factory.</param>
+            <param name="parentShape">The menu parent shape.</param>
+            <param name="menu">The menu shape.</param>
+            <param name="menuItems">The current level to populate.</param>
+            <param name="viewContext">The current <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.ViewContext"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Navigation.NavigationHelper.PopulateMenuLevelAsync(System.Object,System.Object,System.Object,System.Collections.Generic.IEnumerable{OrchardCore.Navigation.MenuItem},Microsoft.AspNetCore.Mvc.Rendering.ViewContext)">
+            <summary>
+            Populates the menu shapes for the level recursively.
+            </summary>
+            <param name="shapeFactory">The shape factory.</param>
+            <param name="parentShape">The menu parent shape.</param>
+            <param name="menu">The menu shape.</param>
+            <param name="menuItems">The current level to populate.</param>
+            <param name="viewContext">The current <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.ViewContext"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Navigation.NavigationHelper.BuildMenuItemShapeAsync(System.Object,System.Object,System.Object,OrchardCore.Navigation.MenuItem,Microsoft.AspNetCore.Mvc.Rendering.ViewContext)">
+            <summary>
+            Builds a menu item shape.
+            </summary>
+            <param name="shapeFactory">The shape factory.</param>
+            <param name="parentShape">The parent shape.</param>
+            <param name="menu">The menu shape.</param>
+            <param name="menuItem">The menu item to build the shape for.</param>
+            <param name="viewContext">The current <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.ViewContext"/>.</param>
+            <returns>The menu item shape.</returns>
+        </member>
+        <member name="M:OrchardCore.Navigation.NavigationHelper.ApplySelection(System.Object,Microsoft.AspNetCore.Mvc.Rendering.ViewContext)">
+            <summary>
+            Ensures only one menuitem (and its ancestors) are marked as selected for the menu.
+            </summary>
+            <param name="parentShape">The menu shape.</param>
+            <param name="viewContext">The current <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.ViewContext"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Navigation.NavigationHelper.GetHighestPrioritySelectedMenuItem(System.Object)">
+            <summary>
+            Traverses the menu and returns the selected item with the highest priority
+            </summary>
+            <param name="parentShape">The menu shape.</param>
+            <returns>The selected menu item shape</returns>
+        </member>
+        <member name="M:OrchardCore.Navigation.NavigationManager.Merge(System.Collections.Generic.List{OrchardCore.Navigation.MenuItem})">
+            <summary>
+            Mutates a list of <see cref="T:OrchardCore.Navigation.MenuItem"/> into a hierarchy
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Navigation.NavigationManager.ComputeHref(System.Collections.Generic.List{OrchardCore.Navigation.MenuItem},Microsoft.AspNetCore.Mvc.ActionContext)">
+            <summary>
+            Computes the <see cref="P:OrchardCore.Navigation.MenuItem.Href"/> properties based on <see cref="P:OrchardCore.Navigation.MenuItem.Url"/>
+            and <see cref="P:OrchardCore.Navigation.MenuItem.RouteValues"/> values.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Navigation.NavigationManager.GetUrl(System.String,Microsoft.AspNetCore.Routing.RouteValueDictionary,Microsoft.AspNetCore.Mvc.ActionContext)">
+            <summary>
+            Gets the url.from a menu item url a routeValueDictionary and an actionContext.
+            </summary>
+            <param name="menuItemUrl">The </param>
+            <param name="routeValueDictionary"></param>
+            <param name="actionContext"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.Navigation.NavigationManager.AuthorizeAsync(System.Collections.Generic.IEnumerable{OrchardCore.Navigation.MenuItem},System.Security.Claims.ClaimsPrincipal)">
+            <summary>
+            Updates the items by checking for permissions
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Navigation.NavigationManager.Reduce(System.Collections.Generic.IEnumerable{OrchardCore.Navigation.MenuItem})">
+            <summary>
+            Retains only menu items with an Href, or that have child items with an Href
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Navigation.Pager.PageDefault">
+            <summary>
+            The default page number.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Navigation.Pager.#ctor(OrchardCore.Navigation.PagerParameters,System.Int32)">
+            <summary>
+            Constructs a new pager.
+            </summary>
+            <param name="pagerParameters">The pager parameters.</param>
+            <param name="defaultPageSize">The default page size.</param>
+        </member>
+        <member name="M:OrchardCore.Navigation.Pager.#ctor(System.Nullable{System.Int32},System.Nullable{System.Int32},System.Int32)">
+            <summary>
+            Constructs a new pager.
+            </summary>
+            <param name="page">The page parameter.</param>
+            <param name="pageSize">The page size parameter.</param>
+            <param name="defaultPageSize">The default page size.</param>
+        </member>
+        <member name="P:OrchardCore.Navigation.Pager.Page">
+            <summary>
+            Gets or sets the current page number or the default page number if none is specified.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.Pager.PageSize">
+            <summary>
+            Gets or sets the current page size or the site default size if none is specified.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Navigation.Pager.GetStartIndex(System.Nullable{System.Int32})">
+            <summary>
+            Gets the current page start index.
+            </summary>
+            <param name="page">The current page number.</param>
+            <returns>The index in which the page starts.</returns>
+        </member>
+        <member name="P:OrchardCore.Navigation.PagerParameters.Page">
+            <summary>
+            Gets or sets the current page number or null if none specified.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.PagerParameters.PageSize">
+            <summary>
+            Gets or sets the current page size or null if none specified.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Navigation.PagerSlimParameters">
+            <summary>
+            Represents the paging parameters of a safe navigation that doesn't
+            require counting, and doesn't support page size alteration.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.PagerSlimParameters.Before">
+            <summary>
+            Gets or sets the first item displayed on the page.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.PagerSlimParameters.After">
+            <summary>
+            Gets or sets the last item displayed on the page.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Navigation.PagerSlim.#ctor(OrchardCore.Navigation.PagerSlimParameters,System.Int32)">
+            <summary>
+            Constructs a new pager.
+            </summary>
+            <param name="pagerParameters">The pager parameters.</param>
+            <param name="pageSize">The page size parameter.</param>
+        </member>
+        <member name="M:OrchardCore.Navigation.PagerSlim.#ctor(System.String,System.String,System.Int32)">
+            <summary>
+            Constructs a new pager.
+            </summary>
+            <param name="before">The identifier of the first element in the page.</param>
+            <param name="after">The identifier of the last element in the page.</param>
+            <param name="pageSize">The page size parameter.</param>
+        </member>
+        <member name="P:OrchardCore.Navigation.PagerSlim.PageSize">
+            <summary>
+            Gets or sets the current page size or the site default size if none is specified.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.PagerSlim.Before">
+            <summary>
+            Gets or sets the the first element in the page or <code>null</code>  if none is specified.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Navigation.PagerSlim.After">
+            <summary>
+            Gets or sets the the last element in the page or <code>null</code>  if none is specified.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Navigation.ServiceCollectionExtensions.AddNavigation(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds tenant level services.
+            </summary>
+            <param name="services"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

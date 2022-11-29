@@ -1,0 +1,142 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: fa\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.GitHub.pot\n"
+"X-Crowdin-File-ID: 750\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Persian\n"
+"Language: fa_IR\n"
+"PO-Revision-Date: 2022-05-05 18:55\n"
+
+#. builder.Add(S["Security"], security => security
+#: OrchardCore.GitHub\AdminMenu.cs:23
+msgctxt "OrchardCore.GitHub.AdminMenuGitHubLogin"
+msgid "Security"
+msgstr "امنیت"
+
+#. .Add(S["Authentication"], authentication => authentication
+#: OrchardCore.GitHub\AdminMenu.cs:24
+msgctxt "OrchardCore.GitHub.AdminMenuGitHubLogin"
+msgid "Authentication"
+msgstr "احراز هویت"
+
+#. .Add(S["GitHub"], S["GitHub"].PrefixPosition(), settings => settings
+#. .Add(S["GitHub"], S["GitHub"].PrefixPosition(), settings => settings
+#: OrchardCore.GitHub\AdminMenu.cs:25
+#: OrchardCore.GitHub\AdminMenu.cs:25
+msgctxt "OrchardCore.GitHub.AdminMenuGitHubLogin"
+msgid "GitHub"
+msgstr ""
+
+#. yield return new ValidationResult(S["ClientID is required"], new string[] { nameof(settings.ClientID) });
+#: OrchardCore.GitHub\Services\GithubAuthenticationService.cs:64
+msgctxt "OrchardCore.GitHub.Services.GitHubAuthenticationService"
+msgid "ClientID is required"
+msgstr "ClientID ضروری است"
+
+#. yield return new ValidationResult(S["ClientSecret is required"], new string[] { nameof(settings.ClientSecret) });
+#: OrchardCore.GitHub\Services\GithubAuthenticationService.cs:69
+msgctxt "OrchardCore.GitHub.Services.GitHubAuthenticationService"
+msgid "ClientSecret is required"
+msgstr "ClientSecret ضروری است"
+
+#. [Required(AllowEmptyStrings = false, ErrorMessage = "API key is required")]
+#: OrchardCore.GitHub\ViewModels\GithubAuthenticationSettingsViewModel.cs:7
+msgctxt "OrchardCore.GitHub.ViewModels.GitHubAuthenticationSettingsViewModel"
+msgid "API key is required"
+msgstr ""
+
+#. [Required(AllowEmptyStrings = false, ErrorMessage = "API secret key is required")]
+#: OrchardCore.GitHub\ViewModels\GithubAuthenticationSettingsViewModel.cs:10
+msgctxt "OrchardCore.GitHub.ViewModels.GitHubAuthenticationSettingsViewModel"
+msgid "API secret key is required"
+msgstr ""
+
+#. [RegularExpression(@"\/[-A-Za-z0-9+&@#\/%?=~_|!:,.;]+[-A-Za-z0-9+&@#\/%=~_|]", ErrorMessage = "Invalid path")]
+#: OrchardCore.GitHub\ViewModels\GithubAuthenticationSettingsViewModel.cs:13
+msgctxt "OrchardCore.GitHub.ViewModels.GitHubAuthenticationSettingsViewModel"
+msgid "Invalid path"
+msgstr ""
+
+#. @T["The current tenant will be reloaded when the settings are saved."]
+#: OrchardCore.GitHub\Views\GithubAuthenticationSettings.Edit.cshtml:5
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr "پس از ذخیره تنظیمات، tenant جاری، مجدد بارگذاری خواهد شد."
+
+#. <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/GitHub/#authenticate-with-github" target="_blank">@T["See documentation"]</a>
+#: OrchardCore.GitHub\Views\GithubAuthenticationSettings.Edit.cshtml:6
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "See documentation"
+msgstr ""
+
+#. <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
+#: OrchardCore.GitHub\Views\GithubAuthenticationSettings.Edit.cshtml:11
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "An error occurred while decrypting a setting. Please apply and save."
+msgstr ""
+
+#. <h3>@T["GitHub Authentication Settings"]</h3>
+#: OrchardCore.GitHub\Views\GithubAuthenticationSettings.Edit.cshtml:14
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "GitHub Authentication Settings"
+msgstr "تنظیمات احرازهویت GitHub"
+
+#. <label asp-for="ClientID">@T["Client ID"]</label>
+#: OrchardCore.GitHub\Views\GithubAuthenticationSettings.Edit.cshtml:18
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "Client ID"
+msgstr "شناسه سرویس‌گیرنده"
+
+#. <span class="hint">@T["The Client ID defined in the general tab of your <a target=\"_blank\" href=\"https://github.com/settings/apps\">GitHub App</a>."]</span>
+#: OrchardCore.GitHub\Views\GithubAuthenticationSettings.Edit.cshtml:21
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "The Client ID defined in the general tab of your <a target=\"_blank\" href=\"https://github.com/settings/apps\">GitHub App</a>."
+msgstr "شناسه سرویس‌گیرنده در تب تنظیمات عمومی <a target=\"_blank\" href=\"https://github.com/settings/apps\">GitHub App</a> شما، تعریف شده است."
+
+#. <label asp-for="ClientSecret">@T["Client secret"]</label>
+#: OrchardCore.GitHub\Views\GithubAuthenticationSettings.Edit.cshtml:27
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "Client secret"
+msgstr "کلید مخفی سرویس‌گیرنده"
+
+#. <span class="hint">@T["The secret for your app."]</span>
+#: OrchardCore.GitHub\Views\GithubAuthenticationSettings.Edit.cshtml:30
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "The secret for your app."
+msgstr "کلید مخفی مشخص‌شده برای برنامه‌کاربردی شما."
+
+#. <label asp-for="CallbackUrl">@T["CallbackPath"]</label>
+#: OrchardCore.GitHub\Views\GithubAuthenticationSettings.Edit.cshtml:36
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "CallbackPath"
+msgstr ""
+
+#. <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
+#: OrchardCore.GitHub\Views\GithubAuthenticationSettings.Edit.cshtml:39
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."
+msgstr "مسیر درخواست به همراه مسیر پایه (base path) برنامه‌کاربردی، جایی که user agent برگردانده می‌شود. این درخواست هنگام ورود، توسط middleware پردازش خواهد شد."
+
+#. <label class="form-check-label" asp-for="SaveTokens">@T["Store tokens"]</label>
+#: OrchardCore.GitHub\Views\GithubAuthenticationSettings.Edit.cshtml:46
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "Store tokens"
+msgstr ""
+
+#. <span class="hint dashed">@T["Store external authentication tokens for reuse"]</span>
+#: OrchardCore.GitHub\Views\GithubAuthenticationSettings.Edit.cshtml:47
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "Store external authentication tokens for reuse"
+msgstr ""
+
+#. <span class="icon"><i class="fab fa-github" aria-hidden="true"></i></span><span class="title">@T["GitHub"]</span>
+#: OrchardCore.GitHub\Views\NavigationItemText-github.Id.cshtml:1
+msgctxt "OrchardCore.GitHub.Views.NavigationItemText-github.Id"
+msgid "GitHub"
+msgstr ""
+

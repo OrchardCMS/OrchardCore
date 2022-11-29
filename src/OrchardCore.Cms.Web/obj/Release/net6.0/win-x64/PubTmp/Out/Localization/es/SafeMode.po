@@ -1,0 +1,20 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: es-ES\n"
+"X-Crowdin-File: /main/Localization/SafeMode.pot\n"
+"X-Crowdin-File-ID: 846\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Spanish\n"
+"Language: es_ES\n"
+"PO-Revision-Date: 2021-10-26 11:00\n"
+
+#. <h1>@T["SAFE MODE"]</h1>
+#: SafeMode\Views\Layout.cshtml:9
+msgctxt "SafeMode.Views.Layout"
+msgid "SAFE MODE"
+msgstr "Modo seguro"
+

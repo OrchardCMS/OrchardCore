@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Search.Lucene</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Search.Lucene.Deployment.LuceneIndexDeploymentStep">
+            <summary>
+            Adds layers to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.Deployment.LuceneIndexRebuildDeploymentStep">
+            <summary>
+            Adds rebuild Lucene index task to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.Deployment.LuceneIndexResetDeploymentStep">
+            <summary>
+            Adds reset Lucene index task to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.Deployment.LuceneSettingsDeploymentStep">
+            <summary>
+            Adds layers to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.GraphQL.Startup">
+            <summary>
+            These services are registered on the tenant service collection
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.Model.LuceneContentIndexSettings">
+            <summary>
+            Represents the indexing settings for a content part or a field.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.Recipes.LuceneIndexRebuildStep">
+            <summary>
+            This recipe step rebuilds a lucene index.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.Recipes.LuceneIndexResetStep">
+            <summary>
+            This recipe step resets a lucene index.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.Recipes.LuceneIndexStep">
+            <summary>
+            This recipe step creates a lucene index.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.IndexingBackgroundTask">
+            <summary>
+            This background task will index content items using Lucene.
+            </summary>
+            <remarks>
+            This services is only registered from OrchardCore.Search.Lucene.Worker feature.
+            </remarks>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.Services.LuceneAnalyzerManager">
+            <summary>
+            Coordinates <see cref="T:OrchardCore.Search.Lucene.ILuceneAnalyzer"/> implementations provided by <see cref="T:OrchardCore.Search.Lucene.LuceneOptions"/>
+            to return the list of all available <see cref="T:OrchardCore.Search.Lucene.ILuceneAnalyzer"/> objects.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.Services.LuceneSearchProvider">
+            <summary>
+            Creates a Lucene SearchProvider.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.LuceneIndexingService">
+            <summary>
+            This class provides services to update all the Lucene indices. It is non-rentrant so that calls
+            from different components can be done simultaneously, e.g. from a background task, an event or a UI interaction.
+            It also indexes one content item at a time and provides the result to all indices.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Lucene.LuceneIndexingService.CreateIndexAsync(OrchardCore.Search.Lucene.Model.LuceneIndexSettings)">
+            <summary>
+            Creates a new index
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.Search.Lucene.LuceneIndexingService.UpdateIndexAsync(OrchardCore.Search.Lucene.Model.LuceneIndexSettings)">
+            <summary>
+            Update an existing index
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.Search.Lucene.LuceneIndexingService.DeleteIndexAsync(System.String)">
+            <summary>
+            Deletes permanently an index
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.Search.Lucene.LuceneIndexingService.ResetIndexAsync(System.String)">
+            <summary>
+            Restarts the indexing process from the beginning in order to update
+            current content items. It doesn't delete existing entries from the index.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Lucene.LuceneIndexingService.RebuildIndexAsync(System.String)">
+            <summary>
+            Deletes and recreates the full index content.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.LuceneIndexingState">
+            <summary>
+            This class persists the indexing state, a cursor, on the filesystem alongside the index itself.
+            This state has to be on the filesystem as each node has its own local storage for the index.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Lucene.LuceneIndexManager">
+            <summary>
+            Provides methods to manage physical Lucene indices.
+            This class is provided as a singleton to that the index searcher can be reused across requests.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Lucene.LuceneIndexManager.GetTimestamps">
+            <summary>
+            Returns a list of open indices and the last time they were accessed.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Lucene.LuceneIndexManager.FreeReaderWriter">
+            <summary>
+            Releases all readers and writers. This can be used after some time of innactivity to free resources.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Lucene.LuceneIndexManager.FreeReaderWriter(System.String)">
+            <summary>
+            Releases all readers and writers. This can be used after some time of innactivity to free resources.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Lucene.LuceneIndexSettingsService.LoadDocumentAsync">
+            <summary>
+            Loads the index settings document from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Lucene.LuceneIndexSettingsService.GetDocumentAsync">
+            <summary>
+            Gets the index settings document from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+    </members>
+</doc>

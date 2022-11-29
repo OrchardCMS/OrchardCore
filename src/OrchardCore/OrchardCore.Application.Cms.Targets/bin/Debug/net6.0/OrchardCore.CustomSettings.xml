@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.CustomSettings</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.CustomSettings.Drivers.CustomSettingsDisplayDriver">
+            <summary>
+            This driver generates an editor for site settings. The GroupId represents the type of
+            the settings to use.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.CustomSettings.Recipes.CustomSettingsStep">
+            <summary>
+            This recipe step updates the site settings.
+            </summary>
+        </member>
+    </members>
+</doc>

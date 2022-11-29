@@ -1,0 +1,1908 @@
+{
+  "version": 3,
+  "targets": {
+    "net6.0": {
+      "GeoAPI/1.7.5": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI.CoordinateSystems": "1.7.5",
+          "GeoAPI.Core": "1.7.5"
+        }
+      },
+      "GeoAPI.CoordinateSystems/1.7.5": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI.Core": "1.7.5"
+        },
+        "compile": {
+          "lib/netstandard2.0/GeoAPI.CoordinateSystems.dll": {
+            "related": ".deps.json;.pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/GeoAPI.CoordinateSystems.dll": {
+            "related": ".deps.json;.pdb;.xml"
+          }
+        }
+      },
+      "GeoAPI.Core/1.7.5": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/GeoAPI.dll": {
+            "related": ".deps.json;.pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/GeoAPI.dll": {
+            "related": ".deps.json;.pdb;.xml"
+          }
+        }
+      },
+      "J2N/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/J2N.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/J2N.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Lucene.Net/4.8.0-beta00016": {
+        "type": "package",
+        "dependencies": {
+          "J2N": "2.0.0",
+          "Microsoft.Extensions.Configuration.Abstractions": "2.0.0"
+        },
+        "compile": {
+          "lib/net6.0/Lucene.Net.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Lucene.Net.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Lucene.Net.Analysis.Common/4.8.0-beta00016": {
+        "type": "package",
+        "dependencies": {
+          "Lucene.Net": "4.8.0-beta00016"
+        },
+        "compile": {
+          "lib/net6.0/Lucene.Net.Analysis.Common.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Lucene.Net.Analysis.Common.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Lucene.Net.Queries/4.8.0-beta00016": {
+        "type": "package",
+        "dependencies": {
+          "Lucene.Net": "4.8.0-beta00016"
+        },
+        "compile": {
+          "lib/net6.0/Lucene.Net.Queries.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Lucene.Net.Queries.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Lucene.Net.QueryParser/4.8.0-beta00016": {
+        "type": "package",
+        "dependencies": {
+          "Lucene.Net.Analysis.Common": "4.8.0-beta00016",
+          "Lucene.Net.Queries": "4.8.0-beta00016",
+          "Lucene.Net.Sandbox": "4.8.0-beta00016"
+        },
+        "compile": {
+          "lib/net6.0/Lucene.Net.QueryParser.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Lucene.Net.QueryParser.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Lucene.Net.Sandbox/4.8.0-beta00016": {
+        "type": "package",
+        "dependencies": {
+          "Lucene.Net": "4.8.0-beta00016"
+        },
+        "compile": {
+          "lib/net6.0/Lucene.Net.Sandbox.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Lucene.Net.Sandbox.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Lucene.Net.Spatial/4.8.0-beta00016": {
+        "type": "package",
+        "dependencies": {
+          "Lucene.Net": "4.8.0-beta00016",
+          "Lucene.Net.Queries": "4.8.0-beta00016",
+          "Spatial4n": "0.4.1.1"
+        },
+        "compile": {
+          "lib/net6.0/Lucene.Net.Spatial.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Lucene.Net.Spatial.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Build.Tasks.Git/1.1.1": {
+        "type": "package",
+        "build": {
+          "build/Microsoft.Build.Tasks.Git.props": {},
+          "build/Microsoft.Build.Tasks.Git.targets": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/Microsoft.Build.Tasks.Git.props": {},
+          "buildMultiTargeting/Microsoft.Build.Tasks.Git.targets": {}
+        }
+      },
+      "Microsoft.Extensions.Configuration.Abstractions/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Configuration.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Configuration.Abstractions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Extensions.Primitives/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "4.4.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Primitives.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Primitives.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.SourceLink.Common/1.1.1": {
+        "type": "package",
+        "build": {
+          "build/Microsoft.SourceLink.Common.props": {},
+          "build/Microsoft.SourceLink.Common.targets": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/Microsoft.SourceLink.Common.props": {},
+          "buildMultiTargeting/Microsoft.SourceLink.Common.targets": {}
+        }
+      },
+      "Microsoft.SourceLink.GitHub/1.1.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Build.Tasks.Git": "1.1.1",
+          "Microsoft.SourceLink.Common": "1.1.1"
+        },
+        "build": {
+          "build/Microsoft.SourceLink.GitHub.props": {},
+          "build/Microsoft.SourceLink.GitHub.targets": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/Microsoft.SourceLink.GitHub.props": {},
+          "buildMultiTargeting/Microsoft.SourceLink.GitHub.targets": {}
+        }
+      },
+      "NetTopologySuite/1.15.0": {
+        "type": "package",
+        "dependencies": {
+          "NetTopologySuite.CoordinateSystems": "1.15.0",
+          "NetTopologySuite.Core": "1.15.0"
+        }
+      },
+      "NetTopologySuite.CoordinateSystems/1.15.0": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI.CoordinateSystems": "1.7.5"
+        },
+        "compile": {
+          "lib/netcoreapp2.0/NetTopologySuite.CoordinateSystems.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netcoreapp2.0/NetTopologySuite.CoordinateSystems.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "NetTopologySuite.Core/1.15.0": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI.Core": "1.7.5"
+        },
+        "compile": {
+          "lib/netcoreapp2.0/NetTopologySuite.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netcoreapp2.0/NetTopologySuite.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "Newtonsoft.Json/13.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Spatial4n/0.4.1.1": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI": "1.7.5",
+          "NetTopologySuite": "1.15.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Spatial4n.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Spatial4n.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "System.Runtime.CompilerServices.Unsafe/4.4.0": {
+        "type": "package",
+        "compile": {
+          "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "OrchardCore.Queries.Abstractions/1.6.0-preview": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "compile": {
+          "bin/placeholder/OrchardCore.Queries.Abstractions.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/OrchardCore.Queries.Abstractions.dll": {}
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
+      "OrchardCore.Search.Lucene.Abstractions/1.6.0-preview": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "Lucene.Net": "4.8.0-beta00016",
+          "Newtonsoft.Json": "13.0.1",
+          "OrchardCore.Queries.Abstractions": "1.6.0-preview"
+        },
+        "compile": {
+          "bin/placeholder/OrchardCore.Search.Lucene.Abstractions.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/OrchardCore.Search.Lucene.Abstractions.dll": {}
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      }
+    },
+    "net6.0/win-x64": {
+      "GeoAPI/1.7.5": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI.CoordinateSystems": "1.7.5",
+          "GeoAPI.Core": "1.7.5"
+        }
+      },
+      "GeoAPI.CoordinateSystems/1.7.5": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI.Core": "1.7.5"
+        },
+        "compile": {
+          "lib/netstandard2.0/GeoAPI.CoordinateSystems.dll": {
+            "related": ".deps.json;.pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/GeoAPI.CoordinateSystems.dll": {
+            "related": ".deps.json;.pdb;.xml"
+          }
+        }
+      },
+      "GeoAPI.Core/1.7.5": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/GeoAPI.dll": {
+            "related": ".deps.json;.pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/GeoAPI.dll": {
+            "related": ".deps.json;.pdb;.xml"
+          }
+        }
+      },
+      "J2N/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/J2N.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/J2N.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Lucene.Net/4.8.0-beta00016": {
+        "type": "package",
+        "dependencies": {
+          "J2N": "2.0.0",
+          "Microsoft.Extensions.Configuration.Abstractions": "2.0.0"
+        },
+        "compile": {
+          "lib/net6.0/Lucene.Net.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Lucene.Net.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Lucene.Net.Analysis.Common/4.8.0-beta00016": {
+        "type": "package",
+        "dependencies": {
+          "Lucene.Net": "4.8.0-beta00016"
+        },
+        "compile": {
+          "lib/net6.0/Lucene.Net.Analysis.Common.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Lucene.Net.Analysis.Common.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Lucene.Net.Queries/4.8.0-beta00016": {
+        "type": "package",
+        "dependencies": {
+          "Lucene.Net": "4.8.0-beta00016"
+        },
+        "compile": {
+          "lib/net6.0/Lucene.Net.Queries.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Lucene.Net.Queries.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Lucene.Net.QueryParser/4.8.0-beta00016": {
+        "type": "package",
+        "dependencies": {
+          "Lucene.Net.Analysis.Common": "4.8.0-beta00016",
+          "Lucene.Net.Queries": "4.8.0-beta00016",
+          "Lucene.Net.Sandbox": "4.8.0-beta00016"
+        },
+        "compile": {
+          "lib/net6.0/Lucene.Net.QueryParser.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Lucene.Net.QueryParser.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Lucene.Net.Sandbox/4.8.0-beta00016": {
+        "type": "package",
+        "dependencies": {
+          "Lucene.Net": "4.8.0-beta00016"
+        },
+        "compile": {
+          "lib/net6.0/Lucene.Net.Sandbox.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Lucene.Net.Sandbox.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Lucene.Net.Spatial/4.8.0-beta00016": {
+        "type": "package",
+        "dependencies": {
+          "Lucene.Net": "4.8.0-beta00016",
+          "Lucene.Net.Queries": "4.8.0-beta00016",
+          "Spatial4n": "0.4.1.1"
+        },
+        "compile": {
+          "lib/net6.0/Lucene.Net.Spatial.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Lucene.Net.Spatial.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Build.Tasks.Git/1.1.1": {
+        "type": "package",
+        "build": {
+          "build/Microsoft.Build.Tasks.Git.props": {},
+          "build/Microsoft.Build.Tasks.Git.targets": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/Microsoft.Build.Tasks.Git.props": {},
+          "buildMultiTargeting/Microsoft.Build.Tasks.Git.targets": {}
+        }
+      },
+      "Microsoft.Extensions.Configuration.Abstractions/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Configuration.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Configuration.Abstractions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Extensions.Primitives/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "4.4.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Primitives.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Primitives.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.SourceLink.Common/1.1.1": {
+        "type": "package",
+        "build": {
+          "build/Microsoft.SourceLink.Common.props": {},
+          "build/Microsoft.SourceLink.Common.targets": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/Microsoft.SourceLink.Common.props": {},
+          "buildMultiTargeting/Microsoft.SourceLink.Common.targets": {}
+        }
+      },
+      "Microsoft.SourceLink.GitHub/1.1.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Build.Tasks.Git": "1.1.1",
+          "Microsoft.SourceLink.Common": "1.1.1"
+        },
+        "build": {
+          "build/Microsoft.SourceLink.GitHub.props": {},
+          "build/Microsoft.SourceLink.GitHub.targets": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/Microsoft.SourceLink.GitHub.props": {},
+          "buildMultiTargeting/Microsoft.SourceLink.GitHub.targets": {}
+        }
+      },
+      "NetTopologySuite/1.15.0": {
+        "type": "package",
+        "dependencies": {
+          "NetTopologySuite.CoordinateSystems": "1.15.0",
+          "NetTopologySuite.Core": "1.15.0"
+        }
+      },
+      "NetTopologySuite.CoordinateSystems/1.15.0": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI.CoordinateSystems": "1.7.5"
+        },
+        "compile": {
+          "lib/netcoreapp2.0/NetTopologySuite.CoordinateSystems.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netcoreapp2.0/NetTopologySuite.CoordinateSystems.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "NetTopologySuite.Core/1.15.0": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI.Core": "1.7.5"
+        },
+        "compile": {
+          "lib/netcoreapp2.0/NetTopologySuite.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netcoreapp2.0/NetTopologySuite.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "Newtonsoft.Json/13.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Spatial4n/0.4.1.1": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI": "1.7.5",
+          "NetTopologySuite": "1.15.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Spatial4n.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Spatial4n.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "System.Runtime.CompilerServices.Unsafe/4.4.0": {
+        "type": "package",
+        "compile": {
+          "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "OrchardCore.Queries.Abstractions/1.6.0-preview": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "compile": {
+          "bin/placeholder/OrchardCore.Queries.Abstractions.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/OrchardCore.Queries.Abstractions.dll": {}
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
+      "OrchardCore.Search.Lucene.Abstractions/1.6.0-preview": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "Lucene.Net": "4.8.0-beta00016",
+          "Newtonsoft.Json": "13.0.1",
+          "OrchardCore.Queries.Abstractions": "1.6.0-preview"
+        },
+        "compile": {
+          "bin/placeholder/OrchardCore.Search.Lucene.Abstractions.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/OrchardCore.Search.Lucene.Abstractions.dll": {}
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      }
+    }
+  },
+  "libraries": {
+    "GeoAPI/1.7.5": {
+      "sha512": "LAHPEztEGuR3LGtnNYOqg2JvUaw449gcACYqmy1pr129R2cWaV+Q9Lne8YgEwCnksHCVoXyQmuKY+CvsgPYmng==",
+      "type": "package",
+      "path": "geoapi/1.7.5",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "geoapi.1.7.5.nupkg.sha512",
+        "geoapi.nuspec"
+      ]
+    },
+    "GeoAPI.CoordinateSystems/1.7.5": {
+      "sha512": "JBcvkeQFjCW9NTfkII5WiJNmnv0ZtYA/VTVljbIqDFWBJ8kHwu2UHd2MVStD/VVHVnLoyNcDIapsuTENdlyF3g==",
+      "type": "package",
+      "path": "geoapi.coordinatesystems/1.7.5",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "geoapi.coordinatesystems.1.7.5.nupkg.sha512",
+        "geoapi.coordinatesystems.nuspec",
+        "lib/net20/GeoAPI.CoordinateSystems.dll",
+        "lib/net20/GeoAPI.CoordinateSystems.pdb",
+        "lib/net20/GeoAPI.CoordinateSystems.xml",
+        "lib/net35-cf/GeoAPI.CoordinateSystems.dll",
+        "lib/net35-cf/GeoAPI.CoordinateSystems.pdb",
+        "lib/net35-cf/GeoAPI.CoordinateSystems.xml",
+        "lib/net35-client/GeoAPI.CoordinateSystems.dll",
+        "lib/net35-client/GeoAPI.CoordinateSystems.pdb",
+        "lib/net35-client/GeoAPI.CoordinateSystems.xml",
+        "lib/net40-client/GeoAPI.CoordinateSystems.dll",
+        "lib/net40-client/GeoAPI.CoordinateSystems.pdb",
+        "lib/net40-client/GeoAPI.CoordinateSystems.xml",
+        "lib/net403-client/GeoAPI.CoordinateSystems.dll",
+        "lib/net403-client/GeoAPI.CoordinateSystems.pdb",
+        "lib/net403-client/GeoAPI.CoordinateSystems.xml",
+        "lib/net45/GeoAPI.CoordinateSystems.dll",
+        "lib/net45/GeoAPI.CoordinateSystems.pdb",
+        "lib/net45/GeoAPI.CoordinateSystems.xml",
+        "lib/netstandard1.0/GeoAPI.CoordinateSystems.deps.json",
+        "lib/netstandard1.0/GeoAPI.CoordinateSystems.dll",
+        "lib/netstandard1.0/GeoAPI.CoordinateSystems.pdb",
+        "lib/netstandard1.0/GeoAPI.CoordinateSystems.xml",
+        "lib/netstandard2.0/GeoAPI.CoordinateSystems.deps.json",
+        "lib/netstandard2.0/GeoAPI.CoordinateSystems.dll",
+        "lib/netstandard2.0/GeoAPI.CoordinateSystems.pdb",
+        "lib/netstandard2.0/GeoAPI.CoordinateSystems.xml",
+        "lib/portable40-net40+sl5+win8+wp8+wpa81/GeoAPI.CoordinateSystems.dll",
+        "lib/portable40-net40+sl5+win8+wp8+wpa81/GeoAPI.CoordinateSystems.pdb",
+        "lib/portable40-net40+sl5+win8+wp8+wpa81/GeoAPI.CoordinateSystems.xml",
+        "lib/portable40-net403+sl5+win8+wp8+wpa81/GeoAPI.CoordinateSystems.dll",
+        "lib/portable40-net403+sl5+win8+wp8+wpa81/GeoAPI.CoordinateSystems.pdb",
+        "lib/portable40-net403+sl5+win8+wp8+wpa81/GeoAPI.CoordinateSystems.xml",
+        "src/CoordinateSystems/AxisInfo.cs",
+        "src/CoordinateSystems/AxisOrientationEnum.cs",
+        "src/CoordinateSystems/DatumType.cs",
+        "src/CoordinateSystems/IAngularUnit.cs",
+        "src/CoordinateSystems/ICompoundCoordinateSystem.cs",
+        "src/CoordinateSystems/ICoordinateSystem.cs",
+        "src/CoordinateSystems/ICoordinateSystemAuthorityFactory.cs",
+        "src/CoordinateSystems/ICoordinateSystemFactory.cs",
+        "src/CoordinateSystems/IDatum.cs",
+        "src/CoordinateSystems/IEllipsoid.cs",
+        "src/CoordinateSystems/IFittedCoordinateSystem.cs",
+        "src/CoordinateSystems/IGeocentricCoordinateSystem.cs",
+        "src/CoordinateSystems/IGeodeticSpatialReference.cs",
+        "src/CoordinateSystems/IGeographicCoordinateSystem.cs",
+        "src/CoordinateSystems/IGeographicTransform.cs",
+        "src/CoordinateSystems/IHorizontalCoordinateSystem.cs",
+        "src/CoordinateSystems/IHorizontalDatum.cs",
+        "src/CoordinateSystems/IInfo.cs",
+        "src/CoordinateSystems/ILinearUnit.cs",
+        "src/CoordinateSystems/ILocalCoordinateSystem.cs",
+        "src/CoordinateSystems/ILocalDatum.cs",
+        "src/CoordinateSystems/IParameterInfo.cs",
+        "src/CoordinateSystems/IPrimeMeridian.cs",
+        "src/CoordinateSystems/IProjectedCoordinateSystem.cs",
+        "src/CoordinateSystems/IProjection.cs",
+        "src/CoordinateSystems/IUnit.cs",
+        "src/CoordinateSystems/IVerticalCoordinateSystem.cs",
+        "src/CoordinateSystems/IVerticalDatum.cs",
+        "src/CoordinateSystems/Parameter.cs",
+        "src/CoordinateSystems/ProjectionParameter.cs",
+        "src/CoordinateSystems/Transformations/DomainFlags.cs",
+        "src/CoordinateSystems/Transformations/ICoordinateTransformation.cs",
+        "src/CoordinateSystems/Transformations/ICoordinateTransformationFactory.cs",
+        "src/CoordinateSystems/Transformations/IMathTransform.cs",
+        "src/CoordinateSystems/Transformations/IMathTransformFactory.cs",
+        "src/CoordinateSystems/Transformations/TransformType.cs",
+        "src/CoordinateSystems/WGS84ConversionInfo.cs",
+        "src/ICoordinateSystemServices.cs"
+      ]
+    },
+    "GeoAPI.Core/1.7.5": {
+      "sha512": "Dy/YkgZ1szgx+xbVWqMi+4++Fm6v3szbVdei1LKPRZ3meSvgNSMZxqhar5IAeaTj5LcUHLtLGdfyUtkjnYbg3A==",
+      "type": "package",
+      "path": "geoapi.core/1.7.5",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "geoapi.core.1.7.5.nupkg.sha512",
+        "geoapi.core.nuspec",
+        "lib/net20/GeoAPI.dll",
+        "lib/net20/GeoAPI.pdb",
+        "lib/net20/GeoAPI.xml",
+        "lib/net35-cf/GeoAPI.dll",
+        "lib/net35-cf/GeoAPI.pdb",
+        "lib/net35-cf/GeoAPI.xml",
+        "lib/net35-client/GeoAPI.dll",
+        "lib/net35-client/GeoAPI.pdb",
+        "lib/net35-client/GeoAPI.xml",
+        "lib/net40-client/GeoAPI.dll",
+        "lib/net40-client/GeoAPI.pdb",
+        "lib/net40-client/GeoAPI.xml",
+        "lib/net403-client/GeoAPI.dll",
+        "lib/net403-client/GeoAPI.pdb",
+        "lib/net403-client/GeoAPI.xml",
+        "lib/net45/GeoAPI.dll",
+        "lib/net45/GeoAPI.pdb",
+        "lib/net45/GeoAPI.xml",
+        "lib/netstandard1.0/GeoAPI.deps.json",
+        "lib/netstandard1.0/GeoAPI.dll",
+        "lib/netstandard1.0/GeoAPI.pdb",
+        "lib/netstandard1.0/GeoAPI.xml",
+        "lib/netstandard2.0/GeoAPI.deps.json",
+        "lib/netstandard2.0/GeoAPI.dll",
+        "lib/netstandard2.0/GeoAPI.pdb",
+        "lib/netstandard2.0/GeoAPI.xml",
+        "lib/portable40-net40+sl5+win8+wp8+wpa81/GeoAPI.dll",
+        "lib/portable40-net40+sl5+win8+wp8+wpa81/GeoAPI.pdb",
+        "lib/portable40-net40+sl5+win8+wp8+wpa81/GeoAPI.xml",
+        "lib/portable40-net403+sl5+win8+wp8+wpa81/GeoAPI.dll",
+        "lib/portable40-net403+sl5+win8+wp8+wpa81/GeoAPI.pdb",
+        "lib/portable40-net403+sl5+win8+wp8+wpa81/GeoAPI.xml",
+        "src/Consts.cs",
+        "src/DataStructures/Interval.cs",
+        "src/Geometries/Coordinate.cs",
+        "src/Geometries/Dimension.cs",
+        "src/Geometries/Envelope.cs",
+        "src/Geometries/IBoundable.cs",
+        "src/Geometries/ICoordinate.cs",
+        "src/Geometries/ICoordinateBuffer.cs",
+        "src/Geometries/ICoordinateFilter.cs",
+        "src/Geometries/ICoordinateSequence.cs",
+        "src/Geometries/ICoordinateSequenceFactory.cs",
+        "src/Geometries/ICoordinateSequenceFilter.cs",
+        "src/Geometries/ICurve.cs",
+        "src/Geometries/IEnvelope.cs",
+        "src/Geometries/IExpandable.cs",
+        "src/Geometries/IGeometry.cs",
+        "src/Geometries/IGeometryCollection.cs",
+        "src/Geometries/IGeometryComponentFilter.cs",
+        "src/Geometries/IGeometryFactory.cs",
+        "src/Geometries/IGeometryFilter.cs",
+        "src/Geometries/IIntersectable.cs",
+        "src/Geometries/ILineString.cs",
+        "src/Geometries/ILineal.cs",
+        "src/Geometries/ILinearRing.cs",
+        "src/Geometries/IMultiCurve.cs",
+        "src/Geometries/IMultiLineString.cs",
+        "src/Geometries/IMultiPoint.cs",
+        "src/Geometries/IMultiPolygon.cs",
+        "src/Geometries/IMultiSurface.cs",
+        "src/Geometries/IPoint.cs",
+        "src/Geometries/IPolygon.cs",
+        "src/Geometries/IPolygonal.cs",
+        "src/Geometries/IPrecisionModel.cs",
+        "src/Geometries/IPuntal.cs",
+        "src/Geometries/ISurface.cs",
+        "src/Geometries/IntersectionMatrix.cs",
+        "src/Geometries/Location.cs",
+        "src/Geometries/OgcGeometryType.cs",
+        "src/Geometries/Ordinate.cs",
+        "src/Geometries/Ordinates.cs",
+        "src/Geometries/OridinatesUtility.cs",
+        "src/Geometries/Prepared/IPreparedGeometry.cs",
+        "src/GeometryServiceProvider.cs",
+        "src/ICloneable.cs",
+        "src/IGeometryServices.cs",
+        "src/IO/ByteOrder.cs",
+        "src/IO/GeometryType.cs",
+        "src/IO/IGeometryReader.cs",
+        "src/IO/IGeometryWriter.cs",
+        "src/IO/ParseException.cs",
+        "src/Operation/Buffer/BufferStyle.cs",
+        "src/Operation/Buffer/EndCapStyle.cs",
+        "src/Operation/Buffer/IBufferParameters.cs",
+        "src/Operation/Buffer/JoinStyle.cs",
+        "src/Properties/AssemblyInfo.cs",
+        "src/ValueParser.cs"
+      ]
+    },
+    "J2N/2.0.0": {
+      "sha512": "M5bwDajAARZiyqupU+rHQJnsVLxNBOHJ8vKYHd8LcLIb1FgLfzzcJvc31Qo5Xz/GEHFjDF9ScjKL/ks/zRTXuA==",
+      "type": "package",
+      "path": "j2n/2.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "j2n-icon-100x100.png",
+        "j2n.2.0.0.nupkg.sha512",
+        "j2n.nuspec",
+        "lib/net40/J2N.dll",
+        "lib/net40/J2N.xml",
+        "lib/net45/J2N.dll",
+        "lib/net45/J2N.xml",
+        "lib/net5.0/J2N.dll",
+        "lib/net5.0/J2N.xml",
+        "lib/net6.0/J2N.dll",
+        "lib/net6.0/J2N.xml",
+        "lib/netcoreapp3.0/J2N.dll",
+        "lib/netcoreapp3.0/J2N.xml",
+        "lib/netstandard2.0/J2N.dll",
+        "lib/netstandard2.0/J2N.xml",
+        "lib/netstandard2.1/J2N.dll",
+        "lib/netstandard2.1/J2N.xml",
+        "readme.md"
+      ]
+    },
+    "Lucene.Net/4.8.0-beta00016": {
+      "sha512": "DCtUbE/NIrisNI7hRwU+UKS3Cr6S2vH1XB9wvEHHI3anu5OUpX1Fkr/PDC7oFCaol/QCvzVLbLZVizAT1aTLpA==",
+      "type": "package",
+      "path": "lucene.net/4.8.0-beta00016",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "NOTICE.txt",
+        "analyzers/dotnet/cs/Lucene.Net.CodeAnalysis.CSharp.dll",
+        "analyzers/dotnet/vb/Lucene.Net.CodeAnalysis.VisualBasic.dll",
+        "lib/net45/Lucene.Net.dll",
+        "lib/net45/Lucene.Net.xml",
+        "lib/net6.0/Lucene.Net.dll",
+        "lib/net6.0/Lucene.Net.xml",
+        "lib/netstandard2.0/Lucene.Net.dll",
+        "lib/netstandard2.0/Lucene.Net.xml",
+        "lib/netstandard2.1/Lucene.Net.dll",
+        "lib/netstandard2.1/Lucene.Net.xml",
+        "lucene-net-icon-128x128.png",
+        "lucene.net.4.8.0-beta00016.nupkg.sha512",
+        "lucene.net.nuspec",
+        "tools/install.ps1",
+        "tools/uninstall.ps1"
+      ]
+    },
+    "Lucene.Net.Analysis.Common/4.8.0-beta00016": {
+      "sha512": "7pjEAIliWdih6E3I0hCE8hKcKKRx1LLzeQBslF1fhvzE1Sal4NyHd8RFJHV1Z+yHlBw4gCyyVIDZADiIoyqwxg==",
+      "type": "package",
+      "path": "lucene.net.analysis.common/4.8.0-beta00016",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "NOTICE.txt",
+        "lib/net45/Lucene.Net.Analysis.Common.dll",
+        "lib/net45/Lucene.Net.Analysis.Common.xml",
+        "lib/net6.0/Lucene.Net.Analysis.Common.dll",
+        "lib/net6.0/Lucene.Net.Analysis.Common.xml",
+        "lib/netstandard2.0/Lucene.Net.Analysis.Common.dll",
+        "lib/netstandard2.0/Lucene.Net.Analysis.Common.xml",
+        "lib/netstandard2.1/Lucene.Net.Analysis.Common.dll",
+        "lib/netstandard2.1/Lucene.Net.Analysis.Common.xml",
+        "lucene-net-icon-128x128.png",
+        "lucene.net.analysis.common.4.8.0-beta00016.nupkg.sha512",
+        "lucene.net.analysis.common.nuspec"
+      ]
+    },
+    "Lucene.Net.Queries/4.8.0-beta00016": {
+      "sha512": "XBzdMDlan68V2ZlhAlP8Fd+Xx2Le8ec7cEN1kFF45Sipa3Q8L/tilJfwS9VHvMTvGkwPM/yj62eGbfGBgIMR8Q==",
+      "type": "package",
+      "path": "lucene.net.queries/4.8.0-beta00016",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "NOTICE.txt",
+        "lib/net45/Lucene.Net.Queries.dll",
+        "lib/net45/Lucene.Net.Queries.xml",
+        "lib/net6.0/Lucene.Net.Queries.dll",
+        "lib/net6.0/Lucene.Net.Queries.xml",
+        "lib/netstandard2.0/Lucene.Net.Queries.dll",
+        "lib/netstandard2.0/Lucene.Net.Queries.xml",
+        "lib/netstandard2.1/Lucene.Net.Queries.dll",
+        "lib/netstandard2.1/Lucene.Net.Queries.xml",
+        "lucene-net-icon-128x128.png",
+        "lucene.net.queries.4.8.0-beta00016.nupkg.sha512",
+        "lucene.net.queries.nuspec"
+      ]
+    },
+    "Lucene.Net.QueryParser/4.8.0-beta00016": {
+      "sha512": "5dVvjXmzPaK8GD/eblJopTJMQmO6c6fvVPfBIOw46+jyZR+yESkUnWF1LtLoLXZQNrl4Dx8LKdes5G1QAM7eGA==",
+      "type": "package",
+      "path": "lucene.net.queryparser/4.8.0-beta00016",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "NOTICE.txt",
+        "lib/net45/Lucene.Net.QueryParser.dll",
+        "lib/net45/Lucene.Net.QueryParser.xml",
+        "lib/net6.0/Lucene.Net.QueryParser.dll",
+        "lib/net6.0/Lucene.Net.QueryParser.xml",
+        "lib/netstandard2.0/Lucene.Net.QueryParser.dll",
+        "lib/netstandard2.0/Lucene.Net.QueryParser.xml",
+        "lib/netstandard2.1/Lucene.Net.QueryParser.dll",
+        "lib/netstandard2.1/Lucene.Net.QueryParser.xml",
+        "lucene-net-icon-128x128.png",
+        "lucene.net.queryparser.4.8.0-beta00016.nupkg.sha512",
+        "lucene.net.queryparser.nuspec"
+      ]
+    },
+    "Lucene.Net.Sandbox/4.8.0-beta00016": {
+      "sha512": "wMsRZtbNx0wvX3mtNjpOwQmKx3Ij4UGHWIYHbvnzMWlPUTgtOpYSj02REL4hOxI71WBZylpGB5EWfQ2eEld63g==",
+      "type": "package",
+      "path": "lucene.net.sandbox/4.8.0-beta00016",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "NOTICE.txt",
+        "lib/net45/Lucene.Net.Sandbox.dll",
+        "lib/net45/Lucene.Net.Sandbox.xml",
+        "lib/net6.0/Lucene.Net.Sandbox.dll",
+        "lib/net6.0/Lucene.Net.Sandbox.xml",
+        "lib/netstandard2.0/Lucene.Net.Sandbox.dll",
+        "lib/netstandard2.0/Lucene.Net.Sandbox.xml",
+        "lib/netstandard2.1/Lucene.Net.Sandbox.dll",
+        "lib/netstandard2.1/Lucene.Net.Sandbox.xml",
+        "lucene-net-icon-128x128.png",
+        "lucene.net.sandbox.4.8.0-beta00016.nupkg.sha512",
+        "lucene.net.sandbox.nuspec"
+      ]
+    },
+    "Lucene.Net.Spatial/4.8.0-beta00016": {
+      "sha512": "a7GGT1M+nYMGV5AQZ1nt8MmnZq/0atO9jw6FK9HuU9a9/JuYt/ZY/0BitAkNXFcsed0fWorNmpYU2j9Eg3luFA==",
+      "type": "package",
+      "path": "lucene.net.spatial/4.8.0-beta00016",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "NOTICE.txt",
+        "lib/net45/Lucene.Net.Spatial.dll",
+        "lib/net45/Lucene.Net.Spatial.xml",
+        "lib/net6.0/Lucene.Net.Spatial.dll",
+        "lib/net6.0/Lucene.Net.Spatial.xml",
+        "lib/netstandard2.0/Lucene.Net.Spatial.dll",
+        "lib/netstandard2.0/Lucene.Net.Spatial.xml",
+        "lib/netstandard2.1/Lucene.Net.Spatial.dll",
+        "lib/netstandard2.1/Lucene.Net.Spatial.xml",
+        "lucene-net-icon-128x128.png",
+        "lucene.net.spatial.4.8.0-beta00016.nupkg.sha512",
+        "lucene.net.spatial.nuspec"
+      ]
+    },
+    "Microsoft.Build.Tasks.Git/1.1.1": {
+      "sha512": "AT3HlgTjsqHnWpBHSNeR0KxbLZD7bztlZVj7I8vgeYG9SYqbeFGh0TM/KVtC6fg53nrWHl3VfZFvb5BiQFcY6Q==",
+      "type": "package",
+      "path": "microsoft.build.tasks.git/1.1.1",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "build/Microsoft.Build.Tasks.Git.props",
+        "build/Microsoft.Build.Tasks.Git.targets",
+        "buildMultiTargeting/Microsoft.Build.Tasks.Git.props",
+        "buildMultiTargeting/Microsoft.Build.Tasks.Git.targets",
+        "microsoft.build.tasks.git.1.1.1.nupkg.sha512",
+        "microsoft.build.tasks.git.nuspec",
+        "tools/core/Microsoft.Build.Tasks.Git.dll",
+        "tools/core/cs/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/core/de/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/core/es/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/core/fr/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/core/it/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/core/ja/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/core/ko/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/core/pl/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/core/pt-BR/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/core/ru/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/core/tr/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/core/zh-Hans/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/core/zh-Hant/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/net472/Microsoft.Build.Tasks.Git.dll",
+        "tools/net472/System.Collections.Immutable.dll",
+        "tools/net472/cs/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/net472/de/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/net472/es/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/net472/fr/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/net472/it/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/net472/ja/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/net472/ko/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/net472/pl/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/net472/pt-BR/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/net472/ru/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/net472/tr/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/net472/zh-Hans/Microsoft.Build.Tasks.Git.resources.dll",
+        "tools/net472/zh-Hant/Microsoft.Build.Tasks.Git.resources.dll"
+      ]
+    },
+    "Microsoft.Extensions.Configuration.Abstractions/2.0.0": {
+      "sha512": "rHFrXqMIvQNq51H8RYTO4IWmDOYh8NUzyqGlh0xHWTP6XYnKk7Ryinys2uDs+Vu88b3AMlM3gBBSs78m6OQpYQ==",
+      "type": "package",
+      "path": "microsoft.extensions.configuration.abstractions/2.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/Microsoft.Extensions.Configuration.Abstractions.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Configuration.Abstractions.xml",
+        "microsoft.extensions.configuration.abstractions.2.0.0.nupkg.sha512",
+        "microsoft.extensions.configuration.abstractions.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.Primitives/2.0.0": {
+      "sha512": "ukg53qNlqTrK38WA30b5qhw0GD7y3jdI9PHHASjdKyTcBHTevFM2o23tyk3pWCgAV27Bbkm+CPQ2zUe1ZOuYSA==",
+      "type": "package",
+      "path": "microsoft.extensions.primitives/2.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/Microsoft.Extensions.Primitives.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Primitives.xml",
+        "microsoft.extensions.primitives.2.0.0.nupkg.sha512",
+        "microsoft.extensions.primitives.nuspec"
+      ]
+    },
+    "Microsoft.SourceLink.Common/1.1.1": {
+      "sha512": "WMcGpWKrmJmzrNeuaEb23bEMnbtR/vLmvZtkAP5qWu7vQsY59GqfRJd65sFpBszbd2k/bQ8cs8eWawQKAabkVg==",
+      "type": "package",
+      "path": "microsoft.sourcelink.common/1.1.1",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "build/InitializeSourceControlInformation.targets",
+        "build/Microsoft.SourceLink.Common.props",
+        "build/Microsoft.SourceLink.Common.targets",
+        "buildMultiTargeting/Microsoft.SourceLink.Common.props",
+        "buildMultiTargeting/Microsoft.SourceLink.Common.targets",
+        "microsoft.sourcelink.common.1.1.1.nupkg.sha512",
+        "microsoft.sourcelink.common.nuspec",
+        "tools/core/Microsoft.SourceLink.Common.dll",
+        "tools/core/cs/Microsoft.SourceLink.Common.resources.dll",
+        "tools/core/de/Microsoft.SourceLink.Common.resources.dll",
+        "tools/core/es/Microsoft.SourceLink.Common.resources.dll",
+        "tools/core/fr/Microsoft.SourceLink.Common.resources.dll",
+        "tools/core/it/Microsoft.SourceLink.Common.resources.dll",
+        "tools/core/ja/Microsoft.SourceLink.Common.resources.dll",
+        "tools/core/ko/Microsoft.SourceLink.Common.resources.dll",
+        "tools/core/pl/Microsoft.SourceLink.Common.resources.dll",
+        "tools/core/pt-BR/Microsoft.SourceLink.Common.resources.dll",
+        "tools/core/ru/Microsoft.SourceLink.Common.resources.dll",
+        "tools/core/tr/Microsoft.SourceLink.Common.resources.dll",
+        "tools/core/zh-Hans/Microsoft.SourceLink.Common.resources.dll",
+        "tools/core/zh-Hant/Microsoft.SourceLink.Common.resources.dll",
+        "tools/net472/Microsoft.SourceLink.Common.dll",
+        "tools/net472/cs/Microsoft.SourceLink.Common.resources.dll",
+        "tools/net472/de/Microsoft.SourceLink.Common.resources.dll",
+        "tools/net472/es/Microsoft.SourceLink.Common.resources.dll",
+        "tools/net472/fr/Microsoft.SourceLink.Common.resources.dll",
+        "tools/net472/it/Microsoft.SourceLink.Common.resources.dll",
+        "tools/net472/ja/Microsoft.SourceLink.Common.resources.dll",
+        "tools/net472/ko/Microsoft.SourceLink.Common.resources.dll",
+        "tools/net472/pl/Microsoft.SourceLink.Common.resources.dll",
+        "tools/net472/pt-BR/Microsoft.SourceLink.Common.resources.dll",
+        "tools/net472/ru/Microsoft.SourceLink.Common.resources.dll",
+        "tools/net472/tr/Microsoft.SourceLink.Common.resources.dll",
+        "tools/net472/zh-Hans/Microsoft.SourceLink.Common.resources.dll",
+        "tools/net472/zh-Hant/Microsoft.SourceLink.Common.resources.dll"
+      ]
+    },
+    "Microsoft.SourceLink.GitHub/1.1.1": {
+      "sha512": "IaJGnOv/M7UQjRJks7B6p7pbPnOwisYGOIzqCz5ilGFTApZ3ktOR+6zJ12ZRPInulBmdAf1SrGdDG2MU8g6XTw==",
+      "type": "package",
+      "path": "microsoft.sourcelink.github/1.1.1",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "build/Microsoft.SourceLink.GitHub.props",
+        "build/Microsoft.SourceLink.GitHub.targets",
+        "buildMultiTargeting/Microsoft.SourceLink.GitHub.props",
+        "buildMultiTargeting/Microsoft.SourceLink.GitHub.targets",
+        "microsoft.sourcelink.github.1.1.1.nupkg.sha512",
+        "microsoft.sourcelink.github.nuspec",
+        "tools/core/Microsoft.SourceLink.GitHub.dll",
+        "tools/core/cs/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/core/de/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/core/es/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/core/fr/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/core/it/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/core/ja/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/core/ko/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/core/pl/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/core/pt-BR/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/core/ru/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/core/tr/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/core/zh-Hans/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/core/zh-Hant/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/net472/Microsoft.SourceLink.GitHub.dll",
+        "tools/net472/cs/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/net472/de/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/net472/es/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/net472/fr/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/net472/it/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/net472/ja/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/net472/ko/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/net472/pl/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/net472/pt-BR/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/net472/ru/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/net472/tr/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/net472/zh-Hans/Microsoft.SourceLink.GitHub.resources.dll",
+        "tools/net472/zh-Hant/Microsoft.SourceLink.GitHub.resources.dll"
+      ]
+    },
+    "NetTopologySuite/1.15.0": {
+      "sha512": "UMqlZgOdR9w24BaBh2K70LRK9KMVeuUPQv/70O93Kcta9XPpKSfN8bDCmXMXsQLQfDpRPimLe0asFEp1Mm7h0A==",
+      "type": "package",
+      "path": "nettopologysuite/1.15.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "nettopologysuite.1.15.0.nupkg.sha512",
+        "nettopologysuite.nuspec"
+      ]
+    },
+    "NetTopologySuite.CoordinateSystems/1.15.0": {
+      "sha512": "p9AiFHHPcpSW+JzN+/t4L/45l1h3e9Tnsb/7TzGVkoIABd8CwfbGfg/xPxRmjhiXTUvDr/ERQK77/abthL0UcQ==",
+      "type": "package",
+      "path": "nettopologysuite.coordinatesystems/1.15.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net35-client/NetTopologySuite.CoordinateSystems.dll",
+        "lib/net35-client/NetTopologySuite.CoordinateSystems.pdb",
+        "lib/net35-client/NetTopologySuite.CoordinateSystems.xml",
+        "lib/net40-client/NetTopologySuite.CoordinateSystems.dll",
+        "lib/net40-client/NetTopologySuite.CoordinateSystems.pdb",
+        "lib/net40-client/NetTopologySuite.CoordinateSystems.xml",
+        "lib/net403-client/NetTopologySuite.CoordinateSystems.dll",
+        "lib/net403-client/NetTopologySuite.CoordinateSystems.pdb",
+        "lib/net403-client/NetTopologySuite.CoordinateSystems.xml",
+        "lib/net45/NetTopologySuite.CoordinateSystems.dll",
+        "lib/net45/NetTopologySuite.CoordinateSystems.pdb",
+        "lib/net45/NetTopologySuite.CoordinateSystems.xml",
+        "lib/netcoreapp2.0/NetTopologySuite.CoordinateSystems.dll",
+        "lib/netcoreapp2.0/NetTopologySuite.CoordinateSystems.pdb",
+        "lib/netcoreapp2.0/NetTopologySuite.CoordinateSystems.xml",
+        "lib/netstandard1.0/NetTopologySuite.CoordinateSystems.deps.json",
+        "lib/netstandard1.0/NetTopologySuite.CoordinateSystems.dll",
+        "lib/netstandard1.0/NetTopologySuite.CoordinateSystems.pdb",
+        "lib/netstandard1.0/NetTopologySuite.CoordinateSystems.xml",
+        "lib/netstandard1.3/NetTopologySuite.CoordinateSystems.deps.json",
+        "lib/netstandard1.3/NetTopologySuite.CoordinateSystems.dll",
+        "lib/netstandard1.3/NetTopologySuite.CoordinateSystems.pdb",
+        "lib/netstandard1.3/NetTopologySuite.CoordinateSystems.xml",
+        "lib/netstandard2.0/NetTopologySuite.CoordinateSystems.deps.json",
+        "lib/netstandard2.0/NetTopologySuite.CoordinateSystems.dll",
+        "lib/netstandard2.0/NetTopologySuite.CoordinateSystems.pdb",
+        "lib/netstandard2.0/NetTopologySuite.CoordinateSystems.xml",
+        "nettopologysuite.coordinatesystems.1.15.0.nupkg.sha512",
+        "nettopologysuite.coordinatesystems.nuspec",
+        "src/NetTopologySuite.Common.props",
+        "src/NetTopologySuite.CoordinateSystems/NetTopologySuite.CoordinateSystems.csproj",
+        "src/NetTopologySuite.CoordinateSystems/Transformations/GeometryTransform.cs",
+        "src/SharedAssemblyVersion.cs"
+      ]
+    },
+    "NetTopologySuite.Core/1.15.0": {
+      "sha512": "SMhtTQYfpgHq9+0X9cwcLfUZlUWkmzK2OODHLMjX5KbSLP99xvCAF95CfZ4hnsI7K6qvezOQXbIKJpYdr7yKmg==",
+      "type": "package",
+      "path": "nettopologysuite.core/1.15.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net35-client/NetTopologySuite.dll",
+        "lib/net35-client/NetTopologySuite.pdb",
+        "lib/net35-client/NetTopologySuite.xml",
+        "lib/net40-client/NetTopologySuite.dll",
+        "lib/net40-client/NetTopologySuite.pdb",
+        "lib/net40-client/NetTopologySuite.xml",
+        "lib/net403-client/NetTopologySuite.dll",
+        "lib/net403-client/NetTopologySuite.pdb",
+        "lib/net403-client/NetTopologySuite.xml",
+        "lib/net45/NetTopologySuite.dll",
+        "lib/net45/NetTopologySuite.pdb",
+        "lib/net45/NetTopologySuite.xml",
+        "lib/netcoreapp2.0/NetTopologySuite.dll",
+        "lib/netcoreapp2.0/NetTopologySuite.pdb",
+        "lib/netcoreapp2.0/NetTopologySuite.xml",
+        "lib/netstandard1.0/NetTopologySuite.deps.json",
+        "lib/netstandard1.0/NetTopologySuite.dll",
+        "lib/netstandard1.0/NetTopologySuite.pdb",
+        "lib/netstandard1.0/NetTopologySuite.xml",
+        "lib/netstandard1.3/NetTopologySuite.deps.json",
+        "lib/netstandard1.3/NetTopologySuite.dll",
+        "lib/netstandard1.3/NetTopologySuite.pdb",
+        "lib/netstandard1.3/NetTopologySuite.xml",
+        "lib/netstandard2.0/NetTopologySuite.deps.json",
+        "lib/netstandard2.0/NetTopologySuite.dll",
+        "lib/netstandard2.0/NetTopologySuite.pdb",
+        "lib/netstandard2.0/NetTopologySuite.xml",
+        "nettopologysuite.core.1.15.0.nupkg.sha512",
+        "nettopologysuite.core.nuspec",
+        "src/NetTopologySuite.Common.props",
+        "src/NetTopologySuite/Algorithm/Algorithm.xml",
+        "src/NetTopologySuite/Algorithm/Angle.cs",
+        "src/NetTopologySuite/Algorithm/Area.cs",
+        "src/NetTopologySuite/Algorithm/BoundaryNodeRule.cs",
+        "src/NetTopologySuite/Algorithm/CGAlgorithms.cs",
+        "src/NetTopologySuite/Algorithm/CGAlgorithms3D.cs",
+        "src/NetTopologySuite/Algorithm/CGAlgorithmsDD.cs",
+        "src/NetTopologySuite/Algorithm/Centroid.cs",
+        "src/NetTopologySuite/Algorithm/CentroidArea.cs",
+        "src/NetTopologySuite/Algorithm/CentroidLine.cs",
+        "src/NetTopologySuite/Algorithm/CentroidPoint.cs",
+        "src/NetTopologySuite/Algorithm/ConvexHull.cs",
+        "src/NetTopologySuite/Algorithm/Distance.cs",
+        "src/NetTopologySuite/Algorithm/Distance/DiscreteHausdorffDistance.cs",
+        "src/NetTopologySuite/Algorithm/Distance/Distance.xml",
+        "src/NetTopologySuite/Algorithm/Distance/DistanceToPoint.cs",
+        "src/NetTopologySuite/Algorithm/Distance/PointPairDistance.cs",
+        "src/NetTopologySuite/Algorithm/HCoordinate.cs",
+        "src/NetTopologySuite/Algorithm/IPointInAreaLocator.cs",
+        "src/NetTopologySuite/Algorithm/InteriorPointArea.cs",
+        "src/NetTopologySuite/Algorithm/InteriorPointLine.cs",
+        "src/NetTopologySuite/Algorithm/InteriorPointPoint.cs",
+        "src/NetTopologySuite/Algorithm/Length.cs",
+        "src/NetTopologySuite/Algorithm/LineIntersector.cs",
+        "src/NetTopologySuite/Algorithm/Locate/IPointOnGeometryLocator.cs",
+        "src/NetTopologySuite/Algorithm/Locate/IndexedPointInAreaLocator.cs",
+        "src/NetTopologySuite/Algorithm/Locate/Locate.xml",
+        "src/NetTopologySuite/Algorithm/Locate/SimplePointInAreaLocator.cs",
+        "src/NetTopologySuite/Algorithm/Match/AreaSimilarityMeasure.cs",
+        "src/NetTopologySuite/Algorithm/Match/HausdorffSimilarityMeasure.cs",
+        "src/NetTopologySuite/Algorithm/Match/ISimilarityMeasure.cs",
+        "src/NetTopologySuite/Algorithm/Match/Match.xml",
+        "src/NetTopologySuite/Algorithm/Match/SimilarityMeasureCombiner.cs",
+        "src/NetTopologySuite/Algorithm/MinimumBoundingCircle.cs",
+        "src/NetTopologySuite/Algorithm/MinimumDiameter.cs",
+        "src/NetTopologySuite/Algorithm/NotRepresentableException.cs",
+        "src/NetTopologySuite/Algorithm/Orientation.cs",
+        "src/NetTopologySuite/Algorithm/OrientationIndex.cs",
+        "src/NetTopologySuite/Algorithm/PointLocation.cs",
+        "src/NetTopologySuite/Algorithm/PointLocator.cs",
+        "src/NetTopologySuite/Algorithm/RayCrossingCounter.cs",
+        "src/NetTopologySuite/Algorithm/RectangleLineIntersector.cs",
+        "src/NetTopologySuite/Algorithm/RobustDeterminant.cs",
+        "src/NetTopologySuite/Algorithm/RobustLineIntersector.cs",
+        "src/NetTopologySuite/Consts.cs",
+        "src/NetTopologySuite/Densify/Densifier.cs",
+        "src/NetTopologySuite/Densify/DensifySummary.xml",
+        "src/NetTopologySuite/Dissolve/DissolveEdgeGraph.cs",
+        "src/NetTopologySuite/Dissolve/DissolveHalfEdge.cs",
+        "src/NetTopologySuite/Dissolve/LineDissolver.cs",
+        "src/NetTopologySuite/EdgeGraph/EdgeGraph.cs",
+        "src/NetTopologySuite/EdgeGraph/EdgeGraphBuilder.cs",
+        "src/NetTopologySuite/EdgeGraph/HalfEdge.cs",
+        "src/NetTopologySuite/EdgeGraph/MarkHalfEdge.cs",
+        "src/NetTopologySuite/FodyWeavers.xml",
+        "src/NetTopologySuite/Geometries/CoordinateArrays.cs",
+        "src/NetTopologySuite/Geometries/CoordinateList.cs",
+        "src/NetTopologySuite/Geometries/CoordinateSequenceComparator.cs",
+        "src/NetTopologySuite/Geometries/CoordinateSequences.cs",
+        "src/NetTopologySuite/Geometries/DefaultCoordinateSequence.cs",
+        "src/NetTopologySuite/Geometries/DefaultCoordinateSequenceFactory.cs",
+        "src/NetTopologySuite/Geometries/Geometries.xml",
+        "src/NetTopologySuite/Geometries/Geometry.cs",
+        "src/NetTopologySuite/Geometries/GeometryCollection.cs",
+        "src/NetTopologySuite/Geometries/GeometryCollectionEnumerator.cs",
+        "src/NetTopologySuite/Geometries/GeometryComponentFilter.cs",
+        "src/NetTopologySuite/Geometries/GeometryFactory.cs",
+        "src/NetTopologySuite/Geometries/Implementation/CoordinateArraySequence.cs",
+        "src/NetTopologySuite/Geometries/Implementation/CoordinateArraySequenceFactory.cs",
+        "src/NetTopologySuite/Geometries/Implementation/DotSpatialAffineCoordinateSequence.cs",
+        "src/NetTopologySuite/Geometries/Implementation/DotSpatialAffineCoordinateSequenceFactory.cs",
+        "src/NetTopologySuite/Geometries/Implementation/PackedCoordinateSequence.cs",
+        "src/NetTopologySuite/Geometries/Implementation/PackedCoordinateSequenceFactory.cs",
+        "src/NetTopologySuite/Geometries/LineSegment.cs",
+        "src/NetTopologySuite/Geometries/LineString.cs",
+        "src/NetTopologySuite/Geometries/LinearRing.cs",
+        "src/NetTopologySuite/Geometries/MultiLineString.cs",
+        "src/NetTopologySuite/Geometries/MultiPoint.cs",
+        "src/NetTopologySuite/Geometries/MultiPolygon.cs",
+        "src/NetTopologySuite/Geometries/OctogonalEnvelope.cs",
+        "src/NetTopologySuite/Geometries/OgcCompliantGeometryFactory.cs",
+        "src/NetTopologySuite/Geometries/Point.cs",
+        "src/NetTopologySuite/Geometries/Polygon.cs",
+        "src/NetTopologySuite/Geometries/PrecisionModel.cs",
+        "src/NetTopologySuite/Geometries/Prepared/AbstractPreparedPolygonContains.cs",
+        "src/NetTopologySuite/Geometries/Prepared/BasicPreparedGeometry.cs",
+        "src/NetTopologySuite/Geometries/Prepared/PreparedGeometryFactory.cs",
+        "src/NetTopologySuite/Geometries/Prepared/PreparedLineString.cs",
+        "src/NetTopologySuite/Geometries/Prepared/PreparedLineStringIntersects.cs",
+        "src/NetTopologySuite/Geometries/Prepared/PreparedPoint.cs",
+        "src/NetTopologySuite/Geometries/Prepared/PreparedPolygon.cs",
+        "src/NetTopologySuite/Geometries/Prepared/PreparedPolygonContains.cs",
+        "src/NetTopologySuite/Geometries/Prepared/PreparedPolygonContainsProperly.cs",
+        "src/NetTopologySuite/Geometries/Prepared/PreparedPolygonCovers.cs",
+        "src/NetTopologySuite/Geometries/Prepared/PreparedPolygonIntersects.cs",
+        "src/NetTopologySuite/Geometries/Prepared/PreparedPolygonPredicate.cs",
+        "src/NetTopologySuite/Geometries/TopologyException.cs",
+        "src/NetTopologySuite/Geometries/Triangle.cs",
+        "src/NetTopologySuite/Geometries/Utilities/AffineTransformation.cs",
+        "src/NetTopologySuite/Geometries/Utilities/AffineTransformationBuilder.cs",
+        "src/NetTopologySuite/Geometries/Utilities/AffineTransformationFactory.cs",
+        "src/NetTopologySuite/Geometries/Utilities/ComponentGeometryExtractor.cs",
+        "src/NetTopologySuite/Geometries/Utilities/GeometryCollectionMapper.cs",
+        "src/NetTopologySuite/Geometries/Utilities/GeometryCombiner.cs",
+        "src/NetTopologySuite/Geometries/Utilities/GeometryEditor.cs",
+        "src/NetTopologySuite/Geometries/Utilities/GeometryExtracter.cs",
+        "src/NetTopologySuite/Geometries/Utilities/GeometryMapper.cs",
+        "src/NetTopologySuite/Geometries/Utilities/GeometryTransformer.cs",
+        "src/NetTopologySuite/Geometries/Utilities/LineStringExtracter.cs",
+        "src/NetTopologySuite/Geometries/Utilities/LinearComponentExtracter.cs",
+        "src/NetTopologySuite/Geometries/Utilities/Matrix.cs",
+        "src/NetTopologySuite/Geometries/Utilities/NoninvertibleTransformationException.cs",
+        "src/NetTopologySuite/Geometries/Utilities/PointExtracter.cs",
+        "src/NetTopologySuite/Geometries/Utilities/PolygonExtracter.cs",
+        "src/NetTopologySuite/Geometries/Utilities/ShortCircuitedGeometryVisitor.cs",
+        "src/NetTopologySuite/Geometries/Utilities/SineStarFactory.cs",
+        "src/NetTopologySuite/GeometriesGraph/Depth.cs",
+        "src/NetTopologySuite/GeometriesGraph/DirectedEdge.cs",
+        "src/NetTopologySuite/GeometriesGraph/DirectedEdgeStar.cs",
+        "src/NetTopologySuite/GeometriesGraph/Edge.cs",
+        "src/NetTopologySuite/GeometriesGraph/EdgeEnd.cs",
+        "src/NetTopologySuite/GeometriesGraph/EdgeEndStar.cs",
+        "src/NetTopologySuite/GeometriesGraph/EdgeIntersection.cs",
+        "src/NetTopologySuite/GeometriesGraph/EdgeIntersectionList.cs",
+        "src/NetTopologySuite/GeometriesGraph/EdgeList.cs",
+        "src/NetTopologySuite/GeometriesGraph/EdgeNodingValidator.cs",
+        "src/NetTopologySuite/GeometriesGraph/EdgeRing.cs",
+        "src/NetTopologySuite/GeometriesGraph/GeometryGraph.cs",
+        "src/NetTopologySuite/GeometriesGraph/GraphComponent.cs",
+        "src/NetTopologySuite/GeometriesGraph/Index/EdgeSetIntersector.cs",
+        "src/NetTopologySuite/GeometriesGraph/Index/MonotoneChain.cs",
+        "src/NetTopologySuite/GeometriesGraph/Index/MonotoneChainEdge.cs",
+        "src/NetTopologySuite/GeometriesGraph/Index/MonotoneChainIndexer.cs",
+        "src/NetTopologySuite/GeometriesGraph/Index/SegmentIntersector.cs",
+        "src/NetTopologySuite/GeometriesGraph/Index/SimpleEdgeSetIntersector.cs",
+        "src/NetTopologySuite/GeometriesGraph/Index/SimpleMCSweepLineIntersector.cs",
+        "src/NetTopologySuite/GeometriesGraph/Index/SimpleSweepLineIntersector.cs",
+        "src/NetTopologySuite/GeometriesGraph/Index/SweepLineEvent.cs",
+        "src/NetTopologySuite/GeometriesGraph/Index/SweepLineSegment.cs",
+        "src/NetTopologySuite/GeometriesGraph/Label.cs",
+        "src/NetTopologySuite/GeometriesGraph/Node.cs",
+        "src/NetTopologySuite/GeometriesGraph/NodeFactory.cs",
+        "src/NetTopologySuite/GeometriesGraph/NodeMap.cs",
+        "src/NetTopologySuite/GeometriesGraph/PlanarGraph.cs",
+        "src/NetTopologySuite/GeometriesGraph/Position.cs",
+        "src/NetTopologySuite/GeometriesGraph/QuadrantOp.cs",
+        "src/NetTopologySuite/GeometriesGraph/TopologyLocation.cs",
+        "src/NetTopologySuite/IO/BEBinaryReader.cs",
+        "src/NetTopologySuite/IO/BEBinaryWriter.cs",
+        "src/NetTopologySuite/IO/BiEndianBinaryReader.cs",
+        "src/NetTopologySuite/IO/GML2/GMLElements.cs",
+        "src/NetTopologySuite/IO/GML2/GMLReader.cs",
+        "src/NetTopologySuite/IO/GML2/GMLWriter.cs",
+        "src/NetTopologySuite/IO/KML/KMLWriter.cs",
+        "src/NetTopologySuite/IO/ParseException.cs",
+        "src/NetTopologySuite/IO/WKBGeometryTypes.cs",
+        "src/NetTopologySuite/IO/WKBHexFileReader.cs",
+        "src/NetTopologySuite/IO/WKBReader.cs",
+        "src/NetTopologySuite/IO/WKBWriter.cs",
+        "src/NetTopologySuite/IO/WKTFileReader.cs",
+        "src/NetTopologySuite/IO/WKTReader.cs",
+        "src/NetTopologySuite/IO/WKTWriter.cs",
+        "src/NetTopologySuite/Index/ArrayListVisitor.cs",
+        "src/NetTopologySuite/Index/Bintree/Bintree.cs",
+        "src/NetTopologySuite/Index/Bintree/Interval.cs",
+        "src/NetTopologySuite/Index/Bintree/Key.cs",
+        "src/NetTopologySuite/Index/Bintree/Node.cs",
+        "src/NetTopologySuite/Index/Bintree/NodeBase.cs",
+        "src/NetTopologySuite/Index/Bintree/Root.cs",
+        "src/NetTopologySuite/Index/Chain/MonotoneChain.cs",
+        "src/NetTopologySuite/Index/Chain/MonotoneChainBuilder.cs",
+        "src/NetTopologySuite/Index/Chain/MonotoneChainOverlapAction.cs",
+        "src/NetTopologySuite/Index/Chain/MonotoneChainSelectAction.cs",
+        "src/NetTopologySuite/Index/IIndexVisitor.cs",
+        "src/NetTopologySuite/Index/IItemVisitor.cs",
+        "src/NetTopologySuite/Index/ISpatialIndex.cs",
+        "src/NetTopologySuite/Index/IntervalRTree/IntervalRTreeBranchNode.cs",
+        "src/NetTopologySuite/Index/IntervalRTree/IntervalRTreeLeafNode.cs",
+        "src/NetTopologySuite/Index/IntervalRTree/IntervalRTreeNode.cs",
+        "src/NetTopologySuite/Index/IntervalRTree/SortedPackedIntervalRTree.cs",
+        "src/NetTopologySuite/Index/KdTree/IKdNodeVisitor.cs",
+        "src/NetTopologySuite/Index/KdTree/KdNode.cs",
+        "src/NetTopologySuite/Index/KdTree/KdTree.cs",
+        "src/NetTopologySuite/Index/KdTree/KdTreeExtensions.cs",
+        "src/NetTopologySuite/Index/Quadtree/DoubleBits.cs",
+        "src/NetTopologySuite/Index/Quadtree/IntervalSize.cs",
+        "src/NetTopologySuite/Index/Quadtree/Key.cs",
+        "src/NetTopologySuite/Index/Quadtree/Node.cs",
+        "src/NetTopologySuite/Index/Quadtree/NodeBase.cs",
+        "src/NetTopologySuite/Index/Quadtree/Quadtree.cs",
+        "src/NetTopologySuite/Index/Quadtree/Root.cs",
+        "src/NetTopologySuite/Index/Strtree/AbstractNode.cs",
+        "src/NetTopologySuite/Index/Strtree/AbstractSTRtree.cs",
+        "src/NetTopologySuite/Index/Strtree/BoundablePair.cs",
+        "src/NetTopologySuite/Index/Strtree/BoundablePairDistanceComparer.cs",
+        "src/NetTopologySuite/Index/Strtree/GeometryItemDistance.cs",
+        "src/NetTopologySuite/Index/Strtree/IBoundable.cs",
+        "src/NetTopologySuite/Index/Strtree/IItemDistance.cs",
+        "src/NetTopologySuite/Index/Strtree/Interval.cs",
+        "src/NetTopologySuite/Index/Strtree/ItemBoundable.cs",
+        "src/NetTopologySuite/Index/Strtree/SIRtree.cs",
+        "src/NetTopologySuite/Index/Strtree/STRtree.cs",
+        "src/NetTopologySuite/Index/Sweepline/ISweepLineOverlapAction.cs",
+        "src/NetTopologySuite/Index/Sweepline/SweepLineEvent.cs",
+        "src/NetTopologySuite/Index/Sweepline/SweepLineIndex.cs",
+        "src/NetTopologySuite/Index/Sweepline/SweepLineInterval.cs",
+        "src/NetTopologySuite/LinearReferencing/ExtractLineByLocation.cs",
+        "src/NetTopologySuite/LinearReferencing/LengthIndexOfPoint.cs",
+        "src/NetTopologySuite/LinearReferencing/LengthIndexedLine.cs",
+        "src/NetTopologySuite/LinearReferencing/LengthLocationMap.cs",
+        "src/NetTopologySuite/LinearReferencing/LinearGeometryBuilder.cs",
+        "src/NetTopologySuite/LinearReferencing/LinearIterator.cs",
+        "src/NetTopologySuite/LinearReferencing/LinearLocation.cs",
+        "src/NetTopologySuite/LinearReferencing/LocationIndexOfLine.cs",
+        "src/NetTopologySuite/LinearReferencing/LocationIndexOfPoint.cs",
+        "src/NetTopologySuite/LinearReferencing/LocationIndexedLine.cs",
+        "src/NetTopologySuite/Mathematics/DD.cs",
+        "src/NetTopologySuite/Mathematics/MathUtil.cs",
+        "src/NetTopologySuite/Mathematics/Matrix.cs",
+        "src/NetTopologySuite/Mathematics/Plane3D.cs",
+        "src/NetTopologySuite/Mathematics/Vector2D.cs",
+        "src/NetTopologySuite/Mathematics/Vector3D.cs",
+        "src/NetTopologySuite/Mathematics/VectorMath.cs",
+        "src/NetTopologySuite/NetTopologySuite.csproj",
+        "src/NetTopologySuite/NetTopologySuiteBootstrapper.cs",
+        "src/NetTopologySuite/Noding/BasicSegmentString.cs",
+        "src/NetTopologySuite/Noding/FastNodingValidator.cs",
+        "src/NetTopologySuite/Noding/FastSegmentSetIntersectionFinder.cs",
+        "src/NetTopologySuite/Noding/INodableSegmentString.cs",
+        "src/NetTopologySuite/Noding/INoder.cs",
+        "src/NetTopologySuite/Noding/ISegmentIntersector.cs",
+        "src/NetTopologySuite/Noding/ISegmentString.cs",
+        "src/NetTopologySuite/Noding/InteriorIntersectionFinder.cs",
+        "src/NetTopologySuite/Noding/InteriorIntersectionFinderAdder.cs",
+        "src/NetTopologySuite/Noding/IntersectionAdder.cs",
+        "src/NetTopologySuite/Noding/IntersectionFinderAdder.cs",
+        "src/NetTopologySuite/Noding/IteratedNoder.cs",
+        "src/NetTopologySuite/Noding/MCIndexNoder.cs",
+        "src/NetTopologySuite/Noding/MCIndexSegmentSetMutualIntersector.cs",
+        "src/NetTopologySuite/Noding/NodingValidator.cs",
+        "src/NetTopologySuite/Noding/Octant.cs",
+        "src/NetTopologySuite/Noding/OrientedCoordinateArray.cs",
+        "src/NetTopologySuite/Noding/ScaledNoder.cs",
+        "src/NetTopologySuite/Noding/SegmentIntersectionDetector.cs",
+        "src/NetTopologySuite/Noding/SegmentNode.cs",
+        "src/NetTopologySuite/Noding/SegmentNodeList.cs",
+        "src/NetTopologySuite/Noding/SegmentPointComparator.cs",
+        "src/NetTopologySuite/Noding/SegmentSetMutualIntersector.cs",
+        "src/NetTopologySuite/Noding/SegmentString.cs",
+        "src/NetTopologySuite/Noding/SegmentStringDissolver.cs",
+        "src/NetTopologySuite/Noding/SegmentStringUtil.cs",
+        "src/NetTopologySuite/Noding/SimpleNoder.cs",
+        "src/NetTopologySuite/Noding/SimpleSegmentSetMutualIntersector.cs",
+        "src/NetTopologySuite/Noding/SinglePassNoder.cs",
+        "src/NetTopologySuite/Noding/Snapround/GeometryNoder.cs",
+        "src/NetTopologySuite/Noding/Snapround/HotPixel.cs",
+        "src/NetTopologySuite/Noding/Snapround/MCIndexPointSnapper.cs",
+        "src/NetTopologySuite/Noding/Snapround/MCIndexSnapRounder.cs",
+        "src/NetTopologySuite/Noding/Snapround/SimpleSnapRounder.cs",
+        "src/NetTopologySuite/NtsGeometryServices.cs",
+        "src/NetTopologySuite/Operation/BoundaryOp.cs",
+        "src/NetTopologySuite/Operation/Buffer/BufferBuilder.cs",
+        "src/NetTopologySuite/Operation/Buffer/BufferInputLineSimplifier.cs",
+        "src/NetTopologySuite/Operation/Buffer/BufferOp.cs",
+        "src/NetTopologySuite/Operation/Buffer/BufferParameters.cs",
+        "src/NetTopologySuite/Operation/Buffer/BufferSubgraph.cs",
+        "src/NetTopologySuite/Operation/Buffer/OffsetCurveBuilder.cs",
+        "src/NetTopologySuite/Operation/Buffer/OffsetCurveSetBuilder.cs",
+        "src/NetTopologySuite/Operation/Buffer/OffsetCurveVertexList.cs",
+        "src/NetTopologySuite/Operation/Buffer/OffsetSegmentGenerator.cs",
+        "src/NetTopologySuite/Operation/Buffer/OffsetSegmentString.cs",
+        "src/NetTopologySuite/Operation/Buffer/OldOffsetCurveBuilder.cs",
+        "src/NetTopologySuite/Operation/Buffer/RightmostEdgeFinder.cs",
+        "src/NetTopologySuite/Operation/Buffer/SubgraphDepthLocater.cs",
+        "src/NetTopologySuite/Operation/Buffer/Validate/BufferCurveMaximumDistanceFinder.cs",
+        "src/NetTopologySuite/Operation/Buffer/Validate/BufferDistanceValidator.cs",
+        "src/NetTopologySuite/Operation/Buffer/Validate/BufferResultValidator.cs",
+        "src/NetTopologySuite/Operation/Buffer/Validate/DistanceToPointFinder.cs",
+        "src/NetTopologySuite/Operation/Buffer/Validate/PointPairDistance.cs",
+        "src/NetTopologySuite/Operation/Distance/ConnectedElementLocationFilter.cs",
+        "src/NetTopologySuite/Operation/Distance/ConnectedElementPointFilter.cs",
+        "src/NetTopologySuite/Operation/Distance/DistanceOp.cs",
+        "src/NetTopologySuite/Operation/Distance/FacetSequence.cs",
+        "src/NetTopologySuite/Operation/Distance/FacetSequenceTreeBuilder.cs",
+        "src/NetTopologySuite/Operation/Distance/GeometryLocation.cs",
+        "src/NetTopologySuite/Operation/Distance/IndexedFacedDistance.cs",
+        "src/NetTopologySuite/Operation/Distance3D/AxisPlaneCoordinateSequence.cs",
+        "src/NetTopologySuite/Operation/Distance3D/Distance3DOp.cs",
+        "src/NetTopologySuite/Operation/Distance3D/PlanarPolygon3D.cs",
+        "src/NetTopologySuite/Operation/GeometryGraphOperation.cs",
+        "src/NetTopologySuite/Operation/IsSimpleOp.cs",
+        "src/NetTopologySuite/Operation/Linemerge/EdgeString.cs",
+        "src/NetTopologySuite/Operation/Linemerge/LineMergeDirectedEdge.cs",
+        "src/NetTopologySuite/Operation/Linemerge/LineMergeEdge.cs",
+        "src/NetTopologySuite/Operation/Linemerge/LineMergeGraph.cs",
+        "src/NetTopologySuite/Operation/Linemerge/LineMerger.cs",
+        "src/NetTopologySuite/Operation/Linemerge/LineSequencer.cs",
+        "src/NetTopologySuite/Operation/Overlay/EdgeSetNoder.cs",
+        "src/NetTopologySuite/Operation/Overlay/LineBuilder.cs",
+        "src/NetTopologySuite/Operation/Overlay/MaximalEdgeRing.cs",
+        "src/NetTopologySuite/Operation/Overlay/MinimalEdgeRing.cs",
+        "src/NetTopologySuite/Operation/Overlay/OverlayNodeFactory.cs",
+        "src/NetTopologySuite/Operation/Overlay/OverlayOp.cs",
+        "src/NetTopologySuite/Operation/Overlay/PointBuilder.cs",
+        "src/NetTopologySuite/Operation/Overlay/PolygonBuilder.cs",
+        "src/NetTopologySuite/Operation/Overlay/Snap/GeometrySnapper.cs",
+        "src/NetTopologySuite/Operation/Overlay/Snap/LineStringSnapper.cs",
+        "src/NetTopologySuite/Operation/Overlay/Snap/SnapIfNeededOverlayOp.cs",
+        "src/NetTopologySuite/Operation/Overlay/Snap/SnapOverlayOp.cs",
+        "src/NetTopologySuite/Operation/Overlay/Validate/FuzzyPointLocator.cs",
+        "src/NetTopologySuite/Operation/Overlay/Validate/OffsetPointGenerator.cs",
+        "src/NetTopologySuite/Operation/Overlay/Validate/OverlayResultValidator.cs",
+        "src/NetTopologySuite/Operation/Polygonize/EdgeRing.cs",
+        "src/NetTopologySuite/Operation/Polygonize/PolygonizeDirectedEdge.cs",
+        "src/NetTopologySuite/Operation/Polygonize/PolygonizeEdge.cs",
+        "src/NetTopologySuite/Operation/Polygonize/PolygonizeGraph.cs",
+        "src/NetTopologySuite/Operation/Polygonize/Polygonizer.cs",
+        "src/NetTopologySuite/Operation/Predicate/RectangleContains.cs",
+        "src/NetTopologySuite/Operation/Predicate/RectangleIntersects.cs",
+        "src/NetTopologySuite/Operation/Predicate/SegmentIntersectionTester.cs",
+        "src/NetTopologySuite/Operation/Relate/EdgeEndBuilder.cs",
+        "src/NetTopologySuite/Operation/Relate/EdgeEndBundle.cs",
+        "src/NetTopologySuite/Operation/Relate/EdgeEndBundleStar.cs",
+        "src/NetTopologySuite/Operation/Relate/RelateComputer.cs",
+        "src/NetTopologySuite/Operation/Relate/RelateNode.cs",
+        "src/NetTopologySuite/Operation/Relate/RelateNodeFactory.cs",
+        "src/NetTopologySuite/Operation/Relate/RelateNodeGraph.cs",
+        "src/NetTopologySuite/Operation/Relate/RelateOp.cs",
+        "src/NetTopologySuite/Operation/Union/CascadedPolygonUnion.cs",
+        "src/NetTopologySuite/Operation/Union/PointGeometryUnion.cs",
+        "src/NetTopologySuite/Operation/Union/UnaryUnionOp.cs",
+        "src/NetTopologySuite/Operation/Union/UnionInteracting.cs",
+        "src/NetTopologySuite/Operation/Valid/ConnectedInteriorTester.cs",
+        "src/NetTopologySuite/Operation/Valid/ConsistentAreaTester.cs",
+        "src/NetTopologySuite/Operation/Valid/IndexedNestedRingTester.cs",
+        "src/NetTopologySuite/Operation/Valid/IsValidOp.cs",
+        "src/NetTopologySuite/Operation/Valid/RepeatedPointTester.cs",
+        "src/NetTopologySuite/Operation/Valid/TopologyValidationError.cs",
+        "src/NetTopologySuite/Planargraph/Algorithm/ConnectedSubgraphFinder.cs",
+        "src/NetTopologySuite/Planargraph/DirectedEdge.cs",
+        "src/NetTopologySuite/Planargraph/DirectedEdgeStar.cs",
+        "src/NetTopologySuite/Planargraph/Edge.cs",
+        "src/NetTopologySuite/Planargraph/GraphComponent.cs",
+        "src/NetTopologySuite/Planargraph/Node.cs",
+        "src/NetTopologySuite/Planargraph/NodeMap.cs",
+        "src/NetTopologySuite/Planargraph/PlanarGraph.cs",
+        "src/NetTopologySuite/Planargraph/Subgraph.cs",
+        "src/NetTopologySuite/Precision/CommonBits.cs",
+        "src/NetTopologySuite/Precision/CommonBitsOp.cs",
+        "src/NetTopologySuite/Precision/CommonBitsRemover.cs",
+        "src/NetTopologySuite/Precision/CoordinatePrecisionReducerFilter.cs",
+        "src/NetTopologySuite/Precision/DocFiles/minClearance.png",
+        "src/NetTopologySuite/Precision/EnhancedPrecisionOp.cs",
+        "src/NetTopologySuite/Precision/GeometryPrecisionReducer.cs",
+        "src/NetTopologySuite/Precision/MinimumClearance.cs",
+        "src/NetTopologySuite/Precision/PrecisionReducerCoordinateOperation.cs",
+        "src/NetTopologySuite/Precision/PrecisionSummary.xml",
+        "src/NetTopologySuite/Precision/SimpleGeometryPrecisionReducer.cs",
+        "src/NetTopologySuite/Precision/SimpleMinimumClearance.cs",
+        "src/NetTopologySuite/Properties/AssemblyInfo.cs",
+        "src/NetTopologySuite/Shape/Fractal/KochSnowflakeBuilder.cs",
+        "src/NetTopologySuite/Shape/Fractal/SierpinskiCarpetBuilder.cs",
+        "src/NetTopologySuite/Shape/GeometricShapeBuilder.cs",
+        "src/NetTopologySuite/Shape/Random/RandomPointsBuilder.cs",
+        "src/NetTopologySuite/Shape/Random/RandomPointsInGridBuilder.cs",
+        "src/NetTopologySuite/Simplify/DouglasPeuckerLineSimplifier.cs",
+        "src/NetTopologySuite/Simplify/DouglasPeuckerSimplifier.cs",
+        "src/NetTopologySuite/Simplify/LineSegmentIndex.cs",
+        "src/NetTopologySuite/Simplify/OldVWLineSimplifier.cs",
+        "src/NetTopologySuite/Simplify/SimplifySummary.xml",
+        "src/NetTopologySuite/Simplify/TaggedLineSegment.cs",
+        "src/NetTopologySuite/Simplify/TaggedLineString.cs",
+        "src/NetTopologySuite/Simplify/TaggedLineStringSimplifier.cs",
+        "src/NetTopologySuite/Simplify/TaggedLinesSimplifier.cs",
+        "src/NetTopologySuite/Simplify/TopologyPreservingSimplifier.cs",
+        "src/NetTopologySuite/Simplify/VWLineSimplifier.cs",
+        "src/NetTopologySuite/Simplify/VWSimplifier.cs",
+        "src/NetTopologySuite/Triangulate/ConformingDelaunayTriangulationBuilder.cs",
+        "src/NetTopologySuite/Triangulate/ConformingDelaunayTriangulator.cs",
+        "src/NetTopologySuite/Triangulate/ConstraintEnforcementException.cs",
+        "src/NetTopologySuite/Triangulate/ConstraintVertex.cs",
+        "src/NetTopologySuite/Triangulate/ConstraintVertexFactory.cs",
+        "src/NetTopologySuite/Triangulate/DelaunayTriangulationBuilder.cs",
+        "src/NetTopologySuite/Triangulate/IConstraintSplitPointFinder.cs",
+        "src/NetTopologySuite/Triangulate/IncrementalDelaunayTriangulator.cs",
+        "src/NetTopologySuite/Triangulate/MidpointSplitPointFinder.cs",
+        "src/NetTopologySuite/Triangulate/NonEncroachingSplitPointFinder.cs",
+        "src/NetTopologySuite/Triangulate/QuadEdge/EdgeConnectedTriangleTraversal.cs",
+        "src/NetTopologySuite/Triangulate/QuadEdge/IQuadEdgeLocator.cs",
+        "src/NetTopologySuite/Triangulate/QuadEdge/ITraversalVisitor.cs",
+        "src/NetTopologySuite/Triangulate/QuadEdge/ITriangleVisitor.cs",
+        "src/NetTopologySuite/Triangulate/QuadEdge/LastFoundQuadEdgeLocator.cs",
+        "src/NetTopologySuite/Triangulate/QuadEdge/LocateFailureException.cs",
+        "src/NetTopologySuite/Triangulate/QuadEdge/QuadEdge.cs",
+        "src/NetTopologySuite/Triangulate/QuadEdge/QuadEdgeSubdivision.cs",
+        "src/NetTopologySuite/Triangulate/QuadEdge/QuadEdgeSummary.xml",
+        "src/NetTopologySuite/Triangulate/QuadEdge/QuadEdgeTriangle.cs",
+        "src/NetTopologySuite/Triangulate/QuadEdge/QuadEdgeUtil.cs",
+        "src/NetTopologySuite/Triangulate/QuadEdge/TrianglePredicate.cs",
+        "src/NetTopologySuite/Triangulate/QuadEdge/Vertex.cs",
+        "src/NetTopologySuite/Triangulate/Segment.cs",
+        "src/NetTopologySuite/Triangulate/SplitSegment.cs",
+        "src/NetTopologySuite/Triangulate/TriangulateSummary.xml",
+        "src/NetTopologySuite/Triangulate/VertexTaggedGeometryDataMapper.cs",
+        "src/NetTopologySuite/Triangulate/VoronoiDiagramBuilder.cs",
+        "src/NetTopologySuite/Utilities/AlternativePriorityQueue.cs",
+        "src/NetTopologySuite/Utilities/Assert.cs",
+        "src/NetTopologySuite/Utilities/AssertionFailedException.cs",
+        "src/NetTopologySuite/Utilities/BitConverter.cs",
+        "src/NetTopologySuite/Utilities/BitTweaks.cs",
+        "src/NetTopologySuite/Utilities/Caster.cs",
+        "src/NetTopologySuite/Utilities/CollectionUtil.cs",
+        "src/NetTopologySuite/Utilities/CoordinateArrayFilter.cs",
+        "src/NetTopologySuite/Utilities/CoordinateCompare.cs",
+        "src/NetTopologySuite/Utilities/CoordinateCountFilter.cs",
+        "src/NetTopologySuite/Utilities/Degrees.cs",
+        "src/NetTopologySuite/Utilities/EnumUtility.cs",
+        "src/NetTopologySuite/Utilities/FunctionsUtility.cs",
+        "src/NetTopologySuite/Utilities/GeometricShapeFactory.cs",
+        "src/NetTopologySuite/Utilities/Global.cs",
+        "src/NetTopologySuite/Utilities/Guard.cs",
+        "src/NetTopologySuite/Utilities/HexConverter.cs",
+        "src/NetTopologySuite/Utilities/Memory.cs",
+        "src/NetTopologySuite/Utilities/PlatformUtilityEx.cs",
+        "src/NetTopologySuite/Utilities/PriorityQueue.cs",
+        "src/NetTopologySuite/Utilities/PriorityQueueNode.cs",
+        "src/NetTopologySuite/Utilities/RToolsUtil/CharBuffer.cs",
+        "src/NetTopologySuite/Utilities/RToolsUtil/StreamTokenizer.cs",
+        "src/NetTopologySuite/Utilities/RToolsUtil/Token.cs",
+        "src/NetTopologySuite/Utilities/RToolsUtil/VerbosityLevel.cs",
+        "src/NetTopologySuite/Utilities/Radians.cs",
+        "src/NetTopologySuite/Utilities/ReverseOrder.cs",
+        "src/NetTopologySuite/Utilities/StreamTokenizer.cs",
+        "src/NetTopologySuite/Utilities/UniqueCoordinateArrayFilter.cs",
+        "src/SharedAssemblyVersion.cs"
+      ]
+    },
+    "Newtonsoft.Json/13.0.1": {
+      "sha512": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A==",
+      "type": "package",
+      "path": "newtonsoft.json/13.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/netstandard1.0/Newtonsoft.Json.dll",
+        "lib/netstandard1.0/Newtonsoft.Json.xml",
+        "lib/netstandard1.3/Newtonsoft.Json.dll",
+        "lib/netstandard1.3/Newtonsoft.Json.xml",
+        "lib/netstandard2.0/Newtonsoft.Json.dll",
+        "lib/netstandard2.0/Newtonsoft.Json.xml",
+        "newtonsoft.json.13.0.1.nupkg.sha512",
+        "newtonsoft.json.nuspec",
+        "packageIcon.png"
+      ]
+    },
+    "Spatial4n/0.4.1.1": {
+      "sha512": "lDFTOtyOJVgYsi9AEBOWVuRyzkj4cZGd3DRiRFgQcOAIceOWGTTHCMPKbqhtwdQ+y9gf7FOe4TnahWPStpT6ZA==",
+      "type": "package",
+      "path": "spatial4n/0.4.1.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "lib/net35/Spatial4n.dll",
+        "lib/net35/Spatial4n.xml",
+        "lib/net40/Spatial4n.dll",
+        "lib/net40/Spatial4n.xml",
+        "lib/netstandard2.0/Spatial4n.dll",
+        "lib/netstandard2.0/Spatial4n.xml",
+        "readme.md",
+        "spatial4n-icon-128x128.png",
+        "spatial4n.0.4.1.1.nupkg.sha512",
+        "spatial4n.nuspec"
+      ]
+    },
+    "System.Runtime.CompilerServices.Unsafe/4.4.0": {
+      "sha512": "9dLLuBxr5GNmOfl2jSMcsHuteEg32BEfUotmmUkmZjpR3RpVHE8YQwt0ow3p6prwA1ME8WqDVZqrr8z6H8G+Kw==",
+      "type": "package",
+      "path": "system.runtime.compilerservices.unsafe/4.4.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/netstandard1.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "lib/netstandard1.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "ref/netstandard1.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "ref/netstandard1.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "system.runtime.compilerservices.unsafe.4.4.0.nupkg.sha512",
+        "system.runtime.compilerservices.unsafe.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
+    "OrchardCore.Queries.Abstractions/1.6.0-preview": {
+      "type": "project",
+      "path": "../OrchardCore.Queries.Abstractions/OrchardCore.Queries.Abstractions.csproj",
+      "msbuildProject": "../OrchardCore.Queries.Abstractions/OrchardCore.Queries.Abstractions.csproj"
+    },
+    "OrchardCore.Search.Lucene.Abstractions/1.6.0-preview": {
+      "type": "project",
+      "path": "../OrchardCore.Search.Lucene.Abstractions/OrchardCore.Search.Lucene.Abstractions.csproj",
+      "msbuildProject": "../OrchardCore.Search.Lucene.Abstractions/OrchardCore.Search.Lucene.Abstractions.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net6.0": [
+      "Lucene.Net.QueryParser >= 4.8.0-beta00016",
+      "Lucene.Net.Spatial >= 4.8.0-beta00016",
+      "Microsoft.SourceLink.GitHub >= 1.1.1",
+      "OrchardCore.Queries.Abstractions >= 1.6.0-preview",
+      "OrchardCore.Search.Lucene.Abstractions >= 1.6.0-preview"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\stloethe\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+  },
+  "project": {
+    "version": "1.6.0-preview",
+    "restore": {
+      "projectUniqueName": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Search.Lucene.Core\\OrchardCore.Search.Lucene.Core.csproj",
+      "projectName": "OrchardCore.Search.Lucene.Core",
+      "projectPath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Search.Lucene.Core\\OrchardCore.Search.Lucene.Core.csproj",
+      "packagesPath": "C:\\Users\\stloethe\\.nuget\\packages\\",
+      "outputPath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Search.Lucene.Core\\obj\\",
+      "projectStyle": "PackageReference",
+      "crossTargeting": true,
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
+      "configFilePaths": [
+        "C:\\repos\\NuGet.Config",
+        "C:\\Users\\stloethe\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net6.0"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
+        "https://api.nuget.org/v3/index.json": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "projectReferences": {
+            "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Queries.Abstractions\\OrchardCore.Queries.Abstractions.csproj": {
+              "projectPath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Queries.Abstractions\\OrchardCore.Queries.Abstractions.csproj"
+            },
+            "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Search.Lucene.Abstractions\\OrchardCore.Search.Lucene.Abstractions.csproj": {
+              "projectPath": "C:\\repos\\loethenweb\\src\\OrchardCore\\OrchardCore.Search.Lucene.Abstractions\\OrchardCore.Search.Lucene.Abstractions.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "allWarningsAsErrors": true,
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net6.0": {
+        "targetAlias": "net6.0",
+        "dependencies": {
+          "Lucene.Net.QueryParser": {
+            "target": "Package",
+            "version": "[4.8.0-beta00016, )"
+          },
+          "Lucene.Net.Spatial": {
+            "target": "Package",
+            "version": "[4.8.0-beta00016, )"
+          },
+          "Microsoft.SourceLink.GitHub": {
+            "suppressParent": "All",
+            "target": "Package",
+            "version": "[1.1.1, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.AspNetCore.App": {
+            "privateAssets": "none"
+          },
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
+      }
+    },
+    "runtimes": {
+      "win-x64": {
+        "#import": []
+      }
+    }
+  }
+}

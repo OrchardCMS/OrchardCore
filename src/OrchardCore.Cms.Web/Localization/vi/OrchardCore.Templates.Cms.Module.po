@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: vi\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Templates.Cms.Module.pot\n"
+"X-Crowdin-File-ID: 824\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"PO-Revision-Date: 2022-05-05 19:16\n"
+
+#. <label class="form-check-label" asp-for="Show">@T["Show"]</label>
+#: OrchardCore.Templates.Cms.Module\Views\MyTestPart.Edit.cshtml:6
+msgctxt "OrchardCore.Templates.Cms.Module.Views.MyTestPart.Edit"
+msgid "Show"
+msgstr "Hiện"
+
+#. <label asp-for="MySetting">@T["Setting"]</label>
+#: OrchardCore.Templates.Cms.Module\Views\MyTestPartSettings.Edit.cshtml:5
+msgctxt "OrchardCore.Templates.Cms.Module.Views.MyTestPartSettings.Edit"
+msgid "Setting"
+msgstr "Cài đặt"
+
+#. <span class="hint">@T["The setting."]</span>
+#: OrchardCore.Templates.Cms.Module\Views\MyTestPartSettings.Edit.cshtml:8
+msgctxt "OrchardCore.Templates.Cms.Module.Views.MyTestPartSettings.Edit"
+msgid "The setting."
+msgstr "Cài đặt."
+

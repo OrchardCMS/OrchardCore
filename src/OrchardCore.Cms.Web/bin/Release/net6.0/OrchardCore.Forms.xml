@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Forms</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Forms.Models.FormElementPart">
+            <summary>
+            Turns a content item into a form element.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Forms.Models.FormInputElementPart">
+            <summary>
+            Turns a content item into a form element that supports input.
+            </summary>
+        </member>
+    </members>
+</doc>

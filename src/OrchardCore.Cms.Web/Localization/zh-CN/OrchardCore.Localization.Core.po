@@ -1,0 +1,326 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Localization.Core.pot\n"
+"X-Crowdin-File-ID: 768\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"PO-Revision-Date: 2021-07-15 19:09\n"
+
+#. public string AssociatedMetadataTypeTypeDescriptorMetadataTypeContainsUnknownProperties => S["The associated metadata type for type '{0}' contains the following unknown properties or fields: {1}. Please make sure that the names of these members match the names of the properties on the main type."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:17
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The associated metadata type for type '{0}' contains the following unknown properties or fields: {1}. Please make sure that the names of these members match the names of the properties on the main type."
+msgstr "类型 '{0}' 的相关元数据类型包含以下未知属性或字段： {1}。 请确保这些成员的名字与主类型上的属性名称相匹配。"
+
+#. public string AttributeStoreUnknownProperty => S["The type '{0}' does not contain a public property named '{1}'."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:19
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The type '{0}' does not contain a public property named '{1}'."
+msgstr "类型 '{0}' 不包含名为 '{1}' 的公共属性。"
+
+#. public string CommonPropertyNotFound => S["The property {0}.{1} could not be found."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:21
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The property {0}.{1} could not be found."
+msgstr "属性 {0}.{1} 找不到。"
+
+#. public string CompareAttributeMustMatch => S["'{0}' and '{1}' do not match."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:23
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "'{0}' and '{1}' do not match."
+msgstr "'{0} 和 '{1}' 不匹配。"
+
+#. public string CompareAttributeUnknownProperty => S["Could not find a property named {0}."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:25
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Could not find a property named {0}."
+msgstr "找不到名为 {0} 的属性。"
+
+#. public string CreditCardAttributeInvalid => S["The {0} field is not a valid credit card number."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:27
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field is not a valid credit card number."
+msgstr "{0} 字段不是一个有效的信用卡号码。"
+
+#. public string CustomValidationAttributeMethodMustReturnValidationResult => S["The CustomValidationAttribute method '{0}' in type '{1}' must return System.ComponentModel.DataAnnotations.ValidationResult.  Use System.ComponentModel.DataAnnotations.ValidationResult.Success to represent success."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:29
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The CustomValidationAttribute method '{0}' in type '{1}' must return System.ComponentModel.DataAnnotations.ValidationResult.  Use System.ComponentModel.DataAnnotations.ValidationResult.Success to represent success."
+msgstr "CustomValidation属性方法{0}在类型{1}中必须返回 System.ComponentModel.DataAnnotations.ValidationResult. Use System.ComponentModel.DataAnnotations.ValidationResult.Success。"
+
+#. public string CustomValidationAttributeMethodNotFound => S["The CustomValidationAttribute method '{0}' does not exist in type '{1}' or is not public and static."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:31
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The CustomValidationAttribute method '{0}' does not exist in type '{1}' or is not public and static."
+msgstr "CustomValidation属性方法 '{0}' 不存在于类型 '{1}' 中，或者不是公开和静态的。"
+
+#. public string CustomValidationAttributeMethodRequired => S["The CustomValidationAttribute.Method was not specified."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:33
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The CustomValidationAttribute.Method was not specified."
+msgstr "未指定CustomValidationAttribute.Method。"
+
+#. public string CustomValidationAttributeMethodSignature => S["The CustomValidationAttribute method '{0}' in type '{1}' must match the expected signature: public static ValidationResult {0}(object value, ValidationContext context). The value can be strongly typed. The ValidationContext parameter is optional."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:35
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The CustomValidationAttribute method '{0}' in type '{1}' must match the expected signature: public static ValidationResult {0}(object value, ValidationContext context). The value can be strongly typed. The ValidationContext parameter is optional."
+msgstr "CustomValidation属性方法'{0}' 类型'{1}' 必须匹配预期的签名：公开静态ValidationResults {0}(对象值，ValidationContext 上下文)。 值可以是强类型。ValidationContext 参数是可选的。"
+
+#. public string CustomValidationAttributeTypeConversionFailed => S["Could not convert the value of type '{0}' to '{1}' as expected by method {2}.{3}."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:37
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Could not convert the value of type '{0}' to '{1}' as expected by method {2}.{3}."
+msgstr "无法按照方法 {2}.{3} 将类型 '{0}' 转换为 '{1}' 的值。。"
+
+#. public string CustomValidationAttributeTypeMustBePublic => S["The custom validation type '{0}' must be public."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:39
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The custom validation type '{0}' must be public."
+msgstr "自定义验证类型 '{0}' 必须是公开的。"
+
+#. public string CustomValidationAttributeValidationError => S["{0} is not valid."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:41
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "{0} is not valid."
+msgstr "{0} 无效。"
+
+#. public string CustomValidationAttributeValidatorTypeRequired => S["The CustomValidationAttribute.ValidatorType was not specified."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:43
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The CustomValidationAttribute.ValidatorType was not specified."
+msgstr "未指定CustomValidationAttribute.ValidatorType"
+
+#. public string DataTypeAttributeEmptyDataTypeString => S["The custom DataType string cannot be null or empty."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:45
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The custom DataType string cannot be null or empty."
+msgstr "自定义数据类型字符串不能为空。"
+
+#. public string DisplayAttributePropertyNotSet => S["The {0} property has not been set.  Use the {1} method to get the value."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:47
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} property has not been set.  Use the {1} method to get the value."
+msgstr "{0} 属性尚未设置。使用 {1} 方法获取值。"
+
+#. public string EmailAddressAttributeInvalid => S["The {0} field is not a valid e-mail address."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:49
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field is not a valid e-mail address."
+msgstr "{0} 是无效电子邮件地址。"
+
+#. public string EnumDataTypeAttributeTypeCannotBeNull => S["The type provided for EnumDataTypeAttribute cannot be null."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:51
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The type provided for EnumDataTypeAttribute cannot be null."
+msgstr "为 EnumDataTypeattribute 提供的类型不能为 null。"
+
+#. public string EnumDataTypeAttributeTypeNeedsToBeAnEnum => S["The type '{0}' needs to represent an enumeration type."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:53
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The type '{0}' needs to represent an enumeration type."
+msgstr "类型 '{0}' 需要表示枚举类型。"
+
+#. public string FileExtensionsAttributeInvalid => S["The {0} field only accepts files with the following extensions: {1}."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:55
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field only accepts files with the following extensions: {1}."
+msgstr "{0} 字段只接受具有以下扩展名的文件： {1}。"
+
+#. public string LocalizableStringLocalizationFailed => S["Cannot retrieve property '{0}' because localization failed.  Type '{1}' is not public or does not contain a public static string property with the name '{2}'."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:57
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Cannot retrieve property '{0}' because localization failed.  Type '{1}' is not public or does not contain a public static string property with the name '{2}'."
+msgstr "无法检索属性 '{0}'，因为本地化失败。 输入 '{1}' 不是公开的，或者不包含名叫'{2}' 的公共静态字符串属性。"
+
+#. public string MaxLengthAttributeInvalidMaxLength => S["MaxLengthAttribute must have a Length value that is greater than zero. Use MaxLength() without parameters to indicate that the string or array can have the maximum allowable length."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:59
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "MaxLengthAttribute must have a Length value that is greater than zero. Use MaxLength() without parameters to indicate that the string or array can have the maximum allowable length."
+msgstr "MaxLength属性必须有大于零的长度。 使用没有参数的MaxLength() 表示字符串或数组可以有最大允许的长度。"
+
+#. public string MaxLengthAttributeValidationError => S["The field {0} must be a string or array type with a maximum length of '{1}'."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:61
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must be a string or array type with a maximum length of '{1}'."
+msgstr "字段 {0} 必须是字符串或数组类型，最大长度为 '{1}'。"
+
+#. public string MetadataTypeAttributeTypeCannotBeNull => S["MetadataClassType cannot be null."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:63
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "MetadataClassType cannot be null."
+msgstr "MetadataClassType 不能为空"
+
+#. public string MinLengthAttributeInvalidMinLength => S["MinLengthAttribute must have a Length value that is zero or greater."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:65
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "MinLengthAttribute must have a Length value that is zero or greater."
+msgstr "MinLength属性必须有一个零或更大值。"
+
+#. public string MinLengthAttributeValidationError => S["The field {0} must be a string or array type with a minimum length of '{1}'."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:67
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must be a string or array type with a minimum length of '{1}'."
+msgstr "字段 {0} 必须是字符串或数组类型，最小长度为 '{1}'。"
+
+#. public string LengthAttributeInvalidValueType => S["The field of type {0} must be a string, array or ICollection type."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:69
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field of type {0} must be a string, array or ICollection type."
+msgstr "类型 {0} 的字段必须是字符串、数组或ICollection类型。"
+
+#. public string PhoneAttributeInvalid => S["The {0} field is not a valid phone number."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:71
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field is not a valid phone number."
+msgstr "{0} 字段不是一个有效的电话号码。"
+
+#. public string RangeAttributeArbitraryTypeNotIComparable => S["The type {0} must implement {1}."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:73
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The type {0} must implement {1}."
+msgstr "类型 {0} 必须实现 {1}。"
+
+#. public string RangeAttributeMinGreaterThanMax => S["The maximum value '{0}' must be greater than or equal to the minimum value '{1}'."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:75
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The maximum value '{0}' must be greater than or equal to the minimum value '{1}'."
+msgstr "最大值 '{0}' 必须大于或等于最小值 '{1}'。"
+
+#. public string RangeAttributeMustSetMinAndMax => S["The minimum and maximum values must be set."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:77
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The minimum and maximum values must be set."
+msgstr "必须设置最小值和最大值。"
+
+#. public string RangeAttributeMustSetOperandType => S["The OperandType must be set when strings are used for minimum and maximum values."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:79
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The OperandType must be set when strings are used for minimum and maximum values."
+msgstr "当字符串使用最小值和最大值时，必须设置 OperandType 。"
+
+#. public string RangeAttributeValidationError => S["The field {0} must be between {1} and {2}."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:81
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must be between {1} and {2}."
+msgstr "字段 {0} 必须在 {1} 和 {2} 之间。"
+
+#. public string RegexAttributeValidationError => S["The field {0} must match the regular expression '{1}'."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:83
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must match the regular expression '{1}'."
+msgstr "字段 {0} 必须匹配正则表达式 '{1}'。"
+
+#. public string RegularExpressionAttributeEmptyPattern => S["The pattern must be set to a valid regular expression."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:85
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The pattern must be set to a valid regular expression."
+msgstr "模式必须设置为有效的正则表达式。"
+
+#. public string RequiredAttributeValidationError => S["The {0} field is required."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:87
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field is required."
+msgstr "{0} 字段是必需的。"
+
+#. public string StringLengthAttributeInvalidMaxLength => S["The maximum length must be a nonnegative integer."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:89
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The maximum length must be a nonnegative integer."
+msgstr "最大长度必须是非负整数。"
+
+#. public string StringLengthAttributeValidationError => S["The field {0} must be a string with a maximum length of {1}."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:91
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must be a string with a maximum length of {1}."
+msgstr "字段 {0} 必须是一个最大长度为 {1} 的字符串。"
+
+#. public string StringLengthAttributeValidationErrorIncludingMinimum => S["The field {0} must be a string with a minimum length of {2} and a maximum length of {1}."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:93
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must be a string with a minimum length of {2} and a maximum length of {1}."
+msgstr "字段 {0} 必须是一个字符串，最小长度为 {2} ，最大长度为 {1}。"
+
+#. public string UIHintImplementationControlParameterKeyIsNotAString => S["The key parameter at position {0} with value '{1}' is not a string. Every key control parameter must be a string."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:95
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The key parameter at position {0} with value '{1}' is not a string. Every key control parameter must be a string."
+msgstr "位置 {0} 中的键值'{1}' 不是字符串。每个键值控制参数必须是字符串。"
+
+#. public string UIHintImplementationControlParameterKeyIsNull => S["The key parameter at position {0} is null. Every key control parameter must be a string."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:97
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The key parameter at position {0} is null. Every key control parameter must be a string."
+msgstr "位置 {0} 的密钥参数为空。每个密钥控制参数必须是字符串。"
+
+#. public string UIHintImplementationControlParameterKeyOccursMoreThanOnce => S["The key parameter at position {0} with value '{1}' occurs more than once."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:99
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The key parameter at position {0} with value '{1}' occurs more than once."
+msgstr "值为 {0} 的位置{1} 的关键参数不止一次出现。"
+
+#. public string UIHintImplementationNeedEvenNumberOfControlParameters => S["The number of control parameters must be even."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:101
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The number of control parameters must be even."
+msgstr "控制参数的数量必须为偶数。"
+
+#. public string UrlAttributeInvalid => S["The {0} field is not a valid fully-qualified http, https, or ftp URL."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:103
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field is not a valid fully-qualified http, https, or ftp URL."
+msgstr "{0} 字段不是一个有效的完全合格的 http，https 或 ftp URL。"
+
+#. public string ValidationAttributeCannotSetErrorMessageAndResource => S["Either ErrorMessageString or ErrorMessageResourceName must be set, but not both."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:105
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Either ErrorMessageString or ErrorMessageResourceName must be set, but not both."
+msgstr "必须设置 ErrorMessageString 或 ErrorMessageResourceName ，但不是两者兼而有之。"
+
+#. public string ValidationAttributeIsValidNotImplemented => S["IsValid(object value) has not been implemented by this class. The preferred entry point is GetValidationResult() and classes should override IsValid(object value, ValidationContext context)."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:107
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "IsValid(object value) has not been implemented by this class. The preferred entry point is GetValidationResult() and classes should override IsValid(object value, ValidationContext context)."
+msgstr "IsValid(对象值) 尚未被此类实现。首选的入口点是 GetValidationResult() ，类应覆盖 IsValid(对象值, ValidationContext 上下文)。"
+
+#. public string ValidationAttributeNeedBothResourceTypeAndResourceName => S["Both ErrorMessageResourceType and ErrorMessageResourceName need to be set on this attribute."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:109
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Both ErrorMessageResourceType and ErrorMessageResourceName need to be set on this attribute."
+msgstr "需要为此属性设置错误消息资源类型和 ErrorMessageResourceResourceName"
+
+#. public string ValidationAttributeResourcePropertyNotStringType => S["The property '{0}' on resource type '{1}' is not a string type."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:111
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The property '{0}' on resource type '{1}' is not a string type."
+msgstr "资源类型 '{1}' 上的属性 '{0}' 不是字符串类型。"
+
+#. public string ValidationAttributeResourceTypeDoesNotHaveProperty => S["The resource type '{0}' does not have an accessible static property named '{1}'."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:113
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The resource type '{0}' does not have an accessible static property named '{1}'."
+msgstr "资源类型 '{0}' 没有可访问的名为 '{1}' 的静态属性。"
+
+#. public string ValidationAttributeValidationError => S["The field {0} is invalid."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:115
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} is invalid."
+msgstr "字段 {0} 无效。"
+
+#. public string ValidatorInstanceMustMatchValidationContextInstance => S["The instance provided must match the ObjectInstance on the ValidationContext supplied."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:117
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The instance provided must match the ObjectInstance on the ValidationContext supplied."
+msgstr "提供的实例必须匹配所提供的ValidationContext 上的对象实例。"
+
+#. public string ValidatorPropertyValueWrongType => S["The value for property '{0}' must be of type '{1}'."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:119
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The value for property '{0}' must be of type '{1}'."
+msgstr "属性的值 '{0}' 必须是类型 '{1}'。"
+

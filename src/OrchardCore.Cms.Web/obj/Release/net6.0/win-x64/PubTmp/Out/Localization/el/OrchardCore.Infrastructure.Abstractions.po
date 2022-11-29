@@ -1,0 +1,44 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: el\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Infrastructure.Abstractions.pot\n"
+"X-Crowdin-File-ID: 758\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Greek\n"
+"Language: el_GR\n"
+"PO-Revision-Date: 2022-03-05 10:49\n"
+
+#. throw new InvalidOperationException(S["Switch \"{0}\" was not found", commandSwitch.Key]);
+#: OrchardCore.Infrastructure.Abstractions\Commands\DefaultCommandHandler.cs:45
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "Switch \"{0}\" was not found"
+msgstr "Ο διακόπτης \"{0}\" δεν βρέθηκε"
+
+#. throw new InvalidOperationException(S["A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, typeof(OrchardSwitchAttribute).Name]);
+#: OrchardCore.Infrastructure.Abstractions\Commands\DefaultCommandHandler.cs:49
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "A property \"{0}\" exists but is not decorated with \"{1}\""
+msgstr "Υπάρχει μια ιδιότητα \"{0}\" αλλά δεν είναι διακοσμημένη με \"{1}\""
+
+#. string message = S["Error converting value \"{0}\" to \"{1}\" for switch \"{2}\"",
+#: OrchardCore.Infrastructure.Abstractions\Commands\DefaultCommandHandler.cs:61
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "Error converting value \"{0}\" to \"{1}\" for switch \"{2}\""
+msgstr "Σφάλμα μετατροπής της τιμής \"{0}\" σε \"{1}\" για το διακόπτη \"{2}\""
+
+#. throw new InvalidOperationException(S["Command arguments \"{0}\" don't match command definition", string.Join(" ", arguments)]);
+#: OrchardCore.Infrastructure.Abstractions\Commands\DefaultCommandHandler.cs:77
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "Command arguments \"{0}\" don't match command definition"
+msgstr "Τα ορίσματα εντολών \"{0}\" δεν ταιριάζουν με τον ορισμό της εντολής"
+
+#. throw new InvalidOperationException(S["Method \"{0}\" does not support switch \"{1}\".", methodInfo.Name, commandSwitch]);
+#: OrchardCore.Infrastructure.Abstractions\Commands\DefaultCommandHandler.cs:176
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "Method \"{0}\" does not support switch \"{1}\"."
+msgstr "Η μέθοδος \"{0}\" δεν υποστηρίζει το διακόπτη \"{1}\"."
+

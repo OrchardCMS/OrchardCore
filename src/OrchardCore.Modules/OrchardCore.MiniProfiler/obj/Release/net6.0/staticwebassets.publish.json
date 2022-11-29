@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "zwhRET5zW10glwRj46a/6mpo7jUqbYFfJXaOwXMalyM=",
+  "Source": "OrchardCore.MiniProfiler",
+  "BasePath": "_content/OrchardCore.MiniProfiler",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "M3Lzrq774OE6/Cc09wafCwgKqcLThig+zngpPgs5zIQ=",
+  "Source": "OrchardCore.ContentLocalization",
+  "BasePath": "_content/OrchardCore.ContentLocalization",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

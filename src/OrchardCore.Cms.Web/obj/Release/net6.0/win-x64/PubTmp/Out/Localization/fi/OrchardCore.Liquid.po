@@ -1,0 +1,38 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: fi\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Liquid.pot\n"
+"X-Crowdin-File-ID: 764\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Finnish\n"
+"Language: fi_FI\n"
+"PO-Revision-Date: 2021-07-15 19:01\n"
+
+#. updater.ModelState.AddModelError(Prefix, nameof(viewModel.Liquid), S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+#: OrchardCore.Liquid\Drivers\LiquidPartDisplayDriver.cs:46
+msgctxt "OrchardCore.Liquid.Drivers.LiquidPartDisplayDriver"
+msgid "The Liquid Body doesn't contain a valid Liquid expression. Details: {0}"
+msgstr "Liquid-runko ei sisällä validia Liquid-lauseketta. Yksityiskohdat: {0}"
+
+#. <label asp-for="Liquid">@T["Body"]</label>
+#: OrchardCore.Liquid\Views\LiquidPart.Edit.cshtml:14
+msgctxt "OrchardCore.Liquid.Views.LiquidPart.Edit"
+msgid "Body"
+msgstr "Runko"
+
+#. @T["The body of the content item, in Liquid format."]
+#: OrchardCore.Liquid\Views\LiquidPart.Edit.cshtml:17
+msgctxt "OrchardCore.Liquid.Views.LiquidPart.Edit"
+msgid "The body of the content item, in Liquid format."
+msgstr "Sisältökohteen runko Liquid-formaatissa."
+
+#. <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Liquid" target="_blank">@T["See documentation"]</a>
+#: OrchardCore.Liquid\Views\LiquidPart.Edit.cshtml:18
+msgctxt "OrchardCore.Liquid.Views.LiquidPart.Edit"
+msgid "See documentation"
+msgstr "Katso käyttöohjeet"
+

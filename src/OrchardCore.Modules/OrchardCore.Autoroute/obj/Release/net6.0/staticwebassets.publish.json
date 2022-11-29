@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "Rrre03afAo9PDPqrScskY5wzuteXqmJcS5ORCi6pIZA=",
+  "Source": "OrchardCore.Autoroute",
+  "BasePath": "_content/OrchardCore.Autoroute",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

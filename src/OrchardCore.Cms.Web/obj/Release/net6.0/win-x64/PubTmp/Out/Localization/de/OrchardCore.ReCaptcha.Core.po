@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: de\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.ReCaptcha.Core.pot\n"
+"X-Crowdin-File-ID: 796\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"PO-Revision-Date: 2021-07-15 18:58\n"
+
+#. context.ModelState.AddModelError("ReCaptcha", S["Failed to validate captcha"]);
+#: OrchardCore.ReCaptcha.Core\ActionFilters\ValidateReCaptchaAttribute.cs:44
+msgctxt "OrchardCore.ReCaptcha.ActionFilters.ValidateReCaptchaAttribute"
+msgid "Failed to validate captcha"
+msgstr "Captcha konnte nicht überprüft werden"
+
+#. reportError("ReCaptcha", S["Failed to validate captcha"]);
+#: OrchardCore.ReCaptcha.Core\Services\ReCaptchaService.cs:96
+msgctxt "OrchardCore.ReCaptcha.Services.ReCaptchaService"
+msgid "Failed to validate captcha"
+msgstr "Captcha konnte nicht überprüft werden"
+
+#. _logger.LogWarning(S["Language with name {0} not found", language]);
+#: OrchardCore.ReCaptcha.Core\TagHelpers\ReCaptchaTagHelper.cs:99
+msgctxt "OrchardCore.ReCaptcha.TagHelpers.ReCaptchaTagHelper"
+msgid "Language with name {0} not found"
+msgstr "Sprache mit Namen {0} nicht gefunden"
+

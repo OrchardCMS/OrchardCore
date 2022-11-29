@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.BackgroundTasks</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.BackgroundTasks.Services.AlwaysHasChangedToken">
+            <summary>
+            An empty change token that is always in the changed state but without raising any change callbacks.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.BackgroundTasks.Services.BackgroundTaskManager.LoadDocumentAsync">
+            <summary>
+            Loads the background task document from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.BackgroundTasks.Services.BackgroundTaskManager.GetDocumentAsync">
+            <summary>
+            Gets the background task document from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+    </members>
+</doc>

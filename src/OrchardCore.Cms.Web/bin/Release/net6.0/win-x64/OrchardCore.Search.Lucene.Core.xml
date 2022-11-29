@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Search.Lucene.Core</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.Search.Lucene.ServiceCollectionExtensions.AddLuceneQueries(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds Lucene queries services.
+            </summary>
+        </member>
+    </members>
+</doc>

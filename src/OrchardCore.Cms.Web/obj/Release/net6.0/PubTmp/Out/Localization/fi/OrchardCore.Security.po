@@ -1,0 +1,399 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: fi\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Security.pot\n"
+"X-Crowdin-File-ID: 856\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Finnish\n"
+"Language: fi_FI\n"
+"PO-Revision-Date: 2022-08-08 11:31\n"
+
+#. builder.Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
+#: OrchardCore.Security\AdminMenu.cs:22
+msgctxt "OrchardCore.Security.AdminMenu"
+msgid "Security"
+msgstr "Turvallisuus"
+
+#. .Add(S["Settings"], settings => settings
+#: OrchardCore.Security\AdminMenu.cs:24
+msgctxt "OrchardCore.Security.AdminMenu"
+msgid "Settings"
+msgstr "Asetukset"
+
+#. .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
+#. .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
+#: OrchardCore.Security\AdminMenu.cs:25
+#: OrchardCore.Security\AdminMenu.cs:25
+msgctxt "OrchardCore.Security.AdminMenu"
+msgid "Security Headers"
+msgstr "Turvallisuustunnisteet"
+
+#. @T["The current tenant will be reloaded when the settings are saved."]
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:165
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "The current tenant will be reloaded when the settings are saved."
+msgstr ""
+
+#. @T["The current settings are coming from configuration sources, saving the settings will affect the AdminSettings not the configuration."]
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:171
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "The current settings are coming from configuration sources, saving the settings will affect the AdminSettings not the configuration."
+msgstr ""
+
+#. <label asp-for="ContentSecurityPolicy">@T["Content Security Policy"]</label>
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:176
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Content Security Policy"
+msgstr "Sisällön turvallisuuskäytäntö"
+
+#. <label class="form-check-label" asp-for="EnableSandbox">@T["Enable Sandbox"]</label>
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:180
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Enable Sandbox"
+msgstr "Ota hiekkalaatikko käyttöön"
+
+#. <span class="hint dashed">@T["Enables a sandbox for the requested resource similar to the iframe sandbox attribute."]</span>
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:181
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Enables a sandbox for the requested resource similar to the iframe sandbox attribute."
+msgstr ""
+
+#. <label class="form-check-label" asp-for="UpgradeInsecureRequests">@T["Upgrade Insecure Requests"]</label>
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:187
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Upgrade Insecure Requests"
+msgstr ""
+
+#. <th>@T["Name"]</th>
+#. <th>@T["Name"]</th>
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:193
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:220
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Name"
+msgstr "Nimi"
+
+#. <span class="hint">@T["Allows administrators to control resources the user agent is allowed to load for a given page."]</span>
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:213
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Allows administrators to control resources the user agent is allowed to load for a given page."
+msgstr ""
+
+#. <label asp-for="PermissionsPolicy">@T["Permissions Policy"]</label>
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:216
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Permissions Policy"
+msgstr "Käyttöoikeuksien käytännöt"
+
+#. <th>@T["None"]</th>
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:221
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "None"
+msgstr "Ei mitään"
+
+#. <th>@T["Any"]</th>
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:222
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Any"
+msgstr "Kaikki"
+
+#. <th>@T["Self"]</th>
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:223
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Self"
+msgstr "Itse"
+
+#. <span class="hint">@T["Allows a site to control which features and APIs can be used in the browser."]</span>
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:271
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Allows a site to control which features and APIs can be used in the browser."
+msgstr ""
+
+#. <label asp-for="ReferrerPolicy">@T["Referrer Policy"]</label>
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:274
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Referrer Policy"
+msgstr "Viitauskäytännöt"
+
+#. @T["No referrer"]
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:277
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "No referrer"
+msgstr "Ei viittauksia"
+
+#. @T["No referrer when downgrade"]
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:280
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "No referrer when downgrade"
+msgstr ""
+
+#. @T["Origin"]
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:283
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Origin"
+msgstr "Alkuperä"
+
+#. @T["Origin when cross origin"]
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:286
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Origin when cross origin"
+msgstr "Alkuperä, kun on rajat ylittävä alkuperä"
+
+#. @T["Same origin"]
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:289
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Same origin"
+msgstr "Sama alkuperä"
+
+#. @T["Strict origin"]
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:292
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Strict origin"
+msgstr "Tiukka alkuperä"
+
+#. @T["Strict origin when cross origin"]
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:295
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Strict origin when cross origin"
+msgstr "Tiukka alkuperä, kun on rajat ylittävä alkuperä"
+
+#. @T["Unsafe URL"]
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:298
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Unsafe URL"
+msgstr "Epäturvallinen URL-osoite"
+
+#. <span class="hint">@T["Allows a site to control how much information the browser includes when navigating away from a page."]</span>
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:302
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Allows a site to control how much information the browser includes when navigating away from a page."
+msgstr ""
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Base URI"
+msgstr "Perus URL-osoite"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Child Source"
+msgstr ""
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Connect Source"
+msgstr ""
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Default Source"
+msgstr "Oletuslähde"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Font Source"
+msgstr "Fonttien lähde"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Form Action"
+msgstr ""
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Frame Ancestors"
+msgstr ""
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Frame Source"
+msgstr "Kehyksen lähde"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Image Source"
+msgstr "Kuvan lähde"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Manifest Source"
+msgstr ""
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Media Source"
+msgstr "Medialähde"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Object Source"
+msgstr "Kohteen lähde"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Sandbox"
+msgstr "Hiekkalaatikko"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Script Source"
+msgstr "Skriptin lähde"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Style Source"
+msgstr ""
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Accelerometer"
+msgstr "Kiihtyvyysanturi"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Ambient Light Sensor"
+msgstr "Valoisuusmittari"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Autoplay"
+msgstr "Automaattinen toisto"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Battery"
+msgstr "Akku"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Camera"
+msgstr "Kamera"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Display Capture"
+msgstr "Ruudunkaappaus"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Document Domain"
+msgstr ""
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Encrypted Media"
+msgstr "Salattu media"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Full Screen"
+msgstr "Kokoruutu"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Game Pad"
+msgstr "Pelikonsoli"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Geolocation"
+msgstr "Sijainti"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Gyroscope"
+msgstr "Gyroskooppi"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Layout Animations"
+msgstr ""
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Legacy ImageFormat"
+msgstr ""
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Magnetometer"
+msgstr "Magnettikentän anturi"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Microphone"
+msgstr "Mikrofoni"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Midi"
+msgstr "Midi"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Oversized Images"
+msgstr "Ylisuuret kuvat"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Payment"
+msgstr "Maksu"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Picture In Picture"
+msgstr "Kuva kuvassa"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Public Key Retrieval"
+msgstr "Julkisen avaimen noutaminen"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Push"
+msgstr "Työnnä"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Speaker Selection"
+msgstr "Kaiuttimen valinta"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Screen Wake Lock"
+msgstr "Näytönlukitus"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Synchronous XML Http Request"
+msgstr ""
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Unoptimized Images"
+msgstr "Optimoimattomat kuvat"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Unsized Media"
+msgstr ""
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "USB"
+msgstr "USB"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Web Share"
+msgstr "Verkossa jakaminen"
+
+#: OrchardCore.Security\Views\SecurityHeadersSettings.Edit.cshtml:0
+msgctxt "OrchardCore.Security.Views.SecurityHeadersSettings.Edit"
+msgid "Web XR"
+msgstr ""
+

@@ -1,0 +1,326 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: el\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Localization.Core.pot\n"
+"X-Crowdin-File-ID: 768\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Greek\n"
+"Language: el_GR\n"
+"PO-Revision-Date: 2021-10-22 14:42\n"
+
+#. public string AssociatedMetadataTypeTypeDescriptorMetadataTypeContainsUnknownProperties => S["The associated metadata type for type '{0}' contains the following unknown properties or fields: {1}. Please make sure that the names of these members match the names of the properties on the main type."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:17
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The associated metadata type for type '{0}' contains the following unknown properties or fields: {1}. Please make sure that the names of these members match the names of the properties on the main type."
+msgstr "Ο συσχετισμένος τύπος μεταδεδομένων για τον τύπο \"{0}\" περιέχει τις ακόλουθες άγνωστες ιδιότητες ή πεδία: {1}. Βεβαιωθείτε ότι τα ονόματα αυτών των μελών ταιριάζουν με τα ονόματα των ιδιοτήτων στον κύριο τύπο."
+
+#. public string AttributeStoreUnknownProperty => S["The type '{0}' does not contain a public property named '{1}'."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:19
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The type '{0}' does not contain a public property named '{1}'."
+msgstr "Ο τύπος \"{0}\" δεν περιέχει μια δημόσια ιδιότητα που ονομάζεται \"{1}\"."
+
+#. public string CommonPropertyNotFound => S["The property {0}.{1} could not be found."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:21
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The property {0}.{1} could not be found."
+msgstr "Η ιδιότητα {0}. {1} δεν μπορεί να βρεθεί."
+
+#. public string CompareAttributeMustMatch => S["'{0}' and '{1}' do not match."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:23
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "'{0}' and '{1}' do not match."
+msgstr "'{0}' και '{1}' δεν ταιριάζουν."
+
+#. public string CompareAttributeUnknownProperty => S["Could not find a property named {0}."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:25
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Could not find a property named {0}."
+msgstr "Δεν ήταν δυνατή η εύρεση μιας ιδιότητας με όνομα {0}."
+
+#. public string CreditCardAttributeInvalid => S["The {0} field is not a valid credit card number."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:27
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field is not a valid credit card number."
+msgstr "Το πεδίο {0} δεν είναι έγκυρος αριθμός πιστωτικής κάρτας."
+
+#. public string CustomValidationAttributeMethodMustReturnValidationResult => S["The CustomValidationAttribute method '{0}' in type '{1}' must return System.ComponentModel.DataAnnotations.ValidationResult.  Use System.ComponentModel.DataAnnotations.ValidationResult.Success to represent success."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:29
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The CustomValidationAttribute method '{0}' in type '{1}' must return System.ComponentModel.DataAnnotations.ValidationResult.  Use System.ComponentModel.DataAnnotations.ValidationResult.Success to represent success."
+msgstr "Η μέθοδος CustomValidationAttribute \"{0}\" στον τύπο \"{1}\" πρέπει να επιστρέψει το System.ComponentModel.DataAnnotations.ValidationResult. Χρησιμοποίησε το System.ComponentModel.DataAnnotations.ValidationResult.Success για να παραστήσεις την επιτυχία."
+
+#. public string CustomValidationAttributeMethodNotFound => S["The CustomValidationAttribute method '{0}' does not exist in type '{1}' or is not public and static."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:31
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The CustomValidationAttribute method '{0}' does not exist in type '{1}' or is not public and static."
+msgstr "Η μέθοδος CustomValidationAttribute \"{0}\" δεν υπάρχει στον τύπο \"{1}\" ή δεν είναι δημόσια και στατική."
+
+#. public string CustomValidationAttributeMethodRequired => S["The CustomValidationAttribute.Method was not specified."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:33
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The CustomValidationAttribute.Method was not specified."
+msgstr "Το CustomValidationAttribute.Method δεν καθορίστηκε."
+
+#. public string CustomValidationAttributeMethodSignature => S["The CustomValidationAttribute method '{0}' in type '{1}' must match the expected signature: public static ValidationResult {0}(object value, ValidationContext context). The value can be strongly typed. The ValidationContext parameter is optional."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:35
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The CustomValidationAttribute method '{0}' in type '{1}' must match the expected signature: public static ValidationResult {0}(object value, ValidationContext context). The value can be strongly typed. The ValidationContext parameter is optional."
+msgstr "Η μέθοδος CustomValidationAttribute \"{0}\" στον τύπο \"{1}\" πρέπει να ταιριάζει με την αναμενόμενη υπογραφή: public static ValidationResult {0} (object value, ValidationContext context). Η τιμή μπορεί να εισαχθεί υποχρεωτικά. Η παράμετρος ValidationContext είναι προαιρετική."
+
+#. public string CustomValidationAttributeTypeConversionFailed => S["Could not convert the value of type '{0}' to '{1}' as expected by method {2}.{3}."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:37
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Could not convert the value of type '{0}' to '{1}' as expected by method {2}.{3}."
+msgstr "Δεν ήταν δυνατή η μετατροπή της τιμής του τύπου \"{0}\" σε \"{1}\" όπως αναμενόταν με τη μέθοδο {2}. {3}."
+
+#. public string CustomValidationAttributeTypeMustBePublic => S["The custom validation type '{0}' must be public."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:39
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The custom validation type '{0}' must be public."
+msgstr "Ο προσαρμοσμένος τύπος επικύρωσης \"{0}\" πρέπει να είναι δημόσιος."
+
+#. public string CustomValidationAttributeValidationError => S["{0} is not valid."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:41
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "{0} is not valid."
+msgstr "{0} δεν είναι έγκυρο."
+
+#. public string CustomValidationAttributeValidatorTypeRequired => S["The CustomValidationAttribute.ValidatorType was not specified."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:43
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The CustomValidationAttribute.ValidatorType was not specified."
+msgstr "Το CustomValidationAttribute.ValidatorType δεν καθορίστηκε."
+
+#. public string DataTypeAttributeEmptyDataTypeString => S["The custom DataType string cannot be null or empty."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:45
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The custom DataType string cannot be null or empty."
+msgstr "Η προσαρμοσμένη συμβολοσειρά DataType δεν μπορεί να είναι null ή κενή."
+
+#. public string DisplayAttributePropertyNotSet => S["The {0} property has not been set.  Use the {1} method to get the value."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:47
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} property has not been set.  Use the {1} method to get the value."
+msgstr "Η ιδιότητα {0} δεν έχει οριστεί. Χρησιμοποίησε τη μέθοδο {1} για να λάβεις την τιμή."
+
+#. public string EmailAddressAttributeInvalid => S["The {0} field is not a valid e-mail address."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:49
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field is not a valid e-mail address."
+msgstr "Το πεδίο {0} δεν είναι έγκυρη διεύθυνση ηλεκτρονικού ταχυδρομείου."
+
+#. public string EnumDataTypeAttributeTypeCannotBeNull => S["The type provided for EnumDataTypeAttribute cannot be null."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:51
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The type provided for EnumDataTypeAttribute cannot be null."
+msgstr "Ο τύπος που παρέχεται για το EnumDataTypeAttribute δεν μπορεί να είναι null."
+
+#. public string EnumDataTypeAttributeTypeNeedsToBeAnEnum => S["The type '{0}' needs to represent an enumeration type."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:53
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The type '{0}' needs to represent an enumeration type."
+msgstr "Ο τύπος \"{0}\" πρέπει να αντιπροσωπεύει έναν τύπο απαρίθμησης."
+
+#. public string FileExtensionsAttributeInvalid => S["The {0} field only accepts files with the following extensions: {1}."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:55
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field only accepts files with the following extensions: {1}."
+msgstr "Το πεδίο {0} δέχεται μόνο αρχεία με τις ακόλουθες επεκτάσεις: {1}."
+
+#. public string LocalizableStringLocalizationFailed => S["Cannot retrieve property '{0}' because localization failed.  Type '{1}' is not public or does not contain a public static string property with the name '{2}'."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:57
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Cannot retrieve property '{0}' because localization failed.  Type '{1}' is not public or does not contain a public static string property with the name '{2}'."
+msgstr "Δεν είναι δυνατή η ανάκτηση της ιδιότητας \"{0}\" επειδή η τοπικοποίηση απέτυχε. Ο τύπος '{1}' δεν είναι δημόσιος ή δεν περιέχει μια δημόσια ιδιότητα στατικής συμβολοσειράς με το όνομα '{2}'."
+
+#. public string MaxLengthAttributeInvalidMaxLength => S["MaxLengthAttribute must have a Length value that is greater than zero. Use MaxLength() without parameters to indicate that the string or array can have the maximum allowable length."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:59
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "MaxLengthAttribute must have a Length value that is greater than zero. Use MaxLength() without parameters to indicate that the string or array can have the maximum allowable length."
+msgstr "Το MaxLengthAttribute πρέπει να έχει τιμή μήκους μεγαλύτερη από το μηδέν. Χρησιμοποιήστε το MaxLength() χωρίς παραμέτρους για να υποδείξετε ότι η συμβολοσειρά ή ο πίνακας μπορεί να έχει το μέγιστο επιτρεπόμενο μήκος."
+
+#. public string MaxLengthAttributeValidationError => S["The field {0} must be a string or array type with a maximum length of '{1}'."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:61
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must be a string or array type with a maximum length of '{1}'."
+msgstr "Το πεδίο {0} πρέπει να είναι συμβολοσειρά ή τύπος πίνακα με μέγιστο μήκος \"{1}\"."
+
+#. public string MetadataTypeAttributeTypeCannotBeNull => S["MetadataClassType cannot be null."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:63
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "MetadataClassType cannot be null."
+msgstr "Το MetadataClassType δεν μπορεί να είναι null."
+
+#. public string MinLengthAttributeInvalidMinLength => S["MinLengthAttribute must have a Length value that is zero or greater."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:65
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "MinLengthAttribute must have a Length value that is zero or greater."
+msgstr "Το MinLengthAttribute πρέπει να έχει τιμή μήκους που είναι μηδέν ή μεγαλύτερη."
+
+#. public string MinLengthAttributeValidationError => S["The field {0} must be a string or array type with a minimum length of '{1}'."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:67
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must be a string or array type with a minimum length of '{1}'."
+msgstr "Το πεδίο {0} πρέπει να είναι συμβολοσειρά ή τύπος πίνακα με ελάχιστο μήκος \"{1}\"."
+
+#. public string LengthAttributeInvalidValueType => S["The field of type {0} must be a string, array or ICollection type."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:69
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field of type {0} must be a string, array or ICollection type."
+msgstr "Το πεδίο τύπου {0} πρέπει να είναι συμβολοσειρά, πίνακας ή τύπος ICollection."
+
+#. public string PhoneAttributeInvalid => S["The {0} field is not a valid phone number."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:71
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field is not a valid phone number."
+msgstr "Το πεδίο {0} δεν είναι έγκυρος αριθμός τηλεφώνου."
+
+#. public string RangeAttributeArbitraryTypeNotIComparable => S["The type {0} must implement {1}."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:73
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The type {0} must implement {1}."
+msgstr "Ο τύπος {0} πρέπει να εφαρμόσει {1}."
+
+#. public string RangeAttributeMinGreaterThanMax => S["The maximum value '{0}' must be greater than or equal to the minimum value '{1}'."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:75
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The maximum value '{0}' must be greater than or equal to the minimum value '{1}'."
+msgstr "Η μέγιστη τιμή \"{0}\" πρέπει να είναι μεγαλύτερη ή ίση με την ελάχιστη τιμή \"{1}\"."
+
+#. public string RangeAttributeMustSetMinAndMax => S["The minimum and maximum values must be set."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:77
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The minimum and maximum values must be set."
+msgstr "Οι ελάχιστες και μέγιστες τιμές πρέπει να οριστούν."
+
+#. public string RangeAttributeMustSetOperandType => S["The OperandType must be set when strings are used for minimum and maximum values."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:79
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The OperandType must be set when strings are used for minimum and maximum values."
+msgstr "Το OperandType πρέπει να οριστεί όταν χρησιμοποιούνται συμβολοσειρές για ελάχιστες και μέγιστες τιμές."
+
+#. public string RangeAttributeValidationError => S["The field {0} must be between {1} and {2}."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:81
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must be between {1} and {2}."
+msgstr "Το πεδίο {0} πρέπει να είναι μεταξύ {1} και {2}."
+
+#. public string RegexAttributeValidationError => S["The field {0} must match the regular expression '{1}'."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:83
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must match the regular expression '{1}'."
+msgstr "Το πεδίο {0} πρέπει να αντιστοιχεί στην τακτική έκφραση \"{1}\"."
+
+#. public string RegularExpressionAttributeEmptyPattern => S["The pattern must be set to a valid regular expression."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:85
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The pattern must be set to a valid regular expression."
+msgstr "Το μοτίβο πρέπει να οριστεί σε μια έγκυρη κανονική έκφραση (regular expression)."
+
+#. public string RequiredAttributeValidationError => S["The {0} field is required."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:87
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field is required."
+msgstr "Το πεδίο {0} είναι υποχρεωτικό."
+
+#. public string StringLengthAttributeInvalidMaxLength => S["The maximum length must be a nonnegative integer."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:89
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The maximum length must be a nonnegative integer."
+msgstr "Το μέγιστο μήκος πρέπει να είναι μη αρνητικός ακέραιος."
+
+#. public string StringLengthAttributeValidationError => S["The field {0} must be a string with a maximum length of {1}."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:91
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must be a string with a maximum length of {1}."
+msgstr "Το πεδίο {0} πρέπει να είναι συμβολοσειρά με μέγιστο μήκος {1}."
+
+#. public string StringLengthAttributeValidationErrorIncludingMinimum => S["The field {0} must be a string with a minimum length of {2} and a maximum length of {1}."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:93
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must be a string with a minimum length of {2} and a maximum length of {1}."
+msgstr "Το πεδίο {0} πρέπει να είναι συμβολοσειρά με ελάχιστο μήκος {2} και μέγιστο μήκος {1}."
+
+#. public string UIHintImplementationControlParameterKeyIsNotAString => S["The key parameter at position {0} with value '{1}' is not a string. Every key control parameter must be a string."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:95
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The key parameter at position {0} with value '{1}' is not a string. Every key control parameter must be a string."
+msgstr "Η παράμετρος του κλειδιού στη θέση {0} με την τιμή \"{1}\" δεν είναι string. Κάθε παράμετρος ελέγχου κλειδιού πρέπει να είναι string."
+
+#. public string UIHintImplementationControlParameterKeyIsNull => S["The key parameter at position {0} is null. Every key control parameter must be a string."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:97
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The key parameter at position {0} is null. Every key control parameter must be a string."
+msgstr "Η παράμετρος του κλειδιού στη θέση {0} είναι null. Κάθε παράμετρος ελέγχου κλειδιού πρέπει να είναι string."
+
+#. public string UIHintImplementationControlParameterKeyOccursMoreThanOnce => S["The key parameter at position {0} with value '{1}' occurs more than once."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:99
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The key parameter at position {0} with value '{1}' occurs more than once."
+msgstr "Η παράμετρος του κλειδιού στη θέση {0} με την τιμή \"{1}\" εμφανίζεται περισσότερες από μία φορές."
+
+#. public string UIHintImplementationNeedEvenNumberOfControlParameters => S["The number of control parameters must be even."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:101
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The number of control parameters must be even."
+msgstr "Ο αριθμός των παραμέτρων ελέγχου πρέπει να είναι ζυγός."
+
+#. public string UrlAttributeInvalid => S["The {0} field is not a valid fully-qualified http, https, or ftp URL."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:103
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field is not a valid fully-qualified http, https, or ftp URL."
+msgstr "Το πεδίο {0} δεν είναι έγκυρη διεύθυνση http, https ή ftp για σωστό URL."
+
+#. public string ValidationAttributeCannotSetErrorMessageAndResource => S["Either ErrorMessageString or ErrorMessageResourceName must be set, but not both."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:105
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Either ErrorMessageString or ErrorMessageResourceName must be set, but not both."
+msgstr "Πρέπει να οριστεί είτε το ErrorMessageString είτε το ErrorMessageResourceName, αλλά όχι και τα δύο."
+
+#. public string ValidationAttributeIsValidNotImplemented => S["IsValid(object value) has not been implemented by this class. The preferred entry point is GetValidationResult() and classes should override IsValid(object value, ValidationContext context)."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:107
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "IsValid(object value) has not been implemented by this class. The preferred entry point is GetValidationResult() and classes should override IsValid(object value, ValidationContext context)."
+msgstr "Το IsValid(object value) δεν έχει εφαρμοστεί από αυτήν την κλάση. Το προτιμώμενο σημείο εισόδου είναι το GetValidationResult() και οι κλάσεις θα πρέπει να αντικαταστήσουν το IsValid(object value, ValidationContext context)."
+
+#. public string ValidationAttributeNeedBothResourceTypeAndResourceName => S["Both ErrorMessageResourceType and ErrorMessageResourceName need to be set on this attribute."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:109
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Both ErrorMessageResourceType and ErrorMessageResourceName need to be set on this attribute."
+msgstr "Τόσο το ErrorMessageResourceType όσο και το ErrorMessageResourceName πρέπει να οριστούν σε αυτό το χαρακτηριστικό."
+
+#. public string ValidationAttributeResourcePropertyNotStringType => S["The property '{0}' on resource type '{1}' is not a string type."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:111
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The property '{0}' on resource type '{1}' is not a string type."
+msgstr "Η ιδιότητα \"{0}\" στον τύπο πόρου \"{1}\" δεν είναι τύπος string."
+
+#. public string ValidationAttributeResourceTypeDoesNotHaveProperty => S["The resource type '{0}' does not have an accessible static property named '{1}'."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:113
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The resource type '{0}' does not have an accessible static property named '{1}'."
+msgstr "Ο τύπος πόρου \"{0}\" δεν έχει προσβάσιμη στατική ιδιότητα με το όνομα \"{1}\"."
+
+#. public string ValidationAttributeValidationError => S["The field {0} is invalid."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:115
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} is invalid."
+msgstr "Το πεδίο {0} δεν είναι έγκυρο."
+
+#. public string ValidatorInstanceMustMatchValidationContextInstance => S["The instance provided must match the ObjectInstance on the ValidationContext supplied."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:117
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The instance provided must match the ObjectInstance on the ValidationContext supplied."
+msgstr "Η υπόδειξη που παρέχεται πρέπει να ταιριάζει με το ObjectInstance στο παρεχόμενο κείμενο ValidationContext."
+
+#. public string ValidatorPropertyValueWrongType => S["The value for property '{0}' must be of type '{1}'."];
+#: OrchardCore.Localization.Core\DataAnnotations\DataAnnotationsDefaultErrorMessages.cs:119
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The value for property '{0}' must be of type '{1}'."
+msgstr "Η τιμή για την ιδιότητα \"{0}\" πρέπει να είναι τύπου \"{1}\"."
+

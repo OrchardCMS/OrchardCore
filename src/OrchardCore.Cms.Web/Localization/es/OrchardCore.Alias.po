@@ -1,0 +1,103 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: es-ES\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Alias.pot\n"
+"X-Crowdin-File-ID: 700\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Spanish\n"
+"Language: es_ES\n"
+"PO-Revision-Date: 2022-01-05 13:33\n"
+
+#. Description = S["the alias part of the content item"];
+#: OrchardCore.Alias\GraphQL\AliasInputObjectType.cs:13
+msgctxt "OrchardCore.Alias.GraphQL.AliasInputObjectType"
+msgid "the alias part of the content item"
+msgstr "la parte alias del elemento de contenido"
+
+#. AddScalarFilterFields<StringGraphType>("alias", S["the alias of the content item"]);
+#: OrchardCore.Alias\GraphQL\AliasInputObjectType.cs:15
+msgctxt "OrchardCore.Alias.GraphQL.AliasInputObjectType"
+msgid "the alias of the content item"
+msgstr "el alias del elemento de contenido"
+
+#. Description = S["Alternative path for the content item"];
+#: OrchardCore.Alias\GraphQL\AliasQueryObjectType.cs:12
+msgctxt "OrchardCore.Alias.GraphQL.AliasQueryObjectType"
+msgid "Alternative path for the content item"
+msgstr "Ruta alternativa para el elemento de contenido"
+
+#. yield return new ValidationResult(S["Your alias is too long. The alias can only be up to {0} characters.", AliasPart.MaxAliasLength], new string[] { nameof(part.Alias) });
+#: OrchardCore.Alias\Models\AliasPartExtensions.cs:18
+msgctxt "OrchardCore.Alias.Models.AliasPartExtensions"
+msgid "Your alias is too long. The alias can only be up to {0} characters."
+msgstr "Tu alias es demasiado largo. El alias solo puede ser de {0} caracteres."
+
+#. yield return new ValidationResult(S["Your alias is already in use."], new[] { nameof(part.Alias) });
+#: OrchardCore.Alias\Models\AliasPartExtensions.cs:23
+msgctxt "OrchardCore.Alias.Models.AliasPartExtensions"
+msgid "Your alias is already in use."
+msgstr "Su alias está actualmente en uso."
+
+#. context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+#: OrchardCore.Alias\Settings\AliasPartSettingsDisplayDriver.cs:43
+msgctxt "OrchardCore.Alias.Settings.AliasPartSettingsDisplayDriver"
+msgid "Pattern doesn't contain a valid Liquid expression. Details: {0}"
+msgstr "El Patrón no contiene una expresión Liquid válida. Detalles: {0}"
+
+#. <label asp-for="Alias">@T["Alias"] </label>
+#: OrchardCore.Alias\Views\AliasPart.Edit.cshtml:11
+msgctxt "OrchardCore.Alias.Views.AliasPart.Edit"
+msgid "Alias"
+msgstr "Alias"
+
+#. @T["The alias of the content item."]
+#: OrchardCore.Alias\Views\AliasPart.Edit.cshtml:15
+msgctxt "OrchardCore.Alias.Views.AliasPart.Edit"
+msgid "The alias of the content item."
+msgstr "El alias del elemento de contenido."
+
+#: OrchardCore.Alias\Views\AliasPart.Edit.cshtml:0
+msgctxt "OrchardCore.Alias.Views.AliasPart.Edit"
+msgid "Leave empty to re-generate it."
+msgstr "Dejar vacío para regenerarlo."
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentEditor)">@T["Standard"]</option>
+#: OrchardCore.Alias\Views\AliasPart.Option.cshtml:4
+msgctxt "OrchardCore.Alias.Views.AliasPart.Option"
+msgid "Standard"
+msgstr "Estándar"
+
+#. <label asp-for="Options">@T["Options"]</label>
+#: OrchardCore.Alias\Views\AliasPartSettings.Edit.cshtml:15
+msgctxt "OrchardCore.Alias.Views.AliasPartSettings.Edit"
+msgid "Options"
+msgstr "Opciones"
+
+#. <option value="@AliasPartOptions.Editable" selected="@(Model.Options == AliasPartOptions.Editable)">@T["Alias is editable"]</option>
+#: OrchardCore.Alias\Views\AliasPartSettings.Edit.cshtml:17
+msgctxt "OrchardCore.Alias.Views.AliasPartSettings.Edit"
+msgid "Alias is editable"
+msgstr "Alias es editable"
+
+#. <option value="@AliasPartOptions.GeneratedDisabled" selected="@(Model.Options == AliasPartOptions.GeneratedDisabled)">@T["Alias is generated and input is disabled"]</option>
+#: OrchardCore.Alias\Views\AliasPartSettings.Edit.cshtml:18
+msgctxt "OrchardCore.Alias.Views.AliasPartSettings.Edit"
+msgid "Alias is generated and input is disabled"
+msgstr "Se genera el alias y la entrada está desactivada"
+
+#. <label asp-for="Pattern">@T["Pattern"]</label>
+#: OrchardCore.Alias\Views\AliasPartSettings.Edit.cshtml:24
+msgctxt "OrchardCore.Alias.Views.AliasPartSettings.Edit"
+msgid "Pattern"
+msgstr "Patrón"
+
+#. <span class="hint">@T["The pattern used to render the alias of this content type."]</span>
+#: OrchardCore.Alias\Views\AliasPartSettings.Edit.cshtml:26
+msgctxt "OrchardCore.Alias.Views.AliasPartSettings.Edit"
+msgid "The pattern used to render the alias of this content type."
+msgstr "El patrón usado para generar el alias de este elemento de contenido."
+

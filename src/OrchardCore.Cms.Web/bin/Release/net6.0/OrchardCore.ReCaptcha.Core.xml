@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.ReCaptcha.Core</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.ReCaptcha.ActionFilters.Detection.IDetectRobots">
+            <summary>
+            This interface describes the contract for components that can detect Robots.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ReCaptcha.ActionFilters.Detection.IDetectRobots.DetectRobot">
+            <summary>
+            Performs a check to see if the current request could be submitted by a robot
+            </summary>
+            <returns>Detection result</returns>
+        </member>
+        <member name="M:OrchardCore.ReCaptcha.ActionFilters.Detection.IDetectRobots.IsNotARobot">
+            <summary>
+            Clear the detectors internal state, we are not dealing with a robot
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ReCaptcha.ActionFilters.Detection.IDetectRobots.FlagAsRobot">
+            <summary>
+            We are dealing with a robot, shields up
+            </summary>
+        </member>
+        <member name="F:OrchardCore.ReCaptcha.ActionFilters.ReCaptchaMode.AlwaysShow">
+            <summary>
+            Captcha is always shown
+            </summary>
+        </member>
+        <member name="F:OrchardCore.ReCaptcha.ActionFilters.ReCaptchaMode.PreventRobots">
+            <summary>
+            Captcha initially is not shown, but when a robot is detected it will show on until dismissed
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ReCaptcha.Configuration.ReCaptchaSettings.DetectionThreshold">
+            <summary>
+            Value for supplying the amount of lenience we are willing to show robots
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ReCaptcha.Services.ReCaptchaClient.VerifyAsync(System.String,System.String)">
+            <summary>
+            Verifies the supplied token with ReCaptcha Api
+            </summary>
+            <param name="responseToken">Token received from the ReCaptcha UI</param>
+            <param name="secretKey">Key entered by user in the secrets</param>
+            <returns>A boolean indicating if the token is valid</returns>
+        </member>
+        <member name="M:OrchardCore.ReCaptcha.Services.ReCaptchaService.MaybeThisIsARobot">
+            <summary>
+            Flags the behavior as that of a robot
+            </summary>
+        </member>
+        <member name="M:OrchardCore.ReCaptcha.Services.ReCaptchaService.IsThisARobot">
+            <summary>
+            Determines if the request has been made by a robot
+            </summary>
+            <returns>Yes (true) or no (false)</returns>
+        </member>
+        <member name="M:OrchardCore.ReCaptcha.Services.ReCaptchaService.ThisIsAHuman">
+            <summary>
+            Clears all robot markers, we are dealing with a human
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.ReCaptcha.Services.ReCaptchaService.VerifyCaptchaResponseAsync(System.String)">
+            <summary>
+            Verifies the ReCaptcha response with the ReCaptcha webservice
+            </summary>
+            <param name="reCaptchaResponse"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OrchardCore.ReCaptcha.Services.ReCaptchaService.ValidateCaptchaAsync(System.Action{System.String,System.String})">
+            <summary>
+            Validates the captcha that is in the Form of the current request
+            </summary>
+            <param name="reportError">Lambda for reporting errors</param>
+        </member>
+        <member name="P:OrchardCore.ReCaptcha.TagHelpers.ReCaptchaTagHelper.Language">
+            <summary>
+            The two letter ISO code of the language the captcha should be displayed in
+            When left blank it will fall back to the default OrchardCore language
+            </summary>
+        </member>
+    </members>
+</doc>

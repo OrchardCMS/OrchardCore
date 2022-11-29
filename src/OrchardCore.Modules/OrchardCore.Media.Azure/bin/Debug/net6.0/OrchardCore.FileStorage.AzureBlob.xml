@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.FileStorage.AzureBlob</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.FileStorage.AzureBlob.BlobFileStore">
+             <summary>
+             Provides an <see cref="T:OrchardCore.FileStorage.IFileStore"/> implementation that targets an underlying Azure Blob Storage account.
+             </summary>
+             <remarks>
+             Azure Blob Storage has very different semantics for directories compared to a local file system, and
+             some special consideration is required for make this provider conform to the semantics of the
+             <see cref="T:OrchardCore.FileStorage.IFileStore"/> interface and behave in an expected way.
+            
+             Directories have no physical manifestation in blob storage; we can obtain a reference to them, but
+             that reference can be created regardless of whether the directory exists, and it can only be used
+             as a scoping container to operate on blobs within that directory namespace.
+            
+             As a consequence, this provider generally behaves as if any given directory always exists. To
+             simulate "creating" a directory (which cannot technically be done in blob storage) this provider creates
+             a marker file inside the directory, which makes the directory "exist" and appear when listing contents
+             subsequently. This marker file is ignored (excluded) when listing directory contents.
+            
+             Note that the Blob Container is not created automatically, and existence of the Container is not verified.
+            
+             Create the Blob Container before enabling a Blob File Store.
+            
+             Azure Blog Storage will create the BasePath inside the container during the upload of the first file.
+             </remarks>
+        </member>
+        <member name="M:OrchardCore.FileStorage.AzureBlob.BlobFileStore.NormalizePrefix(System.String)">
+            <summary>
+            Blob prefix requires a trailing slash except when loading the root of the container.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.FileStorage.AzureBlob.BlobStorageOptions.ConnectionString">
+            <summary>
+            The Azure Blob connection string.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.FileStorage.AzureBlob.BlobStorageOptions.ContainerName">
+            <summary>
+            The Azure Blob container name.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.FileStorage.AzureBlob.BlobStorageOptions.BasePath">
+            <summary>
+            The base directory path to use inside the container for this stores contents.
+            </summary>
+        </member>
+    </members>
+</doc>

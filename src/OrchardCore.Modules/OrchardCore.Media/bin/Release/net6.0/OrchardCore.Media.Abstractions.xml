@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Media.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Media.Events.IMediaCreatingEventHandler">
+            <summary>
+            Event handler fired during creation of new media items.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Media.Events.IMediaCreatingEventHandler.MediaCreatingAsync(OrchardCore.Media.Events.MediaCreatingContext,System.IO.Stream)">
+            <summary>
+            Allows a stream to be mutated during creation of media.
+            Any implementation must return a new stream,
+            which should be disposed by the caller.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.Events.IMediaEventHandler">
+            <summary>
+            Event handler fired during operations for existing media.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.Events.MediaContextBase.Path">
+            <summary>
+            The path of the file for the current filestore operation.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.IMediaFileStore">
+            <summary>
+            Represents an abstraction over a specialized file store for storing media and service it to clients.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Media.IMediaFileStore.MapPathToPublicUrl(System.String)">
+            <summary>
+            Maps a path within the file store to a publicly accessible URL.
+            </summary>
+            <param name="path">The path within the file store.</param>
+            <returns>A string containing the mapped public URL of the given path.</returns>
+        </member>
+        <member name="T:OrchardCore.Media.IMediaFileStoreCache">
+            <summary>
+            Cache a media file store.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.IMediaFileStoreCacheFileProvider">
+            <summary>
+            Identifier for when a file provider serves as a cache provider for a file store.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.IMediaTokenService">
+            <summary>
+            The media token service adds a digital signature to a query string.
+            This allows the media processor to validate that commands were issued by this host.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Media.Indexing.IMediaFileTextProvider">
+            <summary>
+            Service for producing the textual representation of a media file, e.g. the text contained in a PDF document.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Media.Indexing.IMediaFileTextProvider.GetTextAsync(System.String,System.IO.Stream)">
+            <summary>
+            Produces the textual representation of the media file with the given path.
+            </summary>
+            <param name="path">The full relative path of the media file.</param>
+            <param name="fileStream">The <see cref="T:System.IO.Stream"/> that can be used to access the file's content.</param>
+            <returns>The textual representation of the media file.</returns>
+        </member>
+        <member name="M:OrchardCore.Media.Indexing.ServiceCollectionExtensions.AddMediaFileTextProvider``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+            <summary>
+            Adds a new <see cref="T:OrchardCore.Media.Indexing.IMediaFileTextProvider"/> to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to process Media
+            files with the given file extension.
+            </summary>
+            <typeparam name="TMediaFileTextProvider">
+            The <see cref="T:OrchardCore.Media.Indexing.IMediaFileTextProvider"/> implementation to process Media files with the given file
+            extension.
+            </typeparam>
+            <param name="services">
+            The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to add the <see cref="T:OrchardCore.Media.Indexing.IMediaFileTextProvider"/> implementation to.
+            </param>
+            <param name="fileExtension">
+            The file extension of those files, wit a leading dot, that the given <see
+            cref="T:OrchardCore.Media.Indexing.IMediaFileTextProvider"/> implementation will process.
+            </param>
+        </member>
+        <member name="P:OrchardCore.Media.MediaOptions.SupportedSizes">
+            <summary>
+            The accepted sizes for custom width and height.
+            When <see cref="P:OrchardCore.Media.MediaOptions.UseTokenizedQueryString"/> is enabled all sizes are valid
+            and this range acts as a helper for media profiles.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.MediaOptions.AllowedFileExtensions">
+            <summary>
+            The list of allowed file extensions.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.MediaOptions.MaxBrowserCacheDays">
+            <summary>
+            The default number of days for the media cache control header.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.MediaOptions.MaxCacheDays">
+            <summary>
+            The maximum number of days a cached resized media item will be valid for, before being rebuilt on request.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.MediaOptions.MaxFileSize">
+            <summary>
+            The maximum size of an uploaded file in bytes.
+            NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.MediaOptions.CdnBaseUrl">
+            <summary>
+            A CDN base url that will be prefixed to the request path when serving images.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.MediaOptions.AssetsRequestPath">
+            <summary>
+            The request path used to route asset files.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.MediaOptions.AssetsPath">
+            <summary>
+            The path used to store media assets. The path can be relative to the tenant's App_Data folder, or absolute.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.MediaOptions.AssetsUsersFolder">
+            <summary>
+            The folder under AssetsPath used to store users own media assets.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.MediaOptions.UseTokenizedQueryString">
+            <summary>
+            Encrypts the image processing query string to prevent disc filling.
+            Defaults to <see langword="True"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Media.MediaOptions.StaticFileOptions">
+            <summary>
+            The static file options used to serve non resized media.
+            </summary>
+        </member>
+    </members>
+</doc>

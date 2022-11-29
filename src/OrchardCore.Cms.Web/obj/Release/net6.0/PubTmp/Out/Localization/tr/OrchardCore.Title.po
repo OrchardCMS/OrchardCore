@@ -1,0 +1,110 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: orchard-core\n"
+"X-Crowdin-Project-ID: 307044\n"
+"X-Crowdin-Language: tr\n"
+"X-Crowdin-File: /main/Localization/OrchardCore.Title.pot\n"
+"X-Crowdin-File-ID: 832\n"
+"Project-Id-Version: orchard-core\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Turkish\n"
+"Language: tr_TR\n"
+"PO-Revision-Date: 2022-05-05 19:19\n"
+
+#. updater.ModelState.AddModelError(Prefix, nameof(model.Title), S["A value is required for Title."]);
+#: OrchardCore.Title\Drivers\TitlePartDisplayDriver.cs:60
+msgctxt "OrchardCore.Title.Drivers.TitlePartDisplayDriver"
+msgid "A value is required for Title."
+msgstr "Başlık için bir değer gereklidir."
+
+#. context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+#: OrchardCore.Title\Settings\TitlePartSettingsDisplayDriver.cs:48
+msgctxt "OrchardCore.Title.Settings.TitlePartSettingsDisplayDriver"
+msgid "Pattern doesn't contain a valid Liquid expression. Details: {0}"
+msgstr "Desen geçerli bir Liquid ifadesi içermiyor. Ayrıntılar: {0}"
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentDisplayMode)">@T["Standard"]</option>
+#: OrchardCore.Title\Views\TitlePart.DisplayOption.cshtml:4
+msgctxt "OrchardCore.Title.Views.TitlePart.DisplayOption"
+msgid "Standard"
+msgstr "Standart"
+
+#. <label asp-for="Title">@T["Title"]</label>
+#: OrchardCore.Title\Views\TitlePart.Edit.cshtml:13
+msgctxt "OrchardCore.Title.Views.TitlePart.Edit"
+msgid "Title"
+msgstr "Başlık"
+
+#. <span class="hint">@T["Leave empty to auto-generate the title using the pattern."]</span>
+#: OrchardCore.Title\Views\TitlePart.Edit.cshtml:21
+msgctxt "OrchardCore.Title.Views.TitlePart.Edit"
+msgid "Leave empty to auto-generate the title using the pattern."
+msgstr "Desen kullanarak otomatik değer atanması için boş bırakın."
+
+#. <span class="hint">@T["The title will be auto-generated using the pattern."]</span>
+#: OrchardCore.Title\Views\TitlePart.Edit.cshtml:24
+msgctxt "OrchardCore.Title.Views.TitlePart.Edit"
+msgid "The title will be auto-generated using the pattern."
+msgstr "Başlık, desen kullanarak otomatik oluşturulacaktır."
+
+#. <option value="" selected="@String.IsNullOrEmpty(currentEditor)">@T["Standard"]</option>
+#: OrchardCore.Title\Views\TitlePart.Option.cshtml:4
+msgctxt "OrchardCore.Title.Views.TitlePart.Option"
+msgid "Standard"
+msgstr "Standart"
+
+#. <label asp-for="Options">@T["Options"]</label>
+#: OrchardCore.Title\Views\TitlePartSettings.Edit.cshtml:16
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Options"
+msgstr "Seçenekler"
+
+#. <option value="@TitlePartOptions.Editable" selected="@(Model.Options == TitlePartOptions.Editable)">@T["Title is editable"]</option>
+#: OrchardCore.Title\Views\TitlePartSettings.Edit.cshtml:18
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Title is editable"
+msgstr "Başlık değiştirilebilir"
+
+#. <option value="@TitlePartOptions.EditableRequired" selected="@(Model.Options == TitlePartOptions.EditableRequired)">@T["Title is editable and required"]</option>
+#: OrchardCore.Title\Views\TitlePartSettings.Edit.cshtml:19
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Title is editable and required"
+msgstr "Başlık düzenlenebilir ve gereklidir"
+
+#. <option value="@TitlePartOptions.GeneratedDisabled" selected="@(Model.Options == TitlePartOptions.GeneratedDisabled)">@T["Title is generated and input is disabled"]</option>
+#: OrchardCore.Title\Views\TitlePartSettings.Edit.cshtml:20
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Title is generated and input is disabled"
+msgstr "Başlık oluşturulur ve giriş devre dışı bırakılır"
+
+#. <option value="@TitlePartOptions.GeneratedHidden" selected="@(Model.Options == TitlePartOptions.GeneratedHidden)">@T["Title is generated and input is hidden"]</option>
+#: OrchardCore.Title\Views\TitlePartSettings.Edit.cshtml:21
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Title is generated and input is hidden"
+msgstr "Başlık oluşturulur ve giriş gizlidir"
+
+#. <label asp-for="RenderTitle" class="form-check-label">@T["Render Title"]</label>
+#: OrchardCore.Title\Views\TitlePartSettings.Edit.cshtml:28
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Render Title"
+msgstr "Başlığı Göster"
+
+#. <span class="hint dashed">@T["Check to render the title in display views."]</span>
+#: OrchardCore.Title\Views\TitlePartSettings.Edit.cshtml:29
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Check to render the title in display views."
+msgstr "Başlığı ekran görünümlerinde oluşturmak için işaretleyin."
+
+#. <label asp-for="Pattern">@T["Pattern"]</label>
+#: OrchardCore.Title\Views\TitlePartSettings.Edit.cshtml:35
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Pattern"
+msgstr "Desen"
+
+#. <span class="hint">@T["The pattern used to render the title of this content type. With Liquid support."]</span>
+#: OrchardCore.Title\Views\TitlePartSettings.Edit.cshtml:37
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "The pattern used to render the title of this content type. With Liquid support."
+msgstr "Liquid desteğiyle birlikte bu içerik türüne özel başlık oluşturmak için kullanılan desen."
+

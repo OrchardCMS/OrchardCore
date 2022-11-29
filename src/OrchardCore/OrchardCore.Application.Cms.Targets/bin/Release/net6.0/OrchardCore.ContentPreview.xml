@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.ContentPreview</name>
+    </assembly>
+    <members>
+        <member name="M:OrchardCore.ContentPreview.Handlers.PreviewPartHandler.GetPattern(OrchardCore.ContentPreview.Models.PreviewPart)">
+            <summary>
+            Get the pattern from the AutoroutePartSettings property for its type
+            </summary>
+        </member>
+        <member name="T:OrchardCore.ContentPreview.Models.PreviewPart">
+            <summary>
+            When attached to a content type, provides a way to define the
+            url that is used to render the content item
+            </summary>
+        </member>
+        <member name="P:OrchardCore.ContentPreview.Models.PreviewPartSettings.Pattern">
+            <summary>
+            The pattern used to build the Path.
+            </summary>
+        </member>
+    </members>
+</doc>

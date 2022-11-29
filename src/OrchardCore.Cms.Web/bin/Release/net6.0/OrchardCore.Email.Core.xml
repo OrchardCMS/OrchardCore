@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Email.Core</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Email.Services.SmtpService">
+            <summary>
+            Represents a SMTP service that allows to send emails.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Email.Services.SmtpService.#ctor(Microsoft.Extensions.Options.IOptions{OrchardCore.Email.SmtpSettings},Microsoft.Extensions.Logging.ILogger{OrchardCore.Email.Services.SmtpService},Microsoft.Extensions.Localization.IStringLocalizer{OrchardCore.Email.Services.SmtpService})">
+            <summary>
+            Initializes a new instance of a <see cref="T:OrchardCore.Email.Services.SmtpService"/>.
+            </summary>
+            <param name="options">The <see cref="T:Microsoft.Extensions.Options.IOptions`1"/>.</param>
+            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger`1"/>.</param>
+            <param name="stringLocalizer">The <see cref="T:Microsoft.Extensions.Localization.IStringLocalizer`1"/>.</param>
+        </member>
+        <member name="M:OrchardCore.Email.Services.SmtpService.SendAsync(OrchardCore.Email.MailMessage)">
+            <summary>
+            Sends the specified message to an SMTP server for delivery.
+            </summary>
+            <param name="message">The message to be sent.</param>
+            <returns>A <see cref="T:OrchardCore.Email.SmtpResult"/> that holds information about the sent message, for instance if it has sent successfully or if it has failed.</returns>
+            <remarks>This method allows to send an email without setting <see cref="P:OrchardCore.Email.MailMessage.To"/> if <see cref="P:OrchardCore.Email.MailMessage.Cc"/> or <see cref="P:OrchardCore.Email.MailMessage.Bcc"/> is provided.</remarks>
+        </member>
+    </members>
+</doc>

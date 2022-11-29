@@ -1,0 +1,231 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Search.Elasticsearch.Core</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Search.Elasticsearch.Core.Deployment.ElasticIndexDeploymentStep">
+            <summary>
+            Adds layers to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Elasticsearch.Core.Deployment.ElasticIndexRebuildDeploymentStep">
+            <summary>
+            Adds rebuild Elasticsearch index task to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Elasticsearch.Core.Deployment.ElasticIndexResetDeploymentStep">
+            <summary>
+            Adds reset Elasticsearch index task to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Elasticsearch.Core.Deployment.ElasticSettingsDeploymentStep">
+            <summary>
+            Adds layers to a <see cref="T:OrchardCore.Deployment.DeploymentPlanResult"/>.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Elasticsearch.Core.Models.ElasticConnectionOptions.Url">
+            <summary>
+            The server url.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Elasticsearch.Core.Models.ElasticConnectionOptions.Ports">
+            <summary>
+            The server connection port.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Elasticsearch.Core.Models.ElasticConnectionOptions.ConnectionType">
+            <summary>
+            The server connection type
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Elasticsearch.Core.Models.ElasticConnectionOptions.CloudId">
+            <summary>
+            The Elasticsearch cloud service CloudId
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Elasticsearch.Core.Models.ElasticConnectionOptions.Username">
+            <summary>
+            The server Username.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Elasticsearch.Core.Models.ElasticConnectionOptions.Password">
+            <summary>
+            The server Password.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Elasticsearch.Core.Models.ElasticConnectionOptions.CertificateFingerprint">
+            <summary>
+            The server Certificate Fingerprint.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Elasticsearch.Core.Models.ElasticConnectionOptions.EnableApiVersioningHeader">
+            <summary>
+            Enables compatibility mode for Elasticsearch 8.x
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Search.Elasticsearch.Core.Models.ElasticConnectionOptions.ConfigurationExists">
+            <summary>
+            Whether the configuration section exists.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Elasticsearch.Core.Models.ElasticContentIndexSettings">
+            <summary>
+            Represents the indexing settings for a content part or a field.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Elasticsearch.Core.Recipes.ElasticIndexRebuildStep">
+            <summary>
+            This recipe step rebuilds an Elasticsearch index.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Elasticsearch.Core.Recipes.ElasticIndexResetStep">
+            <summary>
+            This recipe step resets an Elasticsearch index.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Elasticsearch.Core.Recipes.ElasticIndexStep">
+            <summary>
+            This recipe step creates a Elasticsearch index.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Elasticsearch.Core.Recipes.ElasticSettingsStep">
+            <summary>
+            This recipe step is used to sync Elasticsearch and Lucene settings.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Elasticsearch.Core.Services.ElasticAnalyzerManager">
+            <summary>
+            Coordinates <see cref="T:OrchardCore.Search.Elasticsearch.IElasticAnalyzer"/> implementations provided by <see cref="T:OrchardCore.Search.Elasticsearch.ElasticOptions"/>
+            to return the list of all available <see cref="T:OrchardCore.Search.Elasticsearch.IElasticAnalyzer"/> objects.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexingService">
+            <summary>
+            This class provides services to update all the Elasticsearch indices.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexingService.CreateIndexAsync(OrchardCore.Search.Elasticsearch.Core.Models.ElasticIndexSettings)">
+            <summary>
+            Creates a new index
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexingService.UpdateIndexAsync(OrchardCore.Search.Elasticsearch.Core.Models.ElasticIndexSettings)">
+            <summary>
+            Update an existing index
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexingService.DeleteIndexAsync(System.String)">
+            <summary>
+            Deletes permanently an index
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexingService.ResetIndexAsync(System.String)">
+            <summary>
+            Restarts the indexing process from the beginning in order to update
+            current content items. It doesn't delete existing entries from the index.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexingService.RebuildIndexAsync(OrchardCore.Search.Elasticsearch.Core.Models.ElasticIndexSettings)">
+            <summary>
+            Deletes and recreates the full index content.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexingService.SyncSettings">
+            <summary>
+            Synchronizes Elasticsearch content index settings with Lucene ones.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexManager">
+            <summary>
+            Provides methods to manage Elasticsearch indices.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexManager.CreateIndexAsync(OrchardCore.Search.Elasticsearch.Core.Models.ElasticIndexSettings)">
+            <summary>
+            <para>Creates an Elasticsearch index with _source mapping.</para>
+            <para><see href="https://www.elastic.co/guide/en/elasticsearch/reference/8.3/mapping-source-field.html#disable-source-field"/></para>
+            <para>Specify an analyzer for an index based on the ElasticsearchIndexSettings
+            <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/specify-analyzer.html#specify-index-time-default-analyzer"/>
+            <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-analyzers.html"/>
+            </para>
+            </summary>
+            <returns><see cref="T:System.Boolean"/></returns>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexManager.SetLastTaskId(System.String,System.Int32)">
+            <summary>
+            Store a last_task_id in the Elasticsearch index _meta mappings.
+            This allows storing the last indexing task id executed on the Elasticsearch index.
+            <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-meta-field.html"/>
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexManager.GetLastTaskId(System.String)">
+            <summary>
+            Get a last_task_id in the Elasticsearch index _meta mappings.
+            This allows retrieving the last indexing task id executed on the index.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexManager.DeleteAllDocumentsAsync(System.String)">
+            <summary>
+            Deletes all documents in an index in one request.
+            <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/docs-delete-by-query.html"/>
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexManager.Exists(System.String)">
+            <summary>
+            Verify if an index exists for the current tenant.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexManager.ToSafeIndexName(System.String)">
+            <summary>
+            Makes sure that the index names are compliant with Elasticsearch specifications.
+            <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html#indices-create-api-path-params"/>
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexManager.SearchAsync(System.String,Nest.QueryContainer,System.Collections.Generic.List{Nest.ISort},System.Int32,System.Int32)">
+            <summary>
+            Returns results from a search made with a NEST QueryContainer query.
+            </summary>
+            <param name="indexName"></param>
+            <param name="query"></param>
+            <param name="sort"></param>
+            <param name="from"></param>
+            <param name="size"></param>
+            <returns><see cref="T:OrchardCore.Search.Elasticsearch.ElasticTopDocs"/></returns>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexManager.SearchAsync(System.String,System.Func{Nest.IElasticClient,System.Threading.Tasks.Task})">
+            <summary>
+            Returns results from a search made with NEST Fluent DSL query.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexSettingsService.LoadDocumentAsync">
+            <summary>
+            Loads the index settings document from the store for updating and that should not be cached.
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.Core.Services.ElasticIndexSettingsService.GetDocumentAsync">
+            <summary>
+            Gets the index settings document from the cache for sharing and that should not be updated.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Elasticsearch.Core.Services.IndexingBackgroundTask">
+            <summary>
+            This background task will index content items using Elasticsearch.
+            </summary>
+            <remarks>
+            This services is only registered from OrchardCore.Search.Elasticsearch.Worker feature.
+            </remarks>
+        </member>
+        <member name="M:OrchardCore.Search.Elasticsearch.ServiceCollectionExtensions.AddElasticServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds Elastic services.
+            </summary>
+        </member>
+        <member name="T:OrchardCore.Search.Elasticsearch.ElasticIndexInitializerService">
+            <summary>
+            Provides a way to initialize Elasticsearch index on startup of the application
+            if the index is not found on the Elasticsearch server.
+            </summary>
+        </member>
+    </members>
+</doc>
