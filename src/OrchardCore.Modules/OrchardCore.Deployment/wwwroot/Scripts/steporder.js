@@ -20,7 +20,6 @@ function updateStepOrders(oldIndex, newIndex) {
     }
   });
 }
-
 $(function () {
   var sortable = document.getElementById("stepOrder");
   var sortable = Sortable.create(sortable, {
