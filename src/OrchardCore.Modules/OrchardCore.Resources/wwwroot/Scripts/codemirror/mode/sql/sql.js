@@ -4,46 +4,48 @@
 */
 
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/5/LICENSE
+
 (function (mod) {
-  if ((typeof exports === "undefined" ? "undefined" : _typeof(exports)) == "object" && (typeof module === "undefined" ? "undefined" : _typeof(module)) == "object") // CommonJS
-    mod(require("../../lib/codemirror"));else if (typeof define == "function" && define.amd) // AMD
-    define(["../../lib/codemirror"], mod);else // Plain browser env
+  if ((typeof exports === "undefined" ? "undefined" : _typeof(exports)) == "object" && (typeof module === "undefined" ? "undefined" : _typeof(module)) == "object")
+    // CommonJS
+    mod(require("../../lib/codemirror"));else if (typeof define == "function" && define.amd)
+    // AMD
+    define(["../../lib/codemirror"], mod);else
+    // Plain browser env
     mod(CodeMirror);
 })(function (CodeMirror) {
   "use strict";
 
   CodeMirror.defineMode("sql", function (config, parserConfig) {
     var client = parserConfig.client || {},
-        atoms = parserConfig.atoms || {
-      "false": true,
-      "true": true,
-      "null": true
-    },
-        builtin = parserConfig.builtin || set(defaultBuiltin),
-        keywords = parserConfig.keywords || set(sqlKeywords),
-        operatorChars = parserConfig.operatorChars || /^[*+\-%<>!=&|~^\/]/,
-        support = parserConfig.support || {},
-        hooks = parserConfig.hooks || {},
-        dateSQL = parserConfig.dateSQL || {
-      "date": true,
-      "time": true,
-      "timestamp": true
-    },
-        backslashStringEscapes = parserConfig.backslashStringEscapes !== false,
-        brackets = parserConfig.brackets || /^[\{}\(\)\[\]]/,
-        punctuation = parserConfig.punctuation || /^[;.,:]/;
-
+      atoms = parserConfig.atoms || {
+        "false": true,
+        "true": true,
+        "null": true
+      },
+      builtin = parserConfig.builtin || set(defaultBuiltin),
+      keywords = parserConfig.keywords || set(sqlKeywords),
+      operatorChars = parserConfig.operatorChars || /^[*+\-%<>!=&|~^\/]/,
+      support = parserConfig.support || {},
+      hooks = parserConfig.hooks || {},
+      dateSQL = parserConfig.dateSQL || {
+        "date": true,
+        "time": true,
+        "timestamp": true
+      },
+      backslashStringEscapes = parserConfig.backslashStringEscapes !== false,
+      brackets = parserConfig.brackets || /^[\{}\(\)\[\]]/,
+      punctuation = parserConfig.punctuation || /^[;.,:]/;
     function tokenBase(stream, state) {
-      var ch = stream.next(); // call hooks from the mime type
+      var ch = stream.next();
 
+      // call hooks from the mime type
       if (hooks[ch]) {
         var result = hooks[ch](stream, state);
         if (result !== false) return result;
       }
-
       if (support.hexNumber && (ch == "0" && stream.match(/^[xX][0-9a-fA-F]+/) || (ch == "x" || ch == "X") && stream.match(/^'[0-9a-fA-F]*'/))) {
         // hex
         // ref: https://dev.mysql.com/doc/refman/8.0/en/hexadecimal-literals.html
@@ -76,7 +78,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         state.tokenize = function (stream, state) {
           return (state.tokenize = tokenLiteral(stream.next(), true))(stream, state);
         };
-
         return "keyword";
       } else if (support.commentSlashSlash && ch == "/" && stream.eat("/")) {
         // 1-line comment
@@ -95,9 +96,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       } else if (ch == ".") {
         // .1 for 0.1
         if (support.zerolessFloat && stream.match(/^(?:\d+(?:e[+-]?\d+)?)/i)) return "number";
-        if (stream.match(/^\.+/)) return null; // .table_name (ODBC)
+        if (stream.match(/^\.+/)) return null;
+        // .table_name (ODBC)
         // // ref: https://dev.mysql.com/doc/refman/8.0/en/identifier-qualifiers.html
-
         if (support.ODBCdotTable && stream.match(/^[\w\d_$#]+/)) return "variable-2";
       } else if (operatorChars.test(ch)) {
         // operators
@@ -116,9 +117,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         return "number";
       } else {
         stream.eatWhile(/^[_\w\d]/);
-        var word = stream.current().toLowerCase(); // dates (standard SQL syntax)
+        var word = stream.current().toLowerCase();
+        // dates (standard SQL syntax)
         // ref: https://dev.mysql.com/doc/refman/8.0/en/date-and-time-literals.html
-
         if (dateSQL.hasOwnProperty(word) && (stream.match(/^( )+'[^']*'/) || stream.match(/^( )+"[^"]*"/))) return "number";
         if (atoms.hasOwnProperty(word)) return "atom";
         if (builtin.hasOwnProperty(word)) return "type";
@@ -126,27 +127,23 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         if (client.hasOwnProperty(word)) return "builtin";
         return null;
       }
-    } // 'string', with char specified in quote escaped by '\'
+    }
 
-
+    // 'string', with char specified in quote escaped by '\'
     function tokenLiteral(quote, backslashEscapes) {
       return function (stream, state) {
         var escaped = false,
-            ch;
-
+          ch;
         while ((ch = stream.next()) != null) {
           if (ch == quote && !escaped) {
             state.tokenize = tokenBase;
             break;
           }
-
           escaped = (backslashStringEscapes || backslashEscapes) && !escaped && ch == "\\";
         }
-
         return "string";
       };
     }
-
     function tokenComment(depth) {
       return function (stream, state) {
         var m = stream.match(/^.*?(\/\*|\*\/)/);
@@ -154,7 +151,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         return "comment";
       };
     }
-
     function pushContext(stream, state, type) {
       state.context = {
         prev: state.context,
@@ -163,12 +159,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         type: type
       };
     }
-
     function popContext(state) {
       state.indent = state.context.indent;
       state.context = state.context.prev;
     }
-
     return {
       startState: function startState() {
         return {
@@ -180,7 +174,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         if (stream.sol()) {
           if (state.context && state.context.align == null) state.context.align = false;
         }
-
         if (state.tokenize == tokenBase && stream.eatSpace()) return null;
         var style = state.tokenize(stream, state);
         if (style == "comment") return style;
@@ -200,37 +193,34 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       lineComment: support.commentSlashSlash ? "//" : support.commentHash ? "#" : "--",
       closeBrackets: "()[]{}''\"\"``"
     };
-  }); // `identifier`
+  });
 
+  // `identifier`
   function hookIdentifier(stream) {
     // MySQL/MariaDB identifiers
     // ref: https://dev.mysql.com/doc/refman/8.0/en/identifier-qualifiers.html
     var ch;
-
     while ((ch = stream.next()) != null) {
       if (ch == "`" && !stream.eat("`")) return "variable-2";
     }
-
     stream.backUp(stream.current().length - 1);
     return stream.eatWhile(/\w/) ? "variable-2" : null;
-  } // "identifier"
+  }
 
-
+  // "identifier"
   function hookIdentifierDoublequote(stream) {
     // Standard SQL /SQLite identifiers
     // ref: http://web.archive.org/web/20160813185132/http://savage.net.au/SQL/sql-99.bnf.html#delimited%20identifier
     // ref: http://sqlite.org/lang_keywords.html
     var ch;
-
     while ((ch = stream.next()) != null) {
       if (ch == "\"" && !stream.eat("\"")) return "variable-2";
     }
-
     stream.backUp(stream.current().length - 1);
     return stream.eatWhile(/\w/) ? "variable-2" : null;
-  } // variable token
+  }
 
-
+  // variable token
   function hookVar(stream) {
     // variables
     // @@prefix.varName @varName
@@ -241,7 +231,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       stream.match('local.');
       stream.match('global.');
     }
-
     if (stream.eat("'")) {
       stream.match(/^.*'/);
       return "variable-2";
@@ -254,40 +243,37 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     } else if (stream.match(/^[0-9a-zA-Z$\.\_]+/)) {
       return "variable-2";
     }
-
     return null;
   }
+  ;
 
-  ; // short client keyword token
-
+  // short client keyword token
   function hookClient(stream) {
     // \N means NULL
     // ref: https://dev.mysql.com/doc/refman/8.0/en/null-values.html
     if (stream.eat("N")) {
       return "atom";
-    } // \g, etc
+    }
+    // \g, etc
     // ref: https://dev.mysql.com/doc/refman/8.0/en/mysql-commands.html
-
-
     return stream.match(/^[a-zA-Z.#!?]/) ? "variable-2" : null;
-  } // these keywords are used by all SQL dialects (however, a mode can still overwrite it)
+  }
 
+  // these keywords are used by all SQL dialects (however, a mode can still overwrite it)
+  var sqlKeywords = "alter and as asc between by count create delete desc distinct drop from group having in insert into is join like not on or order select set table union update values where limit ";
 
-  var sqlKeywords = "alter and as asc between by count create delete desc distinct drop from group having in insert into is join like not on or order select set table union update values where limit "; // turn a space-separated list into an array
-
+  // turn a space-separated list into an array
   function set(str) {
     var obj = {},
-        words = str.split(" ");
-
+      words = str.split(" ");
     for (var i = 0; i < words.length; ++i) {
       obj[words[i]] = true;
     }
-
     return obj;
   }
+  var defaultBuiltin = "bool boolean bit blob enum long longblob longtext medium mediumblob mediumint mediumtext time timestamp tinyblob tinyint tinytext text bigint int int1 int2 int3 int4 int8 integer float float4 float8 double char varbinary varchar varcharacter precision real date datetime year unsigned signed decimal numeric";
 
-  var defaultBuiltin = "bool boolean bit blob enum long longblob longtext medium mediumblob mediumint mediumtext time timestamp tinyblob tinyint tinytext text bigint int int1 int2 int3 int4 int8 integer float float4 float8 double char varbinary varchar varcharacter precision real date datetime year unsigned signed decimal numeric"; // A generic SQL Mode. It's not a standard, it just tries to support what is generally supported
-
+  // A generic SQL Mode. It's not a standard, it just tries to support what is generally supported
   CodeMirror.defineMIME("text/x-sql", {
     name: "sql",
     keywords: set(sqlKeywords + "begin"),
@@ -340,8 +326,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       "`": hookIdentifier,
       "\\": hookClient
     }
-  }); // provided by the phpLiteAdmin project - phpliteadmin.org
+  });
 
+  // provided by the phpLiteAdmin project - phpliteadmin.org
   CodeMirror.defineMIME("text/x-sqlite", {
     name: "sql",
     // commands of the official SQLite client, ref: https://www.sqlite.org/cli.html#dotcmd
@@ -370,9 +357,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       // there is also support for backticks, ref: http://sqlite.org/lang_keywords.html
       "`": hookIdentifier
     }
-  }); // the query language used by Apache Cassandra is called CQL, but this mime type
-  // is called Cassandra to avoid confusion with Contextual Query Language
+  });
 
+  // the query language used by Apache Cassandra is called CQL, but this mime type
+  // is called Cassandra to avoid confusion with Contextual Query Language
   CodeMirror.defineMIME("text/x-cassandra", {
     name: "sql",
     client: {},
@@ -383,8 +371,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     dateSQL: {},
     support: set("commentSlashSlash decimallessFloat"),
     hooks: {}
-  }); // this is based on Peter Raganitsch's 'plsql' mode
+  });
 
+  // this is based on Peter Raganitsch's 'plsql' mode
   CodeMirror.defineMIME("text/x-plsql", {
     name: "sql",
     client: set("appinfo arraysize autocommit autoprint autorecovery autotrace blockterminator break btitle cmdsep colsep compatibility compute concat copycommit copytypecheck define describe echo editfile embedded escape exec execute feedback flagger flush heading headsep instance linesize lno loboffset logsource long longchunksize markup native newpage numformat numwidth pagesize pause pno recsep recsepchar release repfooter repheader serveroutput shiftinout show showmode size spool sqlblanklines sqlcase sqlcode sqlcontinue sqlnumber sqlpluscompatibility sqlprefix sqlprompt sqlterminator suffix tab term termout time timing trimout trimspool ttitle underline verify version wrap"),
@@ -393,8 +382,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     operatorChars: /^[*\/+\-%<>!=~]/,
     dateSQL: set("date time timestamp"),
     support: set("doubleQuote nCharCast zerolessFloat binaryNumber hexNumber")
-  }); // Created to support specific hive keywords
+  });
 
+  // Created to support specific hive keywords
   CodeMirror.defineMIME("text/x-hive", {
     name: "sql",
     keywords: set("select alter $elem$ $key$ $value$ add after all analyze and archive as asc before between binary both bucket buckets by cascade case cast change cluster clustered clusterstatus collection column columns comment compute concatenate continue create cross cursor data database databases dbproperties deferred delete delimited desc describe directory disable distinct distribute drop else enable end escaped exclusive exists explain export extended external fetch fields fileformat first format formatted from full function functions grant group having hold_ddltime idxproperties if import in index indexes inpath inputdriver inputformat insert intersect into is items join keys lateral left like limit lines load local location lock locks mapjoin materialized minus msck no_drop nocompress not of offline on option or order out outer outputdriver outputformat overwrite partition partitioned partitions percent plus preserve procedure purge range rcfile read readonly reads rebuild recordreader recordwriter recover reduce regexp rename repair replace restrict revoke right rlike row schema schemas semi sequencefile serde serdeproperties set shared show show_database sort sorted ssl statistics stored streamtable table tables tablesample tblproperties temporary terminated textfile then tmp to touch transform trigger unarchive undo union uniquejoin unlock update use using utc utc_tmestamp view when where while with admin authorization char compact compactions conf cube current current_date current_timestamp day decimal defined dependency directories elem_type exchange file following for grouping hour ignore inner interval jar less logical macro minute month more none noscan over owner partialscan preceding pretty principals protection reload rewrite role roles rollup rows second server sets skewed transactions truncate unbounded unset uri user values window year"),
@@ -417,16 +407,18 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     backslashStringEscapes: false,
     dateSQL: set("date time timestamp"),
     support: set("ODBCdotTable decimallessFloat zerolessFloat binaryNumber hexNumber nCharCast charsetCast escapeConstant")
-  }); // Google's SQL-like query language, GQL
+  });
 
+  // Google's SQL-like query language, GQL
   CodeMirror.defineMIME("text/x-gql", {
     name: "sql",
     keywords: set("ancestor and asc by contains desc descendant distinct from group has in is limit offset on order select superset where"),
     atoms: set("false true"),
     builtin: set("blob datetime first key __key__ string integer double boolean null"),
     operatorChars: /^[*+\-%<>!=]/
-  }); // Greenplum
+  });
 
+  // Greenplum
   CodeMirror.defineMIME("text/x-gpsql", {
     name: "sql",
     client: set("source"),
@@ -437,8 +429,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     operatorChars: /^[*+\-%<>!=&|^\/#@?~]/,
     dateSQL: set("date time timestamp"),
     support: set("ODBCdotTable decimallessFloat zerolessFloat binaryNumber hexNumber nCharCast charsetCast")
-  }); // Spark SQL
+  });
 
+  // Spark SQL
   CodeMirror.defineMIME("text/x-sparksql", {
     name: "sql",
     keywords: set("add after all alter analyze and anti archive array as asc at between bucket buckets by cache cascade case cast change clear cluster clustered codegen collection column columns comment commit compact compactions compute concatenate cost create cross cube current current_date current_timestamp database databases data dbproperties defined delete delimited deny desc describe dfs directories distinct distribute drop else end escaped except exchange exists explain export extended external false fields fileformat first following for format formatted from full function functions global grant group grouping having if ignore import in index indexes inner inpath inputformat insert intersect interval into is items join keys last lateral lazy left like limit lines list load local location lock locks logical macro map minus msck natural no not null nulls of on optimize option options or order out outer outputformat over overwrite partition partitioned partitions percent preceding principals purge range recordreader recordwriter recover reduce refresh regexp rename repair replace reset restrict revoke right rlike role roles rollback rollup row rows schema schemas select semi separated serde serdeproperties set sets show skewed sort sorted start statistics stored stratify struct table tables tablesample tblproperties temp temporary terminated then to touch transaction transactions transform true truncate unarchive unbounded uncache union unlock unset use using values view when where window with"),
@@ -447,8 +440,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     operatorChars: /^[*\/+\-%<>!=~&|^]/,
     dateSQL: set("date time timestamp"),
     support: set("ODBCdotTable doubleQuote zerolessFloat")
-  }); // Esper
+  });
 
+  // Esper
   CodeMirror.defineMIME("text/x-esper", {
     name: "sql",
     client: set("source"),
@@ -459,8 +453,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     operatorChars: /^[*+\-%<>!=&|^\/#@?~]/,
     dateSQL: set("time"),
     support: set("decimallessFloat zerolessFloat binaryNumber hexNumber")
-  }); // Trino (formerly known as Presto)
+  });
 
+  // Trino (formerly known as Presto)
   CodeMirror.defineMIME("text/x-trino", {
     name: "sql",
     // https://github.com/trinodb/trino/blob/bc7a4eeedde28684c7ae6f74cefcaf7c6e782174/core/trino-parser/src/main/antlr4/io/trino/sql/parser/SqlBase.g4#L859-L1129
@@ -480,6 +475,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     support: set("ODBCdotTable decimallessFloat zerolessFloat hexNumber")
   });
 });
+
 /*
   How Properties of Mime Types are used by SQL Mode
   =================================================
