@@ -29,13 +29,13 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Moq](https://github.com/moq/moq) | The most popular and friendly mocking framework for .NET. | 4.18.2 | [MIT](https://github.com/moq/moq/blob/main/LICENSE) |
 | [NCrontab](https://github.com/atifaziz/NCrontab) | Crontab for .NET | 3.3.1 | [Apache-2.0](https://github.com/atifaziz/NCrontab/blob/master/COPYING.txt) |
 | [NEST](https://github.com/elastic/elasticsearch-net) | .NET Library for Elasticsearch | 7.17.5 | [Apache-2.0](https://github.com/elastic/elasticsearch-net/blob/main/LICENSE.txt) |
-| [NLog.Web.AspNetCore](https://github.com/NLog/NLog.Web/tree/master/src/NLog.Web.AspNetCore) | NLog integration for ASP.NET. | 5.1.5 | [BSD-3-Clause](https://github.com/NLog/NLog.Web/blob/master/LICENSE) |
-| [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) | Json.NET is a popular high-performance JSON framework for .NET | 13.0.1 | [MIT](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md) |
+| [NLog.Web.AspNetCore](https://github.com/NLog/NLog.Web/tree/master/src/NLog.Web.AspNetCore) | NLog integration for ASP.NET. | 5.2.0 | [BSD-3-Clause](https://github.com/NLog/NLog.Web/blob/master/LICENSE) |
+| [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) | Json.NET is a popular high-performance JSON framework for .NET | 13.0.2 | [MIT](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md) |
 | [NJsonSchema](https://github.com/RicoSuter/NJsonSchema) | JSON Schema reader, generator and validator for .NET | 10.8.0 | [MIT](https://github.com/RicoSuter/NJsonSchema/blob/master/LICENSE.md) |
 | [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 3.1.5 | [Apache-2.0](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
 | [OpenIddict](https://github.com/openiddict/openiddict-core) | Versatile OpenID Connect stack for ASP.NET Core. | 3.1.1 | [Apache-2.0](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
 | [PdfPig](https://github.com/UglyToad/PdfPig/) | Library to read and extract text and other content from PDF files. | 0.1.6 | [Apache-2.0](https://github.com/UglyToad/PdfPig/blob/master/LICENSE) |
-| [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore) | Serilog integration for ASP.NET Core. | 6.0.1 | [Apache-2.0](https://github.com/serilog/serilog-aspnetcore/blob/dev/LICENSE) |
+| [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore) | Serilog integration for ASP.NET Core. | 6.1.0 | [Apache-2.0](https://github.com/serilog/serilog-aspnetcore/blob/dev/LICENSE) |
 | [Shortcodes](https://github.com/sebastienros/shortcodes) | Shortcodes processor for .NET. | 1.3.3 | [MIT](https://github.com/sebastienros/shortcodes/blob/dev/LICENSE) |
 | [YesSql](https://github.com/sebastienros/yessql) | .NET document database working on any RDBMS. | 3.2.0 | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE) |
 | [ZString](https://github.com/Cysharp/ZString) | Zero Allocation StringBuilder for .NET Core and Unity. | 2.5.0 | [MIT](https://github.com/Cysharp/ZString/blob/master/LICENSE) |
@@ -44,7 +44,7 @@ The below table lists the different libraries used as Resources:
 
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
-| [Bootstrap](https://github.com/twbs/bootstrap) | HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web. | 5.2.1 | [MIT](https://github.com/twbs/bootstrap/blob/main/LICENSE) |
+| [Bootstrap](https://github.com/twbs/bootstrap) | HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web. | 5.1.3 | [MIT](https://github.com/twbs/bootstrap/blob/main/LICENSE) |
 | [bootstrap-select](https://github.com/snapappointments/bootstrap-select) | jQuery plugin for select elements. | 1.14.0-beta2 | [MIT](https://github.com/snapappointments/bootstrap-select/blob/v1.14-dev/LICENSE) |
 | [Code Mirror](https://github.com/codemirror/CodeMirror) | In-browser code editor. | 5.65.7 | [MIT](https://github.com/codemirror/CodeMirror/blob/master/LICENSE) |
 | [Font Awesome](https://github.com/FortAwesome/Font-Awesome) | The iconic SVG, font, and CSS toolkit. | 6.2.1 | [Font Awesome Free License](https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt) |
@@ -76,11 +76,11 @@ The below table lists the different Client side libraries:
 | [jQuery-File-Upload](https://github.com/blueimp/jQuery-File-Upload) | File Upload widget for jQuery. | 10.32.0 | [MIT](https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt) |
 | [jsPlumb](https://github.com/jsplumb/jsplumb) | Visual connectivity for webapps. | 2.15.6 | [MIT and GPLv2](https://github.com/jsplumb/jsplumb/blob/master/jsPlumb-LICENSE.txt) |
 | [Leaflet](https://github.com/Leaflet/Leaflet) | JavaScript library for mobile-friendly interactive maps. |1.9.3 | [BSD-2-Clause License](https://github.com/Leaflet/Leaflet/blob/main/LICENSE) |
-| [React](https://github.com/facebook/react) | JavaScript library for building user interface. | 17.0.2 | [MIT](https://github.com/facebook/react/blob/master/LICENSE) |
-| [TypeScript](https://github.com/microsoft/TypeScript) | Superset of JavaScript that compiles to clean JavaScript output. | 4.5.2 | [Apache-2.0](https://github.com/microsoft/TypeScript/blob/master/LICENSE.txt) |
+| [React](https://github.com/facebook/react) | JavaScript library for building user interface. | 16.14.0 | [MIT](https://github.com/facebook/react/blob/master/LICENSE) |
+| [TypeScript](https://github.com/microsoft/TypeScript) | Superset of JavaScript that compiles to clean JavaScript output. | 4.9.3 | [Apache-2.0](https://github.com/microsoft/TypeScript/blob/master/LICENSE.txt) |
 | [Vue](https://github.com/vuejs/vue) | JavaScript framework for building UI on the web. | 2.6.14 | [MIT](https://github.com/vuejs/vue/blob/dev/LICENSE) |
-| [Webpack](https://github.com/webpack/webpack) | A bundler for javascript and friends. | 5.72.0 | [MIT](https://github.com/webpack/webpack/blob/master/LICENSE) |
-| [Webpack CLI](https://github.com/webpack/webpack-cli) | Webpack's Command Line Interface | 4.9.2 | [MIT](https://github.com/webpack/webpack-cli/blob/master/LICENSE) |
+| [Webpack](https://github.com/webpack/webpack) | A bundler for javascript and friends. | 5.75.0 | [MIT](https://github.com/webpack/webpack/blob/master/LICENSE) |
+| [Webpack CLI](https://github.com/webpack/webpack-cli) | Webpack's Command Line Interface | 5.0.0 | [MIT](https://github.com/webpack/webpack-cli/blob/master/LICENSE) |
 
 The below table lists the different Tests libraries:
 
