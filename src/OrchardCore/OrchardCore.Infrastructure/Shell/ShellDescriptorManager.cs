@@ -106,9 +106,6 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
             // In the 'ChangedAsync()' event the shell will be released so that, on request, a new one will be built.
             // So, we commit the session earlier to prevent a new shell from being built from an outdated descriptor.
-
-            await _documentStore.CommitAsync();
-
             await _shellDescriptorManagerEventHandlers.InvokeAsync((handler, shellDescriptorRecord, _shellSettings) =>
                 handler.ChangedAsync(shellDescriptorRecord, _shellSettings), shellDescriptor, _shellSettings, _logger);
         }
