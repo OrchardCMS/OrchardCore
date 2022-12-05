@@ -17,7 +17,7 @@ namespace OrchardCore.Users
             {
                 ManageUsers,
                 ManageOwnUserInformation,
-                ViewUsers
+                ViewUsers,
             });
         }
 
