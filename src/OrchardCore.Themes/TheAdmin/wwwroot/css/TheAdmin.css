@@ -1,7 +1,7 @@
 @charset "UTF-8";
 html[data-theme=default] {
   /*!
-   * Bootstrap  v5.2.2 (https://getbootstrap.com/)
+   * Bootstrap  v5.2.3 (https://getbootstrap.com/)
    * Copyright 2011-2022 The Bootstrap Authors
    * Copyright 2011-2022 Twitter, Inc.
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
@@ -28302,6 +28302,9 @@ html[dir][data-theme=default] div.editor-widget.find-widget .button.codicon:acti
   background-color: transparent;
   border-color: transparent;
 }
+html[data-theme=default] span.field-validation-error {
+  width: 100%;
+}
 html[dir][data-theme=default] .has-filter .btn:not(.show), html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .has-filter .close:not(.show), html[dir][data-theme=default] .has-filter .button:not(.show), html[dir][data-theme=default] .has-filter .bootstrap-select .popover-header .close:not(.show), html[dir][data-theme=default] .bootstrap-select .popover-header .has-filter .close:not(.show) {
   border-color: #ced4da !important;
 }
@@ -29850,7 +29853,7 @@ html[dir=rtl][data-theme=default] .has-search:not(.input-group) .form-control-fe
 
 html[data-theme=darkmode] {
   /*!
-   * Bootstrap  v5.2.2 (https://getbootstrap.com/)
+   * Bootstrap  v5.2.3 (https://getbootstrap.com/)
    * Copyright 2011-2022 The Bootstrap Authors
    * Copyright 2011-2022 Twitter, Inc.
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
@@ -58372,6 +58375,9 @@ html[dir][data-theme=darkmode] div.editor-widget.find-widget .button.codicon:foc
 html[dir][data-theme=darkmode] div.editor-widget.find-widget .button.codicon:active {
   background-color: transparent;
   border-color: transparent;
+}
+html[data-theme=darkmode] span.field-validation-error {
+  width: 100%;
 }
 html[dir][data-theme=darkmode] .has-filter .btn:not(.show), html[dir][data-theme=darkmode] .has-filter .button:not(.show), html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .has-filter .close:not(.show), html[dir][data-theme=darkmode] .has-filter .bootstrap-select .popover-header .close:not(.show), html[dir][data-theme=darkmode] .bootstrap-select .popover-header .has-filter .close:not(.show) {
   border-color: #3C4144 !important;

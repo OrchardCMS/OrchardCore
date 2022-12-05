@@ -14990,9 +14990,16 @@ textarea.form-control-lg {
 
 [dir] .form-control:required {
   background-image: url(../Icons/ic_star_rate_black_18px.svg);
-  background-position: 2px 2px;
   background-repeat: no-repeat;
   background-size: 8px;
+}
+
+[dir=ltr] .form-control:required {
+  background-position: 2px 2px;
+}
+
+[dir=rtl] .form-control:required {
+  background-position: right 2px top 2px;
 }
 
 [dir] .form-control:required:valid {
