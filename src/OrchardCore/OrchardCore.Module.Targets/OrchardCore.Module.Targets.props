@@ -33,4 +33,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup Condition="'$(ImplicitUsings)'=='enable' OR '$(ImplicitUsings)'=='true'">
+    <Using Include="Microsoft.AspNetCore.Builder" />
+    <Using Include="Microsoft.AspNetCore.Routing" />
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+
 </Project>
