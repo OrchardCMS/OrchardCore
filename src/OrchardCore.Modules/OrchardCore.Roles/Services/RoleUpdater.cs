@@ -117,10 +117,7 @@ namespace OrchardCore.Roles.Services
                     .Distinct()
                     .ToList();
 
-                if (!rolesDocument.PermissionGroups.ContainsKey(group.RoleName))
-                {
-                    rolesDocument.PermissionGroups.TryAdd(group.RoleName, new List<string>());
-                }
+                rolesDocument.PermissionGroups.TryAdd(group.RoleName, new List<string>());
 
                 // Get all available permission names that isn't already assigned to the role.
                 var additionalPermissionNames = distinctPermissionNames.Except(currentPermissionNames);

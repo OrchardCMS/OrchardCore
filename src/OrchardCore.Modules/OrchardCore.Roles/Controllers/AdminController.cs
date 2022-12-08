@@ -214,10 +214,7 @@ namespace OrchardCore.Roles.Controllers
             var rolesDocument = await _rolesDocumentManager.GetOrCreateMutableAsync();
             var updateRolesDocument = false;
 
-            if (!rolesDocument.PermissionGroups.ContainsKey(role.RoleName))
-            {
-                rolesDocument.PermissionGroups.TryAdd(role.RoleName, new List<string>());
-            }
+            rolesDocument.PermissionGroups.TryAdd(role.RoleName, new List<string>());
 
             var permissionNames = _permissionProviders.SelectMany(x => x.GetDefaultStereotypes())
                 .SelectMany(y => y.Permissions ?? Enumerable.Empty<Permission>())
