@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-279-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-283-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -382,6 +382,12 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/PBMikeW"><img src="https://avatars.githubusercontent.com/u/89110166?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mike Williamson</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=PBMikeW" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/ProstoMimoProhodill"><img src="https://avatars.githubusercontent.com/u/32439583?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Andrew</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=ProstoMimoProhodill" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/MZole"><img src="https://avatars.githubusercontent.com/u/99020631?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Zoltán Máté</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=MZole" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/vahpetr"><img src="https://avatars.githubusercontent.com/u/10128393?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Vasilev Pyotr</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=vahpetr" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/aderderian"><img src="https://avatars.githubusercontent.com/u/868165?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Arra Derderian</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=aderderian" title="Code">💻</a></td>
+    <td align="center"><a href="https://www.crestapps.com/"><img src="https://avatars.githubusercontent.com/u/24724371?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mike Alhayek</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=MikeAlhayek" title="Code">💻</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=MikeAlhayek" title="Documentation">📖</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://bicloud.io/"><img src="https://avatars.githubusercontent.com/u/5276778?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Venkatesan R</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=vengi83644" title="Code">💻</a></td>
   </tr>
 </table>
 

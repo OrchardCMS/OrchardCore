@@ -180,13 +180,17 @@ namespace OrchardCore.Tenants.Controllers
                 databaseProvider = model.DatabaseProvider;
             }
 
-            Enum.TryParse(databaseProvider, out DatabaseProviderName providerName);
+            if (String.IsNullOrEmpty(databaseProvider))
+            {
+                return BadRequest(S["The database provider is not defined."]);
+            }
 
-            var selectedProvider = _databaseProviders.FirstOrDefault(x => x.Value == providerName);
+            var selectedProvider = _databaseProviders.FirstOrDefault(provider =>
+                String.Equals(provider.Value, databaseProvider, StringComparison.OrdinalIgnoreCase));
 
             if (selectedProvider == null)
             {
-                return BadRequest(S["The database provider is not defined."]);
+                return BadRequest(S["The database provider is not supported."]);
             }
 
             var tablePrefix = shellSettings["TablePrefix"];

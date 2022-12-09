@@ -38,34 +38,37 @@ namespace OrchardCore.Navigation
 
                     var viewContextAccessor = context.ServiceProvider.GetRequiredService<ViewContextAccessor>();
                     var viewContext = viewContextAccessor.ViewContext;
-
-                    var navigationManager = context.ServiceProvider.GetRequiredService<INavigationManager>();
+                    var navigationManagers = context.ServiceProvider.GetServices<INavigationManager>();
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                    var menuItems = await navigationManager.BuildMenuAsync(menuName, viewContext);
-                    var httpContext = httpContextAccessor.HttpContext;
 
-                    if (httpContext != null)
+                    foreach (var navigationManager in navigationManagers)
                     {
-                        // adding query string parameters
-                        var route = menu.GetProperty<RouteData>("RouteData");
-                        var routeData = new RouteValueDictionary(route.Values);
-                        var query = httpContext.Request.Query;
+                        var menuItems = await navigationManager.BuildMenuAsync(menuName, viewContext);
+                        var httpContext = httpContextAccessor.HttpContext;
 
-                        if (query != null)
+                        if (httpContext != null)
                         {
-                            foreach (var pair in query)
+                            // adding query string parameters
+                            var route = menu.GetProperty<RouteData>("RouteData");
+                            var routeData = new RouteValueDictionary(route.Values);
+                            var query = httpContext.Request.Query;
+
+                            if (query != null)
                             {
-                                if (pair.Key != null && !routeData.ContainsKey(pair.Key))
+                                foreach (var pair in query)
                                 {
-                                    routeData[pair.Key] = pair.Value;
+                                    if (pair.Key != null && !routeData.ContainsKey(pair.Key))
+                                    {
+                                        routeData[pair.Key] = pair.Value;
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    // TODO: Flag Selected menu item
-                    await NavigationHelper.PopulateMenuAsync(shapeFactory, menu, menu, menuItems, viewContext);
+                        // TODO: Flag Selected menu item
+                        await NavigationHelper.PopulateMenuAsync(shapeFactory, menu, menu, menuItems, viewContext);
+                    }
                 });
 
             builder.Describe("NavigationItem")

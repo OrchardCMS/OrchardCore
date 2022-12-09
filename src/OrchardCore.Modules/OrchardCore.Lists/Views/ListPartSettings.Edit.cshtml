@@ -20,3 +20,11 @@
     <span class="hint">@T["The content types that this list can contain, e.g. Blog Post for a Blog."]</span>
     @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContainedContentTypes, htmlName = Html.NameFor(m => m.ContainedContentTypes) })
 </div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="ShowHeader">
+        <label class="form-check-label" asp-for="ShowHeader">@T["Show container's header"]</label>
+        <span class="hint dashed">@T["Check this option to show a header for the owning content."]</span>
+    </div>
+</div>

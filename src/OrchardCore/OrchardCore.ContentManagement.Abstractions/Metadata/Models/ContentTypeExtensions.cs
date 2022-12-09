@@ -5,12 +5,19 @@ namespace OrchardCore.ContentManagement.Metadata.Models;
 
 public static class ContentTypeExtensions
 {
-    public static bool HasStereotype(this ContentTypeDefinition contentTypeDefinition)
+    public static bool TryGetStereotype(this ContentTypeDefinition contentTypeDefinition, out string stereotype)
     {
-        return !String.IsNullOrEmpty(contentTypeDefinition.GetStereotypeOrDefault());
+        stereotype = contentTypeDefinition.GetStereotype();
+
+        return !String.IsNullOrWhiteSpace(stereotype);
     }
 
-    public static string GetStereotypeOrDefault(this ContentTypeDefinition contentTypeDefinition)
+    public static bool HasStereotype(this ContentTypeDefinition contentTypeDefinition)
+    {
+        return !String.IsNullOrEmpty(contentTypeDefinition.GetStereotype());
+    }
+
+    public static string GetStereotype(this ContentTypeDefinition contentTypeDefinition)
     {
         return contentTypeDefinition.GetSettings().Stereotype;
     }
@@ -42,7 +49,7 @@ public static class ContentTypeExtensions
 
     public static bool HasDescription(this ContentTypeDefinition contentTypeDefinition)
     {
-        return !String.IsNullOrEmpty(contentTypeDefinition.GetSettings().Description);
+        return !String.IsNullOrWhiteSpace(contentTypeDefinition.GetSettings().Description);
     }
 
     public static string GetDescription(this ContentTypeDefinition contentTypeDefinition)

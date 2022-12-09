@@ -1,0 +1,9 @@
+@model OrchardCore.Lists.ViewModels.ListPartHeaderAdminViewModel
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor UpdateModelAccessor
+
+<div class="card bg-primary mb-3">
+    <div class="card-body">
+        @await DisplayAsync(await ContentItemDisplayManager.BuildDisplayAsync(Model.ContainerContentItem, UpdateModelAccessor.ModelUpdater, "HeaderAdmin"))
+    </div>
+</div>
