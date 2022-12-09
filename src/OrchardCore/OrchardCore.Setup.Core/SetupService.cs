@@ -267,6 +267,7 @@ namespace OrchardCore.Setup.Services
 
             // Update the shell state
             shellSettings.State = TenantState.Running;
+            shellSettings.TenantId = IdGenerator.GenerateId();
             await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
             return executionId;

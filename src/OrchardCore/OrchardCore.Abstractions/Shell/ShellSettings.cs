@@ -44,6 +44,12 @@ namespace OrchardCore.Environment.Shell
             set => _settings["VersionId"] = value;
         }
 
+        public string TenantId
+        {
+            get => _settings["TenantId"];
+            set => _settings["TenantId"] = value;
+        }
+
         public string RequestUrlHost
         {
             get => _settings["RequestUrlHost"];

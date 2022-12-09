@@ -211,6 +211,7 @@ namespace OrchardCore.AutoSetup
             shellSettings.RequestUrlHost = setupOptions.RequestUrlHost;
             shellSettings.RequestUrlPrefix = setupOptions.RequestUrlPrefix;
             shellSettings.State = TenantState.Uninitialized;
+            shellSettings.TenantId = IdGenerator.GenerateId();
 
             shellSettings["ConnectionString"] = setupOptions.DatabaseConnectionString;
             shellSettings["TablePrefix"] = setupOptions.DatabaseTablePrefix;
