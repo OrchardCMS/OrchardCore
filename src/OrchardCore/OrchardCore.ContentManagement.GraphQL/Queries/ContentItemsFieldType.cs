@@ -122,7 +122,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 return query;
             }
 
-            string defaultTableAlias = query.GetTypeAlias(typeof(ContentItemIndex));
+            var defaultTableAlias = query.GetTypeAlias(typeof(ContentItemIndex));
 
             IPredicateQuery predicateQuery = new PredicateQuery(
                 dialect: session.Store.Configuration.SqlDialect,
@@ -130,7 +130,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 propertyProviders: fieldContext.RequestServices.GetServices<IIndexPropertyProvider>());
 
             // Create the default table alias
-            predicateQuery.CreateAlias("", nameof(ContentItemIndex));
+            predicateQuery.CreateAlias(String.Empty, nameof(ContentItemIndex));
             predicateQuery.CreateTableAlias(nameof(ContentItemIndex), defaultTableAlias);
 
             // Add all provided table alias to the current predicate query
@@ -170,7 +170,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var whereSqlClause = expressions.ToSqlString(predicateQuery);
 
-
             query = query.Where(whereSqlClause);
 
             // Add all parameters that were used in the predicate query
@@ -203,16 +202,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentItemsQuery;
         }
 
-        private VersionOptions GetVersionOption(PublicationStatusEnum status)
+        private static VersionOptions GetVersionOption(PublicationStatusEnum status)
         {
-            switch (status)
+            return status switch
             {
-                case PublicationStatusEnum.Published: return VersionOptions.Published;
-                case PublicationStatusEnum.Draft: return VersionOptions.Draft;
-                case PublicationStatusEnum.Latest: return VersionOptions.Latest;
-                case PublicationStatusEnum.All: return VersionOptions.AllVersions;
-                default: return VersionOptions.Published;
-            }
+                PublicationStatusEnum.Published => VersionOptions.Published,
+                PublicationStatusEnum.Draft => VersionOptions.Draft,
+                PublicationStatusEnum.Latest => VersionOptions.Latest,
+                PublicationStatusEnum.All => VersionOptions.AllVersions,
+                _ => VersionOptions.Published,
+            };
         }
 
         private static IQuery<ContentItem, ContentItemIndex> FilterContentType(IQuery<ContentItem, ContentItemIndex> query, IResolveFieldContext context)
@@ -308,17 +307,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
                 if (values.Length == 1)
                 {
-                    if (string.Equals(values[0], "or", StringComparison.OrdinalIgnoreCase))
+                    if (String.Equals(values[0], "or", StringComparison.OrdinalIgnoreCase))
                     {
                         expression = Expression.Disjunction();
                         BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, fieldContext, indexAliases);
                     }
-                    else if (string.Equals(values[0], "and", StringComparison.OrdinalIgnoreCase))
+                    else if (String.Equals(values[0], "and", StringComparison.OrdinalIgnoreCase))
                     {
                         expression = Expression.Conjunction();
                         BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, fieldContext, indexAliases);
                     }
-                    else if (string.Equals(values[0], "not", StringComparison.OrdinalIgnoreCase))
+                    else if (String.Equals(values[0], "not", StringComparison.OrdinalIgnoreCase))
                     {
                         expression = Expression.Conjunction();
                         BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, fieldContext, indexAliases);
@@ -340,24 +339,23 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 {
                     var value = entry.Value.ToObject<object>();
 
-                    switch (values[1])
+                    expression = values[1] switch
                     {
-                        case "not": expression = Expression.Not(Expression.Equal(property, value)); break;
-                        case "gt": expression = Expression.GreaterThan(property, value); break;
-                        case "gte": expression = Expression.GreaterThanOrEqual(property, value); break;
-                        case "lt": expression = Expression.LessThan(property, value); break;
-                        case "lte": expression = Expression.LessThanOrEqual(property, value); break;
-                        case "contains": expression = Expression.Like(property, (string)value, MatchOptions.Contains); break;
-                        case "not_contains": expression = Expression.Not(Expression.Like(property, (string)value, MatchOptions.Contains)); break;
-                        case "starts_with": expression = Expression.Like(property, (string)value, MatchOptions.StartsWith); break;
-                        case "not_starts_with": expression = Expression.Not(Expression.Like(property, (string)value, MatchOptions.StartsWith)); break;
-                        case "ends_with": expression = Expression.Like(property, (string)value, MatchOptions.EndsWith); break;
-                        case "not_ends_with": expression = Expression.Not(Expression.Like(property, (string)value, MatchOptions.EndsWith)); break;
-                        case "in": expression = Expression.In(property, entry.Value.ToObject<object[]>()); break;
-                        case "not_in": expression = Expression.Not(Expression.In(property, entry.Value.ToObject<object[]>())); break;
-
-                        default: expression = Expression.Equal(property, value); break;
-                    }
+                        "not" => Expression.Not(Expression.Equal(property, value)),
+                        "gt" => Expression.GreaterThan(property, value),
+                        "gte" => Expression.GreaterThanOrEqual(property, value),
+                        "lt" => Expression.LessThan(property, value),
+                        "lte" => Expression.LessThanOrEqual(property, value),
+                        "contains" => Expression.Like(property, (string)value, MatchOptions.Contains),
+                        "not_contains" => Expression.Not(Expression.Like(property, (string)value, MatchOptions.Contains)),
+                        "starts_with" => Expression.Like(property, (string)value, MatchOptions.StartsWith),
+                        "not_starts_with" => Expression.Not(Expression.Like(property, (string)value, MatchOptions.StartsWith)),
+                        "ends_with" => Expression.Like(property, (string)value, MatchOptions.EndsWith),
+                        "not_ends_with" => Expression.Not(Expression.Like(property, (string)value, MatchOptions.EndsWith)),
+                        "in" => Expression.In(property, entry.Value.ToObject<object[]>()),
+                        "not_in" => Expression.Not(Expression.In(property, entry.Value.ToObject<object[]>())),
+                        _ => Expression.Equal(property, value),
+                    };
                 }
 
                 if (expression != null)
@@ -367,7 +365,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
         }
 
-        private IQuery<ContentItem, ContentItemIndex> OrderBy(IQuery<ContentItem, ContentItemIndex> query,
+        private static IQuery<ContentItem, ContentItemIndex> OrderBy(IQuery<ContentItem, ContentItemIndex> query,
             IResolveFieldContext context)
         {
             if (context.HasPopulatedArgument("orderBy"))

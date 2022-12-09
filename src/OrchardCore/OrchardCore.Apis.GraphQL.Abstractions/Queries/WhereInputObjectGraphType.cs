@@ -18,21 +18,21 @@ namespace OrchardCore.Apis.GraphQL.Queries
         }
 
         // Applies to all types
-        public static Dictionary<string, string> EqualityOperators = new Dictionary<string, string>
+        public static Dictionary<string, string> EqualityOperators = new()
         {
-            { "", "is equal to" },
+            { String.Empty, "is equal to" },
             { "_not", "is not equal to" }
         };
 
         // Applies to all types
-        public static Dictionary<string, string> MultiValueComparisonOperators = new Dictionary<string, string>
+        public static Dictionary<string, string> MultiValueComparisonOperators = new()
         {
             { "_in", "is in collection" },
             { "_not_in", "is not in collection" }
         };
 
         // Applies to non strings
-        public static Dictionary<string, string> NonStringValueComparisonOperators = new Dictionary<string, string>
+        public static Dictionary<string, string> NonStringValueComparisonOperators = new()
         {
             { "_gt", "is greater than" },
             { "_gte", "is greater than or equal" },
@@ -41,7 +41,7 @@ namespace OrchardCore.Apis.GraphQL.Queries
         };
 
         // Applies to strings
-        public static Dictionary<string, string> StringComparisonOperators = new Dictionary<string, string>
+        public static Dictionary<string, string> StringComparisonOperators = new()
         {
             {"_contains", "contains the string"},
             {"_not_contains", "does not contain the string"},
@@ -61,14 +61,30 @@ namespace OrchardCore.Apis.GraphQL.Queries
             AddEqualityFilters(graphType, fieldName, description);
             AddMultiValueFilters(graphType, fieldName, description);
 
-            if (graphType == typeof(StringGraphType))
+            if (IsStringFilter(graphType))
             {
                 AddStringFilters(graphType, fieldName, description);
             }
-            else if (graphType == typeof(DateTimeGraphType))
+            else if (IsNonStringFilter(graphType))
             {
                 AddNonStringFilters(graphType, fieldName, description);
             }
+        }
+
+        private static bool IsNonStringFilter(Type graphType)
+        {
+            return graphType == typeof(DateTimeGraphType)
+                || graphType == typeof(DecimalGraphType)
+                || graphType == typeof(IntGraphType)
+                || graphType == typeof(FloatGraphType)
+                || graphType == typeof(BigIntGraphType)
+                || graphType == typeof(DateGraphType)
+                || graphType == typeof(LongGraphType);
+        }
+
+        private static bool IsStringFilter(Type graphType)
+        {
+            return graphType == typeof(StringGraphType);
         }
 
         private void AddEqualityFilters(Type graphType, string fieldName, string description)
