@@ -1,10 +1,8 @@
 using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Deployment;
@@ -18,9 +16,7 @@ using OrchardCore.Roles.Controllers;
 using OrchardCore.Roles.Deployment;
 using OrchardCore.Roles.Recipes;
 using OrchardCore.Roles.Services;
-using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles
 {
@@ -35,10 +31,7 @@ namespace OrchardCore.Roles
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.TryAddScoped<RoleManager<IRole>>();
-            services.TryAddScoped<IRoleStore<IRole>, RoleStore>();
-            services.TryAddScoped<IRoleService, RoleService>();
-            services.TryAddScoped<IRoleClaimStore<IRole>, RoleStore>();
+            services.AddRoles();
             services.AddRecipeExecutionStep<RolesStep>();
 
             services.AddScoped<RoleUpdater>();
