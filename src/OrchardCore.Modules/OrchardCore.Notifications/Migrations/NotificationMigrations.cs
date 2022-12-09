@@ -20,7 +20,7 @@ public class NotificationMigrations : DataMigration
         );
 
         SchemaBuilder.AlterIndexTable<NotificationIndex>(table => table
-            .CreateIndex("IDX_WebNotificationIndex_DocumentId",
+            .CreateIndex("IDX_NotificationIndex_DocumentId",
                 "DocumentId",
                 "NotificationId",
                 "UserId",

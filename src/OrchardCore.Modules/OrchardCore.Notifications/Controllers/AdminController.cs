@@ -129,7 +129,7 @@ public class AdminController : Controller, IUpdateModel
         options.NotficationsItemsCount = notificationSummaries.Count;
         options.TotalItemCount = pagerShape.TotalItemCount;
 
-        var header = await _notificationOptionsDisplayManager.BuildEditorAsync(options, this, false);
+        var header = await _notificationOptionsDisplayManager.BuildEditorAsync(options, this, false, String.Empty, String.Empty);
 
         var shapeViewModel = await _shapeFactory.CreateAsync<ListNotificationsViewModel>("NotificationsAdminList", viewModel =>
         {
@@ -153,7 +153,7 @@ public class AdminController : Controller, IUpdateModel
         }
 
         // Evaluate the values provided in the form post and map them to the filter result and route values.
-        await _notificationOptionsDisplayManager.UpdateEditorAsync(options, this, false);
+        await _notificationOptionsDisplayManager.UpdateEditorAsync(options, this, false, String.Empty, String.Empty);
 
         // The route value must always be added after the editors have updated the models.
         options.RouteValues.TryAdd("q", options.FilterResult.ToString());

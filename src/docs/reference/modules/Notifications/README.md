@@ -22,7 +22,6 @@ public class EmailNotificationStartup : StartupBase
         services.AddScoped<INotificationMethodProvider, EmailNotificationProvider>();
     }
 }
-
 ```
 
 ## How to send a notification

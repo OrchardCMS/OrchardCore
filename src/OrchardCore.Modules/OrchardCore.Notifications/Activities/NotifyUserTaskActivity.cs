@@ -33,7 +33,6 @@ public abstract class NotifyUserTaskActivity : TaskActivity
         _expressionEvaluator = expressionEvaluator;
         _htmlEncoder = htmlEncoder;
         _logger = logger;
-
         S = localizer;
     }
 
