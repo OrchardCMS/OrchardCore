@@ -47,14 +47,15 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
         public async Task<ShellDescriptor> GetShellDescriptorAsync()
         {
-            (bool cacheable, ShellDescriptor shellDescriptor) = await _documentStore.GetOrCreateImmutableAsync(ShellDescriptorFactory);
+            (var cacheable, var shellDescriptor) = await _documentStore.GetOrCreateImmutableAsync(ShellDescriptorFactory);
 
             if (shellDescriptor.SerialNumber== 0)
             {
                 return null;
             }
 
-            if (cacheable) {
+            if (cacheable)
+            {
                 // Init shell descriptor and load features
                 var configuredFeatures = new ConfiguredFeatures();
                 _shellConfiguration.Bind(configuredFeatures);
@@ -102,7 +103,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
                 _logger.LogInformation("Shell descriptor updated for tenant '{TenantName}'.", _shellSettings.Name);
             }
 
-            await _documentStore.UpdateAsync(shellDescriptor, (_) => Task.CompletedTask);
+            await _documentStore.UpdateAsync(shellDescriptor, _ => Task.CompletedTask);
 
             // In the 'ChangedAsync()' event the shell will be released so that, on request, a new one will be built.
             // So, we commit the session earlier to prevent a new shell from being built from an outdated descriptor.
