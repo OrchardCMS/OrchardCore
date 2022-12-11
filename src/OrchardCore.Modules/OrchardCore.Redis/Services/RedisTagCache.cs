@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Cache;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Redis.Services
@@ -18,12 +17,11 @@ namespace OrchardCore.Redis.Services
 
         public RedisTagCache(
             IRedisService redis,
-            ShellSettings shellSettings,
             IEnumerable<ITagRemovedEventHandler> tagRemovedEventHandlers,
             ILogger<RedisTagCache> logger)
         {
             _redis = redis;
-            _prefix = redis.InstancePrefix + shellSettings.Name + ":Tag:";
+            _prefix = $"{redis.InstancePrefix}{redis.TenantPrefix}Tag:";
             _tagRemovedEventHandlers = tagRemovedEventHandlers;
             _logger = logger;
         }

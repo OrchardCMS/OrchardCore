@@ -1,11 +1,9 @@
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Caching.Distributed;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Redis.Services
 {
@@ -17,11 +15,11 @@ namespace OrchardCore.Redis.Services
         private readonly string _messagePrefix;
         private readonly ILogger _logger;
 
-        public RedisBus(IRedisService redis, ShellSettings shellSettings, ILogger<RedisBus> logger)
+        public RedisBus(IRedisService redis, ILogger<RedisBus> logger)
         {
             _redis = redis;
-            _hostName = Dns.GetHostName() + ':' + Process.GetCurrentProcess().Id;
-            _channelPrefix = redis.InstancePrefix + shellSettings.Name + ':';
+            _hostName = $"{Dns.GetHostName()}:{System.Environment.ProcessId}";
+            _channelPrefix = $"{redis.InstancePrefix}{redis.TenantPrefix}";
             _messagePrefix = _hostName + '/';
             _logger = logger;
         }

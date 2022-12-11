@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using StackExchange.Redis;
 
@@ -13,18 +14,24 @@ namespace OrchardCore.Redis.Services
         private readonly IOptions<RedisOptions> _options;
         private readonly ILogger _logger;
 
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _semaphore = new(1);
 
-        public RedisService(IOptions<RedisOptions> options, ILogger<RedisService> logger)
+        public RedisService(ShellSettings shellSettings, IOptions<RedisOptions> options, ILogger<RedisService> logger)
         {
             _options = options;
             _logger = logger;
 
-            InstancePrefix = options.Value.InstancePrefix;
+            if (!String.IsNullOrWhiteSpace(options.Value.InstancePrefix))
+            {
+                InstancePrefix = $"{options.Value.InstancePrefix}_";
+            }
+
+            TenantPrefix = $"{shellSettings.TenantId}_{shellSettings.Name}_";
         }
 
         public IConnectionMultiplexer Connection { get; private set; }
-        public string InstancePrefix { get; private set; }
+        public string InstancePrefix { get; private set; } = String.Empty;
+        public string TenantPrefix { get; private set; }
         public IDatabase Database { get; private set; }
 
         public override Task ActivatingAsync() => ConnectAsync();

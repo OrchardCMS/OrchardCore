@@ -1,10 +1,8 @@
 using System;
-using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using StackExchange.Redis;
@@ -22,11 +20,11 @@ namespace OrchardCore.Redis.Services
         private readonly string _hostName;
         private readonly string _prefix;
 
-        public RedisLock(IRedisService redis, ShellSettings shellSettings, ILogger<RedisLock> logger)
+        public RedisLock(IRedisService redis, ILogger<RedisLock> logger)
         {
             _redis = redis;
-            _hostName = Dns.GetHostName() + ':' + Process.GetCurrentProcess().Id;
-            _prefix = redis.InstancePrefix + shellSettings.Name + ':';
+            _hostName = $"{Dns.GetHostName()}:{System.Environment.ProcessId}";
+            _prefix = $"{redis.InstancePrefix}{redis.TenantPrefix}";
             _logger = logger;
         }
 

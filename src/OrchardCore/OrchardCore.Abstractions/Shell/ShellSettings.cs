@@ -33,6 +33,7 @@ namespace OrchardCore.Environment.Shell
         {
             _settings = new ShellConfiguration(settings._settings);
             _configuration = new ShellConfiguration(settings.Name, settings._configuration);
+            TenantId = settings.TenantId;
             Name = settings.Name;
         }
 
