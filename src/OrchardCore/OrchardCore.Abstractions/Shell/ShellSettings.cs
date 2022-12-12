@@ -29,11 +29,15 @@ namespace OrchardCore.Environment.Shell
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// This construction should only be used for setup purposes as it will generate the immutable TenantId.
+        /// </summary>
+        /// <param name="settings"></param>
         public ShellSettings(ShellSettings settings)
         {
             _settings = new ShellConfiguration(settings._settings);
             _configuration = new ShellConfiguration(settings.Name, settings._configuration);
-            TenantId = settings.TenantId;
+            TenantId = IdGenerator.GenerateId();
             Name = settings.Name;
         }
 
@@ -48,7 +52,7 @@ namespace OrchardCore.Environment.Shell
         public string TenantId
         {
             get => _settings["TenantId"];
-            set => _settings["TenantId"] = value;
+            init => _settings["TenantId"] = value;
         }
 
         public string RequestUrlHost
