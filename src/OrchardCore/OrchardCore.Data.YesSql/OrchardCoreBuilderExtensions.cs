@@ -150,6 +150,16 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     session.RegisterIndexes(scopedServices.ToArray());
 
+                    ShellScope.Current
+                        .RegisterBeforeDispose(scope =>
+                        {
+                            return session.SaveChangesAsync();
+                        })
+                        .AddExceptionHandler((scope, e) =>
+                        {
+                            return session.CancelAsync();
+                        });
+
                     return session;
                 });
 
