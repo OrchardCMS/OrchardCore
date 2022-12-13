@@ -47,6 +47,14 @@
         <partial name="Shared/MediaFieldEditMediaTextModal.cshtml" />
         <partial name="Shared/MediaFieldEditAnchorModal.cshtml" />
 
+        @*Localizable Strings for uploadComponent*@
+        <input type="hidden" id="t-error" value="@T["This file exceeds the maximum upload size"]" />
+
+        @*Localizable Strings for uploadListcomponent*@
+        <input type="hidden" id="t-uploads" value="@T["Uploads"]" />
+        <input type="hidden" id="t-errors" value="@T["Errors"]" />
+        <input type="hidden" id="t-clear-errors" value="@T["Clear Errors"]" />
+
     </div>
 
     <partial name="Shared/MediaFieldEditLocalization.cshtml" />
