@@ -172,7 +172,22 @@ namespace Microsoft.Extensions.DependencyInjection
                     return documentStore;
                 });
 
-                services.AddSingleton<IFileDocumentStore, FileDocumentStore>();
+                services.AddSingleton<IDocumentFileStore, FileSystemDocumentStore>();
+
+                services.AddScoped<IFileDocumentStore>(sp => {
+                    var fileDocumentStore = sp.CreateInstance<FileDocumentStore>();
+                    ShellScope.Current
+                        .RegisterBeforeDispose(scope =>
+                        {
+                            return fileDocumentStore.CommitAsync();
+                        })
+                        .AddExceptionHandler((scope, e) =>
+                        {
+                            return fileDocumentStore.CancelAsync();
+                        });
+                    return fileDocumentStore;
+                });
+
                 services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
             });
 
