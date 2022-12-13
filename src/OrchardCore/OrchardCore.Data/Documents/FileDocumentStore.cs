@@ -1,50 +1,45 @@
 using System;
-using System.IO;
-using System.Reflection;
-using System.Text.Json;
-using System.Threading;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Data.Documents
 {
     /// <summary>
-    /// A singleton service using the file system to store document files under the tenant folder, and that is in sync
-    /// with the ambient transaction, any file is updated after a successful <see cref="IDocumentStore.CommitAsync"/>.
+    /// An <see cref="IDocumentFileStore"/> using the <see cref="IFileDocumentStore"/>.
     /// </summary>
     public class FileDocumentStore : IFileDocumentStore
     {
-        private readonly string _tenantPath;
+        private readonly IDocumentFileStore _documentFileStore;
 
-        private readonly SemaphoreSlim _semaphore = new(1);
+        private readonly Dictionary<Type, object> _loaded = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, object> _updated = new Dictionary<Type, object>();
 
-        public FileDocumentStore(IOptions<ShellOptions> shellOptions, ShellSettings shellSettings)
+        private readonly List<Type> _afterCommitsSuccess = new List<Type>();
+        private readonly List<Type> _afterCommitsFailure = new List<Type>();
+
+        private DocumentStoreCommitSuccessDelegate _afterCommitSuccess;
+        private DocumentStoreCommitFailureDelegate _afterCommitFailure;
+
+        private bool _canceled;
+
+        public FileDocumentStore(IDocumentFileStore documentFileStore)
         {
-            _tenantPath = Path.Combine(
-                shellOptions.Value.ShellsApplicationDataPath,
-                shellOptions.Value.ShellsContainerName,
-                shellSettings.Name) + "/";
-
-            Directory.CreateDirectory(_tenantPath);
+            _documentFileStore = documentFileStore;
         }
 
         /// <inheritdoc />
         public async Task<T> GetOrCreateMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
         {
-            var loaded = ShellScope.Get<T>(typeof(T));
-            if (loaded != null)
+            if (_loaded.TryGetValue(typeof(T), out var loaded))
             {
-                return loaded;
+                return loaded as T;
             }
 
-            var document = await GetDocumentAsync<T>()
+            var document = (T)await _documentFileStore.GetDocumentAsync(typeof(T))
                 ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null))
                 ?? new T();
 
-            ShellScope.Set(typeof(T), document);
+            _loaded[typeof(T)] = document;
 
             return document;
         }
@@ -52,86 +47,99 @@ namespace OrchardCore.Data.Documents
         /// <inheritdoc />
         public async Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
         {
-            var loaded = ShellScope.Get<T>(typeof(T));
-            if (loaded != null)
+            if (_loaded.TryGetValue(typeof(T), out var loaded))
             {
                 // Return the already loaded document but indicating that it should not be cached.
                 return (false, loaded as T);
             }
 
-            return (true, await GetDocumentAsync<T>() ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T());
+            return (true, (T)await _documentFileStore.GetDocumentAsync(typeof(T)) ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T());
         }
 
         /// <inheritdoc />
         public Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false)
         {
-            DocumentStore.AfterCommitSuccess<T>(async () =>
+            _updated[typeof(T)] = document;
+
+            AfterCommitSuccess<T>(async () =>
             {
-                await SaveDocumentAsync(document);
-                ShellScope.Set(typeof(T), null);
                 await updateCache(document);
             });
 
             return Task.CompletedTask;
         }
 
-        public Task CancelAsync() => DocumentStore.CancelAsync();
-        public void AfterCommitSuccess<T>(DocumentStoreCommitSuccessDelegate afterCommitSuccess) => DocumentStore.AfterCommitSuccess<T>(afterCommitSuccess);
-        public void AfterCommitFailure<T>(DocumentStoreCommitFailureDelegate afterCommitFailure) => DocumentStore.AfterCommitFailure<T>(afterCommitFailure);
-        public Task CommitAsync() => throw new NotImplementedException();
-
-        private async Task<T> GetDocumentAsync<T>()
+        /// <inheritdoc />
+        public Task CancelAsync()
         {
-            var typeName = typeof(T).Name;
+            _canceled = true;
+            _updated.Clear();
+            return Task.CompletedTask;
+        }
 
-            var attribute = typeof(T).GetCustomAttribute<FileDocumentStoreAttribute>();
-            if (attribute != null)
+        /// <inheritdoc />
+        public void AfterCommitSuccess<T>(DocumentStoreCommitSuccessDelegate afterCommitSuccess)
+        {
+            if (!_afterCommitsSuccess.Contains(typeof(T)))
+            {
+                _afterCommitsSuccess.Add(typeof(T));
+                _afterCommitSuccess += afterCommitSuccess;
+            }
+        }
+
+        /// <inheritdoc />
+        public void AfterCommitFailure<T>(DocumentStoreCommitFailureDelegate afterCommitFailure)
+        {
+            if (!_afterCommitsFailure.Contains(typeof(T)))
+            {
+                _afterCommitsFailure.Add(typeof(T));
+                _afterCommitFailure += afterCommitFailure;
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task CommitAsync()
+        {
+            try
+            {
+                foreach(var updated in _updated)
+                {
+                    await _documentFileStore.SaveDocumentAsync(updated.Key, updated.Value);
+                }
+
+                _loaded.Clear();
+                _updated.Clear();
+
+                if (!_canceled && _afterCommitSuccess != null)
+                {
+                    foreach (var d in _afterCommitSuccess.GetInvocationList())
+                    {
+                        await ((DocumentStoreCommitSuccessDelegate)d)();
+                    }
+                }
+            }
+            catch (Exception exception)
             {
                 typeName = attribute.FileName ?? typeName;
             }
 
             var filename = _tenantPath + typeName + ".json";
-            if (!File.Exists(filename))
-            {
-                return default;
-            }
 
             await _semaphore.WaitAsync();
             try
             {
-                using var stream = File.OpenRead(filename);
-                return await JsonSerializer.DeserializeAsync<T>(stream, JOptions.Default);
+                using var file = File.CreateText(filename);
+                var serializer = new JsonSerializer
+                {
+                    Formatting = Formatting.Indented
+                };
+
+                serializer.Serialize(file, document);
             }
             finally
             {
                 _semaphore.Release();
             }
         }
-
-        private async Task SaveDocumentAsync<T>(T document)
-        {
-            var typeName = typeof(T).Name;
-
-            var attribute = typeof(T).GetCustomAttribute<FileDocumentStoreAttribute>();
-            if (attribute != null)
-            {
-                typeName = attribute.FileName ?? typeName;
-            }
-
-            var filename = _tenantPath + typeName + ".json";
-
-            await _semaphore.WaitAsync();
-            try
-            {
-                using var stream = File.Create(filename);
-                await JsonSerializer.SerializeAsync(stream, document, JOptions.Indented);
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
-        }
-
-        private static IDocumentStore DocumentStore => ShellScope.Services.GetRequiredService<IDocumentStore>();
     }
 }
