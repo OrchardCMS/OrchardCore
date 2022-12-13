@@ -84,39 +84,37 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 }
 
                 // if the part registred manually, do not procees?
-                var partName = part.Name;
-
                 if (_contentOptions.ShouldCollapse(part))
                 {
                     foreach (var scaler in scalers)
                     {
-                        whereInput.AddField(scaler.WithPartCollapsedMetaData().WithPartNameMetaData(partName));
+                        whereInput.AddField(scaler.WithPartCollapsedMetaData().WithPartNameMetaData(part.Name));
                     }
                 }
                 else
                 {
-                    if (_dynamicPartFields.TryGetValue(partName, out var fieldType))
+                    if (_dynamicPartFields.TryGetValue(part.Name, out var fieldType))
                     {
                         whereInput.AddField(fieldType);
                     }
                     else
                     {
-
                         var field = whereInput.Field(
                             typeof(DynamicPartInputGraphType),
-                            partName.ToFieldName(),
+                            part.Name.ToFieldName(),
                             description: S["Represents a {0}.", part.PartDefinition.Name],
                             resolve: context =>
                             {
-                                var nameToResolve = partName;
+                                var nameToResolve = part.Name;
+
                                 var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
 
-                                return ((ContentPart)context.Source).Get(typeToResolve, nameToResolve);
+                                return ((ContentItem)context.Source).Get(typeToResolve, nameToResolve);
                             });
 
                         field.ResolvedType = new DynamicPartInputGraphType(_httpContextAccessor, part);
 
-                        _dynamicPartFields[partName] = field;
+                        _dynamicPartFields[part.Name] = field;
                     }
                 }
             }
