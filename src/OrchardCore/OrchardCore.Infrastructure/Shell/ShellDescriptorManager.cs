@@ -27,6 +27,8 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
         private readonly IDocumentStore _documentStore;
         private readonly ILogger _logger;
 
+        private ShellDescriptor _shellDescriptor;
+
         public ShellDescriptorManager(
             ShellSettings shellSettings,
             IShellConfiguration shellConfiguration,
@@ -47,42 +49,54 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
         public async Task<ShellDescriptor> GetShellDescriptorAsync()
         {
-            (var cacheable, var shellDescriptor) = await _documentStore.GetOrCreateImmutableAsync(ShellDescriptorFactory);
+            if (_shellDescriptor != null)
+            {
+                return _shellDescriptor;
+            }
 
-            if (shellDescriptor.SerialNumber== 0)
+            (var cacheable, var shellDescriptor) = await _documentStore.GetOrCreateImmutableAsync<ShellDescriptor>();
+
+            if (shellDescriptor.SerialNumber == 0)
             {
                 return null;
             }
 
-            if (cacheable)
+            if (!cacheable)
             {
-                // Init shell descriptor and load features
-                var configuredFeatures = new ConfiguredFeatures();
-                _shellConfiguration.Bind(configuredFeatures);
-
-                var features = _alwaysEnabledFeatures
-                    .Concat(configuredFeatures.Features.Select(id => new ShellFeature(id) { AlwaysEnabled = true }))
-                    .Concat(shellDescriptor.Features)
-                    .Distinct();
-
-                var featureIds = features.Select(sf => sf.Id).ToArray();
-
-                var missingDependencies = (await _extensionManager.LoadFeaturesAsync(featureIds))
-                    .Select(entry => entry.FeatureInfo.Id)
-                    .Except(featureIds)
-                    .Select(id => new ShellFeature(id));
-
-                shellDescriptor.Features = features
-                    .Concat(missingDependencies)
-                    .ToList();
+                // Clone ShellDescriptor
+                shellDescriptor = new ShellDescriptor
+                {
+                    SerialNumber = shellDescriptor.SerialNumber,
+                    Installed = new List<ShellFeature>(shellDescriptor.Installed),
+                };
             }
 
-            return shellDescriptor;
+            // Init shell descriptor and load features
+            var configuredFeatures = new ConfiguredFeatures();
+            _shellConfiguration.Bind(configuredFeatures);
+
+            var features = _alwaysEnabledFeatures
+                .Concat(configuredFeatures.Features.Select(id => new ShellFeature(id) { AlwaysEnabled = true }))
+                .Concat(shellDescriptor.Features)
+                .Distinct();
+
+            var featureIds = features.Select(sf => sf.Id).ToArray();
+
+            var missingDependencies = (await _extensionManager.LoadFeaturesAsync(featureIds))
+                .Select(entry => entry.FeatureInfo.Id)
+                .Except(featureIds)
+                .Select(id => new ShellFeature(id));
+
+            shellDescriptor.Features = features
+                .Concat(missingDependencies)
+                .ToList();
+
+            return _shellDescriptor = shellDescriptor;
         }
 
         public async Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures)
         {
-            var shellDescriptor = await _documentStore.GetOrCreateMutableAsync(ShellDescriptorFactory);
+            var shellDescriptor = await _documentStore.GetOrCreateMutableAsync<ShellDescriptor>();
 
             if (priorSerialNumber != shellDescriptor.SerialNumber)
             {
@@ -107,13 +121,8 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
             // In the 'ChangedAsync()' event the shell will be released so that, on request, a new one will be built.
             // So, we commit the session earlier to prevent a new shell from being built from an outdated descriptor.
-            await _shellDescriptorManagerEventHandlers.InvokeAsync((handler, shellDescriptorRecord, _shellSettings) =>
-                handler.ChangedAsync(shellDescriptorRecord, _shellSettings), shellDescriptor, _shellSettings, _logger);
-        }
-
-        private static Task<ShellDescriptor> ShellDescriptorFactory()
-        {
-            return Task.FromResult(new ShellDescriptor { SerialNumber = 0 });
+            await _shellDescriptorManagerEventHandlers.InvokeAsync((handler, shellDescriptor, _shellSettings) =>
+                handler.ChangedAsync(shellDescriptor, _shellSettings), shellDescriptor, _shellSettings, _logger);
         }
 
         private class ConfiguredFeatures
