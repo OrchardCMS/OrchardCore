@@ -7,121 +7,117 @@ using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
+namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
+
+public class DynamicContentFieldBuilder : IContentTypeBuilder
 {
-    public class DynamicContentFieldBuilder : IContentTypeBuilder
+    private readonly GraphQLContentOptions _contentOptions;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IStringLocalizer S;
+    private readonly IEnumerable<IContentFieldProvider> _contentFieldProviders;
+    private readonly Dictionary<string, FieldType> _dynamicPartFields;
+
+    public DynamicContentFieldBuilder(
+        IOptions<GraphQLContentOptions> contentOptionsAccessor,
+        IHttpContextAccessor httpContextAccessor,
+        IStringLocalizer<DynamicContentFieldBuilder> stringLocalizer,
+        IEnumerable<IContentFieldProvider> contentFieldProviders)
     {
-        private readonly GraphQLContentOptions _contentOptions;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ITypeActivatorFactory<ContentField> _activatorFactory;
-        private readonly IStringLocalizer S;
-        private readonly IEnumerable<IContentFieldProvider> _contentFieldProviders;
-        private readonly Dictionary<string, FieldType> _dynamicPartFields;
+        _contentOptions = contentOptionsAccessor.Value;
+        _httpContextAccessor = httpContextAccessor;
+        _contentFieldProviders = contentFieldProviders;
+        _dynamicPartFields = new Dictionary<string, FieldType>();
 
-        public DynamicContentFieldBuilder(
-            IOptions<GraphQLContentOptions> contentOptionsAccessor,
-            IHttpContextAccessor httpContextAccessor,
-            ITypeActivatorFactory<ContentField> activatorFactory,
-            IStringLocalizer<DynamicContentFieldBuilder> stringLocalizer,
-            IEnumerable<IContentFieldProvider> contentFieldProviders)
+        S = stringLocalizer;
+    }
+
+    public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
+    {
+        if (_contentOptions.ShouldSkipContentType(contentTypeDefinition.Name))
         {
-            _contentOptions = contentOptionsAccessor.Value;
-            _httpContextAccessor = httpContextAccessor;
-            _activatorFactory = activatorFactory;
-            _contentFieldProviders = contentFieldProviders;
-            _dynamicPartFields = new Dictionary<string, FieldType>();
-
-            S = stringLocalizer;
+            return;
         }
 
-        public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
+        var whereArgument = contentQuery.Arguments.FirstOrDefault(x => x.Name == "where");
+
+        if (whereArgument == null)
         {
-            if (_contentOptions.ShouldSkipContentType(contentTypeDefinition.Name))
+            return;
+        }
+
+        var whereInput = (ContentItemWhereInput)whereArgument.ResolvedType;
+
+        if (whereInput == null)
+        {
+            return;
+        }
+
+        foreach (var part in contentTypeDefinition.Parts)
+        {
+            if (_contentOptions.ShouldSkip(part))
             {
-                return;
+                continue;
             }
 
-            var whereArgument = contentQuery.Arguments.FirstOrDefault(x => x.Name == "where");
+            var scalers = new List<FieldType>();
 
-            if (whereArgument == null)
+            foreach (var field in part.PartDefinition.Fields)
             {
-                return;
-            }
-
-            var whereInput = (ContentItemWhereInput)whereArgument.ResolvedType;
-
-            if (whereInput == null)
-            {
-                return;
-            }
-
-            foreach (var part in contentTypeDefinition.Parts)
-            {
-                if (_contentOptions.ShouldSkip(part))
+                foreach (var provider in _contentFieldProviders)
                 {
-                    continue;
-                }
+                    var fieldType = provider.GetField(field);
 
-                var scalers = new List<FieldType>();
-
-                foreach (var field in part.PartDefinition.Fields)
-                {
-                    foreach (var provider in _contentFieldProviders)
+                    if (fieldType != null && typeof(ScalarGraphType).IsAssignableFrom(fieldType.Type))
                     {
-                        var fieldType = provider.GetField(field);
-
-                        if (fieldType != null && typeof(ScalarGraphType).IsAssignableFrom(fieldType.Type))
-                        {
-                            scalers.Add(fieldType);
-                        }
+                        scalers.Add(fieldType);
                     }
                 }
+            }
 
-                if (scalers.Count == 0)
+            if (scalers.Count == 0)
+            {
+                // no scaler field to build inputs. 
+                continue;
+            }
+
+            // if the part registred manually, do not procees?
+            if (_contentOptions.ShouldCollapse(part))
+            {
+                foreach (var scaler in scalers)
                 {
-                    // no scaler field to build inputs. 
-                    continue;
+                    whereInput.AddField(scaler.WithPartCollapsedMetaData().WithPartNameMetaData(part.Name));
                 }
-
-                // if the part registred manually, do not procees?
-                if (_contentOptions.ShouldCollapse(part))
+            }
+            else
+            {
+                if (_dynamicPartFields.TryGetValue(part.Name, out var fieldType))
                 {
-                    foreach (var scaler in scalers)
-                    {
-                        whereInput.AddField(scaler.WithPartCollapsedMetaData().WithPartNameMetaData(part.Name));
-                    }
+                    whereInput.AddField(fieldType);
                 }
                 else
                 {
-                    if (_dynamicPartFields.TryGetValue(part.Name, out var fieldType))
-                    {
-                        whereInput.AddField(fieldType);
-                    }
-                    else
-                    {
-                        var field = whereInput.Field(
-                            typeof(DynamicPartInputGraphType),
-                            part.Name.ToFieldName(),
-                            description: S["Represents a {0}.", part.PartDefinition.Name],
-                            resolve: context =>
-                            {
-                                var nameToResolve = part.Name;
+                    var field = whereInput.Field(
+                        typeof(DynamicPartInputGraphType),
+                        part.Name.ToFieldName(),
+                        description: S["Represents a {0}.", part.PartDefinition.Name],
+                        resolve: context =>
+                        {
+                            var nameToResolve = part.Name;
 
-                                var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
+                            var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
 
-                                return ((ContentItem)context.Source).Get(typeToResolve, nameToResolve);
-                            });
+                            return ((ContentItem)context.Source).Get(typeToResolve, nameToResolve);
+                        }).WithPartNameMetaData(part.Name);
 
-                        field.ResolvedType = new DynamicPartInputGraphType(_httpContextAccessor, part);
+                    field.ResolvedType = new DynamicPartInputGraphType(_httpContextAccessor, part);
 
-                        _dynamicPartFields[part.Name] = field;
-                    }
+                    _dynamicPartFields[part.Name] = field;
                 }
             }
         }
-        public void Clear()
-        {
-            _dynamicPartFields.Clear();
-        }
+    }
+    public void Clear()
+    {
+        _dynamicPartFields.Clear();
     }
 }

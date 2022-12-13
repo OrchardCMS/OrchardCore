@@ -24,7 +24,7 @@ public sealed class DynamicPartInputGraphType : InputObjectGraphType<ContentPart
                 var fieldType = fieldProvider.GetField(field);
                 if (fieldType != null && typeof(ScalarGraphType).IsAssignableFrom(fieldType.Type))
                 {
-                    AddField(fieldType);
+                    AddField(fieldType.WithPartNameMetaData(part.Name));
                     break;
                 }
             }

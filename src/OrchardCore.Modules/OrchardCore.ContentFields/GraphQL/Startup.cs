@@ -28,6 +28,7 @@ namespace OrchardCore.ContentFields.GraphQL
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IContentTypeBuilder, DynamicContentFieldBuilder>();
+            services.AddTransient<DynamicPartInputGraphType>();
         }
     }
 }
