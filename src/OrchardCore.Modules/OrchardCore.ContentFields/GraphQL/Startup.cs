@@ -21,4 +21,13 @@ namespace OrchardCore.ContentFields.GraphQL
             services.AddObjectGraphType<ContentPickerField, ContentPickerFieldQueryObjectType>();
         }
     }
+
+    [RequireFeatures("OrchardCore.Apis.GraphQL", "OrchardCore.ContentFields.Indexing.SQL")]
+    public class IndexStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentTypeBuilder, DynamicContentFieldBuilder>();
+        }
+    }
 }

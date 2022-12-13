@@ -73,13 +73,15 @@ namespace OrchardCore.Apis.GraphQL.Queries
 
         private static bool IsNonStringFilter(Type graphType)
         {
-            return graphType == typeof(DateTimeGraphType)
-                || graphType == typeof(DecimalGraphType)
+            return graphType == typeof(DecimalGraphType)
                 || graphType == typeof(IntGraphType)
                 || graphType == typeof(FloatGraphType)
+                || graphType == typeof(LongGraphType)
                 || graphType == typeof(BigIntGraphType)
                 || graphType == typeof(DateGraphType)
-                || graphType == typeof(LongGraphType);
+                || graphType == typeof(DateTimeGraphType)
+                //|| graphType == typeof(TimeSpanGraphType)
+                ;
         }
 
         private static bool IsStringFilter(Type graphType)
