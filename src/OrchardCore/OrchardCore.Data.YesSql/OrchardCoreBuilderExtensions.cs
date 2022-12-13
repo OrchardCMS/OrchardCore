@@ -155,24 +155,23 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     session.RegisterIndexes(scopedServices.ToArray());
 
-                    ShellScope.Current
-                        .RegisterBeforeDispose(scope =>
-                        {
-                            return scope.ServiceProvider
-                                .GetRequiredService<IDocumentStore>()
-                                .CommitAsync();
-                        })
-                        .AddExceptionHandler((scope, e) =>
-                        {
-                            return scope.ServiceProvider
-                                .GetRequiredService<IDocumentStore>()
-                                .CancelAsync();
-                        });
-
                     return session;
                 });
 
-                services.AddScoped<IDocumentStore, DocumentStore>();
+                services.AddScoped<IDocumentStore>(sp => {
+                    var documentStore = sp.CreateInstance<DocumentStore>();
+                    ShellScope.Current
+                        .RegisterBeforeDispose(scope =>
+                        {
+                            return documentStore.CommitAsync();
+                        })
+                        .AddExceptionHandler((scope, e) =>
+                        {
+                            return documentStore.CancelAsync();
+                        });
+                    return documentStore;
+                });
+
                 services.AddSingleton<IFileDocumentStore, FileDocumentStore>();
                 services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
             });
