@@ -27,10 +27,4 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Setup.Abstractions\OrchardCore.Setup.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Views\NavigationItemText-configuration.Id.cshtml">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
 </Project>
