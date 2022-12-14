@@ -35,7 +35,6 @@ namespace OrchardCore.Menu
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddDataMigration<Migrations>();
-
             services.AddScoped<IShapeTableProvider, MenuShapes>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();

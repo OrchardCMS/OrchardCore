@@ -22,7 +22,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Recipes.Core",
     Name = "Recipes",
-    Description = "The Recipes services.",
+    Description = "Provides recipe services.",
     Dependencies = new[]
     {
         "OrchardCore.Recipes.Core"

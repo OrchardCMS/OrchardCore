@@ -23,7 +23,9 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             services.AddTransient<IDeploymentSource, ExportContentToDeploymentTargetDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ExportContentToDeploymentTargetDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ExportContentToDeploymentTargetDeploymentStepDriver>();
-            services.AddScoped<IDataMigration, ExportContentToDeploymentTargetMigrations>(); services.AddScoped<IContentDisplayDriver, ExportContentToDeploymentTargetContentDriver>();
+
+            services.AddScoped<IDataMigration, ExportContentToDeploymentTargetMigrations>();
+            services.AddScoped<IContentDisplayDriver, ExportContentToDeploymentTargetContentDriver>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ExportContentToDeploymentTargetContentsAdminListDisplayDriver>();
 
             services.AddSiteSettingsPropertyDeploymentStep<ExportContentToDeploymentTargetSettings, ExportContentToDeploymentTargetStartup>(S => S["Export Content To Deployment Target settings"], S => S["Exports the Export Content To Deployment Target settings."]);
