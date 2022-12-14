@@ -59,10 +59,14 @@ namespace OrchardCore.Recipes
     [Feature("OrchardCore.Recipes.Core")]
     public class RecipesCoreStartup : StartupBase
     {
-
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddRecipes();
+            services.AddScoped<IRecipeHarvester, ApplicationRecipeHarvester>();
+            services.AddScoped<IRecipeHarvester, RecipeHarvester>();
+            services.AddTransient<IRecipeExecutor, RecipeExecutor>();
+            services.AddScoped<IRecipeMigrator, RecipeMigrator>();
+            services.AddScoped<IRecipeReader, RecipeReader>();
+            services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentFeatureProvider>();
         }
     }
 }

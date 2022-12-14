@@ -31,7 +31,11 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget",
     Name = "Export Content To Deployment Target",
     Description = "Adds an export to deployment target action to the content items list.",
-    Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Deployment", "OrchardCore.Recipes.Core" },
+    Dependencies = new[] {
+        "OrchardCore.Contents",
+        "OrchardCore.Deployment",
+        "OrchardCore.Recipes.Core"
+    },
     Category = "Content Management"
 )]
 

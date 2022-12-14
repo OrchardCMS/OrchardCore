@@ -60,7 +60,7 @@ namespace OrchardCore.AdminDashboard
             routes.MapAreaControllerRoute(
                 name: "AdminDashboard",
                 areaName: "OrchardCore.AdminDashboard",
-                pattern: $"{_adminOptions.AdminUrlPrefix}/dashboard/manage",
+                pattern: $"{ _adminOptions.AdminUrlPrefix }/dashboard/manage",
                 defaults: new { controller = dashboardControllerName, action = nameof(DashboardController.Manage) }
             );
         }

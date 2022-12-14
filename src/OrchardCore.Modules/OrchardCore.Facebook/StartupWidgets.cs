@@ -19,8 +19,7 @@ namespace OrchardCore.Facebook
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddDataMigration<WidgetMigrations>();
-
+            services.AddScoped<IDataMigration, WidgetMigrations>();
             services.AddScoped<IShapeTableProvider, LiquidShapes>();
 
             services.AddContentPart<FacebookPluginPart>()
