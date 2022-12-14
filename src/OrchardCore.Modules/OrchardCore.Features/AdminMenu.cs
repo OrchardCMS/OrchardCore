@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Features.Core;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Features
@@ -22,14 +23,13 @@ namespace OrchardCore.Features
             }
 
             builder
-                .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, configuration => configuration
-                    .AddClass("menu-configuration").Id("configuration")
+                .Add(S["Configuration"], configuration => configuration
                     .Add(S["Features"], S["Features"].PrefixPosition(), deployment => deployment
                         // Since features admin accepts tenant, always pass empty string to create valid link for current tenant.
-                        .Action("Features", "Admin", new { area = "OrchardCore.Features", tenant = String.Empty })
+                        .Action("Features", "Admin", new { area = FeaturesConstants.FeatureId, tenant = String.Empty })
                         .Permission(Permissions.ManageFeatures)
                         .LocalNav()
-                    ), priority: 1
+                    )
                 );
 
             return Task.CompletedTask;

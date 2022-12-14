@@ -11,6 +11,7 @@ using OrchardCore.Facebook.Widgets.Models;
 using OrchardCore.Facebook.Widgets.Services;
 using OrchardCore.Facebook.Widgets.Settings;
 using OrchardCore.Modules;
+using OrchardCore.Recipes;
 
 namespace OrchardCore.Facebook
 {
@@ -19,7 +20,9 @@ namespace OrchardCore.Facebook
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDataMigration, WidgetMigrations>();
+            services.AddRecipes()
+                .AddDataMigration<WidgetMigrations>();
+
             services.AddScoped<IShapeTableProvider, LiquidShapes>();
 
             services.AddContentPart<FacebookPluginPart>()

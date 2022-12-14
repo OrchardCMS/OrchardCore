@@ -6,6 +6,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
@@ -24,7 +25,9 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ExportContentToDeploymentTargetDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ExportContentToDeploymentTargetDeploymentStepDriver>();
 
-            services.AddScoped<IDataMigration, ExportContentToDeploymentTargetMigrations>();
+            services.AddRecipes()
+                .AddDataMigration<ExportContentToDeploymentTargetMigrations>();
+
             services.AddScoped<IContentDisplayDriver, ExportContentToDeploymentTargetContentDriver>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ExportContentToDeploymentTargetContentsAdminListDisplayDriver>();
 

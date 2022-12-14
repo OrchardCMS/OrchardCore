@@ -14,6 +14,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using YesSql.Indexes;
 
@@ -42,7 +43,8 @@ namespace OrchardCore.AdminDashboard
 
             services.AddScoped<IContentDisplayDriver, DashboardContentDisplayDriver>();
 
-            services.AddDataMigration<Migrations>();
+            services.AddRecipes()
+                .AddDataMigration<Migrations>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -60,7 +62,7 @@ namespace OrchardCore.AdminDashboard
             routes.MapAreaControllerRoute(
                 name: "AdminDashboard",
                 areaName: "OrchardCore.AdminDashboard",
-                pattern: $"{ _adminOptions.AdminUrlPrefix }/dashboard/manage",
+                pattern: $"{_adminOptions.AdminUrlPrefix}/dashboard/manage",
                 defaults: new { controller = dashboardControllerName, action = nameof(DashboardController.Manage) }
             );
         }

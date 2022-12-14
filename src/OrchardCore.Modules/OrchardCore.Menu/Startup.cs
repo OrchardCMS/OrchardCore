@@ -19,6 +19,7 @@ using OrchardCore.Menu.TagHelpers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Menu
@@ -34,7 +35,9 @@ namespace OrchardCore.Menu
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddDataMigration<Migrations>();
+            services.AddRecipes()
+                .AddDataMigration<Migrations>();
+
             services.AddScoped<IShapeTableProvider, MenuShapes>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();

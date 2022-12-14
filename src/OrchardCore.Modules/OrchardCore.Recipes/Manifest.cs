@@ -8,7 +8,6 @@ using OrchardCore.Modules.Manifest;
     Description = "The Recipes module allows you to execute recipe steps from json files.",
     Dependencies = new[]
     {
-        "OrchardCore.Features",
         "OrchardCore.Scripting"
     },
     Category = "Infrastructure",

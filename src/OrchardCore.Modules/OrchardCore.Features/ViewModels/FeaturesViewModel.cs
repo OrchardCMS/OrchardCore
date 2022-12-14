@@ -7,6 +7,8 @@ namespace OrchardCore.Features.ViewModels
     {
         public string Name { get; set; }
 
+        public bool IsDefaultTenant { get; set; }
+
         public IEnumerable<ModuleFeature> Features { get; set; }
     }
 }

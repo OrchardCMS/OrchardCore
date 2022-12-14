@@ -8,6 +8,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Features.Controllers;
+using OrchardCore.Features.Core;
 using OrchardCore.Features.Deployment;
 using OrchardCore.Features.Recipes.Executors;
 using OrchardCore.Features.Services;
@@ -51,19 +52,19 @@ namespace OrchardCore.Features
 
             routes.MapAreaControllerRoute(
                 name: "Features",
-                areaName: "OrchardCore.Features",
+                areaName: FeaturesConstants.FeatureId,
                 pattern: _adminOptions.AdminUrlPrefix + "/Features/{tenant?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Features) }
             );
             routes.MapAreaControllerRoute(
                 name: "FeaturesDisable",
-                areaName: "OrchardCore.Features",
+                areaName: FeaturesConstants.FeatureId,
                 pattern: _adminOptions.AdminUrlPrefix + "/Features/{id}/Disable/{tenant?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Disable) }
             );
             routes.MapAreaControllerRoute(
                 name: "FeaturesEnable",
-                areaName: "OrchardCore.Features",
+                areaName: FeaturesConstants.FeatureId,
                 pattern: _adminOptions.AdminUrlPrefix + "/Features/{id}/Enable/{tenant?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Enable) }
             );

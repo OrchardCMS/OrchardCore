@@ -1,5 +1,6 @@
 @using Microsoft.AspNetCore.Html
-@using OrchardCore.Modules;
+@using OrchardCore.Features.Core
+@using OrchardCore.Modules
 @model FeaturesViewModel
 @{
     var title = T["Features"];
@@ -132,7 +133,7 @@
                                                 </div>
                                             }
                                         }
-                                        else if (feature.IsAlwaysEnabled && feature.IsEnabled)
+                                        else if (feature.IsEnabled && (feature.IsAlwaysEnabled || (Model.IsDefaultTenant && String.Equals(feature.Descriptor.Id, FeaturesConstants.FeatureId, StringComparison.OrdinalIgnoreCase))))
                                         {
                                             <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is always enabled and cannot be manually disabled."]">
                                                 <button class="btn btn-danger btn-sm" disabled>@T["Disable"]</button>
