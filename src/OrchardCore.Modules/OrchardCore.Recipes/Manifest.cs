@@ -1,15 +1,32 @@
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
-    Name = "Recipes",
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
-    Version = ManifestConstants.OrchardCoreVersion,
+    Version = ManifestConstants.OrchardCoreVersion
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Recipes",
+    Name = "Recipes",
     Description = "The Recipes module allows you to execute recipe steps from json files.",
     Dependencies = new[]
     {
-        "OrchardCore.Scripting"
+        "OrchardCore.Scripting",
+        "OrchardCore.Recipes.Core"
     },
     Category = "Infrastructure",
     IsAlwaysEnabled = true
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Recipes.Core",
+    Name = "Recipes",
+    Description = "The Recipes services.",
+    Dependencies = new[]
+    {
+        "OrchardCore.Recipes.Core"
+    },
+    Category = "Infrastructure",
+    EnabledByDependencyOnly = true
 )]

@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Recipes
@@ -8,12 +7,12 @@ namespace OrchardCore.Recipes
     {
         public static IServiceCollection AddRecipes(this IServiceCollection services)
         {
-            services.TryAddScoped<IRecipeHarvester, ApplicationRecipeHarvester>();
-            services.TryAddScoped<IRecipeHarvester, RecipeHarvester>();
-            services.TryAddTransient<IRecipeExecutor, RecipeExecutor>();
-            services.TryAddScoped<IRecipeMigrator, RecipeMigrator>();
-            services.TryAddScoped<IRecipeReader, RecipeReader>();
-            services.TryAddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentFeatureProvider>();
+            services.AddScoped<IRecipeHarvester, ApplicationRecipeHarvester>();
+            services.AddScoped<IRecipeHarvester, RecipeHarvester>();
+            services.AddTransient<IRecipeExecutor, RecipeExecutor>();
+            services.AddScoped<IRecipeMigrator, RecipeMigrator>();
+            services.AddScoped<IRecipeReader, RecipeReader>();
+            services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentFeatureProvider>();
 
             return services;
         }

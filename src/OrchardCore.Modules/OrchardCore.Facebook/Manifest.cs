@@ -29,5 +29,5 @@ using OrchardCore.Modules.Manifest;
     Name = "Facebook Social Plugins Widgets",
     Category = "Facebook",
     Description = "Integrates Facebook Social Plugins as predefined widgets",
-    Dependencies = new[] { FacebookConstants.Features.Core, "OrchardCore.Widgets" }
+    Dependencies = new[] { FacebookConstants.Features.Core, "OrchardCore.Widgets", "OrchardCore.Recipes.Core" }
 )]
