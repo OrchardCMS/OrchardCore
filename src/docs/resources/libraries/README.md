@@ -12,7 +12,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Azure Storage Blobs](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/storage/Azure.Storage.Blobs/README.md) | Azure Storage Blobs client library for .NET. | 12.14.1 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Storage Blobs for DataProtection](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Extensions.AspNetCore.DataProtection.Blobs_1.2.3/sdk/extensions/Azure.Extensions.AspNetCore.DataProtection.Blobs/README.md) | Allows storing ASP.NET Core DataProtection keys in Azure Blob Storage. | 1.2.3 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Castle.Core](https://github.com/castleproject/Core) | Castle DynamicProxy. | 5.1.0 |[Apache-2.0](https://github.com/castleproject/Core/blob/master/LICENSE) |
-| [Fluid.Core](https://github.com/sebastienros/fluid) | .NET Liquid template engine. | 2.2.16 | [MIT](https://github.com/sebastienros/fluid/blob/dev/LICENSE) |
+| [Fluid.Core](https://github.com/sebastienros/fluid) | .NET Liquid template engine. | 2.3.0 | [MIT](https://github.com/sebastienros/fluid/blob/dev/LICENSE) |
 | [GraphQL](https://github.com/graphql/graphiql) | GraphiQL & GraphQL. | 4.6.1 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
 | [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 8.0.601 | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
 | [Image Sharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 2.0.2 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
@@ -20,19 +20,19 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.0.0-beta-2043 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
 | [Lorem.NET for netstandard](https://github.com/trichards57/Lorem.Universal.NET) | A .NET library for all things random! | 4.0.80 | [MIT](https://github.com/trichards57/Lorem.Universal.NET/blob/master/license.md) |
 | [Lucene.Net](https://github.com/apache/lucenenet) | .NET full-text search engine. | 4.8.0-beta00016 | [Apache-2.0](https://github.com/apache/lucenenet/blob/master/LICENSE.txt) |
-| [MailKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 3.4.2 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
+| [MailKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 3.4.3 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
 | [Markdig](https://github.com/lunet-io/markdig) | .NET Markdown engine. | 0.30.4 | [BSD-2-Clause](https://github.com/lunet-io/markdig/blob/master/license.txt) |
 | [MessagePack](https://github.com/neuecc/MessagePack-CSharp) | Extremely Fast MessagePack Serializer for C# | 2.2.60 | [MIT](https://github.com/neuecc/MessagePack-CSharp/blob/master/LICENSE) |
 | [Microsoft.SourceLink.GitHub](https://github.com/dotnet/sourcelink) | Source Link enables a great source debugging experience. | 1.1.1 | [MIT](https://github.com/dotnet/sourcelink/blob/main/License.txt) |
-| [MimeKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 3.4.2 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
+| [MimeKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 3.4.3 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
 | [MiniProfiler](https://github.com/MiniProfiler/dotnet) | A simple but effective mini-profiler for ASP.NET (and Core) websites | 4.2.22 | [MIT](https://github.com/MiniProfiler/dotnet/blob/main/LICENSE.txt) |
-| [Moq](https://github.com/moq/moq) | The most popular and friendly mocking framework for .NET. | 4.18.2 | [MIT](https://github.com/moq/moq/blob/main/LICENSE) |
+| [Moq](https://github.com/moq/moq) | The most popular and friendly mocking framework for .NET. | 4.18.3 | [MIT](https://github.com/moq/moq/blob/main/LICENSE) |
 | [NCrontab](https://github.com/atifaziz/NCrontab) | Crontab for .NET | 3.3.1 | [Apache-2.0](https://github.com/atifaziz/NCrontab/blob/master/COPYING.txt) |
 | [NEST](https://github.com/elastic/elasticsearch-net) | .NET Library for Elasticsearch | 7.17.5 | [Apache-2.0](https://github.com/elastic/elasticsearch-net/blob/main/LICENSE.txt) |
 | [NLog.Web.AspNetCore](https://github.com/NLog/NLog.Web/tree/master/src/NLog.Web.AspNetCore) | NLog integration for ASP.NET. | 5.2.0 | [BSD-3-Clause](https://github.com/NLog/NLog.Web/blob/master/LICENSE) |
 | [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) | Json.NET is a popular high-performance JSON framework for .NET | 13.0.2 | [MIT](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md) |
 | [NJsonSchema](https://github.com/RicoSuter/NJsonSchema) | JSON Schema reader, generator and validator for .NET | 10.8.0 | [MIT](https://github.com/RicoSuter/NJsonSchema/blob/master/LICENSE.md) |
-| [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 3.1.5 | [Apache-2.0](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
+| [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 3.1.6 | [Apache-2.0](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
 | [OpenIddict](https://github.com/openiddict/openiddict-core) | Versatile OpenID Connect stack for ASP.NET Core. | 3.1.1 | [Apache-2.0](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
 | [PdfPig](https://github.com/UglyToad/PdfPig/) | Library to read and extract text and other content from PDF files. | 0.1.6 | [Apache-2.0](https://github.com/UglyToad/PdfPig/blob/master/LICENSE) |
 | [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore) | Serilog integration for ASP.NET Core. | 6.1.0 | [Apache-2.0](https://github.com/serilog/serilog-aspnetcore/blob/dev/LICENSE) |
@@ -91,5 +91,5 @@ The below table lists the different Tests libraries:
 | [Cypress Orchard](https://www.npmjs.com/package/cypress-orchardcore) | A collection of cypress commands for Orchard Core. | 0.4.5 | MIT |
 | [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 17.4.0 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
 | [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.4.2 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |
-| [xUnit Analyzers](https://github.com/xunit/xunit.analyzers) | Roslyn analyzers for xUnit.net. | 1.0.0 | [MIT](https://github.com/xunit/xunit.analyzers/blob/main/LICENSE) |
+| [xUnit Analyzers](https://github.com/xunit/xunit.analyzers) | Roslyn analyzers for xUnit.net. | 1.1.0 | [MIT](https://github.com/xunit/xunit.analyzers/blob/main/LICENSE) |
 | [xUnit VS runner](https://github.com/xunit/visualstudio.xunit) | VSTest runner for xUnit.net. | 2.4.5 | [MIT](https://github.com/xunit/visualstudio.xunit/blob/main/License.txt) |
