@@ -143,16 +143,13 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddScoped(sp =>
                 {
                     var store = sp.GetService<IStore>();
-
                     if (store == null)
                     {
                         return null;
                     }
 
                     var session = store.CreateSession();
-
                     var scopedServices = sp.GetServices<IScopedIndexProvider>();
-
                     session.RegisterIndexes(scopedServices.ToArray());
 
                     ShellScope.Current
@@ -168,8 +165,16 @@ namespace Microsoft.Extensions.DependencyInjection
                     return session;
                 });
 
-                services.AddScoped<IDocumentStore>(sp => {
-                    var documentStore = sp.CreateInstance<DocumentStore>();
+                services.AddScoped<IDocumentStore>(sp =>
+                {
+                    var session = sp.GetService<ISession>();
+                    if (session == null)
+                    {
+                        return null;
+                    }
+
+                    var documentStore = new DocumentStore(session);
+
                     ShellScope.Current
                         .RegisterBeforeDispose(scope =>
                         {
@@ -179,6 +184,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         {
                             return documentStore.CancelAsync();
                         });
+
                     return documentStore;
                 });
 
@@ -186,6 +192,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.AddScoped<IFileDocumentStore>(sp => {
                     var fileDocumentStore = sp.CreateInstance<FileDocumentStore>();
+
                     ShellScope.Current
                         .RegisterBeforeDispose(scope =>
                         {
@@ -195,6 +202,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         {
                             return fileDocumentStore.CancelAsync();
                         });
+
                     return fileDocumentStore;
                 });
 
