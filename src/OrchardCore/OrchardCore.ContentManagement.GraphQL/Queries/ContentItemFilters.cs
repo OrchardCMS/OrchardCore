@@ -17,19 +17,16 @@ public class ContentItemFilters : GraphQLFilter<ContentItem>
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IContentManager _contentManager;
     private readonly IContentItemFactory _contentItemFactory;
 
     public ContentItemFilters(IHttpContextAccessor httpContextAccessor,
         IContentDefinitionManager contentDefinitionManager,
         IAuthorizationService authorizationService,
-        IContentManager contentManager,
         IContentItemFactory contentItemFactory)
     {
         _httpContextAccessor = httpContextAccessor;
         _contentDefinitionManager = contentDefinitionManager;
         _authorizationService = authorizationService;
-        _contentManager = contentManager;
         _contentItemFactory = contentItemFactory;
     }
 
