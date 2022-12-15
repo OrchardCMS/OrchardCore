@@ -185,7 +185,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.AddSingleton<IDocumentFileStore, FileSystemDocumentStore>();
 
-                services.AddScoped<IFileDocumentStore>(sp => {
+                services.AddScoped<IFileDocumentStore>(sp =>
+                {
                     var fileDocumentStore = sp.CreateInstance<FileDocumentStore>();
 
                     ShellScope.Current
