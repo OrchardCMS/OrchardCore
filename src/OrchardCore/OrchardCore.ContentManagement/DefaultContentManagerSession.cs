@@ -19,7 +19,7 @@ namespace OrchardCore.ContentManagement
                 _itemByVersionId.Add(item.Id, item);
             }
 
-            // Is it the Published version?
+            // Is it the Published version?Add
             if (item.Published)
             {
                 _publishedItemsById[item.ContentItemId] = item;

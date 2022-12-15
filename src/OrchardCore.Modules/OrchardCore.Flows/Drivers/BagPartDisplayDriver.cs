@@ -28,13 +28,15 @@ namespace OrchardCore.Flows.Drivers
         private readonly IServiceProvider _serviceProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IContentItemFactory _contentItemFactory;
 
         public BagPartDisplayDriver(
             IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
             IServiceProvider serviceProvider,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService
+            IAuthorizationService authorizationService,
+            IContentItemFactory contentItemFactory
             )
         {
             _contentDefinitionManager = contentDefinitionManager;
@@ -42,6 +44,7 @@ namespace OrchardCore.Flows.Drivers
             _serviceProvider = serviceProvider;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
+            _contentItemFactory = contentItemFactory;
         }
 
         public override IDisplayResult Display(BagPart bagPart, BuildPartDisplayContext context)
@@ -231,8 +234,7 @@ namespace OrchardCore.Flows.Drivers
 
             foreach (var contentType in contentTypes)
             {
-                var dummyContent = await _contentManager.NewAsync(contentType.Name);
-                dummyContent.Owner = GetCurrentOwner();
+                var dummyContent = await _contentItemFactory.CreateAsync(contentType.Name, GetCurrentOwner());
 
                 if (!await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, dummyContent))
                 {
