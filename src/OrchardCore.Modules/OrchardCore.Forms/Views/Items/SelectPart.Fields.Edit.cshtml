@@ -140,7 +140,7 @@
 </div>
 
 <script at="Foot" depends-on="selectOptionsEditor">
-    selectOptionsEditor.initilizeElement('@(widgetId)-selectOptions', @Html.Raw(Model.Options), @Model.DefaultValue);
+    selectOptionsEditor.initilizeElement('@(widgetId)-selectOptions', @Html.Raw(Model.Options), '@Model.DefaultValue');
 
     var wrapper = document.getElementById('@Html.IdFor(m => m)');
     if (wrapper != null) {

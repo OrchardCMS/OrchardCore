@@ -10,71 +10,56 @@ passwordManager = function () {
     digits: '0123456789',
     symbols: '!#$%&\()*+,-./:;<=>\'?@@[\]^_`{|}~'
   };
-
   var getRandomChar = function getRandomChar(str) {
     return str.charAt(Math.floor(Math.random() * str.length));
   };
-
   var shuffle = function shuffle(str) {
     return str.sort(function () {
       return 0.5 - Math.random();
     });
   };
-
-  var copyPassword = function copyPassword(str) {
-    return navigator.clipboard.writeText(str);
-  };
-
   var meetUniqueRule = function meetUniqueRule(str, requiredUniqueChars) {
     var uniqueCharacters = str.filter(function (item, i, ar) {
       return ar.indexOf(item) === i;
     });
     return uniqueCharacters.length >= requiredUniqueChars;
   };
-
+  var copyPassword = function copyPassword(str) {
+    return navigator.clipboard.writeText(str);
+  };
   var generatePassword = function generatePassword(requiredPasswordLength, requireUppercase, requireLowercase, requireDigit, requireNonAlphanumeric, requiredUniqueChars) {
     var password = [];
     requiredUniqueChars = requiredUniqueChars | 1;
-
     if (requireUppercase) {
       // At least one uppercase
       password.push(getRandomChar(allowed.uppers));
     }
-
     if (requireLowercase) {
       // At least one lowercase
       password.push(getRandomChar(allowed.lowers));
     }
-
     if (requireDigit) {
       // At least one digit
       password.push(getRandomChar(allowed.digits));
     }
-
     if (requireNonAlphanumeric) {
       // At least one special character
       password.push(getRandomChar(allowed.symbols));
     }
-
     var passwordLength = password.length;
-
     if (passwordLength < requiredPasswordLength) {
       // At this point we need lengthier password.Fill the rest of the password with random characters
       var combineAllowed = shuffle(Object.values(allowed)).join('');
-
       for (var i = passwordLength; i < requiredPasswordLength; i++) {
         password.push(getRandomChar(combineAllowed));
       }
     }
-
     if (requiredUniqueChars > 1 && !meetUniqueRule(password, requiredUniqueChars)) {
       // The generated password does not meet the required-unique-chars requirment, create another one
       return generatePassword(requiredPasswordLength, requireUppercase, requireLowercase, requireDigit, requireNonAlphanumeric, requiredUniqueChars);
     }
-
     return shuffle(password).join('');
   };
-
   return {
     generatePassword: generatePassword,
     copyPassword: copyPassword

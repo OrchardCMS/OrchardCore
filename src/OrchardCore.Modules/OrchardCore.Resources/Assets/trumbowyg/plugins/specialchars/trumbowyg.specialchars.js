@@ -28,6 +28,9 @@
             en: {
                 specialChars: 'Special characters'
             },
+            sl: {
+                specialChars: 'Posebni znaki'
+            },
             by: {
                 specialChars: 'Спецыяльныя сімвалы'
             },
