@@ -238,14 +238,13 @@ namespace OrchardCore.OpenId.Controllers
 
             descriptor.Resources.Clear();
 
-            if (!string.IsNullOrEmpty(model.Resources))
+            if (!String.IsNullOrEmpty(model.Resources))
             {
                 descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
             }
 
             descriptor.Resources.UnionWith(model.Tenants
-                .Where(tenant => tenant.Selected)
-                .Where(tenant => !String.Equals(tenant.Name, _shellSettings.Name))
+                .Where(tenant => tenant.Selected && !String.Equals(tenant.Name, _shellSettings.Name))
                 .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
 
             await _scopeManager.UpdateAsync(scope, descriptor);
