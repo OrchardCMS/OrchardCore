@@ -20,7 +20,7 @@ public class UserRolePermissions : IPermissionProvider
     {
         var roles = (await _roleService.GetRoleNamesAsync())
             .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase)
-            .OrderBy(x => x).ToList();
+            .OrderBy(x => x);
 
         var list = new List<Permission>();
 

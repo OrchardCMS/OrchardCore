@@ -239,8 +239,6 @@ namespace OrchardCore.Users
             services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
             services.AddScoped<IDisplayDriver<User>, UserRoleDisplayDriver>();
             services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
-            services.AddScoped<IDataMigration, UserMigrations>();
-            services.AddSingleton<IIndexProvider, UserRoleIndexProvider>();
             services.AddScoped<IPermissionProvider, UserRolePermissions>();
             services.AddSingleton<IUsersAdminListFilterProvider, RolesAdminListFilterProvider>();
         }
