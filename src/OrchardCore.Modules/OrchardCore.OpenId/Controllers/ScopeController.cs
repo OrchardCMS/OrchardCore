@@ -98,7 +98,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 model.Tenants.Add(new CreateOpenIdScopeViewModel.TenantEntry
                 {
-                    Current = tenant.IsDefaultShell(),
+                    Current = String.Equals(tenant.Name, _shellSettings.Name),
                     Name = tenant.Name
                 });
             }
