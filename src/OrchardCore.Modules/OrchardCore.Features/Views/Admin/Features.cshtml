@@ -133,7 +133,7 @@
                                                 </div>
                                             }
                                         }
-                                        else if (feature.IsEnabled && (feature.IsAlwaysEnabled || (Model.IsDefaultTenant && String.Equals(feature.Descriptor.Id, FeaturesConstants.FeatureId, StringComparison.OrdinalIgnoreCase))))
+                                        else if (feature.IsEnabled && (feature.IsAlwaysEnabled || (Model.IsDefaultTenant && feature.Descriptor.Id == FeaturesConstants.FeatureId)))
                                         {
                                             <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is always enabled and cannot be manually disabled."]">
                                                 <button class="btn btn-danger btn-sm" disabled>@T["Disable"]</button>
