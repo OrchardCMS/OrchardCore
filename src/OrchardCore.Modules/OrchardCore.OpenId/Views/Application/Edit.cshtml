@@ -195,6 +195,7 @@
         refreshClientSecret('@OpenIddictConstants.ClientTypes.Confidential');
         refreshFlows();
         refreshOfflineAccessTip(false);
+
         function refreshForbiddenFlows() {
             @if (settings == null)
             {
@@ -206,6 +207,7 @@
                     $("#AllowRefreshTokenFlowFieldSet").collapse("show");
                     $("#AllowLogoutEndpointFieldSet").collapse("show");
                 </text>
+
             }
             else
             {
@@ -220,6 +222,7 @@
                         $("#AllowAuthorizationCodeFlow").prop("checked", false);
                     </text>
                 }
+
                 if (settings.AllowClientCredentialsFlow)
                 {
                     <text>$("#AllowClientCredentialsFlowFieldSet").collapse("show");</text>
@@ -231,6 +234,7 @@
                         $("#AllowClientCredentialsFlow").prop("checked", false);
                     </text>
                 }
+
                 if (settings.AllowImplicitFlow)
                 {
                     <text>$("#AllowImplicitFlowFieldSet").collapse("show");</text>
@@ -242,6 +246,7 @@
                         $("#AllowImplicitFlow").prop("checked", false);
                     </text>
                 }
+
                 if (settings.AllowHybridFlow)
                 {
                     <text>$("#AllowHybridFlowFieldSet").collapse("show");</text>
@@ -253,6 +258,7 @@
                         $("#AllowHybridFlowFlow").prop("checked", false);
                     </text>
                 }
+
                 if (settings.AllowPasswordFlow)
                 {
                     <text>$("#AllowPasswordFlowFieldSet").collapse("show");</text>
@@ -264,6 +270,7 @@
                         $("#AllowPasswordFlow").prop("checked", false);
                     </text>
                 }
+
                 if (settings.AllowRefreshTokenFlow)
                 {
                     <text>$("#AllowRefreshTokenFlowFieldSet").collapse("show");</text>
@@ -275,6 +282,7 @@
                         $("#AllowRefreshTokenFlow").prop("checked", false);
                     </text>
                 }
+
                 if (settings.LogoutEndpointPath.HasValue)
                 {
                     <text>$("#AllowLogoutEndpointFieldSet").collapse("show");</text>
@@ -288,11 +296,13 @@
                 }
             }
         }
+
         $("#Type").change(function () {
             refreshClientSecret();
         });
         function refreshClientSecret(defaultType) {
             var type = $("#Type"), secret = $("#ClientSecret");
+
             var allowClientCredentialsFlow = $("#AllowClientCredentialsFlow");
             if (type.val() === '@OpenIddictConstants.ClientTypes.Confidential') {
                 secret.parent().show();
@@ -304,9 +314,12 @@
                 allowClientCredentialsFlow.attr('disabled', true);
                 allowClientCredentialsFlow.prop("checked", false);
             }
+
             var clientSecretHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint");
+
             if (defaultType === $("#Type").val())
                 return;
+
             if ($("#Type").val() === '@OpenIddictConstants.ClientTypes.Confidential') {
                 clientSecretHints.each(function () { this.innerText = this.innerText.replace("client_id, ", "client_id, client_secret, "); });
             }
@@ -314,14 +327,17 @@
                 clientSecretHints.each(function () { this.innerText = this.innerText.replace("client_id, client_secret, ", "client_id, "); });
             }
         }
+
         $("#AllowRefreshTokenFlow").change(function () {
             refreshOfflineAccessTip();
         });
+
         function refreshOfflineAccessTip(defaultValue) {
             var offlineAccessHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint");
             var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
             if (defaultValue === allowRefreshTokenFlow.prop('checked'))
                 return;
+
             if (allowRefreshTokenFlow.prop('checked')) {
                 offlineAccessHints.each(function () { this.innerText = this.innerText.replace("roles", "roles, offline_access"); });
             }
@@ -329,9 +345,11 @@
                 offlineAccessHints.each(function () { this.innerText = this.innerText.replace(", offline_access", ""); });
             }
         }
+
         $("#AllowClientCredentialsFlow, #AllowPasswordFlow, #AllowAuthorizationCodeFlow, #AllowImplicitFlow, #AllowHybridFlow, #AllowRefreshTokenFlow").change(function () {
             refreshFlows();
         });
+
         function refreshFlows() {
             refreshRoleGroup();
             refreshAllowRefreshTokenFlowVisibility();
@@ -342,6 +360,7 @@
         }
         function refreshAllowRefreshTokenFlowVisibility() {
             var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
+
             if ($("#AllowPasswordFlow").prop('checked') ||
                 $("#AllowAuthorizationCodeFlow").prop('checked') ||
                 $("#AllowHybridFlow").prop('checked')) {
@@ -358,6 +377,7 @@
             var redirectSection = $("#RedirectSection");
             var skipConsent = $("#SkipConsent");
             var postLogoutRedirecUris = $("#postLogoutRedirectUris")
+
             if ($("#AllowImplicitFlow").prop('checked') ||
                 $("#AllowAuthorizationCodeFlow").prop('checked') ||
                 $("#AllowHybridFlow").prop('checked')) {
