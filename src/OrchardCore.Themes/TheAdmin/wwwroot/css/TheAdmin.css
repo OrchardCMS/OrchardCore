@@ -8709,7 +8709,7 @@ html[data-theme=default] .text-warning {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-warning-rgb), var(--bs-text-opacity)) !important;
 }
-html[data-theme=default] .text-danger {
+html[data-theme=default] .text-danger, html[data-theme=default] .field-validation-error, html[data-theme=default] .has-validation-error {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important;
 }
@@ -27667,6 +27667,15 @@ html[dir][data-theme=default] div.editor-widget.find-widget .button.codicon:acti
   background-color: transparent;
   border-color: transparent;
 }
+html[data-theme=default] span.field-validation-error {
+  width: 100%;
+}
+html[dir][data-theme=default] .has-filter .btn:not(.show), html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .has-filter .close:not(.show), html[dir][data-theme=default] .has-filter .button:not(.show), html[dir][data-theme=default] .has-filter .bootstrap-select .popover-header .close:not(.show), html[dir][data-theme=default] .bootstrap-select .popover-header .has-filter .close:not(.show) {
+  border-color: #ced4da !important;
+}
+html[data-theme=default] .has-filter .form-control-feedback, html[data-theme=default] .has-search .form-control-feedback {
+  color: #aaa;
+}
 html[data-theme=default] body {
   --bs-blue: #0d6efd;
   --bs-indigo: #6610f2;
@@ -29153,9 +29162,6 @@ html[data-theme=default] label .field-validation-error::before {
 html[data-theme=default] .field-validation-valid {
   display: none;
 }
-html[data-theme=default] select[multiple] {
-  min-height: 300px;
-}
 html[data-theme=default] input[type=password]::-ms-reveal,
 html[data-theme=default] input[type=password]::-ms-clear {
   display: none;
@@ -29174,7 +29180,6 @@ html[data-theme=default] .has-filter .form-control-feedback, html[data-theme=def
   height: 2rem;
   line-height: 1rem;
   pointer-events: none;
-  color: #aaa;
 }
 html[dir][data-theme=default] .has-filter .form-control-feedback, html[dir][data-theme=default] .has-search .form-control-feedback {
   text-align: center;
@@ -38143,7 +38148,7 @@ html[data-theme=darkmode] .text-warning {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-warning-rgb), var(--bs-text-opacity)) !important;
 }
-html[data-theme=darkmode] .text-danger {
+html[data-theme=darkmode] .text-danger, html[data-theme=darkmode] .field-validation-error, html[data-theme=darkmode] .has-validation-error {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important;
 }
@@ -57101,6 +57106,18 @@ html[dir][data-theme=darkmode] div.editor-widget.find-widget .button.codicon:act
   background-color: transparent;
   border-color: transparent;
 }
+html[data-theme=darkmode] span.field-validation-error {
+  width: 100%;
+}
+html[dir][data-theme=darkmode] .has-filter .btn:not(.show), html[dir][data-theme=darkmode] .has-filter .button:not(.show), html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .has-filter .close:not(.show), html[dir][data-theme=darkmode] .has-filter .bootstrap-select .popover-header .close:not(.show), html[dir][data-theme=darkmode] .bootstrap-select .popover-header .has-filter .close:not(.show) {
+  border-color: #3C4144 !important;
+}
+html[data-theme=darkmode] .has-filter .form-control-feedback, html[data-theme=darkmode] .has-search .form-control-feedback {
+  color: #aaa;
+}
+html[data-theme=darkmode] .has-filter .form-control, html[data-theme=darkmode] .has-search .form-control {
+  color: #aaa;
+}
 html[data-theme=darkmode] body {
   --bs-blue: #007bff;
   --bs-indigo: #6610f2;
@@ -58645,9 +58662,6 @@ html[data-theme=darkmode] label .field-validation-error::before {
 html[data-theme=darkmode] .field-validation-valid {
   display: none;
 }
-html[data-theme=darkmode] select[multiple] {
-  min-height: 300px;
-}
 html[data-theme=darkmode] input[type=password]::-ms-reveal,
 html[data-theme=darkmode] input[type=password]::-ms-clear {
   display: none;
@@ -58666,7 +58680,6 @@ html[data-theme=darkmode] .has-filter .form-control-feedback, html[data-theme=da
   height: 2rem;
   line-height: 1rem;
   pointer-events: none;
-  color: #aaa;
 }
 html[dir][data-theme=darkmode] .has-filter .form-control-feedback, html[dir][data-theme=darkmode] .has-search .form-control-feedback {
   text-align: center;

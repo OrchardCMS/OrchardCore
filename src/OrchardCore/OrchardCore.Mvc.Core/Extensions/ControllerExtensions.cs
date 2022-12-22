@@ -32,7 +32,7 @@ namespace Microsoft.AspNetCore.Mvc
         /// Creates <see cref="ObjectResult"/> that produces a <see cref="HttpStatusCode.InternalServerError"/> response.
         /// </summary>
         /// <param name="controller">The <see cref="Controller"/>.</param>
-        /// <param name="value">An optinal value to set on <see cref="ObjectResult"/>.</param>
+        /// <param name="value">An optional value to set on <see cref="ObjectResult"/>.</param>
         public static ActionResult InternalServerError(this Controller controller, object value = null)
             => controller.StatusCode((int)HttpStatusCode.InternalServerError, value);
 

@@ -1,15 +1,21 @@
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using Cysharp.Text;
+using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Liquid.Services
 {
+    [Obsolete("This class has been deprecated and will be removed in the next major release, please use OrchardCore.Modules.Services instead.", false)]
     public class SlugService : ISlugService
     {
         private const char Hyphen = '-';
         private const int MaxLength = 1000;
+
+        public string Slugify(string text, char separator)
+        {
+            throw new NotImplementedException();
+        }
 
         public string Slugify(string text)
         {

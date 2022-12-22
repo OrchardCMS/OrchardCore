@@ -184,7 +184,7 @@ namespace OrchardCore.Users.Controllers
             options.UsersCount = userEntries.Count;
             options.TotalItemCount = pagerShape.TotalItemCount;
 
-            var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+            var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, "", "");
 
             var shapeViewModel = await _shapeFactory.CreateAsync<UsersIndexViewModel>("UsersAdminList", viewModel =>
             {
@@ -208,7 +208,7 @@ namespace OrchardCore.Users.Controllers
             }
 
             // Evaluate the values provided in the form post and map them to the filter result and route values.
-            await _userOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+            await _userOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false, "", "");
 
             // The route value must always be added after the editors have updated the models.
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
@@ -288,7 +288,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true);
+            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
 
             return View(shape);
         }
@@ -304,7 +304,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true);
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
 
             if (!ModelState.IsValid)
             {
@@ -347,7 +347,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
 
             ViewData["ReturnUrl"] = returnUrl;
 
@@ -380,7 +380,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
 
             if (!ModelState.IsValid)
             {

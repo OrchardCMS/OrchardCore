@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings.ViewModels;
 
@@ -13,10 +14,16 @@ namespace OrchardCore.Settings.Drivers
         public const string GroupId = "general";
 
         private readonly IStringLocalizer S;
+        private readonly IShellHost _shellHost;
+        private readonly ShellSettings _shellSettings;
 
-        public DefaultSiteSettingsDisplayDriver(IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer)
+        public DefaultSiteSettingsDisplayDriver(IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer,
+            IShellHost shellHost,
+            ShellSettings shellSettings)
         {
             S = stringLocalizer;
+            _shellHost = shellHost;
+            _shellSettings = shellSettings;
         }
 
         public override IDisplayResult Edit(ISite site)
@@ -60,7 +67,7 @@ namespace OrchardCore.Settings.Drivers
                         context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be greater than zero."]);
                     }
 
-                    if (site.MaxPageSize > 0 && site.MaxPageSize > model.PageSize.Value)
+                    if (site.MaxPageSize > 0 && model.PageSize.Value > site.MaxPageSize)
                     {
                         context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be less than or equal to {0}.", site.MaxPageSize]);
                     }
@@ -69,6 +76,11 @@ namespace OrchardCore.Settings.Drivers
                 if (!String.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out _))
                 {
                     context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
+                }
+
+                if (context.Updater.ModelState.IsValid)
+                {
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
 

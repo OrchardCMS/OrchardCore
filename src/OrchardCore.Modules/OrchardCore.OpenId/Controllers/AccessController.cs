@@ -442,6 +442,16 @@ namespace OrchardCore.OpenId.Controllers
 
         private async Task<IActionResult> ExchangeClientCredentialsGrantType(OpenIddictRequest request)
         {
+            if (request.HasScope(Scopes.OfflineAccess))
+            {
+                return Forbid(new AuthenticationProperties(new Dictionary<string, string>
+                {
+                    [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidScope,
+                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                        "The 'offline_access' scope is not allowed when using the client credentials grant."
+                }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            }
+
             // Note: client authentication is always enforced by OpenIddict before this action is invoked.
             var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
                 throw new InvalidOperationException("The application details cannot be found.");
