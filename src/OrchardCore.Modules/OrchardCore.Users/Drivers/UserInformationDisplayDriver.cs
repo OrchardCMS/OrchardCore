@@ -36,7 +36,7 @@ namespace OrchardCore.Users.Drivers
             }
 
             var site = await _siteService.GetSiteSettingsAsync();
-            var settings = site.As<UserProfileSettings>();
+            var settings = site.As<LoginSettings>();
 
             return Combine(
                 Initialize<EditUserNameViewModel>("UserName_Edit", async model =>
@@ -74,9 +74,6 @@ namespace OrchardCore.Users.Drivers
 
             // Custom properties should still be validated in the driver.
 
-            var site = await _siteService.GetSiteSettingsAsync();
-            var settings = site.As<UserProfileSettings>();
-
             if (context.IsNew)
             {
                 if (await context.Updater.TryUpdateModelAsync(userNameModel, Prefix))
@@ -91,6 +88,9 @@ namespace OrchardCore.Users.Drivers
             }
             else
             {
+                var site = await _siteService.GetSiteSettingsAsync();
+                var settings = site.As<LoginSettings>();
+
                 if (settings.AllowChangingUsername && await CanEditUserInfoAsync(user) && await context.Updater.TryUpdateModelAsync(userNameModel, Prefix))
                 {
                     user.UserName = userNameModel.UserName;

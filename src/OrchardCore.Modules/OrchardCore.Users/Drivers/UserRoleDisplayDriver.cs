@@ -150,10 +150,10 @@ namespace OrchardCore.Users.Drivers
                     // Add new roles
                     foreach (var role in authorizedSelectedRoleNames)
                     {
-                        var normalName = _userManager.NormalizeName(role);
-                        if (!await _userRoleStore.IsInRoleAsync(user, normalName, default))
+                        var normalizedName = _userManager.NormalizeName(role);
+                        if (!await _userRoleStore.IsInRoleAsync(user, normalizedName, default))
                         {
-                            await _userRoleStore.AddToRoleAsync(user, normalName, default);
+                            await _userRoleStore.AddToRoleAsync(user, normalizedName, default);
                         }
                     }
                 }

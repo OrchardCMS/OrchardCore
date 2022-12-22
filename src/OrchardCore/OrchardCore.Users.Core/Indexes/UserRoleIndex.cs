@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
 using OrchardCore.Users.Models;
 using YesSql.Indexes;
 
@@ -14,24 +14,24 @@ public class UserRoleIndex : MapIndex
 
 public class UserRoleIndexProvider : IndexProvider<User>
 {
+    private readonly ILookupNormalizer _keyNormalizer;
+
+    public UserRoleIndexProvider(ILookupNormalizer keyNormalizer)
+    {
+        _keyNormalizer = keyNormalizer;
+    }
+
     public override void Describe(DescribeContext<User> context)
     {
         context.For<UserRoleIndex>()
             .Map(user =>
             {
-                var indexes = new List<UserRoleIndex>();
-
-                foreach (var role in user.RoleNames.Distinct())
-                {
-                    indexes.Add(new UserRoleIndex()
+                return user.RoleNames.Distinct()
+                    .Select(roleName => new UserRoleIndex()
                     {
                         UserId = user.UserId,
-                        Role = role,
+                        Role = _keyNormalizer.NormalizeName(roleName),
                     });
-                }
-
-                return indexes;
             });
     }
-
 }

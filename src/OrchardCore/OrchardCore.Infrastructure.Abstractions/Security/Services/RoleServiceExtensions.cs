@@ -10,6 +10,12 @@ namespace OrchardCore.Security.Services
 {
     public static class RoleServiceExtensions
     {
+        public static HashSet<string> SystemRoleNames = new()
+        {
+            "Anonymous",
+            "Authenticated"
+        };
+
         public static async Task<IEnumerable<string>> GetRoleNamesAsync(this IRoleService roleService)
         {
             var roles = await roleService.GetRolesAsync();
@@ -24,7 +30,7 @@ namespace OrchardCore.Security.Services
             var accessibleRoles = new List<IRole>();
             foreach (var role in roles)
             {
-                if (new[] { "Anonymous", "Authenticated" }.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase))
+                if (SystemRoleNames.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase))
                 {
                     continue;
                 }

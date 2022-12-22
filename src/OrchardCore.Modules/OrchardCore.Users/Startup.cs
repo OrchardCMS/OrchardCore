@@ -36,11 +36,13 @@ using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Handlers;
+using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 using YesSql.Filters.Query;
+using YesSql.Indexes;
 
 namespace OrchardCore.Users
 {
@@ -224,8 +226,6 @@ namespace OrchardCore.Users
 
             services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
-
-            services.AddScoped<IDisplayDriver<ISite>, UserProfileSettingsDisplayDriver>();
         }
     }
 
