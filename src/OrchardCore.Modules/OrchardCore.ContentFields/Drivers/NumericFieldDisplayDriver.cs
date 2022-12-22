@@ -41,12 +41,19 @@ namespace OrchardCore.ContentFields.Drivers
             {
                 var settings = context.PartFieldDefinition.GetSettings<NumericFieldSettings>();
 
+                // The default value of a field is intended for the editor when a new content item
+                // is created (not for APIs). Since we may want to render the editor of a content
+                // item that was created by code, we only set the default value in the <input>
+                // of the field if it doesn't already have a value.
+                
                 if (field.Value.HasValue)
                 {
                     model.Value = Convert.ToString(field.Value, CultureInfo.CurrentUICulture);
                 }
                 else if (context.IsNew)
                 {
+                    // The content item is new and the field is not initialized, we can 
+                    // use the default value from the settings in the editor.
                     model.Value = settings.DefaultValue;
                 }
 
