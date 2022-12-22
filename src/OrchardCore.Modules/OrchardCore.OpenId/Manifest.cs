@@ -12,7 +12,8 @@ using OrchardCore.OpenId;
     Id = OpenIdConstants.Features.Core,
     Name = "OpenID Core Components",
     Category = "OpenID Connect",
-    Description = "Registers the core components used by the OpenID module."
+    Description = "Registers the core components used by the OpenID module.",
+    EnabledByDependencyOnly = true
 )]
 
 [assembly: Feature(

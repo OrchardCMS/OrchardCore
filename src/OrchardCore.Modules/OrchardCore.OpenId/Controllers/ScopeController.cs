@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -93,16 +94,17 @@ namespace OrchardCore.OpenId.Controllers
 
             var model = new CreateOpenIdScopeViewModel();
 
-            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.State == TenantState.Running))
+            foreach (var tenant in AccessibleTenants())
             {
                 model.Tenants.Add(new CreateOpenIdScopeViewModel.TenantEntry
                 {
-                    Current = string.Equals(tenant.Name, _shellSettings.Name),
+                    Current = tenant.IsDefaultShell(),
                     Name = tenant.Name
                 });
             }
 
             ViewData["ReturnUrl"] = returnUrl;
+
             return View(model);
         }
 
@@ -122,6 +124,7 @@ namespace OrchardCore.OpenId.Controllers
             if (!ModelState.IsValid)
             {
                 ViewData["ReturnUrl"] = returnUrl;
+
                 return View(model);
             }
 
@@ -132,19 +135,18 @@ namespace OrchardCore.OpenId.Controllers
                 Name = model.Name
             };
 
-            if (!string.IsNullOrEmpty(model.Resources))
+            if (!String.IsNullOrEmpty(model.Resources))
             {
                 descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
             }
 
             descriptor.Resources.UnionWith(model.Tenants
-                .Where(tenant => tenant.Selected)
-                .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name))
+                .Where(tenant => tenant.Selected && !String.Equals(tenant.Name, _shellSettings.Name))
                 .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
 
             await _scopeManager.CreateAsync(descriptor);
 
-            if (string.IsNullOrEmpty(returnUrl))
+            if (String.IsNullOrEmpty(returnUrl))
             {
                 return RedirectToAction("Index");
             }
@@ -175,22 +177,23 @@ namespace OrchardCore.OpenId.Controllers
 
             var resources = await _scopeManager.GetResourcesAsync(scope);
 
-            model.Resources = string.Join(" ",
+            model.Resources = String.Join(' ',
                 from resource in resources
-                where !string.IsNullOrEmpty(resource) && !resource.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.Ordinal)
+                where !String.IsNullOrEmpty(resource) && !resource.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.Ordinal)
                 select resource);
 
-            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.State == TenantState.Running))
+            foreach (var tenant in AccessibleTenants())
             {
                 model.Tenants.Add(new EditOpenIdScopeViewModel.TenantEntry
                 {
-                    Current = string.Equals(tenant.Name, _shellSettings.Name),
+                    Current = String.Equals(tenant.Name, _shellSettings.Name),
                     Name = tenant.Name,
                     Selected = resources.Contains(OpenIdConstants.Prefixes.Tenant + tenant.Name)
                 });
             }
 
             ViewData["ReturnUrl"] = returnUrl;
+
             return View(model);
         }
 
@@ -211,7 +214,7 @@ namespace OrchardCore.OpenId.Controllers
             if (ModelState.IsValid)
             {
                 var other = await _scopeManager.FindByNameAsync(model.Name);
-                if (other != null && !string.Equals(
+                if (other != null && !String.Equals(
                     await _scopeManager.GetIdAsync(other),
                     await _scopeManager.GetIdAsync(scope)))
                 {
@@ -222,6 +225,7 @@ namespace OrchardCore.OpenId.Controllers
             if (!ModelState.IsValid)
             {
                 ViewData["ReturnUrl"] = returnUrl;
+
                 return View(model);
             }
 
@@ -241,12 +245,12 @@ namespace OrchardCore.OpenId.Controllers
 
             descriptor.Resources.UnionWith(model.Tenants
                 .Where(tenant => tenant.Selected)
-                .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name))
+                .Where(tenant => !String.Equals(tenant.Name, _shellSettings.Name))
                 .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
 
             await _scopeManager.UpdateAsync(scope, descriptor);
 
-            if (string.IsNullOrEmpty(returnUrl))
+            if (String.IsNullOrEmpty(returnUrl))
             {
                 return RedirectToAction("Index");
             }
@@ -271,6 +275,16 @@ namespace OrchardCore.OpenId.Controllers
             await _scopeManager.DeleteAsync(scope);
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private IEnumerable<ShellSettings> AccessibleTenants()
+        {
+            if (_shellSettings.IsDefaultShell())
+            {
+                return _shellHost.GetAllSettings().Where(s => s.State == TenantState.Running);
+            }
+
+            return new[] { _shellSettings };
         }
     }
 }

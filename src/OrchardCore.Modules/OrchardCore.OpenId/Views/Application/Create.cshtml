@@ -10,11 +10,6 @@
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
-    <div class="mb-3" asp-validation-class-for="ClientId">
-        <label asp-for="ClientId">@T["Client Id"]</label>
-        <input asp-for="ClientId" class="form-control" autofocus />
-        <span asp-validation-for="ClientId" class="text-danger"></span>
-    </div>
     <div class="mb-3" asp-validation-class-for="DisplayName">
         <label asp-for="DisplayName">@T["Display Name"]</label>
         <input asp-for="DisplayName" class="form-control" autofocus />
@@ -27,6 +22,11 @@
             <option value="@OpenIddictConstants.ClientTypes.Public">@T["Public client"]</option>
         </select>
         <div class="hint">@T["Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token."]</div>
+    </div>
+    <div class="mb-3" asp-validation-class-for="ClientId">
+        <label asp-for="ClientId">@T["Client Id"]</label>
+        <input asp-for="ClientId" class="form-control" autofocus />
+        <span asp-validation-for="ClientId" class="text-danger"></span>
     </div>
     <div class="mb-3" asp-validation-class-for="ClientSecret">
         <label asp-for="ClientSecret">@T["Client Secret"]</label>
@@ -116,16 +116,16 @@
                 </div>
             </div>
         </div>
-         <div class="mb-3" >
-             <div class="mb-3">
+        <div class="mb-3">
+            <div class="mb-3">
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" asp-for="RequireProofKeyForCodeExchange" checked="@Model.RequireProofKeyForCodeExchange">
                     <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>
                 </div>
-                 <div class="hint">
+                <div class="hint">
                     @T["Ensure that the client application and OAuth or OIDC library being used supports PKCE before enabling this option."]
-                 </div>
-            </div>            
+                </div>
+            </div>
         </div>
         <div class="mb-3" asp-validation-class-for="ConsentType">
             <label asp-for="ConsentType">@T["Consent type"]</label>
@@ -183,105 +183,105 @@
         refreshOfflineAccessTip(false);
 
         function refreshForbiddenFlows() {
-            @if (settings == null)
-            {
-                <text>
+    @if (settings == null)
+    {
+        <text>
                     $("#AllowAuthorizationCodeFlowFieldSet").collapse("show");
-                    $("#AllowClientCredentialsFlowFieldSet").collapse("show");
-                    $("#AllowImplicitFlowFieldSet").collapse("show");
-                    $("#AllowPasswordFlowFieldSet").collapse("show");
-                    $("#AllowRefreshTokenFlowFieldSet").collapse("show");
-                    $("#AllowLogoutEndpointFieldSet").collapse("show");
-                </text>
+                $("#AllowClientCredentialsFlowFieldSet").collapse("show");
+                $("#AllowImplicitFlowFieldSet").collapse("show");
+                $("#AllowPasswordFlowFieldSet").collapse("show");
+                $("#AllowRefreshTokenFlowFieldSet").collapse("show");
+                $("#AllowLogoutEndpointFieldSet").collapse("show");
+        </text>
 
-            }
-            else
-            {
-                if (settings.AllowAuthorizationCodeFlow)
-                {
-                    <text>$("#AllowAuthorizationCodeFlowFieldSet").collapse("show");</text>
-                }
-                else
-                {
-                    <text>
-                        $("#AllowAuthorizationCodeFlowFieldSet").collapse("hide");
-                        $("#AllowAuthorizationCodeFlow").prop("checked", false);
-                    </text>
-                }
-
-                if (settings.AllowClientCredentialsFlow)
-                {
-                    <text>$("#AllowClientCredentialsFlowFieldSet").collapse("show");</text>
-                }
-                else
-                {
-                    <text>
-                        $("#AllowClientCredentialsFlowFieldSet").collapse("hide");
-                        $("#AllowClientCredentialsFlow").prop("checked", false);
-                    </text>
-                }
-
-                if (settings.AllowImplicitFlow)
-                {
-                    <text>$("#AllowImplicitFlowFieldSet").collapse("show");</text>
-                }
-                else
-                {
-                    <text>
-                        $("#AllowImplicitFlowFieldSet").collapse("hide");
-                        $("#AllowImplicitFlow").prop("checked", false);
-                    </text>
-                }
-
-                if (settings.AllowHybridFlow)
-                {
-                    <text>$("#AllowHybridFlowFieldSet").collapse("show");</text>
-                }
-                else
-                {
-                    <text>
-                        $("#AllowHybridFlowFieldSet").collapse("hide");
-                        $("#AllowHybridFlowFlow").prop("checked", false);
-                    </text>
-                }
-
-                if (settings.AllowPasswordFlow)
-                {
-                    <text>$("#AllowPasswordFlowFieldSet").collapse("show");</text>
-                }
-                else
-                {
-                    <text>
-                        $("#AllowPasswordFlowFieldSet").collapse("hide");
-                        $("#AllowPasswordFlow").prop("checked", false);
-                    </text>
-                }
-
-                if (settings.AllowRefreshTokenFlow)
-                {
-                    <text>$("#AllowRefreshTokenFlowFieldSet").collapse("show");</text>
-                }
-                else
-                {
-                    <text>
-                        $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
-                        $("#AllowRefreshTokenFlow").prop("checked", false);
-                    </text>
-                }
-
-                if (settings.LogoutEndpointPath.HasValue)
-                {
-                    <text>$("#AllowLogoutEndpointFieldSet").collapse("show");</text>
-                }
-                else
-                {
-                    <text>
-                        $("#AllowLogoutEndpointFieldSet").collapse("hide");
-                        $("#AllowLogoutEndpointFieldSet").prop("checked", false);
-                    </text>
-                }
-            }
+    }
+    else
+    {
+        if (settings.AllowAuthorizationCodeFlow)
+        {
+            <text>$("#AllowAuthorizationCodeFlowFieldSet").collapse("show"); </text>
         }
+        else
+        {
+            <text>
+                        $("#AllowAuthorizationCodeFlowFieldSet").collapse("hide");
+                    $("#AllowAuthorizationCodeFlow").prop("checked", false);
+            </text>
+        }
+
+        if (settings.AllowClientCredentialsFlow)
+        {
+            <text>$("#AllowClientCredentialsFlowFieldSet").collapse("show"); </text>
+        }
+        else
+        {
+            <text>
+                        $("#AllowClientCredentialsFlowFieldSet").collapse("hide");
+                    $("#AllowClientCredentialsFlow").prop("checked", false);
+            </text>
+        }
+
+        if (settings.AllowImplicitFlow)
+        {
+            <text>$("#AllowImplicitFlowFieldSet").collapse("show"); </text>
+        }
+        else
+        {
+            <text>
+                        $("#AllowImplicitFlowFieldSet").collapse("hide");
+                    $("#AllowImplicitFlow").prop("checked", false);
+            </text>
+        }
+
+        if (settings.AllowHybridFlow)
+        {
+            <text>$("#AllowHybridFlowFieldSet").collapse("show"); </text>
+        }
+        else
+        {
+            <text>
+                        $("#AllowHybridFlowFieldSet").collapse("hide");
+                    $("#AllowHybridFlowFlow").prop("checked", false);
+            </text>
+        }
+
+        if (settings.AllowPasswordFlow)
+        {
+            <text>$("#AllowPasswordFlowFieldSet").collapse("show"); </text>
+        }
+        else
+        {
+            <text>
+                        $("#AllowPasswordFlowFieldSet").collapse("hide");
+                    $("#AllowPasswordFlow").prop("checked", false);
+            </text>
+        }
+
+        if (settings.AllowRefreshTokenFlow)
+        {
+            <text>$("#AllowRefreshTokenFlowFieldSet").collapse("show"); </text>
+        }
+        else
+        {
+            <text>
+                        $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
+                    $("#AllowRefreshTokenFlow").prop("checked", false);
+            </text>
+        }
+
+        if (settings.LogoutEndpointPath.HasValue)
+        {
+            <text>$("#AllowLogoutEndpointFieldSet").collapse("show"); </text>
+        }
+        else
+        {
+            <text>
+                        $("#AllowLogoutEndpointFieldSet").collapse("hide");
+                    $("#AllowLogoutEndpointFieldSet").prop("checked", false);
+            </text>
+        }
+    }
+                }
 
         $("#Type").change(function () {
             refreshClientSecret();
@@ -381,5 +381,5 @@
             }
         }
     };
-    //]]>
+            //]]>
 </script>
