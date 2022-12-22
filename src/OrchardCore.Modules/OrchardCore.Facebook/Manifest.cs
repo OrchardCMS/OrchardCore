@@ -36,6 +36,6 @@ using OrchardCore.Modules.Manifest;
     {
         FacebookConstants.Features.Core,
         "OrchardCore.Widgets",
-        "OrchardCore.Recipes.Core"
+        "OrchardCore.Recipes.Core",
     }
 )]

@@ -1,4 +1,4 @@
-using OrchardCore.Features.Core;
+using OrchardCore.Features;
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(

@@ -35,7 +35,7 @@ using OrchardCore.Modules.Manifest;
     {
         "OrchardCore.Contents",
         "OrchardCore.Deployment",
-        "OrchardCore.Recipes.Core"
+        "OrchardCore.Recipes.Core",
     },
     Category = "Content Management"
 )]

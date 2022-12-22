@@ -10,7 +10,7 @@ using OrchardCore.Modules.Manifest;
     {
         "OrchardCore.ContentTypes",
         "OrchardCore.Admin",
-        "OrchardCore.Recipes.Core"
+        "OrchardCore.Recipes.Core",
     },
     Category = "Content Management"
 )]

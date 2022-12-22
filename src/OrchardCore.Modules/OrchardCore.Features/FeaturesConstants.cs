@@ -1,4 +1,4 @@
-namespace OrchardCore.Features.Core;
+namespace OrchardCore.Features;
 
 public class FeaturesConstants
 {

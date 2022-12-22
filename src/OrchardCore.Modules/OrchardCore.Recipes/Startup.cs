@@ -61,12 +61,7 @@ namespace OrchardCore.Recipes
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IRecipeHarvester, ApplicationRecipeHarvester>();
-            services.AddScoped<IRecipeHarvester, RecipeHarvester>();
-            services.AddTransient<IRecipeExecutor, RecipeExecutor>();
-            services.AddScoped<IRecipeMigrator, RecipeMigrator>();
-            services.AddScoped<IRecipeReader, RecipeReader>();
-            services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentFeatureProvider>();
+            services.AddRecipes();
         }
     }
 }

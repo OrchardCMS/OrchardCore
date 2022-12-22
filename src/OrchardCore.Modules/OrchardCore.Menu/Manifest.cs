@@ -11,7 +11,7 @@ using OrchardCore.Modules.Manifest;
         "OrchardCore.Contents",
         "OrchardCore.Title",
         "OrchardCore.Alias",
-        "OrchardCore.Recipes.Core"
+        "OrchardCore.Recipes.Core",
     },
     Category = "Navigation"
 )]

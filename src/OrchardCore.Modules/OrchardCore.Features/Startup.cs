@@ -8,7 +8,6 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Features.Controllers;
-using OrchardCore.Features.Core;
 using OrchardCore.Features.Deployment;
 using OrchardCore.Features.Recipes.Executors;
 using OrchardCore.Features.Services;

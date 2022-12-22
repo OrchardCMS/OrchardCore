@@ -12,7 +12,6 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Features.Core;
 using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
 using OrchardCore.Routing;
@@ -64,7 +63,7 @@ namespace OrchardCore.Features.Controllers
                 // if the user provide an invalid tenant value, we'll set it to null so it's not available on the next request
                 tenant = settings?.Name;
                 viewModel.Name = settings?.Name;
-                viewModel.IsDefaultTenant = settings?.Name == null || settings.Name == ShellHelper.DefaultShellName;
+                viewModel.IsDefaultTenant = settings == null || settings.IsDefaultShell();
                 viewModel.Features = await featureService.GetModuleFeaturesAsync();
             });
 
@@ -101,11 +100,6 @@ namespace OrchardCore.Features.Controllers
         [HttpPost]
         public async Task<IActionResult> Disable(string id, string tenant)
         {
-            if (String.IsNullOrEmpty(id))
-            {
-                return NotFound();
-            }
-
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
                 return Forbid();
@@ -124,9 +118,9 @@ namespace OrchardCore.Features.Controllers
 
                 found = true;
 
-                var isDefaultTenant = settings?.Name == null || settings.Name == ShellHelper.DefaultShellName;
+                var isDefaultTenant = settings == null || settings.IsDefaultShell();
 
-                if (isDefaultTenant && String.Equals(id, FeaturesConstants.FeatureId, StringComparison.OrdinalIgnoreCase))
+                if (isDefaultTenant && id == FeaturesConstants.FeatureId)
                 {
                     await _notifier.ErrorAsync(H["This feature is always enabled and cannot be disabled."]);
 
@@ -147,11 +141,6 @@ namespace OrchardCore.Features.Controllers
         [HttpPost]
         public async Task<IActionResult> Enable(string id, string tenant)
         {
-            if (String.IsNullOrEmpty(id))
-            {
-                return NotFound();
-            }
-
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
                 return Forbid();
