@@ -1,0 +1,20 @@
+{
+  "name": "Blog.SQL.Search",
+  "displayName": "Blog - SQL Search",
+  "description": "Enables SQL Queries.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "default" ],
+  "tags": [ "blog", "sql" ],
+
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.Queries.Sql"
+      ]
+    }
+  ]
+}

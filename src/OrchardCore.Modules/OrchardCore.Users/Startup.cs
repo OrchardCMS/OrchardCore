@@ -36,13 +36,11 @@ using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Handlers;
-using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 using YesSql.Filters.Query;
-using YesSql.Indexes;
 
 namespace OrchardCore.Users
 {
@@ -167,14 +165,7 @@ namespace OrchardCore.Users
             services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
 
             services.TryAddScoped<NoRoleUserStore>();
-            services.TryAddScoped<IUserStore<IUser>>(sp => sp.GetRequiredService<NoRoleUserStore>());
-            services.TryAddScoped<IUserRoleStore<IUser>>(sp => sp.GetRequiredService<NoRoleUserStore>());
-            services.TryAddScoped<IUserPasswordStore<IUser>>(sp => sp.GetRequiredService<NoRoleUserStore>());
-            services.TryAddScoped<IUserEmailStore<IUser>>(sp => sp.GetRequiredService<NoRoleUserStore>());
-            services.TryAddScoped<IUserSecurityStampStore<IUser>>(sp => sp.GetRequiredService<NoRoleUserStore>());
-            services.TryAddScoped<IUserLoginStore<IUser>>(sp => sp.GetRequiredService<NoRoleUserStore>());
-            services.TryAddScoped<IUserClaimStore<IUser>>(sp => sp.GetRequiredService<NoRoleUserStore>());
-            services.TryAddScoped<IUserAuthenticationTokenStore<IUser>>(sp => sp.GetRequiredService<NoRoleUserStore>());
+            services.AddUsers();
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -191,14 +182,8 @@ namespace OrchardCore.Users
                 options.AccessDeniedPath = "/Error/403";
             });
 
-            services.AddSingleton<IIndexProvider, UserIndexProvider>();
-            services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
-            services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>();
-            services.AddSingleton<IIndexProvider, UserByClaimIndexProvider>();
             services.AddDataMigration<Migrations>();
 
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalProviderFactory>();
             services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
             services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
 
@@ -243,9 +228,6 @@ namespace OrchardCore.Users
             });
 
             services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
-
-            services.AddScoped<IUserEventHandler, UserDisabledEventHandler>();
-
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
         }
     }

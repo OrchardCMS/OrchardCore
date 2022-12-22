@@ -8,39 +8,51 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
 using OrchardCore.PublishLater.Indexes;
+using OrchardCore.PublishLater.Models;
 using YesSql;
 
-namespace OrchardCore.PublishLater.Services
-{
-    [BackgroundTask(Schedule = "* * * * *", Description = "Publishes content items when their scheduled publish date time arrives.")]
-    public class ScheduledPublishingBackgroundTask : IBackgroundTask
-    {
-        private readonly ILogger<ScheduledPublishingBackgroundTask> _logger;
-        private readonly IClock _clock;
+namespace OrchardCore.PublishLater.Services;
 
-        public ScheduledPublishingBackgroundTask(ILogger<ScheduledPublishingBackgroundTask> logger, IClock clock)
+[BackgroundTask(Schedule = "* * * * *", Description = "Publishes content items when their scheduled publish date time arrives.")]
+public class ScheduledPublishingBackgroundTask : IBackgroundTask
+{
+    private readonly ILogger<ScheduledPublishingBackgroundTask> _logger;
+    private readonly IClock _clock;
+
+    public ScheduledPublishingBackgroundTask(ILogger<ScheduledPublishingBackgroundTask> logger, IClock clock)
+    {
+        _logger = logger;
+        _clock = clock;
+    }
+
+    public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
+    {
+        var itemsToPublish = await serviceProvider
+            .GetRequiredService<ISession>()
+            .QueryIndex<PublishLaterPartIndex>(index => index.Latest && !index.Published && index.ScheduledPublishDateTimeUtc < _clock.UtcNow)
+            .ListAsync();
+
+        if (!itemsToPublish.Any())
         {
-            _logger = logger;
-            _clock = clock;
+            return;
         }
 
-        public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
+        var contentManager = serviceProvider.GetRequiredService<IContentManager>();
+
+        foreach (var item in itemsToPublish)
         {
-            var itemsToPublish = await serviceProvider
-                .GetRequiredService<ISession>()
-                .Query<ContentItem, PublishLaterPartIndex>(index => index.ScheduledPublishDateTimeUtc < _clock.UtcNow)
-                .ListAsync();
+            var contentItem = await contentManager.GetAsync(item.ContentItemId, VersionOptions.Latest);
 
-            if (!itemsToPublish.Any())
+            var part = contentItem.As<PublishLaterPart>();
+            if (part != null)
             {
-                return;
+                part.ScheduledPublishUtc = null;
+                part.Apply();
             }
 
-            foreach (var item in itemsToPublish)
-            {
-                _logger.LogDebug("Publishing scheduled content item {ContentItemId}.", item.ContentItemId);
-                await serviceProvider.GetRequiredService<IContentManager>().PublishAsync(item);
-            }
+            _logger.LogDebug("Publishing scheduled content item {ContentItemId}.", contentItem.ContentItemId);
+
+            await contentManager.PublishAsync(contentItem);
         }
     }
 }

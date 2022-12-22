@@ -50,8 +50,7 @@
                   "Editor": "Wysiwyg"
                 },
                 "GraphQLContentTypePartSettings": {},
-                "HtmlBodyPartSettings": {},
-                "ContentIndexSettings": {}
+                "HtmlBodyPartSettings": {}
               }
             },
             {
