@@ -27,13 +27,9 @@ public class UserRolePermissions : IPermissionProvider
         foreach (var role in roles)
         {
             list.Add(CommonPermissions.CreateListUsersInRolePermission(role));
-
             list.Add(CommonPermissions.CreateEditUsersInRolePermission(role));
-
             list.Add(CommonPermissions.CreateDeleteUsersInRolePermission(role));
-
             list.Add(CommonPermissions.CreateAssignUsersToRolePermission(role));
-
             list.Add(CommonPermissions.CreatePermissionForManageUsersInRole(role));
         }
 

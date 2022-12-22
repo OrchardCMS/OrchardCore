@@ -32,10 +32,10 @@ namespace OrchardCore.Users
             CreateDynamicPermission(name, new Permission("DeleteUsersInRole_{0}", "Delete users in role - {0}", new[] { DeleteUsers }, true));
 
         public static Permission CreateAssignUsersToRolePermission(string name) =>
-            CreateDynamicPermission(name, new Permission("AssignUsersInRole_{0}", "Delete users in role - {0}", new[] { AssignRole }, true));
+            CreateDynamicPermission(name, new Permission("AssignUsersInRole_{0}", "Assign users in role - {0}", new[] { AssignRole }, true));
 
         public static Permission CreatePermissionForManageUsersInRole(string name) =>
-            CreateDynamicPermission(name, new Permission("ManageUsersInRole_{0}", "Manage users to {0} role", new[] { ManageUsers }, true));
+            CreateDynamicPermission(name, new Permission("ManageUsersInRole_{0}", "Manage users in {0} role", new[] { ManageUsers }, true));
 
         // Dynamic permission template.
 
