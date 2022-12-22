@@ -46,7 +46,7 @@
 
 <script at="Foot" asp-name="notification-manager-initializes" depends-on="notification-manager">
     (function () {
-        notificationManager.initializeContainer('@Url.Action("Toggle", "Admin", new { area = "OrchardCore.Notifications", markAsRead = true })')
+        notificationManager.initializeContainer('@Url.Action("Read", "Api", new { area = "OrchardCore.Notifications" })')
     })();
 </script>
 
