@@ -21,7 +21,6 @@ namespace OrchardCore.Users
                 CommonPermissions.EditUsers,
                 CommonPermissions.DeleteUsers,
                 CommonPermissions.AssignRole,
-                CommonPermissions.ManageUserProfileSettings,
             });
         }
 
@@ -38,7 +37,6 @@ namespace OrchardCore.Users
                         CommonPermissions.EditUsers,
                         CommonPermissions.DeleteUsers,
                         CommonPermissions.AssignRole,
-                        CommonPermissions.ManageUserProfileSettings,
                     }
                 },
                 new PermissionStereotype {
