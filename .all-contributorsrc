@@ -2626,6 +2626,15 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "vengi83644",
+      "name": "Venkatesan R",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5276778?v=4",
+      "profile": "https://bicloud.io/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

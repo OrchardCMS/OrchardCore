@@ -1,5 +1,5 @@
 /**
- * Trumbowyg v2.25.2 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.26.0 - A lightweight WYSIWYG editor
  * Default stylesheet for Trumbowyg editor
  * ------------------------
  * @link http://alex-d.github.io/Trumbowyg
@@ -31,6 +31,7 @@
 .trumbowyg-modal svg {
   width: 17px;
   height: 100%;
+  color: #222;
   fill: #222;
 }
 
@@ -43,7 +44,7 @@
 }
 
 [dir] .trumbowyg-box, [dir] .trumbowyg-editor {
-  border: 1px solid #DDD;
+  border: 1px solid #d7e0e2;
 }
 
 [dir] .trumbowyg-box .trumbowyg-editor {
@@ -51,7 +52,7 @@
 }
 
 [dir] .trumbowyg-box.trumbowyg-fullscreen {
-  background: #FEFEFE;
+  background: #fefefe;
   border: none !important;
 }
 
@@ -103,7 +104,7 @@
   display: block;
   overflow: auto;
   font-size: 14px;
-  font-family: "Inconsolata", "Consolas", "Courier", "Courier New", sans-serif;
+  font-family: "Consolas", "Courier", "Courier New", monospace;
   line-height: 18px;
 }
 
@@ -242,7 +243,7 @@
   outline: none;
 }
 [dir] .trumbowyg-button-pane button:not(.trumbowyg-disable):hover, [dir] .trumbowyg-button-pane button:not(.trumbowyg-disable):focus, [dir] .trumbowyg-button-pane button.trumbowyg-active {
-  background-color: #FFF;
+  background-color: #fff;
 }
 .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
   display: block;
@@ -292,14 +293,15 @@
   overflow-y: auto;
   overflow-x: hidden;
   white-space: nowrap;
+  color: #222;
   z-index: 12;
 }
 
 [dir] .trumbowyg-dropdown {
-  border: 1px solid #ecf0f1;
+  border: 1px solid #d7e0e2;
   padding: 5px 0;
   border-top: none;
-  background: #FFF;
+  background: #fff;
   box-shadow: rgba(0, 0, 0, 0.1) 0 2px 3px;
 }
 
@@ -316,12 +318,12 @@
   height: 35px;
   line-height: 35px;
   text-decoration: none;
-  color: #333 !important;
+  color: #222;
   font-size: 15px;
   transition: all 150ms;
 }
 [dir] .trumbowyg-dropdown button {
-  background: #FFF;
+  background: #fff;
   border: none;
   cursor: pointer;
 }
@@ -372,12 +374,13 @@
   width: calc(100% - 20px);
   z-index: 1;
   font-size: 14px;
+  font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif;
   backface-visibility: hidden;
 }
 
 [dir] .trumbowyg-modal-box {
   padding-bottom: 45px;
-  background-color: #FFF;
+  background-color: #fff;
   text-align: center;
   box-shadow: rgba(0, 0, 0, 0.2) 0 2px 3px;
 }
@@ -395,13 +398,11 @@
   font-size: 24px;
   font-weight: bold;
   display: block;
-  color: #333;
 }
 [dir] .trumbowyg-modal-box .trumbowyg-modal-title {
   margin: 0 0 20px;
   padding: 15px 0 13px;
-  border-bottom: 1px solid #EEE;
-  background: #fbfcfc;
+  border-bottom: 1px solid #d7e0e2;
 }
 .trumbowyg-modal-box .trumbowyg-progress {
   width: 100%;
@@ -423,7 +424,7 @@
 }
 [dir] .trumbowyg-modal-box .trumbowyg-input-row {
   margin: 15px 12px;
-  border: 1px solid #DEDEDE;
+  border: 1px solid #dedede;
 }
 .trumbowyg-modal-box .trumbowyg-input-infos {
   transition: all 150ms;
@@ -438,12 +439,12 @@
 }
 [dir=ltr] .trumbowyg-modal-box .trumbowyg-input-infos {
   text-align: left;
-  border-right: 1px solid #DEDEDE;
+  border-right: 1px solid #dedede;
   left: 0;
 }
 [dir=rtl] .trumbowyg-modal-box .trumbowyg-input-infos {
   text-align: right;
-  border-left: 1px solid #DEDEDE;
+  border-left: 1px solid #dedede;
   right: 0;
 }
 .trumbowyg-modal-box .trumbowyg-input-infos label {
@@ -518,7 +519,7 @@
   position: absolute;
   bottom: 10px;
   text-decoration: none;
-  color: #FFF;
+  color: #fff;
   display: block;
   width: 100px;
   height: 35px;
@@ -639,7 +640,7 @@ body.trumbowyg-body-fullscreen {
 
 .trumbowyg-editor {
   /*
-   * lset for resetCss option
+   * For resetCss option
    */
 }
 .trumbowyg-editor object,
@@ -665,7 +666,7 @@ body.trumbowyg-body-fullscreen {
   color: #333;
 }
 [dir] .trumbowyg-editor.trumbowyg-reset-css {
-  background: #FEFEFE !important;
+  background: #fefefe !important;
 }
 .trumbowyg-editor.trumbowyg-reset-css a {
   color: #15c !important;
@@ -776,10 +777,11 @@ body.trumbowyg-body-fullscreen {
  * Dark theme
  */
 .trumbowyg-dark .trumbowyg-textarea {
-  color: #ddd;
+  color: #fff;
 }
 [dir] .trumbowyg-dark .trumbowyg-textarea {
-  background: #111;
+  background: #222;
+  border-color: #343434;
 }
 [dir] .trumbowyg-dark .trumbowyg-box {
   border: 1px solid #343434;
@@ -801,8 +803,8 @@ body.trumbowyg-body-fullscreen {
   }
 }
 .trumbowyg-dark .trumbowyg-box svg {
-  fill: #ecf0f1;
-  color: #ecf0f1;
+  fill: #fff;
+  color: #fff;
 }
 [dir] .trumbowyg-dark .trumbowyg-button-pane {
   background-color: #222;
@@ -831,12 +833,12 @@ body.trumbowyg-body-fullscreen {
   fill: transparent;
 }
 [dir] .trumbowyg-dark .trumbowyg-dropdown {
-  border-color: #222;
+  border-color: #343434;
   background: #333;
   box-shadow: rgba(0, 0, 0, 0.3) 0 2px 3px;
 }
 .trumbowyg-dark .trumbowyg-dropdown button {
-  color: #fff !important;
+  color: #fff;
 }
 [dir] .trumbowyg-dark .trumbowyg-dropdown button {
   background: #333;
@@ -844,8 +846,11 @@ body.trumbowyg-body-fullscreen {
 [dir] .trumbowyg-dark .trumbowyg-dropdown button:hover, [dir] .trumbowyg-dark .trumbowyg-dropdown button:focus {
   background: #222;
 }
+.trumbowyg-dark .trumbowyg-modal-box {
+  color: #fff;
+}
 [dir] .trumbowyg-dark .trumbowyg-modal-box {
-  background-color: #222;
+  background-color: #333;
 }
 .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-title {
   color: #fff;
@@ -854,40 +859,47 @@ body.trumbowyg-body-fullscreen {
   border-bottom: 1px solid #555;
   background: #3c3c3c;
 }
-.trumbowyg-dark .trumbowyg-modal-box label {
-  display: block;
-  position: relative;
-  height: 27px;
-  line-height: 27px;
-  overflow: hidden;
-}
-[dir] .trumbowyg-dark .trumbowyg-modal-box label {
-  margin: 15px 12px;
-}
-.trumbowyg-dark .trumbowyg-modal-box label .trumbowyg-input-infos span {
-  color: #eee;
-}
-[dir] .trumbowyg-dark .trumbowyg-modal-box label .trumbowyg-input-infos span {
-  background-color: #2f2f2f;
+[dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-row {
   border-color: #222;
 }
-.trumbowyg-dark .trumbowyg-modal-box label .trumbowyg-input-infos span.trumbowyg-msg-error {
+.trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-infos {
+  color: #eee;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-infos {
+  background-color: #2f2f2f;
+}
+[dir=ltr] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-infos {
+  border-right-color: #222;
+}
+[dir=rtl] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-infos {
+  border-left-color: #222;
+}
+.trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-infos span {
+  color: #eee;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-infos span {
+  background-color: #2f2f2f;
+  border-color: #343434;
+}
+.trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-infos span.trumbowyg-msg-error {
   color: #e74c3c;
 }
-[dir] .trumbowyg-dark .trumbowyg-modal-box label.trumbowyg-input-error input, [dir] .trumbowyg-dark .trumbowyg-modal-box label.trumbowyg-input-error textarea {
+[dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-row.trumbowyg-input-error input, [dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-row.trumbowyg-input-error select, [dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-row.trumbowyg-input-error textarea {
   border-color: #e74c3c;
 }
-.trumbowyg-dark .trumbowyg-modal-box label input {
-  color: #eee;
+.trumbowyg-dark .trumbowyg-modal-box input,
+.trumbowyg-dark .trumbowyg-modal-box select,
+.trumbowyg-dark .trumbowyg-modal-box textarea {
+  color: #fff;
 }
-[dir] .trumbowyg-dark .trumbowyg-modal-box label input {
-  border-color: #222;
-  background: #333;
+[dir] .trumbowyg-dark .trumbowyg-modal-box input, [dir] .trumbowyg-dark .trumbowyg-modal-box select, [dir] .trumbowyg-dark .trumbowyg-modal-box textarea {
+  border-color: #343434;
+  background: #222;
 }
-[dir] .trumbowyg-dark .trumbowyg-modal-box label input:hover, [dir] .trumbowyg-dark .trumbowyg-modal-box label input:focus {
+[dir] .trumbowyg-dark .trumbowyg-modal-box input:hover, [dir] .trumbowyg-dark .trumbowyg-modal-box input:focus, [dir] .trumbowyg-dark .trumbowyg-modal-box select:hover, [dir] .trumbowyg-dark .trumbowyg-modal-box select:focus, [dir] .trumbowyg-dark .trumbowyg-modal-box textarea:hover, [dir] .trumbowyg-dark .trumbowyg-modal-box textarea:focus {
   border-color: #626262;
 }
-[dir] .trumbowyg-dark .trumbowyg-modal-box label input:focus {
+[dir] .trumbowyg-dark .trumbowyg-modal-box input:focus, [dir] .trumbowyg-dark .trumbowyg-modal-box select:focus, [dir] .trumbowyg-dark .trumbowyg-modal-box textarea:focus {
   background-color: #2f2f2f;
 }
 [dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit {

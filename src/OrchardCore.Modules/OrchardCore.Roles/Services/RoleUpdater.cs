@@ -1,41 +1,50 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Extensions;
+using OrchardCore.Documents;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
+using OrchardCore.Roles.Models;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Services
 {
-    public class RoleUpdater : IFeatureEventHandler
+    public class RoleUpdater : ModularTenantEvents, IFeatureEventHandler
     {
         private readonly RoleManager<IRole> _roleManager;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
+        private readonly IRoleService _roleService;
+        private readonly IDocumentManager<RolesDocument> _rolesDocumentManager;
+
+        private bool _updateInProgress;
 
         public RoleUpdater(
             RoleManager<IRole> roleManager,
             IEnumerable<IPermissionProvider> permissionProviders,
-            ITypeFeatureProvider typeFeatureProvider,
-            ILogger<RoleUpdater> logger)
+            ILogger<RoleUpdater> logger,
+            IRoleService roleService,
+            IDocumentManager<RolesDocument> rolesDocumentManager)
         {
-            _typeFeatureProvider = typeFeatureProvider;
             _roleManager = roleManager;
             _permissionProviders = permissionProviders;
             _logger = logger;
+            _roleService = roleService;
+            _rolesDocumentManager = rolesDocumentManager;
         }
 
         Task IFeatureEventHandler.InstallingAsync(IFeatureInfo feature) => Task.CompletedTask;
 
-        Task IFeatureEventHandler.InstalledAsync(IFeatureInfo feature) => AddDefaultRolesForFeatureAsync(feature);
+        Task IFeatureEventHandler.InstalledAsync(IFeatureInfo feature) => Task.CompletedTask;
 
-        Task IFeatureEventHandler.EnablingAsync(IFeatureInfo feature) => Task.CompletedTask;
+        Task IFeatureEventHandler.EnablingAsync(IFeatureInfo feature) => AssignPermissionsToRolesAsync();
 
         Task IFeatureEventHandler.EnabledAsync(IFeatureInfo feature) => Task.CompletedTask;
 
@@ -47,68 +56,106 @@ namespace OrchardCore.Roles.Services
 
         Task IFeatureEventHandler.UninstalledAsync(IFeatureInfo feature) => Task.CompletedTask;
 
-        public async Task AddDefaultRolesForFeatureAsync(IFeatureInfo feature)
+        /// <summary>
+        /// This event is called of the very first request to the tenant after a tenant is built/rebuilt.
+        /// Using this event will ensure that any new permission were added are auto assigned to a role.
+        /// </summary>
+        /// <returns></returns>
+        public override Task ActivatedAsync() => AssignPermissionsToRolesAsync();
+
+        /// <summary>
+        /// Checks all available permissions to role mapping from any available <see cref="IPermissionProvider"/>.
+        /// When a new permission is found, auto assign it to the mapped role. If the permission was previously assigned,
+        /// do not assign the permission. This method could get called multiple time from the same request,
+        /// so it should not be executed again if the parameter "_updateInProgress" is set to true.
+        /// </summary>
+        /// <returns></returns>
+        private async Task AssignPermissionsToRolesAsync()
         {
-            // when another module is being enabled, locate matching permission providers
-            var providersForEnabledModule = _permissionProviders
-                .Where(x => _typeFeatureProvider.GetFeatureForDependency(x.GetType()).Id == feature.Id);
-
-            if (_logger.IsEnabled(LogLevel.Debug))
+            if (_updateInProgress)
             {
-                if (providersForEnabledModule.Any())
+                return;
+            }
+
+            _updateInProgress = true;
+
+            var roleNames = await _roleService.GetRoleNamesAsync();
+
+            if (!roleNames.Any())
+            {
+                // Site roles are initially added using the "RolesStep" handler, while no role names are availble. This means
+                // that RoleUpdater handler was called before the "RolesStep".
+                // Its likley to be coming from a tenant setup request. Nothing to do.
+                return;
+            }
+
+            var rolesDocument = await _rolesDocumentManager.GetOrCreateMutableAsync();
+            var updateRolesDocument = false;
+
+            // Get all the available permissions grouped by role name as defined by IPermissionProvider.
+            var groups = _permissionProviders.SelectMany(x => x.GetDefaultStereotypes())
+                .GroupBy(stereotype => stereotype.Name)
+                .Select(x => new
                 {
-                    _logger.LogDebug("Configuring default roles for feature '{FeatureName}'", feature.Id);
+                    RoleName = x.Key,
+                    PermissionNames = x.SelectMany(y => y.Permissions ?? Enumerable.Empty<Permission>()).Select(x => x.Name)
+                });
+
+            foreach (var group in groups)
+            {
+                if (!roleNames.Any(roleName => roleName.Equals(group.RoleName, StringComparison.OrdinalIgnoreCase))
+                    || await _roleManager.FindByNameAsync(group.RoleName) is not Role role)
+                {
+                    // A role is mapped in IPermissionProvider, yet it isn't available for the tenant, ignore it.
+                    continue;
                 }
-                else
+
+                var currentPermissionNames = role.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue);
+
+                var distinctPermissionNames = currentPermissionNames
+                    .Union(group.PermissionNames)
+                    .Distinct()
+                    .ToList();
+
+                rolesDocument.PermissionGroups.TryAdd(group.RoleName, new List<string>());
+
+                // Get all available permission names that isn't already assigned to the role.
+                var additionalPermissionNames = distinctPermissionNames.Except(currentPermissionNames);
+
+                foreach (var permissionName in additionalPermissionNames)
                 {
-                    _logger.LogDebug("No default roles for feature '{FeatureName}'", feature.Id);
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        _logger.LogDebug("Default role '{Role}' granted permission '{Permission}'", group.RoleName, permissionName);
+                    }
+
+                    if (rolesDocument.PermissionGroups[group.RoleName].Contains(permissionName, StringComparer.OrdinalIgnoreCase))
+                    {
+                        // The permission was previously assigned to the role, we can't assign it again.
+                        continue;
+                    }
+
+                    await _roleManager.AddClaimAsync(role, new Claim(Permission.ClaimType, permissionName));
+                }
+
+                foreach (var distinctPermissionName in distinctPermissionNames)
+                {
+                    if (rolesDocument.PermissionGroups[group.RoleName].Contains(distinctPermissionName, StringComparer.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    rolesDocument.PermissionGroups[group.RoleName].Add(distinctPermissionName);
+                    updateRolesDocument = true;
                 }
             }
 
-            foreach (var permissionProvider in providersForEnabledModule)
+            if (updateRolesDocument)
             {
-                // get and iterate stereotypical groups of permissions
-                var stereotypes = permissionProvider.GetDefaultStereotypes();
-                foreach (var stereotype in stereotypes)
-                {
-                    // turn those stereotypes into roles
-                    var role = await _roleManager.FindByNameAsync(stereotype.Name);
-                    if (role == null)
-                    {
-                        if (_logger.IsEnabled(LogLevel.Information))
-                        {
-                            _logger.LogInformation("Defining new role '{RoleName}' for permission stereotype", stereotype.Name);
-                        }
-
-                        role = new Role { RoleName = stereotype.Name, RoleDescription = stereotype.Name + " role" };
-                        await _roleManager.CreateAsync(role);
-                    }
-
-                    // and merge the stereotypical permissions into that role
-                    var stereotypePermissionNames = (stereotype.Permissions ?? Enumerable.Empty<Permission>()).Select(x => x.Name);
-                    var currentPermissionNames = ((Role)role).RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue);
-
-                    var distinctPermissionNames = currentPermissionNames
-                        .Union(stereotypePermissionNames)
-                        .Distinct();
-
-                    // update role if set of permissions has increased
-                    var additionalPermissionNames = distinctPermissionNames.Except(currentPermissionNames);
-
-                    if (additionalPermissionNames.Any())
-                    {
-                        foreach (var permissionName in additionalPermissionNames)
-                        {
-                            if (_logger.IsEnabled(LogLevel.Debug))
-                            {
-                                _logger.LogDebug("Default role '{Role}' granted permission '{Permission}'", stereotype.Name, permissionName);
-                            }
-
-                            await _roleManager.AddClaimAsync(role, new Claim(Permission.ClaimType, permissionName));
-                        }
-                    }
-                }
+                await _rolesDocumentManager.UpdateAsync(rolesDocument);
             }
+
+            _updateInProgress = false;
         }
     }
 }
