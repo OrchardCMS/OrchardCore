@@ -85,7 +85,7 @@ public class DynamicContentFieldBuilder : IContentTypeBuilder
             {
                 foreach (var scaler in scalers)
                 {
-                    whereInput.AddField(scaler.WithPartCollapsedMetaData().WithPartNameMetaData(part.Name));
+                    whereInput.AddScalarFilterFields(scaler.Type, scaler.Name, scaler.Description);
                 }
             }
             else
@@ -109,7 +109,7 @@ public class DynamicContentFieldBuilder : IContentTypeBuilder
                             return ((ContentItem)context.Source).Get(typeToResolve, nameToResolve);
                         }).WithPartNameMetaData(part.Name);
 
-                    field.ResolvedType = new DynamicPartInputGraphType(_httpContextAccessor, part);
+                    field.ResolvedType = new DynamicPartInputGraphType(part, scalers);
 
                     _dynamicPartFields[part.Name] = field;
                 }

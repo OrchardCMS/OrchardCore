@@ -1,33 +1,21 @@
-using System.Linq;
+using System.Collections.Generic;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-public sealed class DynamicPartInputGraphType : InputObjectGraphType<ContentPart>
+public sealed class DynamicPartInputGraphType : WhereInputObjectGraphType<ContentPart>
 {
     public DynamicPartInputGraphType(
-        IHttpContextAccessor httpContextAccessor,
-        ContentTypePartDefinition part)
+        ContentTypePartDefinition part,
+        IEnumerable<FieldType> scalers)
     {
-        Name = part.Name;
+        Name = $"{part.Name}WhereInput"; ;
 
-        var serviceProvider = httpContextAccessor.HttpContext.RequestServices;
-        var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
-
-        foreach (var field in part.PartDefinition.Fields)
+        foreach (var scaler in scalers)
         {
-            foreach (var fieldProvider in contentFieldProviders)
-            {
-                var fieldType = fieldProvider.GetField(field);
-                if (fieldType != null && typeof(ScalarGraphType).IsAssignableFrom(fieldType.Type))
-                {
-                    AddField(fieldType.WithPartNameMetaData(part.Name));
-                    break;
-                }
-            }
+            AddScalarFilterFields(scaler.Type, scaler.Name, scaler.Description);
         }
     }
 }
