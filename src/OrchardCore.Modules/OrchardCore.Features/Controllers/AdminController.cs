@@ -63,7 +63,7 @@ namespace OrchardCore.Features.Controllers
                 // if the user provide an invalid tenant value, we'll set it to null so it's not available on the next request
                 tenant = settings?.Name;
                 viewModel.Name = settings?.Name;
-                viewModel.IsDefaultTenant = settings == null || settings.IsDefaultShell();
+                viewModel.CanToggleFeaturesModule = CanToggleFeaturesModule(settings);
                 viewModel.Features = await featureService.GetModuleFeaturesAsync();
             });
 
@@ -118,9 +118,7 @@ namespace OrchardCore.Features.Controllers
 
                 found = true;
 
-                var isDefaultTenant = settings == null || settings.IsDefaultShell();
-
-                if (isDefaultTenant && id == FeaturesConstants.FeatureId)
+                if (id == FeaturesConstants.FeatureId && !CanToggleFeaturesModule(settings))
                 {
                     await _notifier.ErrorAsync(H["This feature is always enabled and cannot be disabled."]);
 
@@ -158,6 +156,13 @@ namespace OrchardCore.Features.Controllers
                 }
 
                 found = true;
+
+                if (id == FeaturesConstants.FeatureId && !CanToggleFeaturesModule(settings))
+                {
+                    await _notifier.ErrorAsync(H["This feature is disabled and cannot be enabled."]);
+
+                    return;
+                }
 
                 await featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Enable, true, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
             });
@@ -219,6 +224,11 @@ namespace OrchardCore.Features.Controllers
             {
                 await _notifier.SuccessAsync(H["{0} was {1}.", feature.Name ?? feature.Id, enabled ? "enabled" : "disabled"]);
             }
+        }
+
+        private bool CanToggleFeaturesModule(ShellSettings settings)
+        {
+            return settings != null && !settings.IsDefaultShell() && _shellSettings.IsDefaultShell();
         }
     }
 }
