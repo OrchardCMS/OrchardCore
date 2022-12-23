@@ -5,13 +5,13 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Notifications;
 
-public class WebNotificationPermissionsProvider : IPermissionProvider
+public class NotificationPermissionsProvider : IPermissionProvider
 {
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
         return Task.FromResult(new[]
         {
-                WebNotificationPermissions.ManageWebNotifications,
+                NotificationPermissions.ManageNotifications,
             }
         .AsEnumerable());
     }
@@ -23,27 +23,27 @@ public class WebNotificationPermissionsProvider : IPermissionProvider
             new PermissionStereotype
             {
                 Name = "Administrator",
-                Permissions = new[] { WebNotificationPermissions.ManageWebNotifications }
+                Permissions = new[] { NotificationPermissions.ManageNotifications }
             },
             new PermissionStereotype {
                 Name = "Editor",
-                Permissions = new[] { WebNotificationPermissions.ManageWebNotifications }
+                Permissions = new[] { NotificationPermissions.ManageNotifications }
             },
             new PermissionStereotype {
                 Name = "Moderator",
-                Permissions = new[] { WebNotificationPermissions.ManageWebNotifications }
+                Permissions = new[] { NotificationPermissions.ManageNotifications }
             },
             new PermissionStereotype {
                 Name = "Author",
-                Permissions = new[] { WebNotificationPermissions.ManageWebNotifications }
+                Permissions = new[] { NotificationPermissions.ManageNotifications }
             },
             new PermissionStereotype {
                 Name = "Contributor",
-                Permissions = new[] { WebNotificationPermissions.ManageWebNotifications }
+                Permissions = new[] { NotificationPermissions.ManageNotifications }
             },
             new PermissionStereotype {
                 Name = "Authenticated",
-                Permissions = new[] { WebNotificationPermissions.ManageWebNotifications }
+                Permissions = new[] { NotificationPermissions.ManageNotifications }
             }
         };
     }

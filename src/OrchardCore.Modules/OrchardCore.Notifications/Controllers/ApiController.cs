@@ -32,14 +32,14 @@ public class ApiController : Controller
     }
 
     [HttpPost("read"), IgnoreAntiforgeryToken]
-    public async Task<IActionResult> Read(ReadWebNotificationViewModel viewModel)
+    public async Task<IActionResult> Read(ReadNotificationViewModel viewModel)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, WebNotificationPermissions.ManageWebNotifications))
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, NotificationPermissions.ManageNotifications))
         {
             return Forbid();
         }

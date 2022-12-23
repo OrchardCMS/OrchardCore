@@ -1,6 +1,6 @@
 @model ListNotificationsViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Manage Notifications"])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Notification Center"])</h1></zone>
 
 <form asp-action="List" asp-controller="Admin" method="post" id="items-form" autocomplete="off">
     @await DisplayAsync(Model)

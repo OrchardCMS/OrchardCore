@@ -2,34 +2,6 @@ using System;
 
 namespace OrchardCore.Notifications.Models;
 
-public class NotificationContentInfo
-{
-    /// <summary>
-    /// ContentItemId this notification is linked to.
-    /// </summary>
-    public string ContentItemId { get; set; }
-
-    /// <summary>
-    /// The type of the referenced contentItem.
-    /// </summary>
-    public string ContentType { get; set; }
-
-    /// <summary>
-    /// The owner of the referenced contentItem.
-    /// </summary>
-    public string ContentOwnerId { get; set; }
-
-    /// <summary>
-    /// The link type of the notification.
-    /// </summary>
-    public NotificationLinkType LinkType { get; set; }
-
-    /// <summary>
-    /// A custom URL to send then user too when the notification is clicked.
-    /// </summary>
-    public string CustomUrl { get; set; }
-}
-
 public class NotificationReadInfo
 {
     /// <summary>

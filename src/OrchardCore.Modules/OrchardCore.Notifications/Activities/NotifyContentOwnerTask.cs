@@ -39,29 +39,23 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity
 
     public override LocalizedString DisplayText => S["Notify Content's Owner Task"];
 
-    public NotificationLinkType LinkType
-    {
-        get => GetProperty(() => NotificationLinkType.None);
-        set => SetProperty(value);
-    }
-
-    public WorkflowExpression<string> Url
-    {
-        get => GetProperty(() => new WorkflowExpression<string>());
-        set => SetProperty(value);
-    }
-
     protected override async Task<IUser> GetUserAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         if (workflowContext.Input.TryGetValue("ContentItem", out var obj)
             && obj is ContentItem contentItem
             && !String.IsNullOrEmpty(contentItem.Owner))
         {
+            if (workflowContext.Input.TryGetValue("Owner", out var ownerObject) && ownerObject is User user)
+            {
+                return user;
+            }
+
             var owner = await _session.Query<User, UserIndex>(x => x.UserId == contentItem.Owner).FirstOrDefaultAsync();
 
             workflowContext.Input.TryAdd("Owner", owner);
 
             return owner;
+
         }
 
         return null;
@@ -69,27 +63,11 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity
 
     protected override async Task<INotificationMessage> GetMessageAsync(WorkflowExecutionContext workflowContext)
     {
-        var message = new ContentNotificationMessage()
+        var message = new HtmlNotificationMessage()
         {
             Summary = await _expressionEvaluator.EvaluateAsync(Summary, workflowContext, _htmlEncoder),
             Body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, _htmlEncoder),
-            IsHtmlBody = IsHtmlBody,
-            LinkType = NotificationLinkType.None,
         };
-
-        if (LinkType == NotificationLinkType.Custom && !String.IsNullOrWhiteSpace(Url.Expression))
-        {
-            message.LinkType = NotificationLinkType.Custom;
-            message.CustomUrl = Url.Expression;
-        }
-
-        if (workflowContext.Input.TryGetValue("ContentItem", out var obj) && obj is ContentItem contentItem)
-        {
-            message.ContentItemId = contentItem.ContentItemId;
-            message.ContentOwnerId = contentItem.Owner;
-            message.ContentType = contentItem.ContentType;
-            message.LinkType = LinkType;
-        }
 
         return message;
     }

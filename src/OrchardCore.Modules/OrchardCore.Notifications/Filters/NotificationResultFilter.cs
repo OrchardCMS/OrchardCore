@@ -16,9 +16,9 @@ using YesSql;
 
 namespace OrchardCore.Notifications.Filters;
 
-public class WebNotificationResultFilter : IAsyncResultFilter
+public class NotificationResultFilter : IAsyncResultFilter
 {
-    // TODO, make this part of a configurable of WebNotificationOptions
+    // TODO, make this part of a configurable of NotificationOptions
     private const int MaxVisibleNotifications = 10;
 
     private readonly ILayoutAccessor _layoutAccessor;
@@ -27,7 +27,7 @@ public class WebNotificationResultFilter : IAsyncResultFilter
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly ISession _session;
 
-    public WebNotificationResultFilter(ILayoutAccessor layoutAccessor,
+    public NotificationResultFilter(ILayoutAccessor layoutAccessor,
         IAuthorizationService authorizationService,
         IDisplayManager<Notification> notificationDisplayDriver,
         IUpdateModelAccessor updateModelAccessor,
@@ -43,7 +43,7 @@ public class WebNotificationResultFilter : IAsyncResultFilter
     public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
     {
         if (context.Result is not (ViewResult or PageResult)
-            || !await _authorizationService.AuthorizeAsync(context.HttpContext.User, WebNotificationPermissions.ManageWebNotifications))
+            || !await _authorizationService.AuthorizeAsync(context.HttpContext.User, NotificationPermissions.ManageNotifications))
         {
             await next();
 

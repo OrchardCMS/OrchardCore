@@ -17,24 +17,6 @@ public class CoreNotificationEventsHandler : NotificationEventsHandler
             context.Notification.UserId = user.UserId;
         }
 
-        if (context.NotificationMessage is INotificationContentMessage contentMessage)
-        {
-            var contentInfo = new NotificationContentInfo()
-            {
-                ContentItemId = contentMessage.ContentItemId,
-                ContentOwnerId = contentMessage.ContentOwnerId,
-                ContentType = contentMessage.ContentType,
-                LinkType = contentMessage.LinkType,
-            };
-
-            if (contentMessage.LinkType == NotificationLinkType.Custom)
-            {
-                contentInfo.CustomUrl = contentMessage.CustomUrl;
-            }
-
-            context.Notification.Put(contentInfo);
-        }
-
         if (context.NotificationMessage is INotificationBodyMessage nm)
         {
             var bodyPart = context.Notification.As<NotificationBodyInfo>();

@@ -16,41 +16,8 @@
     }
 
     var readInfo = notification.As<NotificationReadInfo>();
-    var bodyInfo = notification.As<NotificationBodyInfo>();
-    var contentInfo = notification.As<NotificationContentInfo>();
-
-    var url = String.Empty;
-
-    if (contentInfo.LinkType == NotificationLinkType.Content)
-    {
-        var dummayItem = await ContentManager.NewAsync(contentInfo.ContentType);
-        dummayItem.Owner = contentInfo.ContentOwnerId;
-
-        if (await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.EditContent, dummayItem))
-        {
-            url = Url.Action("Edit", "Admin", new { area = "OrchardCore.Contents", ContentItemId = contentInfo.ContentItemId });
-        }
-        else if (await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.ViewContent, dummayItem))
-        {
-            url = Url.Action("Display", "Admin", new { area = "OrchardCore.Contents", ContentItemId = contentInfo.ContentItemId });
-        }
-    }
 }
 
-<div data-message-id="@notification.NotificationId" data-is-read="@readInfo.IsRead.ToString().ToLowerInvariant()" data-target-url="@url" class="dropdown-item mark-notification-as-read lh-sm text-wrap p-2@(readInfo.IsRead ? " notification-is-read": " notification-is-unread")">
-    @if (String.IsNullOrEmpty(url) && !String.IsNullOrWhiteSpace(bodyInfo.Body))
-    {
-        if (bodyInfo.IsHtmlBody)
-        {
-            <span aria-hidden="false" data-bs-toggle="tooltip" data-bs-original-title="@notification.Summary">@Html.Raw(bodyInfo.Body)</span>
-        }
-        else
-        {
-            <span aria-hidden="false" data-bs-toggle="tooltip" data-bs-original-title="@notification.Summary">@bodyInfo.Body</span>
-        }
-    }
-    else
-    {
-        <span aria-hidden="false">@notification.Summary</span>
-    }
+<div data-message-id="@notification.NotificationId" data-is-read="@readInfo.IsRead.ToString().ToLowerInvariant()" class="dropdown-item mark-notification-as-read lh-sm text-wrap p-2@(readInfo.IsRead ? " notification-is-read": " notification-is-unread")">
+    <span aria-hidden="false">@notification.Summary</span>
 </div>

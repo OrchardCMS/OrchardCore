@@ -50,7 +50,7 @@ public class Startup : StartupBase
         services.AddScoped<INotificationEvents, CoreNotificationEventsHandler>();
 
 
-        services.AddScoped<IPermissionProvider, WebNotificationPermissionsProvider>();
+        services.AddScoped<IPermissionProvider, NotificationPermissionsProvider>();
         services.AddScoped<IDisplayDriver<ListNotificationOptions>, ListNotificationOptionsDisplayDriver>();
         services.AddScoped<IDisplayDriver<Notification>, NotificationDisplayDriver>();
         services.AddTransient<INotificationAdminListFilterProvider, DefaultNotificationsAdminListFilterProvider>();
@@ -73,7 +73,7 @@ public class Startup : StartupBase
 
         services.Configure<MvcOptions>((options) =>
         {
-            options.Filters.Add(typeof(WebNotificationResultFilter));
+            options.Filters.Add(typeof(NotificationResultFilter));
         });
     }
 

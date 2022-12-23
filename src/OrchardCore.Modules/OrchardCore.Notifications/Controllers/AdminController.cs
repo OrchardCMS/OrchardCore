@@ -76,7 +76,7 @@ public class AdminController : Controller, IUpdateModel
         PagerParameters pagerParameters,
         ListNotificationOptions options)
     {
-        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, WebNotificationPermissions.ManageWebNotifications))
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, NotificationPermissions.ManageNotifications))
         {
             return Forbid();
         }
@@ -115,6 +115,7 @@ public class AdminController : Controller, IUpdateModel
         var pagerShape = (await New.Pager(pager)).TotalItemCount(queryResult.TotalCount).RouteData(routeData);
 
         var notificationSummaries = new List<dynamic>();
+
         foreach (var notificaiton in queryResult.Notifications)
         {
             dynamic shape = await _webNoticiationDisplayManager.BuildDisplayAsync(notificaiton, this, "SummaryAdmin");
@@ -146,7 +147,7 @@ public class AdminController : Controller, IUpdateModel
     [FormValueRequired("submit.Filter")]
     public async Task<ActionResult> ListFilterPOST(ListNotificationOptions options)
     {
-        // When the user has typed something into the search input no further evaluation of the form post is required.
+        // When the user has typed something into the search input, no further evaluation of the form post is required.
         if (!String.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
         {
             return RedirectToAction(nameof(List), new RouteValueDictionary { { "q", options.SearchText } });
@@ -223,7 +224,7 @@ public class AdminController : Controller, IUpdateModel
 
     public async Task<IActionResult> ReadAll(string returnUrl)
     {
-        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, WebNotificationPermissions.ManageWebNotifications))
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, NotificationPermissions.ManageNotifications))
         {
             return Forbid();
         }
@@ -247,7 +248,7 @@ public class AdminController : Controller, IUpdateModel
 
     public async Task<IActionResult> Toggle(string notificationId, bool markAsRead, string returnUrl)
     {
-        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, WebNotificationPermissions.ManageWebNotifications))
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, NotificationPermissions.ManageNotifications))
         {
             return Forbid();
         }
@@ -282,7 +283,7 @@ public class AdminController : Controller, IUpdateModel
 
     public async Task<IActionResult> Delete(string notificationId, string returnUrl)
     {
-        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, WebNotificationPermissions.ManageWebNotifications))
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, NotificationPermissions.ManageNotifications))
         {
             return Forbid();
         }
