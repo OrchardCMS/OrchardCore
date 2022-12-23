@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -17,21 +18,31 @@ namespace OrchardCore.Title.Handlers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IStringLocalizer S;
 
         public TitlePartHandler(
             ILiquidTemplateManager liquidTemplateManager,
-            IContentDefinitionManager contentDefinitionManager)
+            IContentDefinitionManager contentDefinitionManager,
+            IStringLocalizer<TitlePartHandler> stringLocalizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _contentDefinitionManager = contentDefinitionManager;
+            S = stringLocalizer;
         }
 
         public override async Task UpdatedAsync(UpdateContentContext context, TitlePart part)
         {
             var settings = GetSettings(part);
-            // Do not compute the title if the user can modify it and the text is already set.
-            if (settings.Options == TitlePartOptions.Editable && !String.IsNullOrWhiteSpace(part.ContentItem.DisplayText))
+            // Do not compute the title if the user can modify it.
+            if (settings.Options == TitlePartOptions.Editable || settings.Options == TitlePartOptions.EditableRequired)
             {
+                if (String.IsNullOrWhiteSpace(part.ContentItem.DisplayText))
+                {
+                    // UpdatedAsync event is called from non-UI request like API, we update the DisplayText if it is not already set.
+                    // When the displayText is not set, we set it to the value of title.
+                    part.ContentItem.DisplayText = part.Title;
+                }
+
                 return;
             }
 
@@ -53,6 +64,18 @@ namespace OrchardCore.Title.Handlers
                 part.ContentItem.DisplayText = title;
                 part.Apply();
             }
+        }
+
+        protected override Task ValidatingAsync(ValidateContentPartContext context, TitlePart part)
+        {
+            var settings = context.ContentTypePartDefinition.GetSettings<TitlePartSettings>();
+
+            if (settings.Options == TitlePartOptions.EditableRequired && String.IsNullOrEmpty(part.Title))
+            {
+                context.Fail(S["A value is required for Title."], nameof(part.Title));
+            }
+
+            return Task.CompletedTask;
         }
 
         private TitlePartSettings GetSettings(TitlePart part)

@@ -2598,6 +2598,43 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "vahpetr",
+      "name": "Vasilev Pyotr",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10128393?v=4",
+      "profile": "https://github.com/vahpetr",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "aderderian",
+      "name": "Arra Derderian",
+      "avatar_url": "https://avatars.githubusercontent.com/u/868165?v=4",
+      "profile": "https://github.com/aderderian",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "MikeAlhayek",
+      "name": "Mike Alhayek",
+      "avatar_url": "https://avatars.githubusercontent.com/u/24724371?v=4",
+      "profile": "https://www.crestapps.com/",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "vengi83644",
+      "name": "Venkatesan R",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5276778?v=4",
+      "profile": "https://bicloud.io/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

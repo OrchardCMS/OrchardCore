@@ -67,8 +67,7 @@ namespace OrchardCore.ContentManagement.Display
                 }
             }
 
-            var settings = contentTypeDefinition?.GetSettings<ContentTypeSettings>();
-            var stereotype = settings?.Stereotype ?? String.Empty;
+            var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
 
             foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
             {
@@ -126,7 +125,7 @@ namespace OrchardCore.ContentManagement.Display
                             // e.g. LandingPage-ServicePart, LandingPage-ServicePart.Summary
                             ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partTypeName}");
 
-                            if (!String.IsNullOrEmpty(stereotype))
+                            if (hasStereotype)
                             {
                                 // [Stereotype]_[DisplayType]__[PartType],
                                 // e.g. Widget-ServicePart
@@ -145,7 +144,7 @@ namespace OrchardCore.ContentManagement.Display
                             // e.g. Employee-Address1, Employee-Address2
                             ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}");
 
-                            if (!String.IsNullOrEmpty(stereotype))
+                            if (hasStereotype)
                             {
                                 // [Stereotype]_[DisplayType]__[PartType]__[PartName]
                                 // e.g. Widget-Services

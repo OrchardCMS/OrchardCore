@@ -7,6 +7,12 @@
       en: {
         giphy: 'Insert GIF',
       },
+      sl: {
+        giphy: 'Vstavi GIF',
+      },
+      by: {
+        giphy: 'Уставіць GIF',
+      },
       et: {
         giphy: 'Sisesta GIF',
       },
@@ -15,6 +21,9 @@
       },
       hu: {
         giphy: 'GIF beszúrás',
+      },
+      ru: {
+        giphy: 'Вставить GIF',
       },
       tr: {
         giphy: 'GIF ekle',
@@ -56,13 +65,21 @@
 
     var html = response.data
       .filter(function (gifData) {
-        return gifData.images.downsized.url !== '';
+        // jshint camelcase:false
+        var downsized = gifData.images.downsized || gifData.images.downsized_medium;
+        // jshint camelcase:true
+        return !!downsized.url;
       })
       .map(function (gifData) {
-        var image = gifData.images.downsized,
-            imageRatio = image.height / image.width;
+        // jshint camelcase:false
+        var downsized = gifData.images.downsized || gifData.images.downsized_medium;
+        // jshint camelcase:true
+        var image = downsized,
+            imageRatio = image.height / image.width,
+            altText = gifData.title;
 
-        return '<div class="img-container"><img src=' + image.url + ' width="' + width + '" height="' + imageRatio * width + '" loading="lazy" onload="this.classList.add(\'tbw-loaded\')"/></div>';
+        var imgHtml = '<img src=' + image.url + ' width="' + width + '" height="' + imageRatio * width + '" alt="' + altText + '" loading="lazy" />';
+        return '<div class="img-container">' + imgHtml + '</div>';
       })
       .join('')
     ;
@@ -79,9 +96,33 @@
       $giphyModal.empty();
     }
     $giphyModal.append(html);
+
+    // Remove gray overlay on image load
+    // moved here from inline callback definition due to CSP issue
+    // Note: this is being done post-factum because load event doesn't bubble up and so can't be delegated
+    var addLoadedClass = function (img) { img.classList.add('tbw-loaded'); };
+    $('img', $giphyModal).each(function (){
+      var img = this;
+      if (img.complete){ // images load instantly when cached and esp. when loaded in previous modal open
+        addLoadedClass(img);
+      } else {
+        img.addEventListener('load', function(){ addLoadedClass(this); });
+      }
+    });
+
     $('img', $giphyModal).on('click', function () {
+      var src = $(this).attr('src'),
+          alt = $(this).attr('alt');
       trumbowyg.restoreRange();
-      trumbowyg.execCmd('insertImage', $(this).attr('src'), false, true);
+      trumbowyg.execCmd('insertImage', src, false, true);
+
+      // relay alt tag into inserted image
+      if (alt){
+        var $img = $('img[src="' + src + '"]:not([alt])',trumbowyg.$box);
+        $img.attr('alt', alt);
+        // Note: This seems to fire relatively early and could be wrapped in a setTimeout if needed
+        trumbowyg.syncCode();
+      }
       $('img', $giphyModal).off();
       trumbowyg.closeModal();
     });

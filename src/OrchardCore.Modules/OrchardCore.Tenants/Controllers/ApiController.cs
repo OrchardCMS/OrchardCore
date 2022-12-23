@@ -113,7 +113,7 @@ namespace OrchardCore.Tenants.Controllers
 
                     var token = CreateSetupToken(settings);
 
-                    return StatusCode(201, GetEncodedUrl(settings, token));
+                    return Created(GetEncodedUrl(settings, token), null);
                 }
                 else
                 {
@@ -165,7 +165,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (shellSettings.State == TenantState.Running)
             {
-                return StatusCode(201);
+                return Created(GetEncodedUrl(shellSettings, null), null);
             }
 
             if (shellSettings.State != TenantState.Uninitialized)
@@ -180,11 +180,17 @@ namespace OrchardCore.Tenants.Controllers
                 databaseProvider = model.DatabaseProvider;
             }
 
-            var selectedProvider = _databaseProviders.FirstOrDefault(x => String.Equals(x.Value, databaseProvider, StringComparison.OrdinalIgnoreCase));
+            if (String.IsNullOrEmpty(databaseProvider))
+            {
+                return BadRequest(S["The database provider is not defined."]);
+            }
+
+            var selectedProvider = _databaseProviders.FirstOrDefault(provider =>
+                String.Equals(provider.Value, databaseProvider, StringComparison.OrdinalIgnoreCase));
 
             if (selectedProvider == null)
             {
-                return BadRequest(S["The database provider is not defined."]);
+                return BadRequest(S["The database provider is not supported."]);
             }
 
             var tablePrefix = shellSettings["TablePrefix"];
@@ -278,7 +284,7 @@ namespace OrchardCore.Tenants.Controllers
                     ModelState.AddModelError(error.Key, error.Value);
                 }
 
-                return StatusCode(500, ModelState);
+                return this.InternalServerError(ModelState);
             }
 
             return Ok(executionId);

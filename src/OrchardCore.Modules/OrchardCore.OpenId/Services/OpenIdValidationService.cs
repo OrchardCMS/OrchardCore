@@ -117,6 +117,34 @@ namespace OrchardCore.OpenId.Services
                         nameof(settings.Authority)
                     }));
                 }
+
+            }
+
+            if (settings.MetadataAddress != null)
+            {
+                if (!settings.MetadataAddress.IsAbsoluteUri || !settings.MetadataAddress.IsWellFormedOriginalString())
+                {
+                    results.Add(new ValidationResult(S["The specified metadata address is not valid."], new[]
+                    {
+                        nameof(settings.MetadataAddress)
+                    }));
+                }
+
+                if (!String.IsNullOrEmpty(settings.MetadataAddress.Query) || !string.IsNullOrEmpty(settings.MetadataAddress.Fragment))
+                {
+                    results.Add(new ValidationResult(S["The metadata address cannot contain a query string or a fragment."], new[]
+                    {
+                        nameof(settings.MetadataAddress)
+                    }));
+                }
+
+                if (!String.IsNullOrEmpty(settings.Tenant))
+                {
+                    results.Add(new ValidationResult(S["No metatada address can be set when using another tenant."], new[]
+                    {
+                        nameof(settings.MetadataAddress)
+                    }));
+                }
             }
 
             if (!String.IsNullOrEmpty(settings.Tenant) && !string.IsNullOrEmpty(settings.Audience))

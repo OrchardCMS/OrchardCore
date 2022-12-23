@@ -11,13 +11,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Security.Services;
-using OrchardCore.Settings;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -35,7 +35,7 @@ namespace OrchardCore.Users.Controllers
         private readonly SignInManager<IUser> _signInManager;
         private readonly ISession _session;
         private readonly IAuthorizationService _authorizationService;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly IDisplayManager<User> _userDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUserService _userService;
@@ -60,7 +60,7 @@ namespace OrchardCore.Users.Controllers
             IRoleService roleService,
             IUsersAdminListQueryService usersAdminListQueryService,
             INotifier notifier,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
             ILogger<AccountController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
@@ -74,7 +74,7 @@ namespace OrchardCore.Users.Controllers
             _session = session;
             _userManager = userManager;
             _notifier = notifier;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             _userService = userService;
             _roleService = roleService;
             _usersAdminListQueryService = usersAdminListQueryService;
@@ -116,8 +116,7 @@ namespace OrchardCore.Users.Controllers
 
             var routeData = new RouteData(options.RouteValues);
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var count = await users.CountAsync();
 
@@ -185,7 +184,7 @@ namespace OrchardCore.Users.Controllers
             options.UsersCount = userEntries.Count;
             options.TotalItemCount = pagerShape.TotalItemCount;
 
-            var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+            var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, "", "");
 
             var shapeViewModel = await _shapeFactory.CreateAsync<UsersIndexViewModel>("UsersAdminList", viewModel =>
             {
@@ -209,7 +208,7 @@ namespace OrchardCore.Users.Controllers
             }
 
             // Evaluate the values provided in the form post and map them to the filter result and route values.
-            await _userOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+            await _userOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false, "", "");
 
             // The route value must always be added after the editors have updated the models.
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
@@ -309,7 +308,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true);
+            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
 
             return View(shape);
         }
@@ -325,7 +324,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true);
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
 
             if (!ModelState.IsValid)
             {
@@ -369,7 +368,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
 
             ViewData["ReturnUrl"] = returnUrl;
 
@@ -403,7 +402,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
 
             if (!ModelState.IsValid)
             {

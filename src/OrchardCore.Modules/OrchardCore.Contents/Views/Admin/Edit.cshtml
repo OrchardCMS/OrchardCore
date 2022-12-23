@@ -13,6 +13,9 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit {0}", typeDisplayName])</h1></zone>
 
 <form asp-action="Edit" asp-route-contentitemid="@contentItem.ContentItemId" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">
-    @Html.ValidationSummary()
+    @if (!ViewContext.ModelState.IsValid)
+    {
+        @Html.ValidationSummary()
+    }
     @await DisplayAsync(Model)
 </form>

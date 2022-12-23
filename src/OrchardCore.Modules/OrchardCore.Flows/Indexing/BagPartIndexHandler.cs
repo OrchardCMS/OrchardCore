@@ -40,7 +40,7 @@ namespace OrchardCore.Flows.Indexing
                             keys.Add($"{key}.{contentItem.ContentType}");
                         }
 
-                        var buildIndexContext = new BuildIndexContext(context.DocumentIndex, contentItem, keys);
+                        var buildIndexContext = new BuildIndexContext(context.DocumentIndex, contentItem, keys, context.Settings);
 
                         await contentItemIndexHandler.BuildIndexAsync(buildIndexContext);
                     }

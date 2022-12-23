@@ -8,6 +8,7 @@ using OrchardCore.Admin;
 using OrchardCore.ContentFields.Controllers;
 using OrchardCore.ContentFields.Drivers;
 using OrchardCore.ContentFields.Fields;
+using OrchardCore.ContentFields.Handlers;
 using OrchardCore.ContentFields.Indexing;
 using OrchardCore.ContentFields.Indexing.SQL;
 using OrchardCore.ContentFields.Services;
@@ -69,7 +70,8 @@ namespace OrchardCore.ContentFields
 
             // Text Field
             services.AddContentField<TextField>()
-                .UseDisplayDriver<TextFieldDisplayDriver>();
+                .UseDisplayDriver<TextFieldDisplayDriver>()
+                .AddHandler<TextFieldHandler>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TextFieldIndexHandler>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldPredefinedListEditorSettingsDriver>();
@@ -134,7 +136,7 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentPickerResultProvider, DefaultContentPickerResultProvider>();
 
             // Migration, can be removed in a future release.
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

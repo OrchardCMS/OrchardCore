@@ -1,6 +1,5 @@
 using BenchmarkDotNet.Attributes;
-using OrchardCore.Liquid;
-using OrchardCore.Liquid.Services;
+using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Benchmark
 {
