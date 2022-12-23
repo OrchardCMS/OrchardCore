@@ -144,6 +144,7 @@ namespace OrchardCore.Environment.Shell
         public async Task UpdateShellSettingsAsync(ShellSettings settings)
         {
             settings.VersionId = IdGenerator.GenerateId();
+            settings.TenantId ??= IdGenerator.GenerateId();
             await _shellSettingsManager.SaveSettingsAsync(settings);
             await ReloadShellContextAsync(settings);
         }
