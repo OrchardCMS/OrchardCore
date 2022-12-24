@@ -75,34 +75,46 @@ namespace OrchardCore.OpenId.Configuration
                 options.SigningCredentials.Add(new SigningCredentials(key, SecurityAlgorithms.RsaSha256));
             }
 
+            // Note: while endpoint paths in OrchardCore are stored as PathString instances,
+            // OpenIddict uses System.Uri. To ensure the System.Uri instances created from
+            // a PathString don't represent root-relative URIs (which would break path-based
+            // multi-tenancy support), the leading '/' that is always present in PathString
+            // instances is manually removed from the endpoint path before URIs are created.
+
             if (settings.AuthorizationEndpointPath.HasValue)
             {
-                options.AuthorizationEndpointUris.Add(new Uri(settings.AuthorizationEndpointPath.Value, UriKind.Relative));
+                options.AuthorizationEndpointUris.Add(new Uri(
+                    settings.AuthorizationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
             if (settings.LogoutEndpointPath.HasValue)
             {
-                options.LogoutEndpointUris.Add(new Uri(settings.LogoutEndpointPath.Value, UriKind.Relative));
+                options.LogoutEndpointUris.Add(new Uri(
+                    settings.LogoutEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
             if (settings.TokenEndpointPath.HasValue)
             {
-                options.TokenEndpointUris.Add(new Uri(settings.TokenEndpointPath.Value, UriKind.Relative));
+                options.TokenEndpointUris.Add(new Uri(
+                    settings.TokenEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
             if (settings.UserinfoEndpointPath.HasValue)
             {
-                options.UserinfoEndpointUris.Add(new Uri(settings.UserinfoEndpointPath.Value, UriKind.Relative));
+                options.UserinfoEndpointUris.Add(new Uri(
+                    settings.UserinfoEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
             if (settings.IntrospectionEndpointPath.HasValue)
             {
-                options.IntrospectionEndpointUris.Add(new Uri(settings.IntrospectionEndpointPath.Value, UriKind.Relative));
+                options.IntrospectionEndpointUris.Add(new Uri(
+                    settings.IntrospectionEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
             if (settings.RevocationEndpointPath.HasValue)
             {
-                options.RevocationEndpointUris.Add(new Uri(settings.RevocationEndpointPath.Value, UriKind.Relative));
+                options.RevocationEndpointUris.Add(new Uri(
+                    settings.RevocationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
             // For now, response types and response modes are not directly
