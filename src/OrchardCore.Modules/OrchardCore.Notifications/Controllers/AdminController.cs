@@ -168,8 +168,9 @@ public class AdminController : Controller, IUpdateModel
     {
         if (itemIds?.Count() > 0)
         {
-            var notifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId.IsIn(itemIds)).ListAsync();
+            var notifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId.IsIn(itemIds), collection: NotificationConstants.NotificationCollection).ListAsync();
             var utcNow = _clock.UtcNow;
+            var counter = 0;
 
             switch (options.BulkAction)
             {
@@ -185,9 +186,13 @@ public class AdminController : Controller, IUpdateModel
                             notification.Put(readPart);
 
                             _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+                            counter++;
                         }
                     }
-                    await _notifier.SuccessAsync(H["Notifications were unread successfully."]);
+                    if (counter > 0)
+                    {
+                        await _notifier.SuccessAsync(H["{0} {1} unread successfully.", counter, H.Plural(counter, "notification", "notifications")]);
+                    }
                     break;
                 case NotificationBulkAction.Read:
                     foreach (var notification in notifications)
@@ -202,17 +207,24 @@ public class AdminController : Controller, IUpdateModel
                             notification.Put(readPart);
 
                             _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+                            counter++;
                         }
                     }
-                    await _notifier.SuccessAsync(H["Notifications were read successfully."]);
+                    if (counter > 0)
+                    {
+                        await _notifier.SuccessAsync(H["{0} {1} read successfully.", counter, H.Plural(counter, "notification", "notifications")]);
+                    }
                     break;
                 case NotificationBulkAction.Remove:
                     foreach (var notification in notifications)
                     {
                         _session.Delete(notification, collection: NotificationConstants.NotificationCollection);
+                        counter++;
                     }
-                    await _notifier.SuccessAsync(H["Notifications removed successfully."]);
-
+                    if (counter > 0)
+                    {
+                        await _notifier.SuccessAsync(H["{0} {1} removed successfully.", counter, H.Plural(counter, "notification", "notifications")]);
+                    }
                     break;
                 default:
                     break;
@@ -232,6 +244,7 @@ public class AdminController : Controller, IUpdateModel
         var notifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && !x.IsRead, collection: NotificationConstants.NotificationCollection).ListAsync();
 
         var utcNow = _clock.UtcNow;
+        var counter = 0;
         foreach (var notification in notifications)
         {
             var readPart = notification.As<NotificationReadInfo>();
@@ -241,6 +254,12 @@ public class AdminController : Controller, IUpdateModel
 
             notification.Put(readPart);
             _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+            counter++;
+        }
+
+        if (counter > 0)
+        {
+            await _notifier.SuccessAsync(H["{0} {1} read successfully.", counter, H.Plural(counter, "notification", "notifications")]);
         }
 
         return RedirectTo(returnUrl);

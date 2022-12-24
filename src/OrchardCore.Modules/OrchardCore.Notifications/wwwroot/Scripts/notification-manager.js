@@ -9,22 +9,17 @@ notificationManager = function () {
       console.log('No readUrl was provided.');
       return;
     }
-
     var elements = document.getElementsByClassName('mark-notification-as-read');
-
     var _loop = function _loop(i) {
       var element = elements[i];
       element.addEventListener('click', function () {
         if (element.getAttribute('data-is-read') != "false") {
           return;
         }
-
         var messageId = element.getAttribute('data-message-id');
-
         if (!messageId) {
           return;
         }
-
         fetch(readUrl, {
           method: 'POST',
           headers: {
@@ -39,31 +34,28 @@ notificationManager = function () {
           if (result.updated) {
             if (wrapperSelector) {
               var wrapper = element.closest(wrapperSelector);
-
               if (wrapper) {
                 wrapper.classList.remove('notification-is-unread');
                 wrapper.classList.add('notification-is-read');
+                wrapper.setAttribute('data-is-read', true);
               }
             } else {
               element.classList.remove('notification-is-unread');
               element.classList.add('notification-is-read');
+              element.setAttribute('data-is-read', true);
             }
           }
-
           var targetUrl = element.getAttribute('data-target-url');
-
           if (targetUrl) {
             window.location.href = targetUrl;
           }
         });
       });
     };
-
     for (var i = 0; i < elements.length; i++) {
       _loop(i);
     }
   };
-
   return {
     initializeContainer: initialize
   };

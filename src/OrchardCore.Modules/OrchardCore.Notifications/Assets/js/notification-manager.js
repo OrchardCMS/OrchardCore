@@ -38,10 +38,12 @@ notificationManager = function () {
                                 if (wrapper) {
                                     wrapper.classList.remove('notification-is-unread');
                                     wrapper.classList.add('notification-is-read');
+                                    wrapper.setAttribute('data-is-read', true);
                                 }
                             } else {
                                 element.classList.remove('notification-is-unread');
                                 element.classList.add('notification-is-read');
+                                element.setAttribute('data-is-read', true);
                             }
                         }
 
