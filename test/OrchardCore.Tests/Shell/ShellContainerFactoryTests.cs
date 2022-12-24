@@ -11,7 +11,6 @@ using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Testing.Stubs;
-using OrchardCore.Tests.Stubs;
 using Xunit;
 
 namespace OrchardCore.Tests.Shell
@@ -38,7 +37,7 @@ namespace OrchardCore.Tests.Shell
 
             _shellContainerFactory = new ShellContainerFactory(
                 new HostingEnvironmentStub(),
-                new StubExtensionManager(),
+                new NullExtensionManager(),
                 _applicationServiceProvider = applicationServices.BuildServiceProvider(),
                 applicationServices
             );
