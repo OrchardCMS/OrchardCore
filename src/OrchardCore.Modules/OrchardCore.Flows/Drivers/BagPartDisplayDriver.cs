@@ -174,6 +174,11 @@ namespace OrchardCore.Flows.Drivers
                     widget.Deletable = await AuthorizeAsync(CommonPermissions.DeleteContent, contentItem);
                 }
 
+                if (contentTypeDefinition == null)
+                {
+                    continue;
+                }
+
                 widget.ContentTypeDefinition = contentTypeDefinition;
 
                 if (widget.Editable || widget.Viewable)
@@ -200,14 +205,13 @@ namespace OrchardCore.Flows.Drivers
             return await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, permission, contentItem);
         }
 
-
         private static bool IsSecurable(IContentDefinitionManager contentDefinitionManager, string contentType, out ContentTypeDefinition contentTypeDefinition)
         {
             contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(contentType);
 
-            var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
+            var settings = contentTypeDefinition?.GetSettings<ContentTypeSettings>();
 
-            return settings.Securable;
+            return settings?.Securable ?? false;
         }
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(IContentDefinitionManager contentDefinitionManager, ContentTypePartDefinition typePartDefinition)
