@@ -16,7 +16,7 @@ using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules.Manifest;
-using OrchardCore.Tests.Stubs;
+using OrchardCore.Testing.Stubs;
 using Xunit;
 
 namespace OrchardCore.Tests.DisplayManagement.Decriptors
@@ -129,7 +129,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             serviceCollection.AddScoped<IShellFeaturesManager, TestShellFeaturesManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
-            serviceCollection.AddSingleton<IHostEnvironment>(new StubHostingEnvironment());
+            serviceCollection.AddSingleton<IHostEnvironment>(new HostingEnvironmentStub());
 
             var testFeatureExtensionInfo = new TestModuleExtensionInfo("Testing");
             var theme1FeatureExtensionInfo = new TestThemeExtensionInfo("Theme1");

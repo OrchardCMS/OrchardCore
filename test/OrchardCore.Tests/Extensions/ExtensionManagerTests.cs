@@ -7,15 +7,14 @@ using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Modules;
-using OrchardCore.Tests.Stubs;
+using OrchardCore.Testing.Stubs;
 using Xunit;
 
 namespace OrchardCore.Tests.Extensions
 {
     public class ExtensionManagerTests
     {
-        private static IHostEnvironment HostingEnvironment
-            = new StubHostingEnvironment();
+        private static IHostEnvironment HostingEnvironment = new HostingEnvironmentStub();
 
         private static IApplicationContext ApplicationContext
             = new ModularApplicationContext(HostingEnvironment, new List<IModuleNamesProvider>()

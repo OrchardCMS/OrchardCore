@@ -10,7 +10,7 @@ using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Recipes.Models;
-using OrchardCore.Tests.Stubs;
+using OrchardCore.Testing.Stubs;
 using Xunit;
 using static OrchardCore.OpenId.Settings.OpenIdServerSettings;
 

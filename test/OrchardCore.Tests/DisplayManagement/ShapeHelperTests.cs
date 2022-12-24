@@ -7,7 +7,7 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
-using OrchardCore.Tests.Stubs;
+using OrchardCore.Testing.Stubs;
 using Xunit;
 
 namespace OrchardCore.Tests.DisplayManagement
@@ -22,10 +22,10 @@ namespace OrchardCore.Tests.DisplayManagement
 
             serviceCollection.AddLogging();
             serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
-            serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
+            serviceCollection.AddScoped<IExtensionManager, NullExtensionManager>();
             serviceCollection.AddScoped<IThemeManager, ThemeManager>();
             serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
-            serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
+            serviceCollection.AddScoped<IShapeTableManager, ShapeTableManagerStub>();
 
             var defaultShapeTable = new ShapeTable
             (
