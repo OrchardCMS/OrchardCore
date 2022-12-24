@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MimeKit;
 using OrchardCore.Email;
-using OrchardCore.Testing;
+using OrchardCore.Testing.Mocks;
 using Xunit;
 
 namespace OrchardCore.Tests.Email

@@ -22,9 +22,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Workflows\OrchardCore.Workflows.csproj" />
     <ProjectReference Include="..\OrchardCore.Deployment.Abstractions\OrchardCore.Deployment.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Email.Core\OrchardCore.Email.Core.csproj" />
+    <ProjectReference Include="..\OrchardCore.Infrastructure\OrchardCore.Infrastructure.csproj" />
     <ProjectReference Include="..\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Scripting.JavaScript\OrchardCore.Scripting.JavaScript.csproj" />
   </ItemGroup>
 
 </Project>

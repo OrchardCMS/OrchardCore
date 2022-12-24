@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -10,9 +5,9 @@ using Moq;
 using OrchardCore.Email;
 using OrchardCore.Email.Services;
 
-namespace OrchardCore.Testing;
+namespace OrchardCore.Testing.Mocks;
 
-public static class OrchardCoreMock
+public static partial class OrchardCoreMock
 {
     public static ISmtpService CreateSmtpService(SmtpSettings settings)
     {
