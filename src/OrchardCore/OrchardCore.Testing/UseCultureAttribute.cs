@@ -24,7 +24,8 @@ public class UseCultureAttribute : BeforeAfterTestAttribute
     /// Creates an instance of <see cref="UseCultureAttribute"/> with culture.
     /// </summary>
     /// <param name="culture">The name of the culture to replace the current thread culture with.</param>
-    public UseCultureAttribute(string culture) : this(culture, culture)
+    public UseCultureAttribute(string culture)
+        : this(culture, culture)
     {
     }
 
@@ -34,9 +35,19 @@ public class UseCultureAttribute : BeforeAfterTestAttribute
     /// <param name="culture">>The name of the culture to replace the current thread culture with.</param>
     /// <param name="uiCulture">>The name of the UI culture to replace the current thread UI culture with.</param>
     public UseCultureAttribute(string culture, string uiCulture)
+        : this(new CultureInfo(culture), new CultureInfo(uiCulture))
     {
-        _culture = new Lazy<CultureInfo>(() => new CultureInfo(culture, false));
-        _uiCulture = new Lazy<CultureInfo>(() => new CultureInfo(uiCulture, false));
+    }
+
+    /// <summary>
+    /// Creates an instance of <see cref="UseCultureAttribute"/> with culture and UI culture.
+    /// </summary>
+    /// <param name="culture">>The culture to replace the current thread culture with.</param>
+    /// <param name="uiCulture">>The UI culture to replace the current thread UI culture with.</param>
+    public UseCultureAttribute(CultureInfo culture, CultureInfo uiCulture)
+    {
+        _culture = new Lazy<CultureInfo>(() => culture);
+        _uiCulture = new Lazy<CultureInfo>(() => uiCulture);
     }
 
     /// <summary>
