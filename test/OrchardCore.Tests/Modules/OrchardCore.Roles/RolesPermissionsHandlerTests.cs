@@ -4,7 +4,7 @@ using Moq;
 using OrchardCore.Roles;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Tests.Security;
+using OrchardCore.Testing.Security;
 using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Roles

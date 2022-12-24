@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using OrchardCore.Security;
 using OrchardCore.Security.AuthorizationHandlers;
 using OrchardCore.Security.Permissions;
-using Xunit;
+using OrchardCore.Testing.Security;
 
 namespace OrchardCore.Tests.Security
 {
@@ -15,6 +15,7 @@ namespace OrchardCore.Tests.Security
         {
             // Arrange
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission(required), new[] { "Allowed" }, true);
+
             var permissionHandler = CreatePermissionHandler();
 
             // Act
@@ -29,6 +30,7 @@ namespace OrchardCore.Tests.Security
         {
             // Arrange
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Required"), new[] { "Other" }, true);
+
             var permissionHandler = CreatePermissionHandler();
 
             await context.SuccessAsync("Required");
@@ -45,6 +47,7 @@ namespace OrchardCore.Tests.Security
         {
             // Arrange
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Allowed"), new[] { "Allowed" });
+
             var permissionHandler = CreatePermissionHandler();
 
             // Act
@@ -63,6 +66,7 @@ namespace OrchardCore.Tests.Security
             var required = new Permission("Required", "Foo", new[] { level1 });
 
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, new[] { "Implicit2" }, true);
+
             var permissionHandler = CreatePermissionHandler();
 
             // Act
@@ -79,6 +83,7 @@ namespace OrchardCore.Tests.Security
             var required = new Permission("required");
 
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, new[] { "ReQuIrEd" }, true);
+
             var permissionHandler = CreatePermissionHandler();
 
             // Act
@@ -91,6 +96,7 @@ namespace OrchardCore.Tests.Security
         private static PermissionHandler CreatePermissionHandler()
         {
             var permissionGrantingService = new DefaultPermissionGrantingService();
+
             return new PermissionHandler(permissionGrantingService);
         }
     }
