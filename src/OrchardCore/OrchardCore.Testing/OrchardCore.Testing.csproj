@@ -29,6 +29,7 @@
     <ProjectReference Include="..\OrchardCore.Infrastructure\OrchardCore.Infrastructure.csproj" />
     <ProjectReference Include="..\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Scripting.JavaScript\OrchardCore.Scripting.JavaScript.csproj" />
+    <ProjectReference Include="..\OrchardCore.Users.Abstractions\OrchardCore.Users.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

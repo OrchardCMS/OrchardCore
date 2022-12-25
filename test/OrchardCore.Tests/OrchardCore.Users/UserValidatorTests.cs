@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Moq;
+using OrchardCore.Testing.Mocks;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using Xunit;
@@ -15,7 +16,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         public async Task CanValidateUser()
         {
             // Arrange
-            var userManager = UsersMockHelper.MockUserManager<IUser>();
+            var userManager = OrchardCoreMock.CreateUserManagerMock<IUser>();
             var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo", Email = "foo@foo.com" };
             userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
             userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
@@ -34,7 +35,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         {
             // Arrange
             var describer = new IdentityErrorDescriber();
-            var userManager = UsersMockHelper.MockUserManager<IUser>();
+            var userManager = OrchardCoreMock.CreateUserManagerMock<IUser>();
             var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo" };
             userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
             userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
@@ -54,7 +55,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         {
             // Arrange
             var describer = new IdentityErrorDescriber();
-            var userManager = UsersMockHelper.MockUserManager<IUser>();
+            var userManager = OrchardCoreMock.CreateUserManagerMock<IUser>();
             var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo", Email = "foo" };
             userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
             userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
@@ -74,7 +75,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         {
             // Arrange
             var describer = new IdentityErrorDescriber();
-            var userManager = UsersMockHelper.MockUserManager<IUser>();
+            var userManager = OrchardCoreMock.CreateUserManagerMock<IUser>();
             var existingUser = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo", Email = "foo@foo.com" };
             userManager.Setup(m => m.GetUserIdAsync(existingUser)).ReturnsAsync(existingUser.UserId);
             userManager.Setup(m => m.GetUserNameAsync(existingUser)).ReturnsAsync(existingUser.UserName);
@@ -101,7 +102,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         {
             // Arrange
             var describer = new IdentityErrorDescriber();
-            var userManager = UsersMockHelper.MockUserManager<IUser>();
+            var userManager = OrchardCoreMock.CreateUserManagerMock<IUser>();
             var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "foo@foo.com", Email = "foo" };
             userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
             userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
@@ -121,7 +122,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         {
             // Arrange
             var describer = new IdentityErrorDescriber();
-            var userManager = UsersMockHelper.MockUserManager<IUser>();
+            var userManager = OrchardCoreMock.CreateUserManagerMock<IUser>();
             var existingUser = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo", Email = "bar@bar.com" };
             userManager.Setup(m => m.GetUserIdAsync(existingUser)).ReturnsAsync(existingUser.UserId);
             userManager.Setup(m => m.GetUserNameAsync(existingUser)).ReturnsAsync(existingUser.UserName);
