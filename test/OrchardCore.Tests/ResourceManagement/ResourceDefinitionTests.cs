@@ -2,15 +2,16 @@ using System;
 using System.IO;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using OrchardCore.ResourceManagement;
+using OrchardCore.Testing.Stubs;
 using Xunit;
 
 namespace OrchardCore.Tests.ResourceManagement
 {
     public class ResourceDefinitionTests
     {
+        private readonly static FileVersionProviderStub _fileVersionProviderStub = new();
+
         private readonly ResourceManifest _resourceManifest;
 
         public ResourceDefinitionTests()
@@ -31,7 +32,7 @@ namespace OrchardCore.Tests.ResourceManagement
                 .SetCdn("https://cdn.tld/foo.js", "https://cdn.tld/foo.debug.js");
 
             var requireSettings = new RequireSettings { DebugMode = false, CdnMode = false };
-            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, _fileVersionProviderStub);
 
             Assert.Equal("script", tagBuilder.TagName);
             Assert.Equal($"{applicationPath}/foo.js", tagBuilder.Attributes["src"]);
@@ -46,7 +47,7 @@ namespace OrchardCore.Tests.ResourceManagement
                 .SetBasePath(basePath);
 
             var requireSettings = new RequireSettings { DebugMode = false, CdnMode = false };
-            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, String.Empty, StubFileVersionProvider.Instance);
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, String.Empty, _fileVersionProviderStub);
 
             Assert.Equal("script", tagBuilder.TagName);
             Assert.Equal($"{basePath}/foo.js", tagBuilder.Attributes["src"]);
@@ -63,7 +64,7 @@ namespace OrchardCore.Tests.ResourceManagement
                 .SetCdn("https://cdn.tld/foo.js", "https://cdn.tld/foo.debug.js");
 
             var requireSettings = new RequireSettings { DebugMode = true, CdnMode = false };
-            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, _fileVersionProviderStub);
 
             Assert.Equal("script", tagBuilder.TagName);
             Assert.Equal($"{applicationPath}/foo.debug.js", tagBuilder.Attributes["src"]);
@@ -80,7 +81,7 @@ namespace OrchardCore.Tests.ResourceManagement
                 .SetCdn("https://cdn.tld/foo.js", "https://cdn.tld/foo.debug.js");
 
             var requireSettings = new RequireSettings { DebugMode = false, CdnMode = true };
-            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, _fileVersionProviderStub);
 
             Assert.Equal("script", tagBuilder.TagName);
             Assert.Equal("https://cdn.tld/foo.js", tagBuilder.Attributes["src"]);
@@ -97,7 +98,7 @@ namespace OrchardCore.Tests.ResourceManagement
                 .SetCdn("https://cdn.tld/foo.js", "https://cdn.tld/foo.debug.js");
 
             var requireSettings = new RequireSettings { DebugMode = true, CdnMode = true, CdnBaseUrl = "https://hostcdn.net" };
-            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, _fileVersionProviderStub);
 
             Assert.Equal("script", tagBuilder.TagName);
             Assert.Equal("https://cdn.tld/foo.debug.js", tagBuilder.Attributes["src"]);
@@ -118,7 +119,7 @@ namespace OrchardCore.Tests.ResourceManagement
                 .SetUrl(url, url);
 
             var requireSettings = new RequireSettings { DebugMode = false, CdnMode = true, CdnBaseUrl = "https://hostcdn.net" };
-            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, _fileVersionProviderStub);
 
             Assert.Equal("script", tagBuilder.TagName);
             Assert.Equal(expected, tagBuilder.Attributes["src"]);
@@ -135,7 +136,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var requireSettings = new RequireSettings()
                 .UseCdnBaseUrl("https://hostcdn.net");
-            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, _fileVersionProviderStub);
 
             Assert.Equal("script", tagBuilder.TagName);
             Assert.Equal("console.log('foo');", ReadIHtmlContent(tagBuilder.InnerHtml));
@@ -152,7 +153,7 @@ namespace OrchardCore.Tests.ResourceManagement
                 .SetCdn("https://cdn.tld/foo.css", "https://cdn.tld/foo.debug.css");
 
             var requireSettings = new RequireSettings { DebugMode = false, CdnMode = false };
-            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, _fileVersionProviderStub);
 
             Assert.Equal("link", tagBuilder.TagName);
             Assert.Equal("text/css", tagBuilder.Attributes["type"]);
@@ -171,7 +172,7 @@ namespace OrchardCore.Tests.ResourceManagement
                 .SetCdn("https://cdn.tld/foo.css", "https://cdn.tld/foo.debug.css");
 
             var requireSettings = new RequireSettings { DebugMode = true, CdnMode = false };
-            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, _fileVersionProviderStub);
 
             Assert.Equal("link", tagBuilder.TagName);
             Assert.Equal("text/css", tagBuilder.Attributes["type"]);
@@ -190,7 +191,7 @@ namespace OrchardCore.Tests.ResourceManagement
                 .SetCdn("https://cdn.tld/foo.css", "https://cdn.tld/foo.debug.css");
 
             var requireSettings = new RequireSettings { DebugMode = false, CdnMode = true };
-            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, _fileVersionProviderStub);
 
             Assert.Equal("link", tagBuilder.TagName);
             Assert.Equal("text/css", tagBuilder.Attributes["type"]);
@@ -213,7 +214,7 @@ namespace OrchardCore.Tests.ResourceManagement
                 .SetUrl(url, url);
 
             var requireSettings = new RequireSettings { DebugMode = false, CdnMode = true, CdnBaseUrl = "https://hostcdn.net" };
-            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, _fileVersionProviderStub);
 
             Assert.Equal("link", tagBuilder.TagName);
             Assert.Equal("text/css", tagBuilder.Attributes["type"]);
@@ -232,7 +233,7 @@ namespace OrchardCore.Tests.ResourceManagement
                 .SetCdn("https://cdn.tld/foo.css", "https://cdn.tld/foo.debug.css");
 
             var requireSettings = new RequireSettings { DebugMode = true, CdnMode = true };
-            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, _fileVersionProviderStub);
 
             Assert.Equal("link", tagBuilder.TagName);
             Assert.Equal("text/css", tagBuilder.Attributes["type"]);
@@ -252,7 +253,7 @@ namespace OrchardCore.Tests.ResourceManagement
                 .SetAttribute("media", "all");
 
             var requireSettings = new RequireSettings { DebugMode = false, CdnMode = false };
-            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, _fileVersionProviderStub);
 
             Assert.Equal("link", tagBuilder.TagName);
             Assert.Equal("text/css", tagBuilder.Attributes["type"]);
@@ -272,7 +273,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var requireSettings = new RequireSettings()
                 .UseCdnBaseUrl("https://cdn.net");
-            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, _fileVersionProviderStub);
 
             Assert.Equal("style", tagBuilder.TagName);
             Assert.Equal("text/css", tagBuilder.Attributes["type"]);
@@ -286,19 +287,6 @@ namespace OrchardCore.Tests.ResourceManagement
             {
                 content?.WriteTo(writer, HtmlEncoder.Default);
                 return writer.ToString();
-            }
-        }
-
-        #endregion
-
-        #region Stubs
-        private class StubFileVersionProvider : IFileVersionProvider
-        {
-            public static StubFileVersionProvider Instance { get; } = new StubFileVersionProvider();
-
-            public string AddFileVersionToPath(PathString requestPathBase, string path)
-            {
-                return path;
             }
         }
 

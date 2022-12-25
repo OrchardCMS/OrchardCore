@@ -8,10 +8,9 @@ using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Options;
 using OrchardCore.ResourceManagement;
+using OrchardCore.Testing.Stubs;
 using Xunit;
 
 namespace OrchardCore.Tests.ResourceManagement
@@ -19,6 +18,8 @@ namespace OrchardCore.Tests.ResourceManagement
     public class ResourceManagerTests
     {
         private const string basePath = "http://host";
+
+        private readonly static FileVersionProviderStub _fileVersionProviderStub = new();
 
         private readonly IBrowsingContext browsingContext;
 
@@ -41,7 +42,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             var resourceDefinition = resourceManager.FindResource(new RequireSettings { Type = "foo", Name = "bar2" });
@@ -58,7 +59,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             var requireSetting = resourceManager.RegisterUrl("foo", "schema://domain.ext/resource", "schema://domain.ext/resource.debug");
@@ -75,7 +76,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             resourceManager.RegisterUrl("foo", "schema://domain.ext/resource", "schema://domain.ext/resource.debug");
@@ -101,7 +102,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             resourceManager.RegisterResource("foo", "bar");
@@ -144,7 +145,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             resourceManager.RegisterResource("foo", "last-resource");
@@ -193,7 +194,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             resourceManager.RegisterResource("foo", "required");
@@ -219,7 +220,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             resourceManager.RegisterResource("foo", "requires-indirect-dependency");
@@ -244,7 +245,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             resourceManager.RegisterResource("foo", "resource");
@@ -278,7 +279,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             resourceManager.RegisterResource("foo", "first-resource");
@@ -315,7 +316,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             resourceManager.RegisterResource("foo", "first-resource");
@@ -339,7 +340,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             resourceManager.RegisterResource("foo", "required");
@@ -372,7 +373,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             resourceManager.RegisterResource("foo", "required");
@@ -395,7 +396,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             var customScript = "<script>doSomeAction();</script>";
@@ -411,7 +412,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             var customScript = "<script>doSomeAction();</script>";
@@ -427,7 +428,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             var customStyle = "<style>.my-class { prop: value; }</style>";
@@ -443,7 +444,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             var linkEntry = new LinkEntry
@@ -464,7 +465,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             var metaEntry = new MetaEntry(name: "foo", content: "bar");
@@ -481,7 +482,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             var first = new MetaEntry(name: "keywords", content: "bar")
@@ -509,7 +510,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             resourceManager.RegisterMeta(new MetaEntry { Charset = "utf-8" });
@@ -536,7 +537,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             resourceManager.RegisterUrl("stylesheet", "other.min.css", "other.css");    // Should not be rendered
@@ -572,7 +573,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             resourceManager.RegisterLink(new LinkEntry { Rel = "icon", Href = "/favicon.ico" });    // Should not be rendered
@@ -629,7 +630,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             // Require resource
@@ -681,7 +682,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             // Require resource
@@ -743,7 +744,7 @@ namespace OrchardCore.Tests.ResourceManagement
             var resourceManager = new ResourceManager
             (
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             // Require resource.
@@ -801,7 +802,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             var requireSetting = resourceManager.RegisterResource("script", "required");
@@ -841,7 +842,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                StubFileVersionProvider.Instance
+                _fileVersionProviderStub
             );
 
             var requireSetting = resourceManager.RegisterResource("stylesheet", "required").AtLocation(ResourceLocation.Inline);
@@ -873,34 +874,6 @@ namespace OrchardCore.Tests.ResourceManagement
                 content.WriteTo(writer, HtmlEncoder.Default);
 
                 return await browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(basePath));
-            }
-        }
-
-        #endregion
-
-        #region Stubs
-        private class StubResourceManifestProvider : IConfigureOptions<ResourceManagementOptions>
-        {
-            private readonly Action<ResourceManagementOptions> _configureManifestAction;
-
-            public StubResourceManifestProvider(Action<ResourceManagementOptions> configureManifestAction)
-            {
-                _configureManifestAction = configureManifestAction;
-            }
-
-            public void Configure(ResourceManagementOptions options)
-            {
-                _configureManifestAction?.Invoke(options);
-            }
-        }
-
-        private class StubFileVersionProvider : IFileVersionProvider
-        {
-            public static StubFileVersionProvider Instance { get; } = new StubFileVersionProvider();
-
-            public string AddFileVersionToPath(PathString requestPathBase, string path)
-            {
-                return path;
             }
         }
 
