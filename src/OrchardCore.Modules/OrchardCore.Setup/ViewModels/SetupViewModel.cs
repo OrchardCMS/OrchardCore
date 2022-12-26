@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Data;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Annotations;
-using YesSql;
 
 namespace OrchardCore.Setup.ViewModels
 {
@@ -22,6 +21,9 @@ namespace OrchardCore.Setup.ViewModels
         public string ConnectionString { get; set; }
 
         public string TablePrefix { get; set; }
+
+        [RegularExpression("^[A-Za-z_]+[A-Za-z0-9_]*$", ErrorMessage = "Invalid schema")]
+        public string Schema { get; set; }
 
         /// <summary>
         /// True if the database configuration is preset and can't be changed or displayed on the Setup screen.
@@ -54,16 +56,5 @@ namespace OrchardCore.Setup.ViewModels
         public string SiteTimeZone { get; set; }
 
         public string Secret { get; set; }
-
-        [RegularExpression("^[A-Za-z_]+[A-Za-z0-9_]*$", ErrorMessage = "Invalid schema")]
-        public string Schema { get; set; }
-
-        [RegularExpression("^[A-Za-z_]+[A-Za-z0-9_]*$", ErrorMessage = "Invalid name")]
-        public string DocumentTable { get; set; }
-
-        [RegularExpression("^_*$|\\bNULL\\b$", ErrorMessage = "Invalid table name separator")]
-        public string TableNameSeparator { get; set; }
-
-        public IdentityColumnSize IdentityColumnSize { get; set; }
     }
 }

@@ -66,7 +66,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         case DatabaseProviderValue.SqlConnection:
                             storeConfiguration
-                                .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, databaseTableOptions.Schema)
+                                .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
                                 .UseBlockIdGenerator();
                             break;
                         case DatabaseProviderValue.Sqlite:
@@ -83,12 +83,12 @@ namespace Microsoft.Extensions.DependencyInjection
                             break;
                         case DatabaseProviderValue.MySql:
                             storeConfiguration
-                                .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, databaseTableOptions.Schema)
+                                .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
                                 .UseBlockIdGenerator();
                             break;
                         case DatabaseProviderValue.Postgres:
                             storeConfiguration
-                                .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, databaseTableOptions.Schema)
+                                .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
                                 .UseBlockIdGenerator();
                             break;
                         default:
@@ -160,13 +160,19 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
 
+            if (!Enum.TryParse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize, out var identityColumnSize) ||
+                !Enum.IsDefined(identityColumnSize))
+            {
+                identityColumnSize = IdentityColumnSize.Int32;
+            }
+
             var storeConfiguration = new YesSql.Configuration
             {
                 CommandsPageSize = yesSqlOptions.CommandsPageSize,
                 QueryGatingEnabled = yesSqlOptions.QueryGatingEnabled,
                 ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
                 TableNameConvention = tableNameFactory.Create(databaseTableOptions),
-                IdentityColumnSize = databaseTableOptions.IdentityColumnSize,
+                IdentityColumnSize = identityColumnSize,
             };
 
             if (yesSqlOptions.IdGenerator != null)

@@ -21,20 +21,12 @@ namespace OrchardCore.Tenants.ViewModels
 
         public string TablePrefix { get; set; }
 
-        public string RecipeName { get; set; }
-
-        public string FeatureProfile { get; set; }
-
-        [RegularExpression("^_*$|\\bNULL\\b$", ErrorMessage = "Invalid table name separator")]
-        public string TableNameSeparator { get; set; }
-
         [RegularExpression("^[A-Za-z_]+[A-Za-z0-9_]*$", ErrorMessage = "Invalid schema")]
         public string Schema { get; set; }
 
-        [RegularExpression("^[A-Za-z_]+[A-Za-z0-9_]*$", ErrorMessage = "Invalid name")]
-        public string DocumentTable { get; set; }
+        public string RecipeName { get; set; }
 
-        public IdentityColumnSize IdentityColumnSize { get; set; }
+        public string FeatureProfile { get; set; }
 
         [BindNever]
         public bool IsNewTenant { get; set; }

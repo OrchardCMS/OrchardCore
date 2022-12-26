@@ -162,10 +162,7 @@ namespace OrchardCore.Setup.Services
                 shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider) ? databaseProvider?.ToString() : String.Empty;
                 shellSettings["ConnectionString"] = context.Properties.TryGetValue(SetupConstants.DatabaseConnectionString, out var databaseConnectionString) ? databaseConnectionString?.ToString() : String.Empty;
                 shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix) ? databaseTablePrefix?.ToString() : String.Empty;
-                shellSettings["Schema"] = context.Properties.TryGetValue(SetupConstants.Schema, out var schema) ? schema?.ToString() : String.Empty;
-                shellSettings["DocumentTable"] = context.Properties.TryGetValue(SetupConstants.DocumentTable, out var documentTable) ? documentTable?.ToString() : String.Empty;
-                shellSettings["TableNameSeparator"] = context.Properties.TryGetValue(SetupConstants.TableNameSeparator, out var tableNameSeparator) ? tableNameSeparator?.ToString() : String.Empty;
-                shellSettings["IdentityColumnSize"] = context.Properties.TryGetValue(SetupConstants.IdentityColumnSize, out var identityColumnSize) ? identityColumnSize?.ToString() : String.Empty;
+                shellSettings["Schema"] = context.Properties.TryGetValue(SetupConstants.DatabaseSchema, out var schema) ? schema?.ToString() : String.Empty;
             }
 
             var validationContext = new DbConnectionValidatorContext(new DatabaseTableOptions(shellSettings))
@@ -173,6 +170,7 @@ namespace OrchardCore.Setup.Services
                 DatabaseProvider = shellSettings["DatabaseProvider"],
                 ConnectionString = shellSettings["ConnectionString"],
                 TablePrefix = shellSettings["TablePrefix"],
+                Schema = shellSettings["Schema"],
                 ShellName = shellSettings.Name,
             };
 

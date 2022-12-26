@@ -10,6 +10,8 @@ public class DbConnectionValidatorContext
 
     public string TablePrefix { get; set; }
 
+    public string Schema { get; set; }
+
     public string ShellName { get; set; }
 
     public DatabaseTableOptions TableOptions { get; }

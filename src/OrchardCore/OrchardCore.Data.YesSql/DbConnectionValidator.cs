@@ -110,7 +110,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         try
         {
             var selectCommand = connection.CreateCommand();
-            selectCommand.CommandText = GetSelectBuilderForDocumentTable(sqlBuilder, documentName, context.TableOptions.Schema).ToSqlString();
+            selectCommand.CommandText = GetSelectBuilderForDocumentTable(sqlBuilder, documentName, context.Schema).ToSqlString();
 
             using var result = await selectCommand.ExecuteReaderAsync();
             if (context.ShellName != ShellHelper.DefaultShellName)
@@ -139,7 +139,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         try
         {
             var selectCommand = connection.CreateCommand();
-            selectCommand.CommandText = GetSelectBuilderForShellDescriptorDocument(sqlBuilder, documentName, context.TableOptions.Schema).ToSqlString();
+            selectCommand.CommandText = GetSelectBuilderForShellDescriptorDocument(sqlBuilder, documentName, context.Schema).ToSqlString();
 
             using var result = await selectCommand.ExecuteReaderAsync();
             if (!result.HasRows)

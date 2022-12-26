@@ -17,17 +17,20 @@ namespace OrchardCore.Tenants.Services
         private readonly static char[] HostsSeparator = new char[] { ',' };
 
         private readonly IShellHost _shellHost;
+        private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IFeatureProfilesService _featureProfilesService;
         private readonly IStringLocalizer<TenantValidator> S;
         private readonly IDbConnectionValidator _dbConnectionValidator;
 
         public TenantValidator(
             IShellHost shellHost,
+            IShellSettingsManager shellSettingsManager,
             IFeatureProfilesService featureProfilesService,
             IDbConnectionValidator dbConnectionValidator,
             IStringLocalizer<TenantValidator> stringLocalizer)
         {
             _shellHost = shellHost;
+            _shellSettingsManager = shellSettingsManager;
             _featureProfilesService = featureProfilesService;
             _dbConnectionValidator = dbConnectionValidator;
             S = stringLocalizer;
@@ -77,14 +80,7 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
 
-            var options = new DatabaseTableOptions
-            (
-                model.Schema,
-                model.DocumentTable,
-                model.TableNameSeparator,
-                model.IdentityColumnSize
-            );
-
+            var options = new DatabaseTableOptions(shellSettings ?? _shellSettingsManager.CreateDefaultSettings());
             if (model.IsNewTenant)
             {
                 if (shellSettings != null)
@@ -99,7 +95,7 @@ namespace OrchardCore.Tenants.Services
                     }
                 }
 
-                await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, errors, model.Name, options);
+                await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, model.Schema, errors, model.Name, options);
             }
             else
             {
@@ -108,20 +104,21 @@ namespace OrchardCore.Tenants.Services
                     // While the tenant is in Uninitialized state, we still are able to change the database settings.
                     // Let's validate the database for assurance.
 
-                    await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, errors, model.Name, options);
+                    await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, model.Schema, errors, model.Name, options);
                 }
             }
 
             return errors;
         }
 
-        private async Task AssertConnectionValidityAndApplyErrorsAsync(string databaseProvider, string connectionString, string tablePrefix, List<ModelError> errors, string shellName, DatabaseTableOptions options)
+        private async Task AssertConnectionValidityAndApplyErrorsAsync(string databaseProvider, string connectionString, string tablePrefix, string schema, List<ModelError> errors, string shellName, DatabaseTableOptions options)
         {
             var validationContext = new DbConnectionValidatorContext(options)
             {
                 DatabaseProvider = databaseProvider,
                 ConnectionString = connectionString,
                 TablePrefix = tablePrefix,
+                Schema = schema,
                 ShellName = shellName,
             };
 

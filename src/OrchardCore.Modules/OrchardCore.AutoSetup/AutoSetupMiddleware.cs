@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Abstractions.Setup;
 using OrchardCore.AutoSetup.Extensions;
 using OrchardCore.AutoSetup.Options;
+using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Locking.Distributed;
@@ -206,6 +207,7 @@ namespace OrchardCore.AutoSetup
         public async Task<ShellSettings> CreateTenantSettingsAsync(TenantSetupOptions setupOptions)
         {
             var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+            DatabaseTableOptions.PresetDefaultValues(shellSettings);
 
             shellSettings.Name = setupOptions.ShellName;
             shellSettings.RequestUrlHost = setupOptions.RequestUrlHost;
@@ -214,14 +216,11 @@ namespace OrchardCore.AutoSetup
 
             shellSettings["ConnectionString"] = setupOptions.DatabaseConnectionString;
             shellSettings["TablePrefix"] = setupOptions.DatabaseTablePrefix;
+            shellSettings["Schema"] = setupOptions.DatabaseSchema;
             shellSettings["DatabaseProvider"] = setupOptions.DatabaseProvider;
             shellSettings["Secret"] = Guid.NewGuid().ToString();
             shellSettings["RecipeName"] = setupOptions.RecipeName;
             shellSettings["FeatureProfile"] = setupOptions.FeatureProfile;
-            shellSettings["Schema"] = setupOptions.Schema;
-            shellSettings["DocumentTable"] = setupOptions.DocumentTable;
-            shellSettings["TableNameSeparator"] = setupOptions.TableNameSeparator;
-            shellSettings["IdentityColumnSize"] = setupOptions.IdentityColumnSize.ToString();
 
             await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -256,10 +255,7 @@ namespace OrchardCore.AutoSetup
             setupContext.Properties[SetupConstants.DatabaseTablePrefix] = options.DatabaseTablePrefix;
             setupContext.Properties[SetupConstants.SiteName] = options.SiteName;
             setupContext.Properties[SetupConstants.SiteTimeZone] = options.SiteTimeZone;
-            setupContext.Properties[SetupConstants.Schema] = options.Schema;
-            setupContext.Properties[SetupConstants.DocumentTable] = options.DocumentTable;
-            setupContext.Properties[SetupConstants.TableNameSeparator] = options.TableNameSeparator;
-            setupContext.Properties[SetupConstants.IdentityColumnSize] = options.IdentityColumnSize.ToString();
+            setupContext.Properties[SetupConstants.DatabaseSchema] = options.DatabaseSchema;
 
             return setupContext;
         }

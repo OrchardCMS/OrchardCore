@@ -37,44 +37,13 @@
             <span id="connectionStringHint" class="text-muted form-text small"></span>
         </div>
     </div>
-}
-
-@if (!Model.DatabaseConfigurationPreset || Model.CanEditDatabasePresets)
-{
-    var columnSizes = new List<SelectListItem>
-    {
-        new SelectListItem(T["Integer"].Value, YesSql.IdentityColumnSize.Int32.ToString()),
-        new SelectListItem(T["Big Integer"].Value, YesSql.IdentityColumnSize.Int64.ToString()),
-    };
 
     <div class="row row-cols-1 row-cols-md-2">
-        <div class="mb-3 col" asp-validation-class-for="IdentityColumnSize">
-            <label asp-for="IdentityColumnSize">@T["Identity column size"]</label>
-            <span asp-validation-for="IdentityColumnSize" class="text-danger"></span>
-            <select asp-for="IdentityColumnSize" asp-items="@columnSizes" class="form-select"></select>
-            <div class="hint">@T["The default value is"] <code>@T["Integer"]</code></div>
-        </div>
-
-        <div class="mb-3 col" asp-validation-class-for="DocumentTable">
-            <label asp-for="DocumentTable">@T["The name of the document table"]</label>
-            <input asp-for="DocumentTable" class="form-control" />
-            <span asp-validation-for="DocumentTable" class="text-danger"></span>
-            <div class="hint">@T["The default value is"] <code>Document</code></div>
-        </div>
-
         <div class="mb-3 col tablePrefix" asp-validation-class-for="Schema">
             <label asp-for="Schema">@T["The table schema?"]</label>
             <input asp-for="Schema" class="form-control" />
             <span asp-validation-for="Schema" class="text-danger"></span>
             <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server", "dbo"]</div>
         </div>
-
-        <div class="mb-3 col" asp-validation-class-for="TableNameSeparator">
-            <label asp-for="TableNameSeparator">@T["Table naming seperator to use when creating table names"]</label>
-            <input asp-for="TableNameSeparator" class="form-control" />
-            <span asp-validation-for="TableNameSeparator" class="text-danger"></span>
-            <div class="hint">@T["Input one or more underscores or 'NULL' for no separator. The default value is a single"] <code>_</code></div>
-        </div>
-
     </div>
 }

@@ -1,5 +1,4 @@
 using OrchardCore.Tenants.Workflows.Activities;
-using YesSql;
 
 namespace OrchardCore.Tenants.Workflows.ViewModels
 {
@@ -17,16 +16,10 @@ namespace OrchardCore.Tenants.Workflows.ViewModels
 
         public string TablePrefixExpression { get; set; }
 
+        public string SchemaExpression { get; set; }
+
         public string RecipeNameExpression { get; set; }
 
         public string FeatureProfileExpression { get; set; }
-
-        public string Schema { get; set; }
-
-        public string DocumentTable { get; set; }
-
-        public string TableNameSeparator { get; set; }
-
-        public IdentityColumnSize IdentityColumnSize { get; set; }
     }
 }

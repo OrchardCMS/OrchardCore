@@ -22,7 +22,6 @@ using OrchardCore.Recipes.Services;
 using OrchardCore.Routing;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
-using YesSql;
 
 namespace OrchardCore.Tenants.Controllers
 {
@@ -290,7 +289,6 @@ namespace OrchardCore.Tenants.Controllers
 
             var currentFeatureProfile = shellSettings["FeatureProfile"];
             var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfile);
-            var databaseTableOptionsModel = new DatabaseTableOptionsModel(shellSettings);
 
             var model = new EditTenantViewModel
             {
@@ -301,12 +299,9 @@ namespace OrchardCore.Tenants.Controllers
                 DatabaseProvider = shellSettings["DatabaseProvider"],
                 ConnectionString = shellSettings["ConnectionString"],
                 TablePrefix = shellSettings["TablePrefix"],
+                Schema = shellSettings["Schema"],
                 FeatureProfile = currentFeatureProfile,
                 FeatureProfiles = featureProfiles,
-                Schema = databaseTableOptionsModel.Schema,
-                DocumentTable = databaseTableOptionsModel.DocumentTable,
-                TableNameSeparator = databaseTableOptionsModel.TableNameSeparator,
-                IdentityColumnSize = databaseTableOptionsModel.IdentityColumnSize,
             };
 
             model.DatabaseConfigurationPreset =
@@ -340,6 +335,7 @@ namespace OrchardCore.Tenants.Controllers
             {
                 // Creates a default shell settings based on the configuration.
                 var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+                DatabaseTableOptions.PresetDefaultValues(shellSettings);
 
                 shellSettings.Name = model.Name;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
@@ -350,14 +346,11 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Description"] = model.Description;
                 shellSettings["ConnectionString"] = model.ConnectionString;
                 shellSettings["TablePrefix"] = model.TablePrefix;
+                shellSettings["Schema"] = model.Schema;
                 shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
                 shellSettings["FeatureProfile"] = model.FeatureProfile;
-                shellSettings["Schema"] = model.Schema;
-                shellSettings["DocumentTable"] = model.DocumentTable;
-                shellSettings["TableNameSeparator"] = model.TableNameSeparator;
-                shellSettings["IdentityColumnSize"] = model.IdentityColumnSize.ToString();
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -413,16 +406,11 @@ namespace OrchardCore.Tenants.Controllers
                 var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
                 model.Recipes = recipes;
 
-                var databaseTableOptionsModel = new DatabaseTableOptionsModel(shellSettings);
-
                 model.DatabaseProvider = shellSettings["DatabaseProvider"];
                 model.TablePrefix = shellSettings["TablePrefix"];
+                model.Schema = shellSettings["Schema"];
                 model.ConnectionString = shellSettings["ConnectionString"];
                 model.RecipeName = shellSettings["RecipeName"];
-                model.Schema = databaseTableOptionsModel.Schema;
-                model.DocumentTable = databaseTableOptionsModel.DocumentTable;
-                model.TableNameSeparator = databaseTableOptionsModel.TableNameSeparator;
-                model.IdentityColumnSize = databaseTableOptionsModel.IdentityColumnSize;
                 model.CanEditDatabasePresets = true;
             }
 
@@ -466,13 +454,10 @@ namespace OrchardCore.Tenants.Controllers
                 {
                     shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                     shellSettings["TablePrefix"] = model.TablePrefix;
+                    shellSettings["Schema"] = model.Schema;
                     shellSettings["ConnectionString"] = model.ConnectionString;
                     shellSettings["RecipeName"] = model.RecipeName;
                     shellSettings["Secret"] = Guid.NewGuid().ToString();
-                    shellSettings["Schema"] = model.Schema;
-                    shellSettings["DocumentTable"] = model.DocumentTable;
-                    shellSettings["TableNameSeparator"] = model.TableNameSeparator;
-                    shellSettings["IdentityColumnSize"] = model.IdentityColumnSize.ToString();
                 }
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);
@@ -486,16 +471,11 @@ namespace OrchardCore.Tenants.Controllers
             // tenant has not been initialized yet
             if (shellSettings.State == TenantState.Uninitialized)
             {
-                var databaseTableOptionsModel = new DatabaseTableOptionsModel(shellSettings);
-
                 model.DatabaseProvider = shellSettings["DatabaseProvider"];
                 model.TablePrefix = shellSettings["TablePrefix"];
+                model.Schema = shellSettings["Schema"];
                 model.ConnectionString = shellSettings["ConnectionString"];
                 model.RecipeName = shellSettings["RecipeName"];
-                model.Schema = databaseTableOptionsModel.Schema;
-                model.DocumentTable = databaseTableOptionsModel.DocumentTable;
-                model.TableNameSeparator = databaseTableOptionsModel.TableNameSeparator;
-                model.IdentityColumnSize = databaseTableOptionsModel.IdentityColumnSize;
                 model.CanEditDatabasePresets = true;
             }
 
@@ -615,9 +595,9 @@ namespace OrchardCore.Tenants.Controllers
             return featureProfiles;
         }
 
-        private async Task ValidateViewModelAsync(EditTenantViewModel model, bool newTenant)
+        private async Task ValidateViewModelAsync(EditTenantViewModel model, bool isNewTenant)
         {
-            model.IsNewTenant = newTenant;
+            model.IsNewTenant = isNewTenant;
 
             ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
         }

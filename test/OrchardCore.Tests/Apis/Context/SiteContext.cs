@@ -21,6 +21,7 @@ namespace OrchardCore.Tests.Apis.Context
         private static readonly TablePrefixGenerator TablePrefixGenerator = new TablePrefixGenerator();
         public static OrchardTestFixture<SiteStartup> Site { get; }
         public static IShellHost ShellHost { get; private set; }
+        public static IShellSettingsManager ShellSettingsManager { get; private set; }
         public static IHttpContextAccessor HttpContextAccessor { get; }
         public static HttpClient DefaultTenantClient { get; }
 
@@ -37,6 +38,7 @@ namespace OrchardCore.Tests.Apis.Context
         {
             Site = new OrchardTestFixture<SiteStartup>();
             ShellHost = Site.Services.GetRequiredService<IShellHost>();
+            ShellSettingsManager = Site.Services.GetRequiredService<IShellSettingsManager>();
             HttpContextAccessor = Site.Services.GetRequiredService<IHttpContextAccessor>();
             DefaultTenantClient = Site.CreateDefaultClient();
         }
@@ -55,9 +57,6 @@ namespace OrchardCore.Tests.Apis.Context
                 Name = tenantName,
                 RequestUrlPrefix = tenantName,
                 Schema = null,
-                DocumentTable = "Document",
-                TableNameSeparator = "_",
-                IdentityColumnSize = YesSql.IdentityColumnSize.Int64,
             };
 
             var createResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/create", createModel);

@@ -17,7 +17,6 @@ using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
-using YesSql;
 
 namespace OrchardCore.Tenants.Workflows.Activities
 {
@@ -98,33 +97,15 @@ namespace OrchardCore.Tenants.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public WorkflowExpression<string> RecipeName
+        public WorkflowExpression<string> DatabaseSchema
         {
             get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
-        public string Schema
+        public WorkflowExpression<string> RecipeName
         {
-            get => GetProperty(() => String.Empty);
-            set => SetProperty(value ?? String.Empty);
-        }
-
-        public string DocumentTable
-        {
-            get => GetProperty(() => "Document");
-            set => SetProperty(value ?? String.Empty);
-        }
-
-        public string TableNameSeparator
-        {
-            get => GetProperty(() => "_");
-            set => SetProperty(value ?? String.Empty);
-        }
-
-        public IdentityColumnSize IdentityColumnSize
-        {
-            get => GetProperty(() => IdentityColumnSize.Int32);
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
@@ -181,6 +162,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var databaseProvider = (await ExpressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext, null))?.Trim();
             var databaseConnectionString = (await ExpressionEvaluator.EvaluateAsync(DatabaseConnectionString, workflowContext, null))?.Trim();
             var databaseTablePrefix = (await ExpressionEvaluator.EvaluateAsync(DatabaseTablePrefix, workflowContext, null))?.Trim();
+            var databaseSchema = (await ExpressionEvaluator.EvaluateAsync(DatabaseSchema, workflowContext, null))?.Trim();
             var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
 
             if (String.IsNullOrEmpty(databaseProvider))
@@ -198,33 +180,14 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 databaseTablePrefix = shellSettings["TablePrefix"];
             }
 
+            if (String.IsNullOrWhiteSpace(databaseSchema))
+            {
+                databaseSchema = shellSettings["Schema"];
+            }
+
             if (String.IsNullOrEmpty(recipeName))
             {
                 recipeName = shellSettings["RecipeName"];
-            }
-
-            var schema = Schema;
-            if (String.IsNullOrWhiteSpace(schema))
-            {
-                schema = shellSettings["Schema"];
-            }
-
-            var documentTable = DocumentTable;
-            if (String.IsNullOrWhiteSpace(documentTable))
-            {
-                documentTable = shellSettings["DocumentTable"];
-            }
-
-            var tableNameSeparator = TableNameSeparator;
-            if (String.IsNullOrWhiteSpace(tableNameSeparator))
-            {
-                tableNameSeparator = shellSettings["TableNameSeparator"];
-            }
-
-            var identityColumnSize = IdentityColumnSize.ToString();
-            if (!Enum.IsDefined(IdentityColumnSize))
-            {
-                identityColumnSize = shellSettings["IdentityColumnSize"];
             }
 
             var recipes = await SetupService.GetSetupRecipesAsync();
@@ -246,10 +209,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
                     { SetupConstants.DatabaseProvider, databaseProvider },
                     { SetupConstants.DatabaseConnectionString, databaseConnectionString },
                     { SetupConstants.DatabaseTablePrefix, databaseTablePrefix },
-                    { SetupConstants.Schema, schema },
-                    { SetupConstants.DocumentTable, documentTable },
-                    { SetupConstants.TableNameSeparator, tableNameSeparator },
-                    { SetupConstants.IdentityColumnSize, identityColumnSize },
+                    { SetupConstants.DatabaseSchema, databaseSchema },
                 }
             };
 

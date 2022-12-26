@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
@@ -9,7 +10,6 @@ using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
-using YesSql;
 
 namespace OrchardCore.Tenants.Workflows.Activities
 {
@@ -67,6 +67,12 @@ namespace OrchardCore.Tenants.Workflows.Activities
             set => SetProperty(value);
         }
 
+        public WorkflowExpression<string> Schema
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
         public WorkflowExpression<string> RecipeName
         {
             get => GetProperty(() => new WorkflowExpression<string>());
@@ -76,30 +82,6 @@ namespace OrchardCore.Tenants.Workflows.Activities
         public WorkflowExpression<string> FeatureProfile
         {
             get => GetProperty(() => new WorkflowExpression<string>());
-            set => SetProperty(value);
-        }
-
-        public string Schema
-        {
-            get => GetProperty(() => String.Empty);
-            set => SetProperty(value ?? String.Empty);
-        }
-
-        public string DocumentTable
-        {
-            get => GetProperty(() => "Document");
-            set => SetProperty(value ?? String.Empty);
-        }
-
-        public string TableNameSeparator
-        {
-            get => GetProperty(() => "_");
-            set => SetProperty(value ?? String.Empty);
-        }
-
-        public IdentityColumnSize IdentityColumnSize
-        {
-            get => GetProperty(() => IdentityColumnSize.Int32);
             set => SetProperty(value);
         }
 
@@ -133,11 +115,13 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var databaseProvider = (await ExpressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext, null))?.Trim();
             var connectionString = (await ExpressionEvaluator.EvaluateAsync(ConnectionString, workflowContext, null))?.Trim();
             var tablePrefix = (await ExpressionEvaluator.EvaluateAsync(TablePrefix, workflowContext, null))?.Trim();
+            var schema = (await ExpressionEvaluator.EvaluateAsync(Schema, workflowContext, null))?.Trim();
             var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
             var featureProfile = (await ExpressionEvaluator.EvaluateAsync(FeatureProfile, workflowContext, null))?.Trim();
 
             // Creates a default shell settings based on the configuration.
             var shellSettings = ShellSettingsManager.CreateDefaultSettings();
+            DatabaseTableOptions.PresetDefaultValues(shellSettings);
             shellSettings.Name = tenantName;
 
             if (!String.IsNullOrEmpty(description))
@@ -167,6 +151,11 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 shellSettings["TablePrefix"] = tablePrefix;
             }
 
+            if (!String.IsNullOrEmpty(schema))
+            {
+                shellSettings["Schema"] = schema;
+            }
+
             if (!String.IsNullOrEmpty(databaseProvider))
             {
                 shellSettings["DatabaseProvider"] = databaseProvider;
@@ -180,26 +169,6 @@ namespace OrchardCore.Tenants.Workflows.Activities
             if (!String.IsNullOrEmpty(featureProfile))
             {
                 shellSettings["FeatureProfile"] = featureProfile;
-            }
-
-            if (!String.IsNullOrEmpty(Schema))
-            {
-                shellSettings["Schema"] = Schema;
-            }
-
-            if (!String.IsNullOrEmpty(DocumentTable))
-            {
-                shellSettings["DocumentTable"] = DocumentTable;
-            }
-
-            if (!String.IsNullOrEmpty(TableNameSeparator))
-            {
-                shellSettings["TableNameSeparator"] = TableNameSeparator;
-            }
-
-            if (Enum.IsDefined(IdentityColumnSize))
-            {
-                shellSettings["IdentityColumnSize"] = IdentityColumnSize.ToString();
             }
 
             shellSettings["Secret"] = Guid.NewGuid().ToString();

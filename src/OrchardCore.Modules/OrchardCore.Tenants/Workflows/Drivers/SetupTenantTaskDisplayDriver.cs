@@ -16,11 +16,8 @@ namespace OrchardCore.Tenants.Workflows.Drivers
             model.DatabaseProviderExpression = activity.DatabaseProvider.Expression;
             model.DatabaseConnectionStringExpression = activity.DatabaseConnectionString.Expression;
             model.DatabaseTablePrefixExpression = activity.DatabaseTablePrefix.Expression;
+            model.DatabaseSchemaExpression = activity.DatabaseSchema.Expression;
             model.RecipeNameExpression = activity.RecipeName.Expression;
-            model.Schema = activity.Schema;
-            model.DocumentTable = activity.DocumentTable;
-            model.TableNameSeparator = activity.TableNameSeparator;
-            model.IdentityColumnSize = activity.IdentityColumnSize;
         }
 
         protected override void UpdateActivity(SetupTenantTaskViewModel model, SetupTenantTask activity)
@@ -33,11 +30,8 @@ namespace OrchardCore.Tenants.Workflows.Drivers
             activity.DatabaseProvider = new WorkflowExpression<string>(model.DatabaseProviderExpression);
             activity.DatabaseConnectionString = new WorkflowExpression<string>(model.DatabaseConnectionStringExpression);
             activity.DatabaseTablePrefix = new WorkflowExpression<string>(model.DatabaseTablePrefixExpression);
+            activity.DatabaseSchema = new WorkflowExpression<string>(model.DatabaseSchemaExpression);
             activity.RecipeName = new WorkflowExpression<string>(model.RecipeNameExpression);
-            activity.Schema = model.Schema;
-            activity.DocumentTable = model.DocumentTable;
-            activity.TableNameSeparator = model.TableNameSeparator;
-            activity.IdentityColumnSize = model.IdentityColumnSize;
         }
     }
 }
