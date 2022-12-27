@@ -5,7 +5,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -14,6 +16,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Contents;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
@@ -27,6 +30,10 @@ namespace OrchardCore.Flows.Drivers
         private readonly IContentManager _contentManager;
         private readonly IServiceProvider _serviceProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger _logger;
+        private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer<BagPartDisplayDriver> H;
+
         private readonly IAuthorizationService _authorizationService;
 
         public BagPartDisplayDriver(
@@ -34,6 +41,9 @@ namespace OrchardCore.Flows.Drivers
             IContentDefinitionManager contentDefinitionManager,
             IServiceProvider serviceProvider,
             IHttpContextAccessor httpContextAccessor,
+            ILogger<BagPartDisplayDriver> logger,
+            INotifier notifier,
+            IHtmlLocalizer<BagPartDisplayDriver> htmlLocalizer,
             IAuthorizationService authorizationService
             )
         {
@@ -41,6 +51,9 @@ namespace OrchardCore.Flows.Drivers
             _contentManager = contentManager;
             _serviceProvider = serviceProvider;
             _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
+            _notifier = notifier;
+            H = htmlLocalizer;
             _authorizationService = authorizationService;
         }
 
@@ -176,6 +189,10 @@ namespace OrchardCore.Flows.Drivers
 
                 if (contentTypeDefinition == null)
                 {
+                    _logger.LogWarning("The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.", contentItem.ContentItemId, contentItem.ContentType);
+
+                    await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", contentItem.ContentItemId, contentItem.ContentType]);
+
                     continue;
                 }
 
