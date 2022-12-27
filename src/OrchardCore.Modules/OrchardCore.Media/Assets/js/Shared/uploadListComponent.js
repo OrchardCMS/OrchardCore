@@ -17,7 +17,7 @@ Vue.component('uploadList', {
             </div> \
             <div class="card-body" v-show="expanded"> \
                 <div class="d-flex flex-wrap"> \
-                    <upload :id-of-upload-input-field="uploadInputId" v-for="f in files" :key="f.name"  :model="f"></upload> \
+                    <upload :upload-input-id="uploadInputId" v-for="f in files" :key="f.name"  :model="f"></upload> \
                 </div > \
             </div> \
         </div> \
@@ -28,12 +28,11 @@ Vue.component('uploadList', {
             T: {},
             expanded: false,
             pendingCount: 0,
-            errorCount: 0,
-            uploadInputId: this.idOfUploadInputField ?? 'fileupload'
+            errorCount: 0
         }
     },
     props: {
-        idOfUploadInputField: String
+        uploadInputId: String
     },
     created: function () {
         var self = this;
@@ -49,8 +48,8 @@ Vue.component('uploadList', {
     },
     mounted: function () {
         var self = this;
-
-        $('#' + self.uploadInputId).bind('fileuploadadd', function (e, data) {
+        var uploadInput = document.getElementById(self.uploadInputId ?? 'fileupload');
+        $(uploadInput).bind('fileuploadadd', function (e, data) {
             if (!data.files) { 
                 return;
             }

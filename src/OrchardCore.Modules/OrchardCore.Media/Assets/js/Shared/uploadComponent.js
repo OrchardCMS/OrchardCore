@@ -12,19 +12,19 @@ Vue.component('upload', {
         ',
     props: {
         model: Object,
-        idOfUploadInputField: String
+        uploadInputId: String
     },
     mounted: function () {
         var self = this;
-        var uploadInputId = self.idOfUploadInputField ?? 'fileupload';
-        $('#' + uploadInputId).bind('fileuploadprogress', function (e, data) {
+        var uploadInput = document.getElementById(self.uploadInputId ?? 'fileupload');
+        $(uploadInput).bind('fileuploadprogress', function (e, data) {
             if (data.files[0].name !== self.model.name) {
                 return;
             }            
             self.model.percentage = parseInt(data.loaded / data.total * 100, 10);
         });
 
-        $('#' + uploadInputId).bind('fileuploaddone', function (e, data) {
+        $(uploadInput).bind('fileuploaddone', function (e, data) {
             if (data.files[0].name !== self.model.name) {
                 return;
             }
@@ -35,7 +35,7 @@ Vue.component('upload', {
             }
         });
 
-        $('#' + uploadInputId).bind('fileuploadfail', function (e, data) {
+        $(uploadInput).bind('fileuploadfail', function (e, data) {
             if (data.files[0].name !== self.model.name) {
                 return;
             }
