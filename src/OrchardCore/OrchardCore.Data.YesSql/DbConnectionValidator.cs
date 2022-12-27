@@ -63,8 +63,8 @@ public class DbConnectionValidator : IDbConnectionValidator
         {
             return DbConnectionValidatorResult.UnsupportedProvider;
         }
-        var connectionString = context.ConnectionString;
 
+        var connectionString = context.ConnectionString;
         if (!provider.HasConnectionString)
         {
             if (provider.Value != DatabaseProviderValue.Sqlite)
@@ -104,7 +104,6 @@ public class DbConnectionValidator : IDbConnectionValidator
         var documentName = tableNameConvention.GetDocumentTable();
 
         var sqlDialect = GetSqlDialect(context.DatabaseProvider);
-
         var sqlBuilder = GetSqlBuilder(sqlDialect, context.TablePrefix, context.TableOptions.TableNameSeparator);
 
         try

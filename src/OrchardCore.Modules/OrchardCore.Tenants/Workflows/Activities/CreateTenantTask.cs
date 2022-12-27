@@ -121,7 +121,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
             // Creates a default shell settings based on the configuration.
             var shellSettings = ShellSettingsManager.CreateDefaultSettings();
-            DatabaseTableOptions.PresetDefaultValues(shellSettings);
+
             shellSettings.Name = tenantName;
 
             if (!String.IsNullOrEmpty(description))

@@ -155,7 +155,8 @@ namespace OrchardCore.Setup.Services
 
             _httpContextAccessor.HttpContext.Features.Set(recipeEnvironmentFeature);
 
-            var shellSettings = new ShellSettings(context.ShellSettings);
+            var shellSettings = new ShellSettings(context.ShellSettings)
+                .WithDefaultDatabaseTableOptions();
 
             if (String.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
             {

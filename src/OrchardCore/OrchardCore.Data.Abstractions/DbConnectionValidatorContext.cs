@@ -4,6 +4,11 @@ namespace OrchardCore.Data;
 
 public class DbConnectionValidatorContext
 {
+    public DbConnectionValidatorContext(DatabaseTableOptions options)
+    {
+        TableOptions = options ?? throw new ArgumentNullException(nameof(options));
+    }
+
     public string DatabaseProvider { get; set; }
 
     public string ConnectionString { get; set; }
@@ -15,9 +20,4 @@ public class DbConnectionValidatorContext
     public string ShellName { get; set; }
 
     public DatabaseTableOptions TableOptions { get; }
-
-    public DbConnectionValidatorContext(DatabaseTableOptions options)
-    {
-        TableOptions = options ?? throw new ArgumentNullException(nameof(options));
-    }
 }

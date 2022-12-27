@@ -207,7 +207,6 @@ namespace OrchardCore.AutoSetup
         public async Task<ShellSettings> CreateTenantSettingsAsync(TenantSetupOptions setupOptions)
         {
             var shellSettings = _shellSettingsManager.CreateDefaultSettings();
-            DatabaseTableOptions.PresetDefaultValues(shellSettings);
 
             shellSettings.Name = setupOptions.ShellName;
             shellSettings.RequestUrlHost = setupOptions.RequestUrlHost;
@@ -253,9 +252,9 @@ namespace OrchardCore.AutoSetup
             setupContext.Properties[SetupConstants.DatabaseConnectionString] = options.DatabaseConnectionString;
             setupContext.Properties[SetupConstants.DatabaseProvider] = options.DatabaseProvider;
             setupContext.Properties[SetupConstants.DatabaseTablePrefix] = options.DatabaseTablePrefix;
+            setupContext.Properties[SetupConstants.DatabaseSchema] = options.DatabaseSchema;
             setupContext.Properties[SetupConstants.SiteName] = options.SiteName;
             setupContext.Properties[SetupConstants.SiteTimeZone] = options.SiteTimeZone;
-            setupContext.Properties[SetupConstants.DatabaseSchema] = options.DatabaseSchema;
 
             return setupContext;
         }

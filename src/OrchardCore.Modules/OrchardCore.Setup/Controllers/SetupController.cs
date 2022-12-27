@@ -232,7 +232,6 @@ namespace OrchardCore.Setup.Controllers
         private async Task<bool> IsTokenValid(string token)
         {
             var result = false;
-
             try
             {
                 var shellScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
