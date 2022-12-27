@@ -14,7 +14,7 @@ namespace OrchardCore.Tenants.Services
 {
     public class TenantValidator : ITenantValidator
     {
-        private readonly static char[] HostsSeparator = new char[] { ',' };
+        private static readonly char[] _hostSeparators = new[] { ',', ' ' };
 
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
@@ -59,9 +59,9 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.Name), S["Invalid tenant name. Must contain characters only and no spaces."]));
             }
 
-            _shellHost.TryGetSettings(model.Name, out var shellSettings);
+            _shellHost.TryGetSettings(model.Name, out var existingShellSettings);
 
-            if ((shellSettings == null || !shellSettings.IsDefaultShell()) &&
+            if ((existingShellSettings == null || !existingShellSettings.IsDefaultShell()) &&
                 String.IsNullOrWhiteSpace(model.RequestUrlHost) &&
                 String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
             {
@@ -73,19 +73,24 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]));
             }
 
-            var allOtherSettings = _shellHost.GetAllSettings().Where(settings => !String.Equals(settings.Name, model.Name, StringComparison.OrdinalIgnoreCase));
+            var allOtherSettings = _shellHost.GetAllSettings().Where(settings => settings != existingShellSettings);
 
-            if (allOtherSettings.Any(settings => String.Equals(settings.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && DoesUrlHostExist(settings.RequestUrlHost, model.RequestUrlHost)))
+            if (allOtherSettings.Any(settings =>
+                String.Equals(
+                    settings.RequestUrlPrefix ?? String.Empty,
+                    model.RequestUrlPrefix?.Trim(' ', '/') ?? String.Empty,
+                    StringComparison.OrdinalIgnoreCase) &&
+                DoesUrlHostExist(settings.RequestUrlHost, model.RequestUrlHost)))
             {
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
 
-            var options = new DatabaseTableOptions(shellSettings ?? _shellSettingsManager.CreateDefaultSettings());
+            DatabaseTableOptions databaseTableOptions = null;
             if (model.IsNewTenant)
             {
-                if (shellSettings != null)
+                if (existingShellSettings != null)
                 {
-                    if (shellSettings.IsDefaultShell())
+                    if (existingShellSettings.IsDefaultShell())
                     {
                         errors.Add(new ModelError(nameof(model.Name), S["The tenant name is in conflict with the 'Default' tenant."]));
                     }
@@ -94,34 +99,45 @@ namespace OrchardCore.Tenants.Services
                         errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
                     }
                 }
-
-                await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, model.Schema, errors, model.Name, options);
+                else
+                {
+                    databaseTableOptions = new DatabaseTableOptions(_shellSettingsManager.CreateDefaultSettings());
+                }
             }
             else
             {
-                if (shellSettings == null || shellSettings.State == TenantState.Uninitialized)
+                if (existingShellSettings == null)
+                {
+                    errors.Add(new ModelError(nameof(model.Name), S["The existing tenant to be validated was not found."]));
+                }
+                else if (existingShellSettings.State == TenantState.Uninitialized)
                 {
                     // While the tenant is in Uninitialized state, we still are able to change the database settings.
                     // Let's validate the database for assurance.
 
-                    await AssertConnectionValidityAndApplyErrorsAsync(model.DatabaseProvider, model.ConnectionString, model.TablePrefix, model.Schema, errors, model.Name, options);
+                    databaseTableOptions = new DatabaseTableOptions(existingShellSettings);
                 }
+            }
+
+            if (databaseTableOptions != null)
+            {
+                var validationContext = new DbConnectionValidatorContext(databaseTableOptions)
+                {
+                    DatabaseProvider = model.DatabaseProvider,
+                    ConnectionString = model.ConnectionString,
+                    TablePrefix = model.TablePrefix,
+                    Schema = model.Schema,
+                    ShellName = model.Name,
+                };
+
+                await ValidateConnectionAsync(validationContext, errors);
             }
 
             return errors;
         }
 
-        private async Task AssertConnectionValidityAndApplyErrorsAsync(string databaseProvider, string connectionString, string tablePrefix, string schema, List<ModelError> errors, string shellName, DatabaseTableOptions options)
+        private async Task ValidateConnectionAsync(DbConnectionValidatorContext validationContext, List<ModelError> errors)
         {
-            var validationContext = new DbConnectionValidatorContext(options)
-            {
-                DatabaseProvider = databaseProvider,
-                ConnectionString = connectionString,
-                TablePrefix = tablePrefix,
-                Schema = schema,
-                ShellName = shellName,
-            };
-
             switch (await _dbConnectionValidator.ValidateAsync(validationContext))
             {
                 case DbConnectionValidatorResult.UnsupportedProvider:
@@ -131,7 +147,7 @@ namespace OrchardCore.Tenants.Services
                     errors.Add(new ModelError(nameof(TenantViewModel.ConnectionString), S["The provided connection string is invalid or server is unreachable."]));
                     break;
                 case DbConnectionValidatorResult.DocumentTableFound:
-                    if (databaseProvider == DatabaseProviderValue.Sqlite)
+                    if (validationContext.DatabaseProvider == DatabaseProviderValue.Sqlite)
                     {
                         errors.Add(new ModelError(String.Empty, S["The related database file is already in use."]));
                     }
@@ -146,25 +162,20 @@ namespace OrchardCore.Tenants.Services
 
         private static bool DoesUrlHostExist(string urlHost, string modelUrlHost)
         {
-            if (String.IsNullOrEmpty(urlHost) && String.IsNullOrEmpty(modelUrlHost))
+            if (String.IsNullOrWhiteSpace(urlHost) && String.IsNullOrWhiteSpace(modelUrlHost))
             {
                 return true;
             }
 
-            var urlHosts = GetUrlHosts(urlHost);
-            var modelUrlHosts = GetUrlHosts(modelUrlHost);
-
-            return urlHosts.Intersect(modelUrlHosts).Any();
-        }
-
-        private static IEnumerable<string> GetUrlHosts(string combinedUrlHosts)
-        {
-            if (String.IsNullOrEmpty(combinedUrlHosts))
+            if (String.IsNullOrWhiteSpace(urlHost) || String.IsNullOrWhiteSpace(modelUrlHost))
             {
-                return Enumerable.Empty<string>();
+                return false;
             }
 
-            return combinedUrlHosts.Split(HostsSeparator).Select(h => h.Trim());
+            var urlHosts = urlHost.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries);
+            var modelUrlHosts = modelUrlHost.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries);
+
+            return urlHosts.Intersect(modelUrlHosts, StringComparer.OrdinalIgnoreCase).Any();
         }
     }
 }

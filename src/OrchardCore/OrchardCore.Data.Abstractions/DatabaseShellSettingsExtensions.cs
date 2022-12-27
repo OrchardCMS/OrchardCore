@@ -77,15 +77,16 @@ public static class DatabaseShellSettingsExtensions
     public static string GetIdentityColumnSize(this ShellSettings shellSettings)
     {
         var identityColumnSize = shellSettings["IdentityColumnSize"];
-        if (shellSettings.State == TenantState.Uninitialized ||
-            shellSettings.State == TenantState.Initializing)
+
+        var initialized = shellSettings.State != TenantState.Uninitialized && shellSettings.State != TenantState.Initializing;
+        if (!initialized)
         {
             identityColumnSize ??= shellSettings["DefaultIdentityColumnSize"];
         }
 
         if (String.IsNullOrWhiteSpace(identityColumnSize))
         {
-            identityColumnSize = nameof(Int32);
+            identityColumnSize = initialized ? nameof(Int32) : nameof(Int64);
         }
         else
         {
