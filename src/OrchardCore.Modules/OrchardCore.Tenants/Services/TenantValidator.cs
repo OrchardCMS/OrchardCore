@@ -85,7 +85,7 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
 
-            DatabaseTableOptions databaseTableOptions = null;
+            ShellSettings shellSettings = null;
             if (model.IsNewTenant)
             {
                 if (existingShellSettings != null)
@@ -101,7 +101,7 @@ namespace OrchardCore.Tenants.Services
                 }
                 else
                 {
-                    databaseTableOptions = new DatabaseTableOptions(_shellSettingsManager.CreateDefaultSettings());
+                    shellSettings = _shellSettingsManager.CreateDefaultSettings();
                 }
             }
             else
@@ -115,13 +115,13 @@ namespace OrchardCore.Tenants.Services
                     // While the tenant is in Uninitialized state, we still are able to change the database settings.
                     // Let's validate the database for assurance.
 
-                    databaseTableOptions = new DatabaseTableOptions(existingShellSettings);
+                    shellSettings = existingShellSettings;
                 }
             }
 
-            if (databaseTableOptions != null)
+            if (shellSettings != null)
             {
-                var validationContext = new DbConnectionValidatorContext(databaseTableOptions)
+                var validationContext = new DbConnectionValidatorContext(shellSettings)
                 {
                     DatabaseProvider = model.DatabaseProvider,
                     ConnectionString = model.ConnectionString,

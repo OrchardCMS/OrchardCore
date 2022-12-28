@@ -26,7 +26,7 @@ See the [`Microsoft.Data.Sqlite` documentation](https://docs.microsoft.com/en-us
 
 ## Configuring YesSql
 
-OrchardCore uses the `YesSql` library to interact with the configured database provider. `YesSql` is shipped with configuration that is suitable for most use cases. However, you can change these settings by configuring `YesSqlOptions`. `YesSqlOptions` provides the following configurable options
+OrchardCore uses the `YesSql` library to interact with the configured database provider. `YesSql` is shipped with configuration that is suitable for most use cases. However, you can change these settings by configuring `YesSqlOptions`. `YesSqlOptions` provides the following configurable options.
 
 | Setting | Description |
 | --- | --- |
@@ -45,6 +45,36 @@ services.Configure<YesSqlOptions>(options =>
     options.CommandsPageSize = 1000;
 });
 ```
+
+Other settings can be provided from any configuration source as `appsettings.json`.
+
+The following settings are only used while setting up a tenant, changing their values doesn't impact existing tenants.
+
+| Setting | Description |
+| --- | --- |
+| `DefaultDocumentTable` | The name of the document table, defaults to 'Document'. |
+| `DefaultTableNameSeparator` | The separator used to generate table names, defaults to '_'. |
+| `DefaultIdentityColumnSize` | The Identity column size, default to 'Int64' ('Int32' for existing tenants). |
+
+##### `appsettings.json`
+
+```json
+  "OrchardCore": {
+    "DefaultDocumentTable": "MyDocument",
+    "DefaultTableNameSeparator": "____",
+    "DefaultIdentityColumnSize": "Int32"
+}
+```
+
+Using the following settings is not recommended as changing their values impact existing tenants.
+
+Unless it is intended e.g. based on the current environment e.g. by providing `appsettings.Development.json` and `appsettings.Production.json` files.
+
+| Setting | Description |
+| --- | --- |
+| `DocumentTable` | The name of the document table, defaults to 'Document'. |
+| `TableNameSeparator` | The separator used to generate table names, defaults to '_'. |
+| `IdentityColumnSize` | The Identity column size, default to 'Int64' ('Int32' for existing tenants). |
 
 ## Running SQL queries
 

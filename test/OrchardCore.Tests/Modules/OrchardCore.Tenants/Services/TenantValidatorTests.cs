@@ -128,7 +128,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
 
             var dbConnectionValidatorMock = new Mock<IDbConnectionValidator>();
 
-            var validationContext = new DbConnectionValidatorContext(new DatabaseTableOptions(shellSettings))
+            var validationContext = new DbConnectionValidatorContext(shellSettings)
             {
                 DatabaseProvider = shellSettings["ProviderName"],
                 ConnectionString = shellSettings["ConnectionName"],

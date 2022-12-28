@@ -1,4 +1,5 @@
 using System;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Data;
 
@@ -7,6 +8,11 @@ public class DbConnectionValidatorContext
     public DbConnectionValidatorContext(DatabaseTableOptions options)
     {
         TableOptions = options ?? throw new ArgumentNullException(nameof(options));
+    }
+
+    public DbConnectionValidatorContext(ShellSettings shellSettings)
+    {
+        TableOptions = new DatabaseTableOptions(shellSettings);
     }
 
     public string DatabaseProvider { get; set; }

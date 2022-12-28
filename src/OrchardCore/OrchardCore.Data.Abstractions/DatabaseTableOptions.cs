@@ -5,6 +5,10 @@ namespace OrchardCore.Data;
 
 public class DatabaseTableOptions
 {
+    public DatabaseTableOptions()
+    {
+    }
+
     public DatabaseTableOptions(ShellSettings shellSettings)
     {
         if (shellSettings == null)
@@ -12,9 +16,9 @@ public class DatabaseTableOptions
             throw new ArgumentNullException(nameof(shellSettings));
         }
 
-        DocumentTable = shellSettings.GetDocumentTableName();
-        TableNameSeparator= shellSettings.GetTableNameSeparator();
-        IdentityColumnSize = shellSettings.GetIdentityColumnSize();
+        DocumentTable = shellSettings.GetDocumentTableOrDefault();
+        TableNameSeparator= shellSettings.GetTableNameSeparatorOrDefault();
+        IdentityColumnSize = shellSettings.GetIdentityColumnSizeOrDefault();
     }
 
     public virtual string DocumentTable { get; }

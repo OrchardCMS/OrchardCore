@@ -156,17 +156,17 @@ namespace OrchardCore.Setup.Services
             _httpContextAccessor.HttpContext.Features.Set(recipeEnvironmentFeature);
 
             var shellSettings = new ShellSettings(context.ShellSettings)
-                .WithDefaultDatabaseTableOptions();
+                .ConfigureDatabaseTableOptions();
 
             if (String.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
             {
                 shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider) ? databaseProvider?.ToString() : String.Empty;
                 shellSettings["ConnectionString"] = context.Properties.TryGetValue(SetupConstants.DatabaseConnectionString, out var databaseConnectionString) ? databaseConnectionString?.ToString() : String.Empty;
                 shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix) ? databaseTablePrefix?.ToString() : String.Empty;
-                shellSettings["Schema"] = context.Properties.TryGetValue(SetupConstants.DatabaseSchema, out var schema) ? schema?.ToString() : String.Empty;
+                shellSettings["Schema"] = context.Properties.TryGetValue(SetupConstants.DatabaseSchema, out var schema) ? schema?.ToString() : null;
             }
 
-            var validationContext = new DbConnectionValidatorContext(new DatabaseTableOptions(shellSettings))
+            var validationContext = new DbConnectionValidatorContext(shellSettings)
             {
                 DatabaseProvider = shellSettings["DatabaseProvider"],
                 ConnectionString = shellSettings["ConnectionString"],
