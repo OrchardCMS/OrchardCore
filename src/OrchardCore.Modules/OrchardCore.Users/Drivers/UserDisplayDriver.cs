@@ -111,7 +111,7 @@ namespace OrchardCore.Users.Drivers
 
             if (!isEditingDisabled && !model.IsEnabled && user.IsEnabled)
             {
-                var usersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>(); ;
+                var usersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>();
                 if (usersOfAdminRole.Count() == 1 && String.Equals(user.UserId, usersOfAdminRole.First().UserId, StringComparison.OrdinalIgnoreCase))
                 {
                     await _notifier.WarningAsync(H["Cannot disable the only administrator."]);
