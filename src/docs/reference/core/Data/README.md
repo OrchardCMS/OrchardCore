@@ -66,9 +66,10 @@ The following settings are only used while setting up a tenant, changing their v
 }
 ```
 
-Using the following settings is not recommended as changing their values impact existing tenants.
+The following settings are always used, not only while setting up a tenant, changing their values impact existing tenants.
 
-Unless it is intended e.g. based on the current environment e.g. by providing `appsettings.Development.json` and `appsettings.Production.json` files.
+!!! warning
+    Changing the values of the following settings impact existing tenants, this is not recommended unless a different behavior is intended, for example while in a `Development` environment by using `appsettings.Development.json`.
 
 | Setting | Description |
 | --- | --- |
