@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
+using OrchardCore.Security.Services;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
@@ -31,6 +32,7 @@ namespace OrchardCore.Users.Services
         private readonly ILookupNormalizer _keyNormalizer;
         private readonly IUserIdGenerator _userIdGenerator;
         private readonly ILogger _logger;
+        private readonly IRoleService _roleService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
         public UserStore(ISession session,
@@ -38,6 +40,7 @@ namespace OrchardCore.Users.Services
             IUserIdGenerator userIdGenerator,
             ILogger<UserStore> logger,
             IEnumerable<IUserEventHandler> handlers,
+            IRoleService roleService,
             IDataProtectionProvider dataProtectionProvider)
         {
             _session = session;
@@ -46,6 +49,7 @@ namespace OrchardCore.Users.Services
             _logger = logger;
             _dataProtectionProvider = dataProtectionProvider;
             Handlers = handlers;
+            _roleService = roleService;
         }
 
         public IEnumerable<IUserEventHandler> Handlers { get; private set; }
@@ -457,15 +461,13 @@ namespace OrchardCore.Users.Services
 
             if (user is User su)
             {
-                await AddToRoleAsync(su, normalizedRoleName, cancellationToken);
+                var roleNames = await _roleService.GetRoleNamesAsync();
+
+                if (!roleNames.Any(r => NormalizeKey(r) == normalizedRoleName))
+                {
+                    throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
+                }
             }
-        }
-
-        protected virtual Task AddToRoleAsync(User user, string normalizedRoleName, CancellationToken cancellationToken)
-        {
-            user.RoleNames.Add(normalizedRoleName);
-
-            return Task.CompletedTask;
         }
 
         public async Task RemoveFromRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
@@ -477,15 +479,13 @@ namespace OrchardCore.Users.Services
 
             if (user is User su)
             {
-                await RemoveFromRoleAsync(su, normalizedRoleName, cancellationToken);
+                var roleNames = await _roleService.GetRoleNamesAsync();
+
+                if (!roleNames.Any(r => NormalizeKey(r) == normalizedRoleName))
+                {
+                    throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
+                }
             }
-        }
-
-        protected virtual Task RemoveFromRoleAsync(User user, string normalizedRoleName, CancellationToken cancellationToken)
-        {
-            user.RoleNames.Remove(normalizedRoleName);
-
-            return Task.CompletedTask;
         }
 
         public Task<IList<string>> GetRolesAsync(IUser user, CancellationToken cancellationToken)
@@ -606,7 +606,7 @@ namespace OrchardCore.Users.Services
 
         #region IUserClaimStore<IUser>
 
-        public async Task<IList<Claim>> GetClaimsAsync(IUser user, CancellationToken cancellationToken)
+        public Task<IList<Claim>> GetClaimsAsync(IUser user, CancellationToken cancellationToken)
         {
             if (user == null)
             {
@@ -615,15 +615,10 @@ namespace OrchardCore.Users.Services
 
             if (user is not User su)
             {
-                return new List<Claim>();
+                return Task.FromResult<IList<Claim>>(new List<Claim>());
             }
 
-            return await GetClaimsAsync(su, cancellationToken);
-        }
-
-        protected virtual Task<IList<Claim>> GetClaimsAsync(User user, CancellationToken cancellationToken)
-        {
-            return Task.FromResult<IList<Claim>>(user.UserClaims.Select(x => x.ToClaim()).ToList());
+            return Task.FromResult<IList<Claim>>(su.UserClaims.Select(x => x.ToClaim()).ToList());
         }
 
         public Task AddClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)

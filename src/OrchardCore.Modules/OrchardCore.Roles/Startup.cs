@@ -35,10 +35,12 @@ namespace OrchardCore.Roles
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<RoleStore>();
+            services.TryAddScoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<RoleStore>());
+            services.AddScoped<IRoleStore<IRole>>(sp => sp.GetRequiredService<RoleStore>());
+
             services.TryAddScoped<RoleManager<IRole>>();
-            services.TryAddScoped<IRoleClaimStore<IRole>, RoleStore>();
             services.AddRecipeExecutionStep<RolesStep>();
-            services.AddScoped<IRoleStore<IRole>, RoleStore>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<RoleUpdater>();
             services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
