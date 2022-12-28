@@ -235,6 +235,7 @@ namespace OrchardCore.Users
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
+            services.AddScoped<IPermissionProvider, UserRolePermissions>();
         }
     }
 

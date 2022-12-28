@@ -18,17 +18,9 @@ namespace OrchardCore.Users
 
         public async Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            var list = new List<Permission>();
-
-            var roles = (await _roleService.GetRoleNamesAsync())
-                .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
-
-            foreach (var role in roles)
-            {
-                list.Add(CommonPermissions.CreatePermissionForManageUsersInRole(role));
-            }
-
-            return list;
+            return (await _roleService.GetRoleNamesAsync())
+                .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase)
+                .Select(role => CommonPermissions.CreatePermissionForManageUsersInRole(role));
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes() => Enumerable.Empty<PermissionStereotype>();
