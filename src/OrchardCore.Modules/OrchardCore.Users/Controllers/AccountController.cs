@@ -248,7 +248,7 @@ namespace OrchardCore.Users.Controllers
             await _signInManager.SignOutAsync();
             _logger.LogInformation(4, "User logged out.");
 
-            return RedirectToLocal(returnUrl.ToUriComponents());
+            return RedirectToLocal(returnUrl);
         }
 
         [HttpGet]
@@ -300,7 +300,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (Url.IsLocalUrl(returnUrl))
             {
-                return Redirect(returnUrl);
+                return Redirect(returnUrl, true);
             }
             else
             {
@@ -322,7 +322,7 @@ namespace OrchardCore.Users.Controllers
                     input: input, correlationId: ((User)user).UserId);
             }
 
-            return RedirectToLocal(returnUrl.ToUriComponents());
+            return RedirectToLocal(returnUrl);
         }
 
         [HttpPost]
