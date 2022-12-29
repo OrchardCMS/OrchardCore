@@ -300,7 +300,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (Url.IsLocalUrl(returnUrl))
             {
-                return Redirect(returnUrl, true);
+                return Redirect(returnUrl.ToUriComponents());
             }
             else
             {
