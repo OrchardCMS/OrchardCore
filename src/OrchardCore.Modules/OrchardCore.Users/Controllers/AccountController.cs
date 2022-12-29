@@ -243,7 +243,7 @@ namespace OrchardCore.Users.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LogOff(string returnUrl)
+        public async Task<IActionResult> LogOff(string returnUrl = null)
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation(4, "User logged out.");
