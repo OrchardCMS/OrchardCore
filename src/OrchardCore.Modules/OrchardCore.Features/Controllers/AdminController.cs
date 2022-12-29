@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -63,7 +62,7 @@ namespace OrchardCore.Features.Controllers
                 // if the user provide an invalid tenant value, we'll set it to null so it's not available on the next request
                 tenant = settings?.Name;
                 viewModel.Name = settings?.Name;
-                viewModel.IsDefaultTenant = settings == null || settings.IsDefaultShell();
+                viewModel.IsDefaultTenant = _shellSettings.IsDefaultShell();
                 viewModel.Features = await featureService.GetModuleFeaturesAsync();
             });
 
@@ -79,7 +78,7 @@ namespace OrchardCore.Features.Controllers
                 return Forbid();
             }
 
-            if (model.FeatureIds == null || !model.FeatureIds.Any())
+            if (model.FeatureIds == null || model.FeatureIds.Length == 0)
             {
                 ModelState.AddModelError(nameof(BulkActionViewModel.FeatureIds), S["Please select one or more features."]);
             }
@@ -118,9 +117,7 @@ namespace OrchardCore.Features.Controllers
 
                 found = true;
 
-                var isDefaultTenant = settings == null || settings.IsDefaultShell();
-
-                if (isDefaultTenant && id == FeaturesConstants.FeatureId)
+                if (_shellSettings.IsDefaultShell() && id == FeaturesConstants.FeatureId)
                 {
                     await _notifier.ErrorAsync(H["This feature is always enabled and cannot be disabled."]);
 
