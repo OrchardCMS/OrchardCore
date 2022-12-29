@@ -243,12 +243,12 @@ namespace OrchardCore.Users.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LogOff()
+        public async Task<IActionResult> LogOff(string returnUrl)
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation(4, "User logged out.");
 
-            return Redirect("~/");
+            return RedirectToLocal(returnUrl.ToUriComponents());
         }
 
         [HttpGet]
