@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -26,6 +28,7 @@ namespace OrchardCore.Features.Controllers
         private readonly IExtensionManager _extensionManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IStringLocalizer S;
+        private readonly AdminOptions _adminOptions;
         private readonly IHtmlLocalizer H;
 
         public AdminController(
@@ -36,7 +39,8 @@ namespace OrchardCore.Features.Controllers
             IShellHost shellHost,
             ShellSettings shellSettings,
             INotifier notifier,
-            IStringLocalizer<AdminController> stringLocalizer)
+            IStringLocalizer<AdminController> stringLocalizer,
+            IOptions<AdminOptions> adminOptions)
         {
             _authorizationService = authorizationService;
             _shellHost = shellHost;
@@ -46,6 +50,7 @@ namespace OrchardCore.Features.Controllers
             _shellFeaturesManager = shellFeaturesManager;
             H = localizer;
             S = stringLocalizer;
+            _adminOptions = adminOptions.Value;
         }
 
         public async Task<ActionResult> Features(string tenant)
@@ -62,7 +67,7 @@ namespace OrchardCore.Features.Controllers
                 // if the user provide an invalid tenant value, we'll set it to null so it's not available on the next request
                 tenant = settings?.Name;
                 viewModel.Name = settings?.Name;
-                viewModel.IsDefaultTenant = _shellSettings.IsDefaultShell();
+                viewModel.IsDefaultTenant = _shellSettings.IsDefaultShell() && (settings == null || settings.IsDefaultShell());
                 viewModel.Features = await featureService.GetModuleFeaturesAsync();
             });
 
@@ -117,7 +122,9 @@ namespace OrchardCore.Features.Controllers
 
                 found = true;
 
-                if (_shellSettings.IsDefaultShell() && id == FeaturesConstants.FeatureId)
+                var isDefaultTenant = _shellSettings.IsDefaultShell() && (settings == null || settings.IsDefaultShell());
+
+                if (isDefaultTenant && id == FeaturesConstants.FeatureId)
                 {
                     await _notifier.ErrorAsync(H["This feature is always enabled and cannot be disabled."]);
 
@@ -132,7 +139,7 @@ namespace OrchardCore.Features.Controllers
                 return NotFound();
             }
 
-            return Redirect(GetNextUrl(tenant));
+            return Redirect(GetNextUrl(tenant, id));
         }
 
         [HttpPost]
@@ -164,7 +171,7 @@ namespace OrchardCore.Features.Controllers
                 return NotFound();
             }
 
-            return Redirect(GetNextUrl(tenant));
+            return Redirect(GetNextUrl(tenant, id));
         }
 
         private async Task ExecuteAsync(string tenant, Func<FeatureService, ShellSettings, Task> action)
@@ -196,7 +203,7 @@ namespace OrchardCore.Features.Controllers
             await action(new FeatureService(_shellFeaturesManager, _extensionManager), null);
         }
 
-        private string GetNextUrl(string tenant)
+        private string GetNextUrl(string tenant, string featureId)
         {
             // Generating routes can fail while the tenant is recycled as routes can use services.
             // It could be fixed by waiting for the next request or the end of the current one
@@ -205,6 +212,11 @@ namespace OrchardCore.Features.Controllers
             if (!String.IsNullOrWhiteSpace(tenant))
             {
                 return Url.Action(nameof(Features), new { tenant });
+            }
+
+            if (featureId == FeaturesConstants.FeatureId)
+            {
+                return Url.Content("~/" + _adminOptions.AdminUrlPrefix);
             }
 
             return Url.Action(nameof(Features));
