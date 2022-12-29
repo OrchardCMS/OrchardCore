@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using YesSql;
+using OrchardCore.Data;
 
 namespace OrchardCore.Tenants.ViewModels
 {
-    public class TenantViewModel
+    public class TenantViewModel : IShellDatabaseInfo
     {
         public string Description { get; set; }
 

@@ -59,7 +59,7 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.Name), S["Invalid tenant name. Must contain characters only and no spaces."]));
             }
 
-            _shellHost.TryGetSettings(model.Name, out var existingShellSettings);
+            _ = _shellHost.TryGetSettings(model.Name, out var existingShellSettings);
 
             if ((existingShellSettings == null || !existingShellSettings.IsDefaultShell()) &&
                 String.IsNullOrWhiteSpace(model.RequestUrlHost) &&
@@ -121,14 +121,7 @@ namespace OrchardCore.Tenants.Services
 
             if (shellSettings != null)
             {
-                var validationContext = new DbConnectionValidatorContext(shellSettings)
-                {
-                    DatabaseProvider = model.DatabaseProvider,
-                    ConnectionString = model.ConnectionString,
-                    TablePrefix = model.TablePrefix,
-                    Schema = model.Schema,
-                    ShellName = model.Name,
-                };
+                var validationContext = new DbConnectionValidatorContext(shellSettings, model);
 
                 await ValidateConnectionAsync(validationContext, errors);
             }

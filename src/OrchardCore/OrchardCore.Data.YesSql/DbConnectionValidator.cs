@@ -72,7 +72,7 @@ public class DbConnectionValidator : IDbConnectionValidator
                 return DbConnectionValidatorResult.DocumentTableNotFound;
             }
 
-            connectionString = SqliteHelper.GetConnectionString(_sqliteOptions, _shellOptions, context.ShellName);
+            connectionString = SqliteHelper.GetConnectionString(_sqliteOptions, _shellOptions, context.Name);
         }
 
         if (String.IsNullOrWhiteSpace(connectionString))
@@ -112,7 +112,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             selectCommand.CommandText = GetSelectBuilderForDocumentTable(sqlBuilder, documentName, context.Schema).ToSqlString();
 
             using var result = await selectCommand.ExecuteReaderAsync();
-            if (context.ShellName != ShellHelper.DefaultShellName)
+            if (context.Name != ShellHelper.DefaultShellName)
             {
                 // The 'Document' table exists.
                 return DbConnectionValidatorResult.DocumentTableFound;

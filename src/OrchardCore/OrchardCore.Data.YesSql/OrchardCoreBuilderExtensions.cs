@@ -59,7 +59,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
 
                     var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
-                    var databaseTableOptions = new DatabaseTableOptions(shellSettings);
+                    var databaseTableOptions = shellSettings.GetDatabaseTableOptions();
                     var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions, databaseTableOptions);
 
                     switch (shellSettings["DatabaseProvider"])
@@ -160,19 +160,13 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
 
-            if (!Enum.TryParse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize, out var identityColumnSize) ||
-                !Enum.IsDefined(identityColumnSize))
-            {
-                identityColumnSize = IdentityColumnSize.Int32;
-            }
-
             var storeConfiguration = new YesSql.Configuration
             {
                 CommandsPageSize = yesSqlOptions.CommandsPageSize,
                 QueryGatingEnabled = yesSqlOptions.QueryGatingEnabled,
                 ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
                 TableNameConvention = tableNameFactory.Create(databaseTableOptions),
-                IdentityColumnSize = identityColumnSize,
+                IdentityColumnSize = Enum.Parse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize),
             };
 
             if (yesSqlOptions.IdGenerator != null)

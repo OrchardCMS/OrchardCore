@@ -8,25 +8,31 @@ namespace OrchardCore.Data;
 
 public static class DatabaseShellSettingsExtensions
 {
+    public static DatabaseTableOptions GetDatabaseTableOptions(this ShellSettings shellSettings) =>
+        new()
+        {
+            DocumentTable = shellSettings.GetDocumentTable(),
+            TableNameSeparator = shellSettings.GetTableNameSeparator(),
+            IdentityColumnSize = shellSettings.GetIdentityColumnSize(),
+        };
+
     public static ShellSettings ConfigureDatabaseTableOptions(this ShellSettings shellSettings)
     {
         if (!shellSettings.IsInitialized())
         {
-            shellSettings["DocumentTable"] ??= shellSettings["DefaultDocumentTable"];
-            shellSettings["TableNameSeparator"] ??= shellSettings["DefaultTableNameSeparator"];
-            shellSettings["IdentityColumnSize"] ??= shellSettings["DefaultIdentityColumnSize"];
+            shellSettings["internal_DocumentTable"] = shellSettings.GetDocumentTable();
+            shellSettings["internal_TableNameSeparator"] = shellSettings.GetTableNameSeparator();
+            shellSettings["internal_IdentityColumnSize"] = shellSettings.GetIdentityColumnSize();
         }
 
         return shellSettings;
     }
 
-    public static string GetDocumentTableOrDefault(this ShellSettings shellSettings)
+    public static string GetDocumentTable(this ShellSettings shellSettings)
     {
-        var documentTable = shellSettings["DocumentTable"];
-        if (!shellSettings.IsInitialized())
-        {
-            documentTable ??= shellSettings["DefaultDocumentTable"];
-        }
+        var documentTable = !shellSettings.IsInitialized()
+            ? shellSettings["OrchardCore_Data_DatabaseTable:DefaultDocumentTable"]
+            : shellSettings["internal_DocumentTable"];
 
         if (String.IsNullOrWhiteSpace(documentTable))
         {
@@ -45,13 +51,11 @@ public static class DatabaseShellSettingsExtensions
         return documentTable;
     }
 
-    public static string GetTableNameSeparatorOrDefault(this ShellSettings shellSettings)
+    public static string GetTableNameSeparator(this ShellSettings shellSettings)
     {
-        var tableNameSeparator = shellSettings["TableNameSeparator"];
-        if (!shellSettings.IsInitialized())
-        {
-            tableNameSeparator ??= shellSettings["DefaultTableNameSeparator"];
-        }
+        var tableNameSeparator = !shellSettings.IsInitialized()
+            ? shellSettings["OrchardCore_Data_DatabaseTable:DefaultTableNameSeparator"]
+            : shellSettings["internal_TableNameSeparator"];
 
         if (String.IsNullOrWhiteSpace(tableNameSeparator))
         {
@@ -74,13 +78,11 @@ public static class DatabaseShellSettingsExtensions
         return tableNameSeparator;
     }
 
-    public static string GetIdentityColumnSizeOrDefault(this ShellSettings shellSettings)
+    public static string GetIdentityColumnSize(this ShellSettings shellSettings)
     {
-        var identityColumnSize = shellSettings["IdentityColumnSize"];
-        if (!shellSettings.IsInitialized())
-        {
-            identityColumnSize ??= shellSettings["DefaultIdentityColumnSize"];
-        }
+        var identityColumnSize = !shellSettings.IsInitialized()
+            ? shellSettings["OrchardCore_Data_DatabaseTable:DefaultIdentityColumnSize"]
+            : shellSettings["internal_IdentityColumnSize"];
 
         if (String.IsNullOrWhiteSpace(identityColumnSize))
         {

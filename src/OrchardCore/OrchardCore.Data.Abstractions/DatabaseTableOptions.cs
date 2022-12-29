@@ -1,6 +1,3 @@
-using System;
-using OrchardCore.Environment.Shell;
-
 namespace OrchardCore.Data;
 
 public class DatabaseTableOptions
@@ -9,21 +6,9 @@ public class DatabaseTableOptions
     {
     }
 
-    public DatabaseTableOptions(ShellSettings shellSettings)
-    {
-        if (shellSettings == null)
-        {
-            throw new ArgumentNullException(nameof(shellSettings));
-        }
+    public string DocumentTable { get; set; }
 
-        DocumentTable = shellSettings.GetDocumentTableOrDefault();
-        TableNameSeparator= shellSettings.GetTableNameSeparatorOrDefault();
-        IdentityColumnSize = shellSettings.GetIdentityColumnSizeOrDefault();
-    }
+    public string TableNameSeparator { get; set; }
 
-    public virtual string DocumentTable { get; }
-
-    public virtual string TableNameSeparator { get; }
-
-    public virtual string IdentityColumnSize { get; }
+    public string IdentityColumnSize { get; set; }
 }

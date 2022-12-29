@@ -24,7 +24,7 @@ See the [`Microsoft.Data.Sqlite` documentation](https://docs.microsoft.com/en-us
 }
 ```
 
-## Configuring YesSql
+## YesSql
 
 OrchardCore uses the `YesSql` library to interact with the configured database provider. `YesSql` is shipped with configuration that is suitable for most use cases. However, you can change these settings by configuring `YesSqlOptions`. `YesSqlOptions` provides the following configurable options.
 
@@ -46,36 +46,25 @@ services.Configure<YesSqlOptions>(options =>
 });
 ```
 
-Other settings can be provided from any configuration source as `appsettings.json`.
+## Database table
 
-The following settings are only used while setting up a tenant, changing their values doesn't impact existing tenants.
+The following database table settings, only used as presets before a given tenant is setup, can be provided from any configuration source.
 
 | Setting | Description |
 | --- | --- |
-| `DefaultDocumentTable` | The name of the document table, defaults to 'Document'. |
-| `DefaultTableNameSeparator` | The separator used to generate table names, defaults to '_'. |
-| `DefaultIdentityColumnSize` | The Identity column size, default to 'Int64' ('Int32' for existing tenants). |
+| `DefaultDocumentTable` | Document table name, defaults to 'Document'. |
+| `DefaultTableNameSeparator` | Table name separator, one or multiple '_', "NULL" means no separator, defaults to '_'. |
+| `DefaultIdentityColumnSize` | Identity column size, 'Int32' or 'Int64', defaults to 'Int64'. |
 
 ##### `appsettings.json`
 
 ```json
-  "OrchardCore": {
+  "OrchardCore_Data_DatabaseTable": {
     "DefaultDocumentTable": "MyDocument",
     "DefaultTableNameSeparator": "____",
     "DefaultIdentityColumnSize": "Int32"
 }
 ```
-
-The following settings are always used, not only while setting up a tenant, changing their values impact existing tenants.
-
-!!! warning
-    Changing the values of the following settings impact existing tenants, this is not recommended unless a different behavior is intended, for example while in a `Development` environment by using `appsettings.Development.json`.
-
-| Setting | Description |
-| --- | --- |
-| `DocumentTable` | The name of the document table, defaults to 'Document'. |
-| `TableNameSeparator` | The separator used to generate table names, defaults to '_'. |
-| `IdentityColumnSize` | The Identity column size, default to 'Int64' ('Int32' for existing tenants). |
 
 ## Running SQL queries
 

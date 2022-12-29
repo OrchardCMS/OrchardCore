@@ -1,29 +1,38 @@
-using System;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Data;
 
 public class DbConnectionValidatorContext
 {
-    public DbConnectionValidatorContext(DatabaseTableOptions options)
-    {
-        TableOptions = options ?? throw new ArgumentNullException(nameof(options));
-    }
-
     public DbConnectionValidatorContext(ShellSettings shellSettings)
     {
-        TableOptions = new DatabaseTableOptions(shellSettings);
+        TableOptions = shellSettings.GetDatabaseTableOptions();
+        DatabaseProvider = shellSettings["DatabaseProvider"];
+        ConnectionString = shellSettings["ConnectionString"];
+        TablePrefix = shellSettings["TablePrefix"];
+        Schema = shellSettings["Schema"];
+        Name = shellSettings.Name;
     }
 
-    public string DatabaseProvider { get; set; }
-
-    public string ConnectionString { get; set; }
-
-    public string TablePrefix { get; set; }
-
-    public string Schema { get; set; }
-
-    public string ShellName { get; set; }
+    public DbConnectionValidatorContext(ShellSettings shellSettings, IShellDatabaseInfo shellDatabaseInfo)
+    {
+        TableOptions = shellSettings.GetDatabaseTableOptions();
+        DatabaseProvider = shellDatabaseInfo.DatabaseProvider;
+        ConnectionString = shellDatabaseInfo.ConnectionString;
+        TablePrefix = shellDatabaseInfo.TablePrefix;
+        Schema = shellDatabaseInfo.Schema;
+        Name = shellDatabaseInfo.Name;
+    }
 
     public DatabaseTableOptions TableOptions { get; }
+
+    public string DatabaseProvider { get; }
+
+    public string ConnectionString { get; }
+
+    public string TablePrefix { get; }
+
+    public string Schema { get; }
+
+    public string Name { get; }
 }

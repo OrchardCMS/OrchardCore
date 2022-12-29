@@ -166,15 +166,7 @@ namespace OrchardCore.Setup.Services
                 shellSettings["Schema"] = context.Properties.TryGetValue(SetupConstants.DatabaseSchema, out var schema) ? schema?.ToString() : null;
             }
 
-            var validationContext = new DbConnectionValidatorContext(shellSettings)
-            {
-                DatabaseProvider = shellSettings["DatabaseProvider"],
-                ConnectionString = shellSettings["ConnectionString"],
-                TablePrefix = shellSettings["TablePrefix"],
-                Schema = shellSettings["Schema"],
-                ShellName = shellSettings.Name,
-            };
-
+            var validationContext = new DbConnectionValidatorContext(shellSettings);
             switch (await _dbConnectionValidator.ValidateAsync(validationContext))
             {
                 case DbConnectionValidatorResult.NoProvider:
