@@ -3,7 +3,8 @@
   <PropertyGroup>
     <TargetFramework>$(TemplateTargetPackageFramework)</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <RazorRuntimeCompilation>false</RazorRuntimeCompilation>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,9 +12,9 @@
     <Folder Include="Localization\" />
   </ItemGroup>
 
+  <!-- Watcher include and excludes -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(TemplateOrchardPackageVersion)"
-                      Condition="'$(RazorRuntimeCompilation)' == 'true'" />
+      <Watch Include="**\*.cs" Exclude="Recipes\**;Assets\**;node_modules\**\*;**\*.js.map;obj\**\*;bin\**\*" />
   </ItemGroup>
 
   <ItemGroup>

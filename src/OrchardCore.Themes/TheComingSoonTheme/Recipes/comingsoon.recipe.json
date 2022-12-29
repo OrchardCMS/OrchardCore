@@ -44,6 +44,7 @@
         "OrchardCore.Resources",
         "OrchardCore.Roles",
         "OrchardCore.Scripting",
+        "OrchardCore.Security",
         "OrchardCore.Settings",
         "OrchardCore.Shortcodes.Templates",
         "OrchardCore.Templates",
@@ -65,6 +66,46 @@
       "name": "themes",
       "admin": "TheAdmin",
       "site": "TheComingSoonTheme"
+    },
+    {
+      "name": "Roles",
+      "Roles": [
+        {
+          "Name": "Administrator",
+          "Description": "Administrator",
+          "Permissions": []
+        },
+        {
+          "Name": "Moderator",
+          "Description": "Moderator",
+          "Permissions": []
+        },
+        {
+          "Name": "Editor",
+          "Description": "Editor",
+          "Permissions": []
+        },
+        {
+          "Name": "Author",
+          "Description": "Author",
+          "Permissions": []
+        },
+        {
+          "Name": "Contributor",
+          "Description": "Contributor",
+          "Permissions": []
+        },
+        {
+          "Name": "Authenticated",
+          "Description": "Authenticated",
+          "Permissions": []
+        },
+        {
+          "Name": "Anonymous",
+          "Description": "Anonymous",
+          "Permissions": []
+        }
+      ]
     },
     {
       "name": "settings",

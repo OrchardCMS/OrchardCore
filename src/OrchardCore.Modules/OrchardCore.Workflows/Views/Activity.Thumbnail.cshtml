@@ -6,11 +6,13 @@
     var isEvent = activity.IsEvent();
     var activityType = isEvent ? "Event" : "Task";
 }
-<div class="card activity" data-category="@activity.Category.Name.HtmlClassify()" data-activity-type="@activityType">
-    <div class="card-body">
-        @await DisplayAsync(Model.Content)
-    </div>
-    <div class="card-footer text-muted text-xs-right">
-        <a class="btn btn-primary btn-sm" asp-route-action="Create" asp-route-controller="Activity" asp-route-activityname="@activity.Name" asp-route-workflowtypeid="@Model.WorkflowTypeId" asp-route-returnurl="@Model.ReturnUrl" data-persist-workflow="true">@T["Add"]</a>
+<div class="col activity" data-category="@activity.Category.Name.HtmlClassify()" data-activity-type="@activityType">
+    <div class="card h-100">
+        <div class="card-body">
+            @await DisplayAsync(Model.Content)
+        </div>
+        <div class="card-footer text-muted text-sm-end">
+            <a class="btn btn-primary btn-sm" asp-route-action="Create" asp-route-controller="Activity" asp-route-activityname="@activity.Name" asp-route-workflowtypeid="@Model.WorkflowTypeId" asp-route-returnurl="@Model.ReturnUrl" data-persist-workflow="true">@T["Add"]</a>
+        </div>
     </div>
 </div>

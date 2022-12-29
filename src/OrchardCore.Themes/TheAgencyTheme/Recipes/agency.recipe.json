@@ -29,6 +29,7 @@
         "OrchardCore.Recipes",
         "OrchardCore.Resources",
         "OrchardCore.Roles",
+        "OrchardCore.Security",
         "OrchardCore.Settings",
         "OrchardCore.Themes",
         "OrchardCore.Users",
@@ -68,6 +69,46 @@
       "name": "themes",
       "admin": "TheAdmin",
       "site": "TheAgencyTheme"
+    },
+    {
+      "name": "Roles",
+      "Roles": [
+        {
+          "Name": "Administrator",
+          "Description": "Administrator",
+          "Permissions": []
+        },
+        {
+          "Name": "Moderator",
+          "Description": "Moderator",
+          "Permissions": []
+        },
+        {
+          "Name": "Editor",
+          "Description": "Editor",
+          "Permissions": []
+        },
+        {
+          "Name": "Author",
+          "Description": "Author",
+          "Permissions": []
+        },
+        {
+          "Name": "Contributor",
+          "Description": "Contributor",
+          "Permissions": []
+        },
+        {
+          "Name": "Authenticated",
+          "Description": "Authenticated",
+          "Permissions": []
+        },
+        {
+          "Name": "Anonymous",
+          "Description": "Anonymous",
+          "Permissions": []
+        }
+      ]
     },
     {
       "name": "settings",
@@ -418,7 +459,7 @@
           "Name": "RawHtml",
           "DisplayName": "Html",
           "Settings": {
-            "ContentTypeSettings": {           
+            "ContentTypeSettings": {
               "Draftable": true,
               "Versionable": true,
               "Securable": true,
@@ -582,7 +623,7 @@
                 },
                 "MediaFieldSettings": {
                   "Required": true,
-                  "Multiple":  false
+                  "Multiple": false
                 }
               }
             },
@@ -860,7 +901,7 @@
                 "ConditionId": "[js: uuid()]"
               }
             ]
-          },          
+          },
           "Description": "The widgets in this layer are displayed on any page of this site."
         },
         {
@@ -875,7 +916,7 @@
                 "ConditionId": "[js: uuid()]"
               }
             ]
-          },          
+          },
           "Description": "The widgets in this layer are only displayed on the homepage."
         }
       ]
@@ -1592,7 +1633,7 @@
           "Mode": 0,
           "Format": 0,
           "Quality": 100
-        },        
+        },
         "small": {
           "Hint": "A small image (240px x 240px)",
           "Width": 240,
@@ -1600,7 +1641,7 @@
           "Mode": 0,
           "Format": 0,
           "Quality": 100
-        },        
+        },
         "extrasmall": {
           "Hint": "A extra small image (160px x 160px)",
           "Width": 160,
@@ -1610,6 +1651,6 @@
           "Quality": 100
         }
       }
-    }  
+    }
   ]
 }

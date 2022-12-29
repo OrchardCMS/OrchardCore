@@ -10,5 +10,6 @@ namespace OrchardCore.Lists.ViewModels
         public string[] ContainedContentTypes { get; set; }
         public int PageSize { get; set; }
         public bool EnableOrdering { get; set; }
+        public bool ShowHeader { get; set; }
     }
 }

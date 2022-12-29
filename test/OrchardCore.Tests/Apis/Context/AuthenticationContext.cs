@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
@@ -17,6 +18,11 @@ namespace OrchardCore.Tests.Apis.Context
         public PermissionContextAuthorizationHandler(IHttpContextAccessor httpContextAccessor, IDictionary<string, PermissionsContext> permissionsContexts)
         {
             _permissionsContext = new PermissionsContext();
+
+            if (httpContextAccessor.HttpContext == null)
+            {
+                return;
+            }
 
             var requestContext = httpContextAccessor.HttpContext.Request;
 
@@ -47,10 +53,46 @@ namespace OrchardCore.Tests.Apis.Context
             }
             else
             {
-                context.Fail();
+                var grantingNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                GetGrantingNamesInternal(requirement.Permission, grantingNames);
+
+                // SiteOwner permission grants them all
+                grantingNames.Add(StandardPermissions.SiteOwner.Name);
+
+                if (permissions.Any(p => grantingNames.Contains(p.Name)))
+                {
+                    context.Succeed(requirement);
+                }
+                else
+                {
+                    context.Fail();
+                }
             }
 
             return Task.CompletedTask;
+        }
+
+        private void GetGrantingNamesInternal(Permission permission, HashSet<string> stack)
+        {
+            // The given name is tested
+            stack.Add(permission.Name);
+
+            // Iterate implied permissions to grant, it present
+            if (permission.ImpliedBy != null && permission.ImpliedBy.Any())
+            {
+                foreach (var impliedBy in permission.ImpliedBy)
+                {
+                    // Avoid potential recursion
+                    if (impliedBy == null || stack.Contains(impliedBy.Name))
+                    {
+                        continue;
+                    }
+
+                    // Otherwise accumulate the implied permission names recursively
+                    GetGrantingNamesInternal(impliedBy, stack);
+                }
+            }
         }
     }
 

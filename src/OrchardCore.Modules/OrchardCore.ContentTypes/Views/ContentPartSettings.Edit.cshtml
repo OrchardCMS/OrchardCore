@@ -1,37 +1,33 @@
 @using OrchardCore.ContentManagement.Metadata.Settings
 @model ContentPartSettingsViewModel
 
-<div class="form-group">
+<div class="mb-3">
     <label asp-for="ContentPartDefinition.Name">@T["Technical Name"]</label>
     <input asp-for="ContentPartDefinition.Name" class="form-control w-md-25" readonly />
     <span class="hint w-100">@T["Technical name of the part."]</span>
 </div>
 
-<div class="form-group">
+<div class="mb-3">
     <label asp-for="DisplayName">@T["Display Name"]</label>
     <input asp-for="DisplayName" class="form-control w-md-25" placeholder="@Model.ContentPartDefinition.DisplayName()" />
     <span class="hint w-100">@T["Name of the part as it will be displayed in screens. Leave empty to use defaults."]</span>
 </div>
 
-<div class="form-group">
+<div class="mb-3">
     <label asp-for="Description">@T["Description"]</label>
     @Html.ValidationMessageFor(m => m.Description)
     <input asp-for="Description" class="form-control w-md-75" />
     <span class="hint w-100">@T["Optionally provide a description for this part."]</span>
 </div>
 
-<div class="form-group">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="Attachable">
-        <label class="custom-control-label" asp-for="Attachable">@T["Attachable"]</label>
-        <span class="hint">@T["Check to allow this part to be attached to other content types."]</span>
-    </div>
+<div class="form-check">
+    <input type="checkbox" class="form-check-input" asp-for="Attachable">
+    <label class="form-check-label" asp-for="Attachable">@T["Attachable"]</label>
+    <span class="hint">@T["Check to allow this part to be attached to other content types."]</span>
 </div>
 
-<div class="form-group">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="Reusable">
-        <label class="custom-control-label" asp-for="Reusable">@T["Reusable"]</label>
-        <span class="hint">@T["Check to allow this part to be attached multiple times."]</span>
-    </div>
+<div class="form-check">
+    <input type="checkbox" class="form-check-input" asp-for="Reusable">
+    <label class="form-check-label" asp-for="Reusable">@T["Reusable"]</label>
+    <span class="hint">@T["Check to allow this part to be attached multiple times."]</span>
 </div>

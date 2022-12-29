@@ -3,8 +3,8 @@
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
-@using OrchardCore.ContentManagement.Metadata.Settings;
-
+@using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.ContentManagement.Metadata.Models
 @*
     This template is used to render the editor for a Taxonomy content item.
     It render the hierarchy of the terms.
@@ -17,12 +17,12 @@
 @{
     var updater = ModelUpdaterAccessor.ModelUpdater;
     var canAddTerm = Model.TaxonomyPart.ContentItem.Id != 0;
-    var termContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => String.IsNullOrEmpty(t.GetSettings<ContentTypeSettings>().Stereotype)).OrderBy(x => x.DisplayName);
+    var termContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => !t.HasStereotype()).OrderBy(x => x.DisplayName);
     var index = 0;
 }
-<div class="form-group" asp-validation-class-for="TermContentType">
-    <label asp-for="TermContentType" >@T["Term Content Type"]</label>
-    <select asp-for="TermContentType" class="form-control col-small" asp-items="@(new SelectList(termContentTypes, "Name", "DisplayName"))">
+<div class="mb-3" asp-validation-class-for="TermContentType">
+    <label asp-for="TermContentType">@T["Term Content Type"]</label>
+    <select asp-for="TermContentType" class="form-select col-small" asp-items="@(new SelectList(termContentTypes, "Name", "DisplayName"))">
     </select>
     <span asp-validation-for="TermContentType"></span>
 </div>
@@ -43,17 +43,15 @@
     }
 }
 
-<p>
-    <ol id="menu">
-        @foreach (var menuItem in Model.TaxonomyPart.ContentItem.As<TaxonomyPart>().Terms)
-        {
-            dynamic termShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TermAdmin");
-            termShape.TaxonomyPart = Model.TaxonomyPart;
-            termShape.Index = index++;
-            @await DisplayAsync(termShape);
-        }
-    </ol>
-</p>
+<ol id="menu" class="list-group my-3">
+    @foreach (var menuItem in Model.TaxonomyPart.ContentItem.As<TaxonomyPart>().Terms)
+    {
+        dynamic termShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TermAdmin");
+        termShape.TaxonomyPart = Model.TaxonomyPart;
+        termShape.Index = index++;
+        @await DisplayAsync(termShape)
+    }
+</ol>
 
 <input asp-for="Hierarchy" type="hidden" value="" />
 <div id="msg-leave" style="display:none" data>@T["You have reordered the taxonomy."]</div>

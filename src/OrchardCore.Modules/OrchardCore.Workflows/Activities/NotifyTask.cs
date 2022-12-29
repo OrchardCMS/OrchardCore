@@ -55,6 +55,8 @@ namespace OrchardCore.Workflows.Activities
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var message = await _expressionEvaluator.EvaluateAsync(Message, workflowContext, _htmlEncoder);
+
+            // The notification message can contain HTML by design
             await _notifier.AddAsync(NotificationType, new LocalizedHtmlString(nameof(NotifyTask), message));
 
             return Outcomes("Done");

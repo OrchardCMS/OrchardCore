@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using OrchardCore.Localization;
 using Xunit;
 
@@ -57,20 +58,21 @@ namespace OrchardCore.Tests.Localization
         }
 
         [Fact]
-        public void CultureScopeRetrievesTheOrginalCulturesIfExceptionOccurs()
+        public async Task CultureScopeRetrievesTheOrginalCulturesIfExceptionOccurs()
         {
             // Arrange
             var culture = CultureInfo.CurrentCulture;
             var uiCulture = CultureInfo.CurrentUICulture;
 
             // Act & Assert
-            Assert.ThrowsAsync<Exception>(() =>
+            await Assert.ThrowsAsync<Exception>(() =>
             {
                 using (var cultureScope = CultureScope.Create("FR"))
                 {
                     throw new Exception("Something goes wrong!!");
                 }
             });
+
             Assert.Equal(culture, CultureInfo.CurrentCulture);
             Assert.Equal(uiCulture, CultureInfo.CurrentUICulture);
         }

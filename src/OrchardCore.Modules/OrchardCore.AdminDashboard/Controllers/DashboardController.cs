@@ -15,12 +15,11 @@ using OrchardCore.AdminDashboard.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Settings;
 
 namespace OrchardCore.AdminDashboard.Controllers
 {
@@ -32,7 +31,6 @@ namespace OrchardCore.AdminDashboard.Controllers
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ISiteService _siteService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
@@ -47,7 +45,6 @@ namespace OrchardCore.AdminDashboard.Controllers
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
-            ISiteService siteService,
             IUpdateModelAccessor updateModelAccessor,
             IShapeFactory shapeFactory,
             INotifier notifier,
@@ -61,7 +58,6 @@ namespace OrchardCore.AdminDashboard.Controllers
             _contentManager = contentManager;
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentDefinitionManager = contentDefinitionManager;
-            _siteService = siteService;
             _updateModelAccessor = updateModelAccessor;
             New = shapeFactory;
             _notifier = notifier;
@@ -113,9 +109,7 @@ namespace OrchardCore.AdminDashboard.Controllers
             var dashboardCreatable = new List<SelectListItem>();
 
             var widgetContentTypes = _contentDefinitionManager.ListTypeDefinitions()
-                    .Where(t =>
-                    !string.IsNullOrEmpty(t.GetSettings<ContentTypeSettings>().Stereotype) &&
-                    t.GetSettings<ContentTypeSettings>().Stereotype.Contains("DashboardWidget"))
+                    .Where(t => t.TryGetStereotype(out var stereotype) && stereotype.Contains("DashboardWidget"))
                     .OrderBy(x => x.DisplayName);
             foreach (var ctd in widgetContentTypes)
             {
@@ -124,7 +118,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                 var authorized = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem);
                 if (authorized)
                 {
-                    dashboardCreatable.Add(new SelectListItem(new LocalizedString(ctd.DisplayName, ctd.DisplayName).Value, ctd.Name));
+                    dashboardCreatable.Add(new SelectListItem(ctd.DisplayName, ctd.Name));
                 }
             }
 
@@ -153,7 +147,7 @@ namespace OrchardCore.AdminDashboard.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminDashboard))
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
 
             var contentItemIds = parts.Select(i => i.ContentItemId).ToArray();
@@ -165,7 +159,7 @@ namespace OrchardCore.AdminDashboard.Controllers
 
             if (latestItems == null)
             {
-                return StatusCode(404);
+                return NotFound();
             }
 
             foreach (var contentItem in latestItems)
@@ -173,7 +167,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                 var dashboardPart = contentItem.As<DashboardPart>();
                 if (dashboardPart == null)
                 {
-                    return StatusCode(403);
+                    return Forbid();
                 }
 
                 var partViewModel = parts.Where(m => m.ContentItemId == contentItem.ContentItemId).FirstOrDefault();
@@ -204,7 +198,7 @@ namespace OrchardCore.AdminDashboard.Controllers
 
             if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
-                return StatusCode(200);
+                return Ok();
             }
             else
             {

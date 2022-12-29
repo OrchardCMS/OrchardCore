@@ -16,10 +16,10 @@
 
     <!-- Bootstrap CSS -->
     <style media="all" asp-name="admin" version="1"></style>
-    <style asp-name="material-icons" version="0.7.2"></style>
+    <style asp-name="material-icons" version="1"></style>
 
-    <script asp-name="font-awesome" at="Head" version="5"></script>
-    <script asp-name="font-awesome-v4-shims" at="Head" version="5"></script>
+    <script asp-name="font-awesome" at="Head" version="6"></script>
+    <script asp-name="font-awesome-v4-shims" at="Head" version="6"></script>
     <script asp-name="js-cookie" at="Foot"></script>
     <script asp-name="admin" version="1" at="Foot"></script>
     <resources type="Header" />
@@ -43,18 +43,20 @@
                     @await RenderSectionAsync("NavbarTop", required: false)
                     @if (adminSettings.DisplayDarkMode)
                     {
-                        <a id="btn-darkmode" class="ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
+                        <a id="btn-darkmode" class="me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
                             @if (darkMode)
                             {
                                 <i class="fas fa-sun" aria-hidden="true"></i>
+                                <span class="d-none">@T["Light mode"]</span>
                             }
                             else
                             {
                                 <i class="fas fa-moon" aria-hidden="true"></i>
+                                <span class="d-none">@T["Dark mode"]</span>
                             }
                         </a>
                     }
-                    <a href="@Url.Content("~/")" class="ml-3" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]" role="button">
+                    <a href="@Url.Content("~/")" class="me-3" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Visit Site"]" role="button">
                         <i class="fa fa-fw fa-external-link" aria-hidden="true"></i>
                     </a>
                     @await DisplayAsync(await New.UserMenu())
@@ -65,7 +67,9 @@
         <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
             @await RenderSectionAsync("Navigation", required: false)
             <div class="footer">
-                <button class="leftbar-compactor" type="button" title="@T["Collapse / expand menu"]"></button>
+                <button type="button" class="leftbar-compactor" title="@T["Collapse / expand menu"]">
+                    <span class="d-none">@T["Collapse / expand menu"]</span>
+                </button>
             </div>
         </div>
 

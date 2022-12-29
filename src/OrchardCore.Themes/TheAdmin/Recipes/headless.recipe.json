@@ -27,6 +27,7 @@
         "OrchardCore.Recipes",
         "OrchardCore.Resources",
         "OrchardCore.Roles",
+        "OrchardCore.Security",
         "OrchardCore.Settings",
         "OrchardCore.Themes",
         "OrchardCore.Users",
@@ -36,7 +37,6 @@
         "OrchardCore.Html",
         "OrchardCore.ContentFields",
         "OrchardCore.Contents",
-        "OrchardCore.Contents.FileContentDefinition",
         "OrchardCore.ContentTypes",
         "OrchardCore.CustomSettings",
         "OrchardCore.Deployment",
@@ -45,7 +45,6 @@
         "OrchardCore.Flows",
         "OrchardCore.Indexing",
         "OrchardCore.Layers",
-        "OrchardCore.Lucene",
         "OrchardCore.Lists",
         "OrchardCore.Markdown",
         "OrchardCore.Media",
@@ -66,8 +65,33 @@
       "name": "Roles",
       "Roles": [
         {
+          "Name": "Administrator",
+          "Description": "Administrator",
+          "Permissions": []
+        },
+        {
+          "Name": "Moderator",
+          "Description": "Moderator",
+          "Permissions": []
+        },
+        {
+          "Name": "Editor",
+          "Description": "Editor",
+          "Permissions": []
+        },
+        {
+          "Name": "Author",
+          "Description": "Author",
+          "Permissions": []
+        },
+        {
+          "Name": "Contributor",
+          "Description": "Contributor",
+          "Permissions": []
+        },
+        {
           "Name": "AUTHENTICATED",
-          "Description": null,
+          "Description": "Authenticated",
           "Permissions": [
             "ViewContent",
             "ExecuteGraphQL",
@@ -76,7 +100,7 @@
         },
         {
           "Name": "ANONYMOUS",
-          "Description": null,
+          "Description": "Anonymous",
           "Permissions": []
         }
       ]

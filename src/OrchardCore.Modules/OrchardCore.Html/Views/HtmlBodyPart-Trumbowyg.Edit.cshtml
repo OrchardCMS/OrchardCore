@@ -20,17 +20,17 @@ else
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="form-group">
+<div class="mb-3">
     <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
     @if (culture.IsRightToLeft())
     {
         <div style="text-align:right">
-            <textarea asp-for="Html" rows="5" class="form-control"></textarea>
+            <textarea asp-for="Html"></textarea>
         </div>
     }
     else
     {
-        <textarea asp-for="Html" rows="5" class="form-control"></textarea>
+        <textarea asp-for="Html"></textarea>
     }
     <span class="hint">@T["The body of the content item."]</span>
 </div>

@@ -1,21 +1,123 @@
-@model EditUserViewModel
+@model OrchardCore.Users.ViewModels.EditUserViewModel
+
 @using OrchardCore.Entities
 @using OrchardCore.Users.Models
+@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Identity
+@inject IOptions<IdentityOptions> IdentityOptions
 
 @if (Site.As<RegistrationSettings>().UsersMustValidateEmail)
 {
-    <div class="form-group">
-        <div class="custom-control custom-checkbox">
-            <input asp-for="EmailConfirmed" type="checkbox" class="custom-control-input" asp-is-disabled="@Model.IsEditingDisabled">
-            <label class="custom-control-label" asp-for="EmailConfirmed">@T["Email confirmed"]</label>
+    <div class="mb-3">
+        <div class="form-check">
+            <input asp-for="EmailConfirmed" type="checkbox" class="form-check-input" asp-is-disabled="@Model.IsEditingDisabled">
+            <label class="form-check-label" asp-for="EmailConfirmed">@T["Email confirmed"]</label>
         </div>
     </div>
 }
 
-<div class="form-group">
-    <div class="custom-control custom-switch">
-        <input asp-for="IsEnabled" type="checkbox" class="custom-control-input" checked="@Model.IsEnabled" asp-is-disabled="@Model.IsEditingDisabled"/>
-        <label asp-for="IsEnabled" class="custom-control-label cursor-pointer">@T["Is enabled?"]</label>
+<div class="mb-3">
+    <div class="form-check form-switch">
+        <input asp-for="IsEnabled" type="checkbox" class="form-check-input" checked="@Model.IsEnabled" asp-is-disabled="@Model.IsEditingDisabled" />
+        <label asp-for="IsEnabled" class="form-check-label cursor-pointer">@T["Is enabled?"]</label>
         <span class="hint dashed">@T["Uncheck to disable this user account."]</span>
     </div>
 </div>
+
+@if (Model.IsNewRequest)
+{
+    <div class="password-generator-wrapper">
+        <div class="mb-1">
+            <label asp-for="Password">@T["Password"]</label>
+            <div class="input-group col-md-4">
+                <span class="input-group-text password-toggle-button"><span class="toggle-icon fas fa-eye prefix"></span></span>
+                <input asp-for="Password" type="password" class="form-control password-input-field" placeholder="@T["Password"]" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="PasswordConfirmation" class="sr-only">@T["Password Confirmation"]</label>
+            <div class="input-group col-md-4">
+                <span class="input-group-text password-confirmation-toggle-button"><span class="toggle-icon fas fa-eye prefix"></span></span>
+                <input asp-for="PasswordConfirmation" type="password" class="form-control password-confirmation-input-field" placeholder="@T["Password confirmation"]" />
+                <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
+            </div>
+
+            <div class="mt-2">
+                <div class="btn btn-warning btn-sm password-generator-button"
+                 data-password-length="@IdentityOptions.Value.Password.RequiredLength"
+                 data-password-requireUppercase="@IdentityOptions.Value.Password.RequireUppercase.ToString().ToLowerInvariant()"
+                 data-password-requireLowercase="@IdentityOptions.Value.Password.RequireLowercase.ToString().ToLowerInvariant()"
+                 data-password-requireDigit="@IdentityOptions.Value.Password.RequireDigit.ToString().ToLowerInvariant()"
+                 data-password-requireNonAlphanumeric="@IdentityOptions.Value.Password.RequireNonAlphanumeric.ToString().ToLowerInvariant()"
+                 data-password-requiredUniqueChars="@IdentityOptions.Value.Password.RequiredUniqueChars">
+                    @T["Generate password"]
+                </div>
+                <div class="btn btn-info btn-sm copy-password-button">@T["Copy password"]</div>
+            </div>
+        </div>
+    </div>
+    <script at="Foot" asp-name="userFieldsPassword" depends-on="password-generator">
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggetIcons = (element) => {
+                if (element.classList.contains('fa-eye')) {
+                    element.classList.remove('fa-eye');
+                    element.classList.add('fa-eye-slash');
+
+                    return;
+                }
+
+                element.classList.remove('fa-eye-slash');
+                element.classList.add('fa-eye');
+            }
+            const toggleFieldType = (element) => {
+                if (element.type == 'password') {
+                    element.type = 'text';
+
+                    return;
+                }
+
+                element.type = 'password';
+            }
+
+            var wrappers = document.querySelectorAll('.password-generator-wrapper');
+
+            for (let i = 0; i < wrappers.length; i++) {
+                let wrapper = wrappers[i];
+                let password = wrapper.querySelector('.password-input-field');
+                let passwordConfirmation = wrapper.querySelector('.password-confirmation-input-field');
+                let passwordToggle = wrapper.querySelector('.password-toggle-button');
+                let passwordConfirmationToggle = wrapper.querySelector('.password-confirmation-toggle-button');
+                let generate = wrapper.querySelector('.password-generator-button');
+
+                generate.addEventListener('click', function () {
+                    const requiredPasswordLength = parseInt(generate.getAttribute('data-password-length'));
+                    const requireUppercase = generate.getAttribute('data-password-requireUppercase') === 'true';
+                    const requireLowercase = generate.getAttribute('data-password-requireLowercase') === 'true';
+                    const requireDigit = generate.getAttribute('data-password-requireDigit') === 'true';
+                    const requireNonAlphanumeric = generate.getAttribute('data-password-requireNonAlphanumeric') === 'true';
+                    const requiredUniqueChars = generate.getAttribute('data-password-requiredUniqueChars') === 'true';
+
+                    var newPassword = passwordManager.generatePassword(requiredPasswordLength, requireUppercase, requireLowercase, requireDigit, requireNonAlphanumeric, requiredUniqueChars);
+                    password.value = newPassword;
+                    passwordConfirmation.value = newPassword;
+                });
+
+                wrapper.querySelector('.copy-password-button').addEventListener('click', function () {
+                    passwordManager.copyPassword(password.value);
+                });
+
+                let togglePasswordFieldState = () => {
+                    toggleFieldType(password);
+                    toggleFieldType(passwordConfirmation);
+                    toggetIcons(passwordToggle.querySelector('.toggle-icon'));
+                    toggetIcons(passwordConfirmationToggle.querySelector('.toggle-icon'));
+                }
+
+                passwordToggle.addEventListener('click', togglePasswordFieldState);
+                passwordConfirmationToggle.addEventListener('click', togglePasswordFieldState);
+            }
+        });
+    </script>
+}

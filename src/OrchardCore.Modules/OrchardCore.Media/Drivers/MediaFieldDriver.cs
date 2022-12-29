@@ -87,6 +87,18 @@ namespace OrchardCore.Media.Drivers
                     }
                 }
 
+                var filenames = field.GetAttachedFileNames();
+                if (filenames != null)
+                {
+                    for (var i = 0; i < itemPaths.Count(); i++)
+                    {
+                        if (i >= 0 && i < filenames.Length)
+                        {
+                            itemPaths[i].AttachedFileName = filenames[i];
+                        }
+                    }
+                }
+
                 model.Paths = JsonConvert.SerializeObject(itemPaths, Settings);
                 model.TempUploadFolder = _attachedMediaFieldFileService.MediaFieldsTempSubFolder;
                 model.Field = field;
@@ -112,6 +124,7 @@ namespace OrchardCore.Media.Drivers
                 {
                     try
                     {
+                        field.SetAttachedFileNames(items.Where(i => !i.IsRemoved).Select(i => i.AttachedFileName).ToArray());
                         await _attachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(items, context.ContentPart.ContentItem);
                     }
                     catch (Exception e)

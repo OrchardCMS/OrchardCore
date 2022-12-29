@@ -10,7 +10,10 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Documents;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Roles.Models;
 using OrchardCore.Roles.ViewModels;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -24,6 +27,7 @@ namespace OrchardCore.Roles.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringLocalizer S;
         private readonly RoleManager<IRole> _roleManager;
+        private readonly IDocumentManager<RolesDocument> _rolesDocumentManager;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IRoleService _roleService;
@@ -37,6 +41,7 @@ namespace OrchardCore.Roles.Controllers
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             RoleManager<IRole> roleManager,
+            IDocumentManager<RolesDocument> rolesDocumentManager,
             IRoleService roleService,
             INotifier notifier,
             IEnumerable<IPermissionProvider> permissionProviders
@@ -48,6 +53,7 @@ namespace OrchardCore.Roles.Controllers
             _typeFeatureProvider = typeFeatureProvider;
             _permissionProviders = permissionProviders;
             _roleManager = roleManager;
+            _rolesDocumentManager = rolesDocumentManager;
             S = stringLocalizer;
             _authorizationService = authorizationService;
             _documentStore = documentStore;
@@ -85,18 +91,23 @@ namespace OrchardCore.Roles.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateRoleViewModel model)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
+            {
+                return Forbid();
+            }
+
             if (ModelState.IsValid)
             {
                 model.RoleName = model.RoleName.Trim();
 
                 if (model.RoleName.Contains('/'))
                 {
-                    ModelState.AddModelError(string.Empty, S["Invalid role name."]);
+                    ModelState.AddModelError(String.Empty, S["Invalid role name."]);
                 }
 
                 if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(model.RoleName)) != null)
                 {
-                    ModelState.AddModelError(string.Empty, S["The role is already used."]);
+                    ModelState.AddModelError(String.Empty, S["The role is already used."]);
                 }
             }
 
@@ -114,7 +125,7 @@ namespace OrchardCore.Roles.Controllers
 
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError(String.Empty, error.Description);
                 }
             }
 
@@ -165,8 +176,7 @@ namespace OrchardCore.Roles.Controllers
                 return Forbid();
             }
 
-            var role = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));
-            if (role == null)
+            if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id)) is not Role role)
             {
                 return NotFound();
             }
@@ -194,22 +204,49 @@ namespace OrchardCore.Roles.Controllers
                 return Forbid();
             }
 
-            var role = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));
-
-            if (role == null)
+            if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id)) is not Role role)
             {
                 return NotFound();
             }
 
             role.RoleDescription = roleDescription;
 
+            var rolesDocument = await _rolesDocumentManager.GetOrCreateMutableAsync();
+            var updateRolesDocument = false;
+
+            rolesDocument.PermissionGroups.TryAdd(role.RoleName, new List<string>());
+
+            var permissionNames = _permissionProviders.SelectMany(x => x.GetDefaultStereotypes())
+                .SelectMany(y => y.Permissions ?? Enumerable.Empty<Permission>())
+                .Select(x => x.Name)
+                .ToList();
+
             // Save
             var rolePermissions = new List<RoleClaim>();
-            foreach (string key in Request.Form.Keys)
+            foreach (var key in Request.Form.Keys)
             {
-                if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
+                var permissionName = key;
+
+                if (key.StartsWith("Checkbox.", StringComparison.Ordinal))
                 {
-                    string permissionName = key.Substring("Checkbox.".Length);
+                    permissionName = key.Substring("Checkbox.".Length);
+                }
+
+                if (!permissionNames.Contains(permissionName, StringComparer.OrdinalIgnoreCase))
+                {
+                    // The request contains an invalid permission, let's ignore it
+                    continue;
+                }
+
+                if (!rolesDocument.PermissionGroups[role.RoleName].Contains(permissionName, StringComparer.OrdinalIgnoreCase))
+                {
+                    // Save the permission in the permissions history so it never gets auto assigned to this role.
+                    rolesDocument.PermissionGroups[role.RoleName].Add(permissionName);
+                    updateRolesDocument = true;
+                }
+
+                if (String.Equals(Request.Form[key], "true", StringComparison.OrdinalIgnoreCase))
+                {
                     rolePermissions.Add(new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = permissionName });
                 }
             }
@@ -218,6 +255,11 @@ namespace OrchardCore.Roles.Controllers
             role.RoleClaims.AddRange(rolePermissions);
 
             await _roleManager.UpdateAsync(role);
+
+            if (updateRolesDocument)
+            {
+                await _rolesDocumentManager.UpdateAsync(rolesDocument);
+            }
 
             await _notifier.SuccessAsync(H["Role updated successfully."]);
 
@@ -234,34 +276,45 @@ namespace OrchardCore.Roles.Controllers
             };
         }
 
-        private async Task<IDictionary<string, IEnumerable<Permission>>> GetInstalledPermissionsAsync()
+        private async Task<IDictionary<PermissionGroupKey, IEnumerable<Permission>>> GetInstalledPermissionsAsync()
         {
-            var installedPermissions = new Dictionary<string, IEnumerable<Permission>>();
+            var installedPermissions = new Dictionary<PermissionGroupKey, IEnumerable<Permission>>();
             foreach (var permissionProvider in _permissionProviders)
             {
                 var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
-                var featureName = feature.Id;
-
                 var permissions = await permissionProvider.GetPermissionsAsync();
 
                 foreach (var permission in permissions)
                 {
-                    var category = permission.Category;
+                    var groupKey = GetGroupKey(feature, permission.Category);
 
-                    string title = String.IsNullOrWhiteSpace(category) ? S["{0} Feature", featureName] : category;
+                    if (installedPermissions.ContainsKey(groupKey))
+                    {
+                        installedPermissions[groupKey] = installedPermissions[groupKey].Concat(new[] { permission });
 
-                    if (installedPermissions.ContainsKey(title))
-                    {
-                        installedPermissions[title] = installedPermissions[title].Concat(new[] { permission });
+                        continue;
                     }
-                    else
-                    {
-                        installedPermissions.Add(title, new[] { permission });
-                    }
+
+                    installedPermissions.Add(groupKey, new[] { permission });
                 }
             }
 
             return installedPermissions;
+        }
+
+        private PermissionGroupKey GetGroupKey(IFeatureInfo feature, string category)
+        {
+            if (!String.IsNullOrWhiteSpace(category))
+            {
+                return new PermissionGroupKey(category, category);
+            }
+
+            var title = String.IsNullOrWhiteSpace(feature.Name) ? S["{0} Feature", feature.Id] : feature.Name;
+
+            return new PermissionGroupKey(feature.Id, title)
+            {
+                Source = feature.Id,
+            };
         }
 
         private async Task<IEnumerable<string>> GetEffectivePermissions(Role role, IEnumerable<Permission> allPermissions)

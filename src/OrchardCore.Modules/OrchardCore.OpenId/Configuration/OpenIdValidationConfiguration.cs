@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using OpenIddict.Abstractions;
 using OpenIddict.Validation;
 using OpenIddict.Validation.AspNetCore;
 using OpenIddict.Validation.DataProtection;
@@ -105,6 +105,7 @@ namespace OrchardCore.OpenId.Configuration
             if (settings.Authority != null)
             {
                 options.Issuer = settings.Authority;
+                options.ConfigurationEndpoint = settings.MetadataAddress;
                 options.Audiences.Add(settings.Audience);
 
                 // Note: OpenIddict 3.0 only accepts tokens issued with a non-empty token type (e.g "at+jwt")
@@ -139,9 +140,9 @@ namespace OrchardCore.OpenId.Configuration
                     return;
                 }
 
-                options.Configuration = new OpenIdConnectConfiguration
+                options.Configuration = new OpenIddictConfiguration
                 {
-                    Issuer = configuration.Authority?.AbsoluteUri
+                    Issuer = configuration.Authority
                 };
 
                 // Import the signing keys from the OpenID server configuration.

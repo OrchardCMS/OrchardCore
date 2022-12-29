@@ -1,14 +1,14 @@
 @model OrchardCore.ContentFields.ViewModels.EditHtmlFieldViewModel
-
+@using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
     var monacoSettings = Model.PartFieldDefinition.GetSettings<HtmlFieldMonacoEditorSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
+    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-@await DisplayAsync(await New.ShortcodeModal())
-
-<div class="form-group">
+<div class="mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Html)_FieldWrapper">
+    @await DisplayAsync(await New.ShortcodeModal())
     <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
     <div id="@Html.IdFor(x => x.Html)_editor" asp-for="Text" style="min-height: 400px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
     <textarea asp-for="Html" hidden>@Html.Raw(Model.Html)</textarea>
@@ -46,7 +46,7 @@
 
             var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Html)_editor'), settings);
             var textArea = document.getElementById('@Html.IdFor(x => x.Html)');
-            
+
             editor.getModel().onDidChangeContent((event) => {
                 textArea.value = editor.getValue();
                 $(document).trigger('contentpreview:render');
