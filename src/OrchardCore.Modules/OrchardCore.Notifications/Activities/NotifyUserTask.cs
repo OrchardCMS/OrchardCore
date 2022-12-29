@@ -11,7 +11,7 @@ namespace OrchardCore.Notifications.Activities;
 public class NotifyUserTask : NotifyUserTaskActivity
 {
     public NotifyUserTask(
-       INotificationManager notificationCoordinator,
+       INotificationService notificationCoordinator,
        IWorkflowExpressionEvaluator expressionEvaluator,
        HtmlEncoder htmlEncoder,
        ILogger<NotifyUserTask> logger,

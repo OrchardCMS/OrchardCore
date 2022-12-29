@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Notifications;
 
-public interface INotificationManager
+public interface INotificationService
 {
     /// <summary>
     /// Attempts to sent the given message to the given notifiable object.

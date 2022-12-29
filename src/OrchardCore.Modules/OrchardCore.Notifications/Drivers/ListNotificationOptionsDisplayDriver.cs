@@ -26,6 +26,7 @@ public class ListNotificationOptionsDisplayDriver : DisplayDriver<ListNotificati
     public override IDisplayResult Edit(ListNotificationOptions model)
     {
         model.FilterResult.MapTo(model);
+
         return Combine(
             Initialize<ListNotificationOptions>("NotificationsAdminListBulkActions", m => BuildOptionsViewModel(m, model)).Location("BulkActions", "Content:10"),
             Initialize<ListNotificationOptions>("NotificationsAdminListSearch", m => BuildOptionsViewModel(m, model)).Location("Search:10"),

@@ -15,18 +15,18 @@ namespace OrchardCore.Notifications.Activities;
 
 public abstract class NotifyUserTaskActivity : TaskActivity
 {
-    protected readonly INotificationManager _notificationCoordinator;
+    protected readonly INotificationService _notificationCoordinator;
     protected readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     protected readonly IStringLocalizer S;
     protected readonly HtmlEncoder _htmlEncoder;
     protected readonly ILogger _logger;
 
     public NotifyUserTaskActivity(
-        INotificationManager notificationCoordinator,
+        INotificationService notificationCoordinator,
         IWorkflowExpressionEvaluator expressionEvaluator,
         HtmlEncoder htmlEncoder,
-        ILogger<NotifyUserTask> logger,
-        IStringLocalizer<NotifyUserTask> localizer
+        ILogger logger,
+        IStringLocalizer localizer
     )
     {
         _notificationCoordinator = notificationCoordinator;
@@ -72,7 +72,7 @@ public abstract class NotifyUserTaskActivity : TaskActivity
 
         if (user is User su && !su.IsEnabled)
         {
-            return Outcomes("Failed: disabled User");
+            return Outcomes("Failed: disabled user");
         }
 
         var message = await GetMessageAsync(workflowContext);

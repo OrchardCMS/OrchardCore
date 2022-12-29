@@ -6,17 +6,17 @@ using YesSql;
 
 namespace OrchardCore.Notifications.Services;
 
-public class NotificationManager : INotificationManager
+public class NotificationService : INotificationService
 {
     private readonly INotificationMethodProviderAccessor _notificationMethodProviderAccessor;
     private readonly IEnumerable<INotificationEvents> _notificationEvents;
-    private readonly ILogger<NotificationManager> _logger;
+    private readonly ILogger<NotificationService> _logger;
     private readonly ISession _session;
     private readonly IClock _clock;
 
-    public NotificationManager(INotificationMethodProviderAccessor notificationMethodProviderAccessor,
+    public NotificationService(INotificationMethodProviderAccessor notificationMethodProviderAccessor,
         IEnumerable<INotificationEvents> notificationEvents,
-        ILogger<NotificationManager> logger,
+        ILogger<NotificationService> logger,
         ISession session,
         IClock clock)
     {
@@ -45,9 +45,9 @@ public class NotificationManager : INotificationManager
 
             if (await provider.TrySendAsync(notify, message))
             {
-                await _notificationEvents.InvokeAsync((handler, service, context) => handler.SentAsync(service, notificationContext), provider, notificationContext, _logger);
-
                 totalSent++;
+
+                await _notificationEvents.InvokeAsync((handler, service, context) => handler.SentAsync(service, notificationContext), provider, notificationContext, _logger);
             }
             else
             {

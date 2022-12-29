@@ -37,10 +37,8 @@ public class ListNotificationOptions
     [BindNever]
     public List<SelectListItem> BulkActions { get; set; }
 
-
     [BindNever]
     public List<SelectListItem> Statuses { get; set; }
-
 
     [BindNever]
     public List<SelectListItem> Sorts { get; set; }

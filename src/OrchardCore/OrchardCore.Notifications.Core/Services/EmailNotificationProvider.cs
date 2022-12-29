@@ -10,7 +10,9 @@ public class EmailNotificationProvider : INotificationMethodProvider
     private readonly ISmtpService _smtpService;
     private readonly IStringLocalizer S;
 
-    public EmailNotificationProvider(ISmtpService smtpService, IStringLocalizer<EmailNotificationProvider> stringLocalizer)
+    public EmailNotificationProvider(
+        ISmtpService smtpService,
+        IStringLocalizer<EmailNotificationProvider> stringLocalizer)
     {
         _smtpService = smtpService;
         S = stringLocalizer;

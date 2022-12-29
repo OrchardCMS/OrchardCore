@@ -40,7 +40,7 @@ public class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INotificationManager, NotificationManager>();
+        services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<INotificationMethodProviderAccessor, NotificationMethodProviderAccessor>();
 
         services.AddDataMigration<NotificationMigrations>();
@@ -48,7 +48,6 @@ public class Startup : StartupBase
         services.AddScoped<INotificationsAdminListQueryService, DefaultNotificationsAdminListQueryService>();
         services.Configure<StoreCollectionOptions>(o => o.Collections.Add(NotificationConstants.NotificationCollection));
         services.AddScoped<INotificationEvents, CoreNotificationEventsHandler>();
-
 
         services.AddScoped<IPermissionProvider, NotificationPermissionsProvider>();
         services.AddScoped<IDisplayDriver<ListNotificationOptions>, ListNotificationOptionsDisplayDriver>();
@@ -90,7 +89,6 @@ public class Startup : StartupBase
     }
 }
 
-[Feature("OrchardCore.Notifications")]
 [RequireFeatures("OrchardCore.Workflows")]
 public class WorkflowsStartup : StartupBase
 {
@@ -100,7 +98,6 @@ public class WorkflowsStartup : StartupBase
     }
 }
 
-[Feature("OrchardCore.Notifications")]
 [RequireFeatures("OrchardCore.Workflows", "OrchardCore.Users", "OrchardCore.Contents")]
 public class UsersWorkflowStartup : StartupBase
 {

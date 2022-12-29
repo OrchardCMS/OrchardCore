@@ -20,11 +20,11 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity
     private readonly ISession _session;
 
     public NotifyContentOwnerTask(
-       INotificationManager notificationCoordinator,
+       INotificationService notificationCoordinator,
        IWorkflowExpressionEvaluator expressionEvaluator,
        HtmlEncoder htmlEncoder,
-       ILogger<NotifyUserTask> logger,
-       IStringLocalizer<NotifyUserTask> localizer,
+       ILogger<NotifyContentOwnerTask> logger,
+       IStringLocalizer<NotifyContentOwnerTask> localizer,
        ISession session
    ) : base(notificationCoordinator,
        expressionEvaluator,

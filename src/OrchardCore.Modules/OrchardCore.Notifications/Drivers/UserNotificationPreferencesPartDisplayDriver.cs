@@ -65,8 +65,8 @@ public class UserNotificationPreferencesPartDisplayDriver : SectionDisplayDriver
 
             if (sortedMethods.Count > 0)
             {
-                // Important to check execute this code only when selectedOrdrededMethods has at least one element to avoid exception.
-                // Store all methods in the same order then appear.
+                // Important to execute this code only when selectedOrdrededMethods has at least one element to avoid exception.
+                // Store all methods in the same order they appear.
                 part.Methods = _notificationMethodProviders
                     .OrderBy(provider => sortedMethods.IndexOf(provider.Method))
                     .ThenBy(provider => provider.Name)

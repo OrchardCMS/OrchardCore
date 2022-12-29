@@ -28,7 +28,6 @@ using YesSql.Services;
 
 namespace OrchardCore.Notifications.Controllers;
 
-[Feature("OrchardCore.Notifications")]
 public class AdminController : Controller, IUpdateModel
 {
     private readonly IAuthorizationService _authorizationService;
