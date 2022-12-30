@@ -73,8 +73,9 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]));
             }
 
-            if (_shellHost.GetAllSettings().Any(settings =>
-                !String.Equals(settings.Name, model.Name, StringComparison.OrdinalIgnoreCase) &&
+            var allOtherSettings = _shellHost.GetAllSettings().Where(settings => settings != existingShellSettings);
+
+            if (allOtherSettings.Any(settings =>
                 String.Equals(
                     settings.RequestUrlPrefix ?? String.Empty,
                     model.RequestUrlPrefix?.Trim(' ', '/') ?? String.Empty,
