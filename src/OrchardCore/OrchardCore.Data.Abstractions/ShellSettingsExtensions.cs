@@ -1,13 +1,17 @@
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Data;
 
-public static class DatabaseShellSettingsExtensions
+public static class ShellSettingsExtensions
 {
+    private const string _databaseTableSection = "OrchardCore_Data_DatabaseTable";
+    private const string _defaultDocumentTableKey = $"{_databaseTableSection}:DefaultDocumentTable";
+    private const string _defaultTableNameSeparatorKey = $"{_databaseTableSection}:DefaultTableNameSeparator";
+    private const string _defaultIdentityColumnSizeKey = $"{_databaseTableSection}:DefaultIdentityColumnSize";
+
     public static DatabaseTableOptions GetDatabaseTableOptions(this ShellSettings shellSettings) =>
         new()
         {
@@ -20,9 +24,9 @@ public static class DatabaseShellSettingsExtensions
     {
         if (!shellSettings.IsInitialized())
         {
-            shellSettings["internal_DocumentTable"] = shellSettings.GetDocumentTable();
-            shellSettings["internal_TableNameSeparator"] = shellSettings.GetTableNameSeparator();
-            shellSettings["internal_IdentityColumnSize"] = shellSettings.GetIdentityColumnSize();
+            shellSettings["DocumentTable"] = shellSettings.GetDocumentTable();
+            shellSettings["TableNameSeparator"] = shellSettings.GetTableNameSeparator();
+            shellSettings["IdentityColumnSize"] = shellSettings.GetIdentityColumnSize();
         }
 
         return shellSettings;
@@ -31,8 +35,8 @@ public static class DatabaseShellSettingsExtensions
     public static string GetDocumentTable(this ShellSettings shellSettings)
     {
         var documentTable = !shellSettings.IsInitialized()
-            ? shellSettings["OrchardCore_Data_DatabaseTable:DefaultDocumentTable"]
-            : shellSettings["internal_DocumentTable"];
+            ? shellSettings[_defaultDocumentTableKey]
+            : shellSettings["DocumentTable"];
 
         if (String.IsNullOrWhiteSpace(documentTable))
         {
@@ -41,11 +45,6 @@ public static class DatabaseShellSettingsExtensions
         else
         {
             documentTable = documentTable.Trim();
-            if (!Regex.Match(documentTable, "^[A-Za-z_]+[A-Za-z0-9_]*$").Success)
-            {
-                throw new InvalidOperationException(
-                    $"The 'DocumentTable' name is invalid, the configured value is '{documentTable}'.");
-            }
         }
 
         return documentTable;
@@ -54,8 +53,8 @@ public static class DatabaseShellSettingsExtensions
     public static string GetTableNameSeparator(this ShellSettings shellSettings)
     {
         var tableNameSeparator = !shellSettings.IsInitialized()
-            ? shellSettings["OrchardCore_Data_DatabaseTable:DefaultTableNameSeparator"]
-            : shellSettings["internal_TableNameSeparator"];
+            ? shellSettings[_defaultTableNameSeparatorKey]
+            : shellSettings["TableNameSeparator"];
 
         if (String.IsNullOrWhiteSpace(tableNameSeparator))
         {
@@ -81,8 +80,8 @@ public static class DatabaseShellSettingsExtensions
     public static string GetIdentityColumnSize(this ShellSettings shellSettings)
     {
         var identityColumnSize = !shellSettings.IsInitialized()
-            ? shellSettings["OrchardCore_Data_DatabaseTable:DefaultIdentityColumnSize"]
-            : shellSettings["internal_IdentityColumnSize"];
+            ? shellSettings[_defaultIdentityColumnSizeKey]
+            : shellSettings["IdentityColumnSize"];
 
         if (String.IsNullOrWhiteSpace(identityColumnSize))
         {

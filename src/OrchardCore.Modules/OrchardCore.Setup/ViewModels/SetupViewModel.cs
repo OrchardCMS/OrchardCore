@@ -22,7 +22,6 @@ namespace OrchardCore.Setup.ViewModels
 
         public string TablePrefix { get; set; }
 
-        [RegularExpression("^[A-Za-z_]+[A-Za-z0-9_]*$", ErrorMessage = "Invalid schema")]
         public string Schema { get; set; }
 
         /// <summary>

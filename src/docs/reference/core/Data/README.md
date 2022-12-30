@@ -24,7 +24,7 @@ See the [`Microsoft.Data.Sqlite` documentation](https://docs.microsoft.com/en-us
 }
 ```
 
-## YesSql
+## Configuring YesSql
 
 OrchardCore uses the `YesSql` library to interact with the configured database provider. `YesSql` is shipped with configuration that is suitable for most use cases. However, you can change these settings by configuring `YesSqlOptions`. `YesSqlOptions` provides the following configurable options.
 
