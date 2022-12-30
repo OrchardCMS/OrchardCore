@@ -62,12 +62,14 @@ namespace OrchardCore.Features.Controllers
 
             var viewModel = new FeaturesViewModel();
 
+            var isDefaultTenant = _shellSettings.IsDefaultShell();
+
             await ExecuteAsync(tenant, async (featureService, settings) =>
             {
                 // if the user provide an invalid tenant value, we'll set it to null so it's not available on the next request
                 tenant = settings?.Name;
                 viewModel.Name = settings?.Name;
-                viewModel.IsDefaultTenant = _shellSettings.IsDefaultShell() && (settings == null || settings.IsDefaultShell());
+                viewModel.IsDefaultTenant = isDefaultTenant && (settings == null || settings.IsDefaultShell());
                 viewModel.Features = await featureService.GetModuleFeaturesAsync();
             });
 
@@ -111,6 +113,8 @@ namespace OrchardCore.Features.Controllers
 
             var found = false;
 
+            var isDefaultTenant = _shellSettings.IsDefaultShell();
+
             await ExecuteAsync(tenant, async (featureService, settings) =>
             {
                 var feature = await featureService.GetAvailableFeature(id);
@@ -122,9 +126,9 @@ namespace OrchardCore.Features.Controllers
 
                 found = true;
 
-                var isDefaultTenant = _shellSettings.IsDefaultShell() && (settings == null || settings.IsDefaultShell());
+                var executingOnDefaultTenant = isDefaultTenant && (settings == null || settings.IsDefaultShell());
 
-                if (isDefaultTenant && id == FeaturesConstants.FeatureId)
+                if (executingOnDefaultTenant && id == FeaturesConstants.FeatureId)
                 {
                     await _notifier.ErrorAsync(H["This feature is always enabled and cannot be disabled."]);
 
