@@ -90,7 +90,8 @@ public static class ShellSettingsExtensions
         else
         {
             identityColumnSize = identityColumnSize.Trim();
-            if (identityColumnSize != nameof(Int32) && identityColumnSize != nameof(Int64))
+            if (identityColumnSize != nameof(Int32) &&
+                identityColumnSize != nameof(Int64))
             {
                 throw new InvalidOperationException(
                     $"The 'IdentityColumnSize' should be 'Int32' or 'Int64', the configured value is '{identityColumnSize}'.");
