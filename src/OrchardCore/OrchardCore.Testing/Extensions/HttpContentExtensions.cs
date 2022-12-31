@@ -1,12 +1,11 @@
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace OrchardCore.Tests.Apis.Context
+namespace System.Net.Http
 {
-    internal static class HttpContentExtensions
+    public static class HttpContentExtensions
     {
         public static async Task<T> ReadAsAsync<T>(this HttpContent content, JsonConverter jsonConverter)
         {
