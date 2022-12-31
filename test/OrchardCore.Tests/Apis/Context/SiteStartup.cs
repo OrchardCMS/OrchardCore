@@ -1,7 +1,4 @@
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -9,8 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
-using OrchardCore.Modules.Manifest;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Testing;
 using OrchardCore.Testing.Apis.Security;
 using OrchardCore.Testing.Recipes;
 
@@ -48,25 +45,6 @@ namespace OrchardCore.Tests.Apis.Context
             services.AddSingleton<IModuleNamesProvider, ModuleNamesProvider>();
         }
 
-        public void Configure(IApplicationBuilder app, IHostEnvironment env, ILoggerFactory loggerFactory)
-        {
-            app.UseOrchardCore();
-        }
-
-        private class ModuleNamesProvider : IModuleNamesProvider
-        {
-            private readonly string[] _moduleNames;
-
-            public ModuleNamesProvider()
-            {
-                var assembly = Assembly.Load(new AssemblyName(typeof(Program).Assembly.GetName().Name));
-                _moduleNames = assembly.GetCustomAttributes<ModuleNameAttribute>().Select(m => m.Name).ToArray();
-            }
-
-            public IEnumerable<string> GetModuleNames()
-            {
-                return _moduleNames;
-            }
-        }
+        public void Configure(IApplicationBuilder app, IHostEnvironment env, ILoggerFactory loggerFactory) => app.UseOrchardCore();
     }
 }
