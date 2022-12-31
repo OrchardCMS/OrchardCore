@@ -12,6 +12,7 @@ using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Testing.Apis.Security;
+using OrchardCore.Testing.Recipes;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -35,7 +36,8 @@ namespace OrchardCore.Tests.Apis.Context
                 )
                 .ConfigureServices(serviceCollection =>
                 {
-                    collection.AddScoped<IRecipeHarvester, TestRecipeHarvester>();
+                    serviceCollection.AddScoped<IRecipeFileProvider, RecipeFileProvider>();
+                    serviceCollection.AddScoped<IRecipeHarvester, TestRecipeHarvester>();
 
                     serviceCollection.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(sp => new PermissionContextAuthorizationHandler(
                         sp.GetRequiredService<IHttpContextAccessor>(),
