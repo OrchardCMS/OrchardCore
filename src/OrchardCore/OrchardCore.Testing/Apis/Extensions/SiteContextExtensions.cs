@@ -1,53 +1,54 @@
 using System;
 using OrchardCore.Testing.Apis.Security;
 
-namespace OrchardCore.Tests.Apis.Context
+namespace OrchardCore.Testing.Apis
 {
     public static class SiteContextExtensions
     {
-        public static SiteContext WithDatabaseProvider(this SiteContext siteContext, string databaseProvider)
+        public static ISiteContext WithDatabaseProvider(this ISiteContext siteContext, string databaseProvider)
         {
             if (String.IsNullOrEmpty(databaseProvider))
             {
                 throw new ArgumentException($"'{nameof(databaseProvider)}' cannot be null or empty.", nameof(databaseProvider));
             }
 
-            siteContext.DatabaseProvider = databaseProvider;
+            siteContext.Options.DatabaseProvider = databaseProvider;
 
             return siteContext;
         }
 
-        public static SiteContext WithConnectionString(this SiteContext siteContext, string connectionString)
+        public static ISiteContext WithConnectionString(this ISiteContext siteContext, string connectionString)
         {
             if (String.IsNullOrEmpty(connectionString))
             {
                 throw new ArgumentException($"'{nameof(connectionString)}' cannot be null or empty.", nameof(connectionString));
             }
 
-            siteContext.ConnectionString = connectionString;
+            siteContext.Options.ConnectionString = connectionString;
+
             return siteContext;
         }
 
-        public static SiteContext WithPermissionsContext(this SiteContext siteContext, PermissionsContext permissionsContext)
+        public static ISiteContext WithPermissionsContext(this ISiteContext siteContext, PermissionsContext permissionsContext)
         {
             if (permissionsContext is null)
             {
                 throw new ArgumentNullException(nameof(permissionsContext));
             }
 
-            siteContext.PermissionsContext = permissionsContext;
+            siteContext.Options.PermissionsContext = permissionsContext;
 
             return siteContext;
         }
 
-        public static SiteContext WithRecipe(this SiteContext siteContext, string recipeName)
+        public static ISiteContext WithRecipe(this ISiteContext siteContext, string recipeName)
         {
             if (String.IsNullOrEmpty(recipeName))
             {
                 throw new ArgumentException($"'{nameof(recipeName)}' cannot be null or empty.", nameof(recipeName));
             }
 
-            siteContext.RecipeName = recipeName;
+            siteContext.Options.RecipeName = recipeName;
 
             return siteContext;
         }

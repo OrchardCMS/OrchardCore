@@ -1,140 +1,35 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Client;
-using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Lucene;
-using OrchardCore.Testing.Apis.Security;
-using OrchardCore.Testing.Data;
-using OrchardCore.Testing.Infrastructure;
+using OrchardCore.Testing.Apis;
 
 namespace OrchardCore.Tests.Apis.Context
 {
-    public class SiteContext : IDisposable
+    public class SiteContext : SiteContextBase<SiteStartup>
     {
-        private static readonly TablePrefixGenerator TablePrefixGenerator = new TablePrefixGenerator();
-        public static OrchardCoreTestFixture<SiteStartup> Site { get; }
-        public static IShellHost ShellHost { get; private set; }
-        public static IHttpContextAccessor HttpContextAccessor { get; }
-        public static HttpClient DefaultTenantClient { get; }
-
-        public string RecipeName { get; set; } = "Blog";
-        public string DatabaseProvider { get; set; } = "Sqlite";
-        public string ConnectionString { get; set; }
-        public PermissionsContext PermissionsContext { get; set; }
-
-        public HttpClient Client { get; private set; }
-        public string TenantName { get; private set; }
-        public OrchardGraphQLClient GraphQLClient { get; private set; }
-
-        static SiteContext()
+        public SiteContext()
         {
-            Site = new OrchardCoreTestFixture<SiteStartup>();
-            ShellHost = Site.Services.GetRequiredService<IShellHost>();
-            HttpContextAccessor = Site.Services.GetRequiredService<IHttpContextAccessor>();
-            DefaultTenantClient = Site.CreateDefaultClient();
+            this.WithRecipe("Blog")
+                .WithDatabaseProvider("Sqlite");
         }
 
-        public virtual async Task InitializeAsync()
+        public override async Task InitializeAsync()
         {
-            var tenantName = Guid.NewGuid().ToString("n");
-            var tablePrefix = await TablePrefixGenerator.GeneratePrefixAsync();
-
-            var createModel = new Tenants.ViewModels.CreateApiViewModel
-            {
-                DatabaseProvider = DatabaseProvider,
-                TablePrefix = tablePrefix,
-                ConnectionString = ConnectionString,
-                RecipeName = RecipeName,
-                Name = tenantName,
-                RequestUrlPrefix = tenantName
-            };
-
-            var createResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/create", createModel);
-            createResult.EnsureSuccessStatusCode();
-
-            var content = await createResult.Content.ReadAsStringAsync();
-
-            var url = new Uri(content.Trim('"'));
-            url = new Uri(url.Scheme + "://" + url.Authority + url.LocalPath + "/");
-
-            var setupModel = new Tenants.ViewModels.SetupApiViewModel
-            {
-                SiteName = "Test Site",
-                DatabaseProvider = DatabaseProvider,
-                TablePrefix = tablePrefix,
-                ConnectionString = ConnectionString,
-                RecipeName = RecipeName,
-                UserName = "admin",
-                Password = "Password01_",
-                Name = tenantName,
-                Email = "Nick@Orchard"
-            };
-
-            var setupResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", setupModel);
-            setupResult.EnsureSuccessStatusCode();
-
-            lock (Site)
-            {
-                Client = Site.CreateDefaultClient(url);
-                TenantName = tenantName;
-            }
-
-            if (PermissionsContext != null)
-            {
-                var permissionContextKey = Guid.NewGuid().ToString();
-                SiteStartup.PermissionsContexts.TryAdd(permissionContextKey, PermissionsContext);
-                Client.DefaultRequestHeaders.Add("PermissionsContext", permissionContextKey);
-            }
+            await base.InitializeAsync();
 
             GraphQLClient = new OrchardGraphQLClient(Client);
         }
 
-        public async Task UsingTenantScopeAsync(Func<ShellScope, Task> execute, bool activateShell = true)
-        {
-            // Ensure that 'HttpContext' is not null before using a 'ShellScope'.
-            var shellScope = await ShellHost.GetScopeAsync(TenantName);
-            HttpContextAccessor.HttpContext = shellScope.ShellContext.CreateHttpContext();
-            await shellScope.UsingAsync(execute, activateShell);
-        }
-
-        public async Task RunRecipeAsync(string recipeName, string recipePath)
-        {
-            await UsingTenantScopeAsync(async scope =>
-            {
-                var shellFeaturesManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
-                var recipeHarvesters = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeHarvester>>();
-                var recipeExecutor = scope.ServiceProvider.GetRequiredService<IRecipeExecutor>();
-
-                var recipeCollections = await Task.WhenAll(
-                    recipeHarvesters.Select(recipe => recipe.HarvestRecipesAsync()));
-
-                var recipes = recipeCollections.SelectMany(recipeCollection => recipeCollection);
-                var recipe = recipes
-                    .FirstOrDefault(recipe => recipe.RecipeFileInfo.Name == recipeName && recipe.BasePath == recipePath);
-
-                var executionId = Guid.NewGuid().ToString("n");
-
-                await recipeExecutor.ExecuteAsync(
-                    executionId,
-                    recipe,
-                    new Dictionary<string, object>(),
-                    CancellationToken.None);
-            });
-        }
-
         public async Task ResetLuceneIndiciesAsync(string indexName)
         {
-            await UsingTenantScopeAsync(async scope =>
+            var shellScope = await ShellHost.GetScopeAsync(TenantName);
+
+            await shellScope.UsingServiceScopeAsync(async scope =>
             {
                 var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
                 var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
@@ -142,6 +37,7 @@ namespace OrchardCore.Tests.Apis.Context
                 var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync(indexName);
 
                 luceneIndexingService.ResetIndexAsync(indexName);
+
                 await luceneIndexingService.ProcessContentItemsAsync(indexName);
             });
         }
@@ -159,19 +55,12 @@ namespace OrchardCore.Tests.Apis.Context
             func(contentItem);
 
             var content = await Client.PostAsJsonAsync("api/content" + (draft ? "?draft=true" : ""), contentItem);
+
             var response = await content.Content.ReadAsAsync<ContentItem>();
 
             return response.ContentItemId;
         }
 
-        public Task DeleteContentItem(string contentItemId)
-        {
-            return Client.DeleteAsync("api/content/" + contentItemId);
-        }
-
-        public void Dispose()
-        {
-            Client?.Dispose();
-        }
+        public async Task DeleteContentItem(string contentItemId) => await Client.DeleteAsync("api/content/" + contentItemId);
     }
 }

@@ -32,7 +32,7 @@ namespace OrchardCore.Testing.Apis.Security
             }
         }
 
-        // Used for static graphql test; passes a permissionsContext directly
+        // Used for static graphql test; passes a permissions Context directly
         public PermissionContextAuthorizationHandler(PermissionsContext permissionsContext)
         {
             _permissionsContext = permissionsContext;
