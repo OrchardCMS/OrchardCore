@@ -13,6 +13,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Lucene;
+using OrchardCore.Testing.Apis.Security;
 using OrchardCore.Testing.Data;
 
 namespace OrchardCore.Tests.Apis.Context

@@ -11,12 +11,13 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Testing.Apis.Security;
 
 namespace OrchardCore.Tests.Apis.Context
 {
     public class SiteStartup
     {
-        public static ConcurrentDictionary<string, PermissionsContext> PermissionsContexts;
+        public readonly static ConcurrentDictionary<string, PermissionsContext> PermissionsContexts;
 
         static SiteStartup()
         {
@@ -32,14 +33,13 @@ namespace OrchardCore.Tests.Apis.Context
                 .AddTenantFeatures(
                     "OrchardCore.Apis.GraphQL"
                 )
-                .ConfigureServices(collection =>
+                .ConfigureServices(serviceCollection =>
                 {
                     collection.AddScoped<IRecipeHarvester, TestRecipeHarvester>();
 
-                    collection.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(sp =>
-                    {
-                        return new PermissionContextAuthorizationHandler(sp.GetRequiredService<IHttpContextAccessor>(), PermissionsContexts);
-                    });
+                    serviceCollection.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(sp => new PermissionContextAuthorizationHandler(
+                        sp.GetRequiredService<IHttpContextAccessor>(),
+                        PermissionsContexts));
                 })
                 .Configure(appBuilder => appBuilder.UseAuthorization()));
 

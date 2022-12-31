@@ -13,7 +13,8 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Tests.Apis.Context;
+using OrchardCore.Testing.Apis.Security;
+using OrchardCore.Testing.Stubs;
 using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
@@ -131,7 +132,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
                 Schema = new ValidationSchema(),
                 UserContext = new GraphQLUserContext
                 {
-                    User = new ClaimsPrincipal(new StubIdentity())
+                    User = new ClaimsPrincipal(new IdentityStub())
                 },
                 ValidationRules = DocumentValidator.CoreRules.Concat(serviceProvider.GetServices<IValidationRule>())
             };

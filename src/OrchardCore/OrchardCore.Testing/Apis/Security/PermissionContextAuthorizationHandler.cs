@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Tests.Apis.Context
+namespace OrchardCore.Testing.Apis.Security
 {
-    internal class PermissionContextAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+    public class PermissionContextAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
         private readonly PermissionsContext _permissionsContext;
 
@@ -94,21 +93,5 @@ namespace OrchardCore.Tests.Apis.Context
                 }
             }
         }
-    }
-
-    public class PermissionsContext
-    {
-        public IEnumerable<Permission> AuthorizedPermissions { get; set; } = Enumerable.Empty<Permission>();
-
-        public bool UsePermissionsContext { get; set; } = false;
-    }
-
-    internal class StubIdentity : IIdentity
-    {
-        public string AuthenticationType => "TEST TEST";
-
-        public bool IsAuthenticated => true;
-
-        public string Name => "Mr Robot";
     }
 }
