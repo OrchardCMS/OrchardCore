@@ -188,7 +188,7 @@ namespace OrchardCore.Tests.ResourceManagement
             manifest.DefineResource("foo", "required")
                 .SetDependencies("dependency");
             manifest.DefineResource("foo", "dependency")
-                .SetDependencies("required"); ;
+                .SetDependencies("required");
 
             options.ResourceManifests.Add(manifest);
 
