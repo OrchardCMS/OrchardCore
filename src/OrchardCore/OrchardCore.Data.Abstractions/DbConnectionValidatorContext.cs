@@ -6,25 +6,29 @@ public class DbConnectionValidatorContext
 {
     public DbConnectionValidatorContext(ShellSettings shellSettings)
     {
-        TableOptions = shellSettings.GetDatabaseTableOptions();
+        DatabaseTableOptions = shellSettings.GetDatabaseTableOptions();
+
+        Name = shellSettings.Name;
         DatabaseProvider = shellSettings["DatabaseProvider"];
         ConnectionString = shellSettings["ConnectionString"];
         TablePrefix = shellSettings["TablePrefix"];
         Schema = shellSettings["Schema"];
-        Name = shellSettings.Name;
     }
 
-    public DbConnectionValidatorContext(ShellSettings shellSettings, IShellDatabaseInfo shellDatabaseInfo)
+    public DbConnectionValidatorContext(ShellSettings shellSettings, IDbConnectionInfo dbConnectionInfo)
     {
-        TableOptions = shellSettings.GetDatabaseTableOptions();
-        DatabaseProvider = shellDatabaseInfo.DatabaseProvider;
-        ConnectionString = shellDatabaseInfo.ConnectionString;
-        TablePrefix = shellDatabaseInfo.TablePrefix;
-        Schema = shellDatabaseInfo.Schema;
-        Name = shellDatabaseInfo.Name;
+        DatabaseTableOptions = shellSettings.GetDatabaseTableOptions();
+
+        Name = dbConnectionInfo.Name;
+        DatabaseProvider = dbConnectionInfo.DatabaseProvider;
+        ConnectionString = dbConnectionInfo.ConnectionString;
+        TablePrefix = dbConnectionInfo.TablePrefix;
+        Schema = dbConnectionInfo.Schema;
     }
 
-    public DatabaseTableOptions TableOptions { get; }
+    public DatabaseTableOptions DatabaseTableOptions { get; }
+
+    public string Name { get; }
 
     public string DatabaseProvider { get; }
 
@@ -33,6 +37,4 @@ public class DbConnectionValidatorContext
     public string TablePrefix { get; }
 
     public string Schema { get; }
-
-    public string Name { get; }
 }

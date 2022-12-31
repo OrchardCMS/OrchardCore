@@ -146,7 +146,7 @@ namespace OrchardCore.Tenants.Services
                     }
                     else
                     {
-                        errors.Add(new ModelError(nameof(TenantViewModel.TablePrefix), S["The provided database and table prefix are already in use."]));
+                        errors.Add(new ModelError(nameof(TenantViewModel.TablePrefix), S["The provided database, table prefix and schema are already in use."]));
                     }
 
                     break;

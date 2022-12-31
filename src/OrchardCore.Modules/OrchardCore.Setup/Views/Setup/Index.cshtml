@@ -168,7 +168,7 @@
                 <select asp-for="DatabaseProvider" class="form-select" required>
                     @foreach (var provider in Model.DatabaseProviders)
                     {
-                        <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix" data-connection-string-sample="@T["The connection string to your database instance. e.g., {0}", provider.SampleConnectionString]">@provider.Name</option>
+                        <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix" data-connection-string-sample="@T["The connection string to your database instance, e.g. {0}.", provider.SampleConnectionString]">@provider.Name</option>
                     }
                 </select>
                 <span asp-validation-for="DatabaseProvider" class="text-danger"></span>
@@ -197,10 +197,10 @@
 
         <div class="row row-cols-1 row-cols-md-2">
             <div class="mb-3 col tablePrefix">
-                <label asp-for="Schema">@T["The table schema?"]</label>
+                <label asp-for="Schema">@T["Table Schema"]</label>
                 <input asp-for="Schema" class="form-control" />
                 <span asp-validation-for="Schema" class="text-danger"></span>
-                <div class="text-muted form-text small">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server", "dbo"]</div>
+                <div class="text-muted form-text small">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
             </div>
         </div>
     }

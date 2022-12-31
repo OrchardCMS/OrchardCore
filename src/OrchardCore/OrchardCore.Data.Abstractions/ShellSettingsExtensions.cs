@@ -8,9 +8,11 @@ namespace OrchardCore.Data;
 public static class ShellSettingsExtensions
 {
     private const string _databaseTableSection = "OrchardCore_Data_DatabaseTable";
-    private const string _defaultDocumentTableKey = $"{_databaseTableSection}:DefaultDocumentTable";
-    private const string _defaultTableNameSeparatorKey = $"{_databaseTableSection}:DefaultTableNameSeparator";
-    private const string _defaultIdentityColumnSizeKey = $"{_databaseTableSection}:DefaultIdentityColumnSize";
+    private const string _defaultDocumentTable = $"{_databaseTableSection}:DefaultDocumentTable";
+    private const string _defaultTableNameSeparator = $"{_databaseTableSection}:DefaultTableNameSeparator";
+    private const string _defaultIdentityColumnSize = $"{_databaseTableSection}:DefaultIdentityColumnSize";
+
+    private readonly static string[] _identityColumnSizes = new[] { nameof(Int64), nameof(Int32) };
 
     public static DatabaseTableOptions GetDatabaseTableOptions(this ShellSettings shellSettings) =>
         new()
@@ -34,17 +36,14 @@ public static class ShellSettingsExtensions
 
     public static string GetDocumentTable(this ShellSettings shellSettings)
     {
-        var documentTable = !shellSettings.IsInitialized()
-            ? shellSettings[_defaultDocumentTableKey]
-            : shellSettings["DocumentTable"];
+        var documentTable = (!shellSettings.IsInitialized()
+            ? shellSettings[_defaultDocumentTable]
+            : shellSettings["DocumentTable"])
+            ?.Trim();
 
-        if (String.IsNullOrWhiteSpace(documentTable))
+        if (String.IsNullOrEmpty(documentTable))
         {
             documentTable = "Document";
-        }
-        else
-        {
-            documentTable = documentTable.Trim();
         }
 
         return documentTable;
@@ -52,26 +51,22 @@ public static class ShellSettingsExtensions
 
     public static string GetTableNameSeparator(this ShellSettings shellSettings)
     {
-        var tableNameSeparator = !shellSettings.IsInitialized()
-            ? shellSettings[_defaultTableNameSeparatorKey]
-            : shellSettings["TableNameSeparator"];
+        var tableNameSeparator = (!shellSettings.IsInitialized()
+            ? shellSettings[_defaultTableNameSeparator]
+            : shellSettings["TableNameSeparator"])
+            ?.Trim();
 
-        if (String.IsNullOrWhiteSpace(tableNameSeparator))
+        if (String.IsNullOrEmpty(tableNameSeparator))
         {
             tableNameSeparator = "_";
         }
-        else
+        else if (tableNameSeparator == "NULL")
         {
-            tableNameSeparator = tableNameSeparator.Trim();
-            if (tableNameSeparator == "NULL")
-            {
-                tableNameSeparator = String.Empty;
-            }
-            else if (tableNameSeparator.Any(c => c != '_'))
-            {
-                throw new InvalidOperationException(
-                    $"The 'TableNameSeparator' should only contain underscores, the configured value is '{tableNameSeparator}'.");
-            }
+            tableNameSeparator = String.Empty;
+        }
+        else if (tableNameSeparator.Any(c => c != '_'))
+        {
+            throw new InvalidOperationException($"The configured table name separator '{tableNameSeparator}' is invalid.");
         }
 
         return tableNameSeparator;
@@ -79,23 +74,18 @@ public static class ShellSettingsExtensions
 
     public static string GetIdentityColumnSize(this ShellSettings shellSettings)
     {
-        var identityColumnSize = !shellSettings.IsInitialized()
-            ? shellSettings[_defaultIdentityColumnSizeKey]
-            : shellSettings["IdentityColumnSize"];
+        var identityColumnSize = (!shellSettings.IsInitialized()
+            ? shellSettings[_defaultIdentityColumnSize]
+            : shellSettings["IdentityColumnSize"])
+            ?.Trim();
 
-        if (String.IsNullOrWhiteSpace(identityColumnSize))
+        if (String.IsNullOrEmpty(identityColumnSize))
         {
-            identityColumnSize = shellSettings.IsInitialized() ? nameof(Int32) : nameof(Int64);
+            identityColumnSize = !shellSettings.IsInitialized() ? nameof(Int64) : nameof(Int32);
         }
-        else
+        else if (!_identityColumnSizes.Contains(identityColumnSize))
         {
-            identityColumnSize = identityColumnSize.Trim();
-            if (identityColumnSize != nameof(Int32) &&
-                identityColumnSize != nameof(Int64))
-            {
-                throw new InvalidOperationException(
-                    $"The 'IdentityColumnSize' should be 'Int32' or 'Int64', the configured value is '{identityColumnSize}'.");
-            }
+            throw new InvalidOperationException($"The configured identity column size '{identityColumnSize}' is invalid.");
         }
 
         return identityColumnSize;

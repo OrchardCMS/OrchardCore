@@ -2,10 +2,6 @@ namespace OrchardCore.Data;
 
 public class DatabaseTableOptions
 {
-    public DatabaseTableOptions()
-    {
-    }
-
     public string DocumentTable { get; set; }
 
     public string TableNameSeparator { get; set; }

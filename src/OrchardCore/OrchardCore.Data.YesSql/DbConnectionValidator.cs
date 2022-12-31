@@ -100,11 +100,11 @@ public class DbConnectionValidator : IDbConnectionValidator
             return DbConnectionValidatorResult.DocumentTableNotFound;
         }
 
-        var tableNameConvention = _tableNameConventionFactory.Create(context.TableOptions);
+        var tableNameConvention = _tableNameConventionFactory.Create(context.DatabaseTableOptions);
         var documentName = tableNameConvention.GetDocumentTable();
 
         var sqlDialect = GetSqlDialect(context.DatabaseProvider);
-        var sqlBuilder = GetSqlBuilder(sqlDialect, context.TablePrefix, context.TableOptions.TableNameSeparator);
+        var sqlBuilder = GetSqlBuilder(sqlDialect, context.TablePrefix, context.DatabaseTableOptions.TableNameSeparator);
 
         try
         {

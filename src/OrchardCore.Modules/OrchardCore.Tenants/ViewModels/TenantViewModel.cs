@@ -4,7 +4,7 @@ using OrchardCore.Data;
 
 namespace OrchardCore.Tenants.ViewModels
 {
-    public class TenantViewModel : IShellDatabaseInfo
+    public class TenantViewModel : IDbConnectionInfo
     {
         public string Description { get; set; }
 

@@ -1,7 +1,9 @@
 namespace OrchardCore.Data;
 
-public interface IShellDatabaseInfo
+public interface IDbConnectionInfo
 {
+    string Name { get; }
+
     string DatabaseProvider { get; }
 
     string ConnectionString { get; }
@@ -9,6 +11,4 @@ public interface IShellDatabaseInfo
     string TablePrefix { get; }
 
     string Schema { get; }
-
-    string Name { get; }
 }
