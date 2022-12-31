@@ -1,14 +1,7 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Moq;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Media;
 using OrchardCore.Media.Processing;
 using OrchardCore.Settings;
 using SixLabors.ImageSharp.Web.Processors;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media
 {

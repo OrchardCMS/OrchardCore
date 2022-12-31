@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Http;
 using OrchardCore.Environment.Shell;
-using Xunit;
 
 namespace OrchardCore.Tests.Shell
 {
