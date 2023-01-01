@@ -14,7 +14,7 @@ namespace OrchardCore.Tenants.Services
 {
     public class TenantValidator : ITenantValidator
     {
-        private readonly static char[] HostsSeparator = new char[] { ',' };
+        private static readonly char[] _hostSeparators = new[] { ',', ' ' };
 
         private readonly IShellHost _shellHost;
         private readonly IFeatureProfilesService _featureProfilesService;
@@ -151,7 +151,7 @@ namespace OrchardCore.Tenants.Services
                 return Enumerable.Empty<string>();
             }
 
-            return combinedUrlHosts.Split(HostsSeparator).Select(h => h.Trim());
+            return combinedUrlHosts.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }

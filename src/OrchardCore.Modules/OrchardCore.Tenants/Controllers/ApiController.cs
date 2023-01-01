@@ -292,7 +292,7 @@ namespace OrchardCore.Tenants.Controllers
 
         private string GetEncodedUrl(ShellSettings shellSettings, string token)
         {
-            var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+            var host = shellSettings.RequestUrlHosts.FirstOrDefault();
             var hostString = host != null ? new HostString(host) : Request.Host;
 
             var pathString = HttpContext.Features.Get<ShellContextFeature>().OriginalPathBase;

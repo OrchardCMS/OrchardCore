@@ -588,7 +588,8 @@ namespace OrchardCore.OpenId.Services
 
             X500DistinguishedName GetSubjectName()
             {
-                try { return new X500DistinguishedName("CN=" + (settings.RequestUrlHost ?? "localhost")); }
+                var host = settings.RequestUrlHosts.FirstOrDefault(host => host != "localhost");
+                try { return new X500DistinguishedName("CN=" + (host ?? "localhost")); }
                 catch { return new X500DistinguishedName("CN=localhost"); }
             }
         }
