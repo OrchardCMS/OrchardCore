@@ -54,8 +54,9 @@ namespace OrchardCore.Environment.Shell
         }
 
         [JsonIgnore]
-        public string[] RequestUrlHosts =>
-            RequestUrlHost?.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+        public string[] RequestUrlHosts => _settings["RequestUrlHost"]
+            ?.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries)
+            ?? Array.Empty<string>();
 
         public string RequestUrlPrefix
         {
