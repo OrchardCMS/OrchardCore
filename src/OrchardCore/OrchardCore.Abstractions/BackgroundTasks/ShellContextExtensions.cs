@@ -31,7 +31,7 @@ public static class ShellContextExtensions
         var context = new DefaultHttpContext().UseShellScopeServices();
 
         context.Request.Scheme = "https";
-        var urlHost = settings.RequestUrlHost?.Split(_urlHostSeparators, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        var urlHost = settings.RequestUrlHosts.FirstOrDefault();
         context.Request.Host = new HostString(urlHost ?? Localhost);
 
         if (!String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
