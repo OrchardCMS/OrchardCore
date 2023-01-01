@@ -15,7 +15,7 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public class ShellSettings
     {
-        private static readonly char[] _urlHostSeparators = new[] { ',', ' ' };
+        private static readonly char[] _hostSeparators = new[] { ',', ' ' };
 
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
@@ -55,7 +55,7 @@ namespace OrchardCore.Environment.Shell
 
         [JsonIgnore]
         public string[] RequestUrlHosts =>
-            RequestUrlHost?.Split(_urlHostSeparators, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+            RequestUrlHost?.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
 
         public string RequestUrlPrefix
         {
