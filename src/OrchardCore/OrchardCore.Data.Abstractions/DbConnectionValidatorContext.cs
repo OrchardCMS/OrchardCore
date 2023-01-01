@@ -2,33 +2,31 @@ using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Data;
 
-public class DbConnectionValidatorContext
+public class DbConnectionValidatorContext : IDbConnectionInfo
 {
     public DbConnectionValidatorContext(ShellSettings shellSettings)
     {
-        DatabaseTableOptions = shellSettings.GetDatabaseTableOptions();
-
-        Name = shellSettings.Name;
+        ShellName = shellSettings.Name;
         DatabaseProvider = shellSettings["DatabaseProvider"];
         ConnectionString = shellSettings["ConnectionString"];
         TablePrefix = shellSettings["TablePrefix"];
         Schema = shellSettings["Schema"];
+
+        TableOptions = shellSettings.GetDatabaseTableOptions();
     }
 
     public DbConnectionValidatorContext(ShellSettings shellSettings, IDbConnectionInfo dbConnectionInfo)
     {
-        DatabaseTableOptions = shellSettings.GetDatabaseTableOptions();
-
-        Name = dbConnectionInfo.Name;
+        ShellName = shellSettings.Name;
         DatabaseProvider = dbConnectionInfo.DatabaseProvider;
         ConnectionString = dbConnectionInfo.ConnectionString;
         TablePrefix = dbConnectionInfo.TablePrefix;
         Schema = dbConnectionInfo.Schema;
+
+        TableOptions = shellSettings.GetDatabaseTableOptions();
     }
 
-    public DatabaseTableOptions DatabaseTableOptions { get; }
-
-    public string Name { get; }
+    public string ShellName { get; }
 
     public string DatabaseProvider { get; }
 
@@ -37,4 +35,6 @@ public class DbConnectionValidatorContext
     public string TablePrefix { get; }
 
     public string Schema { get; }
+
+    public DatabaseTableOptions TableOptions { get; }
 }

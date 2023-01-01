@@ -44,7 +44,7 @@
 <div class="mb-3" asp-validation-class-for="DatabaseSchemaExpression">
     <label asp-for="DatabaseTablePrefixExpression">@T["Schema"] <span asp-validation-for="DatabaseSchemaExpression"></span></label>
     <input type="text" asp-for="DatabaseSchemaExpression" class="form-control code" />
-    <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server", "dbo"]</div>
+    <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
 </div>
 
 <div class="mb-3" asp-validation-class-for="RecipeNameExpression">

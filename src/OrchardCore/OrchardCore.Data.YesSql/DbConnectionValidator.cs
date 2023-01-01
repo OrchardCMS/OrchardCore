@@ -72,7 +72,7 @@ public class DbConnectionValidator : IDbConnectionValidator
                 return DbConnectionValidatorResult.DocumentTableNotFound;
             }
 
-            connectionString = SqliteHelper.GetConnectionString(_sqliteOptions, _shellOptions, context.Name);
+            connectionString = SqliteHelper.GetConnectionString(_sqliteOptions, _shellOptions, context.ShellName);
         }
 
         if (String.IsNullOrWhiteSpace(connectionString))
@@ -100,11 +100,11 @@ public class DbConnectionValidator : IDbConnectionValidator
             return DbConnectionValidatorResult.DocumentTableNotFound;
         }
 
-        var tableNameConvention = _tableNameConventionFactory.Create(context.DatabaseTableOptions);
+        var tableNameConvention = _tableNameConventionFactory.Create(context.TableOptions);
         var documentName = tableNameConvention.GetDocumentTable();
 
         var sqlDialect = GetSqlDialect(context.DatabaseProvider);
-        var sqlBuilder = GetSqlBuilder(sqlDialect, context.TablePrefix, context.DatabaseTableOptions.TableNameSeparator);
+        var sqlBuilder = GetSqlBuilder(sqlDialect, context.TablePrefix, context.TableOptions.TableNameSeparator);
 
         try
         {
@@ -112,7 +112,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             selectCommand.CommandText = GetSelectBuilderForDocumentTable(sqlBuilder, documentName, context.Schema).ToSqlString();
 
             using var result = await selectCommand.ExecuteReaderAsync();
-            if (context.Name != ShellHelper.DefaultShellName)
+            if (context.ShellName != ShellHelper.DefaultShellName)
             {
                 // The 'Document' table exists.
                 return DbConnectionValidatorResult.DocumentTableFound;

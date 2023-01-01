@@ -102,6 +102,7 @@ namespace OrchardCore.Tenants.Services
                 else
                 {
                     shellSettings = _shellSettingsManager.CreateDefaultSettings();
+                    shellSettings.Name = model.Name;
                 }
             }
             else
@@ -122,7 +123,6 @@ namespace OrchardCore.Tenants.Services
             if (shellSettings != null)
             {
                 var validationContext = new DbConnectionValidatorContext(shellSettings, model);
-
                 await ValidateConnectionAsync(validationContext, errors);
             }
 

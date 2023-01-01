@@ -16,7 +16,7 @@
 <div class="mb-3" asp-validation-class-for="RequestUrlPrefixExpression">
     <label asp-for="RequestUrlPrefixExpression">@T["Url Prefix"] <span asp-validation-for="RequestUrlPrefixExpression"></span></label>
     <input type="text" asp-for="RequestUrlPrefixExpression" class="form-control code" />
-    <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"http://orchardproject.net/site1\""]</span>
+    <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"http://orchardproject.net/site1\"."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="RequestUrlHostExpression">
@@ -43,7 +43,7 @@
 <div class="mb-3" asp-validation-class-for="SchemaExpression">
     <label asp-for="TablePrefixExpression">@T["Schema"] <span asp-validation-for="SchemaExpression"></span></label>
     <input type="text" asp-for="SchemaExpression" class="form-control code" />
-    <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server", "dbo"]</div>
+    <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
 </div>
 
 <div class="mb-3" asp-validation-class-for="RecipeNameExpression">
