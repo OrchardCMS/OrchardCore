@@ -69,7 +69,7 @@ namespace OrchardCore.Localization.Drivers
             return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
                 {
                     model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                    .Union(new[] { CultureInfo.GetCultureInfo("zh-CN") }).OrderBy(x => x.Name)
+                    .Union(new[] { CultureInfo.GetCultureInfo("zh-CN") }).Distinct().OrderBy(x => x.Name)
                         .Select(cultureInfo =>
                         {
                             return new CultureEntry
