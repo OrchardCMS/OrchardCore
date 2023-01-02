@@ -80,7 +80,7 @@ namespace OrchardCore.Tenants.Services
                     settings.RequestUrlPrefix ?? String.Empty,
                     model.RequestUrlPrefix?.Trim(' ', '/') ?? String.Empty,
                     StringComparison.OrdinalIgnoreCase) &&
-                DoesUrlHostExist(settings.RequestUrlHost, model.RequestUrlHost)))
+                DoesUrlHostExist(settings.RequestUrlHosts, model.RequestUrlHost)))
             {
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
@@ -153,19 +153,18 @@ namespace OrchardCore.Tenants.Services
             }
         }
 
-        private static bool DoesUrlHostExist(string urlHost, string modelUrlHost)
+        private static bool DoesUrlHostExist(string[] urlHosts, string modelUrlHost)
         {
-            if (String.IsNullOrWhiteSpace(urlHost) && String.IsNullOrWhiteSpace(modelUrlHost))
+            if (urlHosts.Length == 0 && String.IsNullOrWhiteSpace(modelUrlHost))
             {
                 return true;
             }
 
-            if (String.IsNullOrWhiteSpace(urlHost) || String.IsNullOrWhiteSpace(modelUrlHost))
+            if (urlHosts.Length == 0 || String.IsNullOrWhiteSpace(modelUrlHost))
             {
                 return false;
             }
 
-            var urlHosts = urlHost.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries);
             var modelUrlHosts = modelUrlHost.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries);
 
             return urlHosts.Intersect(modelUrlHosts, StringComparer.OrdinalIgnoreCase).Any();
