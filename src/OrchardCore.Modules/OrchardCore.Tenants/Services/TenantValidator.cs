@@ -73,14 +73,16 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]));
             }
 
-            var allOtherSettings = _shellHost.GetAllSettings().Where(settings => settings != existingShellSettings);
+            var modelUrlPrefix = model.RequestUrlPrefix?.Trim(' ', '/') ?? String.Empty;
 
-            if (allOtherSettings.Any(settings =>
-                String.Equals(
-                    settings.RequestUrlPrefix ?? String.Empty,
-                    model.RequestUrlPrefix?.Trim(' ', '/') ?? String.Empty,
-                    StringComparison.OrdinalIgnoreCase) &&
-                DoesUrlHostExist(settings.RequestUrlHosts, model.RequestUrlHost)))
+            var modelUrlHosts = model.RequestUrlHost
+                ?.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries)
+                ?? Array.Empty<string>();
+
+            if (_shellHost.GetAllSettings().Any(settings =>
+                settings != existingShellSettings &&
+                String.Equals(settings.RequestUrlPrefix ?? String.Empty, modelUrlPrefix, StringComparison.OrdinalIgnoreCase) &&
+                DoesUrlHostExist(settings.RequestUrlHosts, modelUrlHosts)))
             {
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
@@ -153,21 +155,30 @@ namespace OrchardCore.Tenants.Services
             }
         }
 
-        private static bool DoesUrlHostExist(string[] urlHosts, string modelUrlHost)
+        private static bool DoesUrlHostExist(string[] urlHosts, string[] modelUrlHosts)
         {
-            if (urlHosts.Length == 0 && String.IsNullOrWhiteSpace(modelUrlHost))
+            if (urlHosts.Length == 0 && modelUrlHosts.Length == 0)
             {
                 return true;
             }
 
-            if (urlHosts.Length == 0 || String.IsNullOrWhiteSpace(modelUrlHost))
+            if (urlHosts.Length == 0 || modelUrlHosts.Length == 0)
             {
                 return false;
             }
 
-            var modelUrlHosts = modelUrlHost.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries);
+            for (var i = 0; i < urlHosts.Length; i++)
+            {
+                for (var j = 0; j < modelUrlHosts.Length; j++)
+                {
+                    if (urlHosts[i].Equals(modelUrlHosts[j], StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+                }
+            }
 
-            return urlHosts.Intersect(modelUrlHosts, StringComparer.OrdinalIgnoreCase).Any();
+            return false;
         }
     }
 }
