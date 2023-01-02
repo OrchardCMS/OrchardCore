@@ -216,10 +216,8 @@ namespace OrchardCore.Roles.Controllers
 
             rolesDocument.PermissionGroups.TryAdd(role.RoleName, new List<string>());
 
-            var permissionNames = _permissionProviders.SelectMany(x => x.GetDefaultStereotypes())
-                .SelectMany(y => y.Permissions ?? Enumerable.Empty<Permission>())
-                .Select(x => x.Name)
-                .ToList();
+            var installedPermissions = await GetInstalledPermissionsAsync();
+            var allPermissions = installedPermissions.SelectMany(x => x.Value).Select(x=>x.Name);
 
             // Save
             var rolePermissions = new List<RoleClaim>();
@@ -232,7 +230,7 @@ namespace OrchardCore.Roles.Controllers
                     permissionName = key.Substring("Checkbox.".Length);
                 }
 
-                if (!permissionNames.Contains(permissionName, StringComparer.OrdinalIgnoreCase))
+                if (!allPermissions.Contains(permissionName, StringComparer.OrdinalIgnoreCase))
                 {
                     // The request contains an invalid permission, let's ignore it
                     continue;
