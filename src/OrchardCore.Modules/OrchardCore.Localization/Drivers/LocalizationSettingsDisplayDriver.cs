@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -68,6 +69,7 @@ namespace OrchardCore.Localization.Drivers
             return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
                 {
                     model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
+                    .Union(new[] { CultureInfo.GetCultureInfo("zh-CN") }).OrderBy(x => x.Name)
                         .Select(cultureInfo =>
                         {
                             return new CultureEntry
