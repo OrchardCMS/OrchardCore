@@ -92,5 +92,6 @@ public static class ShellSettingsExtensions
     }
 
     public static bool IsInitialized(this ShellSettings shellSettings) =>
-        shellSettings.State != TenantState.Uninitialized && shellSettings.State != TenantState.Initializing;
+        shellSettings.State == TenantState.Running ||
+        shellSettings.State == TenantState.Disabled;
 }
