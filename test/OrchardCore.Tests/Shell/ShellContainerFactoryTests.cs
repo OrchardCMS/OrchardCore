@@ -18,6 +18,12 @@ namespace OrchardCore.Tests.Shell
 {
     public class ShellContainerFactoryTests
     {
+        private static readonly ShellSettings _uninitializedDefaultShell = new()
+        {
+            Name = ShellHelper.DefaultShellName,
+            State = TenantState.Uninitialized
+        };
+
         private readonly IShellContainerFactory _shellContainerFactory;
         private readonly IServiceProvider _applicationServiceProvider;
 
@@ -131,12 +137,6 @@ namespace OrchardCore.Tests.Shell
             Assert.IsType<HostSingletonOfTheSameTypeAsScoped>(services.ElementAt(0));
             Assert.IsType<HostScopedOfTheSameTypeAsSingleton>(services.ElementAt(1));
         }
-
-        private static readonly ShellSettings _uninitializedDefaultShell = new()
-        {
-            Name = ShellHelper.DefaultShellName,
-            State = TenantState.Uninitialized
-        };
 
         private static ShellBlueprint CreateBlueprint()
         {
