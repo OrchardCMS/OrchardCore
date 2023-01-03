@@ -301,7 +301,7 @@ namespace OrchardCore.Tenants.Controllers
                 TablePrefix = shellSettings["TablePrefix"],
                 Schema = shellSettings["Schema"],
                 FeatureProfile = currentFeatureProfile,
-                FeatureProfiles = featureProfiles,
+                FeatureProfiles = featureProfiles
             };
 
             model.DatabaseConfigurationPreset =
