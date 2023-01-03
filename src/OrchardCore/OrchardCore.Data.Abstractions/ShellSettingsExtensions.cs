@@ -85,7 +85,7 @@ public static class ShellSettingsExtensions
         }
         else if (!_identityColumnSizes.Contains(identityColumnSize))
         {
-            throw new InvalidOperationException($"The configured identity column size '{inameof(dentityColumnSize)}' is invalid.");
+            throw new InvalidOperationException($"The configured identity column size '{identityColumnSize}' is invalid.");
         }
 
         return identityColumnSize;
