@@ -29028,9 +29028,6 @@ html[data-theme=default] .auth-wrapper {
 html[dir][data-theme=default] .auth-wrapper {
   margin: auto;
 }
-html[data-theme=default] .ui-sortable {
-  min-height: 1rem;
-}
 html[dir][data-theme=default] .with-checkbox .list-group-item {
   padding: 0.75rem 0.5rem;
 }
@@ -58466,9 +58463,6 @@ html[data-theme=darkmode] .auth-wrapper {
 }
 html[dir][data-theme=darkmode] .auth-wrapper {
   margin: auto;
-}
-html[data-theme=darkmode] .ui-sortable {
-  min-height: 1rem;
 }
 html[dir][data-theme=darkmode] .with-checkbox .list-group-item {
   padding: 0.75rem 0.5rem;

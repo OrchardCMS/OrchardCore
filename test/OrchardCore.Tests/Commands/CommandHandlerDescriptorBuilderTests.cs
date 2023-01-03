@@ -1,6 +1,4 @@
-using System.Linq;
 using OrchardCore.Environment.Commands;
-using Xunit;
 
 namespace OrchardCore.Tests.Commands
 {

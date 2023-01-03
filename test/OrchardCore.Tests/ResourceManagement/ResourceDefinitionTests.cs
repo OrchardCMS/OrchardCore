@@ -1,11 +1,4 @@
-using System;
-using System.IO;
-using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using OrchardCore.ResourceManagement;
-using Xunit;
 
 namespace OrchardCore.Tests.ResourceManagement
 {

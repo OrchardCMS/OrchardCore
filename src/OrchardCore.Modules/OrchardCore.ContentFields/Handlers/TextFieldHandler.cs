@@ -21,7 +21,7 @@ public class TextFieldHandler : ContentFieldHandler<TextField>
     {
         var settings = context.ContentPartFieldDefinition.GetSettings<TextFieldSettings>();
 
-        if (settings.Required && String.IsNullOrEmpty(field.Text))
+        if (settings.Required && String.IsNullOrWhiteSpace(field.Text))
         {
             context.Fail(S["A value is required for {0}.", context.ContentPartFieldDefinition.DisplayName()], nameof(field.Text));
         }

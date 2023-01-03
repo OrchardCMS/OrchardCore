@@ -5,7 +5,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -14,6 +16,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Contents;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
@@ -27,6 +30,9 @@ namespace OrchardCore.Flows.Drivers
         private readonly IContentManager _contentManager;
         private readonly IServiceProvider _serviceProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger _logger;
+        private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer H;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentItemFactory _contentItemFactory;
 
@@ -35,14 +41,20 @@ namespace OrchardCore.Flows.Drivers
             IContentDefinitionManager contentDefinitionManager,
             IServiceProvider serviceProvider,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService,
             IContentItemFactory contentItemFactory
+            ILogger<BagPartDisplayDriver> logger,
+            INotifier notifier,
+            IHtmlLocalizer<BagPartDisplayDriver> htmlLocalizer,
+            IAuthorizationService authorizationService
             )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
             _serviceProvider = serviceProvider;
             _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
+            _notifier = notifier;
+            H = htmlLocalizer;
             _authorizationService = authorizationService;
             _contentItemFactory = contentItemFactory;
         }
@@ -177,6 +189,15 @@ namespace OrchardCore.Flows.Drivers
                     widget.Deletable = await AuthorizeAsync(CommonPermissions.DeleteContent, contentItem);
                 }
 
+                if (contentTypeDefinition == null)
+                {
+                    _logger.LogWarning("The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.", contentItem.ContentItemId, contentItem.ContentType);
+
+                    await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", contentItem.ContentItemId, contentItem.ContentType]);
+
+                    continue;
+                }
+
                 widget.ContentTypeDefinition = contentTypeDefinition;
 
                 if (widget.Editable || widget.Viewable)
@@ -203,14 +224,13 @@ namespace OrchardCore.Flows.Drivers
             return await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, permission, contentItem);
         }
 
-
         private static bool IsSecurable(IContentDefinitionManager contentDefinitionManager, string contentType, out ContentTypeDefinition contentTypeDefinition)
         {
             contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(contentType);
 
-            var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
+            var settings = contentTypeDefinition?.GetSettings<ContentTypeSettings>();
 
-            return settings.Securable;
+            return settings?.Securable ?? false;
         }
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(IContentDefinitionManager contentDefinitionManager, ContentTypePartDefinition typePartDefinition)
