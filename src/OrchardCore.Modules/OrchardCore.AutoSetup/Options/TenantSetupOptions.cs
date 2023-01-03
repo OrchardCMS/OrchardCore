@@ -158,11 +158,6 @@ namespace OrchardCore.AutoSetup.Options
             {
                 yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(SiteTimeZone)));
             }
-
-            if (!String.IsNullOrWhiteSpace(DatabaseSchema) && DatabaseSchema.Any(c => !Char.IsLetterOrDigit(c)))
-            {
-                yield return new ValidationResult($"The '{nameof(DatabaseSchema)}' should only contain alpha-numeric chars.");
-            }
         }
     }
 }

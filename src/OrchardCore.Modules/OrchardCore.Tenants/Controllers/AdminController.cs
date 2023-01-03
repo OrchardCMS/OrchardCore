@@ -301,7 +301,7 @@ namespace OrchardCore.Tenants.Controllers
                 TablePrefix = shellSettings["TablePrefix"],
                 Schema = shellSettings["Schema"],
                 FeatureProfile = currentFeatureProfile,
-                FeatureProfiles = featureProfiles
+                FeatureProfiles = featureProfiles,
             };
 
             model.DatabaseConfigurationPreset =
@@ -335,6 +335,7 @@ namespace OrchardCore.Tenants.Controllers
             {
                 // Creates a default shell settings based on the configuration.
                 var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+
                 shellSettings.Name = model.Name;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
@@ -393,7 +394,7 @@ namespace OrchardCore.Tenants.Controllers
                 RequestUrlHost = shellSettings.RequestUrlHost,
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
                 FeatureProfile = currentFeatureProfile,
-                FeatureProfiles = featureProfiles
+                FeatureProfiles = featureProfiles,
             };
 
             // The user can change the 'preset' database information only if the
