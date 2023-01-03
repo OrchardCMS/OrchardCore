@@ -27,6 +27,8 @@ namespace OrchardCore.Tenants.Controllers
 {
     public class AdminController : Controller
     {
+        private static readonly char[] ProfileSeparators = new[] { ' ', ',' };
+
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
@@ -301,7 +303,7 @@ namespace OrchardCore.Tenants.Controllers
             // Creates a default shell settings based on the configuration.
             var shellSettings = _shellSettingsManager.CreateDefaultSettings();
 
-            var currentProfiles = shellSettings["FeatureProfile"]?.Split(',');
+            var currentProfiles = shellSettings["FeatureProfile"]?.Split(ProfileSeparators);
             var featureProfiles = await GetFeatureProfilesAsync(currentProfiles);
 
             var model = new EditTenantViewModel
@@ -311,8 +313,8 @@ namespace OrchardCore.Tenants.Controllers
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
                 TablePrefix = shellSettings["TablePrefix"],
                 RecipeName = shellSettings["RecipeName"],
-                FeatureProfile = currentProfiles,
-                FeatureProfiles = featureProfiles
+                FeatureProfiles = currentProfiles,
+                FeatureProfilesItems = featureProfiles
             };
             SetConfigurationShellValues(model);
 
@@ -357,7 +359,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
-                shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfile ?? Array.Empty<string>());
+                shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -367,7 +369,7 @@ namespace OrchardCore.Tenants.Controllers
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
             model.Recipes = recipes;
-            model.FeatureProfiles = await GetFeatureProfilesAsync(model.FeatureProfile);
+            model.FeatureProfilesItems = await GetFeatureProfilesAsync(model.FeatureProfiles);
 
             // If we got this far, something failed, redisplay form
             return View(model);
@@ -390,7 +392,7 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            var currentProfiles = shellSettings["FeatureProfile"]?.Split(',');
+            var currentProfiles = shellSettings["FeatureProfile"]?.Split(ProfileSeparators);
 
             var featureProfiles = await GetFeatureProfilesAsync(currentProfiles);
 
@@ -401,8 +403,8 @@ namespace OrchardCore.Tenants.Controllers
                 Name = shellSettings.Name,
                 RequestUrlHost = shellSettings.RequestUrlHost,
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
-                FeatureProfile = currentProfiles,
-                FeatureProfiles = featureProfiles
+                FeatureProfiles = currentProfiles,
+                FeatureProfilesItems = featureProfiles
             };
 
             // The user can change the 'preset' database information only if the
@@ -453,7 +455,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
                 shellSettings["Description"] = model.Description;
                 shellSettings["Category"] = model.Category;
-                shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfile ?? Array.Empty<string>());
+                shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
 
                 // The user can change the 'preset' database information only if the
                 // tenant has not been initialized yet
@@ -487,7 +489,7 @@ namespace OrchardCore.Tenants.Controllers
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
             model.Recipes = recipes;
-            model.FeatureProfiles = await GetFeatureProfilesAsync(model.FeatureProfile);
+            model.FeatureProfilesItems = await GetFeatureProfilesAsync(model.FeatureProfiles);
 
             // If we got this far, something failed, redisplay form
             return View(model);
