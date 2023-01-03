@@ -33,6 +33,5 @@ namespace OrchardCore.Tenants.ViewModels
         public string SiteTimeZone { get; set; }
 
         public string Schema { get; set; }
-
     }
 }
