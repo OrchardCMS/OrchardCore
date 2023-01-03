@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
 using OrchardCore.Localization;
-using Xunit;
 
 namespace OrchardCore.Tests.Localization
 {
