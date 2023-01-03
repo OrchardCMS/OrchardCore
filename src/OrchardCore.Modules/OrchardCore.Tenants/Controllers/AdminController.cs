@@ -393,7 +393,7 @@ namespace OrchardCore.Tenants.Controllers
                 RequestUrlHost = shellSettings.RequestUrlHost,
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
                 FeatureProfile = currentFeatureProfile,
-                FeatureProfiles = featureProfiles,
+                FeatureProfiles = featureProfiles
             };
 
             // The user can change the 'preset' database information only if the
