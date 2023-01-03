@@ -161,7 +161,7 @@ namespace OrchardCore.AutoSetup.Options
 
             if (!String.IsNullOrWhiteSpace(DatabaseSchema) && DatabaseSchema.Any(c => !Char.IsLetterOrDigit(c)))
             {
-                yield return new ValidationResult("The 'DatabaseSchema' should only contain alpha-numeric chars.");
+                yield return new ValidationResult($"The '{nameof(DatabaseSchema)}' should only contain alpha-numeric chars.");
             }
         }
     }
