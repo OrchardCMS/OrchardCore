@@ -41,7 +41,7 @@ namespace OrchardCore.Flows.Drivers
             IContentDefinitionManager contentDefinitionManager,
             IServiceProvider serviceProvider,
             IHttpContextAccessor httpContextAccessor,
-            IContentItemFactory contentItemFactory
+            IContentItemFactory contentItemFactory,
             ILogger<BagPartDisplayDriver> logger,
             INotifier notifier,
             IHtmlLocalizer<BagPartDisplayDriver> htmlLocalizer,
