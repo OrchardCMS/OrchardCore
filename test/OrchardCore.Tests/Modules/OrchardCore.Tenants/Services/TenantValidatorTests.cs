@@ -1,16 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
-using Moq;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 using OrchardCore.Tests.Apis.Context;
-using Xunit;
 
 namespace OrchardCore.Modules.Tenants.Services.Tests
 {

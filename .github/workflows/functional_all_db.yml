@@ -161,7 +161,7 @@ jobs:
           ACCEPT_EULA: Y
           MSSQL_SA_PASSWORD: Password12!
     env:
-      OrchardCore__ConnectionString: "Server=mssql;Database=tempdb;User Id=sa;Password=Password12!"
+      OrchardCore__ConnectionString: "Server=mssql;Database=tempdb;User Id=sa;Password=Password12!;Encrypt=False"
       OrchardCore__DatabaseProvider: "SqlConnection"
     steps:
     - uses: actions/checkout@v3

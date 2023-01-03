@@ -1,7 +1,5 @@
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
-using Xunit;
 
 namespace OrchardCore.Tests.Data
 {

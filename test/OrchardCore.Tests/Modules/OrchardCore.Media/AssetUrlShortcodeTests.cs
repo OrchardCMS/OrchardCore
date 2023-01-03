@@ -1,9 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Moq;
 using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Media.Core;
@@ -12,7 +6,6 @@ using OrchardCore.Media.Shortcodes;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Shortcodes.Services;
 using Shortcodes;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media
 {
