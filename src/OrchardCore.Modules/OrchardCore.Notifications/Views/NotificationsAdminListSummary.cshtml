@@ -1,0 +1,11 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@model ListNotificationOptions
+
+<div class="text-nowrap">
+    <div class="form-check my-1">
+        <input type="checkbox" class="form-check-input" id="select-all">
+        <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+        <label id="items" for="select-all">@T.Plural((int)Model.NotficationsItemsCount, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", (int)Model.StartIndex, (int)Model.EndIndex]">@T.Plural((int)Model.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+        <label id="selected-items" class="text-muted" for="select-all"></label>
+    </div>
+</div>

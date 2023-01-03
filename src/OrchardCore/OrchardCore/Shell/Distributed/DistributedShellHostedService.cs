@@ -450,7 +450,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             var descriptor = defaultShell.Blueprint?.Descriptor;
             if (descriptor != null)
             {
-                // Using the current shell descritor prevents a database access, and a race condition
+                // Using the current shell descriptor prevents a database access, and a race condition
                 // when resolving `IStore` while the default tenant is activating and does migrations.
                 try
                 {

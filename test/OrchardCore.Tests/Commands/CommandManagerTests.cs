@@ -1,10 +1,5 @@
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Localization;
-using Xunit;
 
 namespace OrchardCore.Tests.Commands
 {
