@@ -27,8 +27,6 @@ namespace OrchardCore.Tenants.Controllers
 {
     public class AdminController : Controller
     {
-        private static readonly char[] ProfileSeparators = new[] { ' ', ',' };
-
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
@@ -303,7 +301,7 @@ namespace OrchardCore.Tenants.Controllers
             // Creates a default shell settings based on the configuration.
             var shellSettings = _shellSettingsManager.CreateDefaultSettings();
 
-            var currentProfiles = shellSettings["FeatureProfile"]?.Split(ProfileSeparators);
+            var currentProfiles = shellSettings["FeatureProfile"]?.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
             var featureProfiles = await GetFeatureProfilesAsync(currentProfiles);
 
             var model = new EditTenantViewModel
@@ -392,7 +390,7 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            var currentProfiles = shellSettings["FeatureProfile"]?.Split(ProfileSeparators);
+            var currentProfiles = shellSettings["FeatureProfile"]?.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
 
             var featureProfiles = await GetFeatureProfilesAsync(currentProfiles);
 
