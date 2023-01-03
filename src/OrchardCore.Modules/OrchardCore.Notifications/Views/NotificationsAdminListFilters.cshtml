@@ -1,0 +1,8 @@
+@model ListNotificationOptions
+
+<div class="btn-group filter">
+    <select asp-for="Status" asp-items="@Model.Statuses" class="selectpicker show-tick me-2" data-header="@T["Filter by status"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="auto" title="@T["Show"]" data-style="btn-sm">
+        <option value="">@T["All"]</option>
+    </select>
+    <select asp-for="OrderBy" asp-items="@Model.Sorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
+</div>
