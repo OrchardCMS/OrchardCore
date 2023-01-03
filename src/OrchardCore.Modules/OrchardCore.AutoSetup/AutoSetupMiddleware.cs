@@ -10,7 +10,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Abstractions.Setup;
 using OrchardCore.AutoSetup.Extensions;
 using OrchardCore.AutoSetup.Options;
-using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Locking.Distributed;
