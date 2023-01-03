@@ -464,7 +464,7 @@ namespace OrchardCore.Tenants.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // If we got this far, something failed, reinitialize the model and redisplay form
+            // If we got this far, something failed. Reinitialize the model and re-display form.
 
             // The user can change the 'preset' database information only if the
             // tenant has not been initialized yet
