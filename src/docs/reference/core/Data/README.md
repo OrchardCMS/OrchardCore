@@ -59,10 +59,10 @@ The following database table settings, only used as presets before a given tenan
 ##### `appsettings.json`
 
 ```json
-  "OrchardCore_Data_DatabaseTable": {
-    "DefaultDocumentTable": "MyDocument",
-    "DefaultTableNameSeparator": "____",
-    "DefaultIdentityColumnSize": "Int32"
+  "OrchardCore_Data_TableOptions": {
+    "DefaultDocumentTable": "Document",
+    "DefaultTableNameSeparator": "_",
+    "DefaultIdentityColumnSize": "Int64"
 }
 ```
 

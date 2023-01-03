@@ -7,10 +7,10 @@ namespace OrchardCore.Data;
 
 public static class ShellSettingsExtensions
 {
-    private const string _databaseTableSection = "OrchardCore_Data_DatabaseTable";
-    private const string _defaultDocumentTable = $"{_databaseTableSection}:DefaultDocumentTable";
-    private const string _defaultTableNameSeparator = $"{_databaseTableSection}:DefaultTableNameSeparator";
-    private const string _defaultIdentityColumnSize = $"{_databaseTableSection}:DefaultIdentityColumnSize";
+    private const string _databaseTableOptions = "OrchardCore_Data_TableOptions";
+    private const string _defaultDocumentTable = $"{_databaseTableOptions}:DefaultDocumentTable";
+    private const string _defaultTableNameSeparator = $"{_databaseTableOptions}:DefaultTableNameSeparator";
+    private const string _defaultIdentityColumnSize = $"{_databaseTableOptions}:DefaultIdentityColumnSize";
 
     private readonly static string[] _identityColumnSizes = new[] { nameof(Int64), nameof(Int32) };
 
