@@ -69,7 +69,7 @@ namespace OrchardCore.Setup.Controllers
                 DatabaseProviders = _databaseProviders,
                 Recipes = recipes,
                 RecipeName = defaultRecipe?.Name,
-                Secret = token,
+                Secret = token
             };
 
             CopyShellSettingsValues(model);
