@@ -27846,10 +27846,6 @@ html[dir=ltr][data-theme=default] .left-sidebar-compact .ta-navbar-top .nav-item
 html[dir=rtl][data-theme=default] .left-sidebar-compact .ta-navbar-top .nav-item {
   margin-right: 10px;
 }
-html[data-theme=default] .action-bar {
-  top: 3.3rem;
-  z-index: 1050;
-}
 html[data-theme=default] .ta-navbar-top {
   color: #343a40;
 }
@@ -29037,7 +29033,7 @@ html[dir][data-theme=default] .disable.custom-control-input:checked ~ .custom-co
 }
 html[data-theme=default] .action-bar {
   top: 3.3rem;
-  z-index: 1000;
+  z-index: 999;
 }
 html[dir][data-theme=default] .list-group-item + .list-group-item {
   border-top-width: 0px;
@@ -57285,10 +57281,6 @@ html[dir=ltr][data-theme=darkmode] .left-sidebar-compact .ta-navbar-top .nav-ite
 html[dir=rtl][data-theme=darkmode] .left-sidebar-compact .ta-navbar-top .nav-item {
   margin-right: 10px;
 }
-html[data-theme=darkmode] .action-bar {
-  top: 3.3rem;
-  z-index: 1050;
-}
 html[data-theme=darkmode] .ta-navbar-top {
   color: #dee2e6;
 }
@@ -58473,7 +58465,7 @@ html[dir][data-theme=darkmode] .disable.custom-control-input:checked ~ .custom-c
 }
 html[data-theme=darkmode] .action-bar {
   top: 3.3rem;
-  z-index: 1000;
+  z-index: 999;
 }
 html[dir][data-theme=darkmode] .list-group-item + .list-group-item {
   border-top-width: 0px;
