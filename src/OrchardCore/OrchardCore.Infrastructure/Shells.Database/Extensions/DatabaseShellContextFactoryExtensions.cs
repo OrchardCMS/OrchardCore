@@ -27,6 +27,7 @@ namespace OrchardCore.Shells.Database.Extensions
             settings["DatabaseProvider"] = options.DatabaseProvider;
             settings["ConnectionString"] = options.ConnectionString;
             settings["TablePrefix"] = options.TablePrefix;
+            settings["Schema"] = options.Schema;
 
             return shellContextFactory.CreateDescribedContextAsync(settings, new ShellDescriptor());
         }
