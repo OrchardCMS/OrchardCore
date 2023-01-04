@@ -22,7 +22,7 @@ namespace OrchardCore.Deployment
 
         public async Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync()
         {
-            var remoteInstanceList = await _service.GetRemoteInstanceListAsync(); ;
+            var remoteInstanceList = await _service.GetRemoteInstanceListAsync();
 
             return remoteInstanceList.RemoteInstances.Select(x =>
                     new DeploymentTarget(

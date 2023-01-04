@@ -1,9 +1,6 @@
-using System.Globalization;
-using Moq;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.Modules;
 using Parlot;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.AuditTrail
 {
