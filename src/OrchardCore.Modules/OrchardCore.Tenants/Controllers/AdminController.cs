@@ -27,7 +27,6 @@ namespace OrchardCore.Tenants.Controllers
 {
     public class AdminController : Controller
     {
-        private const string Seperator = ", ";
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
@@ -288,8 +287,8 @@ namespace OrchardCore.Tenants.Controllers
             // Creates a default shell settings based on the configuration.
             var shellSettings = _shellSettingsManager.CreateDefaultSettings();
 
-            var currentProfiles = shellSettings["FeatureProfile"]?.Split(Seperator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-            var featureProfiles = await GetFeatureProfilesAsync(currentProfiles);
+            var currentFeatureProfiles = shellSettings.GetFeatureProfiles();
+            var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfiles);
 
             var model = new EditTenantViewModel
             {
@@ -297,8 +296,8 @@ namespace OrchardCore.Tenants.Controllers
                 RequestUrlHost = shellSettings.RequestUrlHost,
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
                 RecipeName = shellSettings["RecipeName"],
-                FeatureProfiles = currentProfiles,
-                FeatureProfilesItems = featureProfiles
+                FeatureProfiles = currentFeatureProfiles,
+                FeatureProfilesItems = featureProfiles,
                 DatabaseProvider = shellSettings["DatabaseProvider"],
                 ConnectionString = shellSettings["ConnectionString"],
                 TablePrefix = shellSettings["TablePrefix"],
@@ -350,7 +349,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
-                shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+                shellSettings["FeatureProfile"] = String.Join(TenantsConstants.FeatureProfileSeperator, model.FeatureProfiles ?? Array.Empty<string>());
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -383,9 +382,9 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            var currentProfiles = shellSettings["FeatureProfile"]?.Split(Seperator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            var currentFeatureProfiles = shellSettings.GetFeatureProfiles();
 
-            var featureProfiles = await GetFeatureProfilesAsync(currentProfiles);
+            var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfiles);
 
             var model = new EditTenantViewModel
             {
@@ -394,7 +393,7 @@ namespace OrchardCore.Tenants.Controllers
                 Name = shellSettings.Name,
                 RequestUrlHost = shellSettings.RequestUrlHost,
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
-                FeatureProfiles = currentProfiles,
+                FeatureProfiles = currentFeatureProfiles,
                 FeatureProfilesItems = featureProfiles
             };
 
@@ -446,7 +445,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
                 shellSettings["Description"] = model.Description;
                 shellSettings["Category"] = model.Category;
-                shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+                shellSettings["FeatureProfile"] = String.Join(TenantsConstants.FeatureProfileSeperator, model.FeatureProfiles ?? Array.Empty<string>());
 
                 // The user can change the 'preset' database information only if the
                 // tenant has not been initialized yet
@@ -579,20 +578,6 @@ namespace OrchardCore.Tenants.Controllers
             await _shellHost.ReloadShellContextAsync(shellSettings);
 
             return Redirect(redirectUrl);
-        }
-
-        private async Task<List<SelectListItem>> GetFeatureProfilesAsync(string currentFeatureProfile)
-        {
-            var featureProfiles = (await _featureProfilesService.GetFeatureProfilesAsync())
-                .Select(x => new SelectListItem(x.Key, x.Key, String.Equals(x.Key, currentFeatureProfile, StringComparison.OrdinalIgnoreCase)))
-                .ToList();
-
-            if (featureProfiles.Any())
-            {
-                featureProfiles.Insert(0, new SelectListItem(S["None"], String.Empty, currentFeatureProfile == String.Empty));
-            }
-
-            return featureProfiles;
         }
 
         private async Task<List<SelectListItem>> GetFeatureProfilesAsync(IEnumerable<string> currentFeatureProfiles)

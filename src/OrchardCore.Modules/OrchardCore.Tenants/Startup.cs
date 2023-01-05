@@ -156,6 +156,7 @@ namespace OrchardCore.Tenants
             services.AddScoped<FeatureProfilesManager>();
             services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
             services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
+            services.AddScoped<IShapeTableProvider, TenantFeatureProfileShapeTableProvider>();
 
             services.AddRecipeExecutionStep<FeatureProfilesStep>();
         }
