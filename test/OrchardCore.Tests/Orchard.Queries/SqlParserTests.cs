@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
 using OrchardCore.Queries.Sql;
-using Xunit;
 using YesSql;
 using YesSql.Provider.SqlServer;
 

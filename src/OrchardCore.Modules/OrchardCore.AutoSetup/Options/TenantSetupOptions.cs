@@ -56,6 +56,11 @@ namespace OrchardCore.AutoSetup.Options
         public string DatabaseTablePrefix { get; set; }
 
         /// <summary>
+        /// Gets or sets the database's schema.
+        /// </summary>
+        public string DatabaseSchema { get; set; }
+
+        /// <summary>
         /// Gets or sets the recipe name.
         /// </summary>
         public string RecipeName { get; set; }
