@@ -11,7 +11,7 @@
     var name = typePartDefinition.PartDefinition.Name.HtmlClassify();
 }
 
-@if (namedPart || typePartDefinition.Name == "BagPart" || typePartDefinition.Name == "FlowPart" || typePartDefinition.Name == "WidgetsListPart")
+@if (namedPart)
 {
     <div class="row content-part-wrapper content-part-wrapper-@name">
         <div class="@Orchard.GetLabelCssClasses()">

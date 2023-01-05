@@ -26,7 +26,7 @@
     </div>
 }
 
-<div class="autoroute-disabled" style="@(Model.Disabled ? "display: none" : "")">
+<div class="autoroute-disabled" style="@(Model.Disabled ? "display: none" : String.Empty)">
     <div class="row mb-3" asp-validation-class-for="Path">
         <label asp-for="Path" class="@Orchard.GetLabelCssClasses()">@T["Permalink"]</label>
         <div class="@Orchard.GetEndCssClasses()">
