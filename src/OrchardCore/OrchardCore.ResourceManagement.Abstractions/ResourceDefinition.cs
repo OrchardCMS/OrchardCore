@@ -139,7 +139,13 @@ namespace OrchardCore.ResourceManagement
         /// <param name="version">The version to set, in the form of <code>major.minor[.build[.revision]]</code></param>
         public ResourceDefinition SetVersion(string version)
         {
+            if (!System.Version.TryParse(version, out _))
+            {
+                throw new FormatException("The resource version should be in the form of major.minor[.build[.revision]].");
+            }
+
             Version = version;
+
             return this;
         }
 

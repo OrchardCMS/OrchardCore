@@ -62,7 +62,7 @@ namespace OrchardCore.Queries.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var queries = await _queryManager.ListQueriesAsync();
             queries = queries.OrderBy(x => x.Name);
@@ -132,7 +132,7 @@ namespace OrchardCore.Queries.Controllers
 
             var model = new QueriesCreateViewModel
             {
-                Editor = await _displayManager.BuildEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true),
+                Editor = await _displayManager.BuildEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", ""),
                 SourceName = id
             };
 
@@ -154,7 +154,7 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true);
+            var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
 
             if (ModelState.IsValid)
             {
@@ -189,7 +189,7 @@ namespace OrchardCore.Queries.Controllers
                 SourceName = query.Source,
                 Name = query.Name,
                 Schema = query.Schema,
-                Editor = await _displayManager.BuildEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false)
+                Editor = await _displayManager.BuildEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "")
             };
 
             return View(model);
@@ -210,7 +210,7 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+            var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
 
             if (ModelState.IsValid)
             {

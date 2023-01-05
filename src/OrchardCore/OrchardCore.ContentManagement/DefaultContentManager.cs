@@ -10,7 +10,7 @@ using OrchardCore.ContentManagement.CompiledQueries;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Builders;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Modules;
 using YesSql;
@@ -61,11 +61,10 @@ namespace OrchardCore.ContentManagement
             }
 
             // create a new kernel for the model instance
-            var context = new ActivatingContentContext
+            var context = new ActivatingContentContext(new ContentItem() { ContentType = contentTypeDefinition.Name })
             {
                 ContentType = contentTypeDefinition.Name,
                 Definition = contentTypeDefinition,
-                ContentItem = new ContentItem() { ContentType = contentTypeDefinition.Name }
             };
 
             // invoke handlers to weld aspects onto kernel
@@ -227,7 +226,7 @@ namespace OrchardCore.ContentManagement
                     var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                     // Check if not versionable, meaning we use only one version
-                    if (!(contentTypeDefinition?.GetSettings<ContentTypeSettings>().Versionable ?? true))
+                    if (contentTypeDefinition != null && !contentTypeDefinition.IsVersionable())
                     {
                         contentItem.Published = false;
                     }

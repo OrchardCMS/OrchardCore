@@ -1,16 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
-using Moq;
 using OpenIddict.Abstractions;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -19,7 +6,6 @@ using OrchardCore.Navigation;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Controllers;
 using OrchardCore.OpenId.ViewModels;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 {
@@ -109,6 +95,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         [InlineData("http://localhost http://localhost:8080", true)]
         public async Task RedirectUrisAreValid(string uris, bool expectValidModel)
         {
+            // Arrange
             var controller = new ApplicationController(
                 Mock.Of<IShapeFactory>(),
                 Mock.Of<IOptions<PagerOptions>>(),
@@ -118,27 +105,28 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<IOpenIdScopeManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
-                Mock.Of<ShellDescriptor>());
-
-            controller.ControllerContext = CreateControllerContext();
-
-            var model = new CreateOpenIdApplicationViewModel();
-            model.Type = OpenIddictConstants.ClientTypes.Public;
-            model.AllowAuthorizationCodeFlow = true;
-            model.RedirectUris = uris;
-
-            var validationContext = new ValidationContext(model);
-            var localizerMock = new Mock<IStringLocalizer<CreateOpenIdApplicationViewModel>>();
-            localizerMock.Setup(x => x[It.IsAny<string>(), It.IsAny<object[]>()])
-                .Returns((string name, object[] args) => new LocalizedString(name, string.Format(name, args)));
-            validationContext.InitializeServiceProvider((t) => localizerMock.Object);
-
-            foreach (var validation in model.Validate(validationContext))
+                Mock.Of<ShellDescriptor>())
             {
-                controller.ModelState.AddModelError(validation.MemberNames.First(), validation.ErrorMessage);
-            }
+                ControllerContext = CreateControllerContext()
+            };
 
+            var model = new CreateOpenIdApplicationViewModel
+            {
+                Type = OpenIddictConstants.ClientTypes.Public,
+                AllowAuthorizationCodeFlow = true,
+                ClientId = "123",
+                DisplayName = "Name",
+                RedirectUris = uris
+            };
+
+            ValidateControllerModel(controller, model);
+
+            // Act
             var result = await controller.Create(model);
+
+            // Assert
+            Assert.Equal(expectValidModel, controller.ModelState.IsValid);
+
             if (expectValidModel)
             {
                 Assert.IsType<RedirectToActionResult>(result);
@@ -147,7 +135,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             {
                 Assert.IsType<ViewResult>(result);
             }
-            Assert.Equal(expectValidModel, controller.ModelState.IsValid);
         }
 
         public Mock<IAuthorizationService> MockAuthorizationServiceMock()
@@ -176,6 +163,19 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             localizerMock.Setup(x => x[It.IsAny<string>()]).Returns(new LocalizedString("TextToLocalize", "localizedText"));
 
             return localizerMock;
+        }
+
+        private static void ValidateControllerModel(Controller controller, object model)
+        {
+            var results = new List<ValidationResult>();
+            var context = new ValidationContext(model, null, null);
+
+            Validator.TryValidateObject(model, context, results, true);
+
+            foreach (var result in results)
+            {
+                controller.ModelState.AddModelError(result.MemberNames.First(), result.ErrorMessage);
+            }
         }
     }
 }

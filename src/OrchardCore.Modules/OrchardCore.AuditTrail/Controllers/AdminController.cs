@@ -76,7 +76,7 @@ namespace OrchardCore.AuditTrail.Controllers
                 options.FilterResult.TryAddOrReplace(new CorrelationIdFilterNode(options.CorrelationId));
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             // With the options populated we filter the query, allowing the filters to alter the options.
             var result = await _auditTrailAdminListQueryService.QueryAsync(pager.Page, pager.PageSize, options);
@@ -110,7 +110,7 @@ namespace OrchardCore.AuditTrail.Controllers
             options.EventsCount = items.Count;
             options.TotalItemCount = result.TotalCount;
 
-            var header = await _auditTrailOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+            var header = await _auditTrailOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, "", "");
 
             var shapeViewModel = await _shapeFactory.CreateAsync<AuditTrailListViewModel>("AuditTrailAdminList", viewModel =>
             {
@@ -127,7 +127,7 @@ namespace OrchardCore.AuditTrail.Controllers
         [FormValueRequired("submit.Filter")]
         public async Task<ActionResult> IndexFilterPOST(AuditTrailIndexOptions options)
         {
-            await _auditTrailOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+            await _auditTrailOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false, "", "");
             // When the user has typed something into the search input no further evaluation of the form post is required.
             if (!String.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
             {
@@ -135,7 +135,7 @@ namespace OrchardCore.AuditTrail.Controllers
             }
 
             // Evaluate the values provided in the form post and map them to the filter result and route values.
-            await _auditTrailOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+            await _auditTrailOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false, "", "");
 
             // The route value must always be added after the editors have updated the models.
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());

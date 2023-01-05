@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-using Moq;
-
 namespace OrchardCore.Tests.Modules.OrchardCore.Roles
 {
     public static class RolesMockHelper

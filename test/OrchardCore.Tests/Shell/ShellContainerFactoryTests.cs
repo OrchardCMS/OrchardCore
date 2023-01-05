@@ -1,17 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Modules;
 using OrchardCore.Tests.Stubs;
-using Xunit;
+using StartupBase = OrchardCore.Modules.StartupBase;
 
 namespace OrchardCore.Tests.Shell
 {
@@ -143,7 +137,7 @@ namespace OrchardCore.Tests.Shell
 
         public static IFeatureInfo AddStartup(ShellBlueprint shellBlueprint, Type startupType)
         {
-            var featureInfo = new FeatureInfo(startupType.Name, startupType.Name, 1, "Tests", null, null, null, false, false);
+            var featureInfo = new FeatureInfo(startupType.Name, startupType.Name, 1, "Tests", null, null, null, false, false, false);
             shellBlueprint.Dependencies.Add(startupType, new FeatureEntry(featureInfo));
 
             return featureInfo;

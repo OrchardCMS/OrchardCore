@@ -1,16 +1,8 @@
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.Logging;
-using Moq;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.Signin.Settings;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Twitter
 {

@@ -1,15 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Client;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Lucene;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Search.Lucene;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -17,6 +12,9 @@ namespace OrchardCore.Tests.Apis.Context
     {
         private static readonly TablePrefixGenerator TablePrefixGenerator = new TablePrefixGenerator();
         public static OrchardTestFixture<SiteStartup> Site { get; }
+        public static IShellHost ShellHost { get; private set; }
+        public static IShellSettingsManager ShellSettingsManager { get; private set; }
+        public static IHttpContextAccessor HttpContextAccessor { get; }
         public static HttpClient DefaultTenantClient { get; }
 
         public string RecipeName { get; set; } = "Blog";
@@ -31,6 +29,9 @@ namespace OrchardCore.Tests.Apis.Context
         static SiteContext()
         {
             Site = new OrchardTestFixture<SiteStartup>();
+            ShellHost = Site.Services.GetRequiredService<IShellHost>();
+            ShellSettingsManager = Site.Services.GetRequiredService<IShellSettingsManager>();
+            HttpContextAccessor = Site.Services.GetRequiredService<IHttpContextAccessor>();
             DefaultTenantClient = Site.CreateDefaultClient();
         }
 
@@ -46,7 +47,8 @@ namespace OrchardCore.Tests.Apis.Context
                 ConnectionString = ConnectionString,
                 RecipeName = RecipeName,
                 Name = tenantName,
-                RequestUrlPrefix = tenantName
+                RequestUrlPrefix = tenantName,
+                Schema = null,
             };
 
             var createResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/create", createModel);
@@ -67,7 +69,7 @@ namespace OrchardCore.Tests.Apis.Context
                 UserName = "admin",
                 Password = "Password01_",
                 Name = tenantName,
-                Email = "Nick@Orchard"
+                Email = "Nick@Orchard",
             };
 
             var setupResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", setupModel);
@@ -89,10 +91,17 @@ namespace OrchardCore.Tests.Apis.Context
             GraphQLClient = new OrchardGraphQLClient(Client);
         }
 
-        public async Task RunRecipeAsync(IShellHost shellHost, string recipeName, string recipePath)
+        public async Task UsingTenantScopeAsync(Func<ShellScope, Task> execute, bool activateShell = true)
         {
-            var shellScope = await shellHost.GetScopeAsync(TenantName);
-            await shellScope.UsingAsync(async scope =>
+            // Ensure that 'HttpContext' is not null before using a 'ShellScope'.
+            var shellScope = await ShellHost.GetScopeAsync(TenantName);
+            HttpContextAccessor.HttpContext = shellScope.ShellContext.CreateHttpContext();
+            await shellScope.UsingAsync(execute, activateShell);
+        }
+
+        public async Task RunRecipeAsync(string recipeName, string recipePath)
+        {
+            await UsingTenantScopeAsync(async scope =>
             {
                 var shellFeaturesManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
                 var recipeHarvesters = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeHarvester>>();
@@ -115,17 +124,16 @@ namespace OrchardCore.Tests.Apis.Context
             });
         }
 
-        public async Task ResetLuceneIndiciesAsync(IShellHost shellHost, string indexName)
+        public async Task ResetLuceneIndiciesAsync(string indexName)
         {
-            var shellScope = await shellHost.GetScopeAsync(TenantName);
-            await shellScope.UsingAsync(async scope =>
+            await UsingTenantScopeAsync(async scope =>
             {
                 var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
                 var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
 
                 var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync(indexName);
 
-                luceneIndexingService.ResetIndex(indexName);
+                luceneIndexingService.ResetIndexAsync(indexName);
                 await luceneIndexingService.ProcessContentItemsAsync(indexName);
             });
         }

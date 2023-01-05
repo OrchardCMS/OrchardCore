@@ -48,7 +48,7 @@ namespace OrchardCore.Markdown
                 .AddHandler<MarkdownBodyPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IContentPartIndexHandler, MarkdownBodyPartIndexHandler>();
 
             // Markdown Field

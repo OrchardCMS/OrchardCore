@@ -25,7 +25,8 @@ namespace OrchardCore.Features
                 .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, configuration => configuration
                     .AddClass("menu-configuration").Id("configuration")
                     .Add(S["Features"], S["Features"].PrefixPosition(), deployment => deployment
-                        .Action("Features", "Admin", new { area = "OrchardCore.Features" })
+                        // Since features admin accepts tenant, always pass empty string to create valid link for current tenant.
+                        .Action("Features", "Admin", new { area = "OrchardCore.Features", tenant = String.Empty })
                         .Permission(Permissions.ManageFeatures)
                         .LocalNav()
                     ), priority: 1

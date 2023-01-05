@@ -41,6 +41,12 @@
     <input type="text" asp-for="DatabaseConnectionStringExpression" class="form-control code" />
 </div>
 
+<div class="mb-3" asp-validation-class-for="DatabaseSchemaExpression">
+    <label asp-for="DatabaseTablePrefixExpression">@T["Schema"] <span asp-validation-for="DatabaseSchemaExpression"></span></label>
+    <input type="text" asp-for="DatabaseSchemaExpression" class="form-control code" />
+    <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
+</div>
+
 <div class="mb-3" asp-validation-class-for="RecipeNameExpression">
     <label asp-for="RecipeNameExpression">@T["Recipe"] <span asp-validation-for="RecipeNameExpression"></span></label>
     <input type="text" asp-for="RecipeNameExpression" class="form-control code" />
@@ -56,60 +62,66 @@
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
 <script at="Foot">
-$(function () {
-    var editorTn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TenantNameExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-      });
-    var editorSn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.SiteNameExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-      });
-    var editorAu = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.AdminUsernameExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-      });
-    var editorAe = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.AdminEmailExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-      });
-    var editorAp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.AdminPasswordExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-      });
-    var editorDp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.DatabaseProviderExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-      });
-    var editorTp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.DatabaseTablePrefixExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-      });
-    var editorCs = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.DatabaseConnectionStringExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-      });
-    var editorRn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.RecipeNameExpression)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-      });
-});
+    $(function () {
+        var editorTn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TenantNameExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorSn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.SiteNameExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorAu = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.AdminUsernameExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorAe = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.AdminEmailExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorAp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.AdminPasswordExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorDp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.DatabaseProviderExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorTp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.DatabaseTablePrefixExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorTp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.DatabaseSchemaExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorCs = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.DatabaseConnectionStringExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        var editorRn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.RecipeNameExpression)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+    });
 </script>

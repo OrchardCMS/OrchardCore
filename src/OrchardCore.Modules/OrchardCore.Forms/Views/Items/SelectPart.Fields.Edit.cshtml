@@ -1,4 +1,5 @@
 @using OrchardCore.Forms.ViewModels
+@using OrchardCore.Forms.Models
 @model SelectPartEditViewModel
 
 <script asp-src="~/OrchardCore.Forms/Scripts/selectOptionsEditor.min.js" debug-src="~/OrchardCore.Forms/Scripts/selectOptionsEditor.js" asp-name="selectOptionsEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
@@ -99,32 +100,51 @@
         <div class="modal-backdrop fade" ref="backdrop" v-if="showModal"></div>
     </div>
 </script>
+@{
+    var widgetId = Html.IdFor(m => m);
+}
+<div class="select-part-properties-wrapper" id="@widgetId">
 
-<div id="@Html.IdFor(m => m)" class="mb-3">
-    <label asp-for="Options">@T["Options"]</label>
-    <a href="#" v-on:click.prevent.stop="showModal = true" class="float-end" title="@T["Edit Data"]"><i class="fas fa-edit" aria-hidden="true"></i></a>
-    <select-options-table :data="state"
-                          :mode="'single'"
-                          v-on:reorder-option="reorderOption"
-                          v-on:add-option="addOption"
-                          v-on:remove-option="removeOption"
-                          v-on:set-default="setDefaultValue">
-    </select-options-table>
-    <select-options-modal :data="state"
-                          :valid-options="validOptions"
-                          :show-modal="showModal"
-                          v-on:modal-cancel="cancelChanges"
-                          v-on:modal-save="updateChanges">
-    </select-options-modal>
-    <input id="@Html.IdFor(m => m.DefaultValue)" name="@Html.NameFor(m => m.DefaultValue)" type="hidden" v-model="state.defaultValue">
-    <input id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="stringify" />
+    <div class="mb-3 show-for-input">
+        <label asp-for="Editor">@T["Editor"]</label>
+        <select asp-for="Editor" class="form-select content-preview-select">
+            <option value="@SelectEditorOption.Dropdown">@T["Dropdown"]</option>
+            <option value="@SelectEditorOption.Checkbox">@T["Checkbox"]</option>
+            <option value="@SelectEditorOption.Radio">@T["Radio"]</option>
+        </select>
+        <span class="hint">@T["The editor style to use for this field."]</span>
+    </div>
+
+    <div class="mb-3 field-options-wrapper" id="@(widgetId)-selectOptions" data-defaultValue="@Model.DefaultValue">
+        <input type="hidden" class="field-options-wrapper-initial-default-value" value="@Model.DefaultValue" />
+        <div class="d-none field-options-wrapper-initial-options">@Html.Raw(Model.Options)</div>
+
+        <label asp-for="Options">@T["Options"]</label>
+        <a href="#" v-on:click.prevent.stop="showModal = true" class="float-end" title="@T["Edit Data"]"><i class="fas fa-edit" aria-hidden="true"></i></a>
+        <select-options-table :data="state"
+                              :mode="'single'"
+                              v-on:reorder-option="reorderOption"
+                              v-on:add-option="addOption"
+                              v-on:remove-option="removeOption"
+                              v-on:set-default="setDefaultValue">
+        </select-options-table>
+        <select-options-modal :data="state"
+                              :valid-options="validOptions"
+                              :show-modal="showModal"
+                              v-on:modal-cancel="cancelChanges"
+                              v-on:modal-save="updateChanges">
+        </select-options-modal>
+        <input id="@Html.IdFor(m => m.DefaultValue)" name="@Html.NameFor(m => m.DefaultValue)" type="hidden" v-model="state.defaultValue">
+        <input id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="stringify" />
+    </div>
 </div>
 
+<script at="Foot" depends-on="selectOptionsEditor">
+    selectOptionsEditor.initilizeElement('@(widgetId)-selectOptions', @Html.Raw(Model.Options), '@Model.DefaultValue');
 
-<script at="Foot">
-window.addEventListener('load', function () {
-    if($('#' + '@Html.IdFor(m => m)').length > 0){
-        initializeSelectOptionsEditor('@Html.IdFor(m => m)', @Html.Raw(Model.Options), '@Model.DefaultValue');
+    var wrapper = document.getElementById('@Html.IdFor(m => m)');
+    if (wrapper != null) {
+        // at this point, we know this wrapper was added after page load, let's initilize it
+        selectOptionsEditor.initilizeFieldType(wrapper);
     }
-})
 </script>

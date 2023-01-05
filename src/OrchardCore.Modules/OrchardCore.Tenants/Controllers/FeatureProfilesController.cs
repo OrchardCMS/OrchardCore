@@ -62,7 +62,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
 
             var featureProfiles = featureProfilesDocument.FeatureProfiles.ToList();

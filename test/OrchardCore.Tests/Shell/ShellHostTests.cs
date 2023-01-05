@@ -1,19 +1,13 @@
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Tests.Apis.Context;
-using Xunit;
 
 namespace OrchardCore.Tests.Shell;
 
 public class ShellHostTests : SiteContext
 {
-    public static IShellHost ShellHost { get; }
-
     static ShellHostTests()
     {
-        ShellHost = Site.Services.GetRequiredService<IShellHost>();
     }
 
     [Theory]

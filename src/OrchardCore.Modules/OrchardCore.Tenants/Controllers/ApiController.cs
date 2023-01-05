@@ -96,6 +96,7 @@ namespace OrchardCore.Tenants.Controllers
 
             shellSettings["ConnectionString"] = model.ConnectionString;
             shellSettings["TablePrefix"] = model.TablePrefix;
+            shellSettings["Schema"] = model.Schema;
             shellSettings["DatabaseProvider"] = model.DatabaseProvider;
             shellSettings["Secret"] = Guid.NewGuid().ToString();
             shellSettings["RecipeName"] = model.RecipeName;
@@ -113,7 +114,7 @@ namespace OrchardCore.Tenants.Controllers
 
                     var token = CreateSetupToken(settings);
 
-                    return StatusCode(201, GetEncodedUrl(settings, token));
+                    return Created(GetEncodedUrl(settings, token), null);
                 }
                 else
                 {
@@ -165,7 +166,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (shellSettings.State == TenantState.Running)
             {
-                return StatusCode(201);
+                return Created(GetEncodedUrl(shellSettings, null), null);
             }
 
             if (shellSettings.State != TenantState.Uninitialized)
@@ -180,11 +181,15 @@ namespace OrchardCore.Tenants.Controllers
                 databaseProvider = model.DatabaseProvider;
             }
 
-            var selectedProvider = _databaseProviders.FirstOrDefault(x => String.Equals(x.Value, databaseProvider, StringComparison.OrdinalIgnoreCase));
-
-            if (selectedProvider == null)
+            if (String.IsNullOrEmpty(databaseProvider))
             {
                 return BadRequest(S["The database provider is not defined."]);
+            }
+
+            var selectedProvider = _databaseProviders.FirstOrDefault(provider => provider.Value == databaseProvider);
+            if (selectedProvider == null)
+            {
+                return BadRequest(S["The database provider is not supported."]);
             }
 
             var tablePrefix = shellSettings["TablePrefix"];
@@ -192,6 +197,13 @@ namespace OrchardCore.Tenants.Controllers
             if (String.IsNullOrEmpty(tablePrefix))
             {
                 tablePrefix = model.TablePrefix;
+            }
+
+            var schema = shellSettings["Schema"];
+
+            if (String.IsNullOrEmpty(schema))
+            {
+                schema = model.Schema;
             }
 
             var connectionString = shellSettings["connectionString"];
@@ -234,7 +246,7 @@ namespace OrchardCore.Tenants.Controllers
                 recipeDescriptor = new RecipeDescriptor
                 {
                     FileProvider = fileProvider,
-                    BasePath = "",
+                    BasePath = String.Empty,
                     RecipeFileInfo = fileProvider.GetFileInfo(Path.GetFileName(tempFilename))
                 };
             }
@@ -265,6 +277,7 @@ namespace OrchardCore.Tenants.Controllers
                     { SetupConstants.DatabaseProvider, selectedProvider.Value },
                     { SetupConstants.DatabaseConnectionString, connectionString },
                     { SetupConstants.DatabaseTablePrefix, tablePrefix },
+                    { SetupConstants.DatabaseSchema, schema },
                 }
             };
 
@@ -278,7 +291,7 @@ namespace OrchardCore.Tenants.Controllers
                     ModelState.AddModelError(error.Key, error.Value);
                 }
 
-                return StatusCode(500, ModelState);
+                return this.InternalServerError(ModelState);
             }
 
             return Ok(executionId);
