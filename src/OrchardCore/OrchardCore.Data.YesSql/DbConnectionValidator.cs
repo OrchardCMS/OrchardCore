@@ -80,8 +80,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             return DbConnectionValidatorResult.InvalidConnection;
         }
 
-        var factory = GetFactory(context.DatabaseProvider, connectionString);
-        var (factory, dialect) = GetConnectionFactoryAndSqlDialect(databaseProvider, connectionString);
+        (var factory, var sqlDialect) = GetFactoryAndSqlDialect(context.DatabaseProvider, connectionString);
 
         using var connection = factory.CreateConnection();
 
@@ -104,18 +103,12 @@ public class DbConnectionValidator : IDbConnectionValidator
         var tableNameConvention = _tableNameConventionFactory.Create(context.TableOptions);
         var documentName = tableNameConvention.GetDocumentTable();
 
-        var sqlDialect = GetSqlDialect(context.DatabaseProvider);
         var sqlBuilder = GetSqlBuilder(sqlDialect, context.TablePrefix, context.TableOptions.TableNameSeparator);
 
-        var selectBuilder = GetDocumentTableSelectBuilder(
-            tablePrefix,
-            _yesSqlOptions.TablePrefixSeparator,
-            _yesSqlOptions.TableNameConvention.GetDocumentTable(),
-            dialect);
         try
         {
             var selectCommand = connection.CreateCommand();
-            selectCommand.CommandText = GetSelectBuilderForDocumentTable(sqlBuilder, documentName, context.Schema).ToSqlString();
+            selectCommand.CommandText = GetSelectBuilderForDocument(sqlBuilder, documentName, context.Schema);
 
             using var result = await selectCommand.ExecuteReaderAsync();
             if (context.ShellName != ShellHelper.DefaultShellName)
@@ -141,17 +134,10 @@ public class DbConnectionValidator : IDbConnectionValidator
             return DbConnectionValidatorResult.DocumentTableNotFound;
         }
 
-        selectBuilder = GetDocumentTableSelectBuilder(
-            tablePrefix,
-            _yesSqlOptions.TablePrefixSeparator,
-            _yesSqlOptions.TableNameConvention.GetDocumentTable(),
-            dialect,
-            isShellDescriptorDocument: true);
-
         try
         {
             var selectCommand = connection.CreateCommand();
-            selectCommand.CommandText = GetSelectBuilderForShellDescriptorDocument(sqlBuilder, documentName, context.Schema).ToSqlString();
+            selectCommand.CommandText = GetSelectBuilderForDocument(sqlBuilder, documentName, context.Schema, isShellDescriptorDocument: true);
 
             using var result = await selectCommand.ExecuteReaderAsync();
             if (!result.HasRows)
@@ -168,50 +154,36 @@ public class DbConnectionValidator : IDbConnectionValidator
         return DbConnectionValidatorResult.DocumentTableFound;
     }
 
-    private static ISqlBuilder GetSelectBuilderForDocumentTable(ISqlBuilder sqlBuilder, string documentTable, string schema)
+    private static string GetSelectBuilderForDocument(
+        ISqlBuilder sqlBuilder,
+        string documentTable,
+        string schema,
+        bool isShellDescriptorDocument = false)
     {
         sqlBuilder.Select();
         sqlBuilder.Selector("*");
         sqlBuilder.Table(documentTable, alias: null, schema);
+
+        if (isShellDescriptorDocument)
+        {
+            sqlBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
+        }
+
         sqlBuilder.Take("1");
 
-        return sqlBuilder;
+        return sqlBuilder.ToString();
     }
 
-    private static ISqlBuilder GetSelectBuilderForShellDescriptorDocument(ISqlBuilder sqlBuilder, string documentTable, string schema)
-    {
-        sqlBuilder.Select();
-        sqlBuilder.Selector("*");
-        sqlBuilder.Table(documentTable, alias: null, schema);
-        sqlBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
-        sqlBuilder.Take("1");
-
-        return sqlBuilder;
-    }
-
-    private static IConnectionFactory GetFactory(string databaseProvider, string connectionString)
-    {
-        return databaseProvider switch
+    private static (IConnectionFactory connectionFactory, ISqlDialect sqlDialect) GetFactoryAndSqlDialect(
+        string databaseProvider,
+        string connectionString) => databaseProvider switch
         {
-            DatabaseProviderValue.SqlConnection => new DbConnectionFactory<SqlConnection>(connectionString),
-            DatabaseProviderValue.MySql => new DbConnectionFactory<MySqlConnection>(connectionString),
-            DatabaseProviderValue.Sqlite => new DbConnectionFactory<SqliteConnection>(connectionString),
-            DatabaseProviderValue.Postgres => new DbConnectionFactory<NpgsqlConnection>(connectionString),
+            DatabaseProviderValue.SqlConnection => (new DbConnectionFactory<SqlConnection>(connectionString), new SqlServerDialect()),
+            DatabaseProviderValue.MySql => (new DbConnectionFactory<MySqlConnection>(connectionString), new MySqlDialect()),
+            DatabaseProviderValue.Sqlite => (new DbConnectionFactory<SqliteConnection>(connectionString), new SqliteDialect()),
+            DatabaseProviderValue.Postgres => (new DbConnectionFactory<NpgsqlConnection>(connectionString), new PostgreSqlDialect()),
             _ => throw new ArgumentOutOfRangeException(nameof(databaseProvider), "Unsupported database provider"),
         };
-    }
-
-    private static ISqlDialect GetSqlDialect(string databaseProvider)
-    {
-        return databaseProvider switch
-        {
-            DatabaseProviderValue.SqlConnection => new SqlServerDialect(),
-            DatabaseProviderValue.MySql => new MySqlDialect(),
-            DatabaseProviderValue.Sqlite => new SqliteDialect(),
-            DatabaseProviderValue.Postgres => new PostgreSqlDialect(),
-            _ => throw new ArgumentOutOfRangeException(nameof(databaseProvider), "Unsupported database provider"),
-        };
-    }
 
     private static ISqlBuilder GetSqlBuilder(ISqlDialect sqlDialect, string tablePrefix, string tableNameSeparator)
     {
@@ -222,55 +194,5 @@ public class DbConnectionValidator : IDbConnectionValidator
         }
 
         return new SqlBuilder(prefix, sqlDialect);
-    private static (IConnectionFactory, ISqlDialect) GetConnectionFactoryAndSqlDialect(string providerName, string connectionString)
-    {
-        IConnectionFactory factory;
-        ISqlDialect dialect;
-        switch (providerName)
-        {
-            case DatabaseProviderValue.SqlConnection:
-                factory = new DbConnectionFactory<SqlConnection>(connectionString);
-                dialect = new SqlServerDialect();
-                break;
-            case DatabaseProviderValue.Sqlite:
-                factory = new DbConnectionFactory<SqliteConnection>(connectionString);
-                dialect = new SqliteDialect();
-                break;
-            case DatabaseProviderValue.MySql:
-                factory = new DbConnectionFactory<MySqlConnection>(connectionString);
-                dialect = new MySqlDialect();
-                break;
-            case DatabaseProviderValue.Postgres:
-                factory = new DbConnectionFactory<NpgsqlConnection>(connectionString);
-                dialect = new PostgreSqlDialect();
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(providerName), "Unsupported Database Provider");
-        }
-
-        return (factory, dialect);
-    }
-
-    private static ISqlBuilder GetDocumentTableSelectBuilder(string tablePrefix, string tablePrefixSeparator, string documentTable, ISqlDialect dialect, bool isShellDescriptorDocument = false)
-    {
-        var prefix = String.Empty;
-        if (!String.IsNullOrEmpty(tablePrefix))
-        {
-            prefix = tablePrefix.Trim() + (tablePrefixSeparator ?? String.Empty);
-        }
-
-        var selectBuilder = new SqlBuilder(prefix, dialect);
-        selectBuilder.Select();
-        selectBuilder.Selector("*");
-        selectBuilder.Table(documentTable, alias: null, schema: null);
-
-        if (isShellDescriptorDocument)
-        {
-            selectBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
-        }
-
-        selectBuilder.Take("1");
-
-        return selectBuilder;
     }
 }
