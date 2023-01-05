@@ -6,7 +6,7 @@
 }
 
 @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, dummyUser)
-&& await AuthorizationService.AuthorizeAsync(User, CommonPermissions.AssignRole, dummyUser))
+&& await AuthorizationService.AuthorizeAsync(User, CommonPermissions.AssignUsersToRole, dummyUser))
 {
     <a asp-route-action="Create" class="btn btn-sm btn-secondary float-end create" role="button">@T["Add User"]</a>
 }

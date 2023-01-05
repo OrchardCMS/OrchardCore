@@ -59,7 +59,7 @@ namespace OrchardCore.Users.Drivers
             {
                 // The current user can only view their roles if they have assign role, to prevent listing roles when managing their own profile.
                 if (String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase) &&
-                    !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.AssignRole))
+                    !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.AssignUsersToRole))
                 {
                     return;
                 }
@@ -175,7 +175,7 @@ namespace OrchardCore.Users.Drivers
             var authorizedRoleNames = new List<string>();
             foreach (var role in roles)
             {
-                if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.AssignRole, role))
+                if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.AssignUsersToRole, role))
                 {
                     authorizedRoleNames.Add(role.RoleName);
                 }

@@ -122,7 +122,7 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
             return true;
         }
 
-        if (String.Equals(permission.Name, CommonPermissions.AssignRole.Name, StringComparison.OrdinalIgnoreCase)
+        if (String.Equals(permission.Name, CommonPermissions.AssignUsersToRole.Name, StringComparison.OrdinalIgnoreCase)
             && await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.CreateAssignUsersToRolePermission(roleName)))
         {
             return true;

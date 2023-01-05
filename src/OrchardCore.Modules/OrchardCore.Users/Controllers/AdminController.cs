@@ -283,7 +283,7 @@ namespace OrchardCore.Users.Controllers
         {
             var user = new User();
 
-            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user) || !await _authorizationService.AuthorizeAsync(User, CommonPermissions.AssignRole, user))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user) || !await _authorizationService.AuthorizeAsync(User, CommonPermissions.AssignUsersToRole, user))
             {
                 return Forbid();
             }
@@ -299,7 +299,7 @@ namespace OrchardCore.Users.Controllers
         {
             var user = new User();
 
-            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user) || !await _authorizationService.AuthorizeAsync(User, CommonPermissions.AssignRole, user))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user) || !await _authorizationService.AuthorizeAsync(User, CommonPermissions.AssignUsersToRole, user))
             {
                 return Forbid();
             }

@@ -22,7 +22,10 @@ public class UserRolePermissions : IPermissionProvider
             .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase)
             .OrderBy(x => x);
 
-        var list = new List<Permission>();
+        var list = new List<Permission>()
+        {
+            CommonPermissions.AssignUsersToRole,
+        };
 
         foreach (var role in roles)
         {
@@ -36,5 +39,16 @@ public class UserRolePermissions : IPermissionProvider
         return list;
     }
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() => Enumerable.Empty<PermissionStereotype>();
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[] {
+            new PermissionStereotype
+            {
+                Name = "Administrator",
+                Permissions = new[] {
+                    CommonPermissions.AssignUsersToRole,
+                }
+            }
+        };
+    }
 }
