@@ -216,10 +216,12 @@ namespace OrchardCore.Roles.Controllers
 
             rolesDocument.PermissionGroups.TryAdd(role.RoleName, new List<string>());
 
-            var permissionNames = _permissionProviders.SelectMany(x => x.GetDefaultStereotypes())
-                .SelectMany(y => y.Permissions ?? Enumerable.Empty<Permission>())
-                .Select(x => x.Name)
-                .ToList();
+            var permissionNames = new List<string>();
+            foreach (var permissionProvider in _permissionProviders)
+            {
+                var permissions = await permissionProvider.GetPermissionsAsync();
+                permissionNames.AddRange(permissions.Select(permission => permission.Name));
+            }
 
             // Save
             var rolePermissions = new List<RoleClaim>();
