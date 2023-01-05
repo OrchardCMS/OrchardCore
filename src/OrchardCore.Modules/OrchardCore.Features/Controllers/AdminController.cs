@@ -62,14 +62,19 @@ namespace OrchardCore.Features.Controllers
 
             var viewModel = new FeaturesViewModel();
 
-            var isDefaultTenant = _shellSettings.IsDefaultShell();
-
             await ExecuteAsync(tenant, async (featureService, settings) =>
             {
-                // if the user provide an invalid tenant value, we'll set it to null so it's not available on the next request
-                tenant = settings?.Name;
-                viewModel.Name = settings?.Name;
-                viewModel.IsDefaultTenant = isDefaultTenant && (settings == null || settings.IsDefaultShell());
+                // If the user provide an invalid tenant value, we'll set it to null so it's not available on the next request.
+                if (!settings.IsDefaultShell())
+                {
+                    tenant = settings.Name;
+                    viewModel.Name = settings.Name;
+                }
+                else
+                {
+                    viewModel.IsDefaultTenant = true;
+                }
+
                 viewModel.Features = await featureService.GetModuleFeaturesAsync();
             });
 
@@ -113,8 +118,6 @@ namespace OrchardCore.Features.Controllers
 
             var found = false;
 
-            var isDefaultTenant = _shellSettings.IsDefaultShell();
-
             await ExecuteAsync(tenant, async (featureService, settings) =>
             {
                 var feature = await featureService.GetAvailableFeature(id);
@@ -126,9 +129,7 @@ namespace OrchardCore.Features.Controllers
 
                 found = true;
 
-                var executingOnDefaultTenant = isDefaultTenant && (settings == null || settings.IsDefaultShell());
-
-                if (executingOnDefaultTenant && id == FeaturesConstants.FeatureId)
+                if (settings.IsDefaultShell() && id == FeaturesConstants.FeatureId)
                 {
                     await _notifier.ErrorAsync(H["This feature is always enabled and cannot be disabled."]);
 
@@ -187,8 +188,8 @@ namespace OrchardCore.Features.Controllers
                 && settings.State == TenantState.Running)
             {
                 // At this point we know that this request is being executed from the host.
-                // Also, we were able to find a matching running tenant that isn't a default shell
-                // we are safe to create a scope for the given tenant
+                // Also, we were able to find a matching running tenant that isn't a default shell.
+                // We are safe to create a scope for the given tenant.
                 var shellScope = await _shellHost.GetScopeAsync(settings);
 
                 await shellScope.UsingAsync(async scope =>
@@ -196,15 +197,15 @@ namespace OrchardCore.Features.Controllers
                     var shellFeatureManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
                     var extensionManager = scope.ServiceProvider.GetRequiredService<IExtensionManager>();
 
-                    // at this point we apply the action on the given tenant
-                    await action(new FeatureService(shellFeatureManager, extensionManager), settings);
+                    // At this point we apply the action on the given tenant.
+                    await action(new FeatureService(shellFeatureManager, extensionManager), scope.ShellContext.Settings);
                 });
 
                 return;
             }
 
-            // at this point we apply the action on the current tenant
-            await action(new FeatureService(_shellFeaturesManager, _extensionManager), null);
+            // At this point we apply the action on the current tenant.
+            await action(new FeatureService(_shellFeaturesManager, _extensionManager), _shellSettings);
         }
 
         private string GetNextUrl(string tenant, string featureId)
@@ -213,12 +214,19 @@ namespace OrchardCore.Features.Controllers
             // It could be fixed by waiting for the next request or the end of the current one
             // to actually release the tenant. Right now we render the url before recycling the tenant.
 
+            ShellSettings settings = null;
+
             if (!String.IsNullOrWhiteSpace(tenant))
+            {
+                _shellHost.TryGetSettings(tenant, out settings);
+            }
+
+            if (settings != null && settings.Name != _shellSettings.Name)
             {
                 return Url.Action(nameof(Features), new { tenant });
             }
 
-            if (featureId == FeaturesConstants.FeatureId)
+            if ((settings == null || !settings.IsDefaultShell()) && featureId == FeaturesConstants.FeatureId)
             {
                 return Url.Content("~/" + _adminOptions.AdminUrlPrefix);
             }
