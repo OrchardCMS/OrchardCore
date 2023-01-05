@@ -80,7 +80,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             return DbConnectionValidatorResult.InvalidConnection;
         }
 
-        (var factory, var sqlDialect) = GetFactoryAndSqlDialect(context.DatabaseProvider, connectionString);
+        var (factory, sqlDialect) = GetFactoryAndSqlDialect(context.DatabaseProvider, connectionString);
 
         using var connection = factory.CreateConnection();
 
@@ -108,7 +108,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         try
         {
             var selectCommand = connection.CreateCommand();
-            selectCommand.CommandText = GetSelectBuilderForDocument(sqlBuilder, documentName, context.Schema);
+            selectCommand.CommandText = GetDocumentCommandText(sqlBuilder, documentName, context.Schema);
 
             using var result = await selectCommand.ExecuteReaderAsync();
             if (context.ShellName != ShellHelper.DefaultShellName)
@@ -137,7 +137,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         try
         {
             var selectCommand = connection.CreateCommand();
-            selectCommand.CommandText = GetSelectBuilderForDocument(sqlBuilder, documentName, context.Schema, isShellDescriptorDocument: true);
+            selectCommand.CommandText = GetDocumentCommandText(sqlBuilder, documentName, context.Schema, isShellDescriptorDocument: true);
 
             using var result = await selectCommand.ExecuteReaderAsync();
             if (!result.HasRows)
@@ -154,11 +154,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         return DbConnectionValidatorResult.DocumentTableFound;
     }
 
-    private static string GetSelectBuilderForDocument(
-        ISqlBuilder sqlBuilder,
-        string documentTable,
-        string schema,
-        bool isShellDescriptorDocument = false)
+    private static string GetDocumentCommandText(ISqlBuilder sqlBuilder, string documentTable, string schema, bool isShellDescriptorDocument = false)
     {
         sqlBuilder.Select();
         sqlBuilder.Selector("*");
