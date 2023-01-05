@@ -1,14 +1,6 @@
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using MimeKit;
-using Moq;
 using OrchardCore.Email;
 using OrchardCore.Email.Services;
-using Xunit;
 
 namespace OrchardCore.Tests.Email
 {

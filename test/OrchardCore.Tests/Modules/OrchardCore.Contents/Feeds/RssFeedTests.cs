@@ -1,16 +1,9 @@
-using System;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Routing;
-using Moq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Contents.Feeds.Builders;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Feeds.Models;
 using OrchardCore.Feeds.Rss;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.Contents.Feeds
 {
