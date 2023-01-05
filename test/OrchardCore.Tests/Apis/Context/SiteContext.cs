@@ -13,6 +13,7 @@ namespace OrchardCore.Tests.Apis.Context
         private static readonly TablePrefixGenerator TablePrefixGenerator = new TablePrefixGenerator();
         public static OrchardTestFixture<SiteStartup> Site { get; }
         public static IShellHost ShellHost { get; private set; }
+        public static IShellSettingsManager ShellSettingsManager { get; private set; }
         public static IHttpContextAccessor HttpContextAccessor { get; }
         public static HttpClient DefaultTenantClient { get; }
 
@@ -29,6 +30,7 @@ namespace OrchardCore.Tests.Apis.Context
         {
             Site = new OrchardTestFixture<SiteStartup>();
             ShellHost = Site.Services.GetRequiredService<IShellHost>();
+            ShellSettingsManager = Site.Services.GetRequiredService<IShellSettingsManager>();
             HttpContextAccessor = Site.Services.GetRequiredService<IHttpContextAccessor>();
             DefaultTenantClient = Site.CreateDefaultClient();
         }
@@ -45,7 +47,8 @@ namespace OrchardCore.Tests.Apis.Context
                 ConnectionString = ConnectionString,
                 RecipeName = RecipeName,
                 Name = tenantName,
-                RequestUrlPrefix = tenantName
+                RequestUrlPrefix = tenantName,
+                Schema = null,
             };
 
             var createResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/create", createModel);
@@ -66,7 +69,7 @@ namespace OrchardCore.Tests.Apis.Context
                 UserName = "admin",
                 Password = "Password01_",
                 Name = tenantName,
-                Email = "Nick@Orchard"
+                Email = "Nick@Orchard",
             };
 
             var setupResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", setupModel);
