@@ -1,0 +1,23 @@
+@using OrchardCore.ContentManagement
+@using Microsoft.AspNetCore.Html
+@using OrchardCore.Notifications.Models
+@using OrchardCore.Entities
+@using Microsoft.AspNetCore.Authorization
+@using OrchardCore.Contents
+
+@inject IContentManager ContentManager
+@inject IAuthorizationService AuthorizationService
+@{
+    Notification notification = Model.Notification;
+
+    if (notification == null)
+    {
+        return;
+    }
+
+    var readInfo = notification.As<NotificationReadInfo>();
+}
+
+<div data-message-id="@notification.NotificationId" data-is-read="@readInfo.IsRead.ToString().ToLowerInvariant()" class="dropdown-item mark-notification-as-read lh-sm text-wrap p-2@(readInfo.IsRead ? " notification-is-read": " notification-is-unread")">
+    <span aria-hidden="false">@notification.Summary</span>
+</div>

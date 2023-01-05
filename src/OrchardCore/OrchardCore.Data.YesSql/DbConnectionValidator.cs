@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MySqlConnector;
 using Npgsql;
@@ -26,35 +27,44 @@ public class DbConnectionValidator : IDbConnectionValidator
     private static readonly string _shellDescriptorTypeColumnValue = new TypeService()[typeof(ShellDescriptor)];
 
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
-    private readonly YesSqlOptions _yesSqlOptions;
+    private readonly ITableNameConventionFactory _tableNameConventionFactory;
+    private readonly ILogger _logger;
     private readonly SqliteOptions _sqliteOptions;
     private readonly ShellOptions _shellOptions;
 
     public DbConnectionValidator(
         IEnumerable<DatabaseProvider> databaseProviders,
-        IOptions<YesSqlOptions> yesSqlOptions,
         IOptions<SqliteOptions> sqliteOptions,
-        IOptions<ShellOptions> shellOptions)
+        IOptions<ShellOptions> shellOptions,
+        ITableNameConventionFactory tableNameConventionFactory,
+        ILogger<DbConnectionValidator> logger)
     {
         _databaseProviders = databaseProviders;
-        _yesSqlOptions = yesSqlOptions.Value;
+        _tableNameConventionFactory = tableNameConventionFactory;
+        _logger = logger;
         _sqliteOptions = sqliteOptions.Value;
         _shellOptions = shellOptions.Value;
     }
 
-    public async Task<DbConnectionValidatorResult> ValidateAsync(string databaseProvider, string connectionString, string tablePrefix, string shellName)
+    public async Task<DbConnectionValidatorResult> ValidateAsync(DbConnectionValidatorContext context)
     {
-        if (String.IsNullOrWhiteSpace(databaseProvider))
+        if (context == null)
+        {
+            throw new ArgumentNullException(nameof(context));
+        }
+
+        if (String.IsNullOrWhiteSpace(context.DatabaseProvider))
         {
             return DbConnectionValidatorResult.NoProvider;
         }
 
-        var provider = _databaseProviders.FirstOrDefault(x => x.Value == databaseProvider);
+        var provider = _databaseProviders.FirstOrDefault(provider => provider.Value == context.DatabaseProvider);
         if (provider == null)
         {
             return DbConnectionValidatorResult.UnsupportedProvider;
         }
 
+        var connectionString = context.ConnectionString;
         if (!provider.HasConnectionString)
         {
             if (provider.Value != DatabaseProviderValue.Sqlite)
@@ -62,7 +72,7 @@ public class DbConnectionValidator : IDbConnectionValidator
                 return DbConnectionValidatorResult.DocumentTableNotFound;
             }
 
-            connectionString = SqliteHelper.GetConnectionString(_sqliteOptions, _shellOptions, shellName);
+            connectionString = SqliteHelper.GetConnectionString(_sqliteOptions, _shellOptions, context.ShellName);
         }
 
         if (String.IsNullOrWhiteSpace(connectionString))
@@ -70,6 +80,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             return DbConnectionValidatorResult.InvalidConnection;
         }
 
+        var factory = GetFactory(context.DatabaseProvider, connectionString);
         var (factory, dialect) = GetConnectionFactoryAndSqlDialect(databaseProvider, connectionString);
 
         using var connection = factory.CreateConnection();
@@ -78,15 +89,23 @@ public class DbConnectionValidator : IDbConnectionValidator
         {
             await connection.OpenAsync();
         }
-        catch
+        catch (Exception ex)
         {
             if (provider.Value != DatabaseProviderValue.Sqlite)
             {
+                _logger.LogWarning(ex, "Unable to validate connection string.");
+
                 return DbConnectionValidatorResult.InvalidConnection;
             }
 
             return DbConnectionValidatorResult.DocumentTableNotFound;
         }
+
+        var tableNameConvention = _tableNameConventionFactory.Create(context.TableOptions);
+        var documentName = tableNameConvention.GetDocumentTable();
+
+        var sqlDialect = GetSqlDialect(context.DatabaseProvider);
+        var sqlBuilder = GetSqlBuilder(sqlDialect, context.TablePrefix, context.TableOptions.TableNameSeparator);
 
         var selectBuilder = GetDocumentTableSelectBuilder(
             tablePrefix,
@@ -96,10 +115,10 @@ public class DbConnectionValidator : IDbConnectionValidator
         try
         {
             var selectCommand = connection.CreateCommand();
-            selectCommand.CommandText = selectBuilder.ToSqlString();
+            selectCommand.CommandText = GetSelectBuilderForDocumentTable(sqlBuilder, documentName, context.Schema).ToSqlString();
 
             using var result = await selectCommand.ExecuteReaderAsync();
-            if (shellName != ShellHelper.DefaultShellName)
+            if (context.ShellName != ShellHelper.DefaultShellName)
             {
                 // The 'Document' table exists.
                 return DbConnectionValidatorResult.DocumentTableFound;
@@ -132,7 +151,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         try
         {
             var selectCommand = connection.CreateCommand();
-            selectCommand.CommandText = selectBuilder.ToSqlString();
+            selectCommand.CommandText = GetSelectBuilderForShellDescriptorDocument(sqlBuilder, documentName, context.Schema).ToSqlString();
 
             using var result = await selectCommand.ExecuteReaderAsync();
             if (!result.HasRows)
@@ -149,6 +168,60 @@ public class DbConnectionValidator : IDbConnectionValidator
         return DbConnectionValidatorResult.DocumentTableFound;
     }
 
+    private static ISqlBuilder GetSelectBuilderForDocumentTable(ISqlBuilder sqlBuilder, string documentTable, string schema)
+    {
+        sqlBuilder.Select();
+        sqlBuilder.Selector("*");
+        sqlBuilder.Table(documentTable, alias: null, schema);
+        sqlBuilder.Take("1");
+
+        return sqlBuilder;
+    }
+
+    private static ISqlBuilder GetSelectBuilderForShellDescriptorDocument(ISqlBuilder sqlBuilder, string documentTable, string schema)
+    {
+        sqlBuilder.Select();
+        sqlBuilder.Selector("*");
+        sqlBuilder.Table(documentTable, alias: null, schema);
+        sqlBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
+        sqlBuilder.Take("1");
+
+        return sqlBuilder;
+    }
+
+    private static IConnectionFactory GetFactory(string databaseProvider, string connectionString)
+    {
+        return databaseProvider switch
+        {
+            DatabaseProviderValue.SqlConnection => new DbConnectionFactory<SqlConnection>(connectionString),
+            DatabaseProviderValue.MySql => new DbConnectionFactory<MySqlConnection>(connectionString),
+            DatabaseProviderValue.Sqlite => new DbConnectionFactory<SqliteConnection>(connectionString),
+            DatabaseProviderValue.Postgres => new DbConnectionFactory<NpgsqlConnection>(connectionString),
+            _ => throw new ArgumentOutOfRangeException(nameof(databaseProvider), "Unsupported database provider"),
+        };
+    }
+
+    private static ISqlDialect GetSqlDialect(string databaseProvider)
+    {
+        return databaseProvider switch
+        {
+            DatabaseProviderValue.SqlConnection => new SqlServerDialect(),
+            DatabaseProviderValue.MySql => new MySqlDialect(),
+            DatabaseProviderValue.Sqlite => new SqliteDialect(),
+            DatabaseProviderValue.Postgres => new PostgreSqlDialect(),
+            _ => throw new ArgumentOutOfRangeException(nameof(databaseProvider), "Unsupported database provider"),
+        };
+    }
+
+    private static ISqlBuilder GetSqlBuilder(ISqlDialect sqlDialect, string tablePrefix, string tableNameSeparator)
+    {
+        var prefix = String.Empty;
+        if (!String.IsNullOrWhiteSpace(tablePrefix))
+        {
+            prefix = tablePrefix.Trim() + tableNameSeparator;
+        }
+
+        return new SqlBuilder(prefix, sqlDialect);
     private static (IConnectionFactory, ISqlDialect) GetConnectionFactoryAndSqlDialect(string providerName, string connectionString)
     {
         IConnectionFactory factory;

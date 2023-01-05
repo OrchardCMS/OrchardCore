@@ -8,8 +8,8 @@
     var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget");
 }
 
-<div class="widget widget-editor card my-1 @(Model.Inline != true ? "collapsed" : "")">
-    <div class="widget-editor-header card-header text-muted py-1 ps-3 pe-1">
+<div class="widget widget-editor card@(Model.Inline ? " collapsed" : String.Empty)">
+    <div class="widget-editor-header card-header text-muted py-1 ps-2 pe-1">
         @if (Model.CanMove != false)
         {
             <div class="widget-editor-handle"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div>
@@ -17,7 +17,7 @@
         <button type="button" class="btn btn-outline-secondary btn-sm widget-list-editor-btn-toggle widget-editor-btn-collapse"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
         <button type="button" class="btn btn-outline-secondary btn-sm widget-list-editor-btn-toggle widget-editor-btn-expand"><i class="fa fa-angle-@(Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left")" aria-hidden="true"></i></button>
         @contentType
-        <div class="btn-widget-metadata border border-info w-100">
+        <div class="btn-widget-metadata border border-info w-100 my-2">
             <div class="btn-group">
                 @if (Model.CanInsert != false)
                 {
@@ -54,7 +54,7 @@
             }
         </div>
     </div>
-    <div class="widget-editor-body card-body px-2 py-2">
+    <div class="widget-editor-body card-body">
         <div class="w-100">
             @if (Model.ContentEditor != null)
             {
@@ -64,7 +64,7 @@
     </div>
     @if (Model.Footer != null)
     {
-        <div class="widget-editor-footer card-footer text-muted px-1 py-1">
+        <div class="widget-editor-footer card-footer text-muted py-1 px-2">
             @await DisplayAsync(Model.Footer)
         </div>
     }

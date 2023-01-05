@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
 using OrchardCore.Queries.Sql;
-using Xunit;
 using YesSql;
 using YesSql.Provider.SqlServer;
 
@@ -215,6 +212,34 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a from b union all select c from d", "SELECT [a] FROM [tp_b] UNION ALL SELECT [c] FROM [tp_d];")]
         [InlineData("select a from b union all select c from d union select e from f", "SELECT [a] FROM [tp_b] UNION ALL SELECT [c] FROM [tp_d] UNION SELECT [e] FROM [tp_f];")]
         public void ShouldParseUnionClause(string sql, string expectedSql)
+        {
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            Assert.True(result);
+            Assert.Equal(expectedSql, FormatSql(rawQuery));
+        }
+
+        [Theory]
+        [InlineData("with cte as (select a from t) select * from cte", "WITH cte AS (SELECT [a] FROM [tp_t]) SELECT * FROM [cte];")]
+        [InlineData("with cte as (select a from t), cte2 as (select b from t) select * from cte2", "WITH cte AS (SELECT [a] FROM [tp_t]), cte2 AS (SELECT [b] FROM [tp_t]) SELECT * FROM [cte2];")]
+        [InlineData("with cte as (select a from t union all select b from t) select * from cte", "WITH cte AS (SELECT [a] FROM [tp_t] UNION ALL SELECT [b] FROM [tp_t]) SELECT * FROM [cte];")]
+        [InlineData("with cte1(abc, def) as (select id as abc, id as def from t), cte2(ghi,jkl) as (select abc as ghi, def as jkl from cte1) select ghi, jkl from cte2", "WITH cte1(abc, def) AS (SELECT [id] AS abc, [id] AS def FROM [tp_t]), cte2(ghi, jkl) AS (SELECT [abc] AS ghi, [def] AS jkl FROM [cte1]) SELECT [ghi], [jkl] FROM [cte2];")]
+        [InlineData("with test(test) as (select a as test from t) select test from test", "WITH test(test) AS (SELECT [a] AS test FROM [tp_t]) SELECT [test] FROM [test];")]
+        public void ShouldParseCte(string sql, string expectedSql)
+        {
+            var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            Assert.True(result);
+            Assert.Equal(expectedSql, FormatSql(rawQuery));
+        }
+
+        [Theory]
+        [InlineData("select * from (select * from t) as b", "SELECT * FROM (SELECT * FROM [tp_t]) AS b;")]
+        [InlineData("select b.a from (select a from t) as b where b.a = b.a", "SELECT b.[a] FROM (SELECT [a] FROM [tp_t]) AS b WHERE b.[a] = b.[a];")]
+        [InlineData("select c.b from (select a as b from t) as c", "SELECT c.[b] FROM (SELECT [a] AS b FROM [tp_t]) AS c;")]
+        [InlineData("select b.a from (select a from t where [a] = 1) as b where b.a = 1", "SELECT b.[a] FROM (SELECT [a] FROM [tp_t] WHERE [a] = 1) AS b WHERE b.[a] = 1;")]
+        [InlineData("select b.a from (select a from t where [a] = 1 union all select a from t where [a] = 2) as b", "SELECT b.[a] FROM (SELECT [a] FROM [tp_t] WHERE [a] = 1 UNION ALL SELECT [a] FROM [tp_t] WHERE [a] = 2) AS b;")]
+        [InlineData("select d.b, g.b from (select a as b from c) as d, (select e as b from f) as g", "SELECT d.[b], g.[b] FROM (SELECT [a] AS b FROM [tp_c]) AS d, (SELECT [e] AS b FROM [tp_f]) AS g;")]
+        [InlineData("select * from (select d as e from (select c as d from (select b as c from (select a as b from t) as l4) as l3) as l2) as l1", "SELECT * FROM (SELECT [d] AS e FROM (SELECT [c] AS d FROM (SELECT [b] AS c FROM (SELECT [a] AS b FROM [tp_t]) AS l4) AS l3) AS l2) AS l1;")]
+        public void ShouldParseSubquery(string sql, string expectedSql)
         {
             var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
             Assert.True(result);

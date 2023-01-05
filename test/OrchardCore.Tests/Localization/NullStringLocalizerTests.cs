@@ -1,9 +1,4 @@
-using System.IO;
-using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
-using Xunit;
 
 namespace OrchardCore.Tests.Localization
 {

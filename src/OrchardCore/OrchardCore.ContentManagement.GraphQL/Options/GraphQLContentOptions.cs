@@ -156,6 +156,18 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             return false;
         }
 
+        public bool ShouldSkipContentType(string contentType)
+        {
+            if (String.IsNullOrEmpty(contentType))
+            {
+                throw new ArgumentNullException(nameof(contentType));
+            }
+
+            var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => ctp.ContentType == contentType);
+
+            return contentTypeOption?.Hidden ?? false;
+        }
+
         internal bool ShouldSkip(Type fieldType, string fieldName)
         {
             return HiddenFields
