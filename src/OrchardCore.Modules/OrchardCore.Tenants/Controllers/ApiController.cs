@@ -96,6 +96,7 @@ namespace OrchardCore.Tenants.Controllers
 
             shellSettings["ConnectionString"] = model.ConnectionString;
             shellSettings["TablePrefix"] = model.TablePrefix;
+            shellSettings["Schema"] = model.Schema;
             shellSettings["DatabaseProvider"] = model.DatabaseProvider;
             shellSettings["Secret"] = Guid.NewGuid().ToString();
             shellSettings["RecipeName"] = model.RecipeName;
@@ -185,9 +186,7 @@ namespace OrchardCore.Tenants.Controllers
                 return BadRequest(S["The database provider is not defined."]);
             }
 
-            var selectedProvider = _databaseProviders.FirstOrDefault(provider =>
-                String.Equals(provider.Value, databaseProvider, StringComparison.OrdinalIgnoreCase));
-
+            var selectedProvider = _databaseProviders.FirstOrDefault(provider => provider.Value == databaseProvider);
             if (selectedProvider == null)
             {
                 return BadRequest(S["The database provider is not supported."]);
@@ -198,6 +197,13 @@ namespace OrchardCore.Tenants.Controllers
             if (String.IsNullOrEmpty(tablePrefix))
             {
                 tablePrefix = model.TablePrefix;
+            }
+
+            var schema = shellSettings["Schema"];
+
+            if (String.IsNullOrEmpty(schema))
+            {
+                schema = model.Schema;
             }
 
             var connectionString = shellSettings["connectionString"];
@@ -240,7 +246,7 @@ namespace OrchardCore.Tenants.Controllers
                 recipeDescriptor = new RecipeDescriptor
                 {
                     FileProvider = fileProvider,
-                    BasePath = "",
+                    BasePath = String.Empty,
                     RecipeFileInfo = fileProvider.GetFileInfo(Path.GetFileName(tempFilename))
                 };
             }
@@ -271,6 +277,7 @@ namespace OrchardCore.Tenants.Controllers
                     { SetupConstants.DatabaseProvider, selectedProvider.Value },
                     { SetupConstants.DatabaseConnectionString, connectionString },
                     { SetupConstants.DatabaseTablePrefix, tablePrefix },
+                    { SetupConstants.DatabaseSchema, schema },
                 }
             };
 

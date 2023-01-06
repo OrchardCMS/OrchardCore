@@ -214,6 +214,7 @@ namespace OrchardCore.AutoSetup
 
             shellSettings["ConnectionString"] = setupOptions.DatabaseConnectionString;
             shellSettings["TablePrefix"] = setupOptions.DatabaseTablePrefix;
+            shellSettings["Schema"] = setupOptions.DatabaseSchema;
             shellSettings["DatabaseProvider"] = setupOptions.DatabaseProvider;
             shellSettings["Secret"] = Guid.NewGuid().ToString();
             shellSettings["RecipeName"] = setupOptions.RecipeName;
@@ -250,6 +251,7 @@ namespace OrchardCore.AutoSetup
             setupContext.Properties[SetupConstants.DatabaseConnectionString] = options.DatabaseConnectionString;
             setupContext.Properties[SetupConstants.DatabaseProvider] = options.DatabaseProvider;
             setupContext.Properties[SetupConstants.DatabaseTablePrefix] = options.DatabaseTablePrefix;
+            setupContext.Properties[SetupConstants.DatabaseSchema] = options.DatabaseSchema;
             setupContext.Properties[SetupConstants.SiteName] = options.SiteName;
             setupContext.Properties[SetupConstants.SiteTimeZone] = options.SiteTimeZone;
 
