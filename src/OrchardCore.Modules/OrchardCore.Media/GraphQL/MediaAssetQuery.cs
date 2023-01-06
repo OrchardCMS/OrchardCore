@@ -31,7 +31,7 @@ namespace OrchardCore.Media.GraphQL
 
         public Task BuildAsync(ISchema schema)
         {
-            if (_graphQLContentOptions.ShouldSkipContentType("MediaAssets"))
+            if (_graphQLContentOptions.IsHiddenByDefault("MediaAssets"))
             {
                 return Task.CompletedTask;
             }

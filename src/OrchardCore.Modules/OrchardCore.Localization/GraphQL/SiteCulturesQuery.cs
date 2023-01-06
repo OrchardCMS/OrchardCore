@@ -40,7 +40,7 @@ namespace OrchardCore.Localization.GraphQL
         /// <inheritdocs/>
         public Task BuildAsync(ISchema schema)
         {
-            if (_graphQLContentOptions.ShouldSkipContentType("SiteCultures"))
+            if (_graphQLContentOptions.IsHiddenByDefault("SiteCultures"))
             {
                 return Task.CompletedTask;
             }
