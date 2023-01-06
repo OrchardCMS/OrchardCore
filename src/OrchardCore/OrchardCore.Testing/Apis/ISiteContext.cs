@@ -10,6 +10,8 @@ namespace OrchardCore.Testing.Apis
     {
         static IShellHost ShellHost { get; }
 
+        static IShellSettingsManager ShellSettingsManager { get; }
+
         static HttpClient DefaultTenantClient { get; }
 
         SiteContextOptions Options { init; get; }

@@ -4,7 +4,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Tests.Stubs;
+using OrchardCore.Testing.Stubs;
 using StartupBase = OrchardCore.Modules.StartupBase;
 
 namespace OrchardCore.Tests.Shell

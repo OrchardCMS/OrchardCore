@@ -20,6 +20,7 @@ namespace OrchardCore.Testing.Apis
         {
             Site = new OrchardCoreTestFixture<TSiteStartup>();
             ShellHost = Site.Services.GetRequiredService<IShellHost>();
+            ShellSettingsManager = Site.Services.GetRequiredService<IShellSettingsManager>();
             DefaultTenantClient = Site.CreateDefaultClient();
         }
 
@@ -31,6 +32,8 @@ namespace OrchardCore.Testing.Apis
         public static OrchardCoreTestFixture<TSiteStartup> Site { get; }
 
         public static IShellHost ShellHost { get; private set; }
+
+        public static IShellSettingsManager ShellSettingsManager { get; private set; }
 
         public static HttpClient DefaultTenantClient { get; }
 
