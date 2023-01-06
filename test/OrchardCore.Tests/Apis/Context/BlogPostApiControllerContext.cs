@@ -1,5 +1,3 @@
-using System.Net.Http;
-using System.Threading.Tasks;
 using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.ContentManagement;
 

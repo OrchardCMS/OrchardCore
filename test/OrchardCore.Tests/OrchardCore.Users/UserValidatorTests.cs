@@ -1,12 +1,6 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Moq;
 using OrchardCore.Testing.Mocks;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
-using Xunit;
 
 namespace OrchardCore.Tests.OrchardCore.Users
 {

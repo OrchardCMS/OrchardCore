@@ -1,14 +1,5 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
 using OrchardCore.Testing.Stubs;
-using Xunit;
 
 namespace OrchardCore.Tests.Localization
 {

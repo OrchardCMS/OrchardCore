@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
@@ -7,7 +5,6 @@ using OrchardCore.Lists.Models;
 using OrchardCore.Testing.Apis;
 using OrchardCore.Testing.Apis.Security;
 using OrchardCore.Tests.Apis.Context;
-using Xunit;
 using GraphQLApi = OrchardCore.Apis.GraphQL;
 
 namespace OrchardCore.Tests.Apis.GraphQL

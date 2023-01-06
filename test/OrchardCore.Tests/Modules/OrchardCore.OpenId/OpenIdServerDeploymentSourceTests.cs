@@ -1,9 +1,3 @@
-using System;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using Moq;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Recipes;
@@ -11,7 +5,6 @@ using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Testing.Stubs;
-using Xunit;
 using static OrchardCore.OpenId.Settings.OpenIdServerSettings;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId

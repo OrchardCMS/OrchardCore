@@ -1,10 +1,7 @@
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using MimeKit;
 using OrchardCore.Email;
+using OrchardCore.Email.Services;
 using OrchardCore.Testing.Mocks;
-using Xunit;
 
 namespace OrchardCore.Tests.Email
 {

@@ -2635,6 +2635,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "DavidStania",
+      "name": "David Stania",
+      "avatar_url": "https://avatars.githubusercontent.com/u/27513913?v=4",
+      "profile": "https://www.powerhouse-solutions.de/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

@@ -1,17 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
-using Microsoft.AspNetCore.Html;
-using Microsoft.Extensions.Options;
 using OrchardCore.ResourceManagement;
+using ResourceLocation = OrchardCore.ResourceManagement.ResourceLocation;
 using OrchardCore.Testing.Stubs;
-using Xunit;
 
 namespace OrchardCore.Tests.ResourceManagement
 {
