@@ -2,15 +2,16 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Testing.Recipes;
 
-namespace OrchardCore.Testing.Recipes
+namespace OrchardCore.Testing.Stubs
 {
-    public class TestRecipeHarvester : IRecipeHarvester
+    public class RecipeHarvesterStub : IRecipeHarvester
     {
         private readonly IRecipeFileProvider _recipeFileProvider;
         private readonly IRecipeReader _recipeReader;
 
-        public TestRecipeHarvester(IRecipeFileProvider recipeFileProvider, IRecipeReader recipeReader)
+        public RecipeHarvesterStub(IRecipeFileProvider recipeFileProvider, IRecipeReader recipeReader)
         {
             _recipeFileProvider = recipeFileProvider;
             _recipeReader = recipeReader;
