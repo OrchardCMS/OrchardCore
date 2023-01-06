@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,6 +25,13 @@ namespace OrchardCore.Localization.Drivers
     public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, LocalizationSettings>
     {
         public const string GroupId = "localization";
+
+        private static readonly CultureInfo[] _chineseAliasCultures = new[]
+        {
+            CultureInfo.GetCultureInfo("zh-CN"),
+            CultureInfo.GetCultureInfo("zh-TW")
+        };
+
         private readonly INotifier _notifier;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
@@ -67,24 +73,25 @@ namespace OrchardCore.Localization.Drivers
             }
 
             return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
-                {
-                    model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                    .Union(new[] { CultureInfo.GetCultureInfo("zh-CN") }).Distinct().OrderBy(x => x.Name)
-                        .Select(cultureInfo =>
-                        {
-                            return new CultureEntry
-                            {
-                                Supported = settings.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
-                                CultureInfo = cultureInfo,
-                                IsDefault = String.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
-                            };
-                        }).ToArray();
-
-                    if (!model.Cultures.Any(x => x.IsDefault))
+            {
+                model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
+                    .Union(_chineseAliasCultures) // Add zh-CN and zh-TW cultures for backward compatibility
+                    .OrderBy(c => c.Name)
+                    .Select(cultureInfo =>
                     {
-                        model.Cultures[0].IsDefault = true;
-                    }
-                }).Location("Content:2").OnGroup(GroupId);
+                        return new CultureEntry
+                        {
+                            Supported = settings.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
+                            CultureInfo = cultureInfo,
+                            IsDefault = String.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
+                        };
+                    }).ToArray();
+
+                if (!model.Cultures.Any(x => x.IsDefault))
+                {
+                    model.Cultures[0].IsDefault = true;
+                }
+            }).Location("Content:2").OnGroup(GroupId);
         }
 
         /// <inheritdocs />
