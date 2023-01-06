@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 namespace OrchardCore.Testing.Data.Tests
 {
     public class TablePrefixGeneratorTests

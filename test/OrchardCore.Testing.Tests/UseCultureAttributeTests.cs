@@ -1,5 +1,3 @@
-using System.Globalization;
-
 namespace OrchardCore.Testing.Tests;
 
 public class UseCultureAttributeTests
