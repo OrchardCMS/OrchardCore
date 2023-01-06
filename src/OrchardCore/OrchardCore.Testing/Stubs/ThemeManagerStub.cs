@@ -6,7 +6,8 @@ namespace OrchardCore.Testing.Stubs;
 
 public class ThemeManagerStub : IThemeManager
 {
-    private IExtensionInfo _extensionInfo;
+    private readonly IExtensionInfo _extensionInfo;
+
     public ThemeManagerStub(IExtensionInfo extensionInfo)
     {
         _extensionInfo = extensionInfo;
