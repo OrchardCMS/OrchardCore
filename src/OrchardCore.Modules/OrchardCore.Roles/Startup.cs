@@ -43,7 +43,7 @@ namespace OrchardCore.Roles
 
             services.AddScoped<RoleUpdater>();
             services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
-            services.AddScoped<IModularTenantEvents>(sp => sp.GetRequiredService<RoleUpdater>());
+            services.AddScoped<IRoleCreatedEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
             services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
