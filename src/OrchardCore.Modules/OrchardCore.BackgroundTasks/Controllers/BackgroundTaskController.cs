@@ -87,7 +87,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Forbid();
             }
 
-            var model = new BackgroundTaskViewModel() { Name = name };
+            var model = new BackgroundTaskViewModel() { Name = name, Title = name };
 
             var task = _backgroundTasks.GetTaskByName(name);
 
@@ -95,6 +95,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             {
                 var settings = task.GetDefaultSettings();
 
+                model.Title = settings.Title;
                 model.Enable = settings.Enable;
                 model.Schedule = settings.Schedule;
                 model.DefaultSchedule = settings.Schedule;
@@ -127,6 +128,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 var settings = new BackgroundTaskSettings
                 {
                     Name = model.Name,
+                    Title = model.Title,
                     Enable = model.Enable,
                     Schedule = model.Schedule?.Trim(),
                     Description = model.Description,
@@ -163,6 +165,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             var model = new BackgroundTaskViewModel
             {
                 Name = name,
+                Title = settings.Title,
                 Enable = settings.Enable,
                 Schedule = settings.Schedule,
                 DefaultSchedule = task?.GetDefaultSettings().Schedule,
@@ -188,26 +191,28 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 {
                     ModelState.AddModelError(nameof(BackgroundTaskViewModel.Name), S["The name is mandatory."]);
                 }
-            }
-
-            if (ModelState.IsValid)
-            {
-                var settings = new BackgroundTaskSettings
+                else
                 {
-                    Name = model.Name,
-                    Enable = model.Enable,
-                    Schedule = model.Schedule?.Trim(),
-                    Description = model.Description,
-                    LockTimeout = model.LockTimeout,
-                    LockExpiration = model.LockExpiration
-                };
+                    var document = await _backgroundTaskManager.GetDocumentAsync();
 
-                await _backgroundTaskManager.UpdateAsync(model.Name, settings);
+                    if (!document.Settings.ContainsKey(model.Name))
+                    {
+                        return NotFound();
+                    }
 
-                return RedirectToAction(nameof(Index));
+                    var settings = document.Settings[model.Name];
+
+                    settings.Schedule = model.Schedule?.Trim();
+                    settings.LockTimeout = model.LockTimeout;
+                    settings.LockExpiration = model.LockExpiration;
+
+                    await _backgroundTaskManager.UpdateAsync(model.Name, settings);
+
+                    return RedirectToAction(nameof(Index));
+                }
             }
 
-            // If we got this far, something failed, redisplay form
+            // If we got this far, something failed. Re-display form.
             return View(model);
         }
 

@@ -16,22 +16,21 @@
 
     <div class="tab-content" id="tabs">
         <div class="tab-pane fade show active" id="properties" role="tabpanel" aria-labelledby="properties-tab">
-            <div class="mb-3" asp-validation-class-for="Name">
-                <label asp-for="Name">@T["Name"]</label>
-                <input asp-for="Name" class="form-control" readonly />
-                <span class="hint">@T["The task on which this settings will apply."]</span>
+
+            <div class="mb-3" asp-validation-class-for="Title">
+                <label asp-for="Title">@T["Title"]</label>
+                <input asp-for="Title" class="form-control" />
+            </div>
+
+            <div class="mb-3" asp-validation-class-for="Description">
+                <label asp-for="Description">@T["Description"]</label>
+                <input asp-for="Description" class="form-control" />
             </div>
 
             <div class="mb-3" asp-validation-class-for="Schedule">
                 <label asp-for="Schedule">@T["Schedule"]</label>
                 <input asp-for="Schedule" class="form-control" autofocus />
                 <span class="hint">@T["The task schedule as a cron expression."]</span>
-            </div>
-
-            <div class="mb-3" asp-validation-class-for="Description">
-                <input asp-for="Enable" class="form-control" type="hidden" />
-                <input asp-for="DefaultSchedule" class="form-control" type="hidden" />
-                <input asp-for="Description" class="form-control" type="hidden" />
             </div>
 
             <div><span asp-validation-for="LockTimeout" class="text-danger">@T["Invalid lock timeout value in the advanced tab"]</span></div>
@@ -61,13 +60,3 @@
         <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
     </div>
 </form>
-
-<script at="Foot">
-$(function () {
-    $('#use-default-schedule').on('click', function (e) {
-        e.preventDefault();
-        document.getElementById('@Html.IdFor(x => x.Schedule)').value =
-            document.getElementById('@Html.IdFor(x => x.DefaultSchedule)').value;
-    });
-});
-</script>

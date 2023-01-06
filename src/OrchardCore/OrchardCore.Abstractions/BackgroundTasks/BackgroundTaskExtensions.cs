@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,24 +9,36 @@ namespace OrchardCore.BackgroundTasks
     {
         public static BackgroundTaskSettings GetDefaultSettings(this IBackgroundTask task)
         {
-            var type = task.GetType();
+            var technicalName = task.GetTaskName();
 
-            var attribute = type.GetCustomAttribute<BackgroundTaskAttribute>();
+            var attribute = task.GetType().GetCustomAttribute<BackgroundTaskAttribute>();
 
             if (attribute != null)
             {
-                return new BackgroundTaskSettings
+                var settings = new BackgroundTaskSettings
                 {
-                    Name = type.FullName,
+                    Title = attribute.Title,
+                    Name = technicalName,
                     Enable = attribute.Enable,
                     Schedule = attribute.Schedule,
                     Description = attribute.Description,
                     LockTimeout = attribute.LockTimeout,
                     LockExpiration = attribute.LockExpiration
                 };
+
+                if (String.IsNullOrWhiteSpace(settings.Title))
+                {
+                    settings.Title = technicalName;
+                }
+
+                return settings;
             }
 
-            return new BackgroundTaskSettings() { Name = type.FullName };
+            return new BackgroundTaskSettings()
+            {
+                Name = technicalName,
+                Title = technicalName
+            };
         }
 
         public static IBackgroundTask GetTaskByName(this IEnumerable<IBackgroundTask> tasks, string name)
