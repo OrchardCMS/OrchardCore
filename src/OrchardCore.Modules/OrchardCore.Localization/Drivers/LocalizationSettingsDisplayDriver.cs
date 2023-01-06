@@ -74,8 +74,10 @@ namespace OrchardCore.Localization.Drivers
 
             return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
             {
+                // Add zh-CN and zh-TW cultures for backward compatibility
+                // For more info: https://github.com/OrchardCMS/OrchardCore/issues/11672
                 model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                    .Union(_chineseAliasCultures) // Add zh-CN and zh-TW cultures for backward compatibility
+                    .Union(_chineseAliasCultures)
                     .OrderBy(c => c.Name)
                     .Select(cultureInfo =>
                     {
