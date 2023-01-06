@@ -43,7 +43,7 @@ namespace OrchardCore.BackgroundTasks
 
         public static IBackgroundTask GetTaskByName(this IEnumerable<IBackgroundTask> tasks, string name)
         {
-            return tasks.LastOrDefault(t => t.GetTaskName() == name);
+            return tasks.LastOrDefault(t => String.Equals(t.GetTaskName(), name, StringComparison.OrdinalIgnoreCase));
         }
 
         public static string GetTaskName(this IBackgroundTask task)
