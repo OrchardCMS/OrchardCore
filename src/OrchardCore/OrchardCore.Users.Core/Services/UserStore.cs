@@ -214,10 +214,10 @@ namespace OrchardCore.Users.Services
 
             if (user is User su)
             {
-                return Task.FromResult(su.NormalizedUserName);
+                su.NormalizedUserName = normalizedName;
             }
 
-            return Task.FromResult<string>(null);
+            return Task.CompletedTask;
         }
 
         public Task SetUserNameAsync(IUser user, string userName, CancellationToken cancellationToken = default(CancellationToken))
