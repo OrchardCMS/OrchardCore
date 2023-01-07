@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks.Models;
@@ -68,7 +69,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var taskItems = items.ToList();
             var routeData = new RouteData();
-            routeData.Values.Add("Options.Search", options.Search);
+            routeData.Values.Add($"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(options.Search)}", options.Search);
 
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var pagerShape = (await New.Pager(pager)).TotalItemCount(taskItems.Count).RouteData(routeData);
@@ -88,17 +89,12 @@ namespace OrchardCore.BackgroundTasks.Controllers
         public ActionResult IndexFilterPOST(BackgroundTaskIndexViewModel model)
         {
             return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search },
+                { $"{nameof(model.Options)}.{nameof(AdminIndexOptions.Search)}", model.Options.Search },
             });
         }
 
         public async Task<IActionResult> Edit(string name)
         {
-            if (String.IsNullOrWhiteSpace(name))
-            {
-                return NotFound();
-            }
-
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
                 return Forbid();
@@ -138,11 +134,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Forbid();
             }
 
-            if (String.IsNullOrWhiteSpace(model.Name))
-            {
-                return NotFound();
-            }
-
             var task = _backgroundTasks.GetTaskByName(model.Name);
 
             if (task == null)
@@ -173,14 +164,14 @@ namespace OrchardCore.BackgroundTasks.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string name)
         {
-            if (String.IsNullOrWhiteSpace(name))
-            {
-                return NotFound();
-            }
-
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
                 return Forbid();
+            }
+
+            if (String.IsNullOrWhiteSpace(name))
+            {
+                return NotFound();
             }
 
             var document = await _backgroundTaskManager.LoadDocumentAsync();
@@ -200,11 +191,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
         [HttpPost]
         public async Task<IActionResult> Enable(string name)
         {
-            if (String.IsNullOrWhiteSpace(name))
-            {
-                return NotFound();
-            }
-
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
                 return Forbid();
@@ -233,11 +219,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
         [HttpPost]
         public async Task<IActionResult> Disable(string name)
         {
-            if (String.IsNullOrWhiteSpace(name))
-            {
-                return NotFound();
-            }
-
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
                 return Forbid();

@@ -15,9 +15,9 @@ namespace OrchardCore.BackgroundTasks
 
             if (attribute != null)
             {
-                var settings = new BackgroundTaskSettings
+                return new BackgroundTaskSettings
                 {
-                    Title = attribute.Title,
+                    Title = !String.IsNullOrWhiteSpace(attribute.Title) ? attribute.Title : technicalName,
                     Name = technicalName,
                     Enable = attribute.Enable,
                     Schedule = attribute.Schedule,
@@ -25,13 +25,6 @@ namespace OrchardCore.BackgroundTasks
                     LockTimeout = attribute.LockTimeout,
                     LockExpiration = attribute.LockExpiration
                 };
-
-                if (String.IsNullOrWhiteSpace(settings.Title))
-                {
-                    settings.Title = technicalName;
-                }
-
-                return settings;
             }
 
             return new BackgroundTaskSettings()
@@ -43,7 +36,12 @@ namespace OrchardCore.BackgroundTasks
 
         public static IBackgroundTask GetTaskByName(this IEnumerable<IBackgroundTask> tasks, string name)
         {
-            return tasks.LastOrDefault(t => String.Equals(t.GetTaskName(), name, StringComparison.OrdinalIgnoreCase));
+            if (String.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
+            return tasks.LastOrDefault(task => String.Equals(task.GetTaskName(), name, StringComparison.OrdinalIgnoreCase));
         }
 
         public static string GetTaskName(this IBackgroundTask task)
