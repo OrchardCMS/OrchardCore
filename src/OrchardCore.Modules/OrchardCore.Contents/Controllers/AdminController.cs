@@ -44,6 +44,7 @@ namespace OrchardCore.Contents.Controllers
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IContentItemFactory _contentItemFactory;
         private readonly IShapeFactory _shapeFactory;
         private readonly dynamic New;
         private readonly ILogger _logger;
@@ -62,7 +63,8 @@ namespace OrchardCore.Contents.Controllers
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor,
+            IContentItemFactory contentItemFactory)
         {
             _authorizationService = authorizationService;
             _notifier = notifier;
@@ -72,6 +74,7 @@ namespace OrchardCore.Contents.Controllers
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
             _updateModelAccessor = updateModelAccessor;
+            _contentItemFactory = contentItemFactory;
             _contentOptionsDisplayManager = contentOptionsDisplayManager;
             _contentsAdminListQueryService = contentsAdminListQueryService;
 
@@ -125,9 +128,9 @@ namespace OrchardCore.Contents.Controllers
                 // Allows non creatable types to be created by another admin page.
                 if (contentTypeDefinition.IsCreatable() || options.CanCreateSelectedContentType)
                 {
-                    var contentItem = await CreateContentItemForOwnedByCurrentAsync(contentTypeDefinition.Name);
+                    var dummyContentItem = await _contentItemFactory.CreateAsync(contentTypeDefinition.Name, CurrentUserId());
 
-                    if (await IsAuthorizedAsync(CommonPermissions.EditContent, contentItem))
+                    if (await IsAuthorizedAsync(CommonPermissions.EditContent, dummyContentItem))
                     {
                         creatableList.Add(new SelectListItem(contentTypeDefinition.DisplayName, contentTypeDefinition.Name));
                     }
@@ -143,9 +146,14 @@ namespace OrchardCore.Contents.Controllers
                 {
                     foreach (var contentTypeDefinition in contentTypeDefinitions)
                     {
-                        var contentItem = await CreateContentItemForOwnedByCurrentAsync(contentTypeDefinition.Name);
+                        if (!contentTypeDefinition.IsCreatable())
+                        {
+                            continue;
+                        }
 
-                        if (contentTypeDefinition.IsCreatable() && await IsAuthorizedAsync(CommonPermissions.EditContent, contentItem))
+                        var dummyContentItem = await _contentItemFactory.CreateAsync(contentTypeDefinition.Name, CurrentUserId());
+
+                        if (await IsAuthorizedAsync(CommonPermissions.EditContent, dummyContentItem))
                         {
                             creatableList.Add(new SelectListItem(contentTypeDefinition.DisplayName, contentTypeDefinition.Name));
                         }
@@ -196,9 +204,9 @@ namespace OrchardCore.Contents.Controllers
                         continue;
                     }
 
-                    var contentItem = await CreateContentItemForOwnedByCurrentAsync(ctd.Name);
+                    var dummyContentItem = await _contentItemFactory.CreateAsync(ctd.Name);
 
-                    if (await IsAuthorizedAsync(CommonPermissions.ViewContent, contentItem))
+                    if (await IsAuthorizedAsync(CommonPermissions.ViewContent, dummyContentItem))
                     {
                         listableTypes.Add(ctd);
                     }
@@ -215,7 +223,19 @@ namespace OrchardCore.Contents.Controllers
 
                 foreach (var option in contentTypeOptions)
                 {
-                    options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key, Selected = (option.Value == options.SelectedContentType) });
+                    var dummyContentItem = await _contentItemFactory.CreateAsync(option.Key, userNameIdentifier);
+
+                    if (!await IsAuthorizedAsync(CommonPermissions.ViewContent, dummyContentItem))
+                    {
+                        continue;
+                    }
+
+                    options.ContentTypeOptions.Add(new SelectListItem()
+                    {
+                        Text = option.Value,
+                        Value = option.Key,
+                        Selected = option.Value == options.SelectedContentType
+                    });
                 }
             }
 
@@ -357,7 +377,7 @@ namespace OrchardCore.Contents.Controllers
                 return NotFound();
             }
 
-            var contentItem = await CreateContentItemForOwnedByCurrentAsync(id);
+            var contentItem = await CreateContentItemOwnedByCurrentUserAsync(id);
 
             if (!await IsAuthorizedAsync(CommonPermissions.EditContent, contentItem))
             {
@@ -390,11 +410,16 @@ namespace OrchardCore.Contents.Controllers
         [FormValueRequired("submit.Publish")]
         public async Task<IActionResult> CreateAndPublishPOST(string id, [Bind(Prefix = "submit.Publish")] string submitPublish, string returnUrl)
         {
-            var stayOnSamePage = submitPublish == "submit.PublishAndContinue";
-            // pass a dummy content to the authorization check to check for "own" variations
-            var dummyContent = await CreateContentItemForOwnedByCurrentAsync(id);
+            if (String.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
 
-            if (!await IsAuthorizedAsync(CommonPermissions.PublishContent, dummyContent))
+            var stayOnSamePage = submitPublish == "submit.PublishAndContinue";
+            // Pass a dummy contentitem to the authorization check to check for "own" variations permissions.
+            var dummyContentItem = await _contentItemFactory.CreateAsync(id, CurrentUserId());
+
+            if (!await IsAuthorizedAsync(CommonPermissions.PublishContent, dummyContentItem))
             {
                 return Forbid();
             }
@@ -413,7 +438,7 @@ namespace OrchardCore.Contents.Controllers
 
         private async Task<IActionResult> CreatePOST(string id, string returnUrl, bool stayOnSamePage, Func<ContentItem, Task> conditionallyPublish)
         {
-            var contentItem = await CreateContentItemForOwnedByCurrentAsync(id);
+            var contentItem = await CreateContentItemOwnedByCurrentUserAsync(id);
 
             if (!await IsAuthorizedAsync(CommonPermissions.EditContent, contentItem))
             {
@@ -714,7 +739,7 @@ namespace OrchardCore.Contents.Controllers
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
         }
 
-        private async Task<ContentItem> CreateContentItemForOwnedByCurrentAsync(string contentType)
+        private async Task<ContentItem> CreateContentItemOwnedByCurrentUserAsync(string contentType)
         {
             var contentItem = await _contentManager.NewAsync(contentType);
             contentItem.Owner = CurrentUserId();

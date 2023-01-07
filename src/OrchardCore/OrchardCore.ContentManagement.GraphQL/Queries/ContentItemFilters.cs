@@ -17,17 +17,17 @@ public class ContentItemFilters : GraphQLFilter<ContentItem>
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IContentManager _contentManager;
+    private readonly IContentItemFactory _contentItemFactory;
 
     public ContentItemFilters(IHttpContextAccessor httpContextAccessor,
         IContentDefinitionManager contentDefinitionManager,
         IAuthorizationService authorizationService,
-        IContentManager contentManager)
+        IContentItemFactory contentItemFactory)
     {
         _httpContextAccessor = httpContextAccessor;
         _contentDefinitionManager = contentDefinitionManager;
         _authorizationService = authorizationService;
-        _contentManager = contentManager;
+        _contentItemFactory = contentItemFactory;
     }
 
     public override async Task<IQuery<ContentItem>> PreQueryAsync(IQuery<ContentItem> query, IResolveFieldContext context)
@@ -44,7 +44,7 @@ public class ContentItemFilters : GraphQLFilter<ContentItem>
         var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.ViewContent);
         var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
 
-        var dummy = await _contentManager.NewAsync(contentTypeDefinition.Name);
+        var dummy = await _contentItemFactory.CreateAsync(contentTypeDefinition.Name);
 
         if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, dynamicPermission, dummy))
         {
