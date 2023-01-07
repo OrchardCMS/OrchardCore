@@ -37,6 +37,8 @@
                         </div>
 
                         <div>
+                            <a asp-action="Edit" asp-route-name="@settings.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+
                             @if (@settings.Enable)
                             {
                                 <a asp-action="Disable" asp-route-name="@settings.Name" class="btn btn-danger btn-sm" data-url-af="UnsafeUrl">@T["Disable"]</a>
@@ -45,8 +47,6 @@
                             {
                                 <a asp-action="Enable" asp-route-name="@settings.Name" class="btn btn-success btn-sm" data-url-af="UnsafeUrl">@T["Enable"]</a>
                             }
-
-                            <a asp-action="Edit" asp-route-name="@settings.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
                         </div>
                     </div>
 
