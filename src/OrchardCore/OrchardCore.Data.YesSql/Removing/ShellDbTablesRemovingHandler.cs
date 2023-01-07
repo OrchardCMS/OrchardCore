@@ -59,11 +59,8 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
             }
 
             // Check for a valid connection and if at least the 'Document' table exists.
-            var result = await dbConnectionValidator.ValidateAsync(
-                context.ShellSettings["DatabaseProvider"],
-                context.ShellSettings["ConnectionString"],
-                context.ShellSettings["TablePrefix"],
-                context.ShellSettings.Name);
+            var validationContext = new DbConnectionValidatorContext(context.ShellSettings);
+            var result = await dbConnectionValidator.ValidateAsync(validationContext);
 
             if (result != DbConnectionValidatorResult.DocumentTableFound)
             {
