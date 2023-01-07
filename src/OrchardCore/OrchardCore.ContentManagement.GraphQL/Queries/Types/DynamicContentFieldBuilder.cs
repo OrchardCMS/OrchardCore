@@ -92,12 +92,12 @@ public class DynamicContentFieldBuilder : IContentTypeBuilder
             {
                 if (_dynamicPartFields.TryGetValue(part.Name, out var fieldType))
                 {
-                    whereInput.AddField(fieldType);
+                    whereInput.AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description);
                 }
                 else
                 {
                     var field = whereInput.Field(
-                        typeof(DynamicPartInputGraphType),
+                    typeof(DynamicPartInputGraphType),
                         part.Name.ToFieldName(),
                         description: S["Represents a {0}.", part.PartDefinition.Name],
                         resolve: context =>
