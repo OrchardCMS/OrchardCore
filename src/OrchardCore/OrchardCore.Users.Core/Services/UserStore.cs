@@ -214,7 +214,7 @@ namespace OrchardCore.Users.Services
 
             if (user is User u)
             {
-                su.NormalizedUserName = normalizedName;
+                u.NormalizedUserName = normalizedName;
             }
 
             return Task.CompletedTask;
