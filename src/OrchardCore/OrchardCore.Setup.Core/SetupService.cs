@@ -7,11 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Abstractions.Setup;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Data;
-using OrchardCore.Data.YesSql;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
@@ -21,7 +19,6 @@ using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Setup.Events;
-using YesSql;
 
 namespace OrchardCore.Setup.Services
 {
@@ -39,7 +36,6 @@ namespace OrchardCore.Setup.Services
         private readonly IHostApplicationLifetime _applicationLifetime;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IDbConnectionValidator _dbConnectionValidator;
-        private readonly YesSqlOptions _yesSqlOptions;
         private readonly string _applicationName;
         private IEnumerable<RecipeDescriptor> _recipes;
 
@@ -56,7 +52,6 @@ namespace OrchardCore.Setup.Services
         /// <param name="applicationLifetime">The <see cref="IHostApplicationLifetime"/>.</param>
         /// <param name="httpContextAccessor">The <see cref="IHttpContextAccessor"/>.</param>
         /// <param name="dbConnectionValidator">The <see cref="IDbConnectionValidator"/>.</param>
-        /// <param name="yesSqlOptions">The <see cref="YesSqlOptions"/>.</param>
         public SetupService(
             IShellHost shellHost,
             IHostEnvironment hostingEnvironment,
@@ -67,8 +62,7 @@ namespace OrchardCore.Setup.Services
             IStringLocalizer<SetupService> stringLocalizer,
             IHostApplicationLifetime applicationLifetime,
             IHttpContextAccessor httpContextAccessor,
-            IDbConnectionValidator dbConnectionValidator,
-            IOptions<YesSqlOptions> yesSqlOptions)
+            IDbConnectionValidator dbConnectionValidator)
         {
             _shellHost = shellHost;
             _applicationName = hostingEnvironment.ApplicationName;
@@ -80,7 +74,6 @@ namespace OrchardCore.Setup.Services
             _applicationLifetime = applicationLifetime;
             _httpContextAccessor = httpContextAccessor;
             _dbConnectionValidator = dbConnectionValidator;
-            _yesSqlOptions = yesSqlOptions.Value;
         }
 
         /// <inheritdoc />
@@ -163,16 +156,17 @@ namespace OrchardCore.Setup.Services
 
             _httpContextAccessor.HttpContext.Features.Set(recipeEnvironmentFeature);
 
-            var shellSettings = new ShellSettings(context.ShellSettings);
-
+            var shellSettings = new ShellSettings(context.ShellSettings).ConfigureDatabaseTableOptions();
             if (String.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
             {
                 shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider) ? databaseProvider?.ToString() : String.Empty;
                 shellSettings["ConnectionString"] = context.Properties.TryGetValue(SetupConstants.DatabaseConnectionString, out var databaseConnectionString) ? databaseConnectionString?.ToString() : String.Empty;
                 shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix) ? databaseTablePrefix?.ToString() : String.Empty;
+                shellSettings["Schema"] = context.Properties.TryGetValue(SetupConstants.DatabaseSchema, out var schema) ? schema?.ToString() : null;
             }
 
-            switch (await _dbConnectionValidator.ValidateAsync(shellSettings["DatabaseProvider"], shellSettings["ConnectionString"], shellSettings["TablePrefix"], shellSettings.Name))
+            var validationContext = new DbConnectionValidatorContext(shellSettings);
+            switch (await _dbConnectionValidator.ValidateAsync(validationContext))
             {
                 case DbConnectionValidatorResult.NoProvider:
                     context.Errors.Add(String.Empty, S["DatabaseProvider setting is required."]);
@@ -184,7 +178,7 @@ namespace OrchardCore.Setup.Services
                     context.Errors.Add(String.Empty, S["The provided connection string is invalid or server is unreachable."]);
                     break;
                 case DbConnectionValidatorResult.DocumentTableFound:
-                    context.Errors.Add(String.Empty, S["The provided database and table prefix are already in use."]);
+                    context.Errors.Add(String.Empty, S["The provided database, table prefix and schema are already in use."]);
                     break;
             }
 
@@ -207,32 +201,21 @@ namespace OrchardCore.Setup.Services
             {
                 await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
                 {
-                    IStore store;
-
                     try
                     {
-                        store = scope.ServiceProvider.GetRequiredService<IStore>();
+                        // Create the "minimum shell descriptor"
+                        await scope
+                            .ServiceProvider
+                            .GetService<IShellDescriptorManager>()
+                            .UpdateShellDescriptorAsync(0,
+                                shellContext.Blueprint.Descriptor.Features);
                     }
                     catch (Exception e)
                     {
-                        // Tables already exist or database was not found
-
-                        // The issue is that the user creation needs the tables to be present,
-                        // if the user information is not valid, the next POST will try to recreate the
-                        // tables. The tables should be rolled back if one of the steps is invalid,
-                        // unless the recipe is executing?
-
                         _logger.LogError(e, "An error occurred while initializing the datastore.");
                         context.Errors.Add(String.Empty, S["An error occurred while initializing the datastore: {0}", e.Message]);
                         return;
                     }
-
-                    // Create the "minimum shell descriptor"
-                    await scope
-                        .ServiceProvider
-                        .GetService<IShellDescriptorManager>()
-                        .UpdateShellDescriptorAsync(0,
-                            shellContext.Blueprint.Descriptor.Features);
                 });
 
                 if (context.Errors.Any())

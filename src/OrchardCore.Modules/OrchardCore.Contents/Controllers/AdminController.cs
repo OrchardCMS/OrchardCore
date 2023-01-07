@@ -256,7 +256,7 @@ namespace OrchardCore.Contents.Controllers
             options.ContentItemsCount = contentItemSummaries.Count;
             options.TotalItemCount = pagerShape.TotalItemCount;
 
-            var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+            var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, "", "");
 
             var shapeViewModel = await _shapeFactory.CreateAsync<ListContentsViewModel>("ContentsAdminList", viewModel =>
             {
@@ -280,7 +280,7 @@ namespace OrchardCore.Contents.Controllers
             }
 
             // Evaluate the values provided in the form post and map them to the filter result and route values.
-            await _contentOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+            await _contentOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false, "", "");
 
             // The route value must always be added after the editors have updated the models.
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());

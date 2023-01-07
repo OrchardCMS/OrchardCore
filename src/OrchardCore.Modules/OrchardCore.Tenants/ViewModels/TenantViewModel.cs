@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.Data;
 
 namespace OrchardCore.Tenants.ViewModels
 {
-    public class TenantViewModel
+    public class TenantViewModel : IDbConnectionInfo
     {
         public string Description { get; set; }
 
@@ -19,6 +20,8 @@ namespace OrchardCore.Tenants.ViewModels
         public string ConnectionString { get; set; }
 
         public string TablePrefix { get; set; }
+
+        public string Schema { get; set; }
 
         public string RecipeName { get; set; }
 

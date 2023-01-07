@@ -61,11 +61,10 @@ namespace OrchardCore.ContentManagement
             }
 
             // create a new kernel for the model instance
-            var context = new ActivatingContentContext
+            var context = new ActivatingContentContext(new ContentItem() { ContentType = contentTypeDefinition.Name })
             {
                 ContentType = contentTypeDefinition.Name,
                 Definition = contentTypeDefinition,
-                ContentItem = new ContentItem() { ContentType = contentTypeDefinition.Name }
             };
 
             // invoke handlers to weld aspects onto kernel

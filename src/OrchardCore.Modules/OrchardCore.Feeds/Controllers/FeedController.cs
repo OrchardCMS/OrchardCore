@@ -65,23 +65,23 @@ namespace OrchardCore.Feeds.Controllers
             }
 
             var document = await context.Builder.ProcessAsync(context, async () =>
-           {
-               await bestQueryMatch.FeedQuery.ExecuteAsync(context);
+            {
+                await bestQueryMatch.FeedQuery.ExecuteAsync(context);
 
-               await _feedItemBuilder.PopulateAsync(context);
+                await _feedItemBuilder.PopulateAsync(context);
 
-               foreach (var contextualizer in context.Response.Contextualizers)
-               {
-                   if (ControllerContext != null)
-                   {
-                       contextualizer(new ContextualizeContext
-                       {
-                           ServiceProvider = _serviceProvider,
-                           Url = Url
-                       });
-                   }
-               }
-           });
+                foreach (var contextualizer in context.Response.Contextualizers)
+                {
+                    if (ControllerContext != null)
+                    {
+                        contextualizer(new ContextualizeContext
+                        {
+                            ServiceProvider = _serviceProvider,
+                            Url = Url
+                        });
+                    }
+                }
+            });
 
             return Content(document.ToString(), "text/xml");
         }

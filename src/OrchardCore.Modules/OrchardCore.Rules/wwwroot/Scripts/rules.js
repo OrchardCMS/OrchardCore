@@ -22,7 +22,6 @@ function updateRuleOrders(conditionId, toConditionId, toPosition) {
     }
   });
 }
-
 $(function () {
   var sortableOptions = {
     group: {
@@ -38,7 +37,6 @@ $(function () {
     }
   };
   var groups = document.querySelectorAll(".condition-group");
-
   for (var i = 0; i < groups.length; i++) {
     new Sortable(groups[i], sortableOptions);
   }
