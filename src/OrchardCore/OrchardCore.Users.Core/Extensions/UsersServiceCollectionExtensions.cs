@@ -48,8 +48,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalProviderFactory>();
             services.AddScoped<IUserEventHandler, UserDisabledEventHandler>();
 
-            services.AddScoped<IUserClaimsProvider, SuperAdminClaimsProviders>();
-
             return services;
         }
     }
