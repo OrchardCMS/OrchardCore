@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks.Models;
@@ -13,6 +14,7 @@ using OrchardCore.BackgroundTasks.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 
 namespace OrchardCore.BackgroundTasks.Controllers
 {
@@ -46,31 +48,48 @@ namespace OrchardCore.BackgroundTasks.Controllers
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Index(PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(AdminIndexOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var document = await _backgroundTaskManager.GetDocumentAsync();
 
-            var taskEntries = _backgroundTasks.Select(task => new BackgroundTaskEntry() { Settings = GetSettings(task, document) })
-                .OrderBy(entry => entry.Settings.Name)
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize)
-                .ToList();
+            var items = _backgroundTasks.Select(task => new BackgroundTaskEntry() { Settings = GetSettings(task, document) });
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(_backgroundTasks.Count());
+            if (!String.IsNullOrWhiteSpace(options.Search))
+            {
+                items = items.Where(x => x.Settings.Title.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
+                    || (x.Settings.Description != null && x.Settings.Description.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
+                );
+            }
+
+            var taskItems = items.ToList();
+            var routeData = new RouteData();
+            routeData.Values.Add("Options.Search", options.Search);
+
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(taskItems.Count).RouteData(routeData);
 
             var model = new BackgroundTaskIndexViewModel
             {
-                Tasks = taskEntries,
-                Pager = pagerShape
+                Tasks = taskItems.OrderBy(entry => entry.Settings.Title).Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList(),
+                Pager = pagerShape,
+                Options = options,
             };
 
             return View(model);
+        }
+
+        [HttpPost, ActionName(nameof(Index))]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(BackgroundTaskIndexViewModel model)
+        {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
+                { "Options.Search", model.Options.Search },
+            });
         }
 
         public async Task<IActionResult> Edit(string name)
