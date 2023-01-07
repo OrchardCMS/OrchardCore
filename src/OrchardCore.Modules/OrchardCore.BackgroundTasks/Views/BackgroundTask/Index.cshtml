@@ -19,33 +19,39 @@
 
         </div>
     </div>
-</form>
 
-<form asp-action="Index">
-    @* the form is necessary to generate an antiforgery token for the delete action *@
-
-    @if (Model.Tasks.Count > 0)
-    {
-        <ul class="list-group">
-            @foreach (var settings in Model.Tasks.Select(t => t.Settings))
+    <ul class="list-group">
+        <li class="list-group-item bg-primary">
+            <div class="row gx-3">
+                <div class="col">
+                </div>
+                <div class="col-auto">
+                    <div class="btn-group filter">
+                        <select asp-for="Options.Status" asp-items="@Model.Options.Statuses" class="selectpicker show-tick me-2" data-header="@T["Filter by status"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Status"]" data-style="btn-sm"></select>
+                    </div>
+                </div>
+            </div>
+        </li>
+        @if (Model.Tasks.Count > 0)
+        {
+            foreach (var settings in Model.Tasks.Select(t => t.Settings))
             {
-                <li class="list-group-item" data-filter-value="@settings.Title @settings.Description">
+                <li class="list-group-item">
                     <div class="d-flex">
                         <div class="me-auto">
                             <span class="text-primary" title="@T["Settings"]"><i class="fa fa-cog" aria-hidden="true"></i></span>
                             <span class="text-primary"><a asp-action="Edit" asp-route-name="@settings.Name">@settings.Title</a></span>
                         </div>
-
                         <div>
                             <a asp-action="Edit" asp-route-name="@settings.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
 
-                            @if (@settings.Enable)
+                            @if (settings.Enable)
                             {
-                                <a asp-action="Disable" asp-route-name="@settings.Name" class="btn btn-danger btn-sm" data-url-af="UnsafeUrl">@T["Disable"]</a>
+                                <a asp-action="Disable" asp-route-name="@settings.Name" class="btn btn-sm btn-danger" data-url-af="UnsafeUrl">@T["Disable"]</a>
                             }
                             else
                             {
-                                <a asp-action="Enable" asp-route-name="@settings.Name" class="btn btn-success btn-sm" data-url-af="UnsafeUrl">@T["Enable"]</a>
+                                <a asp-action="Enable" asp-route-name="@settings.Name" class="btn btn-sm btn-success" data-url-af="UnsafeUrl">@T["Enable"]</a>
                             }
                         </div>
                     </div>
@@ -58,16 +64,36 @@
                             </div>
                         </div>
                     }
-
                 </li>
             }
-        </ul>
-    }
-
-    <div id="list-alert" class="alert alert-info mb-0@(Model.Tasks.Count > 0 ? " d-none" : String.Empty)" role="alert">
-        @T["<strong>Nothing here!</strong> There are no tasks at the moment."]
-    </div>
+        }
+        else
+        {
+            <li class="list-group-item">
+                <div class="alert alert-info mb-0">
+                    @T["<strong>Nothing here!</strong> Your search returned no results."]
+                </div>
+            </li>
+        }
+    </ul>
 
 </form>
 
 @await DisplayAsync(Model.Pager)
+
+<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+
+<script at="Foot">
+    $(function () {
+        $('.selectpicker').selectpicker();
+        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            $("[name='submit.Filter']").click();
+        });
+        $(".filter-options select, .filter-options input").on("change", function () {
+            $("[name='submit.Filter']").click();
+        });
+
+        var filters = $(".filter");
+        filters.show();
+    });
+</script>

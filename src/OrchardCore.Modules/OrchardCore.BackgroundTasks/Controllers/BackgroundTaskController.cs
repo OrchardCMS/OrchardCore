@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks.Models;
@@ -28,15 +30,17 @@ namespace OrchardCore.BackgroundTasks.Controllers
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly dynamic New;
+        private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
 
         public BackgroundTaskController(
             IAuthorizationService authorizationService,
             IEnumerable<IBackgroundTask> backgroundTasks,
             BackgroundTaskManager backgroundTaskManager,
-            IShapeFactory shapeFactory,
             IOptions<PagerOptions> pagerOptions,
+            IShapeFactory shapeFactory,
             IHtmlLocalizer<BackgroundTaskController> htmlLocalizer,
+            IStringLocalizer<BackgroundTaskController> stringLocalizer,
             INotifier notifier)
         {
             _authorizationService = authorizationService;
@@ -46,6 +50,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             _notifier = notifier;
 
             New = shapeFactory;
+            S = stringLocalizer;
             H = htmlLocalizer;
         }
 
@@ -67,9 +72,25 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 );
             }
 
+            if (String.Equals(options.Status, "enabled", StringComparison.OrdinalIgnoreCase))
+            {
+                items = items.Where(x => x.Settings.Enable);
+            }
+            else if (String.Equals(options.Status, "disabled", StringComparison.OrdinalIgnoreCase))
+            {
+                items = items.Where(x => !x.Settings.Enable);
+            }
+
+            options.Statuses = new List<SelectListItem>()
+            {
+                new SelectListItem() { Text = S["Enabled"], Value = "enabled" },
+                new SelectListItem() { Text = S["Disabled"], Value = "disabled" }
+            };
+
             var taskItems = items.ToList();
             var routeData = new RouteData();
             routeData.Values.Add($"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(options.Search)}", options.Search);
+            routeData.Values.Add($"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(options.Status)}", options.Status);
 
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var pagerShape = (await New.Pager(pager)).TotalItemCount(taskItems.Count).RouteData(routeData);
@@ -90,6 +111,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { $"{nameof(model.Options)}.{nameof(AdminIndexOptions.Search)}", model.Options.Search },
+                { $"{nameof(model.Options)}.{nameof(AdminIndexOptions.Status)}", model.Options.Status },
             });
         }
 
