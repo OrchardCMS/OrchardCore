@@ -184,9 +184,9 @@ namespace OrchardCore.Features.Controllers
                 && !settings.IsDefaultShell()
                 && settings.State == TenantState.Running)
             {
-                // At this point we know that this request is being executed from the default tenant.
-                // Also, we were able to find a matching running tenant that isn't the default one.
-                // We are safe to create a scope for the given tenant.
+                // At this point, we know that this request is being executed from the Default tenant.
+                // Also, we were able to find a matching and running tenant that isn't the Default one.
+                // Therefore, it is safe to create a scope for the given tenant.
                 var shellScope = await _shellHost.GetScopeAsync(settings);
 
                 await shellScope.UsingAsync(async scope =>
