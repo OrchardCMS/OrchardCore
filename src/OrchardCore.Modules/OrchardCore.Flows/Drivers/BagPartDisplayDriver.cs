@@ -34,14 +34,12 @@ namespace OrchardCore.Flows.Drivers
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer H;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IContentItemFactory _contentItemFactory;
 
         public BagPartDisplayDriver(
             IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
             IServiceProvider serviceProvider,
             IHttpContextAccessor httpContextAccessor,
-            IContentItemFactory contentItemFactory,
             ILogger<BagPartDisplayDriver> logger,
             INotifier notifier,
             IHtmlLocalizer<BagPartDisplayDriver> htmlLocalizer,
@@ -56,7 +54,6 @@ namespace OrchardCore.Flows.Drivers
             _notifier = notifier;
             H = htmlLocalizer;
             _authorizationService = authorizationService;
-            _contentItemFactory = contentItemFactory;
         }
 
         public override IDisplayResult Display(BagPart bagPart, BuildPartDisplayContext context)
@@ -249,14 +246,13 @@ namespace OrchardCore.Flows.Drivers
                     .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
                     .Where(contentType => contentType != null);
             }
+            var user = _httpContextAccessor.HttpContext.User;
 
             var accessibleContentTypes = new List<ContentTypeDefinition>();
 
             foreach (var contentType in contentTypes)
             {
-                var dummyContent = await _contentItemFactory.CreateAsync(contentType.Name, GetCurrentOwner());
-
-                if (!await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, dummyContent))
+                if (contentType.IsSecurable() && !await _authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.EditContent, contentType, GetCurrentOwner()))
                 {
                     continue;
                 }
