@@ -57,17 +57,7 @@ namespace OrchardCore.Roles.Services
 
             if (!providersForInstalledFeature.Any())
             {
-                if (_logger.IsEnabled(LogLevel.Debug))
-                {
-                    _logger.LogDebug("No default roles for feature '{FeatureName}'", feature.Id);
-                }
-
                 return;
-            }
-
-            if (_logger.IsEnabled(LogLevel.Debug))
-            {
-                _logger.LogDebug("Configuring default roles for feature '{FeatureName}'", feature.Id);
             }
 
             var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
@@ -80,11 +70,6 @@ namespace OrchardCore.Roles.Services
                     var role = rolesDocument.Roles.FirstOrDefault(role => role.RoleName == stereotype.Name);
                     if (role == null)
                     {
-                        if (_logger.IsEnabled(LogLevel.Information))
-                        {
-                            _logger.LogDebug("The default role '{RoleName}' for feature '{FeatureName}' doesn't exist.", stereotype.Name, feature.Id);
-                        }
-
                         continue;
                     }
 
