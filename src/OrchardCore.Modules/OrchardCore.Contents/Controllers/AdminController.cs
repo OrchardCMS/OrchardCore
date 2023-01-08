@@ -185,7 +185,7 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
-            if ((String.IsNullOrEmpty(options.SelectedContentType) || String.IsNullOrEmpty(contentTypeId)) && options.ContentTypeOptions == null)
+            if (options.ContentTypeOptions == null && (String.IsNullOrEmpty(options.SelectedContentType) || String.IsNullOrEmpty(contentTypeId)))
             {
                 var listableTypes = new List<ContentTypeDefinition>();
                 var userNameIdentifier = CurrentUserId();
@@ -214,7 +214,7 @@ namespace OrchardCore.Contents.Controllers
 
                 foreach (var option in contentTypeOptions)
                 {
-                    if (await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.ViewContent, option.Key, userNameIdentifier))
+                    if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.ViewContent, option.Key, userNameIdentifier))
                     {
                         continue;
                     }
