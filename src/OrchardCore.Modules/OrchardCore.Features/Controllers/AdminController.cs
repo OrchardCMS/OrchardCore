@@ -62,17 +62,14 @@ namespace OrchardCore.Features.Controllers
 
             var viewModel = new FeaturesViewModel();
 
-            await ExecuteAsync(tenant, async (featureService, settings) =>
+            await ExecuteAsync(tenant, async (featureService, settings, isProxy) =>
             {
                 // If the user provide an invalid tenant value, we'll set it to null so it's not available on the next request.
-                if (!settings.IsDefaultShell())
+                if (isProxy)
                 {
+                    viewModel.IsProxy = true;
                     tenant = settings.Name;
                     viewModel.Name = settings.Name;
-                }
-                else
-                {
-                    viewModel.IsDefaultTenant = true;
                 }
 
                 viewModel.Features = await featureService.GetModuleFeaturesAsync();
@@ -97,7 +94,7 @@ namespace OrchardCore.Features.Controllers
 
             if (ModelState.IsValid)
             {
-                await ExecuteAsync(tenant, async (featureService, settings) =>
+                await ExecuteAsync(tenant, async (featureService, settings, isProxy) =>
                 {
                     var availableFeatures = await featureService.GetAvailableFeatures(model.FeatureIds);
 
@@ -118,7 +115,7 @@ namespace OrchardCore.Features.Controllers
 
             var found = false;
 
-            await ExecuteAsync(tenant, async (featureService, settings) =>
+            await ExecuteAsync(tenant, async (featureService, settings, isProxy) =>
             {
                 var feature = await featureService.GetAvailableFeature(id);
 
@@ -129,7 +126,7 @@ namespace OrchardCore.Features.Controllers
 
                 found = true;
 
-                if (settings.IsDefaultShell() && id == FeaturesConstants.FeatureId)
+                if (!isProxy && id == FeaturesConstants.FeatureId)
                 {
                     await _notifier.ErrorAsync(H["This feature is always enabled and cannot be disabled."]);
 
@@ -157,7 +154,7 @@ namespace OrchardCore.Features.Controllers
 
             var found = false;
 
-            await ExecuteAsync(tenant, async (featureService, settings) =>
+            await ExecuteAsync(tenant, async (featureService, settings, isProxy) =>
             {
                 var feature = await featureService.GetAvailableFeature(id);
 
@@ -179,7 +176,7 @@ namespace OrchardCore.Features.Controllers
             return Redirect(GetNextUrl(tenant, id));
         }
 
-        private async Task ExecuteAsync(string tenant, Func<FeatureService, ShellSettings, Task> action)
+        private async Task ExecuteAsync(string tenant, Func<FeatureService, ShellSettings, bool, Task> action)
         {
             if (_shellSettings.IsDefaultShell()
                 && !String.IsNullOrWhiteSpace(tenant)
@@ -187,8 +184,8 @@ namespace OrchardCore.Features.Controllers
                 && !settings.IsDefaultShell()
                 && settings.State == TenantState.Running)
             {
-                // At this point we know that this request is being executed from the host.
-                // Also, we were able to find a matching running tenant that isn't a default shell.
+                // At this point we know that this request is being executed from the default tenant.
+                // Also, we were able to find a matching running tenant that isn't the default one.
                 // We are safe to create a scope for the given tenant.
                 var shellScope = await _shellHost.GetScopeAsync(settings);
 
@@ -198,14 +195,14 @@ namespace OrchardCore.Features.Controllers
                     var extensionManager = scope.ServiceProvider.GetRequiredService<IExtensionManager>();
 
                     // At this point we apply the action on the given tenant.
-                    await action(new FeatureService(shellFeatureManager, extensionManager), scope.ShellContext.Settings);
+                    await action(new FeatureService(shellFeatureManager, extensionManager), scope.ShellContext.Settings, true);
                 });
 
                 return;
             }
 
             // At this point we apply the action on the current tenant.
-            await action(new FeatureService(_shellFeaturesManager, _extensionManager), _shellSettings);
+            await action(new FeatureService(_shellFeaturesManager, _extensionManager), _shellSettings, false);
         }
 
         private string GetNextUrl(string tenant, string featureId)

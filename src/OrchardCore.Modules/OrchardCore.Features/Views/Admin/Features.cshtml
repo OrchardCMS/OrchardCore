@@ -71,13 +71,19 @@
                             //var lifecycleStatus = feature.Descriptor.Extension.LifecycleStatus;
                             var featureId = feature.Descriptor.Id;
                             var featureName = feature.Descriptor.Name;
+                            var isAlwaysEnabled = feature.IsAlwaysEnabled;
+
+                            if (Model.IsProxy && featureId == FeaturesConstants.FeatureId)
+                            {
+                                isAlwaysEnabled = false;
+                            }
 
                             var dependencies = (from d in feature.FeatureDependencies
                                                 select (from f in Model.Features where f.Descriptor.Id == d.Id select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
                             var dependenciesNames = String.Join(" ", dependencies.Select(d => d.Descriptor.Name));
                             var missingDependencies = feature.FeatureDependencies
                             .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
-                            var showDisable = !feature.Descriptor.EnabledByDependencyOnly && !feature.IsAlwaysEnabled && categoryName != "Core" && featureName != Application.ModuleName;
+                            var showDisable = !feature.Descriptor.EnabledByDependencyOnly && !isAlwaysEnabled && categoryName != "Core" && featureName != Application.ModuleName;
                             var showEnable = !feature.Descriptor.EnabledByDependencyOnly && !missingDependencies.Any() && featureId != "OrchardCore.Setup" && featureId != "OrchardCore.AutoSetup";
 
                             <li class="list-group-item" data-filter-value="@categoryName @dependenciesNames @featureName">
@@ -131,7 +137,7 @@
                                                 </div>
                                             }
                                         }
-                                        else if (feature.IsEnabled && (feature.IsAlwaysEnabled || (Model.IsDefaultTenant && featureId == FeaturesConstants.FeatureId)))
+                                        else if (feature.IsEnabled && isAlwaysEnabled)
                                         {
                                             <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is always enabled and cannot be manually disabled."]">
                                                 <button class="btn btn-danger btn-sm" disabled>@T["Disable"]</button>
