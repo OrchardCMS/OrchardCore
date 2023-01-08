@@ -319,6 +319,9 @@ The Roles step allows you to set permissions to specific roles.
     }
 ```
 
+!!! warning
+    The default roles are no longer auto created, so any setup recipe should now define the default roles to be used, usually with an empty array for the permissions that are still auto updated with the default permissions provided by features.
+
 ### Template and AdminTemplate Step
 
 The Template and AdminTemplate steps allow you to create Liquid Templates.

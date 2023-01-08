@@ -11,7 +11,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Roles",
     Name = "Roles",
-    Description = "The roles module adds the permissions to assign roles to users. It's also provides a set of default roles for which other modules can define default permissions.",
+    Description = "The roles module adds the permissions to assign roles to users. It also updates existing default roles with the default permissions provided by features.",
     Dependencies = new[] { "OrchardCore.Roles.Core" },
     Category = "Security"
 )]

@@ -38,10 +38,10 @@ namespace OrchardCore.Roles
             services.AddScoped<RoleStore>();
             services.Replace(ServiceDescriptor.Scoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));
             services.Replace(ServiceDescriptor.Scoped<IRoleStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));
-            services.AddRecipeExecutionStep<RolesStep>();
 
-            services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddRecipeExecutionStep<RolesStep>();
             services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
+            services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
         }
 
