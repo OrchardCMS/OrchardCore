@@ -21,9 +21,11 @@ public class NullRoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     public Task<IdentityResult> DeleteAsync(IRole role, CancellationToken cancellationToken)
         => Task.FromResult(IdentityResult.Success);
 
+#pragma warning disable CA1816
     public void Dispose()
     {
     }
+#pragma warning restore CA1816
 
     public Task<IRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         => Task.FromResult<IRole>(null);

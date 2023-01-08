@@ -261,8 +261,10 @@ namespace OrchardCore.Roles.Services
 
         #endregion IRoleClaimStore<IRole>
 
+#pragma warning disable CA1816
         public void Dispose()
         {
         }
+#pragma warning restore CA1816
     }
 }

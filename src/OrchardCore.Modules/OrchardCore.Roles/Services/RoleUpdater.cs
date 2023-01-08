@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Documents;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Roles.Models;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
@@ -14,18 +14,18 @@ namespace OrchardCore.Roles.Services
 {
     public class RoleUpdater : IFeatureEventHandler, IRoleCreatedEventHandler
     {
-        private readonly RoleManager<IRole> _roleManager;
+        private readonly IDocumentManager<RolesDocument> _documentManager;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
 
         public RoleUpdater(
-            RoleManager<IRole> roleManager,
+            IDocumentManager<RolesDocument> documentManager,
             IEnumerable<IPermissionProvider> permissionProviders,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<RoleUpdater> logger)
         {
-            _roleManager = roleManager;
+            _documentManager = documentManager;
             _permissionProviders = permissionProviders;
             _typeFeatureProvider = typeFeatureProvider;
             _logger = logger;
@@ -55,27 +55,29 @@ namespace OrchardCore.Roles.Services
             var providersForInstalledFeature = _permissionProviders
                 .Where(provider => _typeFeatureProvider.GetFeatureForDependency(provider.GetType()).Id == feature.Id);
 
-            if (_logger.IsEnabled(LogLevel.Debug))
+            if (!providersForInstalledFeature.Any())
             {
-                if (providersForInstalledFeature.Any())
-                {
-                    _logger.LogDebug("Configuring default roles for feature '{FeatureName}'", feature.Id);
-                }
-                else
+                if (_logger.IsEnabled(LogLevel.Debug))
                 {
                     _logger.LogDebug("No default roles for feature '{FeatureName}'", feature.Id);
-
-                    return;
                 }
+
+                return;
             }
 
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Configuring default roles for feature '{FeatureName}'", feature.Id);
+            }
+
+            var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
             foreach (var permissionProvider in providersForInstalledFeature)
             {
                 // Get and iterate stereotypical groups of permissions.
                 var stereotypes = permissionProvider.GetDefaultStereotypes();
                 foreach (var stereotype in stereotypes)
                 {
-                    var role = await _roleManager.FindByNameAsync(stereotype.Name);
+                    var role = rolesDocument.Roles.FirstOrDefault(role => role.RoleName == stereotype.Name);
                     if (role == null)
                     {
                         if (_logger.IsEnabled(LogLevel.Information))
@@ -90,9 +92,11 @@ namespace OrchardCore.Roles.Services
                     var permissionNames = (stereotype.Permissions ?? Enumerable.Empty<Permission>())
                         .Select(stereotype => stereotype.Name);
 
-                    await AssignPermissionsToRole((Role)role, permissionNames);
+                    AssignPermissionsToRole(role, permissionNames);
                 }
             }
+
+            await _documentManager.UpdateAsync(rolesDocument);
         }
 
         private async Task UpdateCreatedRoleForEnabledFeaturesAsync(string roleName)
@@ -107,7 +111,8 @@ namespace OrchardCore.Roles.Services
                 return;
             }
 
-            var role = await _roleManager.FindByNameAsync(roleName);
+            var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
+            var role = rolesDocument.Roles.FirstOrDefault(role => role.RoleName == roleName);
             if (role == null)
             {
                 return;
@@ -118,10 +123,12 @@ namespace OrchardCore.Roles.Services
                 .SelectMany(stereotype => stereotype.Permissions ?? Enumerable.Empty<Permission>())
                 .Select(stereotype => stereotype.Name);
 
-            await AssignPermissionsToRole((Role)role, permissionNames);
+            AssignPermissionsToRole(role, permissionNames);
+
+            await _documentManager.UpdateAsync(rolesDocument);
         }
 
-        private async Task AssignPermissionsToRole(Role role, IEnumerable<string> permissionNames)
+        private void AssignPermissionsToRole(Role role, IEnumerable<string> permissionNames)
         {
             var currentPermissionNames = role.RoleClaims
                 .Where(roleClaim => roleClaim.ClaimType == Permission.ClaimType)
@@ -142,7 +149,7 @@ namespace OrchardCore.Roles.Services
                         _logger.LogDebug("Default role '{RoleName}' granted permission '{PermissionName}'.", role.RoleName, permissionName);
                     }
 
-                    await _roleManager.AddClaimAsync(role, new Claim(Permission.ClaimType, permissionName));
+                    role.RoleClaims.Add(new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = permissionName });
                 }
             }
         }
