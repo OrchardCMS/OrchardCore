@@ -1,8 +1,10 @@
 @using Microsoft.AspNetCore.Authorization
+@using OrchardCore.ContentManagement
 @using OrchardCore.Contents
 @model OrchardCore.Lists.ViewModels.ListPartNavigationAdminViewModel
 @inject OrchardCore.ContentManagement.IContentManager ContentManager
 @inject Microsoft.AspNetCore.Authorization.IAuthorizationService AuthorizationService
+@inject IContentItemFactory ContentItemFactory
 
 <div class="card bg-primary text-right mb-3" style="z-index: 1001">
     <div class="card-body">
@@ -24,8 +26,7 @@
             {
                 var contentTypeDefinition = Model.ContainedContentTypeDefinitions[0];
 
-                var dummyContent = await ContentManager.NewAsync(contentTypeDefinition.Name);
-                dummyContent.Owner = User.Identity.Name;
+                var dummyContent = await ContentItemFactory.CreateAsync(contentTypeDefinition.Name, User.Identity.Name);
 
                 if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, dummyContent))
                 {
@@ -42,8 +43,7 @@
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                     @foreach (var containedContentTypeDefinition in Model.ContainedContentTypeDefinitions)
                     {
-                        var dummyContent = await ContentManager.NewAsync(containedContentTypeDefinition.Name);
-                        dummyContent.Owner = User.Identity.Name;
+                        var dummyContent = await ContentItemFactory.CreateAsync(containedContentTypeDefinition.Name, User.Identity.Name);
 
                         if (!await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, dummyContent))
                         {
