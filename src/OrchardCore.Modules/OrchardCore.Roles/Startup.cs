@@ -38,14 +38,11 @@ namespace OrchardCore.Roles
             services.AddScoped<RoleStore>();
             services.Replace(ServiceDescriptor.Scoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));
             services.Replace(ServiceDescriptor.Scoped<IRoleStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));
-
-            services.TryAddScoped<RoleManager<IRole>>();
             services.AddRecipeExecutionStep<RolesStep>();
-            services.AddScoped<IRoleService, RoleService>();
 
+            services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IPermissionProvider, Permissions>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -90,11 +87,14 @@ namespace OrchardCore.Roles
         }
     }
 
-    [Feature("OrchardCore.Roles.Updater")]
+    [Feature("OrchardCore.Roles.Core")]
     public class RoleUpdaterStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<RoleManager<IRole>>();
+            services.AddScoped<IRoleService, RoleService>();
+
             services.AddScoped<RoleUpdater>();
             services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
             services.AddScoped<IRoleCreatedEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
