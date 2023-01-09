@@ -27,7 +27,7 @@ Authenticates users with their Azure AD Account.
 If the site allows to register new users, a local user is created and the Azure AD account is linked.
 If a local user with the same email is found, then the external login is linked to that account, after authenticating.
 
-You can configure The Azure AD through the [Azure Portal](https://portal.azure.com) for your tenant.
+You can configure Azure AD through the [Azure Portal](https://portal.azure.com) for your tenant.
 
 Create a Web app/API App registration. The default call back in Orchard is /signin-oidc
 
@@ -36,8 +36,7 @@ Available settings are:
 - DisplayName: The display name of the provider.
 - AppId: Provide the Application ID from the properties of the above app
 - TenantId: Provide the Directory ID value from the Azure Active Directory properties
-- CallbackPath: The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.
-If no value is provided, setup Azure AD app to use the default path /signin-oidc.
+- CallbackPath: The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives. If no value is provided, setup Azure AD app to use the default path /signin-oidc.
 
 ### Recipe Step
 
