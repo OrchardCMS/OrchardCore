@@ -12,8 +12,8 @@ public static class IndexesServiceCollectionExtensions
     }
 
     public static IServiceCollection AddScopedIndexProvider<TIndexProvider>(this IServiceCollection services)
-        where TIndexProvider : class, IScopedIndexProvider
+        where TScopedIndexProvider : class, IScopedIndexProvider
     {
-        return services.AddScoped<IScopedIndexProvider, TIndexProvider>();
+        return services.AddScoped<IScopedIndexProvider, TScopedIndexProvider>();
     }
 }
