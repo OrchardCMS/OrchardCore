@@ -4,7 +4,6 @@
 @model OrchardCore.Lists.ViewModels.ListPartNavigationAdminViewModel
 @inject OrchardCore.ContentManagement.IContentManager ContentManager
 @inject Microsoft.AspNetCore.Authorization.IAuthorizationService AuthorizationService
-@inject IContentItemFactory ContentItemFactory
 
 <div class="card bg-primary text-right mb-3" style="z-index: 1001">
     <div class="card-body">
@@ -26,9 +25,7 @@
             {
                 var contentTypeDefinition = Model.ContainedContentTypeDefinitions[0];
 
-                var dummyContent = await ContentItemFactory.CreateAsync(contentTypeDefinition.Name, User.Identity.Name);
-
-                if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, dummyContent))
+                if (await AuthorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinition, User.Identity.Name))
                 {
                     <a class="btn btn-secondary" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.Container.ContentItemId" asp-route-ListPart.ContainerContentType="@Model.ContainerContentTypeDefinition?.Name" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
                         @T["Create {0}", contentTypeDefinition.DisplayName]
@@ -43,9 +40,7 @@
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                     @foreach (var containedContentTypeDefinition in Model.ContainedContentTypeDefinitions)
                     {
-                        var dummyContent = await ContentItemFactory.CreateAsync(containedContentTypeDefinition.Name, User.Identity.Name);
-
-                        if (!await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, dummyContent))
+                        if (!await AuthorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, containedContentTypeDefinition, User.Identity.Name))
                         {
                             continue;
                         }

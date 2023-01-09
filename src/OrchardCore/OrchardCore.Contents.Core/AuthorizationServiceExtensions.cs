@@ -12,6 +12,42 @@ namespace Microsoft.AspNetCore.Authorization
 {
     public static class AuthorizationServiceExtensions
     {
+        public static Task<bool> AuthorizeContentTypeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, ContentTypeDefinition contentTypeDefinition, string owner = null)
+        {
+            if (contentTypeDefinition == null)
+            {
+                throw new ArgumentNullException(nameof(contentTypeDefinition));
+            }
+
+            return service.AuthorizeContentTypeAsync(user, requiredPermission, contentTypeDefinition.Name, owner);
+        }
+
+        public static Task<bool> AuthorizeContentTypeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, string contentType, string owner = null)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (requiredPermission == null)
+            {
+                throw new ArgumentNullException(nameof(requiredPermission));
+            }
+
+            if (String.IsNullOrWhiteSpace(contentType))
+            {
+                throw new ArgumentException($"{nameof(contentType)} cannot be empty.");
+            }
+
+            var item = new ContentItem()
+            {
+                ContentType = contentType,
+                Owner = owner,
+            };
+
+            return service.AuthorizeAsync(user, requiredPermission, item);
+        }
+
         /// <summary>
         /// Evaluate if we have a specific owner variation permission to at least one content type
         /// </summary>
