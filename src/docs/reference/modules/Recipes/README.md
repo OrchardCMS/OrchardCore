@@ -320,7 +320,7 @@ The Roles step allows you to set permissions to specific roles.
 ```
 
 !!! warning
-    The default roles are no longer auto created, so any setup recipe should now define the default roles to be used, usually with an empty array for the permissions that are still auto updated with the default permissions provided by features.
+    As of version 1.6, the default roles are no longer auto created. Setup recipe must define the default roles to be used. The `Roles` feature will automatically map all know permission to the defined roles each time a feature is enabled.
 
 ### Template and AdminTemplate Step
 
