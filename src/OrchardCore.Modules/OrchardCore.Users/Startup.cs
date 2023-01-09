@@ -229,7 +229,6 @@ namespace OrchardCore.Users
         }
     }
 
-    [Feature("OrchardCore.Users")]
     [RequireFeatures("OrchardCore.Roles")]
     public class RolesStartup : StartupBase
     {

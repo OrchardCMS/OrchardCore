@@ -10,7 +10,7 @@ public static class HttpContextExtensions
     public static string GetEncodedUrl(this HttpContext httpContext, ShellSettingsEntry entry, bool appendQuery = true)
     {
         var shellSettings = entry.ShellSettings;
-        var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        var host = shellSettings.RequestUrlHosts.FirstOrDefault();
 
         var hostString = httpContext.Request.Host;
         if (host != null)

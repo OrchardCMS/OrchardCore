@@ -12,7 +12,7 @@ namespace OrchardCore.Users
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return Task.FromResult<IEnumerable<Permission>>(new List<Permission>()
+            return Task.FromResult<IEnumerable<Permission>>(new List<Permission>
             {
                 ManageUsers,
                 ViewUsers,
