@@ -52,10 +52,10 @@ The Azure Active Directory can be set during recipes using the settings step. He
 }
 ```
 
-## Users Registration
+## User Registration
 
 - If you want to enable new users to register to the site through their Microsoft Account and/or Microsoft Azure AD login, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
-- An existing user can link his account to his Microsoft Account and/or Microsoft Azure AD login through the External Logins link from User menu
+- Apart from during login, an existing user can link their account to their Microsoft Account and/or Microsoft Azure AD login through the External Logins link from User menu.
 
 ## Microsoft Account & Azure Active Directory Settings Configuration
 
