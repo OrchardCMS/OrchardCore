@@ -11,7 +11,7 @@ public static class IndexesServiceCollectionExtensions
         return services.AddSingleton<IIndexProvider, TIndexProvider>();
     }
 
-    public static IServiceCollection AddScopedIndexProvider<TIndexProvider>(this IServiceCollection services)
+    public static IServiceCollection AddScopedIndexProvider<TScopedIndexProvider>(this IServiceCollection services)
         where TScopedIndexProvider : class, IScopedIndexProvider
     {
         return services.AddScoped<IScopedIndexProvider, TScopedIndexProvider>();
