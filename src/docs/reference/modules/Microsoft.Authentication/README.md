@@ -23,20 +23,34 @@ If no value is provided, setup Microsoft Account app to use the default path /si
 
 ## Azure Active Directory
 
-Authenticates users with their Azure AD Account.
-If the site allows to register new users, a local user is created and the Azure AD account is linked.
-If a local user with the same email is found, then the external login is linked to that account, after authenticating.
+Authenticates users with their Azure AD Account, like Microsoft work or school accounts. If the site allows to register new users, a local user is created and the Azure AD account is linked. If a local user with the same email is found, then the external login is linked to that account, after authenticating.
 
 You can configure Azure AD through the [Azure Portal](https://portal.azure.com) for your tenant.
 
-Create a Web app/API App registration. The default call back in Orchard is /signin-oidc
+1. Go to the Azure Active Directory menu, which will open your organization's Active Directory settings.
+2. Open "App registrations" and click "New registration" to start creating a new app registration.
+3. Use the following settings:
+    - Name: We suggest the name of your web app, e.g. "My App". This is not the same display name that you need to specify for the login later.
+    - Supported account types: The feature supports both single and multitenant Azure AD, but not personal accounts.
+    - Redirect URI: While supposedly optional, you have to specify one for the login flow to work with web apps. Add the host (root) URL of your web app, e.g. "example.com" (upon login, users will be redirected to the page they visited previously, but all such target URLs need to be under the redirect URI).
+4. Once the app is created, note the following details of it which will be necessary to configure in Orchard Core later:
+    - Application (client) ID
+    - Directory (tenant) ID
+5. Configure the rest of the authentication settings of the app under its "Authentication" menu. There, under "Implicit grant and hybrid flows", enable both "Access tokens (used for implicit flows)" and "ID tokens (used for implicit and hybrid flows)". Without these, login with fail with errors.
+6. Configure the `email` claim under the "Token configuration" menu. Click "Add optional claim", as "Token type" select "ID", then select "email" and click "Add". Without this, Orchard can't match logins based on the user's email, and thus existing users won't be able to log in.
 
-Available settings are:
+Now you're ready to configure Azure AD login in Orchard too. After you enable the "Microsoft Azure Active Directory Authentication" feature, on the Orchard admin you'll see the "Security" → "Azure Active Directory" menu. Configure the following at least:
 
-- DisplayName: The display name of the provider.
-- AppId: Provide the Application ID from the properties of the above app
-- TenantId: Provide the Directory ID value from the Azure Active Directory properties
-- CallbackPath: The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives. If no value is provided, setup Azure AD app to use the default path /signin-oidc.
+- Display Name: The text that'll be displayed on the Orchard login screen. We recommend something like "My Company Microsoft account".
+- AppId: Use the above-mentioned "Application (client) ID" from the Azure Portal.
+- TenantId: Use the above-mentioned "Directory (tenant) ID" from the Azure Portal.
+- CallbackPath: We recommend not changing this unless you want to handle the login callback from your custom code. The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives. If no value is provided, the default `/signin-oidc` is used, which requires no further setup.
+
+Now, the login screen will display a button for Azure AD login:
+
+![Azure AD login button on the Orchard Core login screen](images/azure-ad-login-button.png)
+
+Existing users who have the same e-mail address in Orchard and in Azure AD will be able to log in and attach their two accounts. New users will be able to register if registration is otherwise enabled and set up, see below.
 
 ### Recipe Step
 
