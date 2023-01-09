@@ -27,7 +27,7 @@ Authenticates users with their Azure AD Account, like Microsoft work or school a
 
 You can configure Azure AD through the [Azure Portal](https://portal.azure.com) for your tenant.
 
-1. Go to the Azure Active Directory menu, which will open your organization's Active Directory settings.
+1. Go to the "Azure Active Directory" menu, which will open your organization's Active Directory settings.
 2. Open "App registrations" and click "New registration" to start creating a new app registration.
 3. Use the following settings:
     - Name: We suggest the name of your web app, e.g. "My App". This is not the same display name that you need to specify for the login later.
