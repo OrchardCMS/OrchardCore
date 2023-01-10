@@ -25,18 +25,18 @@ If no value is provided, setup Microsoft Account app to use the default path /si
 
 Authenticates users with their Azure AD Account, like Microsoft work or school accounts. If the site allows to register new users, a local user is created and the Azure AD account is linked. If a local user with the same email is found, then the external login is linked to that account, after authenticating.
 
-You can configure Azure AD through the [Azure Portal](https://portal.azure.com) for your tenant.
+First, you need to create an Azure AD app on the [Azure Portal](https://portal.azure.com) for your Azure AD tenant.
 
 1. Go to the "Azure Active Directory" menu, which will open your organization's Active Directory settings.
 2. Open "App registrations" and click "New registration" to start creating a new app registration.
 3. Use the following settings:
-    - Name: We suggest the name of your web app, e.g. "My App". This is not the same display name that you need to specify for the login later.
+    - Name: We suggest the name of your web app, e.g. "My App". This is not the same display name that you need to specify for the login later and it doesn't need to match anything else.
     - Supported account types: The feature supports both single and multitenant Azure AD, but not personal accounts.
-    - Redirect URI: While supposedly optional, you have to specify one for the login flow to work with web apps. Add the host (root) URL of your web app, e.g. "example.com" (upon login, users will be redirected to the page they visited previously, but all such target URLs need to be under the redirect URI).
-4. Once the app is created, note the following details of it which will be necessary to configure in Orchard Core later:
+    - Redirect URI: While supposedly optional, you have to specify one for the login flow to work with web apps. Add the URL that'll handle Azure AD login redirects; by default, this is `/signin-oidc` under your app's root URL, e.g. "https://example.com/signin-oidc" (upon login, users will be redirected to the page they visited previously, this isn't for that).
+4. Once the app is created, note the following details of it, as displayed in the Azure Portal, which will be necessary to configure in Orchard Core later:
     - Application (client) ID
     - Directory (tenant) ID
-5. Configure the rest of the authentication settings of the app under its "Authentication" menu. There, under "Implicit grant and hybrid flows", enable both "Access tokens (used for implicit flows)" and "ID tokens (used for implicit and hybrid flows)". Without these, login with fail with errors.
+5. Configure the rest of the authentication settings of the app under its "Authentication" menu. There, under "Implicit grant and hybrid flows", enable both "Access tokens (used for implicit flows)" and "ID tokens (used for implicit and hybrid flows)". Without these, login will fail with errors.
 6. Configure the `email` claim under the "Token configuration" menu. Click "Add optional claim", as "Token type" select "ID", then select "email" and click "Add". Without this, Orchard can't match logins based on the user's email, and thus existing users won't be able to log in.
 
 Now you're ready to configure Azure AD login in Orchard too. After you enable the "Microsoft Azure Active Directory Authentication" feature, on the Orchard admin you'll see the "Security" → "Azure Active Directory" menu. Configure the following at least:
@@ -44,7 +44,7 @@ Now you're ready to configure Azure AD login in Orchard too. After you enable th
 - Display Name: The text that'll be displayed on the Orchard login screen. We recommend something like "My Company Microsoft account".
 - AppId: Use the above-mentioned "Application (client) ID" from the Azure Portal.
 - TenantId: Use the above-mentioned "Directory (tenant) ID" from the Azure Portal.
-- CallbackPath: We recommend not changing this unless you want to handle the login callback from your custom code. The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives. If no value is provided, the default `/signin-oidc` is used, which requires no further setup.
+- CallbackPath: We recommend not changing this unless you want to handle the login callback from your custom code, or if the `/signin-oidc` path is used by something else. This is the path within the application's base path where the user-agent will be returned after login. The middleware will process this request when it arrives. If no value is provided, the default `/signin-oidc` is used, which requires no further setup. If you change this, you'll also need to use it under "Redirect URIs" of the app in the Azure Portal.
 
 Now, the login screen will display a button for Azure AD login:
 
