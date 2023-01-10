@@ -90,6 +90,10 @@ a {
     z-index: $zindex-sticky;
 }
 
+.second-action-bar {
+    z-index: calc(#{$zindex-sticky} + 1);
+}
+
 .list-group-item + .list-group-item {
     border-top-width: 0px;
 }

@@ -21,8 +21,8 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Feature(
     Id = "OrchardCore.Recipes.Core",
-    Name = "Recipes",
-    Description = "Provides recipe services.",
+    Name = "Recipes Core Services",
+    Description = "Provides recipe core services.",
     Category = "Infrastructure",
     EnabledByDependencyOnly = true
 )]

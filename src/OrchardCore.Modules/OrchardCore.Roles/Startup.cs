@@ -39,16 +39,10 @@ namespace OrchardCore.Roles
             services.Replace(ServiceDescriptor.Scoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));
             services.Replace(ServiceDescriptor.Scoped<IRoleStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));
 
-            services.TryAddScoped<RoleManager<IRole>>();
-
             services.AddRecipeExecutionStep<RolesStep>();
-            services.AddScoped<IRoleService, RoleService>();
-            services.AddScoped<RoleUpdater>();
-            services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
-            services.AddScoped<IModularTenantEvents>(sp => sp.GetRequiredService<RoleUpdater>());
             services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -90,6 +84,21 @@ namespace OrchardCore.Roles
             services.AddTransient<IDeploymentSource, AllRolesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllRolesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllRolesDeploymentStepDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Roles.Core")]
+    public class RoleUpdaterStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<RoleManager<IRole>>();
+            services.AddScoped<IRoleService, RoleService>();
+
+            services.AddScoped<RoleUpdater>();
+            services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
+            services.AddScoped<IRoleCreatedEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
+            services.AddScoped<IRoleRemovedEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
         }
     }
 }

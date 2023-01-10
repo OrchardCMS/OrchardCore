@@ -36,9 +36,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddScoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<NullRoleStore>());
             services.TryAddScoped<IRoleStore<IRole>>(sp => sp.GetRequiredService<NullRoleStore>());
 
-            services.TryAddScoped<RoleManager<IRole>>();
-            services.TryAddScoped<IRoleService, RoleService>();
-
             services.AddSingleton<IIndexProvider, UserIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>();
