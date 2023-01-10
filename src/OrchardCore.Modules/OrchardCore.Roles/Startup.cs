@@ -98,6 +98,7 @@ namespace OrchardCore.Roles
             services.AddScoped<RoleUpdater>();
             services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
             services.AddScoped<IRoleCreatedEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
+            services.AddScoped<IRoleRemovedEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
         }
     }
 }
