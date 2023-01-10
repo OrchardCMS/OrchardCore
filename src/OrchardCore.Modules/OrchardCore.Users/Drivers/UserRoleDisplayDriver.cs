@@ -67,17 +67,16 @@ namespace OrchardCore.Users.Drivers
                 var roles = await GetRoleAsync();
 
                 // When a user is in a role that the current user cannot manage the role is shown but selection is disabled.
-                var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(roles);
+                var authorizedRoleNames = await GetAccessibleRoleNamesAsync(roles);
                 var userRoleNames = await _userRoleStore.GetRolesAsync(user, default);
 
                 var roleEntries = new List<RoleEntry>();
-                foreach (var role in roles)
+                foreach (var roleName in authorizedRoleNames)
                 {
                     var roleEntry = new RoleEntry
                     {
-                        Role = role.RoleName,
-                        IsSelected = userRoleNames.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
-                        IsEditingDisabled = !authorizedRoleNames.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase)
+                        Role = roleName,
+                        IsSelected = userRoleNames.Contains(roleName, StringComparer.OrdinalIgnoreCase),
                     };
 
                     roleEntries.Add(roleEntry);
@@ -86,7 +85,7 @@ namespace OrchardCore.Users.Drivers
                 model.Roles = roleEntries.ToArray();
             })
             .Location("Content:1.10")
-            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.EditUsers, user));
+            .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.EditUsers, user));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
@@ -103,29 +102,29 @@ namespace OrchardCore.Users.Drivers
             {
                 var roles = await GetRoleAsync();
                 // Authorize each role in the model to prevent html injection.
-                var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(roles);
-                var userRoleNames = await _userRoleStore.GetRolesAsync(user, default);
+                var accessibleRoleNames = await GetAccessibleRoleNamesAsync(roles);
+                var currentUserRoleNames = await _userRoleStore.GetRolesAsync(user, default);
 
                 var selectedRoleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role);
                 var selectedRoles = roles.Where(x => selectedRoleNames.Contains(x.RoleName, StringComparer.OrdinalIgnoreCase));
-                var authorizedSelectedRoleNames = await GetAuthorizedRoleNamesAsync(selectedRoles);
+                var accessibleAndSelectedRoleNames = await GetAccessibleRoleNamesAsync(selectedRoles);
 
                 if (context.IsNew)
                 {
                     // Only add authorized new roles.
-                    foreach (var role in authorizedSelectedRoleNames)
+                    foreach (var role in accessibleAndSelectedRoleNames)
                     {
                         await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeName(role), default);
                     }
                 }
                 else
                 {
-                    // Remove roles in two steps to prevent an iteration on a modified collection
+                    // Remove roles in two steps to prevent an iteration on a modified collection.
                     var rolesToRemove = new List<string>();
-                    foreach (var role in userRoleNames)
+                    foreach (var role in currentUserRoleNames)
                     {
                         // When the user has permission to manage the role and it is no longer selected the role can be removed.
-                        if (authorizedRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase) && !authorizedSelectedRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase))
+                        if (accessibleRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase) && !accessibleAndSelectedRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase))
                         {
                             rolesToRemove.Add(role);
                         }
@@ -136,10 +135,11 @@ namespace OrchardCore.Users.Drivers
                         if (String.Equals(role, AdministratorRole, StringComparison.OrdinalIgnoreCase))
                         {
                             var usersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>();
-                            // Make sure we always have at least one administrator account
+                            // Make sure we always have at least one administrator account.
                             if (usersOfAdminRole.Count() == 1 && String.Equals(user.UserId, usersOfAdminRole.First().UserId, StringComparison.OrdinalIgnoreCase))
                             {
                                 await _notifier.WarningAsync(H["Cannot remove administrator role from the only administrator."]);
+
                                 continue;
                             }
                         }
@@ -147,8 +147,8 @@ namespace OrchardCore.Users.Drivers
                         await _userRoleStore.RemoveFromRoleAsync(user, _userManager.NormalizeName(role), default);
                     }
 
-                    // Add new roles
-                    foreach (var role in authorizedSelectedRoleNames)
+                    // Add new roles.
+                    foreach (var role in accessibleAndSelectedRoleNames)
                     {
                         var normalizedName = _userManager.NormalizeName(role);
                         if (!await _userRoleStore.IsInRoleAsync(user, normalizedName, default))
@@ -170,9 +170,10 @@ namespace OrchardCore.Users.Drivers
             return roles.Where(role => !exclude.Any(x => x.Equals(role.RoleName, StringComparison.OrdinalIgnoreCase)));
         }
 
-        private async Task<IEnumerable<string>> GetAuthorizedRoleNamesAsync(IEnumerable<IRole> roles)
+        private async Task<IEnumerable<string>> GetAccessibleRoleNamesAsync(IEnumerable<IRole> roles)
         {
             var authorizedRoleNames = new List<string>();
+
             foreach (var role in roles)
             {
                 if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.AssignUsersToRole, role))
