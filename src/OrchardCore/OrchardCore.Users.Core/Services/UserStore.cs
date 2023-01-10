@@ -467,6 +467,8 @@ namespace OrchardCore.Users.Services
                 {
                     throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
                 }
+
+                u.RoleNames.Add(normalizedRoleName);
             }
         }
 
@@ -485,6 +487,8 @@ namespace OrchardCore.Users.Services
                 {
                     throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
                 }
+
+                u.RoleNames.Remove(normalizedRoleName);
             }
         }
 
