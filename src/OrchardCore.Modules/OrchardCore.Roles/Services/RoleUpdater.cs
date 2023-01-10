@@ -56,9 +56,9 @@ namespace OrchardCore.Roles.Services
 
         public Task UninstalledAsync(IFeatureInfo feature) => Task.CompletedTask;
 
-        public Task RoleCreatedAsync(string roleName) => UpdateRoleFromInstalledFeaturesAsync(roleName);
+        public Task RoleCreatedAsync(string roleName) => UpdateRoleForInstalledFeaturesAsync(roleName);
 
-        public Task RoleRemovedAsync(string roleName) => RemoveRoleFromMissingFeaturesAsync(roleName);
+        public Task RoleRemovedAsync(string roleName) => RemoveRoleForMissingFeaturesAsync(roleName);
 
         private async Task UpdateRolesForInstalledFeatureAsync(IFeatureInfo feature)
         {
@@ -138,7 +138,7 @@ namespace OrchardCore.Roles.Services
             }
         }
 
-        private async Task UpdateRoleFromInstalledFeaturesAsync(string roleName)
+        private async Task UpdateRoleForInstalledFeaturesAsync(string roleName)
         {
             var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
             var role = rolesDocument.Roles.FirstOrDefault(role => role.RoleName == roleName);
@@ -177,7 +177,7 @@ namespace OrchardCore.Roles.Services
             UpdateRole(role, permissions, _logger);
         }
 
-        private async Task RemoveRoleFromMissingFeaturesAsync(string roleName)
+        private async Task RemoveRoleForMissingFeaturesAsync(string roleName)
         {
             var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
             if (rolesDocument.MissingFeaturesByRole.TryGetValue(roleName, out _))
