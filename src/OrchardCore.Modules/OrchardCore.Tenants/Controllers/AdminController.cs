@@ -558,7 +558,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (shellSettings.State != TenantState.Running)
             {
-                await _notifier.ErrorAsync(H["You can only disable an Running tenant."]);
+                await _notifier.ErrorAsync(H["You can only disable a Running tenant."]);
                 return RedirectToAction(nameof(Index));
             }
 
