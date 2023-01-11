@@ -281,7 +281,7 @@ namespace OrchardCore.Tenants.Controllers
                     case nameof(TenantsBulkAction.Remove):
                         if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
                         {
-                            await _notifier.WarningAsync(H["You cannot remove the default tenant."]);
+                            await _notifier.WarningAsync(H["You cannot remove the Default tenant."]);
                         }
                         else if (shellSettings.State != TenantState.Disabled && shellSettings.State != TenantState.Uninitialized)
                         {
