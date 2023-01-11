@@ -222,7 +222,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (shellSettings.State != TenantState.Disabled && shellSettings.State != TenantState.Uninitialized)
             {
-                return BadRequest(S["You can only remove a 'Disabled' or 'Uninitialized' tenant."]);
+                return BadRequest(S["You can only remove a 'Disabled' or an 'Uninitialized' tenant."]);
             }
 
             var context = await _shellRemovalManager.RemoveAsync(shellSettings);
