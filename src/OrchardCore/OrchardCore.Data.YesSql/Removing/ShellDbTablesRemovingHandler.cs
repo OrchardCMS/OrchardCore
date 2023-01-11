@@ -46,9 +46,6 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
 
         if (context.ShellSettings.State == TenantState.Uninitialized)
         {
-            // An 'Uninitialized' tenant with a valid connection, and at least the 'Document' table,
-            // probably means that the tenant setup failed, and that some tables need to be cleanup.
-
             var dbConnectionValidator = ShellScope.Services?.GetService<IDbConnectionValidator>();
             if (dbConnectionValidator == null)
             {

@@ -199,7 +199,6 @@ namespace OrchardCore.Tenants.Controllers
             model.Options.TenantsBulkAction = new List<SelectListItem>() {
                 new SelectListItem() { Text = S["Disable"], Value = nameof(TenantsBulkAction.Disable) },
                 new SelectListItem() { Text = S["Enable"], Value = nameof(TenantsBulkAction.Enable) },
-                new SelectListItem() { Text = S["Remove"], Value = nameof(TenantsBulkAction.Remove) },
             };
 
             return View(model);
@@ -274,35 +273,6 @@ namespace OrchardCore.Tenants.Controllers
                         {
                             shellSettings.State = TenantState.Running;
                             await _shellHost.UpdateShellSettingsAsync(shellSettings);
-                        }
-
-                        break;
-
-                    case nameof(TenantsBulkAction.Remove):
-                        if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
-                        {
-                            await _notifier.WarningAsync(H["You cannot remove the Default tenant."]);
-                        }
-                        else if (shellSettings.State != TenantState.Disabled && shellSettings.State != TenantState.Uninitialized)
-                        {
-                            await _notifier.WarningAsync(H["The tenant '{0}' should be disabled or uninitialized.", shellSettings.Name]);
-                        }
-                        else
-                        {
-                            var context = await _shellRemovalManager.RemoveAsync(shellSettings);
-                            if (!context.Success)
-                            {
-                                await _notifier.ErrorAsync(H["An error occurred while removing the tenant '{0}'. {1}", shellSettings.Name, context.ErrorMessage]);
-                            }
-                            else
-                            {
-                                if (_logger.IsEnabled(LogLevel.Warning))
-                                {
-                                    _logger.LogWarning("The tenant '{TenantName}' was removed.", shellSettings.Name);
-                                }
-
-                                await _notifier.SuccessAsync(H["The tenant '{0}' was removed, see the log file for more info.", shellSettings.Name]);
-                            }
                         }
 
                         break;
