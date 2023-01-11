@@ -136,7 +136,7 @@ Tenant Removal can be allowed from any configuration source (e.g. `appsettings.j
 ```json
 {
     "OrchardCore_Tenants": {
-      "TenantRemovalAllowed": true // Whether tenant removal is allowed, false by default.
+      "TenantRemovalAllowed": false // Whether tenant removal is allowed or not. Default is false.
     }
   }
 }
