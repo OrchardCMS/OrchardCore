@@ -127,10 +127,6 @@ A feature profile can also be set when creating a tenant via the web API.
 
 If you're using [Auto Setup](../AutoSetup/README.md), you can specify the `FeatureProfile` property for tenants as well; see the Auto Setup documentation for more information.
 
-## Video
-
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/aQAjTG2ma64" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
 ## Tenant Removal
 
 Allows removing a tenant if it is not yet set up or is in the disabled state. By default, this feature is not allowed.
@@ -145,3 +141,7 @@ Tenant Removal can be allowed from any configuration source (e.g. `appsettings.j
   }
 }
 ```
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/aQAjTG2ma64" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
