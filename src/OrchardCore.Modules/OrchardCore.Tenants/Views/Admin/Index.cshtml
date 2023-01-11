@@ -56,7 +56,7 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
                             @foreach (var item in Model.Options.TenantsBulkAction)
                             {
-                                @if (item.Value == nameof(TenantsBulkAction.Remove) && !TenantsOptions.Value.TenantRemovalAllowed)
+                                @if (item.Value == nameof(TenantsBulkAction.Remove) /*&& !TenantsOptions.Value.TenantRemovalAllowed*/)
                                 {
                                     continue;
                                 }
