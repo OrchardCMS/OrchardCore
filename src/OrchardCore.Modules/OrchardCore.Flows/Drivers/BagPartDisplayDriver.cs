@@ -32,8 +32,7 @@ namespace OrchardCore.Flows.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<BagPartDisplayDriver> H;
-
+        private readonly IHtmlLocalizer H;
         private readonly IAuthorizationService _authorizationService;
 
         public BagPartDisplayDriver(
@@ -247,15 +246,13 @@ namespace OrchardCore.Flows.Drivers
                     .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
                     .Where(contentType => contentType != null);
             }
+            var user = _httpContextAccessor.HttpContext.User;
 
             var accessibleContentTypes = new List<ContentTypeDefinition>();
 
             foreach (var contentType in contentTypes)
             {
-                var dummyContent = await _contentManager.NewAsync(contentType.Name);
-                dummyContent.Owner = GetCurrentOwner();
-
-                if (!await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, dummyContent))
+                if (contentType.IsSecurable() && !await _authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.EditContent, contentType, GetCurrentOwner()))
                 {
                     continue;
                 }
