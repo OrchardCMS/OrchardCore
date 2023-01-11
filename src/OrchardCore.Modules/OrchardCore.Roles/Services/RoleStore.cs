@@ -67,9 +67,16 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
+            var roleToCreate = (Role)role;
+
             var roles = await LoadRolesAsync();
-            roles.Roles.Add((Role)role);
+            roles.Roles.Add(roleToCreate);
             await UpdateRolesAsync(roles);
+
+            var roleCreatedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleCreatedEventHandler>>();
+
+            await roleCreatedEventHandlers.InvokeAsync((handler, roleToCreate) =>
+                handler.RoleCreatedAsync(roleToCreate.RoleName), roleToCreate, _logger);
 
             return IdentityResult.Success;
         }
@@ -90,7 +97,9 @@ namespace OrchardCore.Roles.Services
             }
 
             var roleRemovedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleRemovedEventHandler>>();
-            await roleRemovedEventHandlers.InvokeAsync((handler, roleToRemove) => handler.RoleRemovedAsync(roleToRemove.RoleName), roleToRemove, _logger);
+
+            await roleRemovedEventHandlers.InvokeAsync((handler, roleToRemove) =>
+                handler.RoleRemovedAsync(roleToRemove.RoleName), roleToRemove, _logger);
 
             var roles = await LoadRolesAsync();
             roleToRemove = roles.Roles.FirstOrDefault(r => r.RoleName == roleToRemove.RoleName);
@@ -252,8 +261,10 @@ namespace OrchardCore.Roles.Services
 
         #endregion IRoleClaimStore<IRole>
 
+#pragma warning disable CA1816
         public void Dispose()
         {
         }
+#pragma warning restore CA1816
     }
 }
