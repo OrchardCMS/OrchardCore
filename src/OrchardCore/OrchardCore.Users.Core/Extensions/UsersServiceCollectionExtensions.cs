@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using OrchardCore.Roles.Services;
 using OrchardCore.Security;
-using OrchardCore.Security.Services;
 using OrchardCore.Users;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
