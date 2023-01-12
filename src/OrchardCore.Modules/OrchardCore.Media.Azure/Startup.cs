@@ -95,6 +95,9 @@ namespace OrchardCore.Media.Azure
                 services.AddSingleton<IMediaFileStoreCache>(serviceProvider =>
                     serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>());
 
+                // Register the BlobFileStorageFactory
+                services.AddAzureBlobFileStorage();
+
                 // Replace the default media file store with a blob file store.
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
                 {
@@ -102,15 +105,12 @@ namespace OrchardCore.Media.Azure
                     var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                     var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                     var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
-                    var clock = serviceProvider.GetRequiredService<IClock>();
-                    var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
                     var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
                     var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
                     var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
+                    var blobStoreFactory = serviceProvider.GetRequiredService<BlobFileStoreFactory>();
 
-                    var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
-
-                    var mediaPath = GetMediaPath(shellOptions.Value, shellSettings, mediaOptions.AssetsPath);
+                    var fileStore = blobStoreFactory.Create(blobStorageOptions);
 
                     var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 

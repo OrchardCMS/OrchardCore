@@ -24,6 +24,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
 
+            // register the azure blob file storage services
+            builder.AddAzureBlobFileStorage();
+
             services.AddSingleton<IShellsFileStore>(sp =>
             {
                 var configuration = sp.GetRequiredService<IConfiguration>();
@@ -34,10 +37,9 @@ namespace Microsoft.Extensions.DependencyInjection
                         "The 'OrchardCore.Shells.Azure' configuration section must be defined");
                 }
 
-                var clock = sp.GetRequiredService<IClock>();
-                var contentTypeProvider = sp.GetRequiredService<IContentTypeProvider>();
+                var blobFileStoreFactory = sp.GetRequiredService<BlobFileStoreFactory>();
 
-                var fileStore = new BlobFileStore(blobOptions, clock, contentTypeProvider);
+                var fileStore = blobFileStoreFactory.Create(blobOptions);
 
                 return new BlobShellsFileStore(fileStore);
             });
