@@ -57,7 +57,25 @@ public class ShellRemovalManager : IShellRemovalManager
         if (shellSettings.State == TenantState.Disabled && !context.LocalResourcesOnly)
         {
             // Create an isolated shell context composed of all features that have been installed.
-            using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
+            ShellContext maximumContext = null;
+            try
+            {
+                maximumContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Failed to create a 'ShellContext' before removing the tenant '{TenantName}'.",
+                    shellSettings.Name);
+
+                context.ErrorMessage = S["Failed to create a 'ShellContext' before removing the tenant."];
+                context.Error = ex;
+
+                return context;
+            }
+
+            using var shellContext = maximumContext;
             (var locker, var locked) = await shellContext.TryAcquireShellRemovingLockAsync();
             if (!locked)
             {
