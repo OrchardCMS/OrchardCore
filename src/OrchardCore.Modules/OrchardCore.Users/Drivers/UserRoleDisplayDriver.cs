@@ -49,7 +49,7 @@ namespace OrchardCore.Users.Drivers
 
         public override IDisplayResult Display(User user)
         {
-            return Initialize<SummaryAdminUserViewModel>("RolesMeta", model => model.User = user)
+            return Initialize<SummaryAdminUserViewModel>("UserRolesMeta", model => model.User = user)
                 .Location("SummaryAdmin", "Meta");
         }
         public override IDisplayResult Edit(User user)
@@ -91,10 +91,13 @@ namespace OrchardCore.Users.Drivers
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
             var model = new EditUserRoleViewModel();
+            var currentUserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             // The current user cannot alter their own roles. This prevents them removing access to the site for themselves.
-            if (String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase))
+            if (currentUserId == user.UserId && !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, StandardPermissions.SiteOwner))
             {
+                await _notifier.WarningAsync(H["Cannot update your own roles."]);
+
                 return Edit(user);
             }
 
@@ -134,11 +137,15 @@ namespace OrchardCore.Users.Drivers
                     {
                         if (String.Equals(role, AdministratorRole, StringComparison.OrdinalIgnoreCase))
                         {
-                            var usersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>();
-                            // Make sure we always have at least one administrator account.
-                            if (usersOfAdminRole.Count() == 1 && String.Equals(user.UserId, usersOfAdminRole.First().UserId, StringComparison.OrdinalIgnoreCase))
+                            var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole))
+                                .Cast<User>()
+                                .Where(user => user.IsEnabled)
+                                .ToList();
+
+                            // Make sure we always have at least one enabled administrator account.
+                            if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
                             {
-                                await _notifier.WarningAsync(H["Cannot remove administrator role from the only administrator."]);
+                                await _notifier.WarningAsync(H[$"Cannot remove {AdministratorRole} role from the only enabled administrator."]);
 
                                 continue;
                             }

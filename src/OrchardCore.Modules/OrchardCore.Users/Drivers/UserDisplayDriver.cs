@@ -27,7 +27,7 @@ namespace OrchardCore.Users.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
-        private IEnumerable<IUserEventHandler> _userEventHandlers;
+        private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
         private readonly ILogger _logger;
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
@@ -113,10 +113,14 @@ namespace OrchardCore.Users.Drivers
 
             if (!isEditingDisabled && !model.IsEnabled && user.IsEnabled)
             {
-                var usersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>();
-                if (usersOfAdminRole.Count() == 1 && String.Equals(user.UserId, usersOfAdminRole.First().UserId, StringComparison.OrdinalIgnoreCase))
+                var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole))
+                    .Cast<User>()
+                    .Where(user => user.IsEnabled)
+                    .ToList();
+
+                if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
                 {
-                    await _notifier.WarningAsync(H["Cannot disable the only administrator."]);
+                    await _notifier.WarningAsync(H["Cannot disable the only enabled administrator."]);
                 }
                 else
                 {
