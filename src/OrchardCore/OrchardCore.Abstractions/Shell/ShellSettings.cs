@@ -36,7 +36,6 @@ namespace OrchardCore.Environment.Shell
         {
             _settings = new ShellConfiguration(settings._settings);
             _configuration = new ShellConfiguration(settings.Name, settings._configuration);
-            TenantId = settings.TenantId;
             Name = settings.Name;
         }
 
@@ -45,12 +44,20 @@ namespace OrchardCore.Environment.Shell
         public string VersionId
         {
             get => _settings["VersionId"];
-            set => _settings["VersionId"] = value;
+            set
+            {
+                if (_settings["TenantId"] == null)
+                {
+                    _settings["TenantId"] = _settings["VersionId"] ?? value;
+                }
+
+                _settings["VersionId"] = value;
+            }
         }
 
         public string TenantId
         {
-            get => _settings["TenantId"];
+            get => _settings["TenantId"] ?? _settings ["VersionId"];
             set => _settings["TenantId"] = value;
         }
 
