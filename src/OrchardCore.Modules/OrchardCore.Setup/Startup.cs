@@ -19,7 +19,7 @@ namespace OrchardCore.Setup
     {
         private readonly string _defaultCulture = CultureInfo.InstalledUICulture.Name;
 
-        private readonly string[] _supportedCultures = new string[]
+        private string[] _supportedCultures = new string[]
         {
             "ar", "cs", "de", "el", "en", "es", "fa", "fr", "it", "ja", "pl", "pt-BR", "ru", "sv", "tr", "vi", "zh-Hans-CN", "zh-Hant-TW"
         };
