@@ -467,6 +467,8 @@ namespace OrchardCore.Users.Services
                 {
                     throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
                 }
+
+                u.RoleNames.Add(normalizedRoleName);
             }
         }
 
@@ -485,6 +487,8 @@ namespace OrchardCore.Users.Services
                 {
                     throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
                 }
+
+                u.RoleNames.Remove(normalizedRoleName);
             }
         }
 
@@ -801,8 +805,11 @@ namespace OrchardCore.Users.Services
                 u.UserTokens.Add(userToken);
             }
 
-            // Encrypt the token
-            userToken.Value = _dataProtectionProvider.CreateProtector(TokenProtector).Protect(value);
+            // Encrypt the token.
+            if (userToken != null)
+            {
+                userToken.Value = _dataProtectionProvider.CreateProtector(TokenProtector).Protect(value);
+            }
 
             return Task.CompletedTask;
         }
