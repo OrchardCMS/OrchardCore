@@ -3,7 +3,7 @@ using YesSql.Indexes;
 
 namespace OrchardCore.Data;
 
-public static class IndexesServiceCollectionExtensions
+public static class IndexServiceCollectionExtensions
 {
     public static IServiceCollection AddIndexProvider<TIndexProvider>(this IServiceCollection services)
         where TIndexProvider : class, IIndexProvider
