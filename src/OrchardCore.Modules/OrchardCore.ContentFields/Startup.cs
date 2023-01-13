@@ -203,16 +203,16 @@ namespace OrchardCore.ContentFields
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IDataMigration, Indexing.SQL.Migrations>();
-            services.AddScoped<IScopedIndexProvider, TextFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, BooleanFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, NumericFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, DateTimeFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, DateFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, ContentPickerFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, TimeFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, LinkFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, HtmlFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, MultiTextFieldIndexProvider>();
+            services.AddScopedIndexProvider<TextFieldIndexProvider>();
+            services.AddScopedIndexProvider<BooleanFieldIndexProvider>();
+            services.AddScopedIndexProvider<NumericFieldIndexProvider>();
+            services.AddScopedIndexProvider<DateTimeFieldIndexProvider>();
+            services.AddScopedIndexProvider<DateFieldIndexProvider>();
+            services.AddScopedIndexProvider<ContentPickerFieldIndexProvider>();
+            services.AddScopedIndexProvider<TimeFieldIndexProvider>();
+            services.AddScopedIndexProvider<LinkFieldIndexProvider>();
+            services.AddScopedIndexProvider<HtmlFieldIndexProvider>();
+            services.AddScopedIndexProvider<MultiTextFieldIndexProvider>();
         }
     }
 
@@ -261,8 +261,8 @@ namespace OrchardCore.ContentFields
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDataMigration, Indexing.SQL.UserPickerMigrations>();
-            services.AddScoped<IScopedIndexProvider, UserPickerFieldIndexProvider>();
+            services.AddScoped<IDataMigration, UserPickerMigrations>();
+            services.AddScopedIndexProvider<UserPickerFieldIndexProvider>();
         }
     }
 }
