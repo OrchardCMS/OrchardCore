@@ -10,7 +10,8 @@ using OrchardCore.Modules.Manifest;
     {
         "OrchardCore.Contents",
         "OrchardCore.Title",
-        "OrchardCore.Alias"
+        "OrchardCore.Alias",
+        "OrchardCore.Recipes.Core",
     },
     Category = "Navigation"
 )]
