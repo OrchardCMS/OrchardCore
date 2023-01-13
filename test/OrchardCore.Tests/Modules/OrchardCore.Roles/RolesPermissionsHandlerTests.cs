@@ -1,6 +1,7 @@
 using OrchardCore.Roles;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Testing.Mocks;
 using OrchardCore.Testing.Security;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Roles
@@ -119,15 +120,16 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
 
         private static RolesPermissionsHandler CreatePermissionHandler(params Role[] roles)
         {
-            var roleManager = RolesMockHelper.MockRoleManager<IRole>();
+            var roleManagerMock = OrchardCoreMock.CreateRoleManager<IRole>();
 
             foreach (var role in roles)
             {
-                roleManager.Setup(m => m.FindByNameAsync(role.RoleName)).ReturnsAsync(role);
+                roleManagerMock.Setup(m => m.FindByNameAsync(role.RoleName)).ReturnsAsync(role);
             }
 
             var permissionGrantingService = new DefaultPermissionGrantingService();
-            return new RolesPermissionsHandler(roleManager.Object, permissionGrantingService);
+
+            return new RolesPermissionsHandler(roleManagerMock.Object, permissionGrantingService);
         }
     }
 }

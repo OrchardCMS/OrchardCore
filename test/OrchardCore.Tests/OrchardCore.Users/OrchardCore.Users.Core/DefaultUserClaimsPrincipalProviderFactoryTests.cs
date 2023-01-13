@@ -26,7 +26,7 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
                 userManager.Setup(m => m.IsEmailConfirmedAsync(user)).ReturnsAsync(emailVerified);
             }
 
-            var roleManager = OrchardCoreMock.CreateRoleManager<IRole>();
+            var roleManager = OrchardCoreMock.CreateRoleManager<IRole>().Object;
 
             var options = new Mock<IOptions<IdentityOptions>>();
             options.Setup(a => a.Value).Returns(new IdentityOptions());

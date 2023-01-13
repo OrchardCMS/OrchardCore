@@ -59,7 +59,7 @@ public static partial class OrchardCoreMock
         return userManagerMock;
     }
 
-    public static RoleManager<TRole> CreateRoleManager<TRole>() where TRole : class
+    public static Mock<RoleManager<TRole>> CreateRoleManager<TRole>() where TRole : class
     {
         var roleStoreMock = new Mock<IRoleStore<TRole>>().Object;
         var rolesValidators = new List<IRoleValidator<TRole>>
@@ -74,6 +74,6 @@ public static partial class OrchardCoreMock
             new IdentityErrorDescriber(),
             null);
 
-        return roleManagerMock.Object;
+        return roleManagerMock;
     }
 }
