@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.Data;
+using OrchardCore.Roles.Services;
 using OrchardCore.Security;
 using OrchardCore.Users;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Services;
-using YesSql.Indexes;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -34,10 +35,13 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddScoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<NullRoleStore>());
             services.TryAddScoped<IRoleStore<IRole>>(sp => sp.GetRequiredService<NullRoleStore>());
 
-            services.AddSingleton<IIndexProvider, UserIndexProvider>();
-            services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
-            services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>();
-            services.AddSingleton<IIndexProvider, UserByClaimIndexProvider>();
+            services.TryAddScoped<RoleManager<IRole>>();
+            services.TryAddScoped<IRoleService, RoleService>();
+            
+            services.AddIndexProvider<UserIndexProvider>();
+            services.AddIndexProvider<UserByRoleNameIndexProvider>();
+            services.AddIndexProvider<UserByLoginInfoIndexProvider>();
+            services.AddIndexProvider<UserByClaimIndexProvider>();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalProviderFactory>();

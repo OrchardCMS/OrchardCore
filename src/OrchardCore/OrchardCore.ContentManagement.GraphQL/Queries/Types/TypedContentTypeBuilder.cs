@@ -27,7 +27,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
             var typeActivator = serviceProvider.GetService<ITypeActivatorFactory<ContentPart>>();
 
-            if (_contentOptions.ShouldSkipContentType(contentTypeDefinition.Name))
+            if (_contentOptions.ShouldHide(contentTypeDefinition))
             {
                 return;
             }

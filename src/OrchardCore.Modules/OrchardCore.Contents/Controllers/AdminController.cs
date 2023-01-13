@@ -406,7 +406,7 @@ namespace OrchardCore.Contents.Controllers
 
             var stayOnSamePage = submitPublish == "submit.PublishAndContinue";
             // Pass a dummy contentitem to the authorization check to check for "own" variations permissions.
-            if (await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.PublishContent, id, CurrentUserId()))
+            if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.PublishContent, id, CurrentUserId()))
             {
                 return Forbid();
             }
@@ -534,6 +534,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 return Forbid();
             }
+
             return await EditPOST(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
             {
                 await _contentManager.PublishAsync(contentItem);

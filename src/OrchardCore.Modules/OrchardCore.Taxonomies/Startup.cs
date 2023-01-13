@@ -82,7 +82,7 @@ namespace OrchardCore.Taxonomies
 
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldTagsEditorSettingsDriver>();
 
-            services.AddScoped<IScopedIndexProvider, TaxonomyIndexProvider>();
+            services.AddScopedIndexProvider<TaxonomyIndexProvider>();
 
             // Terms.
             services.AddContentPart<TermPart>();
