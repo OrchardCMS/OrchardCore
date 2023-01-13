@@ -51,7 +51,7 @@ namespace OrchardCore.Contents.Drivers
                     {
                         // TODO Move this editor to a user picker.
                         var user = await _userManager.FindByIdAsync(part.ContentItem.Owner);
-                        model.OwnerName = user.UserName;
+                        model.OwnerName = user?.UserName;
                     }
                 });
             }
