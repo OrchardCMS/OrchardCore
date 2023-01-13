@@ -81,7 +81,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
             var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
 
             using var connection = store.Configuration.ConnectionFactory.CreateConnection();
-            if (shellSettings["DatabaseProvider"] == DataProviderValue.Sqlite && connection is SqliteConnection sqliteConnection)
+            if (shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite && connection is SqliteConnection sqliteConnection)
             {
                 // Clear the pool to unlock the file and remove it.
                 SqliteConnection.ClearPool(sqliteConnection);
@@ -113,7 +113,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
     private async Task<ShellDbTablesInfo> GetTablesToRemoveAsync(ShellSettings shellSettings)
     {
         var shellDbTablesInfo = new ShellDbTablesInfo();
-        if (shellSettings["DatabaseProvider"] == DataProviderValue.Sqlite)
+        if (shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite)
         {
             // The whole database file will be removed.
             return shellDbTablesInfo;
