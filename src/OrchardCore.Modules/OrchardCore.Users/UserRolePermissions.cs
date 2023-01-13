@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,22 +17,22 @@ public class UserRolePermissions : IPermissionProvider
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        var roles = (await _roleService.GetRoleNamesAsync())
-            .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase)
-            .OrderBy(x => x);
+        var roleNames = (await _roleService.GetRoleNamesAsync())
+            .Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName))
+            .OrderBy(roleName => roleName);
 
         var list = new List<Permission>()
         {
             CommonPermissions.AssignUsersToRole,
         };
 
-        foreach (var role in roles)
+        foreach (var roleName in roleNames)
         {
-            list.Add(CommonPermissions.CreateListUsersInRolePermission(role));
-            list.Add(CommonPermissions.CreateEditUsersInRolePermission(role));
-            list.Add(CommonPermissions.CreateDeleteUsersInRolePermission(role));
-            list.Add(CommonPermissions.CreateAssignUsersToRolePermission(role));
-            list.Add(CommonPermissions.CreatePermissionForManageUsersInRole(role));
+            list.Add(CommonPermissions.CreateListUsersInRolePermission(roleName));
+            list.Add(CommonPermissions.CreateEditUsersInRolePermission(roleName));
+            list.Add(CommonPermissions.CreateDeleteUsersInRolePermission(roleName));
+            list.Add(CommonPermissions.CreateAssignUsersToRolePermission(roleName));
+            list.Add(CommonPermissions.CreatePermissionForManageUsersInRole(roleName));
         }
 
         return list;

@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
@@ -42,7 +43,6 @@ using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 using YesSql.Filters.Query;
-using YesSql.Indexes;
 
 namespace OrchardCore.Users
 {
@@ -235,7 +235,7 @@ namespace OrchardCore.Users
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
-            services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
+            services.AddIndexProvider<UserByRoleNameIndexProvider>();
             services.AddScoped<IDisplayDriver<User>, UserRoleDisplayDriver>();
             services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
             services.AddScoped<IPermissionProvider, UserRolePermissions>();

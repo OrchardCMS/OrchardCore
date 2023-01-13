@@ -172,9 +172,8 @@ namespace OrchardCore.Users.Drivers
         private async Task<IEnumerable<IRole>> GetRoleAsync()
         {
             var roles = await _roleService.GetRolesAsync();
-            var exclude = new[] { "Anonymous", "Authenticated" };
 
-            return roles.Where(role => !exclude.Any(x => x.Equals(role.RoleName, StringComparison.OrdinalIgnoreCase)));
+            return roles.Where(role => !RoleHelper.SystemRoleNames.Contains(role.RoleName));
         }
 
         private async Task<IEnumerable<string>> GetAccessibleRoleNamesAsync(IEnumerable<IRole> roles)
