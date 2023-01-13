@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using OrchardCore.Security;
 using OrchardCore.Security.AuthorizationHandlers;
 using OrchardCore.Security.Permissions;
