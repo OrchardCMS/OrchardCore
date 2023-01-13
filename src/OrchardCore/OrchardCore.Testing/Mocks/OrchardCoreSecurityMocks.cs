@@ -13,7 +13,7 @@ public static partial class OrchardCoreMock
     public static SignInManager<TUser> CreateSignInManager<TUser>(UserManager<TUser> userManager = null) where TUser : class, IUser
     {
         var context = new Mock<HttpContext>();
-        var manager = userManager ?? CreateUserManagerMock<TUser>().Object;
+        var manager = userManager ?? CreateUserManager<TUser>().Object;
 
         var signInManager = new Mock<SignInManager<TUser>>(
             manager,
@@ -34,7 +34,7 @@ public static partial class OrchardCoreMock
         return signInManager.Object;
     }
 
-    public static Mock<UserManager<TUser>> CreateUserManagerMock<TUser>() where TUser : class
+    public static Mock<UserManager<TUser>> CreateUserManager<TUser>() where TUser : class
     {
         var userStore = new Mock<IUserStore<TUser>>();
         var identityOptions = new IdentityOptions();

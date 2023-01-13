@@ -108,7 +108,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         private static RegistrationController SetupRegistrationController(RegistrationSettings registrationSettings)
         {
             var users = new List<IUser>();
-            var mockUserManager = OrchardCoreMock.CreateUserManagerMock<IUser>();
+            var mockUserManager = OrchardCoreMock.CreateUserManager<IUser>();
             mockUserManager.Setup(um => um.FindByEmailAsync(It.IsAny<string>()))
                 .Returns<string>(e =>
                 {

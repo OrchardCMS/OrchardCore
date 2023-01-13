@@ -15,7 +15,7 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
         public async Task EnsurePrincipalHasExpectedClaims(bool emailVerified)
         {
             //Arrange
-            var userManager = OrchardCoreMock.CreateUserManagerMock<IUser>();
+            var userManager = OrchardCoreMock.CreateUserManager<IUser>();
             var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo", Email = "foo@foo.com" };
             userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
             userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
