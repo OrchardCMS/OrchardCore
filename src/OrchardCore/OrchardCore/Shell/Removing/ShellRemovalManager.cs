@@ -47,7 +47,7 @@ public class ShellRemovalManager : IShellRemovalManager
             return context;
         }
 
-        if (shellSettings.State != TenantState.Disabled && shellSettings.State != TenantState.Uninitialized)
+        if (!shellSettings.IsRemovable())
         {
             context.ErrorMessage = S["The tenant '{0}' should be 'Disabled' or 'Uninitialized'.", shellSettings.Name];
             return context;

@@ -615,7 +615,7 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            if (shellSettings.State != TenantState.Disabled && shellSettings.State != TenantState.Uninitialized)
+            if (!shellSettings.IsRemovable())
             {
                 await _notifier.ErrorAsync(H["You can only remove a 'Disabled' or 'Uninitialized' tenant."]);
                 return RedirectToAction(nameof(Index));
