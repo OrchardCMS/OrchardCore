@@ -132,6 +132,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 .Callback<IUser, string, Action<string, string>>((u, p, e) => users.Add(u))
                 .ReturnsAsync<IUser, string, Action<string, string>, IUserService, IUser>((u, p, e) => u);
 
+            var signInManagerMock = OrchardCoreMock.CreateSignInManager(mockUserManager.Object);
+
             var urlHelperMock = new Mock<IUrlHelper>();
             urlHelperMock.Setup(urlHelper => urlHelper.Action(It.IsAny<UrlActionContext>()));
 
@@ -173,7 +175,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 .Returns(userService.Object);
             mockServiceProvider
                 .Setup(x => x.GetService(typeof(SignInManager<IUser>)))
-                .Returns(OrchardCoreMock.CreateSignInManager(mockUserManager.Object));
+                .Returns(signInManagerMock.Object);
             mockServiceProvider
                 .Setup(x => x.GetService(typeof(ITempDataDictionaryFactory)))
                 .Returns(Mock.Of<ITempDataDictionaryFactory>());

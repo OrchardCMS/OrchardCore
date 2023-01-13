@@ -10,7 +10,7 @@ namespace OrchardCore.Testing.Mocks;
 
 public static partial class OrchardCoreMock
 {
-    public static SignInManager<TUser> CreateSignInManager<TUser>(UserManager<TUser> userManager = null) where TUser : class, IUser
+    public static Mock<SignInManager<TUser>> CreateSignInManager<TUser>(UserManager<TUser> userManager = null) where TUser : class, IUser
     {
         var context = new Mock<HttpContext>();
         var manager = userManager ?? CreateUserManager<TUser>().Object;
@@ -31,7 +31,7 @@ public static partial class OrchardCoreMock
             .Setup(x => x.SignInAsync(It.IsAny<TUser>(), It.IsAny<bool>(), It.IsAny<string>()))
             .Returns(Task.CompletedTask);
 
-        return signInManager.Object;
+        return signInManager;
     }
 
     public static Mock<UserManager<TUser>> CreateUserManager<TUser>() where TUser : class
