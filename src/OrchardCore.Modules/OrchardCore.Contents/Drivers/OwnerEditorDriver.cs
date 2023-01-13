@@ -70,29 +70,30 @@ namespace OrchardCore.Contents.Drivers
 
             var settings = context.TypePartDefinition.GetSettings<CommonPartSettings>();
 
-            if (!settings.DisplayOwnerEditor)
+            if (settings.DisplayOwnerEditor)
             {
-                if (part.ContentItem.Owner == null)
-                {
-                    part.ContentItem.Owner = currentUser.FindFirstValue(ClaimTypes.NameIdentifier);
-                }
-            }
-            else
-            {
+                var currentUserId = currentUser.FindFirstValue(ClaimTypes.NameIdentifier);
+
                 var model = new OwnerEditorViewModel();
 
-                if (part.ContentItem.Owner != null)
+                var user = await _userManager.FindByIdAsync(part.ContentItem.Owner ?? currentUserId);
+
+                if (user == null)
                 {
-                    var user = await _userManager.FindByIdAsync(part.ContentItem.Owner);
-                    model.OwnerName = user.UserName;
+                    // At this point, we know that the owner is invalid/no longer exists.
+                    user = await _userManager.FindByIdAsync(currentUserId);
+
+                    part.ContentItem.Owner = currentUserId;
                 }
+
+                model.OwnerName = user.UserName;
 
                 var priorOwnerName = model.OwnerName;
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 if (model.OwnerName != priorOwnerName)
                 {
-                    var newOwner = (await _userManager.FindByNameAsync(model.OwnerName));
+                    var newOwner = await _userManager.FindByNameAsync(model.OwnerName);
 
                     if (newOwner == null)
                     {
