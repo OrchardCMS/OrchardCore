@@ -41,7 +41,7 @@ namespace OrchardCore.Localization.PortableObject
         }
 
         /// <inheritdocs />
-        public LocalizedString this[string name]
+        public virtual LocalizedString this[string name]
         {
             get
             {
@@ -57,7 +57,7 @@ namespace OrchardCore.Localization.PortableObject
         }
 
         /// <inheritdocs />
-        public LocalizedString this[string name, params object[] arguments]
+        public virtual LocalizedString this[string name, params object[] arguments]
         {
             get
             {
@@ -69,7 +69,7 @@ namespace OrchardCore.Localization.PortableObject
         }
 
         /// <inheritdocs />
-        public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
+        public virtual IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
         {
             var culture = CultureInfo.CurrentUICulture;
 
@@ -79,7 +79,7 @@ namespace OrchardCore.Localization.PortableObject
         }
 
         /// <inheritdocs />
-        public (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
+        public virtual (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
         {
             if (name == null)
             {
@@ -151,7 +151,7 @@ namespace OrchardCore.Localization.PortableObject
             return allLocalizedStrings;
         }
 
-        private string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)
+        protected string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)
         {
             var dictionary = _localizationManager.GetDictionary(culture);
 
@@ -171,7 +171,7 @@ namespace OrchardCore.Localization.PortableObject
             return pluralForms[pluralForm];
         }
 
-        private string GetTranslation(string name, string context, CultureInfo culture, int? count)
+        protected string GetTranslation(string name, string context, CultureInfo culture, int? count)
         {
             string translation = null;
             try

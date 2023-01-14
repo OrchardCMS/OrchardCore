@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using OrchardCore.Media.Events;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media
 {
@@ -55,12 +50,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
                 finally
                 {
                     // This disposes the final outputStream.
-                    outputStream?.Dispose();
+                    if (outputStream != null)
+                    {
+                        await outputStream.DisposeAsync();
+                    }
                 }
             }
             finally
             {
-                inputStream?.Dispose();
+                if (inputStream != null)
+                {
+                    await inputStream.DisposeAsync();
+                }
             }
 
             foreach (var stream in streams)

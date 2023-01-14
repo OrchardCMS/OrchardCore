@@ -8,5 +8,6 @@ namespace OrchardCore.ContentTypes.ViewModels
         public bool Versionable { get; set; }
         public bool Securable { get; set; }
         public string Stereotype { get; set; }
+        public string Description { get; set; }
     }
 }

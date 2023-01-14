@@ -7,6 +7,7 @@ using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.Core;
 using OrchardCore.ReCaptcha.Drivers;
 using OrchardCore.ReCaptcha.Users.Handlers;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Users.Events;
@@ -22,6 +23,7 @@ namespace OrchardCore.ReCaptcha
 
             services.AddScoped<IDisplayDriver<ISite>, ReCaptchaSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IPermissionProvider, Permissions>();
         }
     }
 

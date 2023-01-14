@@ -56,8 +56,9 @@ namespace OrchardCore.ContentFields.Drivers
             return Initialize<EditLinkFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
-                model.Url = context.IsNew ? settings.DefaultUrl : field.Url;
-                model.Text = context.IsNew ? settings.DefaultText : field.Text;
+                model.Url = context.IsNew && field.Url == null ? settings.DefaultUrl : field.Url;
+                model.Text = context.IsNew && field.Text == null ? settings.DefaultText : field.Text;
+
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
@@ -95,17 +96,20 @@ namespace OrchardCore.ContentFields.Drivers
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["The url is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
-                else if (!String.IsNullOrWhiteSpace(field.Url) && !Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
+                else if (!String.IsNullOrWhiteSpace(field.Url))
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["{0} is an invalid url.", field.Url]);
-                }
-                else
-                {
-                    var link = $"<a href=\"{_htmlencoder.Encode(urlToValidate)}\"></a>";
-
-                    if (!String.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
+                    if (!Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
                     {
                         updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["{0} is an invalid url.", field.Url]);
+                    }
+                    else
+                    {
+                        var link = $"<a href=\"{_htmlencoder.Encode(urlToValidate)}\"></a>";
+
+                        if (!String.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
+                        {
+                            updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["{0} is an invalid url.", field.Url]);
+                        }
                     }
                 }
 

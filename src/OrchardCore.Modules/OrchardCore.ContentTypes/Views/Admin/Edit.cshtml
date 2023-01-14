@@ -1,13 +1,14 @@
 @model EditTypeViewModel
-@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Mvc.Utilities
 
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+@inject OrchardCore.ContentTypes.Services.IContentDefinitionService ContentDefinitionService
+
 @{
     var typePart = Model.TypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.Name, Model.TypeDefinition.Name, StringComparison.OrdinalIgnoreCase));
-
-    var orderedParts = Model.TypeDefinition.Parts
+    var partDefinitions = Model.TypeDefinition.Parts
         .Select(part =>
         {
             var defaultPosition = ContentDefinitionManager.GetPartDefinition(part.PartDefinition.Name)?.DefaultPosition() ?? "5";
@@ -16,10 +17,18 @@
         .OrderBy(x => x.Order)
         .Select(x => x.Part);
 
-    var orderedFields = typePart == null ? Enumerable.Empty<ContentPartFieldDefinition>() : typePart.PartDefinition.Fields
+    var fieldDefintions = new List<ContentPartFieldDefinition>();
+
+    if (typePart?.PartDefinition?.Fields != null)
+    {
+        fieldDefintions = typePart.PartDefinition.Fields
         .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
         .OrderBy(x => x.Order)
-        .Select(x => x.Field);
+        .Select(x => x.Field)
+        .ToList();
+    }
+
+    var fields = ContentDefinitionService.GetFields().ToList();
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Type - {0}", Model.TypeDefinition.DisplayName])</h1></zone>
@@ -31,67 +40,74 @@
 
     @if (Model.Editor.Shortcuts != null)
     {
-        <div class="form-group">
+        <div class="mb-3">
             @await DisplayAsync(Model.Editor.Shortcuts)
         </div>
     }
 
     @await DisplayAsync(Model.Editor)
 
-    <div class="form-group">
-        <h3>@T["Fields"]</h3>
+    @if (fieldDefintions.Count > 0 || fields.Count > 0)
+    {
+        <div class="mb-3">
+            <h3>@T["Fields"]</h3>
 
-        <ul class="list-group sortable" id="fields">
-            @if (typePart != null)
-            {
-                @foreach (var field in orderedFields)
+            <ul class="list-group sortable" id="fields">
+                @foreach (var fieldDefintion in fieldDefintions)
                 {
                     <li class="list-group-item" style="cursor: move;">
-                        <div class="properties">
-                            <div class="related">
-                                <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                        <div class="w-100">
+                            <div class="float-end">
+                                @if (fields.Any(field => String.Equals(field.Name, fieldDefintion.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefintion.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                                }
+                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefintion.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
-                            @field.DisplayName() <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
+                            @fieldDefintion.DisplayName() <span class="hint dashed">@fieldDefintion.FieldDefinition.Name.CamelFriendly()</span>
 
-                            @if (!string.IsNullOrEmpty(field.DisplayMode()))
+                            @if (!String.IsNullOrEmpty(fieldDefintion.DisplayMode()))
                             {
-                                <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info" aria-hidden="true"></i> @field.DisplayMode()</span>
+                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info" aria-hidden="true"></i> @fieldDefintion.DisplayMode()</span>
                             }
-                            @if (!string.IsNullOrEmpty(field.Editor()))
+                            @if (!String.IsNullOrEmpty(fieldDefintion.Editor()))
                             {
-                                <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info" aria-hidden="true"></i> @field.Editor()</span>
+                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info" aria-hidden="true"></i> @fieldDefintion.Editor()</span>
                             }
                         </div>
-                        <input type="hidden" asp-for="OrderedFieldNames" value="@field.Name" />
+                        <input type="hidden" asp-for="OrderedFieldNames" value="@fieldDefintion.Name" />
                     </li>
                 }
-            }
-        </ul>
-    </div>
-    <div class="form-group">
-        <a asp-route-action="AddFieldTo" asp-route-id="@Model.TypeDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
-    </div>
-    <div class="form-group">
+            </ul>
+        </div>
+
+        @if (fields.Count > 0)
+        {
+            <div class="mb-3">
+                <a asp-route-action="AddFieldTo" asp-route-id="@Model.TypeDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
+            </div>
+        }
+    }
+    <div class="mb-3">
         <h3>@T["Parts"]</h3>
 
         <ul class="list-group sortable" id="parts">
-            @foreach (var part in orderedParts)
+            @foreach (var partDefinition in partDefinitions)
             {
-                <li class="list-group-item @(part == typePart ? " bg-faded" : null)" style="cursor: move;">
-                    <div class="properties">
-                        @part.DisplayName()
+                <li class="list-group-item @(partDefinition == typePart ? " bg-faded" : null)" style="cursor: move;">
+                    <div class="w-100">
+                        @partDefinition.DisplayName()
 
-                        @if (part != typePart)
+                        @if (partDefinition != typePart)
                         {
-                            @if (!String.IsNullOrEmpty(part.Description()))
+                            @if (!String.IsNullOrEmpty(partDefinition.Description()))
                             {
-                                <span class="hint dashed">@part.Description()</span>
+                                <span class="hint dashed">@partDefinition.Description()</span>
                             }
 
-                            <div class="related">
-                                <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                                <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                            <div class="float-end">
+                                <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                                <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
                         }
                         else
@@ -99,37 +115,35 @@
                             <span class="hint dashed">@T["Contains the fields for the current type"]</span>
                         }
 
-                        @if (!string.IsNullOrEmpty(part.DisplayMode()))
+                        @if (!String.IsNullOrEmpty(partDefinition.DisplayMode()))
                         {
-                            <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info" aria-hidden="true"></i> @part.DisplayMode()</span>
+                            <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info" aria-hidden="true"></i> @partDefinition.DisplayMode()</span>
                         }
-                        @if (!string.IsNullOrEmpty(part.Editor()))
+                        @if (!String.IsNullOrEmpty(partDefinition.Editor()))
                         {
-                            <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info" aria-hidden="true"></i> @part.Editor()</span>
+                            <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info" aria-hidden="true"></i> @partDefinition.Editor()</span>
                         }
                     </div>
-                    <input type="hidden" asp-for="OrderedPartNames" value="@part.Name" />
+                    <input type="hidden" asp-for="OrderedPartNames" value="@partDefinition.Name" />
                 </li>
             }
         </ul>
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         <a asp-route-action="AddPartsTo" asp-route-id="@Model.TypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Parts"]</a>
         <a asp-route-action="AddReusablePartTo" asp-route-id="@Model.TypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Named Part"]</a>
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
         <button class="btn btn-danger delete" type="submit" name="submit.Delete" value="Delete" data-url-af="RemoveUrl">@T["Delete"]</button>
     </div>
 </form>
 
 <script at="Foot">
-    //<![CDATA[
     $(function () {
         Sortable.create(document.getElementById("fields"));
         Sortable.create(document.getElementById("parts"));
     })
-    //]]>
 </script>

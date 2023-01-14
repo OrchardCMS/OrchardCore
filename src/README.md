@@ -14,6 +14,12 @@ It’s important to note the differences between the framework and the CMS. Some
 [![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://docs.orchardcore.net/)
 [![Crowdin](https://badges.crowdin.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
 
+## Local communities
+
+中文资源
+
+[![Orchard Core CN 中文讨论组](docs/assets/images/orchard-core-cn-community-logo.png)](https://shang.qq.com/wpa/qunwpa?idkey=48721591a71ee7586316604a7a4ee99d26fd977c6120370a06585085a5936f62)
+
 ## Building Software as a Service (SaaS) solutions with the Orchard Core Framework
 
 It’s very important to understand the Orchard Core Framework is distributed independently from the CMS on nuget.org. We’ve made some sample applications on <https://github.com/OrchardCMS/OrchardCore.Samples> that will guide you on how to build **modular** and **multi-tenant** applications using just Orchard Core Framework without any of the CMS specific features.
@@ -58,14 +64,14 @@ Orchard Core CMS supports all major site building strategies:
 
 ## Status
 
-The latest released version of Orchard Core is `1.2.2`.
-The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/v1.2.2>
+The latest released version of Orchard Core is `1.5.0`.
+The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/v1.5.0>
 
 Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki/Roadmap).
 
 ## Getting Started
 
-- Clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `master` branch for the latest release, or the `dev` branch for the cutting-edge version.
+- Clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `main` branch for the latest release, or the `dev` branch for the cutting-edge version.
 
 - Watch the ASP.NET Community Standup video where Orchard Core was demonstrated: <https://www.youtube.com/watch?v=HeDjv3blBjQ&t=2246s&list=PL1rZQsJPBU2StolNg0aqvQswETPcYnNKL&index=24>
 
@@ -97,3 +103,7 @@ For more details on the various development tools we recommend for using with Or
 - Run `docker run --name orchardcms orchardproject/orchardcore-cms-linux:latest`
 
 Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>
+
+## Showcasing Orchard Core CMS
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Gfy5SCACyL8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

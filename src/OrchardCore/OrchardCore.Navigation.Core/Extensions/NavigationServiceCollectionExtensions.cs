@@ -12,8 +12,8 @@ namespace OrchardCore.Navigation
         /// <returns></returns>
         public static IServiceCollection AddNavigation(this IServiceCollection services)
         {
-            services.TryAddScoped<INavigationManager, NavigationManager>();
-
+            services.TryAddEnumerable(ServiceDescriptor.Scoped<INavigationManager, NavigationManager>());
+            
             return services;
         }
     }

@@ -10,14 +10,14 @@ jobs:
     name: Functional Tests - MVC
     runs-on: ubuntu-latest
     container:
-      image: cypress/included:9.4.1
+      image: cypress/included:9.6.1
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
         node-version: "15"
     - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
     - name: Fix nuget restore issue
@@ -39,11 +39,11 @@ jobs:
     name: Functional Tests - CMS Sqlite
     runs-on: ubuntu-latest
     container:
-      image: cypress/included:9.4.1
+      image: cypress/included:9.6.1
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
     - name: Fix nuget restore issue
@@ -67,7 +67,7 @@ jobs:
     name: Functional Tests - CMS Postgres
     runs-on: ubuntu-latest
     container:
-      image: cypress/included:9.4.1
+      image: cypress/included:9.6.1
     services:
       postgres:
         image: postgres:11
@@ -85,9 +85,9 @@ jobs:
       OrchardCore__ConnectionString: "User ID=postgres;Password=admin;Host=postgres;Port=5432;Database=app;"
       OrchardCore__DatabaseProvider: "Postgres"
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
     - name: Fix nuget restore issue
@@ -111,7 +111,7 @@ jobs:
     name: Functional Tests - CMS MySql
     runs-on: ubuntu-latest
     container:
-      image: cypress/included:9.4.1
+      image: cypress/included:9.6.1
     services:
       mariadb:
         image: mariadb:latest
@@ -125,9 +125,9 @@ jobs:
       OrchardCore__ConnectionString: "server=mariadb;uid=root;pwd=test123;database=test"
       OrchardCore__DatabaseProvider: "MySql"
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
     - name: Fix nuget restore issue
@@ -151,7 +151,7 @@ jobs:
     name: Functional Tests - CMS SqlServer 2019
     runs-on: ubuntu-latest
     container:
-      image: cypress/included:9.4.1
+      image: cypress/included:9.6.1
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
@@ -161,12 +161,12 @@ jobs:
           ACCEPT_EULA: Y
           MSSQL_SA_PASSWORD: Password12!
     env:
-      OrchardCore__ConnectionString: "Server=mssql;Database=tempdb;User Id=sa;Password=Password12!"
+      OrchardCore__ConnectionString: "Server=mssql;Database=tempdb;User Id=sa;Password=Password12!;Encrypt=False"
       OrchardCore__DatabaseProvider: "SqlConnection"
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
     - name: Fix nuget restore issue

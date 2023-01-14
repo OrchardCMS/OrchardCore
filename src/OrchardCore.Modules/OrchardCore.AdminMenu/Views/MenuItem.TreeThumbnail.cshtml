@@ -1,10 +1,12 @@
 @model dynamic
 
-<div class="card admin-node-thumbnail">
-    <div class="card-body">
-        @await DisplayAsync(Model.Content)
-    </div>
-    <div class="card-footer text-muted text-xs-right">
-        <a class="btn btn-primary btn-sm" asp-route-action="Create" asp-route-controller="Node" asp-route-type="@Model.Type" asp-route-id="@Model.ContentTreePreset.Id">@T["Add"]</a>
+<div class="col">
+    <div class="card h-100 admin-node-thumbnail">
+        <div class="card-body">
+            @await DisplayAsync(Model.Content)
+        </div>
+        <div class="card-footer text-muted text-xs-right">
+            <a class="btn btn-primary btn-sm" asp-route-action="Create" asp-route-controller="Node" asp-route-type="@Model.Type" asp-route-id="@Model.ContentTreePreset.Id">@T["Add"]</a>
+        </div>
     </div>
 </div>

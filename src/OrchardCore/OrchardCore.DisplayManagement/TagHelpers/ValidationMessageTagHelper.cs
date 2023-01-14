@@ -61,7 +61,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 var viewContextAware = _htmlHelper as IViewContextAware;
                 viewContextAware?.Contextualize(ViewContext);
 
-                var fullName = _htmlHelper.GenerateIdFromName(For.Name);
+                var fullName = _htmlHelper.Name(For.Name);
 
                 if (ViewContext.ViewData.ModelState.TryGetValue(fullName, out var entry) && entry.Errors.Count > 0)
                 {

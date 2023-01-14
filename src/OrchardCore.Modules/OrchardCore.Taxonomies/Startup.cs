@@ -59,7 +59,7 @@ namespace OrchardCore.Taxonomies
             .AddLiquidFilter<InheritedTermsFilter>("inherited_terms")
             .AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IShapeTableProvider, TermShapes>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
@@ -70,7 +70,8 @@ namespace OrchardCore.Taxonomies
 
             // Taxonomy Field
             services.AddContentField<TaxonomyField>()
-                .UseDisplayDriver<TaxonomyFieldDisplayDriver>(d => !String.Equals(d, "Tags", StringComparison.OrdinalIgnoreCase));
+                .UseDisplayDriver<TaxonomyFieldDisplayDriver>(d => !String.Equals(d, "Tags", StringComparison.OrdinalIgnoreCase))
+                .AddHandler<TaxonomyFieldHandler>();
 
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TaxonomyFieldIndexHandler>();
@@ -81,13 +82,12 @@ namespace OrchardCore.Taxonomies
 
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldTagsEditorSettingsDriver>();
 
-            services.AddScoped<IScopedIndexProvider, TaxonomyIndexProvider>();
+            services.AddScopedIndexProvider<TaxonomyIndexProvider>();
 
             // Terms.
             services.AddContentPart<TermPart>();
             services.AddScoped<IContentHandler, TermPartContentHandler>();
             services.AddScoped<IContentDisplayDriver, TermPartContentDriver>();
-
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

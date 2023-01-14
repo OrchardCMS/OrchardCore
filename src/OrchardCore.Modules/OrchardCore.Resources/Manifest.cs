@@ -6,5 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "The Resources module allows you to declare scripts and stylesheets.",
-    Category = "Theming"
+    Category = "Theming",
+    IsAlwaysEnabled = true
 )]

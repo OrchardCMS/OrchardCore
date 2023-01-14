@@ -11,6 +11,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Users",
     Name = "Users",
     Description = "The users module enables authentication UI and user management.",
+    Dependencies = new[] { "OrchardCore.Roles.Core" },
     Category = "Security"
 )]
 
@@ -59,5 +60,13 @@ using OrchardCore.Modules.Manifest;
     Name = "Users Audit Trail",
     Description = "The users audit trail feature allows logging of user events.",
     Dependencies = new[] { "OrchardCore.AuditTrail", "OrchardCore.Users" },
+    Category = "Security"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Users.Authentication.CacheTicketStore",
+    Name = "Users Authentication Ticket Store",
+    Description = "Stores users authentication tickets on server in memory cache instead of cookies. If distributed cache feature is enabled it will store authentication tickets on distributed cache.",
+    Dependencies = new[] { "OrchardCore.Users" },
     Category = "Security"
 )]

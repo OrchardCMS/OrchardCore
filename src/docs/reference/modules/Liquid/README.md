@@ -107,6 +107,22 @@ Output
 Wednesday, 02 August 2017 11:54:48
 ```
 
+### `utc`
+
+Converts a local date and time to the UTC date and time based on the site settings.
+
+Input
+
+```liquid
+{{ "now" | utc | date: "%c" }}
+```
+
+Output
+
+```text
+Wednesday, 02 August 2017 11:54:48
+```
+
 ### `t`
 
 Localizes a string using the current culture.
@@ -901,23 +917,23 @@ Using `helper` invokes the `validation_for` tag helper of ASP.NET Core with `spa
 
 ### `link`
 
-Invokes the `link` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#link-tag)
+Invokes the `link` tag helper from the `Orchard.ResourceManagement` package. [See this section.](../Resources/README.md#link-tag)
 
 ### `meta`
 
-Invokes the `meta` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#meta-tags)
+Invokes the `meta` tag helper from the `Orchard.ResourceManagement` package. [See this section.](../Resources/README.md#meta-tags)
 
 ### `resources`
 
-Invokes the `resources` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#rendering)
+Invokes the `resources` tag helper from the `Orchard.ResourceManagement` package. [See this section.](../Resources/README.md#rendering)
 
 ### `script`
 
-Invokes the `script` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#inline-definition)
+Invokes the `script` tag helper from the `Orchard.ResourceManagement` package. [See this section.](../Resources/README.md#inline-definition)
 
 ### `style`
 
-Invokes the `style` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#inline-definition)
+Invokes the `style` tag helper from the `Orchard.ResourceManagement` package. [See this section.](../Resources/README.md#inline-definition)
 
 ### `a`
 

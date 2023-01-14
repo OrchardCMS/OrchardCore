@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.FileProviders;
-using Moq;
-using Newtonsoft.Json.Linq;
 using OpenIddict.Abstractions;
 using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
@@ -13,7 +5,6 @@ using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.YesSql.Models;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Tests.Utilities;
-using Xunit;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
@@ -119,8 +110,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 
             appManagerMock.Setup(m =>
                 m.PopulateAsync(
-                    It.IsAny<object>(),
                     It.IsAny<OpenIddictApplicationDescriptor>(),
+                    It.IsAny<object>(),
                     It.IsAny<CancellationToken>()))
                 .Returns(
                     new ValueTask());

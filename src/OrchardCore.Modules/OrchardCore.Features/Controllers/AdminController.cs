@@ -1,17 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using OrchardCore.DisplayManagement.Extensions;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Features.Models;
+using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
 using OrchardCore.Routing;
 
@@ -19,12 +21,14 @@ namespace OrchardCore.Features.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly IExtensionManager _extensionManager;
-        private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly INotifier _notifier;
+        private readonly IExtensionManager _extensionManager;
+        private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IStringLocalizer S;
+        private readonly AdminOptions _adminOptions;
         private readonly IHtmlLocalizer H;
 
         public AdminController(
@@ -32,155 +36,199 @@ namespace OrchardCore.Features.Controllers
             IHtmlLocalizer<AdminController> localizer,
             IShellFeaturesManager shellFeaturesManager,
             IAuthorizationService authorizationService,
+            IShellHost shellHost,
             ShellSettings shellSettings,
             INotifier notifier,
-            IStringLocalizer<AdminController> stringLocalizer)
+            IStringLocalizer<AdminController> stringLocalizer,
+            IOptions<AdminOptions> adminOptions)
         {
-            _extensionManager = extensionManager;
-            _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;
+            _shellHost = shellHost;
             _shellSettings = shellSettings;
             _notifier = notifier;
+            _extensionManager = extensionManager;
+            _shellFeaturesManager = shellFeaturesManager;
             H = localizer;
             S = stringLocalizer;
+            _adminOptions = adminOptions.Value;
         }
 
-        public async Task<ActionResult> Features()
+        public async Task<ActionResult> Features(string tenant)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
                 return Forbid();
             }
 
-            var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
-            var alwaysEnabledFeatures = await _shellFeaturesManager.GetAlwaysEnabledFeaturesAsync();
+            var viewModel = new FeaturesViewModel();
 
-            var moduleFeatures = new List<ModuleFeature>();
-
-            var features = (await _shellFeaturesManager.GetAvailableFeaturesAsync()).Where(f => !f.IsTheme());
-
-            foreach (var moduleFeatureInfo in features)
+            await ExecuteAsync(tenant, async (featureService, settings, isProxy) =>
             {
-                var dependentFeatures = _extensionManager.GetDependentFeatures(moduleFeatureInfo.Id);
-                var featureDependencies = _extensionManager.GetFeatureDependencies(moduleFeatureInfo.Id);
-
-                var moduleFeature = new ModuleFeature
+                // If the user provide an invalid tenant value, we'll set it to null so it's not available on the next request.
+                if (isProxy)
                 {
-                    Descriptor = moduleFeatureInfo,
-                    IsEnabled = enabledFeatures.Contains(moduleFeatureInfo),
-                    IsAlwaysEnabled = alwaysEnabledFeatures.Contains(moduleFeatureInfo),
-                    //IsRecentlyInstalled = _moduleService.IsRecentlyInstalled(f.Extension),
-                    //NeedsUpdate = featuresThatNeedUpdate.Contains(f.Id),
-                    EnabledDependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id && enabledFeatures.Contains(x)).ToList(),
-                    FeatureDependencies = featureDependencies.Where(d => d.Id != moduleFeatureInfo.Id).ToList()
-                };
+                    viewModel.IsProxy = true;
+                    tenant = settings.Name;
+                    viewModel.Name = settings.Name;
+                }
 
-                moduleFeatures.Add(moduleFeature);
-            }
-
-            return View(new FeaturesViewModel
-            {
-                Features = moduleFeatures
+                viewModel.Features = await featureService.GetModuleFeaturesAsync();
             });
+
+            return View(viewModel);
         }
 
         [HttpPost]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> Features(BulkActionViewModel model, bool? force)
+        public async Task<ActionResult> Features(BulkActionViewModel model, bool? force, string tenant)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
                 return Forbid();
             }
 
-            if (model.FeatureIds == null || !model.FeatureIds.Any())
+            if (model.FeatureIds == null || model.FeatureIds.Length == 0)
             {
                 ModelState.AddModelError(nameof(BulkActionViewModel.FeatureIds), S["Please select one or more features."]);
             }
 
             if (ModelState.IsValid)
             {
-                var features = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                    .Where(f => !f.IsTheme() && model.FeatureIds.Contains(f.Id));
+                await ExecuteAsync(tenant, async (featureService, settings, isProxy) =>
+                {
+                    var availableFeatures = await featureService.GetAvailableFeatures(model.FeatureIds);
 
-                await EnableOrDisableFeaturesAsync(features, model.BulkAction, force);
+                    await featureService.EnableOrDisableFeaturesAsync(availableFeatures, model.BulkAction, force, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
+                });
             }
 
             return RedirectToAction(nameof(Features));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Disable(string id)
+        public async Task<IActionResult> Disable(string id, string tenant)
         {
-            var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                .FirstOrDefault(f => !f.IsTheme() && f.Id == id);
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
+            {
+                return Forbid();
+            }
 
-            if (feature == null)
+            var found = false;
+
+            await ExecuteAsync(tenant, async (featureService, settings, isProxy) =>
+            {
+                var feature = await featureService.GetAvailableFeature(id);
+
+                if (feature == null)
+                {
+                    return;
+                }
+
+                found = true;
+
+                if (!isProxy && id == FeaturesConstants.FeatureId)
+                {
+                    await _notifier.ErrorAsync(H["This feature is always enabled and cannot be disabled."]);
+
+                    return;
+                }
+
+                await featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Disable, true, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
+            });
+
+            if (!found)
             {
                 return NotFound();
             }
 
-            // Generating routes can fail while the tenant is recycled as routes can use services.
-            // It could be fixed by waiting for the next request or the end of the current one
-            // to actually release the tenant. Right now we render the url before recycling the tenant.
-
-            var nextUrl = Url.Action(nameof(Features));
-
-            await EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Disable, force: true);
-
-            return Redirect(nextUrl);
+            return Redirect(GetNextUrl(tenant, id));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Enable(string id)
+        public async Task<IActionResult> Enable(string id, string tenant)
         {
-            var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                .FirstOrDefault(f => !f.IsTheme() && f.Id == id);
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
+            {
+                return Forbid();
+            }
 
-            if (feature == null)
+            var found = false;
+
+            await ExecuteAsync(tenant, async (featureService, settings, isProxy) =>
+            {
+                var feature = await featureService.GetAvailableFeature(id);
+
+                if (feature == null)
+                {
+                    return;
+                }
+
+                found = true;
+
+                await featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Enable, true, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
+            });
+
+            if (!found)
             {
                 return NotFound();
             }
 
+            return Redirect(GetNextUrl(tenant, id));
+        }
+
+        private async Task ExecuteAsync(string tenant, Func<FeatureService, ShellSettings, bool, Task> action)
+        {
+            if (_shellSettings.IsDefaultShell()
+                && !String.IsNullOrWhiteSpace(tenant)
+                && _shellHost.TryGetSettings(tenant, out var settings)
+                && !settings.IsDefaultShell()
+                && settings.State == TenantState.Running)
+            {
+                // At this point, we know that this request is being executed from the Default tenant.
+                // Also, we were able to find a matching and running tenant that isn't the Default one.
+                // Therefore, it is safe to create a scope for the given tenant.
+                var shellScope = await _shellHost.GetScopeAsync(settings);
+
+                await shellScope.UsingAsync(async scope =>
+                {
+                    var shellFeatureManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
+                    var extensionManager = scope.ServiceProvider.GetRequiredService<IExtensionManager>();
+
+                    // At this point we apply the action on the given tenant.
+                    await action(new FeatureService(shellFeatureManager, extensionManager), scope.ShellContext.Settings, true);
+                });
+
+                return;
+            }
+
+            // At this point we apply the action on the current tenant.
+            await action(new FeatureService(_shellFeaturesManager, _extensionManager), _shellSettings, false);
+        }
+
+        private string GetNextUrl(string tenant, string featureId)
+        {
             // Generating routes can fail while the tenant is recycled as routes can use services.
             // It could be fixed by waiting for the next request or the end of the current one
             // to actually release the tenant. Right now we render the url before recycling the tenant.
 
-            var nextUrl = Url.Action(nameof(Features));
+            ShellSettings settings = null;
 
-            await EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Enable, force: true);
-
-            return Redirect(nextUrl);
-        }
-
-        private async Task EnableOrDisableFeaturesAsync(IEnumerable<IFeatureInfo> features, FeaturesBulkAction action, bool? force)
-        {
-            switch (action)
+            if (!String.IsNullOrWhiteSpace(tenant))
             {
-                case FeaturesBulkAction.None:
-                    break;
-                case FeaturesBulkAction.Enable:
-                    await _shellFeaturesManager.EnableFeaturesAsync(features, force == true);
-                    await NotifyAsync(features);
-                    break;
-                case FeaturesBulkAction.Disable:
-                    await _shellFeaturesManager.DisableFeaturesAsync(features, force == true);
-                    await NotifyAsync(features, enabled: false);
-                    break;
-                case FeaturesBulkAction.Toggle:
-                    // The features array has already been checked for validity.
-                    var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
-                    var disabledFeatures = await _shellFeaturesManager.GetDisabledFeaturesAsync();
-                    var featuresToEnable = disabledFeatures.Intersect(features);
-                    var featuresToDisable = enabledFeatures.Intersect(features);
-
-                    await _shellFeaturesManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, force == true);
-                    await NotifyAsync(featuresToEnable);
-                    await NotifyAsync(featuresToDisable, enabled: false);
-                    return;
-                default:
-                    break;
+                _shellHost.TryGetSettings(tenant, out settings);
             }
+
+            if (settings != null && settings.Name != _shellSettings.Name)
+            {
+                return Url.Action(nameof(Features), new { tenant });
+            }
+
+            if ((settings == null || !settings.IsDefaultShell()) && featureId == FeaturesConstants.FeatureId)
+            {
+                return Url.Content("~/" + _adminOptions.AdminUrlPrefix);
+            }
+
+            return Url.Action(nameof(Features));
         }
 
         private async ValueTask NotifyAsync(IEnumerable<IFeatureInfo> features, bool enabled = true)
