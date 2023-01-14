@@ -10,10 +10,8 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Documents;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
-using OrchardCore.Roles.Models;
 using OrchardCore.Roles.ViewModels;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -24,39 +22,35 @@ namespace OrchardCore.Roles.Controllers
     public class AdminController : Controller
     {
         private readonly IDocumentStore _documentStore;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer S;
         private readonly RoleManager<IRole> _roleManager;
-        private readonly IDocumentManager<RolesDocument> _rolesDocumentManager;
+        private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IRoleService _roleService;
         private readonly INotifier _notifier;
+        private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
 
         public AdminController(
-            IAuthorizationService authorizationService,
-            ITypeFeatureProvider typeFeatureProvider,
             IDocumentStore documentStore,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer,
             RoleManager<IRole> roleManager,
-            IDocumentManager<RolesDocument> rolesDocumentManager,
+            IAuthorizationService authorizationService,
+            IEnumerable<IPermissionProvider> permissionProviders,
+            ITypeFeatureProvider typeFeatureProvider,
             IRoleService roleService,
             INotifier notifier,
-            IEnumerable<IPermissionProvider> permissionProviders
-            )
+            IStringLocalizer<AdminController> stringLocalizer,
+            IHtmlLocalizer<AdminController> htmlLocalizer)
         {
-            H = htmlLocalizer;
-            _notifier = notifier;
-            _roleService = roleService;
-            _typeFeatureProvider = typeFeatureProvider;
-            _permissionProviders = permissionProviders;
-            _roleManager = roleManager;
-            _rolesDocumentManager = rolesDocumentManager;
-            S = stringLocalizer;
-            _authorizationService = authorizationService;
             _documentStore = documentStore;
+            _roleManager = roleManager;
+            _authorizationService = authorizationService;
+            _permissionProviders = permissionProviders;
+            _typeFeatureProvider = typeFeatureProvider;
+            _roleService = roleService;
+            _notifier = notifier;
+            S = stringLocalizer;
+            H = htmlLocalizer;
         }
 
         public async Task<ActionResult> Index()
@@ -211,42 +205,13 @@ namespace OrchardCore.Roles.Controllers
 
             role.RoleDescription = roleDescription;
 
-            var rolesDocument = await _rolesDocumentManager.GetOrCreateMutableAsync();
-            var updateRolesDocument = false;
-
-            rolesDocument.PermissionGroups.TryAdd(role.RoleName, new List<string>());
-
-            var permissionNames = _permissionProviders.SelectMany(x => x.GetDefaultStereotypes())
-                .SelectMany(y => y.Permissions ?? Enumerable.Empty<Permission>())
-                .Select(x => x.Name)
-                .ToList();
-
-            // Save
+            // Save.
             var rolePermissions = new List<RoleClaim>();
             foreach (var key in Request.Form.Keys)
             {
-                var permissionName = key;
-
-                if (key.StartsWith("Checkbox.", StringComparison.Ordinal))
+                if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
                 {
-                    permissionName = key.Substring("Checkbox.".Length);
-                }
-
-                if (!permissionNames.Contains(permissionName, StringComparer.OrdinalIgnoreCase))
-                {
-                    // The request contains an invalid permission, let's ignore it
-                    continue;
-                }
-
-                if (!rolesDocument.PermissionGroups[role.RoleName].Contains(permissionName, StringComparer.OrdinalIgnoreCase))
-                {
-                    // Save the permission in the permissions history so it never gets auto assigned to this role.
-                    rolesDocument.PermissionGroups[role.RoleName].Add(permissionName);
-                    updateRolesDocument = true;
-                }
-
-                if (String.Equals(Request.Form[key], "true", StringComparison.OrdinalIgnoreCase))
-                {
+                    var permissionName = key["Checkbox.".Length..];
                     rolePermissions.Add(new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = permissionName });
                 }
             }
@@ -255,11 +220,6 @@ namespace OrchardCore.Roles.Controllers
             role.RoleClaims.AddRange(rolePermissions);
 
             await _roleManager.UpdateAsync(role);
-
-            if (updateRolesDocument)
-            {
-                await _rolesDocumentManager.UpdateAsync(rolesDocument);
-            }
 
             await _notifier.SuccessAsync(H["Role updated successfully."]);
 

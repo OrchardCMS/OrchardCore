@@ -70,7 +70,7 @@ public abstract class NotifyUserTaskActivity : TaskActivity
             return Outcomes("Failed: user not found");
         }
 
-        if (user is User su && !su.IsEnabled)
+        if (user is User u && !u.IsEnabled)
         {
             return Outcomes("Failed: disabled user");
         }
