@@ -57,14 +57,14 @@ namespace OrchardCore.Media.Processing
                 queryStringParams["rmode"] = resizeMode.ToString().ToLower();
             }
 
-            if (quality.HasValue)
-            {
-                queryStringParams["quality"] = quality.ToString();
-            }
-
             if (format != Format.Undefined)
             {
                 queryStringParams["format"] = format.ToString().ToLower();
+            }
+
+            if (quality.HasValue)
+            {
+                queryStringParams["quality"] = quality.ToString();
             }
 
             if (anchor != null)
