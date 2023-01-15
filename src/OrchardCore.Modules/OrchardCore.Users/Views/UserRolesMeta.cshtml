@@ -4,13 +4,13 @@
 @inject IRoleService RoleService
 
 @{
-    var roleNames = await RoleService.GetRoleNamesAsync();
+    var roleNames = await RoleService.GetNormalizedRoleNamesAsync();
 }
 
 <div data-bs-toggle="tooltip" title="@T["The roles this user has"]">
     @foreach (var normalizedRoleName in Model.User.RoleNames)
     {
-        var roleName = roleNames.FirstOrDefault(roleName => roleName.Equals(normalizedRoleName, StringComparison.OrdinalIgnoreCase));
+        var roleName = roleNames.FirstOrDefault(roleName => roleName == normalizedRoleName);
         if (roleName == null)
         {
             continue;

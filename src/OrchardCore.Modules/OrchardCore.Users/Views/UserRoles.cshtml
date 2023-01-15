@@ -4,14 +4,14 @@
 @inject IRoleService RoleService
 
 @{
-    var roleNames = await RoleService.GetRoleNamesAsync();
+    var roleNames = await RoleService.GetNormalizedRoleNamesAsync();
 }
 
 <h4>@T["Roles"]</h4>
 <ul class="list-unstyled">
     @foreach (var normalizedRoleName in Model.User.RoleNames)
     {
-        var roleName = roleNames.FirstOrDefault(roleName => roleName.Equals(normalizedRoleName, StringComparison.OrdinalIgnoreCase));
+        var roleName = roleNames.FirstOrDefault(roleName => roleName == normalizedRoleName);
         if (roleName == null)
         {
             continue;
