@@ -8,7 +8,7 @@ namespace OrchardCore.Users
     {
         public static readonly Permission ManageUsers = CommonPermissions.ManageUsers;
         public static readonly Permission ViewUsers = CommonPermissions.ViewUsers;
-        public static readonly Permission ManageOwnUserInformation = new("ManageOwnUserInformation", "Edit own user information", new Permission[] { ManageUsers });
+        public static readonly Permission ManageOwnUserInformation = new("ManageOwnUserInformation", "Edit own user information", new Permission[] { CommonPermissions.EditUsers });
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {

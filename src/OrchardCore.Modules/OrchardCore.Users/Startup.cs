@@ -135,7 +135,12 @@ namespace OrchardCore.Users
                 pattern: _adminOptions.AdminUrlPrefix + "/Users/Unlock/{id}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Unlock) }
             );
-
+            routes.MapAreaControllerRoute(
+                name: "UsersDisplay",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Display/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Display) }
+            );
             builder.UseAuthorization();
         }
 

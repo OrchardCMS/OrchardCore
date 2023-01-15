@@ -1,0 +1,22 @@
+@using OrchardCore.Security.Services
+@model SummaryAdminUserViewModel
+
+@inject IRoleService RoleService
+
+@{
+    var roleNames = await RoleService.GetRoleNamesAsync();
+}
+
+<h4>@T["Roles"]</h4>
+<ul class="list-unstyled">
+    @foreach (var normalizedRoleName in Model.User.RoleNames)
+    {
+        var roleName = roleNames.FirstOrDefault(roleName => roleName.Equals(normalizedRoleName, StringComparison.OrdinalIgnoreCase));
+        if (roleName == null)
+        {
+            continue;
+        }
+
+        <li>@roleName</li>
+    }
+</ul>

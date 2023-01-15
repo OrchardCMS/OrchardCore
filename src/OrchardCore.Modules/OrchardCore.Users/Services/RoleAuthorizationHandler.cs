@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -43,7 +42,9 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
 
         if (context.Resource is IRole role)
         {
-            if (await TryAuthenticateAsync(context, requirement.Permission, role.RoleName))
+            var variantPermission = GetPermissionVariation(requirement.Permission, role.RoleName);
+
+            if (variantPermission != null && await _authorizationService.AuthorizeAsync(context.User, variantPermission))
             {
                 context.Succeed(requirement);
 
@@ -55,8 +56,8 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
         {
             var currentUserId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (String.Equals(requirement.Permission.Name, CommonPermissions.EditUsers.Name, StringComparison.OrdinalIgnoreCase)
-                && user.UserId != null && user.UserId.Equals(currentUserId, StringComparison.OrdinalIgnoreCase)
+            if (requirement.Permission.Name == CommonPermissions.EditUsers.Name
+                && user.UserId == currentUserId
                 && await _authorizationService.AuthorizeAsync(context.User, Permissions.ManageOwnUserInformation))
             {
                 context.Succeed(requirement);
@@ -75,14 +76,16 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
 
             if (!roleNames.Any())
             {
-                // When the given user does not have any role, means it's a dummy user. 
-                roleNames = await AvailableRolesAsync();
+                // When the user is in no roles, we check to see if the current user can manage any roles.
+                roleNames = (await _roleService.GetRoleNamesAsync()).Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName));
             }
 
             // Check every role to see if the current user has permission to at least one role.
             foreach (var roleName in roleNames)
             {
-                if (await TryAuthenticateAsync(context, requirement.Permission, roleName))
+                var variantPermission = GetPermissionVariation(requirement.Permission, roleName);
+
+                if (variantPermission != null && await _authorizationService.AuthorizeAsync(context.User, variantPermission))
                 {
                     context.Succeed(requirement);
 
@@ -92,48 +95,33 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
         }
     }
 
-    private IEnumerable<string> _roleNames;
-
-    private async Task<IEnumerable<string>> AvailableRolesAsync()
+    private Permission GetPermissionVariation(Permission permission, string roleName)
     {
-        _roleNames ??= (await _roleService.GetRoleNamesAsync())
-                           .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
-
-        return _roleNames;
-    }
-
-    private async Task<bool> TryAuthenticateAsync(AuthorizationHandlerContext context, Permission permission, string roleName)
-    {
-        if (String.Equals(permission.Name, CommonPermissions.ListUsers.Name, StringComparison.OrdinalIgnoreCase)
-            && await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.CreateListUsersInRolePermission(roleName)))
+        if (permission.Name == CommonPermissions.ListUsers.Name)
         {
-            return true;
+            return CommonPermissions.CreateListUsersInRolePermission(roleName);
         }
 
-        if (String.Equals(permission.Name, CommonPermissions.EditUsers.Name, StringComparison.OrdinalIgnoreCase)
-            && await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.CreateEditUsersInRolePermission(roleName)))
+        if (permission.Name == CommonPermissions.EditUsers.Name)
         {
-            return true;
+            return CommonPermissions.CreateEditUsersInRolePermission(roleName);
         }
 
-        if (String.Equals(permission.Name, CommonPermissions.DeleteUsers.Name, StringComparison.OrdinalIgnoreCase)
-            && await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.CreateDeleteUsersInRolePermission(roleName)))
+        if (permission.Name == CommonPermissions.DeleteUsers.Name)
         {
-            return true;
+            return CommonPermissions.CreateDeleteUsersInRolePermission(roleName);
         }
 
-        if (String.Equals(permission.Name, CommonPermissions.AssignUsersToRole.Name, StringComparison.OrdinalIgnoreCase)
-            && await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.CreateAssignUsersToRolePermission(roleName)))
+        if (permission.Name == CommonPermissions.AssignRoleToUsers.Name)
         {
-            return true;
+            return CommonPermissions.CreateAssignRoleToUsersPermission(roleName);
         }
 
-        if (String.Equals(permission.Name, CommonPermissions.ManageUsers.Name, StringComparison.OrdinalIgnoreCase)
-            && await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.CreatePermissionForManageUsersInRole(roleName)))
+        if (permission.Name == CommonPermissions.ManageUsers.Name)
         {
-            return true;
+            return CommonPermissions.CreatePermissionForManageUsersInRole(roleName);
         }
 
-        return false;
+        return null;
     }
 }

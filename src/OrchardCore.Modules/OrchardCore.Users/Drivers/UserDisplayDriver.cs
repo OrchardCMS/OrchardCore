@@ -56,6 +56,7 @@ namespace OrchardCore.Users.Drivers
         {
             return Combine(
                 Initialize<SummaryAdminUserViewModel>("UserFields", model => model.User = user).Location("SummaryAdmin", "Header:1"),
+                Initialize<SummaryAdminUserViewModel>("UserInfo", model => model.User = user).Location("DetailAdmin", "Content:5"),
                 Initialize<SummaryAdminUserViewModel>("UserButtons", model => model.User = user).Location("SummaryAdmin", "Actions:1")
             );
         }

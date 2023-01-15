@@ -49,9 +49,15 @@ namespace OrchardCore.Users.Drivers
 
         public override IDisplayResult Display(User user)
         {
-            return Initialize<SummaryAdminUserViewModel>("UserRolesMeta", model => model.User = user)
-                .Location("SummaryAdmin", "Meta");
+            return Combine(
+                Initialize<SummaryAdminUserViewModel>("UserRolesMeta", model => model.User = user)
+                    .Location("SummaryAdmin", "Meta"),
+
+                Initialize<SummaryAdminUserViewModel>("UserRoles", model => model.User = user)
+                    .Location("DetailAdmin", "Content:10")
+            );
         }
+
         public override IDisplayResult Edit(User user)
         {
             // This view is always rendered, however there will be no editable roles if the user does not have permission to edit them.
@@ -59,7 +65,7 @@ namespace OrchardCore.Users.Drivers
             {
                 // The current user can only view their roles if they have assign role, to prevent listing roles when managing their own profile.
                 if (String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase) &&
-                    !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.AssignUsersToRole))
+                    !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.AssignRoleToUsers))
                 {
                     return;
                 }
@@ -182,7 +188,7 @@ namespace OrchardCore.Users.Drivers
 
             foreach (var role in roles)
             {
-                if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.AssignUsersToRole, role))
+                if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.AssignRoleToUsers, role))
                 {
                     authorizedRoleNames.Add(role.RoleName);
                 }

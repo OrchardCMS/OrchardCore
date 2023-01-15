@@ -23,7 +23,7 @@ public class UserRolePermissions : IPermissionProvider
 
         var list = new List<Permission>()
         {
-            CommonPermissions.AssignUsersToRole,
+            CommonPermissions.AssignRoleToUsers,
         };
 
         foreach (var roleName in roleNames)
@@ -31,7 +31,7 @@ public class UserRolePermissions : IPermissionProvider
             list.Add(CommonPermissions.CreateListUsersInRolePermission(roleName));
             list.Add(CommonPermissions.CreateEditUsersInRolePermission(roleName));
             list.Add(CommonPermissions.CreateDeleteUsersInRolePermission(roleName));
-            list.Add(CommonPermissions.CreateAssignUsersToRolePermission(roleName));
+            list.Add(CommonPermissions.CreateAssignRoleToUsersPermission(roleName));
             list.Add(CommonPermissions.CreatePermissionForManageUsersInRole(roleName));
         }
 
@@ -45,7 +45,7 @@ public class UserRolePermissions : IPermissionProvider
             {
                 Name = "Administrator",
                 Permissions = new[] {
-                    CommonPermissions.AssignUsersToRole,
+                    CommonPermissions.AssignRoleToUsers,
                 }
             }
         };
