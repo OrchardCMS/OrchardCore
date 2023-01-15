@@ -155,7 +155,7 @@ namespace OrchardCore.Users.Drivers
 
         private bool IsCurrentUser(User user)
         {
-            return String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase);
+            return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId;
         }
     }
 }
