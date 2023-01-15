@@ -7,7 +7,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Search.Lucene
 {
-    public class LuceneIndexInitializerService : IModularTenantEvents
+    public class LuceneIndexInitializerService : ModularTenantEvents
     {
         private readonly ShellSettings _shellSettings;
 
@@ -16,7 +16,7 @@ namespace OrchardCore.Search.Lucene
             _shellSettings = shellSettings;
         }
 
-        public Task ActivatedAsync()
+        public override Task ActivatedAsync()
         {
             if (_shellSettings.State == TenantState.Running)
             {
@@ -39,21 +39,6 @@ namespace OrchardCore.Search.Lucene
                 });
             }
 
-            return Task.CompletedTask;
-        }
-
-        public Task ActivatingAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task TerminatedAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task TerminatingAsync()
-        {
             return Task.CompletedTask;
         }
     }
