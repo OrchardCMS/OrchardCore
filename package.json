@@ -31,7 +31,7 @@
     "@babel/preset-flow": "7.18.6",
     "all-contributors-cli": "^6.24.0",
     "es6-promise": "4.2.8",
-    "glob": "^8.0.3",
+    "glob": "^8.1.0",
     "graceful-fs": "4.2.10",
     "gulp": "^4.0.2",
     "gulp-babel": "8.0.0",
