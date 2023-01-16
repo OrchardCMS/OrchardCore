@@ -45,12 +45,16 @@ namespace OrchardCore.Localization
             var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
             var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
 
+            var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
             var cultureOptions = serviceProvider.GetService<IOptions<CultureOptions>>().Value;
 
             var requestLocalizationOptions = new OrchardCoreRequestLocalizationOptions(ignoreSystemSettings: cultureOptions.IgnoreSystemSettings)
                 .SetDefaultCulture(defaultCulture)
                 .AddSupportedCultures(supportedCultures)
                 .AddSupportedUICultures(supportedCultures);
+
+            // Avoid ignoring existing culture providers
+            requestLocalizationOptions.RequestCultureProviders = localizationOptions.RequestCultureProviders;
 
             app.UseRequestLocalization(requestLocalizationOptions);
             app.MapCulturesAlias();
