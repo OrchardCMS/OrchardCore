@@ -1,7 +1,7 @@
 @using OrchardCore.Entities
 @using OrchardCore.Settings
 @using OrchardCore.Facebook.Settings
-@model OrchardCore.Facebook.Widgets.ViewModels.FacebookPluginPartViewModel;
+@model OrchardCore.Facebook.Widgets.ViewModels.FacebookPluginPartViewModel
 @inject ISiteService _site
 @{
     var fbInit = (await _site.GetSiteSettingsAsync()).As<FacebookSettings>().FBInit;

@@ -25,7 +25,6 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
 using YesSql.Filters.Query;
-using YesSql.Indexes;
 
 namespace OrchardCore.Notifications;
 
@@ -44,7 +43,7 @@ public class Startup : StartupBase
         services.AddScoped<INotificationMethodProviderAccessor, NotificationMethodProviderAccessor>();
 
         services.AddDataMigration<NotificationMigrations>();
-        services.AddSingleton<IIndexProvider, NotificationIndexProvider>();
+        services.AddIndexProvider<NotificationIndexProvider>();
         services.AddScoped<INotificationsAdminListQueryService, DefaultNotificationsAdminListQueryService>();
         services.Configure<StoreCollectionOptions>(o => o.Collections.Add(NotificationConstants.NotificationCollection));
         services.AddScoped<INotificationEvents, CoreNotificationEventsHandler>();

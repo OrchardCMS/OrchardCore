@@ -127,6 +127,21 @@ A feature profile can also be set when creating a tenant via the web API.
 
 If you're using [Auto Setup](../AutoSetup/README.md), you can specify the `FeatureProfile` property for tenants as well; see the Auto Setup documentation for more information.
 
+## Tenant Removal
+
+Allows removing a tenant if it is not yet set up or is in the disabled state. By default, this feature is not allowed.
+
+Tenant Removal can be allowed from any configuration source (e.g. `appsettings.json`) under the `OrchardCore` section. See the [../../Core/Configuration/README.md](configuration documentation) for details.
+
+```json
+{
+    "OrchardCore_Tenants": {
+      "TenantRemovalAllowed": false // Whether tenant removal is allowed or not. Default is false.
+    }
+  }
+}
+```
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/aQAjTG2ma64" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

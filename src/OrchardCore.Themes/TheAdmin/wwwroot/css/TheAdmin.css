@@ -27890,7 +27890,7 @@ html[dir=rtl][data-theme=default] .list-group-item.last-child-visible {
   border-bottom-left-radius: inherit;
 }
 html[data-theme=default] body:not(.left-sidebar-compact) #ta-left-sidebar {
-  z-index: calc(1000 + 1);
+  z-index: calc(1000 + 50);
   position: fixed;
   top: 52px;
   bottom: 0;
@@ -28281,7 +28281,7 @@ html[dir][data-theme=default] body:not(.left-sidebar-compact) #ta-left-sidebar #
   border-radius: unset;
 }
 html[data-theme=default] .left-sidebar-compact #ta-left-sidebar {
-  z-index: calc(1000 + 1);
+  z-index: calc(1000 + 50);
   position: fixed;
   top: 52px;
   bottom: 0;
@@ -29038,6 +29038,9 @@ html[dir][data-theme=default] .disable.custom-control-input:checked ~ .custom-co
 html[data-theme=default] .action-bar {
   top: 3.3rem;
   z-index: 1000;
+}
+html[data-theme=default] .second-action-bar {
+  z-index: calc(1000 + 1);
 }
 html[dir][data-theme=default] .list-group-item + .list-group-item {
   border-top-width: 0px;
@@ -57326,7 +57329,7 @@ html[dir=rtl][data-theme=darkmode] .list-group-item.last-child-visible {
   border-bottom-left-radius: inherit;
 }
 html[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar {
-  z-index: calc(1000 + 1);
+  z-index: calc(1000 + 50);
   position: fixed;
   top: 52px;
   bottom: 0;
@@ -57717,7 +57720,7 @@ html[dir][data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar 
   border-radius: unset;
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar {
-  z-index: calc(1000 + 1);
+  z-index: calc(1000 + 50);
   position: fixed;
   top: 52px;
   bottom: 0;
@@ -58474,6 +58477,9 @@ html[dir][data-theme=darkmode] .disable.custom-control-input:checked ~ .custom-c
 html[data-theme=darkmode] .action-bar {
   top: 3.3rem;
   z-index: 1000;
+}
+html[data-theme=darkmode] .second-action-bar {
+  z-index: calc(1000 + 1);
 }
 html[dir][data-theme=darkmode] .list-group-item + .list-group-item {
   border-top-width: 0px;

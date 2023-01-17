@@ -223,6 +223,36 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
+        public async Task RemoveSettingsAsync(ShellSettings settings)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                await EnsureConfigurationAsync();
+
+                if (settings == null)
+                {
+                    throw new ArgumentNullException(nameof(settings));
+                }
+
+                await _settingsSources.RemoveAsync(settings.Name);
+
+                await _tenantConfigSemaphore.WaitAsync();
+                try
+                {
+                    await _tenantConfigSources.RemoveAsync(settings.Name);
+                }
+                finally
+                {
+                    _tenantConfigSemaphore.Release();
+                }
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
         private async Task EnsureConfigurationAsync()
         {
             if (_configuration != null)
