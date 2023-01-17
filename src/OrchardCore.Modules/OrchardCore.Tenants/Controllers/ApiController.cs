@@ -114,9 +114,12 @@ namespace OrchardCore.Tenants.Controllers
             shellSettings["RecipeName"] = model.RecipeName;
             shellSettings["FeatureProfile"] = model.FeatureProfile;
 
-            model.IsNewTenant = true;
+            if (ModelState.IsValid)
+            {
+                model.IsNewTenant = true;
 
-            ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
+                ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
+            }
 
             if (ModelState.IsValid)
             {
