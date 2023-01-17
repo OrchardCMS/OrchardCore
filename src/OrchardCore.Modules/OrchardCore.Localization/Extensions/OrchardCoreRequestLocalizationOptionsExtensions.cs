@@ -5,7 +5,7 @@ namespace OrchardCore.Localization;
 
 internal static class OrchardCoreRequestLocalizationOptionsExtensions
 {
-    public static RequestLocalizationOptions WithOptions(
+    public static RequestLocalizationOptions WithRequestLocalizationOptions(
         this OrchardCoreRequestLocalizationOptions orchardCoreRequestLocalization, RequestLocalizationOptions requestLocalizationOptions)
     {
         if (orchardCoreRequestLocalization is null)
