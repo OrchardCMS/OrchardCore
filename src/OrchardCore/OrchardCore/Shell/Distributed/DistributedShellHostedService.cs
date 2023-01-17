@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Removing;
+using OrchardCore.Locking;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Distributed
@@ -34,7 +35,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         private readonly ILogger _logger;
 
         private readonly ConcurrentDictionary<string, ShellIdentifier> _identifiers = new ConcurrentDictionary<string, ShellIdentifier>();
-        private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
+        private readonly ILocalLock _localLock;
 
         private string _shellChangedId;
         private string _shellCountChangedId;
@@ -50,12 +51,14 @@ namespace OrchardCore.Environment.Shell.Distributed
             IShellContextFactory shellContextFactory,
             IShellSettingsManager shellSettingsManager,
             IShellRemovalManager shellRemovingManager,
+            ILocalLock localLock,
             ILogger<DistributedShellHostedService> logger)
         {
             _shellHost = shellHost;
             _shellContextFactory = shellContextFactory;
             _shellSettingsManager = shellSettingsManager;
             _shellRemovingManager = shellRemovingManager;
+            _localLock = localLock;
             _logger = logger;
 
             shellHost.LoadingAsync += LoadingAsync;
@@ -206,76 +209,72 @@ namespace OrchardCore.Environment.Shell.Distributed
                             break;
                         }
 
-                        var semaphore = _semaphores.GetOrAdd(settings.Name, name => new SemaphoreSlim(1));
-                        await semaphore.WaitAsync();
-                        try
+                        using (await _localLock.AcquireLockAsync(settings.Name).ConfigureAwait(false))
                         {
-                            // Try to retrieve the release identifier of this tenant from the distributed cache.
-                            var releaseId = await distributedCache.GetStringAsync(ReleaseIdKey(settings.Name));
-                            if (releaseId != null)
+                            try
                             {
-                                // Check if the release identifier of this tenant has changed.
-                                var identifier = _identifiers.GetOrAdd(settings.Name, name => new ShellIdentifier());
-                                if (identifier.ReleaseId != releaseId)
+                                // Try to retrieve the release identifier of this tenant from the distributed cache.
+                                var releaseId = await distributedCache.GetStringAsync(ReleaseIdKey(settings.Name));
+                                if (releaseId != null)
                                 {
-                                    // Update the local identifier.
-                                    identifier.ReleaseId = releaseId;
-
-                                    // Keep in sync this tenant by releasing it locally.
-                                    await _shellHost.ReleaseShellContextAsync(settings, eventSource: false);
-                                }
-                            }
-
-                            // Try to retrieve the reload identifier of this tenant from the distributed cache.
-                            var reloadId = await distributedCache.GetStringAsync(ReloadIdKey(settings.Name));
-                            if (reloadId != null)
-                            {
-                                // Check if the reload identifier of this tenant has changed.
-                                var identifier = _identifiers.GetOrAdd(settings.Name, name => new ShellIdentifier());
-                                if (identifier.ReloadId != reloadId)
-                                {
-                                    // Update the local identifier.
-                                    identifier.ReloadId = reloadId;
-
-                                    // Keep in sync this tenant by reloading it locally.
-                                    await _shellHost.ReloadShellContextAsync(settings, eventSource: false);
-                                }
-                            }
-
-                            // Check if the tenant needs to be removed locally.
-                            if (settings.Name != ShellHelper.DefaultShellName && tenantsToRemove.Contains(settings.Name))
-                            {
-                                // The local resources can only be removed if the tenant is 'Disabled' or 'Uninitialized'.
-                                if (settings.State == TenantState.Disabled || settings.State == TenantState.Uninitialized)
-                                {
-                                    // Keep in sync this tenant by removing its local (non shared) resources.
-                                    var removingContext = await _shellRemovingManager.RemoveAsync(settings, localResourcesOnly: true);
-                                    if (removingContext.FailedOnLockTimeout)
+                                    // Check if the release identifier of this tenant has changed.
+                                    var identifier = _identifiers.GetOrAdd(settings.Name, name => new ShellIdentifier());
+                                    if (identifier.ReleaseId != releaseId)
                                     {
-                                        // If it only failed to acquire a lock, let it retry on the next loop.
-                                        syncingSuccess = false;
-                                    }
-                                    else
-                                    {
-                                        // Otherwise, keep in sync this tenant by removing the shell locally.
-                                        await _shellHost.RemoveShellContextAsync(settings, eventSource: false);
+                                        // Update the local identifier.
+                                        identifier.ReleaseId = releaseId;
 
-                                        // Cleanup local dictionaries.
-                                        _identifiers.TryRemove(settings.Name, out _);
-                                        _semaphores.TryRemove(settings.Name, out _);
+                                        // Keep in sync this tenant by releasing it locally.
+                                        await _shellHost.ReleaseShellContextAsync(settings, eventSource: false);
                                     }
                                 }
+
+                                // Try to retrieve the reload identifier of this tenant from the distributed cache.
+                                var reloadId = await distributedCache.GetStringAsync(ReloadIdKey(settings.Name));
+                                if (reloadId != null)
+                                {
+                                    // Check if the reload identifier of this tenant has changed.
+                                    var identifier = _identifiers.GetOrAdd(settings.Name, name => new ShellIdentifier());
+                                    if (identifier.ReloadId != reloadId)
+                                    {
+                                        // Update the local identifier.
+                                        identifier.ReloadId = reloadId;
+
+                                        // Keep in sync this tenant by reloading it locally.
+                                        await _shellHost.ReloadShellContextAsync(settings, eventSource: false);
+                                    }
+                                }
+
+                                // Check if the tenant needs to be removed locally.
+                                if (settings.Name != ShellHelper.DefaultShellName && tenantsToRemove.Contains(settings.Name))
+                                {
+                                    // The local resources can only be removed if the tenant is 'Disabled' or 'Uninitialized'.
+                                    if (settings.State == TenantState.Disabled || settings.State == TenantState.Uninitialized)
+                                    {
+                                        // Keep in sync this tenant by removing its local (non shared) resources.
+                                        var removingContext = await _shellRemovingManager.RemoveAsync(settings, localResourcesOnly: true);
+                                        if (removingContext.FailedOnLockTimeout)
+                                        {
+                                            // If it only failed to acquire a lock, let it retry on the next loop.
+                                            syncingSuccess = false;
+                                        }
+                                        else
+                                        {
+                                            // Otherwise, keep in sync this tenant by removing the shell locally.
+                                            await _shellHost.RemoveShellContextAsync(settings, eventSource: false);
+
+                                            // Cleanup local dictionary.
+                                            _identifiers.TryRemove(settings.Name, out _);
+                                        }
+                                    }
+                                }
                             }
-                        }
-                        catch (Exception ex) when (!ex.IsFatal())
-                        {
-                            syncingSuccess = false;
-                            _logger.LogError(ex, "Unexpected error while syncing the tenant '{TenantName}'.", settings.Name);
-                            break;
-                        }
-                        finally
-                        {
-                            semaphore.Release();
+                            catch (Exception ex) when (!ex.IsFatal())
+                            {
+                                syncingSuccess = false;
+                                _logger.LogError(ex, "Unexpected error while syncing the tenant '{TenantName}'.", settings.Name);
+                                break;
+                            }
                         }
                     }
 

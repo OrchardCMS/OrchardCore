@@ -11,6 +11,7 @@ using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Events;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Locking;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -32,7 +33,7 @@ namespace OrchardCore.Environment.Shell
         private bool _initialized;
         private readonly ConcurrentDictionary<string, ShellContext> _shellContexts = new(StringComparer.OrdinalIgnoreCase);
         private readonly ConcurrentDictionary<string, ShellSettings> _shellSettings = new(StringComparer.OrdinalIgnoreCase);
-        private readonly ConcurrentDictionary<string, SemaphoreSlim> _shellSemaphores = new();
+        private readonly ILocalLock _localLock;
         private readonly SemaphoreSlim _initializingSemaphore = new(1);
 
         public ShellHost(
@@ -40,12 +41,14 @@ namespace OrchardCore.Environment.Shell
             IShellContextFactory shellContextFactory,
             IRunningShellTable runningShellTable,
             IExtensionManager extensionManager,
+            ILocalLock localLock,
             ILogger<ShellHost> logger)
         {
             _shellSettingsManager = shellSettingsManager;
             _shellContextFactory = shellContextFactory;
             _runningShellTable = runningShellTable;
             _extensionManager = extensionManager;
+            _localLock = localLock;
             _logger = logger;
         }
 
@@ -85,21 +88,13 @@ namespace OrchardCore.Environment.Shell
             {
                 if (!_shellContexts.TryGetValue(settings.Name, out shell))
                 {
-                    var semaphore = _shellSemaphores.GetOrAdd(settings.Name, (name) => new SemaphoreSlim(1));
-
-                    await semaphore.WaitAsync();
-
-                    try
+                    using (await _localLock.AcquireLockAsync(settings.Name).ConfigureAwait(false))
                     {
                         if (!_shellContexts.TryGetValue(settings.Name, out shell))
                         {
                             shell = await CreateShellContextAsync(settings);
                             AddAndRegisterShell(shell);
                         }
-                    }
-                    finally
-                    {
-                        semaphore.Release();
                     }
                 }
 
