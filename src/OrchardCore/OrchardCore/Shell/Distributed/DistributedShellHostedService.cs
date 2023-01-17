@@ -390,27 +390,24 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return;
             }
 
-            var semaphore = _semaphores.GetOrAdd(name, name => new SemaphoreSlim(1));
-            await semaphore.WaitAsync();
-            try
+            using (await _localLock.AcquireLockAsync(name).ConfigureAwait(false))
             {
-                // Update this tenant in the local collection with a new release identifier.
-                var identifier = _identifiers.GetOrAdd(name, name => new ShellIdentifier());
-                identifier.ReleaseId = IdGenerator.GenerateId();
+                try
+                {
+                    // Update this tenant in the local collection with a new release identifier.
+                    var identifier = _identifiers.GetOrAdd(name, name => new ShellIdentifier());
+                    identifier.ReleaseId = IdGenerator.GenerateId();
 
-                // Update the release identifier of this tenant in the distributed cache.
-                await distributedCache.SetStringAsync(ReleaseIdKey(name), identifier.ReleaseId);
+                    // Update the release identifier of this tenant in the distributed cache.
+                    await distributedCache.SetStringAsync(ReleaseIdKey(name), identifier.ReleaseId);
 
-                // Also update the global identifier specifying that a tenant has changed.
-                await distributedCache.SetStringAsync(ShellChangedIdKey, identifier.ReleaseId);
-            }
-            catch (Exception ex) when (!ex.IsFatal())
-            {
-                _logger.LogError(ex, "Unable to update the distributed cache before releasing the tenant '{TenantName}'.", name);
-            }
-            finally
-            {
-                semaphore.Release();
+                    // Also update the global identifier specifying that a tenant has changed.
+                    await distributedCache.SetStringAsync(ShellChangedIdKey, identifier.ReleaseId);
+                }
+                catch (Exception ex) when (!ex.IsFatal())
+                {
+                    _logger.LogError(ex, "Unable to update the distributed cache before releasing the tenant '{TenantName}'.", name);
+                }
             }
         }
 
@@ -441,34 +438,31 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return;
             }
 
-            var semaphore = _semaphores.GetOrAdd(name, name => new SemaphoreSlim(1));
-            await semaphore.WaitAsync();
-            try
+            using (await _localLock.AcquireLockAsync(name).ConfigureAwait(false))
             {
-                // Update this tenant in the local collection with a new reload identifier.
-                var identifier = _identifiers.GetOrAdd(name, name => new ShellIdentifier());
-                identifier.ReloadId = IdGenerator.GenerateId();
-
-                // Update the reload identifier of this tenant in the distributed cache.
-                await distributedCache.SetStringAsync(ReloadIdKey(name), identifier.ReloadId);
-
-                // Check if it is a new created tenant that has not been already loaded.
-                if (name != ShellHelper.DefaultShellName && !_shellHost.TryGetSettings(name, out _))
+                try
                 {
-                    // Also update the global identifier specifying that a tenant has been created.
-                    await distributedCache.SetStringAsync(ShellCountChangedIdKey, identifier.ReloadId);
-                }
+                    // Update this tenant in the local collection with a new reload identifier.
+                    var identifier = _identifiers.GetOrAdd(name, name => new ShellIdentifier());
+                    identifier.ReloadId = IdGenerator.GenerateId();
 
-                // Also update the global identifier specifying that a tenant has changed.
-                await distributedCache.SetStringAsync(ShellChangedIdKey, identifier.ReloadId);
-            }
-            catch (Exception ex) when (!ex.IsFatal())
-            {
-                _logger.LogError(ex, "Unable to update the distributed cache before reloading the tenant '{TenantName}'.", name);
-            }
-            finally
-            {
-                semaphore.Release();
+                    // Update the reload identifier of this tenant in the distributed cache.
+                    await distributedCache.SetStringAsync(ReloadIdKey(name), identifier.ReloadId);
+
+                    // Check if it is a new created tenant that has not been already loaded.
+                    if (name != ShellHelper.DefaultShellName && !_shellHost.TryGetSettings(name, out _))
+                    {
+                        // Also update the global identifier specifying that a tenant has been created.
+                        await distributedCache.SetStringAsync(ShellCountChangedIdKey, identifier.ReloadId);
+                    }
+
+                    // Also update the global identifier specifying that a tenant has changed.
+                    await distributedCache.SetStringAsync(ShellChangedIdKey, identifier.ReloadId);
+                }
+                catch (Exception ex) when (!ex.IsFatal())
+                {
+                    _logger.LogError(ex, "Unable to update the distributed cache before reloading the tenant '{TenantName}'.", name);
+                }
             }
         }
 
@@ -500,25 +494,22 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return;
             }
 
-            var semaphore = _semaphores.GetOrAdd(name, name => new SemaphoreSlim(1));
-            await semaphore.WaitAsync();
-            try
+            using (await _localLock.AcquireLockAsync(name).ConfigureAwait(false))
             {
-                var removedId = IdGenerator.GenerateId();
+                try
+                {
+                    var removedId = IdGenerator.GenerateId();
 
-                // Also update the global identifier specifying that a tenant has been removed.
-                await distributedCache.SetStringAsync(ShellCountChangedIdKey, removedId);
+                    // Also update the global identifier specifying that a tenant has been removed.
+                    await distributedCache.SetStringAsync(ShellCountChangedIdKey, removedId);
 
-                // Also update the global identifier specifying that a tenant has changed.
-                await distributedCache.SetStringAsync(ShellChangedIdKey, removedId);
-            }
-            catch (Exception ex) when (!ex.IsFatal())
-            {
-                _logger.LogError(ex, "Unable to update the distributed cache before removing the tenant '{TenantName}'.", name);
-            }
-            finally
-            {
-                semaphore.Release();
+                    // Also update the global identifier specifying that a tenant has changed.
+                    await distributedCache.SetStringAsync(ShellChangedIdKey, removedId);
+                }
+                catch (Exception ex) when (!ex.IsFatal())
+                {
+                    _logger.LogError(ex, "Unable to update the distributed cache before removing the tenant '{TenantName}'.", name);
+                }
             }
         }
 
