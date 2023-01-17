@@ -4,142 +4,115 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.BackgroundTasks.Models;
 using OrchardCore.BackgroundTasks.Services;
 using OrchardCore.BackgroundTasks.ViewModels;
 using OrchardCore.DisplayManagement;
-using OrchardCore.Environment.Shell;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 
 namespace OrchardCore.BackgroundTasks.Controllers
 {
     [Admin]
     public class BackgroundTaskController : Controller
     {
-        private readonly string _tenant;
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IBackgroundTask> _backgroundTasks;
         private readonly BackgroundTaskManager _backgroundTaskManager;
         private readonly PagerOptions _pagerOptions;
-        private readonly IStringLocalizer S;
+        private readonly INotifier _notifier;
         private readonly dynamic New;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
 
         public BackgroundTaskController(
-            ShellSettings shellSettings,
             IAuthorizationService authorizationService,
             IEnumerable<IBackgroundTask> backgroundTasks,
             BackgroundTaskManager backgroundTaskManager,
-            IShapeFactory shapeFactory,
             IOptions<PagerOptions> pagerOptions,
-            IStringLocalizer<BackgroundTaskController> stringLocalizer)
+            IShapeFactory shapeFactory,
+            IHtmlLocalizer<BackgroundTaskController> htmlLocalizer,
+            IStringLocalizer<BackgroundTaskController> stringLocalizer,
+            INotifier notifier)
         {
-            _tenant = shellSettings.Name;
             _authorizationService = authorizationService;
             _backgroundTasks = backgroundTasks;
             _backgroundTaskManager = backgroundTaskManager;
             _pagerOptions = pagerOptions.Value;
+            _notifier = notifier;
 
             New = shapeFactory;
             S = stringLocalizer;
+            H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Index(PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(AdminIndexOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var document = await _backgroundTaskManager.GetDocumentAsync();
 
-            var taskEntries = _backgroundTasks.Select(t =>
+            var items = _backgroundTasks.Select(task => new BackgroundTaskEntry() { Settings = GetSettings(task, document) });
+
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
-                if (!document.Settings.TryGetValue(t.GetTaskName(), out var settings))
-                {
-                    settings = t.GetDefaultSettings();
-                }
+                items = items.Where(x => x.Settings.Title.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
+                    || (x.Settings.Description != null && x.Settings.Description.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
+                );
+            }
 
-                return new BackgroundTaskEntry() { Settings = settings };
-            })
-            .OrderBy(entry => entry.Settings.Name)
-            .Skip(pager.GetStartIndex())
-            .Take(pager.PageSize)
-            .ToList();
+            if (String.Equals(options.Status, "enabled", StringComparison.OrdinalIgnoreCase))
+            {
+                items = items.Where(x => x.Settings.Enable);
+            }
+            else if (String.Equals(options.Status, "disabled", StringComparison.OrdinalIgnoreCase))
+            {
+                items = items.Where(x => !x.Settings.Enable);
+            }
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(_backgroundTasks.Count());
+            options.Statuses = new List<SelectListItem>()
+            {
+                new SelectListItem() { Text = S["Enabled"], Value = "enabled" },
+                new SelectListItem() { Text = S["Disabled"], Value = "disabled" }
+            };
+
+            var taskItems = items.ToList();
+            var routeData = new RouteData();
+            routeData.Values.Add($"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(options.Search)}", options.Search);
+            routeData.Values.Add($"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(options.Status)}", options.Status);
+
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(taskItems.Count).RouteData(routeData);
 
             var model = new BackgroundTaskIndexViewModel
             {
-                Tasks = taskEntries,
-                Pager = pagerShape
+                Tasks = taskItems.OrderBy(entry => entry.Settings.Title).Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList(),
+                Pager = pagerShape,
+                Options = options,
             };
 
             return View(model);
         }
 
-        public async Task<IActionResult> Create(string name)
+        [HttpPost, ActionName(nameof(Index))]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(BackgroundTaskIndexViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
-            {
-                return Forbid();
-            }
-
-            var model = new BackgroundTaskViewModel() { Name = name };
-
-            var task = _backgroundTasks.GetTaskByName(name);
-
-            if (task != null)
-            {
-                var settings = task.GetDefaultSettings();
-
-                model.Enable = settings.Enable;
-                model.Schedule = settings.Schedule;
-                model.DefaultSchedule = settings.Schedule;
-                model.Description = settings.Description;
-                model.LockTimeout = settings.LockTimeout;
-                model.LockExpiration = settings.LockExpiration;
-            }
-
-            return View(model);
-        }
-
-        [HttpPost, ActionName("Create")]
-        public async Task<IActionResult> CreatePost(BackgroundTaskViewModel model)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
-            {
-                return Forbid();
-            }
-
-            if (ModelState.IsValid)
-            {
-                if (String.IsNullOrWhiteSpace(model.Name))
-                {
-                    ModelState.AddModelError(nameof(BackgroundTaskViewModel.Name), S["The name is mandatory."]);
-                }
-            }
-
-            if (ModelState.IsValid)
-            {
-                var settings = new BackgroundTaskSettings
-                {
-                    Name = model.Name,
-                    Enable = model.Enable,
-                    Schedule = model.Schedule?.Trim(),
-                    Description = model.Description,
-                    LockTimeout = model.LockTimeout,
-                    LockExpiration = model.LockExpiration
-                };
-
-                await _backgroundTaskManager.UpdateAsync(model.Name, settings);
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            return View(model);
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
+                { $"{nameof(model.Options)}.{nameof(AdminIndexOptions.Search)}", model.Options.Search },
+                { $"{nameof(model.Options)}.{nameof(AdminIndexOptions.Status)}", model.Options.Status },
+            });
         }
 
         public async Task<IActionResult> Edit(string name)
@@ -149,20 +122,21 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Forbid();
             }
 
-            var document = await _backgroundTaskManager.GetDocumentAsync();
-
-            if (!document.Settings.ContainsKey(name))
-            {
-                return RedirectToAction(nameof(Create), new { name });
-            }
-
             var task = _backgroundTasks.GetTaskByName(name);
 
-            var settings = document.Settings[name];
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            var document = await _backgroundTaskManager.GetDocumentAsync();
+
+            var settings = GetSettings(task, document);
 
             var model = new BackgroundTaskViewModel
             {
                 Name = name,
+                Title = settings.Title,
                 Enable = settings.Enable,
                 Schedule = settings.Schedule,
                 DefaultSchedule = task?.GetDefaultSettings().Schedule,
@@ -182,32 +156,30 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Forbid();
             }
 
-            if (ModelState.IsValid)
+            var task = _backgroundTasks.GetTaskByName(model.Name);
+
+            if (task == null)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
-                {
-                    ModelState.AddModelError(nameof(BackgroundTaskViewModel.Name), S["The name is mandatory."]);
-                }
+                return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                var settings = new BackgroundTaskSettings
-                {
-                    Name = model.Name,
-                    Enable = model.Enable,
-                    Schedule = model.Schedule?.Trim(),
-                    Description = model.Description,
-                    LockTimeout = model.LockTimeout,
-                    LockExpiration = model.LockExpiration
-                };
+                var document = await _backgroundTaskManager.LoadDocumentAsync();
+
+                var settings = GetSettings(task, document);
+
+                settings.Schedule = model.Schedule?.Trim();
+                settings.LockTimeout = model.LockTimeout;
+                settings.LockExpiration = model.LockExpiration;
 
                 await _backgroundTaskManager.UpdateAsync(model.Name, settings);
+
+                await _notifier.SuccessAsync(H["The task has been updated."]);
 
                 return RedirectToAction(nameof(Index));
             }
 
-            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
@@ -219,6 +191,11 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Forbid();
             }
 
+            if (String.IsNullOrWhiteSpace(name))
+            {
+                return NotFound();
+            }
+
             var document = await _backgroundTaskManager.LoadDocumentAsync();
 
             if (!document.Settings.ContainsKey(name))
@@ -227,6 +204,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             await _backgroundTaskManager.RemoveAsync(name);
+
+            await _notifier.SuccessAsync(H["The task has been deleted."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -239,18 +218,22 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Forbid();
             }
 
+            var task = _backgroundTasks.GetTaskByName(name);
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
             var document = await _backgroundTaskManager.LoadDocumentAsync();
 
-            if (!document.Settings.TryGetValue(name, out var settings))
-            {
-                settings = _backgroundTasks.GetTaskByName(name)?.GetDefaultSettings();
-            }
+            var settings = GetSettings(task, document);
 
-            if (settings != null)
-            {
-                settings.Enable = true;
-                await _backgroundTaskManager.UpdateAsync(name, settings);
-            }
+            settings.Enable = true;
+
+            await _backgroundTaskManager.UpdateAsync(name, settings);
+
+            await _notifier.SuccessAsync(H["The task has been enabled."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -263,20 +246,36 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Forbid();
             }
 
+            var task = _backgroundTasks.GetTaskByName(name);
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
             var document = await _backgroundTaskManager.LoadDocumentAsync();
 
-            if (!document.Settings.TryGetValue(name, out var settings))
-            {
-                settings = _backgroundTasks.GetTaskByName(name)?.GetDefaultSettings();
-            }
+            var settings = GetSettings(task, document);
 
-            if (settings != null)
-            {
-                settings.Enable = false;
-                await _backgroundTaskManager.UpdateAsync(name, settings);
-            }
+            settings.Enable = false;
+
+            await _backgroundTaskManager.UpdateAsync(name, settings);
+
+            await _notifier.SuccessAsync(H["The task has been disabled."]);
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private static BackgroundTaskSettings GetSettings(IBackgroundTask task, BackgroundTaskDocument document)
+        {
+            var name = task.GetTaskName();
+
+            if (document.Settings.ContainsKey(name))
+            {
+                return document.Settings[name];
+            }
+
+            return task.GetDefaultSettings();
         }
     }
 }

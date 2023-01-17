@@ -10,7 +10,6 @@ using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.Contents;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
@@ -50,6 +49,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             foreach (var typeDefinition in contentDefinitionManager.ListTypeDefinitions())
             {
+                if (_contentOptionsAccessor.Value.ShouldHide(typeDefinition))
+                {
+                    continue;
+                }
+
                 var typeType = new ContentItemType(_contentOptionsAccessor)
                 {
                     Name = typeDefinition.Name,
@@ -63,7 +67,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     ResolvedType = new ListGraphType(typeType)
                 };
 
-                query.RequirePermission(CommonPermissions.ViewContent, typeDefinition.Name);
+                query.RequirePermission(CommonPermissions.ExecuteGraphQL);
+                query.RequirePermission(Contents.CommonPermissions.ViewOwnContent, typeDefinition.Name);
 
                 foreach (var builder in contentTypeBuilders)
                 {

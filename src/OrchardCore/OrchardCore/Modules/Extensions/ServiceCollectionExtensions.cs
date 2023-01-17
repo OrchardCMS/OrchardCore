@@ -33,6 +33,7 @@ using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
+using OrchardCore.Modules.Services;
 using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -117,6 +118,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<ICalendarManager, DefaultCalendarManager>();
             services.AddScoped<ICalendarSelector, DefaultCalendarSelector>();
 
+            services.AddSingleton<ICultureAliasProvider, DefaultCultureAliasProvider>();
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
@@ -131,6 +133,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.Configure<CultureOptions>(configuration.GetSection("OrchardCore_Localization_CultureOptions"));
             });
+
+            services.AddSingleton<ISlugService, SlugService>();
         }
 
         private static void AddShellServices(OrchardCoreBuilder builder)

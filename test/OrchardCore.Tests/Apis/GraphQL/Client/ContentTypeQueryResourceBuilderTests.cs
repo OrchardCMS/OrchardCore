@@ -1,6 +1,4 @@
-using System;
 using OrchardCore.Apis.GraphQL.Client;
-using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL.Client
 {

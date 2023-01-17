@@ -36,13 +36,11 @@ using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Handlers;
-using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 using YesSql.Filters.Query;
-using YesSql.Indexes;
 
 namespace OrchardCore.Users
 {
@@ -166,15 +164,7 @@ namespace OrchardCore.Users
             // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
             services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
 
-            services.TryAddScoped<UserStore>();
-            services.TryAddScoped<IUserStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
-            services.TryAddScoped<IUserRoleStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
-            services.TryAddScoped<IUserPasswordStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
-            services.TryAddScoped<IUserEmailStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
-            services.TryAddScoped<IUserSecurityStampStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
-            services.TryAddScoped<IUserLoginStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
-            services.TryAddScoped<IUserClaimStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
-            services.TryAddScoped<IUserAuthenticationTokenStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.AddUsers();
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -191,18 +181,10 @@ namespace OrchardCore.Users
                 options.AccessDeniedPath = "/Error/403";
             });
 
-            services.AddSingleton<IIndexProvider, UserIndexProvider>();
-            services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
-            services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>();
-            services.AddSingleton<IIndexProvider, UserByClaimIndexProvider>();
             services.AddDataMigration<Migrations>();
 
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalProviderFactory>();
             services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
             services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
-
-            services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
 
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
@@ -243,10 +225,17 @@ namespace OrchardCore.Users
             });
 
             services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
-
-            services.AddScoped<IUserEventHandler, UserDisabledEventHandler>();
-
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Roles")]
+    public class RoleStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
+            services.AddScoped<IPermissionProvider, UserRolePermissions>();
         }
     }
 

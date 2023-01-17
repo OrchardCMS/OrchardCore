@@ -1,0 +1,49 @@
+@model EditTenantViewModel
+@inject IEnumerable<OrchardCore.Data.DatabaseProvider> DatabaseProviders
+
+<h6>
+    @T["Database Presets"]
+    <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
+</h6>
+<div class="row row-cols-1 row-cols-md-2">
+    @if (!Model.DatabaseConfigurationPreset || Model.CanEditDatabasePresets)
+    {
+        <div class="mb-3 col" asp-validation-class-for="DatabaseProvider">
+            <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>
+            <select asp-for="DatabaseProvider" class="form-select">
+                <option value="" data-connection-string="false">@T["None"]</option>
+                @foreach (var provider in DatabaseProviders)
+                {
+                    <option value="@provider.Value" data-connection-string="@provider.HasConnectionString.ToString().ToLower()" data-table-prefix="@provider.HasTablePrefix.ToString().ToLower()" data-connection-string-sample="@T["The connection string to your database instance, e.g. {0}.", provider.SampleConnectionString]">@provider.Name</option>
+                }
+            </select>
+        </div>
+    }
+
+    <div class="mb-3 col tablePrefix" asp-validation-class-for="TablePrefix">
+        <label asp-for="TablePrefix">@T["Table Prefix"]</label>
+        <input asp-for="TablePrefix" class="form-control" />
+        <span asp-validation-for="TablePrefix" class="text-danger"></span>
+    </div>
+</div>
+
+@if (!Model.DatabaseConfigurationPreset || Model.CanEditDatabasePresets)
+{
+    <div class="row connectionString" asp-validation-class-for="ConnectionString">
+        <div class="mb-3 col-md-12">
+            <label asp-for="ConnectionString">@T["Connection string"]</label>
+            <input asp-for="ConnectionString" class="form-control" />
+            <span asp-validation-for="ConnectionString" class="text-danger"></span>
+            <span id="connectionStringHint" class="text-muted form-text small"></span>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2">
+        <div class="mb-3 col tablePrefix" asp-validation-class-for="Schema">
+            <label asp-for="Schema">@T["Table Schema"]</label>
+            <input asp-for="Schema" class="form-control" />
+            <span asp-validation-for="Schema" class="text-danger"></span>
+            <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
+        </div>
+    </div>
+}

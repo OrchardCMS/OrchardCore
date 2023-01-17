@@ -16,5 +16,10 @@ namespace OrchardCore.Environment.Shell.Events
         /// The <see cref="ShellEvent"/> delegate that will get called before reloading a given shell.
         /// </summary>
         ShellEvent ReloadingAsync { get; set; }
+
+        /// <summary>
+        /// The <see cref="ShellEvent"/> delegate that will get called before removing a given shell.
+        /// </summary>
+        ShellEvent RemovingAsync { get; set; }
     }
 }

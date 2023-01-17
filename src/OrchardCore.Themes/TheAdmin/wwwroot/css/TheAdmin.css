@@ -8709,7 +8709,7 @@ html[data-theme=default] .text-warning {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-warning-rgb), var(--bs-text-opacity)) !important;
 }
-html[data-theme=default] .text-danger {
+html[data-theme=default] .text-danger, html[data-theme=default] .field-validation-error, html[data-theme=default] .has-validation-error {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important;
 }
@@ -27667,6 +27667,9 @@ html[dir][data-theme=default] div.editor-widget.find-widget .button.codicon:acti
   background-color: transparent;
   border-color: transparent;
 }
+html[data-theme=default] span.field-validation-error {
+  width: 100%;
+}
 html[dir][data-theme=default] .has-filter .btn:not(.show), html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .has-filter .close:not(.show), html[dir][data-theme=default] .has-filter .button:not(.show), html[dir][data-theme=default] .has-filter .bootstrap-select .popover-header .close:not(.show), html[dir][data-theme=default] .bootstrap-select .popover-header .has-filter .close:not(.show) {
   border-color: #ced4da !important;
 }
@@ -27887,7 +27890,7 @@ html[dir=rtl][data-theme=default] .list-group-item.last-child-visible {
   border-bottom-left-radius: inherit;
 }
 html[data-theme=default] body:not(.left-sidebar-compact) #ta-left-sidebar {
-  z-index: calc(1000 + 1);
+  z-index: calc(1000 + 50);
   position: fixed;
   top: 52px;
   bottom: 0;
@@ -28278,7 +28281,7 @@ html[dir][data-theme=default] body:not(.left-sidebar-compact) #ta-left-sidebar #
   border-radius: unset;
 }
 html[data-theme=default] .left-sidebar-compact #ta-left-sidebar {
-  z-index: calc(1000 + 1);
+  z-index: calc(1000 + 50);
   position: fixed;
   top: 52px;
   bottom: 0;
@@ -29025,9 +29028,6 @@ html[data-theme=default] .auth-wrapper {
 html[dir][data-theme=default] .auth-wrapper {
   margin: auto;
 }
-html[data-theme=default] .ui-sortable {
-  min-height: 1rem;
-}
 html[dir][data-theme=default] .with-checkbox .list-group-item {
   padding: 0.75rem 0.5rem;
 }
@@ -29038,6 +29038,9 @@ html[dir][data-theme=default] .disable.custom-control-input:checked ~ .custom-co
 html[data-theme=default] .action-bar {
   top: 3.3rem;
   z-index: 1000;
+}
+html[data-theme=default] .second-action-bar {
+  z-index: calc(1000 + 1);
 }
 html[dir][data-theme=default] .list-group-item + .list-group-item {
   border-top-width: 0px;
@@ -38145,7 +38148,7 @@ html[data-theme=darkmode] .text-warning {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-warning-rgb), var(--bs-text-opacity)) !important;
 }
-html[data-theme=darkmode] .text-danger {
+html[data-theme=darkmode] .text-danger, html[data-theme=darkmode] .field-validation-error, html[data-theme=darkmode] .has-validation-error {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important;
 }
@@ -57103,6 +57106,9 @@ html[dir][data-theme=darkmode] div.editor-widget.find-widget .button.codicon:act
   background-color: transparent;
   border-color: transparent;
 }
+html[data-theme=darkmode] span.field-validation-error {
+  width: 100%;
+}
 html[dir][data-theme=darkmode] .has-filter .btn:not(.show), html[dir][data-theme=darkmode] .has-filter .button:not(.show), html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .has-filter .close:not(.show), html[dir][data-theme=darkmode] .has-filter .bootstrap-select .popover-header .close:not(.show), html[dir][data-theme=darkmode] .bootstrap-select .popover-header .has-filter .close:not(.show) {
   border-color: #3C4144 !important;
 }
@@ -57323,7 +57329,7 @@ html[dir=rtl][data-theme=darkmode] .list-group-item.last-child-visible {
   border-bottom-left-radius: inherit;
 }
 html[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar {
-  z-index: calc(1000 + 1);
+  z-index: calc(1000 + 50);
   position: fixed;
   top: 52px;
   bottom: 0;
@@ -57714,7 +57720,7 @@ html[dir][data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar 
   border-radius: unset;
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar {
-  z-index: calc(1000 + 1);
+  z-index: calc(1000 + 50);
   position: fixed;
   top: 52px;
   bottom: 0;
@@ -58461,9 +58467,6 @@ html[data-theme=darkmode] .auth-wrapper {
 html[dir][data-theme=darkmode] .auth-wrapper {
   margin: auto;
 }
-html[data-theme=darkmode] .ui-sortable {
-  min-height: 1rem;
-}
 html[dir][data-theme=darkmode] .with-checkbox .list-group-item {
   padding: 0.75rem 0.5rem;
 }
@@ -58474,6 +58477,9 @@ html[dir][data-theme=darkmode] .disable.custom-control-input:checked ~ .custom-c
 html[data-theme=darkmode] .action-bar {
   top: 3.3rem;
   z-index: 1000;
+}
+html[data-theme=darkmode] .second-action-bar {
+  z-index: calc(1000 + 1);
 }
 html[dir][data-theme=darkmode] .list-group-item + .list-group-item {
   border-top-width: 0px;

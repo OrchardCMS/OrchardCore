@@ -22,6 +22,8 @@ namespace OrchardCore.Setup.ViewModels
 
         public string TablePrefix { get; set; }
 
+        public string Schema { get; set; }
+
         /// <summary>
         /// True if the database configuration is preset and can't be changed or displayed on the Setup screen.
         /// </summary>
