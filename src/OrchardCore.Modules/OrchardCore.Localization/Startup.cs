@@ -49,12 +49,10 @@ namespace OrchardCore.Localization
             var cultureOptions = serviceProvider.GetService<IOptions<CultureOptions>>().Value;
 
             var requestLocalizationOptions = new OrchardCoreRequestLocalizationOptions(ignoreSystemSettings: cultureOptions.IgnoreSystemSettings)
+                .WithOptions(localizationOptions)
                 .SetDefaultCulture(defaultCulture)
                 .AddSupportedCultures(supportedCultures)
                 .AddSupportedUICultures(supportedCultures);
-
-            // Avoid ignoring existing culture providers
-            requestLocalizationOptions.RequestCultureProviders = localizationOptions.RequestCultureProviders;
 
             app.UseRequestLocalization(requestLocalizationOptions);
             app.MapCulturesAlias();
