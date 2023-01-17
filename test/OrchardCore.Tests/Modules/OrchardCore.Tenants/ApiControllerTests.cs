@@ -13,7 +13,9 @@ namespace OrchardCore.Modules.OrchardCore.Tenants.Tests;
 
 public class ApiControllerTests
 {
-    private static Dictionary<string, ShellSettings> _shellSettings = new();
+    private static readonly Dictionary<string, ShellSettings> _shellSettings = new();
+
+    private delegate void TryGetSettingsCallback(string name, out ShellSettings settings);
 
     [Fact]
     public async Task ShouldGetTenantSetupToken_AfterCreateTenantApiCalled()
@@ -63,34 +65,21 @@ public class ApiControllerTests
             Name = ShellHelper.DefaultShellName,
             State = TenantState.Running
         };
-        ShellSettings settings;
-
         var shellHostMock = new Mock<IShellHost>();
         shellHostMock
             .Setup(host => host.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()))
             .Callback<ShellSettings>(settings => _shellSettings.Add(settings.Name, settings));
 
+        var _ = It.IsAny<ShellSettings>();
         shellHostMock
-            .Setup(host => host.TryGetSettings(It.IsAny<string>(), out settings))
-            .Returns<string, ShellSettings>((name, settings) =>
-            {
-                var found = _shellSettings.ContainsKey(name);
-
-                settings = found
-                   ? _shellSettings[name]
-                   : null;
-
-                return found;
-            });
+            .Setup(host => host.TryGetSettings(It.IsAny<string>(), out _))
+            .Callback(new TryGetSettingsCallback((string name, out ShellSettings settings) => _shellSettings.TryGetValue(name, out settings)))
+            .Returns<string, ShellSettings>((name, _) => _shellSettings.ContainsKey(name));
 
         var shellSettingsManagerMock = new Mock<IShellSettingsManager>();
         shellSettingsManagerMock
             .Setup(shellSettingsManager => shellSettingsManager.CreateDefaultSettings())
             .Returns(defaultShellSettings);
-
-        shellSettingsManagerMock
-            .Setup(shellSettingsManager => shellSettingsManager.SaveSettingsAsync(It.IsAny<ShellSettings>()))
-            .Callback<ShellSettings>(settings => _shellSettings.Add(settings.Name, settings));
 
         var dataProtectionProviderMock = new Mock<IDataProtectionProvider>();
         dataProtectionProviderMock
