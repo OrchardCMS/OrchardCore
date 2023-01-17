@@ -64,8 +64,8 @@ namespace OrchardCore.Users.Drivers
             return Initialize<EditUserRoleViewModel>("UserRoleFields_Edit", async model =>
             {
                 // The current user can only view their roles if they have assign role, to prevent listing roles when managing their own profile.
-                if (String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase) &&
-                    !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.AssignRoleToUsers))
+                if (_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId
+                    && !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.AssignRoleToUsers))
                 {
                     return;
                 }
@@ -97,10 +97,10 @@ namespace OrchardCore.Users.Drivers
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
             var model = new EditUserRoleViewModel();
-            var currentUserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             // The current user cannot alter their own roles. This prevents them removing access to the site for themselves.
-            if (currentUserId == user.UserId && !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, StandardPermissions.SiteOwner))
+            if (_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId
+                && !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, StandardPermissions.SiteOwner))
             {
                 await _notifier.WarningAsync(H["Cannot update your own roles."]);
 
@@ -133,7 +133,8 @@ namespace OrchardCore.Users.Drivers
                     foreach (var role in currentUserRoleNames)
                     {
                         // When the user has permission to manage the role and it is no longer selected the role can be removed.
-                        if (accessibleRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase) && !accessibleAndSelectedRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase))
+                        if (accessibleRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase)
+                            && !accessibleAndSelectedRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase))
                         {
                             rolesToRemove.Add(role);
                         }
