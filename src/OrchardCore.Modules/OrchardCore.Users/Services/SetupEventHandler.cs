@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Abstractions.Setup;
-using OrchardCore.Security;
 using OrchardCore.Setup.Events;
 using OrchardCore.Users.Models;
 
@@ -15,15 +14,15 @@ namespace OrchardCore.Users.Services
     public class SetupEventHandler : ISetupEventHandler
     {
         private readonly IUserService _userService;
-        private readonly RoleManager<IRole> _roleManager;
+        private readonly ILookupNormalizer _keyNormalizer;
 
-        public SetupEventHandler(IUserService userService, RoleManager<IRole> roleManager)
+        public SetupEventHandler(IUserService userService, ILookupNormalizer keyNormalizer)
         {
             _userService = userService;
-            _roleManager = roleManager;
+            _keyNormalizer = keyNormalizer;
         }
 
-        public Task Setup(
+        public async Task Setup(
             IDictionary<string, object> properties,
             Action<string, string> reportError
             )
@@ -36,9 +35,9 @@ namespace OrchardCore.Users.Services
                 EmailConfirmed = true
             };
 
-            user.RoleNames.Add(_roleManager.NormalizeKey("Administrator"));
+            user.RoleNames.Add(_keyNormalizer.NormalizeName("Administrator"));
 
-            return _userService.CreateUserAsync(user, properties[SetupConstants.AdminPassword]?.ToString(), reportError);
+            await _userService.CreateUserAsync(user, properties[SetupConstants.AdminPassword]?.ToString(), reportError);
         }
     }
 }
