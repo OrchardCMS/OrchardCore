@@ -26,7 +26,7 @@ namespace OrchardCore.Users.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
             {
                 return null;
             }
@@ -45,7 +45,7 @@ namespace OrchardCore.Users.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(LoginSettings section, BuildEditorContext context)
         {
-            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
             {
                 return null;
             }

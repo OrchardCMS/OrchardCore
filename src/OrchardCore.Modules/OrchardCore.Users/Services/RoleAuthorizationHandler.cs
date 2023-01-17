@@ -58,7 +58,7 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
 
             if (requirement.Permission.Name == CommonPermissions.EditUsers.Name
                 && user.UserId == currentUserId
-                && await _authorizationService.AuthorizeAsync(context.User, Permissions.ManageOwnUserInformation))
+                && await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditOwnUser))
             {
                 context.Succeed(requirement);
 

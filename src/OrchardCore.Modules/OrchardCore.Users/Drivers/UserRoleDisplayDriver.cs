@@ -19,7 +19,7 @@ namespace OrchardCore.Users.Drivers
 {
     public class UserRoleDisplayDriver : DisplayDriver<User>
     {
-        private const string AdministratorRole = "Administrator";
+        private const string _administratorRole = "Administrator";
 
         private readonly UserManager<IUser> _userManager;
         private readonly IRoleService _roleService;
@@ -141,9 +141,9 @@ namespace OrchardCore.Users.Drivers
 
                     foreach (var role in rolesToRemove)
                     {
-                        if (String.Equals(role, AdministratorRole, StringComparison.OrdinalIgnoreCase))
+                        if (String.Equals(role, _administratorRole, StringComparison.OrdinalIgnoreCase))
                         {
-                            var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole))
+                            var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(_administratorRole))
                                 .Cast<User>()
                                 .Where(user => user.IsEnabled)
                                 .ToList();
@@ -151,7 +151,7 @@ namespace OrchardCore.Users.Drivers
                             // Make sure we always have at least one enabled administrator account.
                             if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
                             {
-                                await _notifier.WarningAsync(H[$"Cannot remove {AdministratorRole} role from the only enabled administrator."]);
+                                await _notifier.WarningAsync(H[$"Cannot remove {_administratorRole} role from the only enabled administrator."]);
 
                                 continue;
                             }

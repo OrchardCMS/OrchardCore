@@ -24,6 +24,8 @@ namespace OrchardCore.Users
 
         public static readonly Permission AssignRoleToUsers = new("AssignRoleToUsers", "Assign any role to users", new[] { EditUsers }, true);
 
+        public static readonly Permission EditOwnUser = new("ManageOwnUserInformation", "Edit own user information", new Permission[] { EditUsers });
+
         public static Permission CreateEditUsersInRolePermission(string roleName) =>
             CreateDynamicPermission(roleName, new Permission("EditUsersInRole_{0}", "Edit users in {0} role", new[] { EditUsers }, true));
 
