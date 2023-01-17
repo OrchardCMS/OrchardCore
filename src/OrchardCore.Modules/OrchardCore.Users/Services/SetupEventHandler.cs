@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using OrchardCore.Abstractions.Setup;
 using OrchardCore.Setup.Events;
 using OrchardCore.Users.Models;
@@ -14,12 +13,10 @@ namespace OrchardCore.Users.Services
     public class SetupEventHandler : ISetupEventHandler
     {
         private readonly IUserService _userService;
-        private readonly ILookupNormalizer _keyNormalizer;
 
-        public SetupEventHandler(IUserService userService, ILookupNormalizer keyNormalizer)
+        public SetupEventHandler(IUserService userService)
         {
             _userService = userService;
-            _keyNormalizer = keyNormalizer;
         }
 
         public async Task Setup(
@@ -35,7 +32,7 @@ namespace OrchardCore.Users.Services
                 EmailConfirmed = true
             };
 
-            user.RoleNames.Add(_keyNormalizer.NormalizeName("Administrator"));
+            user.RoleNames.Add("Administrator");
 
             await _userService.CreateUserAsync(user, properties[SetupConstants.AdminPassword]?.ToString(), reportError);
         }
