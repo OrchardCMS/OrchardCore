@@ -462,13 +462,14 @@ namespace OrchardCore.Users.Services
             if (user is User u)
             {
                 var roleNames = await _roleService.GetRoleNamesAsync();
+                var roleName = roleNames?.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
 
                 if (!roleNames.Any(r => NormalizeKey(r) == normalizedRoleName))
                 {
                     throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
                 }
 
-                u.RoleNames.Add(normalizedRoleName);
+                u.RoleNames.Add(roleName);
             }
         }
 
@@ -482,13 +483,14 @@ namespace OrchardCore.Users.Services
             if (user is User u)
             {
                 var roleNames = await _roleService.GetRoleNamesAsync();
+                var roleName = roleNames?.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
 
                 if (!roleNames.Any(r => NormalizeKey(r) == normalizedRoleName))
                 {
                     throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
                 }
 
-                u.RoleNames.Remove(normalizedRoleName);
+                u.RoleNames.Remove(roleName);
             }
         }
 
