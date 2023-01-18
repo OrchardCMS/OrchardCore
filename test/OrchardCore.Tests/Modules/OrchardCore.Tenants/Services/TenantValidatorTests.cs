@@ -41,7 +41,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
             var tenantValidator = CreateTenantValidator(defaultTenant: false);
 
             // Act
-            var viewModel = new EditTenantViewModel
+            var viewModel = new TenantViewModel
             {
                 Name = name,
                 RequestUrlPrefix = urlPrefix,
@@ -72,7 +72,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
 
             var tenantValidator = CreateTenantValidator();
 
-            var viewModel = new EditTenantViewModel
+            var viewModel = new TenantViewModel
             {
                 Name = "Tenant5",
                 RequestUrlPrefix = "tenant4",

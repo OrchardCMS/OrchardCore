@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Data;
+using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Tenants.ViewModels
 {
@@ -29,5 +32,15 @@ namespace OrchardCore.Tenants.ViewModels
 
         [BindNever]
         public bool IsNewTenant { get; set; }
+
+        public string Category { get; set; }
+
+        public List<SelectListItem> FeatureProfiles { get; set; }
+
+        public IEnumerable<RecipeDescriptor> Recipes { get; set; }
+
+        public bool CanEditDatabasePresets { get; set; }
+
+        public bool DatabaseConfigurationPreset { get; set; }
     }
 }

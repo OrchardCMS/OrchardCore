@@ -306,7 +306,7 @@ namespace OrchardCore.Tenants.Controllers
             var currentFeatureProfile = shellSettings["FeatureProfile"];
             var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfile);
 
-            var model = new EditTenantViewModel
+            var model = new TenantViewModel
             {
                 Recipes = recipes,
                 RequestUrlHost = shellSettings.RequestUrlHost,
@@ -330,7 +330,7 @@ namespace OrchardCore.Tenants.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(EditTenantViewModel model)
+        public async Task<IActionResult> Create(TenantViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
@@ -402,7 +402,7 @@ namespace OrchardCore.Tenants.Controllers
 
             var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfile);
 
-            var model = new EditTenantViewModel
+            var model = new TenantViewModel
             {
                 Category = shellSettings["Category"],
                 Description = shellSettings["Description"],
@@ -433,7 +433,7 @@ namespace OrchardCore.Tenants.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(EditTenantViewModel model)
+        public async Task<IActionResult> Edit(TenantViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
@@ -653,7 +653,7 @@ namespace OrchardCore.Tenants.Controllers
             return featureProfiles;
         }
 
-        private async Task ValidateViewModelAsync(EditTenantViewModel model, bool isNewTenant)
+        private async Task ValidateViewModelAsync(TenantViewModel model, bool isNewTenant)
         {
             model.IsNewTenant = isNewTenant;
 

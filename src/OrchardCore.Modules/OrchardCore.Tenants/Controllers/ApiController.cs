@@ -86,7 +86,7 @@ namespace OrchardCore.Tenants.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> Create(CreateApiViewModel model)
+        public async Task<IActionResult> Create(TenantViewModel model)
         {
             if (!_currentShellSettings.IsDefaultShell())
             {

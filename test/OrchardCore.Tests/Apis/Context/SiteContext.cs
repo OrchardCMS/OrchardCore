@@ -5,6 +5,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Lucene;
+using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -40,7 +41,7 @@ namespace OrchardCore.Tests.Apis.Context
             var tenantName = Guid.NewGuid().ToString("n");
             var tablePrefix = await TablePrefixGenerator.GeneratePrefixAsync();
 
-            var createModel = new Tenants.ViewModels.CreateApiViewModel
+            var createModel = new TenantViewModel
             {
                 DatabaseProvider = DatabaseProvider,
                 TablePrefix = tablePrefix,
