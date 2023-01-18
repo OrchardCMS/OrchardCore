@@ -1,5 +1,8 @@
 @using OrchardCore.Microsoft.Authentication.ViewModels;
+@using Microsoft.Extensions.Options;
+@using OrchardCore.Microsoft.Authentication.Settings
 @model AzureADSettingsViewModel
+@inject IOptions<AzureADSettings> AzureADSettingsOptions
 
 <p class="alert alert-warning">
     @T["The current tenant will be reloaded when the settings are saved."]
@@ -9,7 +12,7 @@
 <h3>@T["Azure AD Authentication Settings"]</h3>
 
 <div class="mb-3" asp-validation-class-for="DisplayName">
-    <label>@T["Display Name"]</label>
+    <label>@T["Display Name"] - @AzureADSettingsOptions.Value.DisplayName</label>
     <input asp-for="DisplayName" class="form-control" />
     <span asp-validation-for="DisplayName"></span>
     <span class="hint">@T["The display name of the provider."]</span>

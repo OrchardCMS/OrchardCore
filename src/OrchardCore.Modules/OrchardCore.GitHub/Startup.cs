@@ -7,6 +7,7 @@ using OrchardCore.GitHub.Configuration;
 using OrchardCore.GitHub.Drivers;
 using OrchardCore.GitHub.Recipes;
 using OrchardCore.GitHub.Services;
+using OrchardCore.GitHub.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -41,6 +42,8 @@ namespace OrchardCore.GitHub
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<GitHubOptions>, OAuthPostConfigureOptions<GitHubOptions,GitHubHandler>>()
             });
+
+            services.AddTransient<IConfigureOptions<GitHubAuthenticationSettings>, GitHubAuthenticationSettingsConfiguration>();
         }
     }
 }
