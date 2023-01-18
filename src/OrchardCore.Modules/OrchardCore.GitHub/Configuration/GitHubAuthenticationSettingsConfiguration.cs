@@ -2,9 +2,10 @@ using System;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.GitHub.Services;
 using OrchardCore.GitHub.Settings;
 
-namespace OrchardCore.GitHub.Services;
+namespace OrchardCore.GitHub.Configuration;
 
 public class GitHubAuthenticationSettingsConfiguration : IConfigureOptions<GitHubAuthenticationSettings>
 {
