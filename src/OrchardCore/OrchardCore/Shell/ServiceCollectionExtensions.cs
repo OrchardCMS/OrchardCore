@@ -8,6 +8,7 @@ using OrchardCore.Environment.Shell.Descriptor.Settings;
 using OrchardCore.Environment.Shell.Distributed;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Removing;
+using OrchardCore.Locking;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -15,6 +16,7 @@ namespace OrchardCore.Environment.Shell
     {
         public static IServiceCollection AddHostingShellServices(this IServiceCollection services)
         {
+            services.AddSingleton<ILocalLock, LocalLock>();
             services.AddSingleton<IShellHost, ShellHost>();
             services.AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<IShellHost>());
 
