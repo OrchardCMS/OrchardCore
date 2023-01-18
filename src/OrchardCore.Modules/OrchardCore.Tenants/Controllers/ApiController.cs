@@ -106,6 +106,8 @@ namespace OrchardCore.Tenants.Controllers
             shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
             shellSettings.State = TenantState.Uninitialized;
 
+            shellSettings["Category"] = model.Category;
+            shellSettings["Description"] = model.Description;
             shellSettings["ConnectionString"] = model.ConnectionString;
             shellSettings["TablePrefix"] = model.TablePrefix;
             shellSettings["Schema"] = model.Schema;
