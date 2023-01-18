@@ -4,9 +4,9 @@ using OrchardCore.ContentManagement.Cache;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Cache;
-using YesSql.Indexes;
 
 namespace OrchardCore.ContentManagement
 {
@@ -19,7 +19,7 @@ namespace OrchardCore.ContentManagement
             services.TryAddScoped<IContentDefinitionStore, DatabaseContentDefinitionStore>();
             services.TryAddScoped<IContentManager, DefaultContentManager>();
             services.TryAddScoped<IContentManagerSession, DefaultContentManagerSession>();
-            services.AddSingleton<IIndexProvider, ContentItemIndexProvider>();
+            services.AddIndexProvider<ContentItemIndexProvider>();
             services.AddDataMigration<Migrations>();
             services.AddScoped<IContentHandler, UpdateContentsHandler>();
             services.AddScoped<IContentHandler, ContentPartHandlerCoordinator>();

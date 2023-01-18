@@ -292,7 +292,7 @@ namespace OrchardCore.Environment.Shell.Scope
             (var locker, var locked) = await ShellContext.TryAcquireShellActivateLockAsync();
             if (!locked)
             {
-                throw new TimeoutException($"Fails to acquire a lock before activating the tenant: {ShellContext.Settings.Name}");
+                throw new TimeoutException($"Failed to acquire a lock before activating the tenant: {ShellContext.Settings.Name}");
             }
 
             await using var acquiredLock = locker;

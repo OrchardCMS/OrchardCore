@@ -108,6 +108,33 @@ namespace OrchardCore.Shells.Azure.Configuration
             }
         }
 
+        public async Task RemoveAsync(string tenant)
+        {
+            var fileInfo = await _shellsFileStore.GetFileInfoAsync(_tenantsBlobName);
+
+            if (fileInfo != null)
+            {
+                JObject tenantsSettings;
+                using (var stream = await _shellsFileStore.GetFileStreamAsync(_tenantsBlobName))
+                {
+                    using var streamReader = new StreamReader(stream);
+                    using var reader = new JsonTextReader(streamReader);
+                    tenantsSettings = await JObject.LoadAsync(reader);
+                }
+
+                tenantsSettings.Remove(tenant);
+
+                using var memoryStream = new MemoryStream();
+                using var streamWriter = new StreamWriter(memoryStream);
+                using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
+
+                await tenantsSettings.WriteToAsync(jsonWriter);
+                await jsonWriter.FlushAsync();
+                memoryStream.Position = 0;
+                await _shellsFileStore.CreateFileFromStreamAsync(_tenantsBlobName, memoryStream);
+            }
+        }
+
         private async Task<bool> TryMigrateFromFileAsync()
         {
             if (!File.Exists(_tenantsFileSystemName))
