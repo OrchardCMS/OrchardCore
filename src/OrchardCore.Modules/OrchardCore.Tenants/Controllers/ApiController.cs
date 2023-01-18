@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -10,12 +11,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Abstractions.Setup;
 using OrchardCore.Data;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
@@ -33,6 +36,7 @@ namespace OrchardCore.Tenants.Controllers
     {
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _currentShellSettings;
+        private readonly IShellRemovalManager _shellRemovalManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IDataProtectionProvider _dataProtectorProvider;
@@ -40,13 +44,16 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IClock _clock;
         private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly IdentityOptions _identityOptions;
+        private readonly TenantsOptions _tenantsOptions;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly ITenantValidator _tenantValidator;
         private readonly IStringLocalizer S;
+        private readonly ILogger _logger;
 
         public ApiController(
             IShellHost shellHost,
             ShellSettings currentShellSettings,
+            IShellRemovalManager shellRemovalManager,
             IAuthorizationService authorizationService,
             IShellSettingsManager shellSettingsManager,
             IDataProtectionProvider dataProtectorProvider,
@@ -54,12 +61,15 @@ namespace OrchardCore.Tenants.Controllers
             IClock clock,
             IEmailAddressValidator emailAddressValidator,
             IOptions<IdentityOptions> identityOptions,
+            IOptions<TenantsOptions> tenantsOptions,
             IEnumerable<DatabaseProvider> databaseProviders,
             ITenantValidator tenantValidator,
-            IStringLocalizer<ApiController> stringLocalizer)
+            IStringLocalizer<ApiController> stringLocalizer,
+            ILogger<ApiController> logger)
         {
             _shellHost = shellHost;
             _currentShellSettings = currentShellSettings;
+            _shellRemovalManager = shellRemovalManager;
             _authorizationService = authorizationService;
             _dataProtectorProvider = dataProtectorProvider;
             _shellSettingsManager = shellSettingsManager;
@@ -67,9 +77,11 @@ namespace OrchardCore.Tenants.Controllers
             _clock = clock;
             _emailAddressValidator = emailAddressValidator;
             _identityOptions = identityOptions.Value;
+            _tenantsOptions = tenantsOptions.Value;
             _databaseProviders = databaseProviders;
             _tenantValidator = tenantValidator;
             S = stringLocalizer;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -96,6 +108,7 @@ namespace OrchardCore.Tenants.Controllers
 
             shellSettings["ConnectionString"] = model.ConnectionString;
             shellSettings["TablePrefix"] = model.TablePrefix;
+            shellSettings["Schema"] = model.Schema;
             shellSettings["DatabaseProvider"] = model.DatabaseProvider;
             shellSettings["Secret"] = Guid.NewGuid().ToString();
             shellSettings["RecipeName"] = model.RecipeName;
@@ -126,6 +139,107 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+
+        [HttpPost]
+        [Route("disable/{tenantName}")]
+        public async Task<IActionResult> Disable(string tenantName)
+        {
+            if (!_currentShellSettings.IsDefaultShell())
+            {
+                return Forbid();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return this.ChallengeOrForbid("Api");
+            }
+
+            if (!_shellHost.TryGetSettings(tenantName, out var shellSettings))
+            {
+                return NotFound();
+            }
+
+            if (shellSettings.State != TenantState.Running)
+            {
+                return BadRequest(S["You can only disable a Running tenant."]);
+            }
+
+            shellSettings.State = TenantState.Disabled;
+            await _shellHost.UpdateShellSettingsAsync(shellSettings);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("enable/{tenantName}")]
+        public async Task<IActionResult> Enable(string tenantName)
+        {
+            if (!_currentShellSettings.IsDefaultShell())
+            {
+                return Forbid();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return this.ChallengeOrForbid("Api");
+            }
+
+            if (!_shellHost.TryGetSettings(tenantName, out var shellSettings))
+            {
+                return NotFound();
+            }
+
+            if (shellSettings.State != TenantState.Disabled)
+            {
+                return BadRequest(S["You can only enable a Disabled tenant."]);
+            }
+
+            shellSettings.State = TenantState.Running;
+            await _shellHost.UpdateShellSettingsAsync(shellSettings);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("remove/{tenantName}")]
+        public async Task<IActionResult> Remove(string tenantName)
+        {
+            if (!_currentShellSettings.IsDefaultShell() || !_tenantsOptions.TenantRemovalAllowed)
+            {
+                return Forbid();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return this.ChallengeOrForbid("Api");
+            }
+
+            if (!_shellHost.TryGetSettings(tenantName, out var shellSettings))
+            {
+                return NotFound();
+            }
+
+            if (!shellSettings.IsRemovable())
+            {
+                return BadRequest(S["You can only remove a 'Disabled' or an 'Uninitialized' tenant."]);
+            }
+
+            var context = await _shellRemovalManager.RemoveAsync(shellSettings);
+            if (!context.Success)
+            {
+                return Problem(
+                    title: S["An error occurred while removing the tenant '{0}'.", tenantName],
+                    detail: context.ErrorMessage,
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            }
+
+            if (_logger.IsEnabled(LogLevel.Warning))
+            {
+                _logger.LogWarning("The tenant '{TenantName}' was removed.", shellSettings.Name);
+            }
+
+            return Ok();
         }
 
         [HttpPost]
@@ -185,9 +299,7 @@ namespace OrchardCore.Tenants.Controllers
                 return BadRequest(S["The database provider is not defined."]);
             }
 
-            var selectedProvider = _databaseProviders.FirstOrDefault(provider =>
-                String.Equals(provider.Value, databaseProvider, StringComparison.OrdinalIgnoreCase));
-
+            var selectedProvider = _databaseProviders.FirstOrDefault(provider => provider.Value == databaseProvider);
             if (selectedProvider == null)
             {
                 return BadRequest(S["The database provider is not supported."]);
@@ -198,6 +310,13 @@ namespace OrchardCore.Tenants.Controllers
             if (String.IsNullOrEmpty(tablePrefix))
             {
                 tablePrefix = model.TablePrefix;
+            }
+
+            var schema = shellSettings["Schema"];
+
+            if (String.IsNullOrEmpty(schema))
+            {
+                schema = model.Schema;
             }
 
             var connectionString = shellSettings["connectionString"];
@@ -240,7 +359,7 @@ namespace OrchardCore.Tenants.Controllers
                 recipeDescriptor = new RecipeDescriptor
                 {
                     FileProvider = fileProvider,
-                    BasePath = "",
+                    BasePath = String.Empty,
                     RecipeFileInfo = fileProvider.GetFileInfo(Path.GetFileName(tempFilename))
                 };
             }
@@ -271,6 +390,7 @@ namespace OrchardCore.Tenants.Controllers
                     { SetupConstants.DatabaseProvider, selectedProvider.Value },
                     { SetupConstants.DatabaseConnectionString, connectionString },
                     { SetupConstants.DatabaseTablePrefix, tablePrefix },
+                    { SetupConstants.DatabaseSchema, schema },
                 }
             };
 
@@ -292,7 +412,7 @@ namespace OrchardCore.Tenants.Controllers
 
         private string GetEncodedUrl(ShellSettings shellSettings, string token)
         {
-            var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+            var host = shellSettings.RequestUrlHosts.FirstOrDefault();
             var hostString = host != null ? new HostString(host) : Request.Host;
 
             var pathString = HttpContext.Features.Get<ShellContextFeature>().OriginalPathBase;

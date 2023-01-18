@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Abstractions.Setup;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
@@ -155,16 +156,17 @@ namespace OrchardCore.Setup.Services
 
             _httpContextAccessor.HttpContext.Features.Set(recipeEnvironmentFeature);
 
-            var shellSettings = new ShellSettings(context.ShellSettings);
-
+            var shellSettings = new ShellSettings(context.ShellSettings).ConfigureDatabaseTableOptions();
             if (String.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
             {
                 shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider) ? databaseProvider?.ToString() : String.Empty;
                 shellSettings["ConnectionString"] = context.Properties.TryGetValue(SetupConstants.DatabaseConnectionString, out var databaseConnectionString) ? databaseConnectionString?.ToString() : String.Empty;
                 shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix) ? databaseTablePrefix?.ToString() : String.Empty;
+                shellSettings["Schema"] = context.Properties.TryGetValue(SetupConstants.DatabaseSchema, out var schema) ? schema?.ToString() : null;
             }
 
-            switch (await _dbConnectionValidator.ValidateAsync(shellSettings["DatabaseProvider"], shellSettings["ConnectionString"], shellSettings["TablePrefix"], shellSettings.Name))
+            var validationContext = new DbConnectionValidatorContext(shellSettings);
+            switch (await _dbConnectionValidator.ValidateAsync(validationContext))
             {
                 case DbConnectionValidatorResult.NoProvider:
                     context.Errors.Add(String.Empty, S["DatabaseProvider setting is required."]);
@@ -176,7 +178,7 @@ namespace OrchardCore.Setup.Services
                     context.Errors.Add(String.Empty, S["The provided connection string is invalid or server is unreachable."]);
                     break;
                 case DbConnectionValidatorResult.DocumentTableFound:
-                    context.Errors.Add(String.Empty, S["The provided database and table prefix are already in use."]);
+                    context.Errors.Add(String.Empty, S["The provided database, table prefix and schema are already in use."]);
                     break;
             }
 

@@ -27,8 +27,11 @@ namespace OrchardCore.Tenants.ViewModels
         public string Password { get; set; }
 
         public string RecipeName { get; set; }
+
         public IFormFile Recipe { get; set; }
 
         public string SiteTimeZone { get; set; }
+
+        public string Schema { get; set; }
     }
 }

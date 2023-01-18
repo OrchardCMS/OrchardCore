@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -14,6 +15,8 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public class ShellSettings
     {
+        private static readonly char[] _hostSeparators = new[] { ',', ' ' };
+
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
 
@@ -49,6 +52,11 @@ namespace OrchardCore.Environment.Shell
             get => _settings["RequestUrlHost"];
             set => _settings["RequestUrlHost"] = value;
         }
+
+        [JsonIgnore]
+        public string[] RequestUrlHosts => _settings["RequestUrlHost"]
+            ?.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries)
+            ?? Array.Empty<string>();
 
         public string RequestUrlPrefix
         {

@@ -69,7 +69,7 @@ namespace OrchardCore.Setup.Controllers
                 DatabaseProviders = _databaseProviders,
                 Recipes = recipes,
                 RecipeName = defaultRecipe?.Name,
-                Secret = token
+                Secret = token,
             };
 
             CopyShellSettingsValues(model);
@@ -78,6 +78,12 @@ namespace OrchardCore.Setup.Controllers
             {
                 model.DatabaseConfigurationPreset = true;
                 model.TablePrefix = _shellSettings["TablePrefix"];
+            }
+
+            if (!String.IsNullOrEmpty(_shellSettings["Schema"]))
+            {
+                model.DatabaseConfigurationPreset = true;
+                model.Schema = _shellSettings["Schema"];
             }
 
             return View(model);
@@ -157,12 +163,14 @@ namespace OrchardCore.Setup.Controllers
                 setupContext.Properties[SetupConstants.DatabaseProvider] = _shellSettings["DatabaseProvider"];
                 setupContext.Properties[SetupConstants.DatabaseConnectionString] = _shellSettings["ConnectionString"];
                 setupContext.Properties[SetupConstants.DatabaseTablePrefix] = _shellSettings["TablePrefix"];
+                setupContext.Properties[SetupConstants.DatabaseSchema] = _shellSettings["Schema"];
             }
             else
             {
                 setupContext.Properties[SetupConstants.DatabaseProvider] = model.DatabaseProvider;
                 setupContext.Properties[SetupConstants.DatabaseConnectionString] = model.ConnectionString;
                 setupContext.Properties[SetupConstants.DatabaseTablePrefix] = model.TablePrefix;
+                setupContext.Properties[SetupConstants.DatabaseSchema] = model.Schema;
             }
 
             var executionId = await _setupService.SetupAsync(setupContext);
@@ -204,11 +212,6 @@ namespace OrchardCore.Setup.Controllers
             {
                 model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
             }
-
-            if (!String.IsNullOrEmpty(_shellSettings["Description"]))
-            {
-                model.Description = _shellSettings["Description"];
-            }
         }
 
         private async Task<bool> ShouldProceedWithTokenAsync(string token)
@@ -228,10 +231,9 @@ namespace OrchardCore.Setup.Controllers
 
         private async Task<bool> IsTokenValid(string token)
         {
+            var result = false;
             try
             {
-                var result = false;
-
                 var shellScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
 
                 await shellScope.UsingAsync(scope =>
@@ -251,15 +253,13 @@ namespace OrchardCore.Setup.Controllers
 
                     return Task.CompletedTask;
                 });
-
-                return result;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in decrypting the token");
             }
 
-            return false;
+            return result;
         }
     }
 }

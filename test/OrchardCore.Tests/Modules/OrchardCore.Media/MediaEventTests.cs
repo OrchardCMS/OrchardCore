@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using OrchardCore.Media.Events;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media
 {

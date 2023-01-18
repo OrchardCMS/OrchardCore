@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Security.Services;
 
 namespace OrchardCore.Users
 {
@@ -11,34 +8,19 @@ namespace OrchardCore.Users
     {
         public static readonly Permission ManageUsers = CommonPermissions.ManageUsers;
         public static readonly Permission ViewUsers = CommonPermissions.ViewUsers;
+        public static readonly Permission ManageOwnUserInformation = CommonPermissions.EditOwnUser;
 
-        public static readonly Permission ManageOwnUserInformation = new Permission("ManageOwnUserInformation", "Manage own user information", new Permission[] { ManageUsers });
-
-        private readonly IRoleService _roleService;
-
-        public Permissions(IRoleService roleService)
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            _roleService = roleService;
-        }
-
-        public async Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            var list = new List<Permission>
+            return Task.FromResult<IEnumerable<Permission>>(new List<Permission>
             {
-                ManageUsers,
-                ManageOwnUserInformation,
-                ViewUsers
-            };
-
-            var roles = (await _roleService.GetRoleNamesAsync())
-                .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
-
-            foreach (var role in roles)
-            {
-                list.Add(CommonPermissions.CreatePermissionForManageUsersInRole(role));
-            }
-
-            return list;
+                CommonPermissions.ManageUsers,
+                CommonPermissions.ViewUsers,
+                CommonPermissions.EditOwnUser,
+                CommonPermissions.ListUsers,
+                CommonPermissions.EditUsers,
+                CommonPermissions.DeleteUsers,
+            });
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -46,23 +28,30 @@ namespace OrchardCore.Users
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] { ManageUsers }
+                    Permissions = new[] {
+                        CommonPermissions.ManageUsers,
+                        CommonPermissions.ViewUsers,
+                        CommonPermissions.EditOwnUser,
+                        CommonPermissions.ListUsers,
+                        CommonPermissions.EditUsers,
+                        CommonPermissions.DeleteUsers,
+                    }
                 },
                 new PermissionStereotype {
                     Name = "Editor",
-                    Permissions = new[] { ManageOwnUserInformation }
+                    Permissions = new[] { CommonPermissions.EditOwnUser }
                 },
                 new PermissionStereotype {
                     Name = "Moderator",
-                    Permissions = new[] { ManageOwnUserInformation }
+                    Permissions = new[] { CommonPermissions.EditOwnUser }
                 },
                 new PermissionStereotype {
                     Name = "Contributor",
-                    Permissions = new[] { ManageOwnUserInformation }
+                    Permissions = new[] { CommonPermissions.EditOwnUser }
                 },
                 new PermissionStereotype {
                     Name = "Author",
-                    Permissions = new[] { ManageOwnUserInformation }
+                    Permissions = new[] { CommonPermissions.EditOwnUser }
                 }
             };
         }

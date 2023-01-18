@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
@@ -36,6 +37,7 @@ using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Handlers;
+using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -133,7 +135,12 @@ namespace OrchardCore.Users
                 pattern: _adminOptions.AdminUrlPrefix + "/Users/Unlock/{id}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Unlock) }
             );
-
+            routes.MapAreaControllerRoute(
+                name: "UsersDisplay",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Display/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Display) }
+            );
             builder.UseAuthorization();
         }
 
@@ -186,12 +193,9 @@ namespace OrchardCore.Users
             services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
             services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
 
-            services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
-
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<ICommandHandler, UserCommands>();
-            services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
             services.AddScoped<IExternalLoginEventHandler, ScriptExternalLoginEventHandler>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -200,7 +204,6 @@ namespace OrchardCore.Users
             services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
 
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
-            services.AddScoped<IDisplayDriver<User>, UserRoleDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserInformationDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
 
@@ -228,6 +231,20 @@ namespace OrchardCore.Users
 
             services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Roles")]
+    public class RolesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
+            services.AddIndexProvider<UserByRoleNameIndexProvider>();
+            services.AddScoped<IDisplayDriver<User>, UserRoleDisplayDriver>();
+            services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
+            services.AddScoped<IPermissionProvider, UserRolePermissions>();
+            services.AddSingleton<IUsersAdminListFilterProvider, RolesAdminListFilterProvider>();
         }
     }
 
