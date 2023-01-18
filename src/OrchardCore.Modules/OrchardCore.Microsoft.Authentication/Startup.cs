@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Email.Services;
 using OrchardCore.Microsoft.Authentication.Configuration;
 using OrchardCore.Microsoft.Authentication.Deployment;
 using OrchardCore.Microsoft.Authentication.Drivers;

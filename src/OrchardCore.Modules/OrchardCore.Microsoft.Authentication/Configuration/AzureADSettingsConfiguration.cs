@@ -2,7 +2,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 
-namespace OrchardCore.Email.Services;
+namespace OrchardCore.Microsoft.Authentication.Configuration;
 
 public class AzureADSettingsConfiguration : IConfigureOptions<AzureADSettings>
 {
