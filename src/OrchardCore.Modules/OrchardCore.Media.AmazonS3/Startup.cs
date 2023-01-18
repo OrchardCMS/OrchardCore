@@ -69,16 +69,15 @@ public class Startup : Modules.StartupBase
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStoreCacheFileProvider>>();
 
-                var mediaCachePath = GetMediaCachePath(hostingEnvironment,
-                    DefaultMediaFileStoreCacheFileProvider.AssetsCachePath, shellSettings);
+                var mediaCachePath = GetMediaCachePath(
+                    hostingEnvironment, shellSettings, DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
 
                 if (!Directory.Exists(mediaCachePath))
                 {
                     Directory.CreateDirectory(mediaCachePath);
                 }
 
-                return new DefaultMediaFileStoreCacheFileProvider(logger, mediaOptions.AssetsRequestPath,
-                    mediaCachePath);
+                return new DefaultMediaFileStoreCacheFileProvider(logger, mediaOptions.AssetsRequestPath, mediaCachePath);
             });
 
             // Replace the default media file provider with the media cache file provider.
@@ -103,15 +102,13 @@ public class Startup : Modules.StartupBase
                 var amazonS3Client = serviceProvider.GetService<IAmazonS3>();
 
                 var fileStore = new AwsFileStore(clock, storeOptions, amazonS3Client);
-
-                var mediaUrlBase =
-                    $"/{fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath)}";
+                var mediaUrlBase = $"/{fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath)}";
 
                 var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
                     ?.Features.Get<ShellContextFeature>()
                     ?.OriginalPathBase;
 
-                if (originalPathBase.HasValue && !String.IsNullOrWhiteSpace(originalPathBase.Value))
+                if (originalPathBase.HasValue)
                 {
                     mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
                 }
@@ -126,12 +123,10 @@ public class Startup : Modules.StartupBase
 
             services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
 
-            services.AddScoped<IModularTenantEvents, CreateMediaS3BucketEvent>();
+            services.AddScoped<IModularTenantEvents, MediaS3BucketTenantEvents>();
         }
     }
 
-    private string GetMediaCachePath(IWebHostEnvironment hostingEnvironment,
-        string assetsPath, ShellSettings shellSettings)
-        => PathExtensions.Combine(hostingEnvironment.WebRootPath,
-            assetsPath, shellSettings.Name);
+    private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
+        => PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
 }

@@ -9,12 +9,14 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Navigation;
@@ -29,6 +31,7 @@ namespace OrchardCore.Tenants.Controllers
     {
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
+        private readonly IShellRemovalManager _shellRemovalManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _currentShellSettings;
@@ -39,6 +42,8 @@ namespace OrchardCore.Tenants.Controllers
         private readonly INotifier _notifier;
         private readonly ITenantValidator _tenantValidator;
         private readonly PagerOptions _pagerOptions;
+        private readonly TenantsOptions _tenantsOptions;
+        private readonly ILogger _logger;
         private readonly dynamic New;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
@@ -46,6 +51,7 @@ namespace OrchardCore.Tenants.Controllers
         public AdminController(
             IShellHost shellHost,
             IShellSettingsManager shellSettingsManager,
+            IShellRemovalManager shellRemovalManager,
             IEnumerable<DatabaseProvider> databaseProviders,
             IAuthorizationService authorizationService,
             ShellSettings currentShellSettings,
@@ -56,12 +62,15 @@ namespace OrchardCore.Tenants.Controllers
             INotifier notifier,
             ITenantValidator tenantValidator,
             IOptions<PagerOptions> pagerOptions,
+            IOptions<TenantsOptions> tenantsOptions,
+            ILogger<AdminController> logger,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _shellHost = shellHost;
             _shellSettingsManager = shellSettingsManager;
+            _shellRemovalManager = shellRemovalManager;
             _databaseProviders = databaseProviders;
             _authorizationService = authorizationService;
             _currentShellSettings = currentShellSettings;
@@ -72,6 +81,8 @@ namespace OrchardCore.Tenants.Controllers
             _notifier = notifier;
             _tenantValidator = tenantValidator;
             _pagerOptions = pagerOptions.Value;
+            _tenantsOptions = tenantsOptions.Value;
+            _logger = logger;
 
             New = shapeFactory;
             S = stringLocalizer;
@@ -187,7 +198,7 @@ namespace OrchardCore.Tenants.Controllers
 
             model.Options.TenantsBulkAction = new List<SelectListItem>() {
                 new SelectListItem() { Text = S["Disable"], Value = nameof(TenantsBulkAction.Disable) },
-                new SelectListItem() { Text = S["Enable"], Value = nameof(TenantsBulkAction.Enable) }
+                new SelectListItem() { Text = S["Enable"], Value = nameof(TenantsBulkAction.Enable) },
             };
 
             return View(model);
@@ -216,6 +227,11 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             if (!_currentShellSettings.IsDefaultShell())
+            {
+                return Forbid();
+            }
+
+            if (model.BulkAction.ToString() == nameof(TenantsBulkAction.Remove) && !_tenantsOptions.TenantRemovalAllowed)
             {
                 return Forbid();
             }
@@ -512,7 +528,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (shellSettings.State != TenantState.Running)
             {
-                await _notifier.ErrorAsync(H["You can only disable an Enabled tenant."]);
+                await _notifier.ErrorAsync(H["You can only disable a Running tenant."]);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -543,6 +559,7 @@ namespace OrchardCore.Tenants.Controllers
             if (shellSettings.State != TenantState.Disabled)
             {
                 await _notifier.ErrorAsync(H["You can only enable a Disabled tenant."]);
+                return RedirectToAction(nameof(Index));
             }
 
             shellSettings.State = TenantState.Running;
@@ -578,6 +595,48 @@ namespace OrchardCore.Tenants.Controllers
             await _shellHost.ReloadShellContextAsync(shellSettings);
 
             return Redirect(redirectUrl);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Remove(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants) || !_tenantsOptions.TenantRemovalAllowed)
+            {
+                return Forbid();
+            }
+
+            if (!_currentShellSettings.IsDefaultShell())
+            {
+                return Forbid();
+            }
+
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
+            {
+                return NotFound();
+            }
+
+            if (!shellSettings.IsRemovable())
+            {
+                await _notifier.ErrorAsync(H["You can only remove a 'Disabled' or 'Uninitialized' tenant."]);
+                return RedirectToAction(nameof(Index));
+            }
+
+            var context = await _shellRemovalManager.RemoveAsync(shellSettings);
+            if (!context.Success)
+            {
+                await _notifier.ErrorAsync(H["An error occurred while removing the tenant '{0}'. {1}", id, context.ErrorMessage]);
+            }
+            else
+            {
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning("The tenant '{TenantName}' was removed.", shellSettings.Name);
+                }
+
+                await _notifier.SuccessAsync(H["The tenant '{0}' was removed, see the log file for more info.", shellSettings.Name]);
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         private async Task<List<SelectListItem>> GetFeatureProfilesAsync(string currentFeatureProfile)

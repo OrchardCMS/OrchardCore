@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,15 +9,16 @@ namespace OrchardCore.BackgroundTasks
     {
         public static BackgroundTaskSettings GetDefaultSettings(this IBackgroundTask task)
         {
-            var type = task.GetType();
+            var technicalName = task.GetTaskName();
 
-            var attribute = type.GetCustomAttribute<BackgroundTaskAttribute>();
+            var attribute = task.GetType().GetCustomAttribute<BackgroundTaskAttribute>();
 
             if (attribute != null)
             {
                 return new BackgroundTaskSettings
                 {
-                    Name = type.FullName,
+                    Title = !String.IsNullOrWhiteSpace(attribute.Title) ? attribute.Title : technicalName,
+                    Name = technicalName,
                     Enable = attribute.Enable,
                     Schedule = attribute.Schedule,
                     Description = attribute.Description,
@@ -25,12 +27,21 @@ namespace OrchardCore.BackgroundTasks
                 };
             }
 
-            return new BackgroundTaskSettings() { Name = type.FullName };
+            return new BackgroundTaskSettings()
+            {
+                Name = technicalName,
+                Title = technicalName
+            };
         }
 
         public static IBackgroundTask GetTaskByName(this IEnumerable<IBackgroundTask> tasks, string name)
         {
-            return tasks.LastOrDefault(t => t.GetTaskName() == name);
+            if (String.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
+            return tasks.LastOrDefault(task => String.Equals(task.GetTaskName(), name, StringComparison.OrdinalIgnoreCase));
         }
 
         public static string GetTaskName(this IBackgroundTask task)
