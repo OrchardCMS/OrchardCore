@@ -7,11 +7,13 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Email.Services;
 using OrchardCore.Microsoft.Authentication.Configuration;
 using OrchardCore.Microsoft.Authentication.Deployment;
 using OrchardCore.Microsoft.Authentication.Drivers;
 using OrchardCore.Microsoft.Authentication.Recipes;
 using OrchardCore.Microsoft.Authentication.Services;
+using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -40,6 +42,9 @@ namespace OrchardCore.Microsoft.Authentication
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<MicrosoftAccountOptions>, OAuthPostConfigureOptions<MicrosoftAccountOptions,MicrosoftAccountHandler>>()
             });
+
+            services.AddTransient<IConfigureOptions<AzureADSettings>, AzureADSettingsConfiguration>();
+            services.AddTransient<IConfigureOptions<MicrosoftAccountSettings>, MicrosoftAccountSettingsConfiguration>();
         }
     }
 
