@@ -114,7 +114,7 @@ namespace OrchardCore.Tenants.Controllers
             {
                 if (exists)
                 {
-                    // Site already exists, return 201 for indempotency purpose
+                    // Site already exists, return 201 for indempotency purposes.
 
                     var token = CreateSetupToken(settings);
 

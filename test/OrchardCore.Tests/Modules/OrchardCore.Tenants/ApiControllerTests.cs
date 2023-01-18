@@ -94,7 +94,7 @@ public class ApiControllerTests
 
         Assert.NotNull(token1);
 
-        // Enfore the setup token to be expired
+        // Enforce the setup token to be expired.
         _clockMock.Setup(clock => clock.UtcNow).Returns(DateTime.Now.AddDays(2));
 
         controller = CreateController();
