@@ -166,7 +166,7 @@ namespace OrchardCore.Users.Controllers
             };
 
             var allRoles = (await _roleService.GetRoleNamesAsync())
-                .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
+                .Except(RoleHelper.SystemRoleNames, StringComparer.OrdinalIgnoreCase);
 
             options.UserRoleFilters = new List<SelectListItem>()
             {

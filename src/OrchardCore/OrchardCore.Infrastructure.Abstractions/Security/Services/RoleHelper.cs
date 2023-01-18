@@ -8,7 +8,7 @@ namespace OrchardCore.Security.Services
         public static readonly HashSet<string> SystemRoleNames = new(StringComparer.OrdinalIgnoreCase)
         {
             "Anonymous",
-            "Authenticated"
+            "Authenticated",
         };
     }
 }
