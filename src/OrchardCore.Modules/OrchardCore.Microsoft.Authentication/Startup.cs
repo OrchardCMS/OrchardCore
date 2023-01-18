@@ -43,7 +43,6 @@ namespace OrchardCore.Microsoft.Authentication
                 ServiceDescriptor.Transient<IPostConfigureOptions<MicrosoftAccountOptions>, OAuthPostConfigureOptions<MicrosoftAccountOptions,MicrosoftAccountHandler>>()
             });
 
-            services.AddTransient<IConfigureOptions<AzureADSettings>, AzureADSettingsConfiguration>();
             services.AddTransient<IConfigureOptions<MicrosoftAccountSettings>, MicrosoftAccountSettingsConfiguration>();
         }
     }
@@ -80,6 +79,8 @@ namespace OrchardCore.Microsoft.Authentication
                 // Built-in initializers:
                 ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>(),
             });
+
+            services.AddTransient<IConfigureOptions<AzureADSettings>, AzureADSettingsConfiguration>();
         }
     }
 
