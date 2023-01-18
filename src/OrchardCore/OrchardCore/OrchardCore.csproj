@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AsyncKeyedLock" Version="6.0.5" />
+    <PackageReference Include="AsyncKeyedLock" />
     <PackageReference Include="ncrontab" />
     <PackageReference Include="NodaTime" />
   </ItemGroup>
