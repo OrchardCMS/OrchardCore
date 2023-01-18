@@ -15,6 +15,10 @@ public class ApiControllerTests
 {
     private static readonly Dictionary<string, ShellSettings> _shellSettings = new();
     private static readonly Mock<IClock> _clockMock = new();
+    private static readonly Dictionary<string, FeatureProfile> _featureProfiles = new()
+    {
+        { "Feature Profile", new FeatureProfile() }
+    };
 
     private delegate void TryGetSettingsCallback(string name, out ShellSettings settings);
 
@@ -31,7 +35,7 @@ public class ApiControllerTests
         var viewModel = new CreateApiViewModel
         {
             Name = "Test",
-            RequestUrlPrefix = "/test",
+            RequestUrlPrefix = "test",
             RequestUrlHost = "orchardcore.net",
             FeatureProfile = "Feature Profile",
             IsNewTenant = true
@@ -72,7 +76,7 @@ public class ApiControllerTests
         var viewModel = new CreateApiViewModel
         {
             Name = "Test",
-            RequestUrlPrefix = "/test",
+            RequestUrlPrefix = "test",
             RequestUrlHost = "orchardcore.net",
             FeatureProfile = "Feature Profile",
             IsNewTenant = true
@@ -144,6 +148,23 @@ public class ApiControllerTests
                 It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
             .ReturnsAsync(AuthorizationResult.Success);
 
+        var featureProfilesService = new Mock<IFeatureProfilesService>();
+        featureProfilesService
+            .Setup(featureProfiles => featureProfiles.GetFeatureProfilesAsync())
+            .ReturnsAsync(_featureProfiles);
+
+        var stringLocalizerMock = new Mock<IStringLocalizer<TenantValidator>>();
+        stringLocalizerMock
+            .Setup(localizer => localizer[It.IsAny<string>()])
+            .Returns((string name) => new LocalizedString(name, name));
+
+        var tenantValidator = new TenantValidator(
+            shellHostMock.Object,
+            shellSettingsManagerMock.Object,
+            featureProfilesService.Object,
+            Mock.Of<IDbConnectionValidator>(),
+            stringLocalizerMock.Object);
+
         return new ApiController(
             shellHostMock.Object,
             defaultShellSettings,
@@ -157,7 +178,7 @@ public class ApiControllerTests
             Options.Create(new IdentityOptions()),
             Options.Create(new TenantsOptions()),
             Enumerable.Empty<DatabaseProvider>(),
-            Mock.Of<ITenantValidator>(),
+            tenantValidator,
             Mock.Of<IStringLocalizer<ApiController>>(),
             Mock.Of<ILogger<ApiController>>())
         {
