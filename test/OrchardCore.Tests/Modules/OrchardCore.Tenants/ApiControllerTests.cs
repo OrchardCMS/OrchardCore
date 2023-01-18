@@ -13,19 +13,14 @@ namespace OrchardCore.Modules.OrchardCore.Tenants.Tests;
 
 public class ApiControllerTests
 {
-    private static readonly Dictionary<string, ShellSettings> _shellSettings = new();
-    private static readonly Mock<IClock> _clockMock = new();
-    private static readonly Dictionary<string, FeatureProfile> _featureProfiles = new()
+    private readonly Dictionary<string, ShellSettings> _shellSettings = new();
+    private readonly Mock<IClock> _clockMock = new();
+    private readonly Dictionary<string, FeatureProfile> _featureProfiles = new()
     {
         { "Feature Profile", new FeatureProfile() }
     };
 
     private delegate void TryGetSettingsCallback(string name, out ShellSettings settings);
-
-    public ApiControllerTests()
-    {
-        _shellSettings.Clear();
-    }
 
     [Fact]
     public async Task CallCreateApiMultipleTimes_ShouldCreateTenant_ReturnsSetupToken()
@@ -112,7 +107,7 @@ public class ApiControllerTests
         Assert.NotEqual(token1, token2);
     }
 
-    private static ApiController CreateController()
+    private ApiController CreateController()
     {
         var defaultShellSettings = new ShellSettings
         {
