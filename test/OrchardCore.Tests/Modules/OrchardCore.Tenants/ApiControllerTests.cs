@@ -14,11 +14,17 @@ namespace OrchardCore.Modules.OrchardCore.Tenants.Tests;
 public class ApiControllerTests
 {
     private static readonly Dictionary<string, ShellSettings> _shellSettings = new();
+    private static readonly Mock<IClock> _clockMock = new();
 
     private delegate void TryGetSettingsCallback(string name, out ShellSettings settings);
 
+    public ApiControllerTests()
+    {
+        _shellSettings.Clear();
+    }
+
     [Fact]
-    public async Task ShouldGetTenantSetupToken_AfterCreateTenantApiCalled()
+    public async Task CallCreateApiMultipleTimes_ShouldCreateTenant_ReturnsSetupToken()
     {
         // Arrange
         var controller = CreateController();
@@ -56,6 +62,50 @@ public class ApiControllerTests
 
         Assert.NotNull(token2);
         Assert.Equal(token1, token2);
+    }
+
+    [Fact]
+    public async Task ShouldGetNewTenantSetupToken_WhenThePreviousTokenExpired()
+    {
+        // Arrange
+        var controller = CreateController();
+        var viewModel = new CreateApiViewModel
+        {
+            Name = "Test",
+            RequestUrlPrefix = "/test",
+            RequestUrlHost = "orchardcore.net",
+            FeatureProfile = "Feature Profile",
+            IsNewTenant = true
+        };
+
+        // Act & Assert
+        var result = await controller.Create(viewModel);
+
+        Assert.True(controller.ModelState.IsValid);
+        Assert.IsType<OkObjectResult>(result);
+
+        var token1 = (result as OkObjectResult).Value
+            .ToString()
+            .Split("token=")?[1];
+
+        Assert.NotNull(token1);
+
+        // Enfore the setup token to be expired
+        _clockMock.Setup(clock => clock.UtcNow).Returns(DateTime.Now.AddDays(2));
+
+        controller = CreateController();
+
+        result = await controller.Create(viewModel);
+
+        Assert.True(controller.ModelState.IsValid);
+        Assert.IsType<CreatedResult>(result);
+
+        var token2 = (result as CreatedResult).Location
+            .ToString()
+            .Split("token=")?[1];
+
+        Assert.NotNull(token2);
+        Assert.NotEqual(token1, token2);
     }
 
     private static ApiController CreateController()
@@ -102,7 +152,7 @@ public class ApiControllerTests
             shellSettingsManagerMock.Object,
             dataProtectionProviderMock.Object,
             Mock.Of<ISetupService>(),
-            Mock.Of<IClock>(),
+            _clockMock.Object,
             Mock.Of<IEmailAddressValidator>(),
             Options.Create(new IdentityOptions()),
             Options.Create(new TenantsOptions()),

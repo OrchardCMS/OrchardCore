@@ -98,22 +98,6 @@ namespace OrchardCore.Tenants.Controllers
                 return this.ChallengeOrForbid("Api");
             }
 
-            // Creates a default shell settings based on the configuration.
-            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
-
-            shellSettings.Name = model.Name;
-            shellSettings.RequestUrlHost = model.RequestUrlHost;
-            shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
-            shellSettings.State = TenantState.Uninitialized;
-
-            shellSettings["ConnectionString"] = model.ConnectionString;
-            shellSettings["TablePrefix"] = model.TablePrefix;
-            shellSettings["Schema"] = model.Schema;
-            shellSettings["DatabaseProvider"] = model.DatabaseProvider;
-            shellSettings["Secret"] = Guid.NewGuid().ToString();
-            shellSettings["RecipeName"] = model.RecipeName;
-            shellSettings["FeatureProfile"] = model.FeatureProfile;
-
             if (ModelState.IsValid)
             {
                 model.IsNewTenant = true;
@@ -133,6 +117,22 @@ namespace OrchardCore.Tenants.Controllers
                 }
                 else
                 {
+                    // Creates a default shell settings based on the configuration.
+                    var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+
+                    shellSettings.Name = model.Name;
+                    shellSettings.RequestUrlHost = model.RequestUrlHost;
+                    shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
+                    shellSettings.State = TenantState.Uninitialized;
+
+                    shellSettings["ConnectionString"] = model.ConnectionString;
+                    shellSettings["TablePrefix"] = model.TablePrefix;
+                    shellSettings["Schema"] = model.Schema;
+                    shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+                    shellSettings["Secret"] = Guid.NewGuid().ToString();
+                    shellSettings["RecipeName"] = model.RecipeName;
+                    shellSettings["FeatureProfile"] = model.FeatureProfile;
+
                     await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
                     var token = CreateSetupToken(shellSettings);
