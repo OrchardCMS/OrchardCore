@@ -57,6 +57,8 @@ namespace OrchardCore.Media.Processing
                 queryStringParams["rmode"] = resizeMode.ToString().ToLower();
             }
 
+            // The format is set before quality such that the quality is not 
+            // invalidated when the url is generated.
             if (format != Format.Undefined)
             {
                 queryStringParams["format"] = format.ToString().ToLower();
