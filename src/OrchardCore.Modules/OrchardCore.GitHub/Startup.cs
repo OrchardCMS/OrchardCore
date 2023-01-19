@@ -33,6 +33,9 @@ namespace OrchardCore.GitHub
             services.AddScoped<IDisplayDriver<ISite>, GitHubAuthenticationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuGitHubLogin>();
             services.AddRecipeExecutionStep<GitHubAuthenticationSettingsStep>();
+
+            services.AddTransient<IConfigureOptions<GitHubAuthenticationSettings>, GitHubAuthenticationSettingsConfiguration>();
+
             // Register the options initializers required by the GitHub Handler.
             services.TryAddEnumerable(new[]
             {
@@ -42,8 +45,6 @@ namespace OrchardCore.GitHub
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<GitHubOptions>, OAuthPostConfigureOptions<GitHubOptions,GitHubHandler>>()
             });
-
-            services.AddTransient<IConfigureOptions<GitHubAuthenticationSettings>, GitHubAuthenticationSettingsConfiguration>();
         }
     }
 }

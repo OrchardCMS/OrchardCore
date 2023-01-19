@@ -1,4 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Google.Authentication.Configuration;
 using OrchardCore.Google.Authentication.Settings;
 
 namespace OrchardCore.Google.Authentication.Services;
@@ -6,22 +13,48 @@ namespace OrchardCore.Google.Authentication.Services;
 public class GoogleAuthenticationSettingsConfiguration : IConfigureOptions<GoogleAuthenticationSettings>
 {
     private readonly GoogleAuthenticationService _googleAuthenticationService;
+    private readonly ShellSettings _shellSettings;
+    private readonly ILogger _logger;
 
-    public GoogleAuthenticationSettingsConfiguration(GoogleAuthenticationService gitHubAuthenticationService)
+    public GoogleAuthenticationSettingsConfiguration(
+        GoogleAuthenticationService gitHubAuthenticationService,
+        ShellSettings shellSettings,
+        ILogger<GoogleOptionsConfiguration> logger)
     {
         _googleAuthenticationService = gitHubAuthenticationService;
+        _shellSettings = shellSettings;
+        _logger = logger;
     }
 
     public void Configure(GoogleAuthenticationSettings options)
     {
-        var settings = _googleAuthenticationService
-            .GetSettingsAsync()
+        var settings = GetGoogleAuthenticationSettingsAsync()
             .GetAwaiter()
             .GetResult();
 
-        options.CallbackPath = settings.CallbackPath;
-        options.ClientID = settings.ClientID;
-        options.ClientSecret = settings.ClientSecret;
-        options.SaveTokens = settings.SaveTokens;
+        if (settings != null)
+        {
+            options.CallbackPath = settings.CallbackPath;
+            options.ClientID = settings.ClientID;
+            options.ClientSecret = settings.ClientSecret;
+            options.SaveTokens = settings.SaveTokens;
+        }
+    }
+
+    private async Task<GoogleAuthenticationSettings> GetGoogleAuthenticationSettingsAsync()
+    {
+        var settings = await _googleAuthenticationService.GetSettingsAsync();
+
+        if ((_googleAuthenticationService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
+        {
+            if (_shellSettings.State == TenantState.Running)
+            {
+                _logger.LogWarning("Google Authentication is not correctly configured.");
+            }
+
+            return null;
+        }
+
+        return settings;
     }
 }

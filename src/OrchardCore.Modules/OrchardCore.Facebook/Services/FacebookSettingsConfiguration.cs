@@ -19,11 +19,14 @@ public class FacebookSettingsConfiguration : IConfigureOptions<FacebookSettings>
             .GetAwaiter()
             .GetResult();
 
-        options.AppId = settings.AppId;
-        options.AppSecret = settings.AppSecret;
-        options.Version = settings.Version;
-        options.FBInit = settings.FBInit;
-        options.FBInitParams = settings.FBInitParams;
-        options.SdkJs = settings.SdkJs;
+        if (settings != null)
+        {
+            options.AppId = settings.AppId;
+            options.AppSecret = settings.AppSecret;
+            options.Version = settings.Version;
+            options.FBInit = settings.FBInit;
+            options.FBInitParams = settings.FBInitParams;
+            options.SdkJs = settings.SdkJs;
+        }
     }
 }

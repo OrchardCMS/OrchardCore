@@ -1,16 +1,9 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 
 #pragma warning disable CS0618
@@ -24,23 +17,16 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         IConfigureNamedOptions<PolicySchemeOptions>,
         IConfigureNamedOptions<AzureADOptions>
     {
-        private readonly IAzureADService _azureADService;
-        private readonly ShellSettings _shellSettings;
-        private readonly ILogger _logger;
+        private readonly AzureADSettings _azureADSettings;
 
-        public AzureADOptionsConfiguration(
-            IAzureADService loginService,
-            ShellSettings shellSettings,
-            ILogger<AzureADOptionsConfiguration> logger)
+        public AzureADOptionsConfiguration(IOptions<AzureADSettings> azureADSettings)
         {
-            _azureADService = loginService;
-            _shellSettings = shellSettings;
-            _logger = logger;
+            _azureADSettings = azureADSettings.Value;
         }
 
         public void Configure(AuthenticationOptions options)
         {
-            var settings = GetAzureADSettingsAsync().GetAwaiter().GetResult();
+            var settings = _azureADSettings;
             if (settings == null)
             {
                 return;
@@ -67,7 +53,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
                 return;
             }
 
-            var loginSettings = GetAzureADSettingsAsync().GetAwaiter().GetResult();
+            var loginSettings = _azureADSettings;
             if (loginSettings == null)
             {
                 return;
@@ -96,22 +82,6 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             options.ForwardChallenge = AzureADDefaults.OpenIdScheme;
         }
         public void Configure(PolicySchemeOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
-
-        private async Task<AzureADSettings> GetAzureADSettingsAsync()
-        {
-            var settings = await _azureADService.GetSettingsAsync();
-            if (_azureADService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
-            {
-                if (_shellSettings.State == TenantState.Running)
-                {
-                    _logger.LogWarning("The AzureAD Authentication is not correctly configured.");
-                }
-
-                return null;
-            }
-
-            return settings;
-        }
     }
 }
 
