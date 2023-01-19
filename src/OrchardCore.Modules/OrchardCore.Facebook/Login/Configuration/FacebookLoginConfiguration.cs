@@ -122,7 +122,8 @@ namespace OrchardCore.Facebook.Login.Configuration
         private async Task<FacebookSettings> GetFacebookCoreSettingsAsync()
         {
             var settings = await _coreService.GetSettingsAsync();
-            if ((await _coreService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
+
+            if (_coreService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
             {
                 if (_shellSettings.State == TenantState.Running)
                 {
