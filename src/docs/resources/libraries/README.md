@@ -86,7 +86,7 @@ The below table lists the different Tests libraries:
 
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
-| [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) | Powerful .NET library for benchmarking. | 0.13.3 | [MIT](https://github.com/dotnet/BenchmarkDotNet/blob/master/LICENSE.md) |
+| [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) | Powerful .NET library for benchmarking. | 0.13.4 | [MIT](https://github.com/dotnet/BenchmarkDotNet/blob/master/LICENSE.md) |
 | [Cypress](https://github.com/cypress-io/cypress) | Fast, easy and reliable testing for anything that runs in a browser. | 9.6.1 | [MIT](https://github.com/cypress-io/cypress/blob/develop/LICENSE) |
 | [Cypress Orchard](https://www.npmjs.com/package/cypress-orchardcore) | A collection of cypress commands for Orchard Core. | 0.4.5 | MIT |
 | [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 17.4.1 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
