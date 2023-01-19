@@ -1,28 +1,53 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 
-namespace OrchardCore.Users
+namespace OrchardCore.Users;
+
+public class UserRolePermissions : IPermissionProvider
 {
-    public class UserRolePermissions : IPermissionProvider
+    private readonly IRoleService _roleService;
+
+    public UserRolePermissions(IRoleService roleService)
     {
-        private readonly IRoleService _roleService;
+        _roleService = roleService;
+    }
 
-        public UserRolePermissions(IRoleService roleService)
+    public async Task<IEnumerable<Permission>> GetPermissionsAsync()
+    {
+        var roleNames = (await _roleService.GetRoleNamesAsync())
+            .Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName))
+            .OrderBy(roleName => roleName);
+
+        var list = new List<Permission>()
         {
-            _roleService = roleService;
+            CommonPermissions.AssignRoleToUsers,
+        };
+
+        foreach (var roleName in roleNames)
+        {
+            list.Add(CommonPermissions.CreateListUsersInRolePermission(roleName));
+            list.Add(CommonPermissions.CreateEditUsersInRolePermission(roleName));
+            list.Add(CommonPermissions.CreateDeleteUsersInRolePermission(roleName));
+            list.Add(CommonPermissions.CreateAssignRoleToUsersPermission(roleName));
+            list.Add(CommonPermissions.CreatePermissionForManageUsersInRole(roleName));
         }
 
-        public async Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return (await _roleService.GetRoleNamesAsync())
-                .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase)
-                .Select(role => CommonPermissions.CreatePermissionForManageUsersInRole(role));
-        }
+        return list;
+    }
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes() => Enumerable.Empty<PermissionStereotype>();
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[] {
+            new PermissionStereotype
+            {
+                Name = "Administrator",
+                Permissions = new[] {
+                    CommonPermissions.AssignRoleToUsers,
+                }
+            }
+        };
     }
 }

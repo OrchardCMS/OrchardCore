@@ -6,30 +6,39 @@
 @inject UserManager<IUser> UserManager
 @inject IAuthorizationService AuthorizationService
 @{
-    var user = Model.User as User;
-    var currentUser = user.UserName == User.Identity.Name;
-    var hasManageUser = await AuthorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user);
-    var isLockedOut = await UserManager.IsLockedOutAsync(user);
+    var isCurrentUser = Model.User.UserName == User.Identity.Name;
+    var canEdit = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, Model.User);
+    var isLockedOut = await UserManager.IsLockedOutAsync(Model.User);
 }
-<a asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-primary btn-sm">@T["Edit"]</a>
 
-@if (hasManageUser) 
+@if (canEdit)
 {
-    if (!currentUser)
-    {
-        <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@user.UserId" data-url-af="RemoveUrl UnsafeUrl" >@T["Delete"]</a>
-    }
-    <a asp-action="EditPassword" asp-route-id="@user.UserId" class="btn btn-secondary btn-sm">@T["Edit Password"]</a>
+    <a asp-action="Edit" asp-route-id="@Model.User.UserId" class="btn btn-primary btn-sm">@T["Edit"]</a>
+}
+
+@if (!isCurrentUser && await AuthorizationService.AuthorizeAsync(User, CommonPermissions.ViewUsers, Model.User))
+{
+    <a asp-action="Display" asp-route-id="@Model.User.UserId" class="btn btn-success btn-sm">@T["View"]</a>
+}
+
+@if (canEdit)
+{
+    <a asp-action="EditPassword" asp-route-id="@Model.User.UserId" class="btn btn-secondary btn-sm">@T["Edit Password"]</a>
     if (isLockedOut)
     {
-        <a asp-action="Unlock" asp-route-id="@user.UserId" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Unlock user"]" data-message="@T["Are you sure you want to unlock this user?"]">@T["Unlock"]</a>
+        <a asp-action="Unlock" asp-route-id="@Model.User.UserId" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Unlock user"]" data-message="@T["Are you sure you want to unlock this user?"]">@T["Unlock"]</a>
     }
 }
 
-@if (!user.EmailConfirmed && Site.As<RegistrationSettings>().UsersMustValidateEmail && hasManageUser)
+@if (!isCurrentUser && await AuthorizationService.AuthorizeAsync(User, CommonPermissions.DeleteUsers, Model.User))
+{
+    <a asp-action="Delete" asp-route-id="@Model.User.UserId" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+}
+
+@if (canEdit && !Model.User.EmailConfirmed && Site.As<RegistrationSettings>().UsersMustValidateEmail)
 {
     <form method="post" class="d-inline-block" class="no-multisubmit">
-        <input name="id" type="hidden" value="@user.UserId" />
+        <input name="id" type="hidden" value="@Model.User.UserId" />
         <button asp-action="SendVerificationEmail" asp-controller="Registration" class="btn btn-info btn-sm">@T["Send verification email"]</button>
     </form>
 }
