@@ -2,8 +2,8 @@
 @model OwnerEditorViewModel
 
 <div class="mb-3" asp-validation-class-for="OwnerName">
-    <label asp-for="OwnerName">@T["Owner Name"]</label>
+    <label asp-for="OwnerName">@T["Owner"]</label>
     <input asp-for="OwnerName" class="form-control" />
     <span asp-validation-for="OwnerName"></span>
-    <span class="hint">@T["The name of the owner of the content item."]</span>
+    <span class="hint">@T["The owner's username of this content item."]</span>
 </div>
