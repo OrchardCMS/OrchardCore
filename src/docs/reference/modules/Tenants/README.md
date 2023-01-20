@@ -131,10 +131,11 @@ If you're using [Auto Setup](../AutoSetup/README.md), you can specify the `Featu
 
 Allows removing a tenant if it is not yet set up or is in the disabled state. By default, this feature is not allowed.
 
-Tenant Removal can be allowed from any configuration source (e.g. `appsettings.json`) under the `OrchardCore` section. See the [../../Core/Configuration/README.md](configuration documentation) for details.
+Tenant Removal can be allowed from any configuration source (e.g. `appsettings.json`) under the `OrchardCore` section. See the [configuration documentation](../../core/Configuration/README.md) for details.
 
 ```json
 {
+  "OrchardCore": {
     "OrchardCore_Tenants": {
       "TenantRemovalAllowed": false // Whether tenant removal is allowed or not. Default is false.
     }
