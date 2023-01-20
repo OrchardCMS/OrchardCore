@@ -19,7 +19,7 @@ public class GoogleAuthenticationSettingsConfiguration : IConfigureOptions<Googl
     public GoogleAuthenticationSettingsConfiguration(
         GoogleAuthenticationService gitHubAuthenticationService,
         ShellSettings shellSettings,
-        ILogger<GoogleOptionsConfiguration> logger)
+        ILogger<GoogleAuthenticationSettingsConfiguration> logger)
     {
         _googleAuthenticationService = gitHubAuthenticationService;
         _shellSettings = shellSettings;

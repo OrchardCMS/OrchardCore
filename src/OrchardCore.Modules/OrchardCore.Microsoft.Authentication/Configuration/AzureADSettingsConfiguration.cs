@@ -19,7 +19,7 @@ public class AzureADSettingsConfiguration : IConfigureOptions<AzureADSettings>
     public AzureADSettingsConfiguration(
         IAzureADService azureADService,
         ShellSettings shellSettings,
-        ILogger<AzureADOptionsConfiguration> logger)
+        ILogger<AzureADSettingsConfiguration> logger)
     {
         _azureADService = azureADService;
         _shellSettings = shellSettings;

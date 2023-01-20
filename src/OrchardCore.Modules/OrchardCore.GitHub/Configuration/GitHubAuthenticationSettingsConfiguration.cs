@@ -19,7 +19,7 @@ public class GitHubAuthenticationSettingsConfiguration : IConfigureOptions<GitHu
     public GitHubAuthenticationSettingsConfiguration(
         IGitHubAuthenticationService gitHubAuthenticationService,
         ShellSettings shellSettings,
-        ILogger<GitHubOptionsConfiguration> logger)
+        ILogger<GitHubAuthenticationSettingsConfiguration> logger)
     {
         _gitHubAuthenticationService = gitHubAuthenticationService;
         _shellSettings = shellSettings;

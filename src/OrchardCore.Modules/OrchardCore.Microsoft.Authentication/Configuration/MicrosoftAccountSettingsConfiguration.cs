@@ -19,7 +19,7 @@ public class MicrosoftAccountSettingsConfiguration : IConfigureOptions<Microsoft
     public MicrosoftAccountSettingsConfiguration(
         IMicrosoftAccountService microsoftAccountService,
         ShellSettings shellSettings,
-        ILogger<AzureADOptionsConfiguration> logger)
+        ILogger<MicrosoftAccountSettingsConfiguration> logger)
     {
         _microsoftAccountService = microsoftAccountService;
         _shellSettings = shellSettings;
