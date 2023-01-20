@@ -446,16 +446,16 @@ namespace OrchardCore.Resources
                 .DefineScript("vue-multiselect")
                 .SetDependencies("vuejs")
                 .SetUrl("~/OrchardCore.Resources/Scripts/vue-multiselect.min.js", "~/OrchardCore.Resources/Scripts/vue-multiselect.min.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.js", "https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.js")
-                .SetCdnIntegrity("sha384-a4eXewRTYCwYdFtSnMCZTNtiXrfdul6aQdueRgHPAx2y1Ldp0QaFdCTpOx0ycsXU", "sha384-a4eXewRTYCwYdFtSnMCZTNtiXrfdul6aQdueRgHPAx2y1Ldp0QaFdCTpOx0ycsXU")
-                .SetVersion("2.1.6");
+                .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.7/dist/vue-multiselect.min.js", "https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.7/dist/vue-multiselect.min.js")
+                .SetCdnIntegrity("sha384-ugQE/wrm+9Iqppn/mKNCSRShqTHGVcEOpbEvvhsy03ckPdk6VxVWX+tcUcVlHa2p", "sha384-ugQE/wrm+9Iqppn/mKNCSRShqTHGVcEOpbEvvhsy03ckPdk6VxVWX+tcUcVlHa2p")
+                .SetVersion("2.1.7");
 
             manifest
                 .DefineStyle("vue-multiselect")
                 .SetUrl("~/OrchardCore.Resources/Styles/vue-multiselect.min.css", "~/OrchardCore.Resources/Styles/vue-multiselect.min.css")
-                .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.css", "https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.css")
-                .SetCdnIntegrity("sha384-PPH/T7V86Z1+B4eMPef4FJXLD5fsTpObWoCoK3CiNtSX7aji+5qxpOCn1f2TDYAM", "sha384-PPH/T7V86Z1+B4eMPef4FJXLD5fsTpObWoCoK3CiNtSX7aji+5qxpOCn1f2TDYAM")
-                .SetVersion("2.1.6");
+                .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.7/dist/vue-multiselect.min.css", "https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.7/dist/vue-multiselect.min.css")
+                .SetCdnIntegrity("sha384-u5tf0Dfu6m2GH9gUtq/QA+5L0IRfS5mIyxF/IHSGa276Tsn3EnqH9vBuorS0IMmy", "sha384-u5tf0Dfu6m2GH9gUtq/QA+5L0IRfS5mIyxF/IHSGa276Tsn3EnqH9vBuorS0IMmy")
+                .SetVersion("2.1.7");
 
             manifest
                 .DefineScript("Sortable")

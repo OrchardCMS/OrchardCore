@@ -17,7 +17,7 @@
     "sortablejs": "^1.14.0",
     "trumbowyg": "2.26.0",
     "vue": "^2.6.14",
-    "vue-multiselect": "^2.1.6",
+    "vue-multiselect": "^2.1.7",
     "vuedraggable": "^2.24.3"
   },
   "devDependencies": {
