@@ -260,8 +260,13 @@ Developing custom activities involve the following steps:
 You may trigger a custom event activity by calling the `TriggerEventAsync` method on `IWorkflowManager`. The following is an example of how to trigger the workflow for a custom event named `CustomTaskActivity`
 
 ```csharp
-var input = new Dictionary<string, object>();
-// here you can add any data you want to the workflow using input dictionary.
+var customData = new CustomDto();
+
+var input = new Dictionary<string, object>()
+{
+    // Here we are passing custom data to the workflow's input.
+    { "data", customData}
+};
 
 await workflowManager.TriggerEventAsync("CustomTaskActivity", input);
 ```
@@ -271,7 +276,7 @@ You may passing an instance of a custom object to the workflow's input by adding
 ```csharp
 services.Configure<TemplateOptions>(o =>
 {
-    o.MemberAccessStrategy.Register<YourCustomTypeToAccess>();
+    o.MemberAccessStrategy.Register<CustomDto>();
 });
 ```
 
