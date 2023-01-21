@@ -1,4 +1,4 @@
-using System.Security.Claims;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +9,7 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Security;
 using OrchardCore.Users;
 
@@ -47,11 +48,12 @@ namespace OrchardCore.Contents.Drivers
             {
                 return Initialize<OwnerEditorViewModel>("CommonPart_Edit__Owner", async model =>
                 {
-                    if (part.ContentItem.Owner != null)
+                    if (!String.IsNullOrEmpty(part.ContentItem.Owner))
                     {
                         // TODO Move this editor to a user picker.
                         var user = await _userManager.FindByIdAsync(part.ContentItem.Owner);
-                        model.OwnerName = user.UserName;
+
+                        model.OwnerName = user?.UserName;
                     }
                 });
             }
@@ -70,33 +72,23 @@ namespace OrchardCore.Contents.Drivers
 
             var settings = context.TypePartDefinition.GetSettings<CommonPartSettings>();
 
-            if (!settings.DisplayOwnerEditor)
-            {
-                if (part.ContentItem.Owner == null)
-                {
-                    part.ContentItem.Owner = currentUser.FindFirstValue(ClaimTypes.NameIdentifier);
-                }
-            }
-            else
+            if (settings.DisplayOwnerEditor)
             {
                 var model = new OwnerEditorViewModel();
 
-                if (part.ContentItem.Owner != null)
-                {
-                    var user = await _userManager.FindByIdAsync(part.ContentItem.Owner);
-                    model.OwnerName = user.UserName;
-                }
-
-                var priorOwnerName = model.OwnerName;
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                if (model.OwnerName != priorOwnerName)
+                if (String.IsNullOrWhiteSpace(model.OwnerName))
                 {
-                    var newOwner = (await _userManager.FindByNameAsync(model.OwnerName));
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.OwnerName), S["A value is required for Owner."]);
+                }
+                else
+                {
+                    var newOwner = await _userManager.FindByNameAsync(model.OwnerName);
 
                     if (newOwner == null)
                     {
-                        context.Updater.ModelState.AddModelError("CommonPart.OwnerName", S["Invalid user name"]);
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.OwnerName), S["Invalid username provided for Owner."]);
                     }
                     else
                     {

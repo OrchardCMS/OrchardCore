@@ -1,10 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Amazon;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
-using Amazon.Runtime.CredentialManagement;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Configuration;
@@ -42,6 +40,7 @@ public static class AwsStorageOptionsExtension
         options.BucketName = section.GetValue(nameof(options.BucketName), String.Empty);
         options.BasePath = section.GetValue(nameof(options.BasePath), String.Empty);
         options.CreateBucket = section.GetValue(nameof(options.CreateBucket), false);
+        options.RemoveBucket = section.GetValue(nameof(options.RemoveBucket), false);
 
         try
         {

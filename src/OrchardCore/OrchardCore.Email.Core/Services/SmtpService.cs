@@ -81,7 +81,7 @@ namespace OrchardCore.Email.Services
                     return SmtpResult.Failed(errors.ToArray());
                 }
 
-                if (mimeMessage.From.Count == 0 && mimeMessage.Cc.Count == 0 && mimeMessage.Bcc.Count == 0)
+                if (mimeMessage.To.Count == 0 && mimeMessage.Cc.Count == 0 && mimeMessage.Bcc.Count == 0)
                 {
                     return SmtpResult.Failed(S["The mail message should have at least one of these headers: To, Cc or Bcc."]);
                 }

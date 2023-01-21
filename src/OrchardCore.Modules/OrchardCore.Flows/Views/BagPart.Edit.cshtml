@@ -56,7 +56,7 @@
     {
         var type = Model.ContainedContentTypeDefinitions.First();
 
-        <a class="btn btn-primary add-widget btn-sm mt-1"
+        <a class="btn btn-primary add-widget btn-sm"
        data-target-id="@widgetTemplatePlaceholderId"
        data-html-field-prefix="@htmlFieldPrefix"
        data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
@@ -70,7 +70,7 @@
     }
     else if (totalItems > 1)
     {
-        <div class="btn-group btn-bag-add mt-1">
+        <div class="btn-group btn-bag-add">
             <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 @T["Add Item"]
             </button>

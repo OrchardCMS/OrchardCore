@@ -1,5 +1,4 @@
 using OrchardCore.Modules.Services;
-using Xunit;
 
 namespace OrchardCore.Tests.Tokens.Content
 {

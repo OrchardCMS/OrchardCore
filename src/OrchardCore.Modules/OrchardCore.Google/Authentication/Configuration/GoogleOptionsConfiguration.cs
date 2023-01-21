@@ -1,5 +1,7 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -17,7 +19,7 @@ namespace OrchardCore.Google.Authentication.Configuration
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<GoogleOptions>
     {
-        private readonly GoogleAuthenticationService _googleAuthenticationService;
+        private readonly IGoogleAuthenticationService _googleAuthenticationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
@@ -85,7 +87,8 @@ namespace OrchardCore.Google.Authentication.Configuration
         private async Task<GoogleAuthenticationSettings> GetGoogleAuthenticationSettingsAsync()
         {
             var settings = await _googleAuthenticationService.GetSettingsAsync();
-            if (!_googleAuthenticationService.CheckSettings(settings))
+
+            if ((_googleAuthenticationService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
             {
                 if (_shellSettings.State == TenantState.Running)
                 {

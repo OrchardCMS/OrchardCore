@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-283-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-285-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -388,6 +388,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://bicloud.io/"><img src="https://avatars.githubusercontent.com/u/5276778?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Venkatesan R</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=vengi83644" title="Code">💻</a></td>
+    <td align="center"><a href="https://www.powerhouse-solutions.de/"><img src="https://avatars.githubusercontent.com/u/27513913?v=4?s=100" width="100px;" alt=""/><br /><sub><b>David Stania</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=DavidStania" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/stoyandimov"><img src="https://avatars.githubusercontent.com/u/1770309?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Stoyan Dimov</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=stoyandimov" title="Documentation">📖</a></td>
   </tr>
 </table>
 

@@ -21,6 +21,7 @@ namespace OrchardCore.Media.Services
             ".gif",
             ".ico",
             ".svg",
+            ".webp",
 
             // Documents
             ".pdf", // (Portable Document Format; Adobe Acrobat)

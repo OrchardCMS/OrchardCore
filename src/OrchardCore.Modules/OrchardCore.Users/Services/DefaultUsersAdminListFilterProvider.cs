@@ -1,7 +1,10 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Security.Services;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
@@ -43,15 +46,12 @@ namespace OrchardCore.Users.Services
                     })
                     .MapFrom<UserIndexOptions>((model) =>
                     {
-                        switch (model.Filter)
+                        return model.Filter switch
                         {
-                            case UsersFilter.Enabled:
-                                return (true, model.Filter.ToString());
-                            case UsersFilter.Disabled:
-                                return (true, model.Filter.ToString());
-                        }
-
-                        return (false, String.Empty);
+                            UsersFilter.Enabled => (true, model.Filter.ToString()),
+                            UsersFilter.Disabled => (true, model.Filter.ToString()),
+                            _ => (false, String.Empty)
+                        };
                     })
                 )
                 .WithNamedTerm("sort", builder => builder

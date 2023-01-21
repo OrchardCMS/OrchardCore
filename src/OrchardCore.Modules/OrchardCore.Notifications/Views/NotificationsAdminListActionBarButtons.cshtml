@@ -1,0 +1,9 @@
+@model ListNotificationOptions
+
+@if (Model.TotalItemCount > 0)
+{
+    <a class="btn btn-secondary"
+   asp-action="ReadAll" asp-controller="Admin" asp-area="OrchardCore.Notifications" asp-route-returnUrl="@FullRequestPath"
+   data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you to mark all notifications as read?"]"
+   data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Mark All as Read"]</a>
+}

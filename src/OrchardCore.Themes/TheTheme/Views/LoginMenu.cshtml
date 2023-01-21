@@ -10,6 +10,9 @@
     var allowChangeEmail = (await SiteService.GetSiteSettingsAsync()).As<ChangeEmailSettings>().AllowChangeEmail;
     var externalAuthenticationSchemes = await SignInManager.GetExternalAuthenticationSchemesAsync();
 }
+
+@await RenderSectionAsync("NavbarTop", required: false)
+
 <ul class="navbar-nav">
     @if (User.Identity.IsAuthenticated)
     {
