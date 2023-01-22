@@ -1,23 +1,23 @@
 using System.Collections.Generic;
 using System.Globalization;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Localization;
 
 public class DefaultCultureAliasProvider : ICultureAliasProvider
 {
-    private static readonly Dictionary<string, CultureInfo> _culturesAliases = new()
+    private static readonly Dictionary<string, CultureInfo> _culturesAliases = new();
+
+    private readonly OrchardCoreRequestLocalizationOptions _requestLocalizationOptions;
+
+    public DefaultCultureAliasProvider(IOptions<OrchardCoreRequestLocalizationOptions> requestLocalizationOptions)
     {
-        { "zh-CN",  CultureInfo.GetCultureInfo("zh-Hans-CN")},
-        { "zh-TW",  CultureInfo.GetCultureInfo("zh-Hant-TW")}
-    };
+        _requestLocalizationOptions = requestLocalizationOptions.Value;
+
+        _culturesAliases.Add("zh-CN", new CultureInfo("zh-Hans-CN", _requestLocalizationOptions.UseUserOverride));
+        _culturesAliases.Add("zh-TW", new CultureInfo("zh-Hans-CN", _requestLocalizationOptions.UseUserOverride));
+    }
 
     public bool TryGetCulture(CultureInfo cultureAlias, out CultureInfo culture)
-    {
-        if (_culturesAliases.TryGetValue(cultureAlias.Name, out culture))
-        {
-            return true;
-        }
-
-        return false;
-    }
+        => _culturesAliases.TryGetValue(cultureAlias.Name, out culture);
 }

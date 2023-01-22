@@ -10,8 +10,6 @@ namespace OrchardCore.Localization;
 /// </summary>
 public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
 {
-    private readonly bool _useUserOverride;
-
     /// <summary>
     /// Creates a new <see cref="OrchardCoreRequestLocalizationOptions"/> with default values.
     /// </summary>
@@ -25,8 +23,13 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
     /// </summary>
     public OrchardCoreRequestLocalizationOptions(bool ignoreSystemSettings) : base()
     {
-        _useUserOverride = !ignoreSystemSettings;
+        UseUserOverride = !ignoreSystemSettings;
     }
+
+    /// <summary>
+    /// Gets whether to use the user-selected culture settings or not.
+    /// </summary>
+    public bool UseUserOverride { init; get; }
 
     /// <inheritdoc/>
     public new RequestLocalizationOptions AddSupportedCultures(params string[] cultures)
@@ -35,7 +38,7 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
 
         foreach (var culture in cultures)
         {
-            supportedCultures.Add(new CultureInfo(culture, _useUserOverride));
+            supportedCultures.Add(new CultureInfo(culture, UseUserOverride));
         }
 
         SupportedCultures = supportedCultures;
@@ -49,7 +52,7 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
         var supportedUICultures = new List<CultureInfo>();
         foreach (var culture in uiCultures)
         {
-            supportedUICultures.Add(new CultureInfo(culture, _useUserOverride));
+            supportedUICultures.Add(new CultureInfo(culture, UseUserOverride));
         }
 
         SupportedUICultures = supportedUICultures;
@@ -60,7 +63,7 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
     /// <inheritdoc/>
     public new RequestLocalizationOptions SetDefaultCulture(string defaultCulture)
     {
-        DefaultRequestCulture = new RequestCulture(new CultureInfo(defaultCulture, _useUserOverride));
+        DefaultRequestCulture = new RequestCulture(new CultureInfo(defaultCulture, UseUserOverride));
         
         return this;
     } 
