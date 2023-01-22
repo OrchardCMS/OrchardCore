@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Localization.Services
 {
-    public class CultureAliasConversionMiddleware
+    public class CultureAliasMiddleware
     {
         private readonly ICultureAliasProvider _cultureAliasProvider;
         private readonly RequestDelegate _next;
 
-        public CultureAliasConversionMiddleware(ICultureAliasProvider cultureAliasProvider, RequestDelegate next)
+        public CultureAliasMiddleware(ICultureAliasProvider cultureAliasProvider, RequestDelegate next)
         {
             _cultureAliasProvider = cultureAliasProvider;
             _next = next;

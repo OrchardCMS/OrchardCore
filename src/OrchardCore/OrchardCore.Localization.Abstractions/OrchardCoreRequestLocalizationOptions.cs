@@ -29,10 +29,9 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
     }
 
     /// <inheritdoc/>
-    public new RequestLocalizationOptions AddSupportedCultures(params string[] cultures)
+    public new OrchardCoreRequestLocalizationOptions AddSupportedCultures(params string[] cultures)
     {
         var supportedCultures = new List<CultureInfo>();
-
         foreach (var culture in cultures)
         {
             supportedCultures.Add(new CultureInfo(culture, _useUserOverride));
@@ -44,7 +43,7 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
     }
 
     /// <inheritdoc/>
-    public new RequestLocalizationOptions AddSupportedUICultures(params string[] uiCultures)
+    public new OrchardCoreRequestLocalizationOptions AddSupportedUICultures(params string[] uiCultures)
     {
         var supportedUICultures = new List<CultureInfo>();
         foreach (var culture in uiCultures)
@@ -58,7 +57,7 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
     }
 
     /// <inheritdoc/>
-    public new RequestLocalizationOptions SetDefaultCulture(string defaultCulture)
+    public new OrchardCoreRequestLocalizationOptions SetDefaultCulture(string defaultCulture)
     {
         DefaultRequestCulture = new RequestCulture(new CultureInfo(defaultCulture, _useUserOverride));
         
