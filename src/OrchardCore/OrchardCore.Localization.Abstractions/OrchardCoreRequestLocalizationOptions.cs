@@ -42,7 +42,7 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
                 supportedCultures.Add(new CultureInfo("zh-CN", _useUserOverride));
             }
 
-            if (culture == "zh-Hans-TW" && !cultures.Contains("zh-TW"))
+            if (culture == "zh-Hant-TW" && !cultures.Contains("zh-TW"))
             {
                 supportedCultures.Add(new CultureInfo("zh-TW", _useUserOverride));
             }
@@ -66,7 +66,7 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
                 supportedUICultures.Add(new CultureInfo("zh-CN", _useUserOverride));
             }
 
-            if (culture == "zh-Hans-TW" && !uiCultures.Contains("zh-TW"))
+            if (culture == "zh-Hant-TW" && !uiCultures.Contains("zh-TW"))
             {
                 supportedUICultures.Add(new CultureInfo("zh-TW", _useUserOverride));
             }
