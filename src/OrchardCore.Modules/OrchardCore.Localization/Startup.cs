@@ -53,8 +53,6 @@ namespace OrchardCore.Localization
                 .AddSupportedUICultures(supportedCultures);
 
             app.UseRequestLocalization(requestLocalizationOptions);
-
-            app.UseMiddleware<CultureAliasMiddleware>();
         }
     }
 

@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Localization;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Localization;
 
 namespace OrchardCore.Localization;
 
@@ -32,9 +33,19 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
     public new OrchardCoreRequestLocalizationOptions AddSupportedCultures(params string[] cultures)
     {
         var supportedCultures = new List<CultureInfo>();
-        foreach (var culture in cultures)
+        foreach (var culture in cultures.ToHashSet())
         {
             supportedCultures.Add(new CultureInfo(culture, _useUserOverride));
+
+            if (culture == "zh-Hans-CN" && !cultures.Contains("zh-CN"))
+            {
+                supportedCultures.Add(new CultureInfo("zh-CN", _useUserOverride));
+            }
+
+            if (culture == "zh-Hans-TW" && !cultures.Contains("zh-TW"))
+            {
+                supportedCultures.Add(new CultureInfo("zh-TW", _useUserOverride));
+            }
         }
 
         SupportedCultures = supportedCultures;
@@ -46,9 +57,19 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
     public new OrchardCoreRequestLocalizationOptions AddSupportedUICultures(params string[] uiCultures)
     {
         var supportedUICultures = new List<CultureInfo>();
-        foreach (var culture in uiCultures)
+        foreach (var culture in uiCultures.ToHashSet())
         {
             supportedUICultures.Add(new CultureInfo(culture, _useUserOverride));
+
+            if (culture == "zh-Hans-CN" && !uiCultures.Contains("zh-CN"))
+            {
+                supportedUICultures.Add(new CultureInfo("zh-CN", _useUserOverride));
+            }
+
+            if (culture == "zh-Hans-TW" && !uiCultures.Contains("zh-TW"))
+            {
+                supportedUICultures.Add(new CultureInfo("zh-TW", _useUserOverride));
+            }
         }
 
         SupportedUICultures = supportedUICultures;
