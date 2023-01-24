@@ -2644,6 +2644,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "stoyandimov",
+      "name": "Stoyan Dimov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1770309?v=4",
+      "profile": "https://github.com/stoyandimov",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true

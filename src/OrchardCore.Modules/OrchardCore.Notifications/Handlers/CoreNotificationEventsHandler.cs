@@ -17,12 +17,12 @@ public class CoreNotificationEventsHandler : NotificationEventsHandler
             context.Notification.UserId = user.UserId;
         }
 
-        if (context.NotificationMessage is INotificationBodyMessage nm)
+        if (context.NotificationMessage is INotificationBodyMessage message)
         {
             var bodyPart = context.Notification.As<NotificationBodyInfo>();
 
-            bodyPart.IsHtmlBody = nm.IsHtmlBody;
-            bodyPart.Body = nm.Body;
+            bodyPart.IsHtmlBody = message.IsHtmlBody;
+            bodyPart.Body = message.Body;
 
             context.Notification.Put(bodyPart);
         }

@@ -67,6 +67,7 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity
         {
             Summary = await _expressionEvaluator.EvaluateAsync(Summary, workflowContext, _htmlEncoder),
             Body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, _htmlEncoder),
+            IsHtmlBody = base.IsHtmlBody,
         };
 
         return message;
