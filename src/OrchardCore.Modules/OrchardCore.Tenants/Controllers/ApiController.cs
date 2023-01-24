@@ -112,7 +112,7 @@ namespace OrchardCore.Tenants.Controllers
             shellSettings["DatabaseProvider"] = model.DatabaseProvider;
             shellSettings["Secret"] = Guid.NewGuid().ToString();
             shellSettings["RecipeName"] = model.RecipeName;
-            shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+            shellSettings["FeatureProfile"] = String.Join(TenantsConstants.FeatureProfileSeperator, model.FeatureProfiles ?? Array.Empty<string>());
 
             model.IsNewTenant = true;
 

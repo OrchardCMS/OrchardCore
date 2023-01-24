@@ -35,7 +35,7 @@ namespace OrchardCore.Environment.Shell
         {
             var profileNames = _shellSettings["FeatureProfile"];
 
-            if (String.IsNullOrEmpty(profileNames))
+            if (String.IsNullOrWhiteSpace(profileNames))
             {
                 return true;
             }
@@ -50,7 +50,7 @@ namespace OrchardCore.Environment.Shell
 
                     var feauterProfiles = await featureProfilesService.GetFeatureProfilesAsync();
 
-                    foreach (var profileName in profileNames.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                    foreach (var profileName in profileNames.Split(", ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                     {
                         if (feauterProfiles.TryGetValue(profileName, out var featureProfile))
                         {

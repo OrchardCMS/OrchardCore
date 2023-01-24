@@ -457,10 +457,10 @@ namespace OrchardCore.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
-                shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
-                shellSettings.RequestUrlHost = model.RequestUrlHost;
                 shellSettings["Description"] = model.Description;
                 shellSettings["Category"] = model.Category;
+                shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
+                shellSettings.RequestUrlHost = model.RequestUrlHost;
                 shellSettings["FeatureProfile"] = String.Join(TenantsConstants.FeatureProfileSeperator, model.FeatureProfiles ?? Array.Empty<string>());
 
                 // The user can change the 'preset' database information only if the
@@ -642,7 +642,7 @@ namespace OrchardCore.Tenants.Controllers
         private async Task<List<SelectListItem>> GetFeatureProfilesAsync(IEnumerable<string> currentFeatureProfiles)
         {
             var featureProfiles = (await _featureProfilesService.GetFeatureProfilesAsync())
-                .Select(x => new SelectListItem(x.Value.Name ?? x.Key, x.Key, currentFeatureProfiles != null && currentFeatureProfiles.Contains(x.Key, StringComparer.OrdinalIgnoreCase)))
+                .Select(x => new SelectListItem(x.Value.Name ?? x.Key, x.Key, currentFeatureProfiles != null && currentFeatureProfiles.Contains(x.Key)))
                 .ToList();
 
             return featureProfiles;

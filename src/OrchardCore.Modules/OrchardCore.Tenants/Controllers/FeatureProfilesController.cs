@@ -17,7 +17,6 @@ using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
@@ -82,12 +81,18 @@ namespace OrchardCore.Tenants.Controllers
 
             var model = new FeatureProfilesIndexViewModel
             {
-                FeatureProfiles = featureProfiles.Select(x => new FeatureProfileEntry { Name = x.Value.Name ?? x.Key, FeatureProfile = x.Value, Id = x.Key }).ToList(),
+                FeatureProfiles = featureProfiles.Select(x => new FeatureProfileEntry
+                {
+                    Name = x.Value.Name ?? x.Key,
+                    FeatureProfile = x.Value,
+                    Id = x.Key
+                }).ToList(),
                 Options = options,
                 Pager = pagerShape
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
+            model.Options.ContentsBulkAction = new List<SelectListItem>()
+            {
                 new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
@@ -129,11 +134,6 @@ namespace OrchardCore.Tenants.Controllers
 
         public async Task<IActionResult> Edit(string id)
         {
-            if (String.IsNullOrEmpty(id))
-            {
-                return NotFound();
-            }
-
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
             {
                 return Forbid();
@@ -141,7 +141,7 @@ namespace OrchardCore.Tenants.Controllers
 
             var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
 
-            if (!featureProfilesDocument.FeatureProfiles.TryGetValue(id, out FeatureProfile featureProfile))
+            if (!featureProfilesDocument.FeatureProfiles.TryGetValue(id, out var featureProfile))
             {
                 return NotFound();
             }
@@ -191,7 +191,7 @@ namespace OrchardCore.Tenants.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
         {
@@ -206,8 +206,6 @@ namespace OrchardCore.Tenants.Controllers
                 var checkItems = featureProfilesDocument.FeatureProfiles.Where(x => itemIds.Contains(x.Key));
                 switch (options.BulkAction)
                 {
-                    case ContentsBulkAction.None:
-                        break;
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkItems)
                         {
@@ -216,7 +214,7 @@ namespace OrchardCore.Tenants.Controllers
                         await _notifier.SuccessAsync(H["Feature profiles successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        break;
                 }
             }
 
@@ -270,8 +268,8 @@ namespace OrchardCore.Tenants.Controllers
 
         private static bool FeatureExists(FeatureProfile model, FeatureProfilesDocument featureProfilesDocument, bool isNew)
         {
-            // For backward compatibility, we use the key value as the name when the new name property isn't set
-            var profiles = featureProfilesDocument.FeatureProfiles.Where(x => (x.Value.Name ?? x.Key).Equals(model.Name, StringComparison.OrdinalIgnoreCase));
+            // For backward compatibility, we use the key value as the name when the new name property is not set.
+            var profiles = featureProfilesDocument.FeatureProfiles.Where(x => (x.Value.Name ?? x.Key) == model.Name);
 
             return profiles.Any(x => isNew || x.Key != model.Id);
         }
