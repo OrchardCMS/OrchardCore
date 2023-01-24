@@ -11,8 +11,8 @@ public class DefaultCultureAliasProviderTests
     public void ShouldReturnCultureFromAlias(string cultureAlias, string expectedCulture, bool expectedAliasFound)
     {
         // Arrange
-        var requestLocalizationOptions = Options.Create(new OrchardCoreRequestLocalizationOptions());
-        var cultureAliasProvider = new DefaultCultureAliasProvider(requestLocalizationOptions);
+        var cultureOptions = Options.Create(new CultureOptions());
+        var cultureAliasProvider = new DefaultCultureAliasProvider(cultureOptions);
         var cultureAliasInfo = CultureInfo.GetCultureInfo(cultureAlias);
 
         // Act
@@ -29,8 +29,11 @@ public class DefaultCultureAliasProviderTests
     public void ShouldRespect_OrchardCoreRequestLocalizationOptions_IgnoreSystemCulture(string cultureAlias, string expectedCulture, bool ignoreSystemCulture)
     {
         // Arrange
-        var requestLocalizationOptions = Options.Create(new OrchardCoreRequestLocalizationOptions(ignoreSystemCulture));
-        var cultureAliasProvider = new DefaultCultureAliasProvider(requestLocalizationOptions);
+        var cultureOptions = Options.Create(new CultureOptions
+        {
+            IgnoreSystemSettings = ignoreSystemCulture
+        });
+        var cultureAliasProvider = new DefaultCultureAliasProvider(cultureOptions);
         var cultureAliasInfo = CultureInfo.GetCultureInfo(cultureAlias);
 
         // Act

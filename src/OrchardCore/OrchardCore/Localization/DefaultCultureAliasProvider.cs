@@ -8,14 +8,12 @@ public class DefaultCultureAliasProvider : ICultureAliasProvider
 {
     private readonly Dictionary<string, CultureInfo> _culturesAliases = new();
 
-    private readonly OrchardCoreRequestLocalizationOptions _requestLocalizationOptions;
-
-    public DefaultCultureAliasProvider(IOptions<OrchardCoreRequestLocalizationOptions> requestLocalizationOptions)
+    public DefaultCultureAliasProvider(IOptions<CultureOptions> cultureOptions)
     {
-        _requestLocalizationOptions = requestLocalizationOptions.Value;
+        var useUserOverride = !cultureOptions.Value.IgnoreSystemSettings;
 
-        _culturesAliases.Add("zh-CN", new CultureInfo("zh-Hans-CN", _requestLocalizationOptions.UseUserOverride));
-        _culturesAliases.Add("zh-TW", new CultureInfo("zh-Hant-TW", _requestLocalizationOptions.UseUserOverride));
+        _culturesAliases.Add("zh-CN", new CultureInfo("zh-Hans-CN", useUserOverride));
+        _culturesAliases.Add("zh-TW", new CultureInfo("zh-Hant-TW", useUserOverride));
     }
 
     public bool TryGetCulture(CultureInfo cultureAlias, out CultureInfo culture)
