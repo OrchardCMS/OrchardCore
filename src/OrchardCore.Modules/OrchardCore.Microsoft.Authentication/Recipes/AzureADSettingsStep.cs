@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Recipes.Models;
@@ -13,10 +14,12 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
     public class AzureADSettingsStep : IRecipeStepHandler
     {
         private readonly IAzureADService _azureADService;
+        private readonly AzureADSettings _azureADSettings;
 
-        public AzureADSettingsStep(IAzureADService azureADService)
+        public AzureADSettingsStep(IAzureADService azureADService, IOptions<AzureADSettings> azureADSettings)
         {
             _azureADService = azureADService;
+            _azureADSettings = azureADSettings.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -27,14 +30,13 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
             }
 
             var model = context.Step.ToObject<AzureADSettingsStepModel>();
-            var settings = await _azureADService.LoadSettingsAsync();
 
-            settings.AppId = model.AppId;
-            settings.TenantId = model.TenantId;
-            settings.DisplayName = model.DisplayName;
-            settings.CallbackPath = model.CallbackPath;
+            _azureADSettings.AppId = model.AppId;
+            _azureADSettings.TenantId = model.TenantId;
+            _azureADSettings.DisplayName = model.DisplayName;
+            _azureADSettings.CallbackPath = model.CallbackPath;
 
-            await _azureADService.UpdateSettingsAsync(settings);
+            await _azureADService.UpdateSettingsAsync(_azureADSettings);
         }
     }
 

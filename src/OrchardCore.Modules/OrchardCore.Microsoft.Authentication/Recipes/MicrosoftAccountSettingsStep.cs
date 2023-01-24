@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Recipes.Models;
@@ -13,10 +14,14 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
     public class MicrosoftAccountSettingsStep : IRecipeStepHandler
     {
         private readonly IMicrosoftAccountService _microsoftAccountService;
+        private readonly MicrosoftAccountSettings _microsoftAccountSettings;
 
-        public MicrosoftAccountSettingsStep(IMicrosoftAccountService microsoftAccountService)
+        public MicrosoftAccountSettingsStep(
+            IMicrosoftAccountService microsoftAccountService,
+            IOptions<MicrosoftAccountSettings> microsoftAccountSettings)
         {
             _microsoftAccountService = microsoftAccountService;
+            _microsoftAccountSettings = microsoftAccountSettings.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -27,13 +32,12 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
             }
 
             var model = context.Step.ToObject<MicrosoftAccountSettingsStepModel>();
-            var settings = await _microsoftAccountService.LoadSettingsAsync();
 
-            settings.AppId = model.AppId;
-            settings.AppSecret = model.AppSecret;
-            settings.CallbackPath = model.CallbackPath;
+            _microsoftAccountSettings.AppId = model.AppId;
+            _microsoftAccountSettings.AppSecret = model.AppSecret;
+            _microsoftAccountSettings.CallbackPath = model.CallbackPath;
 
-            await _microsoftAccountService.UpdateSettingsAsync(settings);
+            await _microsoftAccountService.UpdateSettingsAsync(_microsoftAccountSettings);
         }
     }
 

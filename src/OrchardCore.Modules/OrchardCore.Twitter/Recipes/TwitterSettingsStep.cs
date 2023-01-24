@@ -13,10 +13,12 @@ namespace OrchardCore.Twitter.Recipes
     public class TwitterSettingsStep : IRecipeStepHandler
     {
         private readonly ITwitterSettingsService _twitterService;
+        private readonly TwitterSettings _twitterSettings;
 
-        public TwitterSettingsStep(ITwitterSettingsService twitterService)
+        public TwitterSettingsStep(ITwitterSettingsService twitterService, TwitterSettings twitterSettings)
         {
             _twitterService = twitterService;
+            _twitterSettings = twitterSettings;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -27,14 +29,13 @@ namespace OrchardCore.Twitter.Recipes
             }
 
             var model = context.Step.ToObject<TwitterSettingsStepModel>();
-            var settings = await _twitterService.LoadSettingsAsync();
 
-            settings.ConsumerKey = model.ConsumerKey;
-            settings.ConsumerSecret = model.ConsumerSecret;
-            settings.AccessToken = model.AccessToken;
-            settings.AccessTokenSecret = model.AccessTokenSecret;
+            _twitterSettings.ConsumerKey = model.ConsumerKey;
+            _twitterSettings.ConsumerSecret = model.ConsumerSecret;
+            _twitterSettings.AccessToken = model.AccessToken;
+            _twitterSettings.AccessTokenSecret = model.AccessTokenSecret;
 
-            await _twitterService.UpdateSettingsAsync(settings);
+            await _twitterService.UpdateSettingsAsync(_twitterSettings);
         }
     }
 

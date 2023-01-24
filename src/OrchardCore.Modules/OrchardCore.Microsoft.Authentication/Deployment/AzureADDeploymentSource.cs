@@ -1,17 +1,18 @@
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
-using OrchardCore.Microsoft.Authentication.Services;
+using OrchardCore.Microsoft.Authentication.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Deployment
 {
     public class AzureADDeploymentSource : IDeploymentSource
     {
-        private readonly IAzureADService _azureADService;
+        private readonly AzureADSettings _azureADSettings;
 
-        public AzureADDeploymentSource(IAzureADService azureADService)
+        public AzureADDeploymentSource(IOptions<AzureADSettings> azureADSettings)
         {
-            _azureADService = azureADService;
+            _azureADSettings = azureADSettings.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -20,14 +21,11 @@ namespace OrchardCore.Microsoft.Authentication.Deployment
 
             if (azureADStep == null)
             {
-                return;
+                await Task.CompletedTask;
             }
-
-            var settings = await _azureADService.GetSettingsAsync();
-
             result.Steps.Add(new JObject(
                 new JProperty("name", "AzureAD"),
-                new JProperty("AzureAD", JObject.FromObject(settings))
+                new JProperty("AzureAD", JObject.FromObject(_azureADSettings))
             ));
         }
     }
