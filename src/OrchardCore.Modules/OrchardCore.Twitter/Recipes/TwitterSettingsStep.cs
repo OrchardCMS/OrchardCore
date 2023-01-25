@@ -27,7 +27,6 @@ namespace OrchardCore.Twitter.Recipes
             }
 
             var model = context.Step.ToObject<TwitterSettingsStepModel>();
-
             var settings = await _twitterService.LoadSettingsAsync();
 
             settings.ConsumerKey = model.ConsumerKey;
