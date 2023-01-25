@@ -48,11 +48,11 @@ namespace OrchardCore.Environment.Shell
                 {
                     var featureProfilesService = scope.ServiceProvider.GetService<IFeatureProfilesService>();
 
-                    var feauterProfiles = await featureProfilesService.GetFeatureProfilesAsync();
+                    var featureProfiles = await featureProfilesService.GetFeatureProfilesAsync();
 
                     foreach (var profileName in profileNames.Split(", ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                     {
-                        if (feauterProfiles.TryGetValue(profileName, out var featureProfile))
+                        if (featureProfiles.TryGetValue(profileName, out var featureProfile))
                         {
                             _featureProfileLookup = (false, featureProfile);
 
