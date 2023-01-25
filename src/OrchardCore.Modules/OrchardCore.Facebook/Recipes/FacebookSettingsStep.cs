@@ -1,8 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.Facebook.Services;
-using OrchardCore.Facebook.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -14,12 +12,10 @@ namespace OrchardCore.Facebook.Recipes
     public class FacebookSettingsStep : IRecipeStepHandler
     {
         private readonly IFacebookService _facebookService;
-        private readonly FacebookSettings _facebookSettings;
 
-        public FacebookSettingsStep(IFacebookService facebookService, IOptions<FacebookSettings> facebookSettings)
+        public FacebookSettingsStep(IFacebookService facebookService)
         {
             _facebookService = facebookService;
-            _facebookSettings = facebookSettings.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -30,15 +26,16 @@ namespace OrchardCore.Facebook.Recipes
             }
 
             var model = context.Step.ToObject<FacebookCoreSettingsStepModel>();
+            var settings = await _facebookService.GetSettingsAsync();
 
-            _facebookSettings.AppId = model.AppId;
-            _facebookSettings.AppSecret = model.AppSecret;
-            _facebookSettings.SdkJs = model.SdkJs ?? "sdk.js";
-            _facebookSettings.FBInit = model.FBInit;
-            _facebookSettings.FBInitParams = model.FBInitParams;
-            _facebookSettings.Version = model.Version ?? "3.2";
+            settings.AppId = model.AppId;
+            settings.AppSecret = model.AppSecret;
+            settings.SdkJs = model.SdkJs ?? "sdk.js";
+            settings.FBInit = model.FBInit;
+            settings.FBInitParams = model.FBInitParams;
+            settings.Version = model.Version ?? "3.2";
 
-            await _facebookService.UpdateSettingsAsync(_facebookSettings);
+            await _facebookService.UpdateSettingsAsync(settings);
         }
     }
 

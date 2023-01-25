@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.GitHub.Services;
 using OrchardCore.GitHub.Settings;
 using OrchardCore.Recipes.Models;
@@ -14,14 +13,10 @@ namespace OrchardCore.GitHub.Recipes
     public class GitHubAuthenticationSettingsStep : IRecipeStepHandler
     {
         private readonly IGitHubAuthenticationService _githubAuthenticationService;
-        private readonly GitHubAuthenticationSettings _gitHubAuthenticationSettings;
 
-        public GitHubAuthenticationSettingsStep(
-            IGitHubAuthenticationService githubLoginService,
-            IOptions<GitHubAuthenticationSettings> gitHubAuthenticationSettings)
+        public GitHubAuthenticationSettingsStep(IGitHubAuthenticationService githubLoginService)
         {
             _githubAuthenticationService = githubLoginService;
-            _gitHubAuthenticationSettings = gitHubAuthenticationSettings.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -31,12 +26,13 @@ namespace OrchardCore.GitHub.Recipes
                 return;
             }
             var model = context.Step.ToObject<GitHubLoginSettingsStepModel>();
+            var settings = await _githubAuthenticationService.LoadSettingsAsync();
 
-            _gitHubAuthenticationSettings.ClientID = model.ConsumerKey;
-            _gitHubAuthenticationSettings.ClientSecret = model.ConsumerSecret;
-            _gitHubAuthenticationSettings.CallbackPath = model.CallbackPath;
+            settings.ClientID = model.ConsumerKey;
+            settings.ClientSecret = model.ConsumerSecret;
+            settings.CallbackPath = model.CallbackPath;
 
-            await _githubAuthenticationService.UpdateSettingsAsync(_gitHubAuthenticationSettings);
+            await _githubAuthenticationService.UpdateSettingsAsync(settings);
         }
     }
 
