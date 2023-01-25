@@ -136,9 +136,9 @@ It is necessary to reference the `OrchardCore.Localization.Abstractions` package
 
 ```
 msgctxt "TheAdmin.Views.Layout"
-msgid "1 book"
+msgid "{0} book"
 msgid_plural "{0} books"
-msgstr[0] "[1 livre]"
+msgstr[0] "[{0} livre]"
 msgstr[1] "[{0} livres]"
 ```
 
@@ -148,7 +148,7 @@ msgstr[1] "[{0} livres]"
 - Inject an instance of `IStringLocalizer` or `IViewLocalizer` (represented as the `T` variable in the following example).
 
 ```csharp
-T.Plural(count, "1 book", "{0} books")
+T.Plural(count, "{0} book", "{0} books")
 ```
 
 ### Extract translations to PO files
