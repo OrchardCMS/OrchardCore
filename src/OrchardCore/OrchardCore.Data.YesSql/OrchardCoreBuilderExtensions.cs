@@ -40,7 +40,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 services.AddScoped<IDbConnectionValidator, DbConnectionValidator>();
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();
-                services.AddTransient<IShellContextEvents, InitializeYesSqlServices>();
+                services.AddTransient<IShellContextEvents, DataStoreInitializer>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
                 services.AddTransient<ITableNameConventionFactory, TableNameConventionFactory>();

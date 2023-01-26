@@ -84,7 +84,6 @@ namespace OrchardCore.Environment.Shell.Builders
             };
 
             var shellEvents = provider.GetServices<IShellContextEvents>();
-
             foreach (var shellEvent in shellEvents)
             {
                 await shellEvent.CreatedAsync(context);

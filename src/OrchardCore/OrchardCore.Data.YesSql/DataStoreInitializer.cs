@@ -7,7 +7,7 @@ using YesSql;
 
 namespace OrchardCore.Data;
 
-public class InitializeYesSqlServices : IShellContextEvents
+public class DataStoreInitializer : IShellContextEvents
 {
     public async Task CreatedAsync(ShellContext context)
     {
@@ -17,10 +17,9 @@ public class InitializeYesSqlServices : IShellContextEvents
             return;
         }
 
-        var storeCollectionOptions = context.ServiceProvider.GetService<IOptions<StoreCollectionOptions>>().Value;
-
         await store.InitializeAsync();
 
+        var storeCollectionOptions = context.ServiceProvider.GetService<IOptions<StoreCollectionOptions>>().Value;
         foreach (var collection in storeCollectionOptions.Collections)
         {
             await store.InitializeCollectionAsync(collection);
