@@ -11,10 +11,10 @@ public class DefaultCultureAliasProvider : ICultureAliasProvider
     public DefaultCultureAliasProvider(IOptions<CultureOptions> cultureOptions)
     {
         var useUserOverride = !cultureOptions.Value.IgnoreSystemSettings;
-        _culturesAliases.Add("zh-CN", new CultureInfo("zh-Hans-CN", useUserOverride));
-        _culturesAliases.Add("zh-TW", new CultureInfo("zh-Hant-TW", useUserOverride));
+        _culturesAliases.Add("zh-Hans-CN", new CultureInfo("zh-CN", useUserOverride));
+        _culturesAliases.Add("zh-Hant-TW", new CultureInfo("zh-TW", useUserOverride));
     }
 
-    public bool TryGetCulture(string cultureAlias, out CultureInfo culture)
-        => _culturesAliases.TryGetValue(cultureAlias, out culture);
+    public bool TryGetCulture(string culture, out CultureInfo cultureAlias)
+        => _culturesAliases.TryGetValue(culture, out cultureAlias);
 }

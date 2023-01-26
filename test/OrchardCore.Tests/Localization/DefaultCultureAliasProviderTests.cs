@@ -5,27 +5,27 @@ namespace OrchardCore.Tests.Localization;
 public class DefaultCultureAliasProviderTests
 {
     [Theory]
-    [InlineData("zh-CN", "zh-Hans-CN", true)]
-    [InlineData("zh-TW", "zh-Hant-TW", true)]
+    [InlineData("zh-Hans-CN", "zh-CN", true)]
+    [InlineData("zh-Hant-TW", "zh-TW", true)]
     [InlineData("zh-SG", null, false)]
-    public void ShouldReturnCultureFromAlias(string cultureAlias, string expectedCulture, bool expectedAliasFound)
+    public void ShouldReturnAliasFromCulture(string culture, string expectedCulture, bool expectedAliasFound)
     {
         // Arrange
         var cultureOptions = Options.Create(new CultureOptions());
         var cultureAliasProvider = new DefaultCultureAliasProvider(cultureOptions);
 
         // Act
-        var isAliasFound = cultureAliasProvider.TryGetCulture(cultureAlias, out var culture);
+        var isAliasFound = cultureAliasProvider.TryGetCulture(culture, out var cultureAlias);
 
         // Assert
         Assert.Equal(expectedAliasFound, isAliasFound);
-        Assert.Equal(expectedCulture, culture?.Name);
+        Assert.Equal(expectedCulture, cultureAlias?.Name);
     }
 
     [Theory]
-    [InlineData("zh-CN", "zh-Hans-CN", true)]
-    [InlineData("zh-TW", "zh-Hant-TW", false)]
-    public void ShouldRespect_OrchardCoreRequestLocalizationOptions_IgnoreSystemCulture(string cultureAlias, string expectedCulture, bool ignoreSystemCulture)
+    [InlineData("zh-Hans-CN", "zh-CN", true)]
+    [InlineData("zh-Hant-TW", "zh-TW", false)]
+    public void ShouldRespect_OrchardCoreRequestLocalizationOptions_IgnoreSystemCulture(string culture, string expectedCulture, bool ignoreSystemCulture)
     {
         // Arrange
         var cultureOptions = Options.Create(new CultureOptions
@@ -35,11 +35,11 @@ public class DefaultCultureAliasProviderTests
         var cultureAliasProvider = new DefaultCultureAliasProvider(cultureOptions);
 
         // Act
-        var isAliasFound = cultureAliasProvider.TryGetCulture(cultureAlias, out var culture);
+        var isAliasFound = cultureAliasProvider.TryGetCulture(culture, out var cultureAlias);
 
         // Assert
         Assert.True(isAliasFound);
-        Assert.Equal(expectedCulture, culture.Name);
-        Assert.Equal(ignoreSystemCulture, !culture.UseUserOverride);
+        Assert.Equal(expectedCulture, cultureAlias.Name);
+        Assert.Equal(ignoreSystemCulture, !cultureAlias.UseUserOverride);
     }
 }
