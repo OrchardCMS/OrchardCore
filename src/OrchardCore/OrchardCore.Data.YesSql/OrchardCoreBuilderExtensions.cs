@@ -39,6 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 services.AddScoped<IDbConnectionValidator, DbConnectionValidator>();
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();
+                services.AddTransient<IModularTenantEvents, InitializeYesSql>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
                 services.AddTransient<ITableNameConventionFactory, TableNameConventionFactory>();
@@ -105,12 +106,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         storeConfiguration = storeConfiguration.SetTablePrefix(tablePrefix);
                     }
 
-                    var store = StoreFactory.CreateAndInitializeAsync(storeConfiguration).GetAwaiter().GetResult();
-                    var options = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
-                    foreach (var collection in options.Collections)
-                    {
-                        store.InitializeCollectionAsync(collection).GetAwaiter().GetResult();
-                    }
+                    var store = StoreFactory.Create(storeConfiguration);
 
                     var indexes = sp.GetServices<IIndexProvider>();
 
