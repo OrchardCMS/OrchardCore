@@ -53,7 +53,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     continue;
                 }
 
-                if (!(part.PartDefinition.Fields.Any(field=> contentFieldProviders.Any(fieldProvider=>fieldProvider.GetField(field)!=null))))
+                if (!(part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(fieldProvider => fieldProvider.GetField(field)!=null))))
                 {
                     continue;
                 }
