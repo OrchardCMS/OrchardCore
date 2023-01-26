@@ -12,9 +12,9 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
     /// </summary>
     public class MicrosoftAccountSettingsStep : IRecipeStepHandler
     {
-        private readonly IMicrosoftAccountService _microsoftAccountService;
+        private readonly MicrosoftAccountService _microsoftAccountService;
 
-        public MicrosoftAccountSettingsStep(IMicrosoftAccountService microsoftAccountService)
+        public MicrosoftAccountSettingsStep(MicrosoftAccountService microsoftAccountService)
         {
             _microsoftAccountService = microsoftAccountService;
         }
@@ -27,7 +27,7 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
             }
 
             var model = context.Step.ToObject<MicrosoftAccountSettingsStepModel>();
-            var settings = await _microsoftAccountService.LoadSettingsAsync();
+            var settings = await _microsoftAccountService.GetSettingsAsync();
 
             settings.AppId = model.AppId;
             settings.AppSecret = model.AppSecret;

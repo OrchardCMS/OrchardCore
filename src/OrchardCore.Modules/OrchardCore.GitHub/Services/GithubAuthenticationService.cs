@@ -1,58 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Entities;
 using OrchardCore.GitHub.Settings;
+using OrchardCore.Security.Services;
 using OrchardCore.Settings;
 
 namespace OrchardCore.GitHub.Services
 {
-    public class GitHubAuthenticationService : IGitHubAuthenticationService
+    public class GitHubAuthenticationService : SocialAuthenticationService<GitHubAuthenticationSettings>
     {
-        private readonly ISiteService _siteService;
-        private readonly IStringLocalizer S;
-
         public GitHubAuthenticationService(
             ISiteService siteService,
-            IStringLocalizer<GitHubAuthenticationService> stringLocalizer)
+            IStringLocalizer<SocialAuthenticationService<GitHubAuthenticationSettings>> stringLocalizer) : base(siteService, stringLocalizer)
         {
-            _siteService = siteService;
-            S = stringLocalizer;
         }
 
-        public async Task<GitHubAuthenticationSettings> GetSettingsAsync()
-        {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<GitHubAuthenticationSettings>();
-        }
-
-        public async Task<GitHubAuthenticationSettings> LoadSettingsAsync()
-        {
-            var container = await _siteService.LoadSiteSettingsAsync();
-            return container.As<GitHubAuthenticationSettings>();
-        }
-
-        public async Task UpdateSettingsAsync(GitHubAuthenticationSettings settings)
-        {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<GitHubAuthenticationSettings>(nameof(GitHubAuthenticationSettings), aspect =>
-            {
-                aspect.ClientID = settings.ClientID;
-                aspect.ClientSecret = settings.ClientSecret;
-                aspect.CallbackPath = settings.CallbackPath;
-            });
-
-            await _siteService.UpdateSiteSettingsAsync(container);
-        }
-
-        public IEnumerable<ValidationResult> ValidateSettings(GitHubAuthenticationSettings settings)
+        public override IEnumerable<ValidationResult> ValidateSettings(GitHubAuthenticationSettings settings)
         {
             if (settings == null)
             {

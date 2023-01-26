@@ -12,9 +12,9 @@ namespace OrchardCore.GitHub.Recipes
     /// </summary>
     public class GitHubAuthenticationSettingsStep : IRecipeStepHandler
     {
-        private readonly IGitHubAuthenticationService _githubAuthenticationService;
+        private readonly GitHubAuthenticationService _githubAuthenticationService;
 
-        public GitHubAuthenticationSettingsStep(IGitHubAuthenticationService githubLoginService)
+        public GitHubAuthenticationSettingsStep(GitHubAuthenticationService githubLoginService)
         {
             _githubAuthenticationService = githubLoginService;
         }
@@ -26,7 +26,7 @@ namespace OrchardCore.GitHub.Recipes
                 return;
             }
             var model = context.Step.ToObject<GitHubLoginSettingsStepModel>();
-            var settings = await _githubAuthenticationService.LoadSettingsAsync();
+            var settings = await _githubAuthenticationService.GetSettingsAsync();
 
             settings.ClientID = model.ConsumerKey;
             settings.ClientSecret = model.ConsumerSecret;

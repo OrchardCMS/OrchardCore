@@ -12,9 +12,9 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
     /// </summary>
     public class AzureADSettingsStep : IRecipeStepHandler
     {
-        private readonly IAzureADService _azureADService;
+        private readonly AzureADService _azureADService;
 
-        public AzureADSettingsStep(IAzureADService azureADService)
+        public AzureADSettingsStep(AzureADService azureADService)
         {
             _azureADService = azureADService;
         }
@@ -27,7 +27,7 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
             }
 
             var model = context.Step.ToObject<AzureADSettingsStepModel>();
-            var settings = await _azureADService.LoadSettingsAsync();
+            var settings = await _azureADService.GetSettingsAsync();
 
             settings.AppId = model.AppId;
             settings.TenantId = model.TenantId;

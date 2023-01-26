@@ -11,9 +11,9 @@ namespace OrchardCore.Facebook.Recipes
     /// </summary>
     public class FacebookSettingsStep : IRecipeStepHandler
     {
-        private readonly IFacebookService _facebookService;
+        private readonly FacebookService _facebookService;
 
-        public FacebookSettingsStep(IFacebookService facebookService)
+        public FacebookSettingsStep(FacebookService facebookService)
         {
             _facebookService = facebookService;
         }

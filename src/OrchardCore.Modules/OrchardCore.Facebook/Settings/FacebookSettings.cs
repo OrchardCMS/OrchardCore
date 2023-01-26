@@ -1,6 +1,8 @@
+using OrchardCore.Security.Services;
+
 namespace OrchardCore.Facebook.Settings
 {
-    public class FacebookSettings
+    public class FacebookSettings : SocialAuthenticationSettings
     {
         public string AppId { get; set; }
         public string AppSecret { get; set; }

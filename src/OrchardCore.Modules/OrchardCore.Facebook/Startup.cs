@@ -31,7 +31,7 @@ namespace OrchardCore.Facebook
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddSingleton<IFacebookService, FacebookService>();
+            services.AddSingleton<FacebookService>();
             services.AddScoped<IDisplayDriver<ISite>, FacebookSettingsDisplayDriver>();
             services.AddRecipeExecutionStep<FacebookSettingsStep>();
 

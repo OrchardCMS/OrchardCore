@@ -11,12 +11,12 @@ namespace OrchardCore.Facebook.Services;
 
 public class FacebookSettingsConfiguration : IConfigureOptions<FacebookSettings>
 {
-    private readonly IFacebookService _facebookService;
+    private readonly FacebookService _facebookService;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
     public FacebookSettingsConfiguration(
-        IFacebookService facebookService,
+        FacebookService facebookService,
         ShellSettings shellSettings,
         ILogger<FacebookSettingsConfiguration> logger)
     {

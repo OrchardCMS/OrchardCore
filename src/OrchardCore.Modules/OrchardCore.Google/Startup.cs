@@ -31,7 +31,7 @@ namespace OrchardCore.Google
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, Permissions.GoogleAuthentication>();
-            services.AddSingleton<GoogleAuthenticationService, GoogleAuthenticationService>();
+            services.AddSingleton<GoogleAuthenticationService>();
             services.AddScoped<IDisplayDriver<ISite>, GoogleAuthenticationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, GoogleAuthenticationAdminMenu>();
             // Register the options initializers required by the Google Handler.

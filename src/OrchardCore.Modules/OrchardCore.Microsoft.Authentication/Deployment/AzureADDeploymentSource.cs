@@ -7,9 +7,9 @@ namespace OrchardCore.Microsoft.Authentication.Deployment
 {
     public class AzureADDeploymentSource : IDeploymentSource
     {
-        private readonly IAzureADService _azureADService;
+        private readonly AzureADService _azureADService;
 
-        public AzureADDeploymentSource(IAzureADService azureADService)
+        public AzureADDeploymentSource(AzureADService azureADService)
         {
             _azureADService = azureADService;
         }
