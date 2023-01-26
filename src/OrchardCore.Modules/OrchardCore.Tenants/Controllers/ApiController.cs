@@ -144,6 +144,51 @@ namespace OrchardCore.Tenants.Controllers
         }
 
         [HttpPost]
+        [Route("edit")]
+        public async Task<IActionResult> Edit(TenantViewModel model)
+        {
+            if (!_currentShellSettings.IsDefaultShell())
+            {
+                return Forbid();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return this.ChallengeOrForbid("Api");
+            }
+
+            if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                shellSettings["Description"] = model.Description;
+                shellSettings["Category"] = model.Category;
+                shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
+                shellSettings.RequestUrlHost = model.RequestUrlHost;
+                shellSettings["FeatureProfile"] = model.FeatureProfile;
+
+                if (shellSettings.State == TenantState.Uninitialized)
+                {
+                    shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+                    shellSettings["TablePrefix"] = model.TablePrefix;
+                    shellSettings["Schema"] = model.Schema;
+                    shellSettings["ConnectionString"] = model.ConnectionString;
+                    shellSettings["RecipeName"] = model.RecipeName;
+                    shellSettings["Secret"] = Guid.NewGuid().ToString();
+                }
+
+                await _shellHost.UpdateShellSettingsAsync(shellSettings);
+
+                return Ok();
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [HttpPost]
         [Route("disable/{tenantName}")]
         public async Task<IActionResult> Disable(string tenantName)
         {
