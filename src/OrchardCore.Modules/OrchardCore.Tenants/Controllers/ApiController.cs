@@ -24,6 +24,7 @@ using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
+using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
@@ -86,7 +87,7 @@ namespace OrchardCore.Tenants.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> Create(CreateApiViewModel model)
+        public async Task<IActionResult> Create(TenantApiModel model)
         {
             if (!_currentShellSettings.IsDefaultShell())
             {
@@ -145,7 +146,7 @@ namespace OrchardCore.Tenants.Controllers
 
         [HttpPost]
         [Route("edit")]
-        public async Task<IActionResult> Edit(TenantViewModel model)
+        public async Task<IActionResult> Edit(TenantApiModel model)
         {
             if (!_currentShellSettings.IsDefaultShell())
             {
