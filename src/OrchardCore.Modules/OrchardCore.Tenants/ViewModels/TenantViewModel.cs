@@ -11,6 +11,8 @@ namespace OrchardCore.Tenants.ViewModels
         [Required]
         public string Name { get; set; }
 
+        public string Category { get; set; }
+
         public string DatabaseProvider { get; set; }
 
         public string RequestUrlPrefix { get; set; }
