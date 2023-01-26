@@ -40,12 +40,19 @@ public class EmailNotificationProvider : INotificationMethodProvider
             IsBodyText = true,
         };
 
-        if (message is INotificationBodyMessage emailNotificationMessage && emailNotificationMessage.IsHtmlBody)
+        if (message is INotificationBodyMessage emailNotificationMessage)
         {
-            emailMessage.Body = emailNotificationMessage.Body;
-            emailMessage.BodyText = null;
-            emailMessage.IsBodyHtml = true;
-            emailMessage.IsBodyText = false;
+            if (emailNotificationMessage.IsHtmlBody)
+            {
+                emailMessage.Body = emailNotificationMessage.Body;
+                emailMessage.BodyText = null;
+                emailMessage.IsBodyHtml = true;
+                emailMessage.IsBodyText = false;
+            }
+            else
+            {
+                emailMessage.BodyText = emailNotificationMessage.Body;
+            }
         }
 
         var result = await _smtpService.SendAsync(emailMessage);

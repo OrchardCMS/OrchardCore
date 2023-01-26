@@ -12,6 +12,7 @@ using OrchardCore.Microsoft.Authentication.Deployment;
 using OrchardCore.Microsoft.Authentication.Drivers;
 using OrchardCore.Microsoft.Authentication.Recipes;
 using OrchardCore.Microsoft.Authentication.Services;
+using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -31,6 +32,9 @@ namespace OrchardCore.Microsoft.Authentication
             services.AddScoped<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuMicrosoftAccount>();
             services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>();
+
+            services.AddTransient<IConfigureOptions<MicrosoftAccountSettings>, MicrosoftAccountSettingsConfiguration>();
+
             // Register the options initializers required by the Microsoft Account Handler.
             services.TryAddEnumerable(new[]
             {
@@ -55,6 +59,9 @@ namespace OrchardCore.Microsoft.Authentication
 
             services.AddScoped<IDisplayDriver<ISite>, AzureADSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuAAD>();
+
+            services.AddTransient<IConfigureOptions<AzureADSettings>, AzureADSettingsConfiguration>();
+
             // Register the options initializers required by the Policy Scheme, Cookie and OpenId Connect Handler.
             services.TryAddEnumerable(new[]
             {

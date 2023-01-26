@@ -98,45 +98,45 @@ namespace OrchardCore.Tenants.Controllers
                 return this.ChallengeOrForbid("Api");
             }
 
-            // Creates a default shell settings based on the configuration.
-            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
-
-            shellSettings.Name = model.Name;
-            shellSettings.RequestUrlHost = model.RequestUrlHost;
-            shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
-            shellSettings.State = TenantState.Uninitialized;
-
-            shellSettings["Category"] = model.Category;
-            shellSettings["Description"] = model.Description;
-            shellSettings["ConnectionString"] = model.ConnectionString;
-            shellSettings["TablePrefix"] = model.TablePrefix;
-            shellSettings["Schema"] = model.Schema;
-            shellSettings["DatabaseProvider"] = model.DatabaseProvider;
-            shellSettings["Secret"] = Guid.NewGuid().ToString();
-            shellSettings["RecipeName"] = model.RecipeName;
-            shellSettings["FeatureProfile"] = model.FeatureProfile;
-
-            model.IsNewTenant = true;
+            model.IsNewTenant = !_shellHost.TryGetSettings(model.Name, out var settings);
 
             ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
 
             if (ModelState.IsValid)
             {
-                if (_shellHost.TryGetSettings(model.Name, out var settings))
+                if (model.IsNewTenant)
                 {
-                    // Site already exists, return 201 for indempotency purpose
+                    // Creates a default shell settings based on the configuration.
+                    var shellSettings = _shellSettingsManager.CreateDefaultSettings();
 
-                    var token = CreateSetupToken(settings);
+                    shellSettings.Name = model.Name;
+                    shellSettings.RequestUrlHost = model.RequestUrlHost;
+                    shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
+                    shellSettings.State = TenantState.Uninitialized;
 
-                    return Created(GetEncodedUrl(settings, token), null);
-                }
-                else
-                {
+					shellSettings["Category"] = model.Category;
+            		shellSettings["Description"] = model.Description;
+                    shellSettings["ConnectionString"] = model.ConnectionString;
+                    shellSettings["TablePrefix"] = model.TablePrefix;
+                    shellSettings["Schema"] = model.Schema;
+                    shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+                    shellSettings["Secret"] = Guid.NewGuid().ToString();
+                    shellSettings["RecipeName"] = model.RecipeName;
+                    shellSettings["FeatureProfile"] = model.FeatureProfile;
+
                     await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
                     var token = CreateSetupToken(shellSettings);
 
                     return Ok(GetEncodedUrl(shellSettings, token));
+                }
+                else
+                {
+                    // Site already exists, return 201 for indempotency purposes.
+
+                    var token = CreateSetupToken(settings);
+
+                    return Created(GetEncodedUrl(settings, token), null);
                 }
             }
 
