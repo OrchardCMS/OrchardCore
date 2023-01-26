@@ -1,4 +1,4 @@
-using OrchardCore.Security.Services;
+using OrchardCore.Security;
 
 namespace OrchardCore.Twitter.Settings
 {

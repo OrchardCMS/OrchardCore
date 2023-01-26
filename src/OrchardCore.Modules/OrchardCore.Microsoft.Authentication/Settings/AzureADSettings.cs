@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Http;
-using OrchardCore.Security.Services;
+using OrchardCore.Security;
 
 namespace OrchardCore.Microsoft.Authentication.Settings
 {
