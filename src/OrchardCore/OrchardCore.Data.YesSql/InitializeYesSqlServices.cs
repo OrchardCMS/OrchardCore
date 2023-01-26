@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Abstractions.Shell;
 using OrchardCore.Environment.Shell.Builders;
@@ -8,24 +9,21 @@ namespace OrchardCore.Data;
 
 public class InitializeYesSqlServices : IShellContextEvents
 {
-    private readonly IStore _store;
-    private readonly StoreCollectionOptions _storeCollectionOptions;
-
-    public InitializeYesSqlServices(
-        IStore store,
-        IOptions<StoreCollectionOptions> storeCollectionOptions)
-    {
-        _store = store;
-        _storeCollectionOptions = storeCollectionOptions.Value;
-    }
-
     public async Task CreatedAsync(ShellContext context)
     {
-        await _store.InitializeAsync();
-
-        foreach (var collection in _storeCollectionOptions.Collections)
+        var store = context.ServiceProvider.GetService<IStore>();
+        if (store == null)
         {
-            await _store.InitializeCollectionAsync(collection);
+            return;
+        }
+
+        var storeCollectionOptions = context.ServiceProvider.GetService<IOptions<StoreCollectionOptions>>().Value;
+
+        await store.InitializeAsync();
+
+        foreach (var collection in storeCollectionOptions.Collections)
+        {
+            await store.InitializeCollectionAsync(collection);
         }
     }
 }
