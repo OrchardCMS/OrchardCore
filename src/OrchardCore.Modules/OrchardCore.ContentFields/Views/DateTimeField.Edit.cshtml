@@ -5,15 +5,18 @@
     var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 <script asp-name="jQuery-ui-i18n" at="Foot"></script>
-<div class="mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.LocalDateTime)_FieldWrapper">
-    <div class="row">
-        <div class="col-md-6 col-lg-4">
-            <label asp-for="LocalDateTime">@Model.PartFieldDefinition.DisplayName()</label>
-            <input asp-for="LocalDateTime" type="datetime-local" class="form-control content-preview-select" required="@settings.Required" />
+<div class="row mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.LocalDateTime)_FieldWrapper">
+    <label asp-for="LocalDateTime" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        <div class="row">
+            <div class="@Orchard.GetLimitedWidthCssClasses()">
+                <input asp-for="LocalDateTime" type="datetime-local" class="form-control content-preview-select" required="@settings.Required" />
+            </div>
         </div>
+
+        @if (!String.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
     </div>
-    @if (!String.IsNullOrEmpty(settings.Hint))
-    {
-        <span class="hint">@settings.Hint</span>
-    }
 </div>

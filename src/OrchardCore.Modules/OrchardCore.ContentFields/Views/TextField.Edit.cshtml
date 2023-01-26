@@ -6,11 +6,13 @@
     var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Text)_FieldWrapper">
-    <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
-    <input asp-for="Text" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()" />
-    @if (!String.IsNullOrEmpty(settings.Hint))
-    {
-        <span class="hint">@settings.Hint</span>
-    }
+<div class="row mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Text)_FieldWrapper">
+    <label asp-for="Text" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        <input asp-for="Text" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()" />
+        @if (!String.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
+    </div>
 </div>
