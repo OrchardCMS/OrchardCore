@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
-using OrchardCore.Infrastructure.Security;
+using OrchardCore.Security;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Security.Services;
