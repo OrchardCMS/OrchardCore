@@ -11,11 +11,11 @@ public class DefaultCultureAliasProviderTests
     public void ShouldReturnCultureFromAlias(string cultureAlias, string expectedCulture, bool expectedAliasFound)
     {
         // Arrange
-        var cultureAliasProvider = new DefaultCultureAliasProvider();
-        var cultureAliasInfo = CultureInfo.GetCultureInfo(cultureAlias);
+        var cultureOptions = Options.Create(new CultureOptions());
+        var cultureAliasProvider = new DefaultCultureAliasProvider(cultureOptions);
 
         // Act
-        var isAliasFound = cultureAliasProvider.TryGetCulture(cultureAliasInfo, out var culture);
+        var isAliasFound = cultureAliasProvider.TryGetCulture(cultureAlias, out var culture);
 
         // Assert
         Assert.Equal(expectedAliasFound, isAliasFound);
