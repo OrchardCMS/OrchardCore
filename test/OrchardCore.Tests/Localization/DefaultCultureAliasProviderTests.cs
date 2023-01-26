@@ -21,4 +21,25 @@ public class DefaultCultureAliasProviderTests
         Assert.Equal(expectedAliasFound, isAliasFound);
         Assert.Equal(expectedCulture, culture?.Name);
     }
+
+    [Theory]
+    [InlineData("zh-CN", "zh-Hans-CN", true)]
+    [InlineData("zh-TW", "zh-Hant-TW", false)]
+    public void ShouldRespect_OrchardCoreRequestLocalizationOptions_IgnoreSystemCulture(string cultureAlias, string expectedCulture, bool ignoreSystemCulture)
+    {
+        // Arrange
+        var cultureOptions = Options.Create(new CultureOptions
+        {
+            IgnoreSystemSettings = ignoreSystemCulture
+        });
+        var cultureAliasProvider = new DefaultCultureAliasProvider(cultureOptions);
+
+        // Act
+        var isAliasFound = cultureAliasProvider.TryGetCulture(cultureAlias, out var culture);
+
+        // Assert
+        Assert.True(isAliasFound);
+        Assert.Equal(expectedCulture, culture.Name);
+        Assert.Equal(ignoreSystemCulture, !culture.UseUserOverride);
+    }
 }
