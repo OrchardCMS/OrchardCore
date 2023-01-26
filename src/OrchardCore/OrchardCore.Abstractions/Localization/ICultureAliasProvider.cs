@@ -4,5 +4,5 @@ namespace OrchardCore.Localization;
 
 public interface ICultureAliasProvider
 {
-    bool TryGetCulture(CultureInfo cultureAlias, out CultureInfo culture);
+    bool TryGetCulture(string cultureAlias, out CultureInfo culture);
 }

@@ -118,7 +118,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<ICalendarManager, DefaultCalendarManager>();
             services.AddScoped<ICalendarSelector, DefaultCalendarSelector>();
 
-            services.AddSingleton<ICultureAliasProvider, DefaultCultureAliasProvider>();
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
@@ -128,6 +127,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<LocalLock>();
                 services.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
                 services.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
+                services.AddSingleton<ICultureAliasProvider, DefaultCultureAliasProvider>();
 
                 var configuration = serviceProvider.GetService<IShellConfiguration>();
 
