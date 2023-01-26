@@ -2,7 +2,7 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Twitter.Settings
 {
-    public class TwitterSettings : SocialAuthenticationSettings
+    public class TwitterSettings : OAuthSettings
     {
         public string ConsumerKey { get; set; }
 

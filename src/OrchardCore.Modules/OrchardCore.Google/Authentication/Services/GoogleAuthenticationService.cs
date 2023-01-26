@@ -8,11 +8,11 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Google.Authentication.Services
 {
-    public class GoogleAuthenticationService : SocialAuthenticationService<GoogleAuthenticationSettings>
+    public class GoogleAuthenticationService : OAuthSettingsService<GoogleAuthenticationSettings>
     {
         public GoogleAuthenticationService(
             ISiteService siteService,
-            IStringLocalizer<SocialAuthenticationService<GoogleAuthenticationSettings>> stringLocalizer) : base(siteService, stringLocalizer)
+            IStringLocalizer<OAuthSettingsService<GoogleAuthenticationSettings>> stringLocalizer) : base(siteService, stringLocalizer)
         {
         }
 

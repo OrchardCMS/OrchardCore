@@ -3,7 +3,7 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Microsoft.Authentication.Settings
 {
-    public class MicrosoftAccountSettings : SocialAuthenticationSettings
+    public class MicrosoftAccountSettings : OAuthSettings
     {
         public string AppId { get; set; }
 

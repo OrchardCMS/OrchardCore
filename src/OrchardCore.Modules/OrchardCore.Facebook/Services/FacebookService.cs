@@ -8,11 +8,11 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook.Services
 {
-    public class FacebookService : SocialAuthenticationService<FacebookSettings>
+    public class FacebookService : OAuthSettingsService<FacebookSettings>
     {
         public FacebookService(
             ISiteService siteService,
-            IStringLocalizer<SocialAuthenticationService<FacebookSettings>> stringLocalizer) : base(siteService, stringLocalizer)
+            IStringLocalizer<OAuthSettingsService<FacebookSettings>> stringLocalizer) : base(siteService, stringLocalizer)
         {
         }
 

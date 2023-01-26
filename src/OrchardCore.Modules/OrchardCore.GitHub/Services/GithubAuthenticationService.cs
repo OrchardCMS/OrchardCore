@@ -8,11 +8,11 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.GitHub.Services
 {
-    public class GitHubAuthenticationService : SocialAuthenticationService<GitHubAuthenticationSettings>
+    public class GitHubAuthenticationService : OAuthSettingsService<GitHubAuthenticationSettings>
     {
         public GitHubAuthenticationService(
             ISiteService siteService,
-            IStringLocalizer<SocialAuthenticationService<GitHubAuthenticationSettings>> stringLocalizer) : base(siteService, stringLocalizer)
+            IStringLocalizer<OAuthSettingsService<GitHubAuthenticationSettings>> stringLocalizer) : base(siteService, stringLocalizer)
         {
         }
 

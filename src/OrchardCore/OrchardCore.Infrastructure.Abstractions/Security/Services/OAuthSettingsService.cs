@@ -9,13 +9,13 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Security.Services;
 
-public abstract class SocialAuthenticationService<TAuthenticationSettings> where TAuthenticationSettings : SocialAuthenticationSettings, new()
+public abstract class OAuthSettingsService<TAuthenticationSettings> where TAuthenticationSettings : OAuthSettings, new()
 {
     private readonly ISiteService _siteService;
 
-    public SocialAuthenticationService(
+    public OAuthSettingsService(
         ISiteService siteService,
-        IStringLocalizer<SocialAuthenticationService<TAuthenticationSettings>> stringLocalizer)
+        IStringLocalizer<OAuthSettingsService<TAuthenticationSettings>> stringLocalizer)
     {
         _siteService = siteService;
         S = stringLocalizer;

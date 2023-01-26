@@ -8,11 +8,11 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Services
 {
-    public class MicrosoftAccountService : SocialAuthenticationService<MicrosoftAccountSettings>
+    public class MicrosoftAccountService : OAuthSettingsService<MicrosoftAccountSettings>
     {
         public MicrosoftAccountService(
             ISiteService siteService,
-            IStringLocalizer<SocialAuthenticationService<MicrosoftAccountSettings>> stringLocalizer) : base(siteService, stringLocalizer)
+            IStringLocalizer<OAuthSettingsService<MicrosoftAccountSettings>> stringLocalizer) : base(siteService, stringLocalizer)
         {
         }
 

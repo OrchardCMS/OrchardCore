@@ -3,7 +3,7 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Microsoft.Authentication.Settings
 {
-    public class AzureADSettings : SocialAuthenticationSettings
+    public class AzureADSettings : OAuthSettings
     {
         public string DisplayName { get; set; }
 

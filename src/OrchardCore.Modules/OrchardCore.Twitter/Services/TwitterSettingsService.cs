@@ -8,11 +8,11 @@ using OrchardCore.Twitter.Settings;
 
 namespace OrchardCore.Twitter.Services
 {
-    public class TwitterSettingsService : SocialAuthenticationService<TwitterSettings>
+    public class TwitterSettingsService : OAuthSettingsService<TwitterSettings>
     {
         public TwitterSettingsService(
             ISiteService siteService,
-            IStringLocalizer<SocialAuthenticationService<TwitterSettings>> stringLocalizer) : base(siteService, stringLocalizer)
+            IStringLocalizer<OAuthSettingsService<TwitterSettings>> stringLocalizer) : base(siteService, stringLocalizer)
         {
         }
 

@@ -1,5 +1,5 @@
 namespace OrchardCore.Security.Services;
 
-public class SocialAuthenticationSettings
+public class OAuthSettings
 {
 }

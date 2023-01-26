@@ -3,7 +3,7 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Google.Authentication.Settings
 {
-    public class GoogleAuthenticationSettings : SocialAuthenticationSettings
+    public class GoogleAuthenticationSettings : OAuthSettings
     {
         public string ClientID { get; set; }
 

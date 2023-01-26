@@ -8,11 +8,11 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Services
 {
-    public class AzureADService : SocialAuthenticationService<AzureADSettings>
+    public class AzureADService : OAuthSettingsService<AzureADSettings>
     {
         public AzureADService(
             ISiteService siteService,
-            IStringLocalizer<SocialAuthenticationService<AzureADSettings>> stringLocalizer) : base(siteService, stringLocalizer)
+            IStringLocalizer<OAuthSettingsService<AzureADSettings>> stringLocalizer) : base(siteService, stringLocalizer)
         {
         }
 
