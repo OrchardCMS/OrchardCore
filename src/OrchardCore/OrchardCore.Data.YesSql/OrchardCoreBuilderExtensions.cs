@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Options;
+using OrchardCore.Abstractions.Shell;
 using OrchardCore.Data;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
@@ -39,7 +40,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 services.AddScoped<IDbConnectionValidator, DbConnectionValidator>();
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();
-                services.AddTransient<IModularTenantEvents, InitializeYesSql>();
+                services.AddTransient<IShellContextEvents, InitializeYesSqlServices>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
                 services.AddTransient<ITableNameConventionFactory, TableNameConventionFactory>();

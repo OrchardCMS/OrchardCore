@@ -1,16 +1,17 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using OrchardCore.Modules;
+using OrchardCore.Abstractions.Shell;
+using OrchardCore.Environment.Shell.Builders;
 using YesSql;
 
 namespace OrchardCore.Data;
 
-public class InitializeYesSql : ModularTenantEvents
+public class InitializeYesSqlServices : IShellContextEvents
 {
     private readonly IStore _store;
     private readonly StoreCollectionOptions _storeCollectionOptions;
 
-    public InitializeYesSql(
+    public InitializeYesSqlServices(
         IStore store,
         IOptions<StoreCollectionOptions> storeCollectionOptions)
     {
@@ -18,7 +19,7 @@ public class InitializeYesSql : ModularTenantEvents
         _storeCollectionOptions = storeCollectionOptions.Value;
     }
 
-    public override async Task ActivatingAsync()
+    public async Task CreatedAsync(ShellContext context)
     {
         await _store.InitializeAsync();
 

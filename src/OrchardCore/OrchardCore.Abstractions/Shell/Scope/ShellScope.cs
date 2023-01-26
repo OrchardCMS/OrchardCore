@@ -283,6 +283,11 @@ namespace OrchardCore.Environment.Shell.Scope
                 return;
             }
 
+            if (_serviceScopeOnly)
+            {
+                return;
+            }
+
             // Try to acquire a lock before using a new scope, so that a next process gets the last committed data.
             (var locker, var locked) = await ShellContext.TryAcquireShellActivateLockAsync();
             if (!locked)
@@ -301,11 +306,6 @@ namespace OrchardCore.Environment.Shell.Scope
                     foreach (var tenantEvent in tenantEvents)
                     {
                         await tenantEvent.ActivatingAsync();
-                    }
-
-                    if (_serviceScopeOnly)
-                    {
-                        return;
                     }
 
                     foreach (var tenantEvent in tenantEvents.Reverse())
