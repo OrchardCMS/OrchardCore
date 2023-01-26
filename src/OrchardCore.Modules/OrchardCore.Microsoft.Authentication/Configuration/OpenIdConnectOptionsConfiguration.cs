@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Options;
-using OrchardCore.Microsoft.Authentication.Services;
+using OrchardCore.Microsoft.Authentication.Settings;
 
 #pragma warning disable CS0618
 // The net5.0 5.0.3 build obsoletes 'AzureADOptions' and 'AzureADDefaults', 'Microsoft.Identity.Web' should be used instead.
@@ -14,12 +14,14 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
     internal class OpenIdConnectOptionsConfiguration : IConfigureNamedOptions<OpenIdConnectOptions>
     {
         private readonly IOptionsMonitor<AzureADOptions> _azureADOptions;
-        private readonly IAzureADService _azureADService;
+        private readonly AzureADSettings _azureADSettings;
 
-        public OpenIdConnectOptionsConfiguration(IOptionsMonitor<AzureADOptions> azureADOptions, IAzureADService azureADService)
+        public OpenIdConnectOptionsConfiguration(
+            IOptionsMonitor<AzureADOptions> azureADOptions,
+            IOptions<AzureADSettings> azureADSettings)
         {
             _azureADOptions = azureADOptions;
-            _azureADService = azureADService;
+            _azureADSettings = azureADSettings.Value;
         }
 
         public void Configure(string name, OpenIdConnectOptions options)
@@ -38,9 +40,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             options.SignedOutCallbackPath = azureADOptions.SignedOutCallbackPath ?? options.SignedOutCallbackPath;
             options.SignInScheme = "Identity.External";
             options.UseTokenLifetime = true;
-
-            var settings = _azureADService.GetSettingsAsync().GetAwaiter().GetResult();
-            options.SaveTokens = settings.SaveTokens;
+            options.SaveTokens = _azureADSettings.SaveTokens;
 
         }
 
