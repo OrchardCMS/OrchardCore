@@ -99,9 +99,7 @@ namespace OrchardCore.Tenants.Controllers
                 return this.ChallengeOrForbid("Api");
             }
 
-            model.IsNewTenant = !_shellHost.TryGetSettings(model.Name, out var settings);
-
-            ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
+            await ValidateModelAsync(model, isNewTenant: !_shellHost.TryGetSettings(model.Name, out var settings));
 
             if (ModelState.IsValid)
             {
@@ -123,7 +121,7 @@ namespace OrchardCore.Tenants.Controllers
                     shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                     shellSettings["Secret"] = Guid.NewGuid().ToString();
                     shellSettings["RecipeName"] = model.RecipeName;
-                    shellSettings["FeatureProfile"] = model.FeatureProfile;
+                    shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
 
                     await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -158,6 +156,11 @@ namespace OrchardCore.Tenants.Controllers
                 return this.ChallengeOrForbid("Api");
             }
 
+            if (ModelState.IsValid)
+            {
+                await ValidateModelAsync(model, isNewTenant: false);
+            }
+
             if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))
             {
                 return NotFound();
@@ -169,7 +172,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Category"] = model.Category;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
-                shellSettings["FeatureProfile"] = model.FeatureProfile;
+                shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
 
                 if (shellSettings.State == TenantState.Uninitialized)
                 {
@@ -485,6 +488,13 @@ namespace OrchardCore.Tenants.Controllers
             var token = dataProtector.Protect(shellSettings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
 
             return token;
+        }
+
+        private async Task ValidateModelAsync(TenantApiModel model, bool isNewTenant)
+        {
+            model.IsNewTenant = isNewTenant;
+
+            ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
         }
     }
 }
