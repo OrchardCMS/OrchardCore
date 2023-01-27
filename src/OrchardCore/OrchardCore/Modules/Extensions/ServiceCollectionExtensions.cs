@@ -131,7 +131,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 var configuration = serviceProvider.GetService<IShellConfiguration>();
 
-                services.Configure<CultureOptions>(configuration.GetSection("OrchardCore_Localization_CultureOptions"));
+                services.Configure<OrchardCoreRequestLocalizationOptions>(configuration.GetSection("OrchardCore_Localization"));
             });
 
             services.AddSingleton<ISlugService, SlugService>();

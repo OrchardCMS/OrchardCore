@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -10,12 +11,10 @@ namespace OrchardCore.Localization;
 /// </summary>
 public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
 {
-    private readonly bool _useUserOverride;
-
     /// <summary>
     /// Creates a new <see cref="OrchardCoreRequestLocalizationOptions"/> with default values.
     /// </summary>
-    public OrchardCoreRequestLocalizationOptions() : this(ignoreSystemSettings: false)
+    public OrchardCoreRequestLocalizationOptions()
     {
     }
 
@@ -23,10 +22,15 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
     /// Creates a new <see cref="OrchardCoreRequestLocalizationOptions"/> with default values and ability to ignore system settings.
     /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not.</param>
     /// </summary>
-    public OrchardCoreRequestLocalizationOptions(bool ignoreSystemSettings) : base()
+    [Obsolete("This constrcutor has been deprecated, it will be removed in the upcoming major release.", error: true)]
+    public OrchardCoreRequestLocalizationOptions(bool ignoreSystemSettings)
     {
-        _useUserOverride = !ignoreSystemSettings;
     }
+
+    /// <summary>
+    /// Gets or sets whether to ignore the system culture settings or not.
+    /// </summary>
+    public bool IgnoreSystemSettings { get; set; }
 
     /// <inheritdoc/>
     public new OrchardCoreRequestLocalizationOptions AddSupportedCultures(params string[] cultures)
@@ -35,11 +39,11 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
 
         foreach (var culture in cultures)
         {
-            supportedCultures.Add(new CultureInfo(culture, _useUserOverride));
+            supportedCultures.Add(new CultureInfo(culture, !IgnoreSystemSettings));
         }
 
         SupportedCultures = supportedCultures;
-        
+
         return this;
     }
 
@@ -49,19 +53,19 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
         var supportedUICultures = new List<CultureInfo>();
         foreach (var culture in uiCultures)
         {
-            supportedUICultures.Add(new CultureInfo(culture, _useUserOverride));
+            supportedUICultures.Add(new CultureInfo(culture, !IgnoreSystemSettings));
         }
 
         SupportedUICultures = supportedUICultures;
-        
+
         return this;
     }
 
     /// <inheritdoc/>
     public new OrchardCoreRequestLocalizationOptions SetDefaultCulture(string defaultCulture)
     {
-        DefaultRequestCulture = new RequestCulture(new CultureInfo(defaultCulture, _useUserOverride));
-        
+        DefaultRequestCulture = new RequestCulture(new CultureInfo(defaultCulture, !IgnoreSystemSettings));
+
         return this;
-    } 
+    }
 }

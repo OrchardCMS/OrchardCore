@@ -13,6 +13,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
+using YesSql;
 
 namespace OrchardCore.Localization
 {
@@ -45,16 +46,17 @@ namespace OrchardCore.Localization
             var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
             var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
 
-            var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-            var cultureOptions = serviceProvider.GetService<IOptions<CultureOptions>>().Value;
+            var requestLocalizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
 
-            var requestLocalizationOptions = new OrchardCoreRequestLocalizationOptions(ignoreSystemSettings: cultureOptions.IgnoreSystemSettings)
-                .WithRequestLocalizationOptions(localizationOptions)
+            var orchardCoreRequestLocalizationOptions = serviceProvider.GetService<IOptions<OrchardCoreRequestLocalizationOptions>>().Value;
+
+            orchardCoreRequestLocalizationOptions
+                .WithRequestLocalizationOptions(requestLocalizationOptions)
                 .SetDefaultCulture(defaultCulture)
                 .AddSupportedCultures(supportedCultures)
                 .AddSupportedUICultures(supportedCultures);
 
-            app.UseRequestLocalization(requestLocalizationOptions);
+            app.UseRequestLocalization(orchardCoreRequestLocalizationOptions);
             app.MapCulturesAlias();
         }
     }

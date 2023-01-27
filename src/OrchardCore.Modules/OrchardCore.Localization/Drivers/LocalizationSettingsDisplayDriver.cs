@@ -37,7 +37,7 @@ namespace OrchardCore.Localization.Drivers
         private readonly ShellSettings _shellSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
-        private readonly CultureOptions _cultureOptions;
+        private readonly OrchardCoreRequestLocalizationOptions _requestlocalizationOptions;
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
 
@@ -47,7 +47,7 @@ namespace OrchardCore.Localization.Drivers
             ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
-            IOptions<CultureOptions> cultureOptions,
+            IOptions<OrchardCoreRequestLocalizationOptions> requestlocalizationOptions,
             IHtmlLocalizer<LocalizationSettingsDisplayDriver> h,
             IStringLocalizer<LocalizationSettingsDisplayDriver> s
         )
@@ -57,7 +57,7 @@ namespace OrchardCore.Localization.Drivers
             _shellSettings = shellSettings;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
-            _cultureOptions = cultureOptions.Value;
+            _requestlocalizationOptions = requestlocalizationOptions.Value;
             H = h;
             S = s;
         }
@@ -134,7 +134,7 @@ namespace OrchardCore.Localization.Drivers
                     await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
                     // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
-                    using (CultureScope.Create(section.DefaultCulture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings))
+                    using (CultureScope.Create(section.DefaultCulture, ignoreSystemSettings: _requestlocalizationOptions.IgnoreSystemSettings))
                     {
                         await _notifier.WarningAsync(H["The site has been restarted for the settings to take effect."]);
                     }

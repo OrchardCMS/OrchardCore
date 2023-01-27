@@ -18,7 +18,7 @@ namespace OrchardCore.Settings.Controllers
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly CultureOptions _cultureOptions;
+        private readonly OrchardCoreRequestLocalizationOptions _requestLocalizationOptions;
         private readonly IHtmlLocalizer H;
 
         public AdminController(
@@ -27,7 +27,7 @@ namespace OrchardCore.Settings.Controllers
             IAuthorizationService authorizationService,
             INotifier notifier,
             IHtmlLocalizer<AdminController> h,
-            IOptions<CultureOptions> cultureOptions,
+            IOptions<OrchardCoreRequestLocalizationOptions> requestLocalizationOptions,
             IUpdateModelAccessor updateModelAccessor)
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
@@ -35,7 +35,7 @@ namespace OrchardCore.Settings.Controllers
             _notifier = notifier;
             _authorizationService = authorizationService;
             _updateModelAccessor = updateModelAccessor;
-            _cultureOptions = cultureOptions.Value;
+            _requestLocalizationOptions = requestLocalizationOptions.Value;
             H = h;
         }
 
@@ -84,7 +84,7 @@ namespace OrchardCore.Settings.Controllers
                     culture = settings.Value<string>("DefaultCulture");
                 }
                 // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
-                using (culture != null ? CultureScope.Create(culture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings) : null)
+                using (culture != null ? CultureScope.Create(culture, ignoreSystemSettings: _requestLocalizationOptions.IgnoreSystemSettings) : null)
                 {
                     await _notifier.SuccessAsync(H["Site settings updated successfully."]);
                 }
