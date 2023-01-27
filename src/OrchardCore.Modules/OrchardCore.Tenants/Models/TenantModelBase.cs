@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Data;
 
 namespace OrchardCore.Tenants.Models;
@@ -27,7 +27,7 @@ public abstract class TenantModelBase : IDbConnectionInfo
 
     public string RecipeName { get; set; }
 
-    public string FeatureProfile { get; set; }
+    public string[] FeatureProfiles { get; set; }
 
     [BindNever]
     public bool IsNewTenant { get; set; }
