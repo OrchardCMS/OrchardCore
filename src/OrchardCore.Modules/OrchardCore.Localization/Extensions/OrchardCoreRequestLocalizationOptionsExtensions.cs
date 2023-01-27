@@ -5,7 +5,7 @@ namespace OrchardCore.Localization;
 
 internal static class OrchardCoreRequestLocalizationOptionsExtensions
 {
-    public static RequestLocalizationOptions WithRequestLocalizationOptions(
+    public static OrchardCoreRequestLocalizationOptions WithRequestLocalizationOptions(
         this OrchardCoreRequestLocalizationOptions orchardCoreRequestLocalization, RequestLocalizationOptions requestLocalizationOptions)
     {
         if (orchardCoreRequestLocalization is null)
@@ -24,6 +24,6 @@ internal static class OrchardCoreRequestLocalizationOptionsExtensions
         orchardCoreRequestLocalization.FallBackToParentCultures = requestLocalizationOptions.FallBackToParentCultures;
         orchardCoreRequestLocalization.FallBackToParentUICultures = requestLocalizationOptions.FallBackToParentUICultures;
 
-        return requestLocalizationOptions;
+        return orchardCoreRequestLocalization;
     }
 }
