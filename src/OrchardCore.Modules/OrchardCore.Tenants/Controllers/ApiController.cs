@@ -24,6 +24,7 @@ using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
+using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
@@ -86,7 +87,7 @@ namespace OrchardCore.Tenants.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> Create(CreateApiViewModel model)
+        public async Task<IActionResult> Create(TenantApiModel model)
         {
             if (!_currentShellSettings.IsDefaultShell())
             {
@@ -114,8 +115,8 @@ namespace OrchardCore.Tenants.Controllers
                     shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                     shellSettings.State = TenantState.Uninitialized;
 
-					shellSettings["Category"] = model.Category;
-            		shellSettings["Description"] = model.Description;
+                    shellSettings["Category"] = model.Category;
+                    shellSettings["Description"] = model.Description;
                     shellSettings["ConnectionString"] = model.ConnectionString;
                     shellSettings["TablePrefix"] = model.TablePrefix;
                     shellSettings["Schema"] = model.Schema;
@@ -138,6 +139,51 @@ namespace OrchardCore.Tenants.Controllers
 
                     return Created(GetEncodedUrl(settings, token), null);
                 }
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [HttpPost]
+        [Route("edit")]
+        public async Task<IActionResult> Edit(TenantApiModel model)
+        {
+            if (!_currentShellSettings.IsDefaultShell())
+            {
+                return Forbid();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return this.ChallengeOrForbid("Api");
+            }
+
+            if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                shellSettings["Description"] = model.Description;
+                shellSettings["Category"] = model.Category;
+                shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
+                shellSettings.RequestUrlHost = model.RequestUrlHost;
+                shellSettings["FeatureProfile"] = model.FeatureProfile;
+
+                if (shellSettings.State == TenantState.Uninitialized)
+                {
+                    shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+                    shellSettings["TablePrefix"] = model.TablePrefix;
+                    shellSettings["Schema"] = model.Schema;
+                    shellSettings["ConnectionString"] = model.ConnectionString;
+                    shellSettings["RecipeName"] = model.RecipeName;
+                    shellSettings["Secret"] = Guid.NewGuid().ToString();
+                }
+
+                await _shellHost.UpdateShellSettingsAsync(shellSettings);
+
+                return Ok();
             }
 
             return BadRequest(ModelState);

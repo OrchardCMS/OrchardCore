@@ -16,48 +16,50 @@
     var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Value)_FieldWrapper">
-    <div class="row">
-        <div class="col-md-6 col-lg-4">
-            <label asp-for="Value">@name</label>
-            <div class="input-group mb-2">
-                @if (settings.Minimum.HasValue)
-                {
-                    <span class="input-group-text">@min</span>
-                }
-                <input asp-for="Value" typeof="text" class="form-control content-preview-select" placeholder="@settings.Placeholder" required="@settings.Required" />
-                <button class="btn btn-outline-secondary" type="button" onclick="numericFieldSpinner('@(id)', @(scale), -@(step), @(min), @(max))"><i class="fa fa-minus" aria-hidden="true"></i></button>
-                <button class="btn btn-outline-secondary" type="button" onclick="numericFieldSpinner('@(id)', @(scale), +@(step), @(min), @(max))"><i class="fa fa-plus" aria-hidden="true"></i></button>
-                @if (settings.Maximum.HasValue)
-                {
-                    <span class="input-group-text">@max</span>
-                }
+<div class="row mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Value)_FieldWrapper">
+    <label asp-for="Value" class="@Orchard.GetLabelCssClasses()">@name</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        <div class="row">
+            <div class="@Orchard.GetLimitedWidthCssClasses()">
+                <div class="input-group">
+                    @if (settings.Minimum.HasValue)
+                    {
+                        <span class="input-group-text">@min</span>
+                    }
+                    <input asp-for="Value" typeof="text" class="form-control content-preview-select" placeholder="@settings.Placeholder" required="@settings.Required" />
+                    <button class="btn btn-outline-secondary" type="button" onclick="numericFieldSpinner('@(id)', @(scale), -@(step), @(min), @(max))"><i class="fa fa-minus" aria-hidden="true"></i></button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="numericFieldSpinner('@(id)', @(scale), +@(step), @(min), @(max))"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                    @if (settings.Maximum.HasValue)
+                    {
+                        <span class="input-group-text">@max</span>
+                    }
+                </div>
             </div>
         </div>
+        @if (!String.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
     </div>
-    @if (!String.IsNullOrEmpty(settings.Hint))
-    {
-        <span class="hint">@settings.Hint</span>
-    }
 </div>
 
 <script asp-name="numericFieldSpinner" at="Foot">
 
     function numericFieldSpinner(id, scale, step, min, max) {
         let value = $('#' + id).val();
-        @if (javascriptDecimalSeparator != serverDecimalSeparator)
-        {
+    @if (javascriptDecimalSeparator != serverDecimalSeparator)
+    {
         <text>value = value.replace('@(serverDecimalSeparator)', '@(javascriptDecimalSeparator)'); </text>
-        }
-        value = (Number(value) || 0) + step;
+    }
+            value = (Number(value) || 0) + step;
         value = Math.min(value, max); // Never go above max
         value = Math.max(value, min); // or below min
         value = Number(value.toFixed(scale)).toString(); // Drop insignificant trailing zeros
-        @if (javascriptDecimalSeparator != serverDecimalSeparator)
-        {
+    @if (javascriptDecimalSeparator != serverDecimalSeparator)
+    {
         <text>value = value.replace('@(javascriptDecimalSeparator)', '@(serverDecimalSeparator)'); </text>
-        }
-        $('#' + id).val(value);
+    }
+            $('#' + id).val(value);
     }
 
 </script>

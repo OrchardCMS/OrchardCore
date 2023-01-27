@@ -288,14 +288,14 @@ namespace OrchardCore.Environment.Extensions
             }
 
             await _semaphore.WaitAsync();
-
-            if (_isInitialized)
-            {
-                return;
-            }
-
             try
             {
+
+                if (_isInitialized)
+                {
+                    return;
+                }
+
                 var modules = _applicationContext.Application.Modules;
                 var loadedExtensions = new ConcurrentDictionary<string, ExtensionEntry>();
 
