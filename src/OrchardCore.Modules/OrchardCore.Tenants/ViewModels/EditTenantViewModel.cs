@@ -6,8 +6,6 @@ namespace OrchardCore.Tenants.ViewModels
 {
     public class EditTenantViewModel : TenantViewModel
     {
-        public string Category { get; set; }
-
         public List<SelectListItem> FeatureProfilesItems { get; set; }
 
         public IEnumerable<RecipeDescriptor> Recipes { get; set; }

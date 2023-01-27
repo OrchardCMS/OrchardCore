@@ -32,7 +32,7 @@ public class ApiControllerTests
             Name = "Test",
             RequestUrlPrefix = "test",
             RequestUrlHost = "orchardcore.net",
-            FeatureProfile = "Feature Profile",
+            FeatureProfiles = new[] { "Feature Profile" },
             IsNewTenant = true
         };
 
@@ -73,7 +73,7 @@ public class ApiControllerTests
             Name = "Test",
             RequestUrlPrefix = "test",
             RequestUrlHost = "orchardcore.net",
-            FeatureProfile = "Feature Profile",
+            FeatureProfiles = new[] { "Feature Profile" },
             IsNewTenant = true
         };
 
