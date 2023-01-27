@@ -15,6 +15,7 @@ using OrchardCore.Settings;
 using OrchardCore.Twitter.Drivers;
 using OrchardCore.Twitter.Recipes;
 using OrchardCore.Twitter.Services;
+using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.Signin.Configuration;
 using OrchardCore.Twitter.Signin.Drivers;
 using OrchardCore.Twitter.Signin.Services;
@@ -42,6 +43,7 @@ namespace OrchardCore.Twitter
             services.AddRecipeExecutionStep<TwitterSettingsStep>();
 
             services.AddTransient<TwitterClientMessageHandler>();
+            services.AddTransient<IConfigureOptions<TwitterSettings>, TwitterSettingsConfiguration>();
 
             services.AddHttpClient<TwitterClient>()
                 .AddHttpMessageHandler<TwitterClientMessageHandler>()

@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Options;
+using OrchardCore.Abstractions.Shell;
 using OrchardCore.Data;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
@@ -39,6 +40,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 services.AddScoped<IDbConnectionValidator, DbConnectionValidator>();
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();
+                services.AddTransient<IShellContextEvents, DataStoreInitializer>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
                 services.AddTransient<ITableNameConventionFactory, TableNameConventionFactory>();
@@ -105,12 +107,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         storeConfiguration = storeConfiguration.SetTablePrefix(tablePrefix);
                     }
 
-                    var store = StoreFactory.CreateAndInitializeAsync(storeConfiguration).GetAwaiter().GetResult();
-                    var options = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
-                    foreach (var collection in options.Collections)
-                    {
-                        store.InitializeCollectionAsync(collection).GetAwaiter().GetResult();
-                    }
+                    var store = StoreFactory.Create(storeConfiguration);
 
                     var indexes = sp.GetServices<IIndexProvider>();
 

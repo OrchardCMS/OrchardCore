@@ -24,6 +24,7 @@ using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
+using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
@@ -86,7 +87,7 @@ namespace OrchardCore.Tenants.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> Create(CreateApiViewModel model)
+        public async Task<IActionResult> Create(TenantApiModel model)
         {
             if (!_currentShellSettings.IsDefaultShell())
             {
@@ -114,28 +115,91 @@ namespace OrchardCore.Tenants.Controllers
             shellSettings["RecipeName"] = model.RecipeName;
             shellSettings["FeatureProfile"] = String.Join(TenantsConstants.FeatureProfileSeperator, model.FeatureProfiles ?? Array.Empty<string>());
 
-            model.IsNewTenant = true;
+            model.IsNewTenant = !_shellHost.TryGetSettings(model.Name, out var settings);
 
             ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
 
             if (ModelState.IsValid)
             {
-                if (_shellHost.TryGetSettings(model.Name, out var settings))
+                if (model.IsNewTenant)
                 {
-                    // Site already exists, return 201 for indempotency purpose
+                    // Creates a default shell settings based on the configuration.
+                    var shellSettings = _shellSettingsManager.CreateDefaultSettings();
 
-                    var token = CreateSetupToken(settings);
+                    shellSettings.Name = model.Name;
+                    shellSettings.RequestUrlHost = model.RequestUrlHost;
+                    shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
+                    shellSettings.State = TenantState.Uninitialized;
 
-                    return Created(GetEncodedUrl(settings, token), null);
-                }
-                else
-                {
+                    shellSettings["Category"] = model.Category;
+                    shellSettings["Description"] = model.Description;
+                    shellSettings["ConnectionString"] = model.ConnectionString;
+                    shellSettings["TablePrefix"] = model.TablePrefix;
+                    shellSettings["Schema"] = model.Schema;
+                    shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+                    shellSettings["Secret"] = Guid.NewGuid().ToString();
+                    shellSettings["RecipeName"] = model.RecipeName;
+                    shellSettings["FeatureProfile"] = model.FeatureProfile;
+
                     await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
                     var token = CreateSetupToken(shellSettings);
 
                     return Ok(GetEncodedUrl(shellSettings, token));
                 }
+                else
+                {
+                    // Site already exists, return 201 for indempotency purposes.
+
+                    var token = CreateSetupToken(settings);
+
+                    return Created(GetEncodedUrl(settings, token), null);
+                }
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [HttpPost]
+        [Route("edit")]
+        public async Task<IActionResult> Edit(TenantApiModel model)
+        {
+            if (!_currentShellSettings.IsDefaultShell())
+            {
+                return Forbid();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return this.ChallengeOrForbid("Api");
+            }
+
+            if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                shellSettings["Description"] = model.Description;
+                shellSettings["Category"] = model.Category;
+                shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
+                shellSettings.RequestUrlHost = model.RequestUrlHost;
+                shellSettings["FeatureProfile"] = model.FeatureProfile;
+
+                if (shellSettings.State == TenantState.Uninitialized)
+                {
+                    shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+                    shellSettings["TablePrefix"] = model.TablePrefix;
+                    shellSettings["Schema"] = model.Schema;
+                    shellSettings["ConnectionString"] = model.ConnectionString;
+                    shellSettings["RecipeName"] = model.RecipeName;
+                    shellSettings["Secret"] = Guid.NewGuid().ToString();
+                }
+
+                await _shellHost.UpdateShellSettingsAsync(shellSettings);
+
+                return Ok();
             }
 
             return BadRequest(ModelState);

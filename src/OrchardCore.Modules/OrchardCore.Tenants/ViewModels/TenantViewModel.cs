@@ -1,10 +1,8 @@
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using OrchardCore.Data;
+using OrchardCore.Tenants.Models;
 
 namespace OrchardCore.Tenants.ViewModels
 {
-    public class TenantViewModel : IDbConnectionInfo
+    public class TenantViewModel : TenantModelBase
     {
         public string Description { get; set; }
 

@@ -8,6 +8,7 @@ using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Services
@@ -36,7 +37,7 @@ namespace OrchardCore.Tenants.Services
             S = stringLocalizer;
         }
 
-        public async Task<IEnumerable<ModelError>> ValidateAsync(TenantViewModel model)
+        public async Task<IEnumerable<ModelError>> ValidateAsync(TenantModelBase model)
         {
             var errors = new List<ModelError>();
 
