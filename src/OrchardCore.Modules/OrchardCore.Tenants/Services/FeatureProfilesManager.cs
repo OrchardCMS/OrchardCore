@@ -31,7 +31,7 @@ namespace OrchardCore.Tenants.Services
         public async Task UpdateFeatureProfileAsync(string id, FeatureProfile profile)
         {
             var document = await LoadFeatureProfilesDocumentAsync();
-            document.FeatureProfiles[id.ToLower()] = profile;
+            document.FeatureProfiles[id] = profile;
             await _documentManager.UpdateAsync(document);
         }
     }

@@ -50,7 +50,7 @@ namespace OrchardCore.Environment.Shell
 
                     var featureProfiles = await featureProfilesService.GetFeatureProfilesAsync();
 
-                    foreach (var profileName in profileNames.Split(", ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                    foreach (var profileName in profileNames.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                     {
                         if (featureProfiles.TryGetValue(profileName, out var featureProfile))
                         {
