@@ -1,3 +1,8 @@
+@using OrchardCore
+@using OrchardCore.Html.Settings
+@using System.Globalization
+@using OrchardCore.Html.ViewModels
+@using OrchardCore.Localization
 @model HtmlBodyPartViewModel
 
 @{
@@ -11,21 +16,22 @@
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="mb-3">
-    <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
-    @if (culture.IsRightToLeft())
-    {
-        <div style="text-align:right">
+<div class="row mb-3">
+    <label asp-for="Html" class="@Orchard.GetLabelCssClasses()">@Model.TypePartDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        @if (culture.IsRightToLeft())
+        {
+            <div style="text-align:right">
+                <textarea asp-for="Html"></textarea>
+            </div>
+        }
+        else
+        {
             <textarea asp-for="Html"></textarea>
-        </div>
-    }
-    else
-    {
-        <textarea asp-for="Html"></textarea>
-    }
-    <span class="hint">@T["The body of the content item."]</span>
+        }
+        <span class="hint">@T["The body of the content item."]</span>
+    </div>
 </div>
-
 
 <script at="Foot">
     $(function() {
