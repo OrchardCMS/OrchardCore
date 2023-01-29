@@ -14,7 +14,7 @@
     <label asp-for="Url" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         <div class="row">
-            <div class="mb-3 col-md-6" asp-validation-class-for="Url">
+            <div class="col-md-6" asp-validation-class-for="Url">
                 <div class="@(useFormFloating ? "form-floating" : String.Empty)">
                     <input asp-for="Url" class="form-control content-preview-text" placeholder="@settings.UrlPlaceholder" required="@isRequired" />
                     @if (useFormFloating)
@@ -30,7 +30,7 @@
             </div>
             @if (settings.LinkTextMode == LinkTextMode.Optional || settings.LinkTextMode == LinkTextMode.Required)
             {
-                <div class="mb-3 col-md-6" asp-validation-class-for="Text">
+                <div class="col-md-6" asp-validation-class-for="Text">
                     <div class="@(useFormFloating ? "form-floating" : String.Empty)">
                         <input asp-for="Text" type="text" class="form-control content-preview-text" placeholder="@settings.TextPlaceholder" required="@isTextRequired" />
                         @if (useFormFloating)
