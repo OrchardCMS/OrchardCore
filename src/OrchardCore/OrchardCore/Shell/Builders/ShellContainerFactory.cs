@@ -85,12 +85,24 @@ namespace OrchardCore.Environment.Shell.Builders
                     new Type[] { typeof(IServiceCollection) },
                     null);
 
+                var initializeServicesAsyncMethod = rawStartup.GetMethod(
+                    nameof(IStartup.InitializeServicesAsync),
+                    BindingFlags.Public | BindingFlags.Instance,
+                    null,
+                    CallingConventions.Any,
+                    new Type[] { typeof(IServiceProvider) },
+                    null);
+
                 var configureMethod = rawStartup.GetMethod(
                     nameof(IStartup.Configure),
                     BindingFlags.Public | BindingFlags.Instance);
 
                 var orderProperty = rawStartup.GetProperty(
                     nameof(IStartup.Order),
+                    BindingFlags.Public | BindingFlags.Instance);
+
+                var initializeOrderProperty = rawStartup.GetProperty(
+                    nameof(IStartup.InitializeOrder),
                     BindingFlags.Public | BindingFlags.Instance);
 
                 var configureOrderProperty = rawStartup.GetProperty(
@@ -105,13 +117,27 @@ namespace OrchardCore.Environment.Shell.Builders
                 moduleServiceCollection.AddSingleton<IStartup>(sp =>
                 {
                     var startupInstance = sp.GetService(rawStartup);
-                    return new StartupBaseMock(startupInstance, configureServicesMethod, configureMethod, orderProperty, configureOrderProperty);
+                    return new StartupBaseMock(
+                        startupInstance,
+                        configureServicesMethod,
+                        initializeServicesAsyncMethod,
+                        configureMethod,
+                        orderProperty,
+                        initializeOrderProperty,
+                        configureOrderProperty);
                 });
 
                 tenantServiceCollection.AddSingleton<IStartup>(sp =>
                 {
                     var startupInstance = sp.GetService(rawStartup);
-                    return new StartupBaseMock(startupInstance, configureServicesMethod, configureMethod, orderProperty, configureOrderProperty);
+                    return new StartupBaseMock(
+                        startupInstance,
+                        configureServicesMethod,
+                        initializeServicesAsyncMethod,
+                        configureMethod,
+                        orderProperty,
+                        initializeOrderProperty,
+                        configureOrderProperty);
                 });
             }
 
