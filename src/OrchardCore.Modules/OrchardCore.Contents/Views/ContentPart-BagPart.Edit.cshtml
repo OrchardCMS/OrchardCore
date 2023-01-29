@@ -9,7 +9,7 @@
     var name = typePartDefinition.PartDefinition.Name.HtmlClassify();
 }
 
-<div class="row content-part-wrapper content-part-wrapper-@name">
+<div class="@Orchard.GetInputWrapperCssClasses("content-part-wrapper", $"content-part-wrapper-{name}")">
     <div class="@Orchard.GetLabelCssClasses()">
         @typePartDefinition.DisplayName()
 

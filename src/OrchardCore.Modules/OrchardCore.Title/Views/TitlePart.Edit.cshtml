@@ -9,7 +9,7 @@
 }
 @if (Model.Settings?.Options != TitlePartOptions.GeneratedHidden)
 {
-    <div class="row mb-3" asp-validation-class-for="Title">
+    <div class="@Orchard.GetInputWrapperCssClasses()" asp-validation-class-for="Title">
         <label asp-for="Title" class="@Orchard.GetLabelCssClasses()">@T["Title"]</label>
         <div class="@Orchard.GetEndCssClasses()">
             <input asp-for="Title" class="form-control content-preview-text content-caption-text" disabled="@(Model.Settings?.Options == TitlePartOptions.GeneratedDisabled)" autofocus="autofocus" dir="@culture.GetLanguageDirection()" />

@@ -16,7 +16,7 @@
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="row mb-3 mde-editor">
+<div class="@Orchard.GetInputWrapperCssClasses("mde-editor")">
     <label asp-for="Markdown" class="@Orchard.GetLabelCssClasses()">@Model.TypePartDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         <span class="hint">@T["The markdown text of the content item."]</span>

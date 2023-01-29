@@ -7,7 +7,7 @@
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="row mb-3">
+<div class="@Orchard.GetInputWrapperCssClasses()">
     <label asp-for="Html" class="@Orchard.GetLabelCssClasses()">@Model.TypePartDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         <textarea asp-for="Html" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>

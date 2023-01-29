@@ -11,7 +11,7 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<div class="row mb-3">
+<div class="@Orchard.GetInputWrapperCssClasses()">
     <label asp-for="Liquid" class="@Orchard.GetLabelCssClasses()">@T["Body"]</label>
     <div class="@Orchard.GetEndCssClasses()">
         <textarea asp-for="Liquid" rows="5" class="form-control content-preview-text"></textarea>

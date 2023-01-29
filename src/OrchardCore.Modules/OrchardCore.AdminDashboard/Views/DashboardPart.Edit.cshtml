@@ -1,7 +1,7 @@
 @using OrchardCore
 @model DashboardPartViewModel
 
-<div class="row mb-3" asp-validation-class-for="Position">
+<div class="@Orchard.GetInputWrapperCssClasses()" asp-validation-class-for="Position">
     <label asp-for="Position" class="@Orchard.GetLabelCssClasses()">@T["Position"] </label>
     <div class="@Orchard.GetEndCssClasses()">
         <input asp-for="Position" class="form-control" />
@@ -9,7 +9,7 @@
     </div>
 </div>
 
-<div class="row mb-3" asp-validation-class-for="Width">
+<div class="@Orchard.GetInputWrapperCssClasses()" asp-validation-class-for="Width">
     <label asp-for="Width" class="@Orchard.GetLabelCssClasses()">@T["Width"] </label>
     <div class="@Orchard.GetEndCssClasses()">
         <input asp-for="Width" class="form-control" />
@@ -17,7 +17,7 @@
     </div>
 </div>
 
-<div class="row mb-3" asp-validation-class-for="Height">
+<div class="@Orchard.GetInputWrapperCssClasses()" asp-validation-class-for="Height">
     <label asp-for="Height" class="@Orchard.GetLabelCssClasses()">@T["Height"] </label>
     <div class="@Orchard.GetEndCssClasses()">
         <input asp-for="Height" class="form-control" />

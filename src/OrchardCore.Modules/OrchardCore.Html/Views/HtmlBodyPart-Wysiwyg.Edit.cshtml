@@ -16,7 +16,7 @@
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="row mb-3">
+<div class="@Orchard.GetInputWrapperCssClasses()">
     <label asp-for="Html" class="@Orchard.GetLabelCssClasses()">@Model.TypePartDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         @if (culture.IsRightToLeft())
@@ -34,7 +34,7 @@
 </div>
 
 <script at="Foot">
-    $(function() {
+    $(function () {
     @* set dir while keeping trumbowg translations dictionary intact *@
     @if (culture.GetLanguageDirection() == LanguageDirection.RTL)
     {
@@ -62,7 +62,7 @@
             semantic: false
         }
 
-        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function() {
+        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
             $(document).trigger('contentpreview:render');
         });
     });

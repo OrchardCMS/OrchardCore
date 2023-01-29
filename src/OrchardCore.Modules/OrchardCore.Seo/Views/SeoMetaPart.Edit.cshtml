@@ -3,7 +3,7 @@
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="row mb-3">
+<div class="@Orchard.GetInputWrapperCssClasses()">
     <div class="@Orchard.GetEndCssClasses(true)">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="Render" checked="@Model.Render" />
@@ -13,7 +13,7 @@
     </div>
 </div>
 
-<div class="row mb-3" asp-validation-class-for="PageTitle">
+<div class="@Orchard.GetInputWrapperCssClasses()" asp-validation-class-for="PageTitle">
     <label asp-for="PageTitle" class="@Orchard.GetLabelCssClasses()">@T["Page Title"] </label>
     <div class="@Orchard.GetEndCssClasses()">
         <input asp-for="PageTitle" class="form-control content-preview-text shortcode-modal-input" />
@@ -21,7 +21,7 @@
     </div>
 </div>
 
-<div class="row mb-3" asp-validation-class-for="MetaDescription">
+<div class="@Orchard.GetInputWrapperCssClasses()" asp-validation-class-for="MetaDescription">
     <label asp-for="MetaDescription" class="@Orchard.GetLabelCssClasses()">@T["Meta Description"] </label>
     <div class="@Orchard.GetEndCssClasses()">
         <textarea asp-for="MetaDescription" class="form-control content-preview-text shortcode-modal-input"></textarea>
@@ -31,7 +31,7 @@
 
 @if (Model.Settings.DisplayKeywords)
 {
-    <div class="row mb-3" asp-validation-class-for="MetaKeywords">
+    <div class="@Orchard.GetInputWrapperCssClasses()" asp-validation-class-for="MetaKeywords">
         <label asp-for="MetaKeywords" class="@Orchard.GetLabelCssClasses()">@T["Meta Keywords"] </label>
         <div class="@Orchard.GetEndCssClasses()">
             <input asp-for="MetaKeywords" class="form-control content-preview-text shortcode-modal-input" />
@@ -40,7 +40,7 @@
     </div>
 }
 
-<div class="row mb-3" asp-validation-class-for="Canonical">
+<div class="@Orchard.GetInputWrapperCssClasses()" asp-validation-class-for="Canonical">
     <label asp-for="Canonical" class="@Orchard.GetLabelCssClasses()"> @T["Canonical"] </label>
     <div class="@Orchard.GetEndCssClasses()">
         <input asp-for="Canonical" class="form-control content-preview-text" />
@@ -48,7 +48,7 @@
     </div>
 </div>
 
-<div class="row mb-3" asp-validation-class-for="MetaRobots">
+<div class="@Orchard.GetInputWrapperCssClasses()" asp-validation-class-for="MetaRobots">
     <label asp-for="MetaRobots" class="@Orchard.GetLabelCssClasses()">@T["Meta Robots"] </label>
     <div class="@Orchard.GetEndCssClasses()">
         <input asp-for="MetaRobots" class="form-control content-preview-text shortcode-modal-input" />

@@ -15,7 +15,7 @@
 
 @if (Model.Settings.AllowDisabled)
 {
-    <div class="row mb-3">
+    <div class="@Orchard.GetInputWrapperCssClasses()">
         <div class="@Orchard.GetEndCssClasses(true)">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="Disabled" checked="@Model.Disabled" />
@@ -27,7 +27,7 @@
 }
 
 <div class="autoroute-disabled" style="@(Model.Disabled ? "display: none" : String.Empty)">
-    <div class="row mb-3" asp-validation-class-for="Path">
+    <div class="@Orchard.GetInputWrapperCssClasses()" asp-validation-class-for="Path">
         <label asp-for="Path" class="@Orchard.GetLabelCssClasses()">@T["Permalink"]</label>
         <div class="@Orchard.GetEndCssClasses()">
             <div class="input-group">
@@ -64,7 +64,7 @@
         {
             if (showHomepageOption)
             {
-                <div class="row mb-3">
+                <div class="@Orchard.GetInputWrapperCssClasses()">
                     <div class="@Orchard.GetEndCssClasses(true)">
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" asp-for="SetHomepage" checked="@Model.SetHomepage" />
@@ -79,7 +79,7 @@
 
     @if (Model.Settings.AllowUpdatePath)
     {
-        <div class="row mb-3">
+        <div class="@Orchard.GetInputWrapperCssClasses()">
             <div class="@Orchard.GetEndCssClasses(true)">
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" asp-for="UpdatePath" checked="@Model.UpdatePath" />
@@ -92,7 +92,7 @@
 
     @if (containedContentItemsAspect.Accessors.Any() && Model.Settings.AllowRouteContainedItems)
     {
-        <div class="row mb-3">
+        <div class="@Orchard.GetInputWrapperCssClasses()">
             <div class="@Orchard.GetEndCssClasses(true)">
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" asp-for="RouteContainedItems" checked="@Model.RouteContainedItems" />
@@ -105,7 +105,7 @@
 
     @if (Model.Settings.ManageContainedItemRoutes && Model.Settings.AllowAbsolutePath)
     {
-        <div class="row mb-3">
+        <div class="@Orchard.GetInputWrapperCssClasses()">
             <div class="@Orchard.GetEndCssClasses(true)">
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" asp-for="Absolute" checked="@Model.Absolute" />

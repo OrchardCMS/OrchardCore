@@ -2,7 +2,7 @@
 @using OrchardCore
 @model DateEditorViewModel
 
-<div class="row mb-3" asp-validation-class-for="LocalDateTime">
+<div class="@Orchard.GetInputWrapperCssClasses()" asp-validation-class-for="LocalDateTime">
     <label asp-for="LocalDateTime" class="@Orchard.GetLabelCssClasses()">@T["Created"]</label>
     <div class="@Orchard.GetEndCssClasses()">
         <div class="row">

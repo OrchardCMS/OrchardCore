@@ -13,7 +13,7 @@
 <script asp-name="trumbowyg-shortcodes" at="Foot"></script>
 
 
-<div class="row mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Html)_FieldWrapper">
+<div class="@Orchard.GetInputWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Html)_FieldWrapper">
     <label asp-for="Html" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         @await DisplayAsync(await New.ShortcodeModal())

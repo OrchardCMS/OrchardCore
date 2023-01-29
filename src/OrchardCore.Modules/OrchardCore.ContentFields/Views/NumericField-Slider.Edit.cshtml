@@ -15,7 +15,7 @@
 
 <script asp-name="nouislider" at="Foot"></script>
 
-<div class="row mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Value)_FieldWrapper">
+<div class="@Orchard.GetInputWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Value)_FieldWrapper">
     <label asp-for="Value" class="@Orchard.GetLabelCssClasses()">@name</label>
     <div class="@Orchard.GetEndCssClasses()">
         <div class="row">

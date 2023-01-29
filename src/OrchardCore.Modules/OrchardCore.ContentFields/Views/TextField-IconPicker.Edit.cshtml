@@ -10,7 +10,7 @@
 <script asp-name="fontpickerScript" asp-src="~/OrchardCore.ContentFields/Scripts/fontawesome-iconpicker.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/fontawesome-iconpicker.js" at="Foot" depends-on="jquery"></script>
 <script asp-name="iconpickerCustomScript" asp-src="~/OrchardCore.ContentFields/Scripts/iconpicker-custom.js" at="Foot"></script>
 
-<div class="row mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Text)_FieldWrapper">
+<div class="@Orchard.GetInputWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Text)_FieldWrapper">
     <label asp-for="Text" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         <input type="hidden" asp-for="Text" id="@Html.IdFor(m=>m.Text)" />

@@ -21,7 +21,7 @@
     var termContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => !t.HasStereotype()).OrderBy(x => x.DisplayName);
     var index = 0;
 }
-<div class="row mb-3" asp-validation-class-for="TermContentType">
+<div class="@Orchard.GetInputWrapperCssClasses()" asp-validation-class-for="TermContentType">
     <label asp-for="TermContentType" class="@Orchard.GetLabelCssClasses()">@T["Term Content Type"]</label>
     <div class="@Orchard.GetEndCssClasses()">
         <select asp-for="TermContentType" class="form-select" asp-items="@(new SelectList(termContentTypes, "Name", "DisplayName"))">
@@ -29,7 +29,7 @@
     </div>
     <span asp-validation-for="TermContentType"></span>
 </div>
-<div class="row mb-3">
+<div class="@Orchard.GetInputWrapperCssClasses()">
 
     <div class="@Orchard.GetEndCssClasses(true)">
         @if (canAddTerm && Model.TermContentType != null)
