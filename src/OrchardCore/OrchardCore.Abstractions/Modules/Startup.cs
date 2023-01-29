@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +18,9 @@ namespace OrchardCore.Modules
         public virtual void ConfigureServices(IServiceCollection services)
         {
         }
+
+        /// <inheritdoc />
+        public virtual Task InitializeServicesAsync(IServiceProvider serviceProvider) => Task.CompletedTask;
 
         /// <inheritdoc />
         public virtual void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

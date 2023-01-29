@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 
@@ -15,6 +16,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public int Order { get; }
 
         public ICollection<Action<IServiceCollection, IServiceProvider>> ConfigureServicesActions { get; } = new List<Action<IServiceCollection, IServiceProvider>>();
+
+        public ICollection<Func<IServiceProvider, Task>> InitializeServicesTasks { get; } = new List<Func<IServiceProvider, Task>>();
 
         public ICollection<Action<IApplicationBuilder, IEndpointRouteBuilder, IServiceProvider>> ConfigureActions { get; } = new List<Action<IApplicationBuilder, IEndpointRouteBuilder, IServiceProvider>>();
     }

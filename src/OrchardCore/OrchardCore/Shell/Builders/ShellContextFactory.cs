@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Abstractions.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 
@@ -74,22 +73,14 @@ namespace OrchardCore.Environment.Shell.Builders
             await settings.EnsureConfigurationAsync();
 
             var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
-            var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
+            var provider = await _shellContainerFactory.CreateContainerAsync(settings, blueprint);
 
-            var context = new ShellContext
+            return new ShellContext
             {
                 Settings = settings,
                 Blueprint = blueprint,
                 ServiceProvider = provider
             };
-
-            var shellEvents = provider.GetServices<IShellContextEvents>();
-            foreach (var shellEvent in shellEvents)
-            {
-                await shellEvent.CreatedAsync(context);
-            }
-
-            return context;
         }
 
         /// <summary>

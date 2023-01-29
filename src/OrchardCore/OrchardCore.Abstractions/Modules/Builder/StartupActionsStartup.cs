@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace OrchardCore.Modules
 {
     /// <summary>
-    /// Represents a fake Startup class that is composed of Configure and ConfigureServices lambdas.
+    /// Represents a fake Startup class that is composed of 'Configure', 'ConfigureServices' and 'InitializeServicesAsync' lambdas.
     /// </summary>
     internal class StartupActionsStartup : StartupBase
     {
@@ -27,6 +28,14 @@ namespace OrchardCore.Modules
             foreach (var configureServices in _actions.ConfigureServicesActions)
             {
                 configureServices?.Invoke(services, _serviceProvider);
+            }
+        }
+
+        public override async Task InitializeServicesAsync(IServiceProvider serviceProvider)
+        {
+            foreach (var initializeServicesTask in _actions.InitializeServicesTasks)
+            {
+                await (initializeServicesTask?.Invoke(serviceProvider) ?? Task.CompletedTask);
             }
         }
 

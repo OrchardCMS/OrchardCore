@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -57,6 +58,26 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
+        /// This async method gets called for each tenant. Use this method to initialize container services.
+        /// </summary>
+        /// <param name="initializeAsync">The async task to execute when pre-configuring the tenant container services.</param>
+        /// <param name="order">The order of the task to execute. Lower values will be executed first.</param>
+        public OrchardCoreBuilder InitializeServices(Func<IServiceProvider, Task> initializeAsync, int order = 0)
+        {
+            if (!_actions.TryGetValue(order, out var actions))
+            {
+                actions = _actions[order] = new StartupActions(order);
+
+                ApplicationServices.AddTransient<IStartup>(sp => new StartupActionsStartup(
+                    sp.GetRequiredService<IServiceProvider>(), actions, order));
+            }
+
+            actions.InitializeServicesTasks.Add(initializeAsync);
+
+            return this;
+        }
+
+        /// <summary>
         /// This method gets called for each tenant. Use this method to configure the request's pipeline.
         /// </summary>
         /// <param name="configure">The action to execute when configuring the request's pipeline for a tenant.</param>
@@ -104,7 +125,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var service = services[index];
                     if (service.ImplementationInstance is ShellFeature feature &&
-                        string.Equals(feature.Id, id, StringComparison.OrdinalIgnoreCase))
+                        String.Equals(feature.Id, id, StringComparison.OrdinalIgnoreCase))
                     {
                         return;
                     }
