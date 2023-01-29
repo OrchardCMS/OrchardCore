@@ -181,7 +181,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 }
             }
 
-            startups = shellServiceProvider.GetServices<IStartup>().OrderBy(s => s.Order);
+            startups = shellServiceProvider.GetServices<IStartup>().OrderBy(s => s.InitializeOrder);
             foreach (var startup in startups)
             {
                 await startup.InitializeServicesAsync(shellServiceProvider);

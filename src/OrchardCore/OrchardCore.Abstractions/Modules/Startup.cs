@@ -12,6 +12,9 @@ namespace OrchardCore.Modules
         public virtual int Order { get; } = 0;
 
         /// <inheritdoc />
+        public virtual int InitializeOrder => Order;
+
+        /// <inheritdoc />
         public virtual int ConfigureOrder => Order;
 
         /// <inheritdoc />

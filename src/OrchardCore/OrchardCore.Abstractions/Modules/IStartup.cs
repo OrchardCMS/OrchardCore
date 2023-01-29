@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace OrchardCore.Modules
 {
     /// <summary>
-    /// An implementation of this interface is used to initialize the services and HTTP request
+    /// An implementation of this interface is used to initialize the services and the HTTP request pipeline.
     /// pipeline of a module.
     /// </summary>
     public interface IStartup
@@ -16,6 +16,11 @@ namespace OrchardCore.Modules
         /// Get the value to use to order startups to configure services. The default is 0.
         /// </summary>
         int Order { get; }
+
+        /// <summary>
+        /// Get the value to use to order startups to initialize services. The default is the 'Order' property.
+        /// </summary>
+        int InitializeOrder { get; }
 
         /// <summary>
         /// Get the value to use to order startups to build the pipeline. The default is the 'Order' property.
