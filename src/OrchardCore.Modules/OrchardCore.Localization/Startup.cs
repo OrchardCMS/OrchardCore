@@ -41,21 +41,19 @@ namespace OrchardCore.Localization
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var localizationService = serviceProvider.GetService<ILocalizationService>();
-
             var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
             var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
 
             var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
             var cultureOptions = serviceProvider.GetService<IOptions<CultureOptions>>().Value;
+            var useUserOverride = !cultureOptions.IgnoreSystemSettings;
 
-            var requestLocalizationOptions = new OrchardCoreRequestLocalizationOptions(ignoreSystemSettings: cultureOptions.IgnoreSystemSettings)
-                .WithRequestLocalizationOptions(localizationOptions)
-                .SetDefaultCulture(defaultCulture)
-                .AddSupportedCultures(supportedCultures)
-                .AddSupportedUICultures(supportedCultures);
+            localizationOptions
+                .SetDefaultCulture(useUserOverride, defaultCulture)
+                .AddSupportedCultures(useUserOverride, supportedCultures)
+                .AddSupportedUICultures(useUserOverride, supportedCultures);
 
-            app.UseRequestLocalization(requestLocalizationOptions);
-            app.MapCulturesAlias();
+            app.UseRequestLocalization(localizationOptions);
         }
     }
 
