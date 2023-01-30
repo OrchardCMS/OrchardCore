@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace OrchardCore.Modules
 {
     /// <summary>
-    /// Represents a fake Startup class that is composed of 'Configure', 'ConfigureServices' and 'InitializeServicesAsync' lambdas.
+    /// Represents a fake Startup class that is composed of Configure and ConfigureServices lambdas.
     /// </summary>
     internal class StartupActionsStartup : StartupBase
     {
