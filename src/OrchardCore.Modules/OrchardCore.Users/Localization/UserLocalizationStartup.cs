@@ -18,6 +18,6 @@ public class UserLocalizationStartup : StartupBase
         services.AddScoped<IUserClaimsProvider, UserLocalizationClaimsProvider>();
 
         services.Configure<RequestLocalizationOptions>(options =>
-            options.RequestCultureProviders.Insert(0, new UserLocalizationRequestCultureProvider()));
+            options.AddInitialRequestCultureProvider(new UserLocalizationRequestCultureProvider()));
     }
 }

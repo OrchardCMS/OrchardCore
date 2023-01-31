@@ -17,7 +17,7 @@ public class UserLocalizationRequestCultureProvider : RequestCultureProvider
 
         if (httpContext?.User?.Identity?.IsAuthenticated == false)
         {
-            return null;
+            return await NullProviderCultureResult;
         }
 
         string userCulture = null;

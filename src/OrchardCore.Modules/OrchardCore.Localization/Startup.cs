@@ -25,7 +25,7 @@ namespace OrchardCore.Localization
     /// </summary>
     public class Startup : StartupBase
     {
-        public override int ConfigureOrder => -100;
+        public override int ConfigureOrder => 100;
 
         /// <inheritdocs />
         public override void ConfigureServices(IServiceCollection services)
