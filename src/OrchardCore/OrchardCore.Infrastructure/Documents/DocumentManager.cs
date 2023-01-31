@@ -37,7 +37,7 @@ namespace OrchardCore.Documents
             _options = options.Get(typeof(TDocument).FullName);
             _logger = logger;
 
-            if (!(_distributedCache is MemoryDistributedCache))
+            if (_distributedCache is not MemoryDistributedCache)
             {
                 _isDistributed = true;
             }
