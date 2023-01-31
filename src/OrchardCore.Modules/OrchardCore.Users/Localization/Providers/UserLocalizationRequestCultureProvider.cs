@@ -31,7 +31,7 @@ public class UserLocalizationRequestCultureProvider : RequestCultureProvider
         if (userCulture == null)
         {
             // No values specified for either so no match
-            return null;
+            return await NullProviderCultureResult;
         }
 
         var localizationService = httpContext.RequestServices.GetService<ILocalizationService>();
@@ -41,7 +41,7 @@ public class UserLocalizationRequestCultureProvider : RequestCultureProvider
         // We verify that the userCulture is still a supportedCulture
         if (!supportedCulture.Contains(userCulture))
         {
-            return null;
+            return await NullProviderCultureResult;
         }
 
         var requestCulture = new ProviderCultureResult(userCulture);
