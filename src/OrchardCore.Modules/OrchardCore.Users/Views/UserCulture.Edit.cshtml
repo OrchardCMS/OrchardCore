@@ -1,0 +1,12 @@
+@using OrchardCore.Users.Localization.ViewModels
+@model UserLocalizationViewModel
+
+
+<div class="mb-3" asp-validation-class-for="Culture">
+    <label asp-for="Culture">@T["Default User Culture"]</label>
+    <select asp-for="Culture" asp-items="Model.SupportedCultures" class="form-select">
+        <option value="">@T["Use site's culture"]</option>
+    </select>
+    <span asp-validation-for="Culture"></span>
+    <span class="hint">@T["Determines the default culture used by this user."]</span>
+</div>

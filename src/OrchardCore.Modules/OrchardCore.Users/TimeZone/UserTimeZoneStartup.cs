@@ -11,7 +11,7 @@ using OrchardCore.Users.TimeZone.Services;
 namespace OrchardCore.Users.TimeZone
 {
     [Feature("OrchardCore.Users.TimeZone")]
-    public class Startup : StartupBase
+    public class UserTimeZoneStartup : StartupBase
     {
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
