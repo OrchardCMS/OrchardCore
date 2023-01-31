@@ -27,11 +27,11 @@ namespace OrchardCore.Recipes.RecipeSteps
             }
 
             var step = context.Step.ToObject<InternalStep>();
+
+            var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(harvester => harvester.HarvestRecipesAsync()));
+            var recipes = recipeCollections.SelectMany(recipe => recipe).ToDictionary(recipe => recipe.Name);
+
             var innerRecipes = new List<RecipeDescriptor>();
-
-            var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
-            var recipes = recipeCollections.SelectMany(x => x).ToDictionary(x => x.Name);
-
             foreach (var recipe in step.Values)
             {
                 if (!recipes.ContainsKey(recipe.Name))
