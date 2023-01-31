@@ -52,7 +52,7 @@ namespace OrchardCore.Queries.Sql
 
             if (!SqlParser.TryParse(tokenizedQuery, _session.Store.Configuration.Schema, dialect, _session.Store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
-                sqlQueryResults.Items = new object[0];
+                sqlQueryResults.Items = System.Array.Empty<object>();
                 connection.Dispose();
                 return sqlQueryResults;
             }
