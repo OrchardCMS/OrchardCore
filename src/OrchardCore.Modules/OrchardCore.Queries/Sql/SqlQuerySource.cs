@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -52,7 +53,7 @@ namespace OrchardCore.Queries.Sql
 
             if (!SqlParser.TryParse(tokenizedQuery, _session.Store.Configuration.Schema, dialect, _session.Store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
-                sqlQueryResults.Items = System.Array.Empty<object>();
+                sqlQueryResults.Items = Array.Empty<object>();
                 connection.Dispose();
                 return sqlQueryResults;
             }
