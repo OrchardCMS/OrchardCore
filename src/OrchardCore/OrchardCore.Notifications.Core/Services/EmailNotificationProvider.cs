@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email;
@@ -35,24 +36,17 @@ public class EmailNotificationProvider : INotificationMethodProvider
         {
             To = user.Email,
             Subject = message.Summary,
-            BodyText = message.Summary,
+            BodyText = message.TextBody,
             IsBodyHtml = false,
             IsBodyText = true,
         };
 
-        if (message is INotificationBodyMessage emailNotificationMessage)
+        if (message.IsHtmlPreferred && !String.IsNullOrWhiteSpace(message.HtmlBody))
         {
-            if (emailNotificationMessage.IsHtmlBody)
-            {
-                emailMessage.Body = emailNotificationMessage.Body;
-                emailMessage.BodyText = null;
-                emailMessage.IsBodyHtml = true;
-                emailMessage.IsBodyText = false;
-            }
-            else
-            {
-                emailMessage.BodyText = emailNotificationMessage.Body;
-            }
+            emailMessage.Body = message.HtmlBody;
+            emailMessage.BodyText = null;
+            emailMessage.IsBodyHtml = true;
+            emailMessage.IsBodyText = false;
         }
 
         var result = await _smtpService.SendAsync(emailMessage);

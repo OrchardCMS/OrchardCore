@@ -66,7 +66,7 @@ public class NotificationService : INotificationService
         {
             NotificationId = IdGenerator.GenerateId(),
             CreatedUtc = _clock.UtcNow,
-            Summary = context.NotificationMessage.Summary,
+            Summary = context.NotificationMessage.TextBody,
         };
 
         context.Notification = notification;
