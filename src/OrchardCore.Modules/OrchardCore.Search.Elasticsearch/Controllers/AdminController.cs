@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -22,6 +21,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -173,7 +173,7 @@ namespace OrchardCore.Search.Elasticsearch
                 AnalyzerName = IsCreate ? "standardanalyzer" : settings.AnalyzerName,
                 IndexLatest = settings.IndexLatest,
                 Culture = settings.Culture,
-                Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
+                Cultures = CultureInfoHelper.GetAllCulturesWithAliases()
                     .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
                 Analyzers = _elasticAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
@@ -212,7 +212,7 @@ namespace OrchardCore.Search.Elasticsearch
 
             if (!ModelState.IsValid)
             {
-                model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
+                model.Cultures = CultureInfoHelper.GetAllCulturesWithAliases()
                     .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" });
                 model.Analyzers = _elasticAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name });
@@ -368,7 +368,7 @@ namespace OrchardCore.Search.Elasticsearch
             }
 
             await _elasticIndexingService.SyncSettings();
-            
+
             return RedirectToAction("index");
         }
 
