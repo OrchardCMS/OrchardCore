@@ -39,7 +39,7 @@ namespace OrchardCore.ContentFields.Drivers
             return Initialize<EditTextFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
-                model.Text = context.IsNew ? settings.DefaultValue : field.Text;
+                model.Text = context.IsNew && field.Text == null ? settings.DefaultValue : field.Text;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
