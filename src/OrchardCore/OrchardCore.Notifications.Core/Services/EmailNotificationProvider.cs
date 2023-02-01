@@ -27,29 +27,29 @@ public class EmailNotificationProvider : INotificationMethodProvider
     {
         var user = notify as User;
 
-        if (user == null)
+        if (String.IsNullOrEmpty(user?.Email))
         {
             return false;
         }
 
-        var emailMessage = new MailMessage()
+        var mailMessage = new MailMessage()
         {
             To = user.Email,
             Subject = message.Summary,
-            BodyText = message.TextBody,
-            IsBodyHtml = false,
-            IsBodyText = true,
         };
 
         if (message.IsHtmlPreferred && !String.IsNullOrWhiteSpace(message.HtmlBody))
         {
-            emailMessage.Body = message.HtmlBody;
-            emailMessage.BodyText = null;
-            emailMessage.IsBodyHtml = true;
-            emailMessage.IsBodyText = false;
+            mailMessage.Body = message.HtmlBody;
+            mailMessage.IsBodyHtml = true;
+        }
+        else
+        {
+            mailMessage.BodyText = message.TextBody;
+            mailMessage.IsBodyText = true;
         }
 
-        var result = await _smtpService.SendAsync(emailMessage);
+        var result = await _smtpService.SendAsync(mailMessage);
 
         return result.Succeeded;
     }

@@ -3,7 +3,7 @@ namespace OrchardCore.Notifications.Models;
 public class NotificationBodyInfo
 {
     /// <summary>
-    /// The Summary or subject of the notification.
+    /// The summary or subject of the notification.
     /// </summary>
     public string Summary { get; set; }
 
