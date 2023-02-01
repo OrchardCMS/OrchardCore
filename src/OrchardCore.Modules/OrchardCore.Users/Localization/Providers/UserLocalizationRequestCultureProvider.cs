@@ -17,7 +17,7 @@ public class UserLocalizationRequestCultureProvider : RequestCultureProvider
 
         if (httpContext?.User?.Identity?.IsAuthenticated == false)
         {
-            return await NullProviderCultureResult;
+            return default;
         }
 
         string userCulture = null;
@@ -31,7 +31,7 @@ public class UserLocalizationRequestCultureProvider : RequestCultureProvider
         if (userCulture == null)
         {
             // No values specified for either so no match
-            return await NullProviderCultureResult;
+            return default;
         }
 
         var localizationService = httpContext.RequestServices.GetService<ILocalizationService>();
@@ -41,7 +41,7 @@ public class UserLocalizationRequestCultureProvider : RequestCultureProvider
         // We verify that the userCulture is still a supportedCulture
         if (!supportedCulture.Contains(userCulture))
         {
-            return await NullProviderCultureResult;
+            return default;
         }
 
         var requestCulture = new ProviderCultureResult(userCulture);
