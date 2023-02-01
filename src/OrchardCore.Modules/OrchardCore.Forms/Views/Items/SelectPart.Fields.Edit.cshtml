@@ -118,27 +118,29 @@
         </div>
     </div>
 
-    <div class="mb-3 field-options-wrapper" id="@(widgetId)-selectOptions" data-defaultValue="@Model.DefaultValue">
-        <input type="hidden" class="field-options-wrapper-initial-default-value" value="@Model.DefaultValue" />
-        <div class="d-none field-options-wrapper-initial-options">@Html.Raw(Model.Options)</div>
+    <div class="@Orchard.GetWrapperCssClasses("field-options-wrapper")" id="@(widgetId)-selectOptions" data-defaultValue="@Model.DefaultValue">
+        <label asp-for="Options" class="@Orchard.GetLabelCssClasses()">@T["Options"]</label>
 
-        <label asp-for="Options">@T["Options"]</label>
-        <a href="#" v-on:click.prevent.stop="showModal = true" class="float-end" title="@T["Edit Data"]"><i class="fas fa-edit" aria-hidden="true"></i></a>
-        <select-options-table :data="state"
-                              :mode="'single'"
-                              v-on:reorder-option="reorderOption"
-                              v-on:add-option="addOption"
-                              v-on:remove-option="removeOption"
-                              v-on:set-default="setDefaultValue">
-        </select-options-table>
-        <select-options-modal :data="state"
-                              :valid-options="validOptions"
-                              :show-modal="showModal"
-                              v-on:modal-cancel="cancelChanges"
-                              v-on:modal-save="updateChanges">
-        </select-options-modal>
-        <input id="@Html.IdFor(m => m.DefaultValue)" name="@Html.NameFor(m => m.DefaultValue)" type="hidden" v-model="state.defaultValue">
-        <input id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="stringify" />
+        <div class="@Orchard.GetEndCssClasses()">
+            <input type="hidden" class="field-options-wrapper-initial-default-value" value="@Model.DefaultValue" />
+            <div class="d-none field-options-wrapper-initial-options">@Html.Raw(Model.Options)</div>
+            <a href="#" v-on:click.prevent.stop="showModal = true" class="float-end" title="@T["Edit Data"]"><i class="fas fa-edit" aria-hidden="true"></i></a>
+            <select-options-table :data="state"
+                                  :mode="'single'"
+                                  v-on:reorder-option="reorderOption"
+                                  v-on:add-option="addOption"
+                                  v-on:remove-option="removeOption"
+                                  v-on:set-default="setDefaultValue">
+            </select-options-table>
+            <select-options-modal :data="state"
+                                  :valid-options="validOptions"
+                                  :show-modal="showModal"
+                                  v-on:modal-cancel="cancelChanges"
+                                  v-on:modal-save="updateChanges">
+            </select-options-modal>
+            <input id="@Html.IdFor(m => m.DefaultValue)" name="@Html.NameFor(m => m.DefaultValue)" type="hidden" v-model="state.defaultValue">
+            <input id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="stringify" />
+        </div>
     </div>
 </div>
 
