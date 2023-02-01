@@ -13,7 +13,7 @@
 
 @if (namedPart)
 {
-    <div class="@Orchard.GetInputWrapperCssClasses("content-part-wrapper", $"content-part-wrapper-{name}")">
+    <div class="@Orchard.GetWrapperCssClasses("content-part-wrapper", $"content-part-wrapper-{name}")">
         <div class="@Orchard.GetLabelCssClasses()">
             @typePartDefinition.DisplayName()
 

@@ -9,6 +9,13 @@ namespace OrchardCore;
 
 public static class CssOrchardHelper
 {
+    public static string GetLimitedWidthWrapperCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
+    {
+        var options = GetThemeOptions(helper);
+
+        return String.Join(' ', Combine(options.LimitedWidthWrapperClasses, additionalClasses));
+    }
+
     public static string GetLimitedWidthCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
     {
         var options = GetThemeOptions(helper);
@@ -37,11 +44,11 @@ public static class CssOrchardHelper
         return String.Join(' ', Combine(options.EndClasses, additionalClasses));
     }
 
-    public static string GetInputWrapperCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
+    public static string GetWrapperCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
     {
         var options = GetThemeOptions(helper);
 
-        return String.Join(' ', Combine(options.InputWrapperClasses, additionalClasses));
+        return String.Join(' ', Combine(options.WrapperClasses, additionalClasses));
     }
 
     public static string GetEndCssClasses(this IOrchardHelper helper, bool withOffset, params string[] additionalClasses)

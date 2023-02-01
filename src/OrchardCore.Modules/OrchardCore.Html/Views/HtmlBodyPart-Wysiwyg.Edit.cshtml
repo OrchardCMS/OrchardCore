@@ -16,7 +16,7 @@
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="@Orchard.GetInputWrapperCssClasses()">
+<div class="@Orchard.GetWrapperCssClasses()">
     <label asp-for="Html" class="@Orchard.GetLabelCssClasses()">@Model.TypePartDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         @if (culture.IsRightToLeft())

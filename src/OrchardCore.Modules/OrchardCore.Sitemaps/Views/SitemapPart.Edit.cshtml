@@ -1,6 +1,6 @@
 @using OrchardCore
 @model SitemapPartViewModel
-<div class="@Orchard.GetInputWrapperCssClasses()">
+<div class="@Orchard.GetWrapperCssClasses()">
     <div class="@Orchard.GetEndCssClasses(true)">
         <div class="form-check">
             <input asp-for="OverrideSitemapConfig" class="form-check-input" />
@@ -16,14 +16,14 @@
         </div>
     </div>
 </div>
-<div class="@Orchard.GetInputWrapperCssClasses()">
+<div class="@Orchard.GetWrapperCssClasses()">
     <label asp-for="ChangeFrequency" class="@Orchard.GetLabelCssClasses()">@T["Change Frequency"]</label>
     <div class="@Orchard.GetEndCssClasses("sitemap-form-g")" asp-validation-class-for="ChangeFrequency" style="@(Model.OverrideSitemapConfig ? String.Empty : "display: none")">
         <select asp-for="ChangeFrequency" class="form-select" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
         <span class="hint">@T["The frequency this content item is likely to change."]</span>
     </div>
 </div>
-<div class="@Orchard.GetInputWrapperCssClasses()">
+<div class="@Orchard.GetWrapperCssClasses()">
     <label asp-for="Priority" class="@Orchard.GetLabelCssClasses()">@T["Priority"] </label>
     <div class="@Orchard.GetEndCssClasses("sitemap-form-g")" asp-validation-class-for="Priority" style="@(Model.OverrideSitemapConfig ? String.Empty : "display: none")">
         <select asp-for="Priority" class="form-select">
