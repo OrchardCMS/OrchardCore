@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -8,6 +9,7 @@ namespace OrchardCore.Localization;
 /// <summary>
 /// Represents an options for the <see cref="RequestLocalizationMiddleware"/> that extends <see cref="RequestLocalizationOptions"/>.
 /// </summary>
+[Obsolete("This class has been deprecated and will be removed on the upcoming major verion.", error: true)]
 public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
 {
     private readonly bool _useUserOverride;
