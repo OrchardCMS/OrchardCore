@@ -28,7 +28,7 @@ namespace OrchardCore.Localization
         /// <summary>
         /// Gets a list of supported cultures by operating system.
         /// </summary>
-        static CultureInfo[] GetCulturesAndAliases()
+        static CultureInfo[] GetAllCulturesAndAliases()
         {
             var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
                 .Union(_cultureAliases)

@@ -67,7 +67,7 @@ namespace OrchardCore.Localization.Drivers
 
             return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
             {
-                model.Cultures = ILocalizationService.GetCulturesAndAliases()
+                model.Cultures = ILocalizationService.GetAllCulturesAndAliases()
                     .Select(cultureInfo =>
                     {
                         return new CultureEntry
