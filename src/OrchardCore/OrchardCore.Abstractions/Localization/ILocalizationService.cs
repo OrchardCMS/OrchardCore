@@ -9,7 +9,7 @@ namespace OrchardCore.Localization
     /// </summary>
     public interface ILocalizationService
     {
-        private static readonly CultureInfo[] _aliasCultures = new[]
+        private static readonly CultureInfo[] _cultureAliases = new[]
         {
             CultureInfo.GetCultureInfo("zh-CN"),
             CultureInfo.GetCultureInfo("zh-TW")
@@ -31,7 +31,7 @@ namespace OrchardCore.Localization
         static CultureInfo[] GetCultures()
         {
             var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                .Union(_aliasCultures)
+                .Union(_cultureAliases)
                 .OrderBy(c => c.Name);
 
             return cultures.ToArray();
