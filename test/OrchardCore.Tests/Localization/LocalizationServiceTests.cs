@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Localization;
 public class LocalizationService
 {
     [Fact]
-    public void GetCultures_ShouldContainsChineseCultures()
+    public void GetCulturesAndAliases_ShouldContainsChineseCultures()
     {
         // Act
         var cultures = ILocalizationService.GetCulturesAndAliases();
