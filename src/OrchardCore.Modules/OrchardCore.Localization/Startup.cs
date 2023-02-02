@@ -48,13 +48,13 @@ namespace OrchardCore.Localization
             var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
             var cultureOptions = serviceProvider.GetService<IOptions<CultureOptions>>().Value;
 
-            var requestLocalizationOptions = new OrchardCoreRequestLocalizationOptions(ignoreSystemSettings: cultureOptions.IgnoreSystemSettings)
-                .WithRequestLocalizationOptions(localizationOptions)
+            var localizationOptionsBuilder = new RequestLocalizationOptionsBuilder(localizationOptions, !cultureOptions.IgnoreSystemSettings);
+            localizationOptionsBuilder
                 .SetDefaultCulture(defaultCulture)
                 .AddSupportedCultures(supportedCultures)
                 .AddSupportedUICultures(supportedCultures);
 
-            app.UseRequestLocalization(requestLocalizationOptions);
+            app.UseRequestLocalization(localizationOptionsBuilder.Options);
             app.MapCulturesAlias();
         }
     }
