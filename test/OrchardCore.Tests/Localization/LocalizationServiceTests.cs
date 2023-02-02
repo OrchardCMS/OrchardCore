@@ -8,7 +8,7 @@ public class LocalizationService
     public void GetCultures_ShouldContainsChineseCultures()
     {
         // Act
-        var cultures = ILocalizationService.GetCultures();
+        var cultures = ILocalizationService.GetCulturesAndAliases();
 
         // Assert
         Assert.Contains(cultures, c => c.Name == "zh-CN");

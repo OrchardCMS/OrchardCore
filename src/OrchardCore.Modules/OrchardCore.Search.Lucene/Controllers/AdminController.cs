@@ -170,7 +170,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                 AnalyzerName = IsCreate ? "standardanalyzer" : settings.AnalyzerName,
                 IndexLatest = settings.IndexLatest,
                 Culture = settings.Culture,
-                Cultures = ILocalizationService.GetCultures()
+                Cultures = ILocalizationService.GetCulturesAndAliases()
                     .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
                 Analyzers = _luceneAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
