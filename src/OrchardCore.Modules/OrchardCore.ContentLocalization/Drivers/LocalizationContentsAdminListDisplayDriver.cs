@@ -39,7 +39,7 @@ namespace OrchardCore.ContentLocalization.Drivers
             return Initialize<LocalizationContentsAdminFilterViewModel>("ContentsAdminList__LocalizationPartFilter", async m =>
                 {
                     model.FilterResult.MapTo(m);
-                    var supportedCultures = await _localizationService.GetSupportedCulturesAndAliasesAsync();
+                    var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
                     var cultures = new List<SelectListItem>
                     {
                         new SelectListItem() { Text = S["All cultures"], Value = "", Selected = String.IsNullOrEmpty(m.SelectedCulture) }

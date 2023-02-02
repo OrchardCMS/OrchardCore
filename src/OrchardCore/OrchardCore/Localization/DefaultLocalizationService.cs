@@ -15,6 +15,6 @@ namespace OrchardCore.Localization
         public Task<string> GetDefaultCultureAsync() => DefaultCulture;
 
         /// <inheritdocs />
-        public Task<string[]> GetSupportedCulturesAndAliasesAsync() => SupportedCultures;
+        public Task<string[]> GetSupportedCulturesAsync() => SupportedCultures;
     }
 }

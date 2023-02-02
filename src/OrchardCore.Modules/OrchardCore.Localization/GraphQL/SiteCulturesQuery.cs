@@ -63,7 +63,7 @@ namespace OrchardCore.Localization.GraphQL
             var localizationService = resolveContext.RequestServices.GetService<ILocalizationService>();
 
             var defaultCulture = await localizationService.GetDefaultCultureAsync();
-            var supportedCultures = await localizationService.GetSupportedCulturesAndAliasesAsync();
+            var supportedCultures = await localizationService.GetSupportedCulturesAsync();
 
             var cultures = supportedCultures.Select(culture =>
                new SiteCulture

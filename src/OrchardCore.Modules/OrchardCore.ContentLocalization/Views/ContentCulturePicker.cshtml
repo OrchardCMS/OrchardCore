@@ -4,7 +4,7 @@
 
 @{
     var currentCulture = Context.Features.Get<IRequestCultureFeature>()?.RequestCulture?.Culture ?? CultureInfo.CurrentUICulture;
-    var supportedCultures = (await localizationService.GetSupportedCulturesAndAliasesAsync()).Select(c => CultureInfo.GetCultureInfo(c));
+    var supportedCultures = (await localizationService.GetSupportedCulturesAsync()).Select(c => CultureInfo.GetCultureInfo(c));
 }
 @await DisplayAsync(await New.ContentCulturePickerContainer(
     CurrentCulture: currentCulture,
