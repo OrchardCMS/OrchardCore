@@ -22,7 +22,7 @@
 
         @if (Model.Actions != null)
         {
-            <div class="row mb-3 edit-item-secondary group">
+            <div class="@Orchard.GetWrapperCssClasses("edit-item-secondary","group")">
                 <div class="@Orchard.GetEndCssClasses(true, "edit-item-actions")">
                     @await DisplayAsync(Model.Actions)
 
