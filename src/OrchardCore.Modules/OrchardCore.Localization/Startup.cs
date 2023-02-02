@@ -43,7 +43,7 @@ namespace OrchardCore.Localization
             var localizationService = serviceProvider.GetService<ILocalizationService>();
 
             var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
-            var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
+            var supportedCultures = localizationService.GetSupportedCulturesAndAliasesAsync().GetAwaiter().GetResult();
 
             var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
             var cultureOptions = serviceProvider.GetService<IOptions<CultureOptions>>().Value;

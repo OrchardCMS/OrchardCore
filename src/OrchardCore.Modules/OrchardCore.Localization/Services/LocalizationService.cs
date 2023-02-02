@@ -36,7 +36,7 @@ namespace OrchardCore.Localization.Services
         }
 
         /// <inheritdocs />
-        public async Task<string[]> GetSupportedCulturesAsync()
+        public async Task<string[]> GetSupportedCulturesAndAliasesAsync()
         {
             await InitializeLocalizationSettingsAsync();
 

@@ -9,7 +9,7 @@ namespace OrchardCore.Localization
     /// </summary>
     public interface ILocalizationService
     {
-        private static readonly CultureInfo[] _chineseAliasCultures = new[]
+        private static readonly CultureInfo[] _aliasCultures = new[]
         {
             CultureInfo.GetCultureInfo("zh-CN"),
             CultureInfo.GetCultureInfo("zh-TW")
@@ -23,7 +23,7 @@ namespace OrchardCore.Localization
         /// <summary>
         /// Returns all the supported cultures of the site. It also contains the default culture.
         /// </summary>
-        Task<string[]> GetSupportedCulturesAsync();
+        Task<string[]> GetSupportedCulturesAndAliasesAsync();
 
         /// <summary>
         /// Gets a list of supported cultures by operating system.
@@ -31,7 +31,7 @@ namespace OrchardCore.Localization
         static CultureInfo[] GetCultures()
         {
             var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                .Union(_chineseAliasCultures)
+                .Union(_aliasCultures)
                 .OrderBy(c => c.Name);
 
             return cultures.ToArray();

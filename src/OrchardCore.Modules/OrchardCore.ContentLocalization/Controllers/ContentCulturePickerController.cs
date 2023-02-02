@@ -44,7 +44,7 @@ namespace OrchardCore.ContentLocalization.Controllers
             var queryString = new QueryString(queryStringValue);
             var url = HttpContext.Request.PathBase + contentItemUrl + queryString;
 
-            var supportedCultures = await _locationService.GetSupportedCulturesAsync();
+            var supportedCultures = await _locationService.GetSupportedCulturesAndAliasesAsync();
 
             if (supportedCultures.Any(t => t == targetCulture))
             {
