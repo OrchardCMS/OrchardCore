@@ -16,6 +16,7 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
     /// <summary>
     /// Creates a new <see cref="OrchardCoreRequestLocalizationOptions"/> with default values.
     /// </summary>
+    [Obsolete("This constructor has been deprecated, please use OrchardCoreRequestLocalizationOptions(RequestLocalizationOptions, bool) instead.", error: true)]
     public OrchardCoreRequestLocalizationOptions() : this(ignoreSystemSettings: false)
     {
     }
@@ -24,28 +25,28 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
     /// Creates a new <see cref="OrchardCoreRequestLocalizationOptions"/> with default values and the ability to ignore system settings.
     /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not.</param>
     /// </summary>
+    [Obsolete("This constructor has been deprecated, please use OrchardCoreRequestLocalizationOptions(RequestLocalizationOptions, bool) instead.", error: true)]
     public OrchardCoreRequestLocalizationOptions(bool ignoreSystemSettings) : base()
     {
-        _useUserOverride = !ignoreSystemSettings;
     }
 
     /// <summary>
-    /// Initializes the options properties from a provided <see cref="RequestLocalizationOptions"/> instance.
-    /// <param name="requestLocalizationOptions">The provided <see cref="RequestLocalizationOptions"/>.</param>
+    /// Creates a new <see cref="OrchardCoreRequestLocalizationOptions"/> with options properties from a given <see cref="RequestLocalizationOptions"/> instance and the ability to ignore system settings.
     /// </summary>
-    public OrchardCoreRequestLocalizationOptions WithRequestLocalizationOptions(RequestLocalizationOptions requestLocalizationOptions)
+    /// <param name="requestLocalizationOptions">The <see cref="RequestLocalizationOptions"/>.</param>
+    /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not.</param>
+    public OrchardCoreRequestLocalizationOptions(RequestLocalizationOptions requestLocalizationOptions, bool ignoreSystemSettings)
     {
         if (requestLocalizationOptions is null)
         {
             throw new ArgumentNullException(nameof(requestLocalizationOptions));
         }
 
+        _useUserOverride = !ignoreSystemSettings;
         ApplyCurrentCultureToResponseHeaders = requestLocalizationOptions.ApplyCurrentCultureToResponseHeaders;
         RequestCultureProviders = requestLocalizationOptions.RequestCultureProviders;
         FallBackToParentCultures = requestLocalizationOptions.FallBackToParentCultures;
         FallBackToParentUICultures = requestLocalizationOptions.FallBackToParentUICultures;
-
-        return this;
     }
 
     /// <inheritdoc/>

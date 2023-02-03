@@ -48,8 +48,7 @@ namespace OrchardCore.Localization
             var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
             var cultureOptions = serviceProvider.GetService<IOptions<CultureOptions>>().Value;
 
-            var requestLocalizationOptions = new OrchardCoreRequestLocalizationOptions(cultureOptions.IgnoreSystemSettings)
-                .WithRequestLocalizationOptions(localizationOptions)
+            var requestLocalizationOptions = new OrchardCoreRequestLocalizationOptions(localizationOptions, cultureOptions.IgnoreSystemSettings)
                 .SetDefaultCulture(defaultCulture)
                 .AddSupportedCultures(supportedCultures)
                 .AddSupportedUICultures(supportedCultures);
