@@ -106,7 +106,7 @@ public class Startup : Modules.StartupBase
 
                 var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
                     ?.Features.Get<ShellContextFeature>()
-                    ?.OriginalPathBase;
+                    ?.OriginalPathBase ?? PathString.Empty;
 
                 if (originalPathBase.HasValue)
                 {
