@@ -17,7 +17,7 @@ public class RequestLocalizationOptionsBuilder
 
     public RequestLocalizationOptions Options { init;  get; }
 
-    public RequestLocalizationOptions AddSupportedCultures(params string[] cultures)
+    public RequestLocalizationOptionsBuilder AddSupportedCultures(params string[] cultures)
     {
         var supportedCultures = new List<CultureInfo>(cultures.Length);
 
@@ -28,10 +28,10 @@ public class RequestLocalizationOptionsBuilder
 
         Options.SupportedCultures = supportedCultures;
 
-        return Options;
+        return this;
     }
 
-    public RequestLocalizationOptions AddSupportedUICultures(params string[] uiCultures)
+    public RequestLocalizationOptionsBuilder AddSupportedUICultures(params string[] uiCultures)
     {
         var supportedUICultures = new List<CultureInfo>(uiCultures.Length);
         foreach (var culture in uiCultures)
@@ -41,13 +41,13 @@ public class RequestLocalizationOptionsBuilder
 
         Options.SupportedUICultures = supportedUICultures;
 
-        return Options;
+        return this;
     }
 
-    public RequestLocalizationOptions SetDefaultCulture(string defaultCulture)
+    public RequestLocalizationOptionsBuilder SetDefaultCulture(string defaultCulture)
     {
         Options.DefaultRequestCulture = new RequestCulture(new CultureInfo(defaultCulture, _useUserOverride));
 
-        return Options;
+        return this;
     }
 }
