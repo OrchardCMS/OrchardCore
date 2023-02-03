@@ -101,7 +101,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 return factory();
             }
 
-            if (!Current._items.TryGetValue(key, out var value) || !(value is T item))
+            if (!Current._items.TryGetValue(key, out var value) || value is not T item)
             {
                 Current._items[key] = item = factory();
             }
@@ -119,7 +119,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 return new T();
             }
 
-            if (!Current._items.TryGetValue(key, out var value) || !(value is T item))
+            if (!Current._items.TryGetValue(key, out var value) || value is not T item)
             {
                 Current._items[key] = item = new T();
             }
