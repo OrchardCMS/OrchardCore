@@ -11,33 +11,43 @@
 <script asp-src="~/OrchardCore.Menu/Scripts/menu.js" at="Foot" depends-on="admin, jQuery-ui"></script>
 <style asp-src="~/OrchardCore.Menu/Styles/menu.min.css" debug-src="~/OrchardCore.Menu/Styles/menu.css" depends-on="jQuery-ui"></style>
 
+@using OrchardCore
 @using OrchardCore.ContentManagement.Metadata.Settings
 
 @{
     var updater = ModelUpdaterAccessor.ModelUpdater;
     var canAddMenuItem = Model.MenuPart.ContentItem.Id != 0;
     var index = 0;
+    var items = Model.MenuPart.ContentItem.As<MenuItemsListPart>().MenuItems;
 }
 
-<div class="card mb-3">
-    <div class="card-body bg-primary p-3">
-        <button type="button" @(canAddMenuItem ? null : "disabled=\"disabled\"") class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalMenuItems">
-            @T["Add Menu Item"]
-        </button>
+<div class="@Orchard.GetWrapperCssClasses()">
+    <div class="@Orchard.GetEndCssClasses(true)">
+        <div class="card bg-primary">
+            <div class="card-body p-3">
+                <button type="button" @(canAddMenuItem ? null : "disabled=\"disabled\"") class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalMenuItems">
+                    @T["Add Menu Item"]
+                </button>
+            </div>
+        </div>
+        @if (items.Count > 0)
+        {
+            <ol id="menu" class="list-group mt-3">
+                @foreach (var menuItem in items)
+                {
+                    if (Model.MenuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
+                    {
+                        dynamic menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
+                        menuItemShape.MenuPart = Model.MenuPart;
+                        menuItemShape.Index = index++;
+
+                        @await DisplayAsync(menuItemShape)
+                    }
+                }
+            </ol>
+        }
     </div>
 </div>
-<ol id="menu" class="list-group my-3">
-    @foreach (var menuItem in Model.MenuPart.ContentItem.As<MenuItemsListPart>().MenuItems)
-    {
-        if (Model.MenuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
-        {
-            dynamic menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
-            menuItemShape.MenuPart = Model.MenuPart;
-            menuItemShape.Index = index++;
-            @await DisplayAsync(menuItemShape);
-        }
-    }
-</ol>
 
 <!-- Modal -->
 <div class="modal fade" id="modalMenuItems" tabindex="-1" role="dialog" aria-labelledby="available-menu-items-title" aria-hidden="true">

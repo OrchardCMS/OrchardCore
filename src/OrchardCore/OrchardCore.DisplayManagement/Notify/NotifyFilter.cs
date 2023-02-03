@@ -92,7 +92,7 @@ namespace OrchardCore.DisplayManagement.Notify
             object result = filterContext is ActionExecutedContext ace ? ace.Result : ((PageHandlerExecutedContext)filterContext).Result;
             // Result is not a view, so assume a redirect and assign values to TemData.
             // String data type used instead of complex array to be session-friendly.
-            if (!(result is ViewResult || result is PageResult) && _existingEntries.Length > 0)
+            if (result is not ViewResult && result is not PageResult && _existingEntries.Length > 0)
             {
                 filterContext.HttpContext.Response.Cookies.Append(CookiePrefix, SerializeNotifyEntry(_existingEntries), new CookieOptions { HttpOnly = true, Path = _tenantPath });
             }
@@ -136,7 +136,7 @@ namespace OrchardCore.DisplayManagement.Notify
                 return;
             }
 
-            if (!(filterContext.Result is ViewResult || filterContext.Result is PageResult))
+            if (filterContext.Result is not ViewResult && filterContext.Result is not PageResult)
             {
                 await next();
                 return;

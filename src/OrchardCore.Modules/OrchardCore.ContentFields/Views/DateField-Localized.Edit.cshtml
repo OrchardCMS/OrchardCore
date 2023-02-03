@@ -6,10 +6,10 @@
     var datepickerId = Html.IdFor(m => m.Value);
 }
 
-<div class="row mb-3">
+<div class="@Orchard.GetWrapperCssClasses()">
     <label asp-for="Value" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
-        <div class="row">
+        <div class="@Orchard.GetLimitedWidthWrapperCssClasses()">
             <div class="@Orchard.GetLimitedWidthCssClasses()">
                 <input asp-for="Value" type="text" class="form-control content-preview-select datepicker" required="@settings.Required" />
             </div>

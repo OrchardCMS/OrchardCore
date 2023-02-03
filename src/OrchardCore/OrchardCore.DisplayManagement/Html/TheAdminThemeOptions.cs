@@ -3,9 +3,20 @@ namespace OrchardCore.DisplayManagement.Html;
 public class TheAdminThemeOptions
 {
     /// <summary>
-    /// Space seperated CSS classes used to control the width of inputs with controls like numeric input.
+    /// Space seperated CSS classes used to control the wrapper.
     /// </summary>
-    public string LimitedWidth { get; set; } = "col-md-6 col-lg-4 col-xxl-3";
+    public string WrapperClasses { get; set; } = "mb-3";
+
+    /// <summary>
+    /// Space seperated CSS classes used to control the wrapper for limited width elements.
+    /// </summary>
+    public string LimitedWidthWrapperClasses { get; set; } = "row";
+
+    //GroupWrapperClasses
+    /// <summary>
+    /// Space seperated CSS classes used to control the width of input elements like numeric, date, etc.
+    /// </summary>
+    public string LimitedWidthClasses { get; set; } = "col-md-6 col-lg-4 col-xxl-3";
 
     /// <summary>
     /// Space seperated CSS classes to add to the leading element like other than a label.

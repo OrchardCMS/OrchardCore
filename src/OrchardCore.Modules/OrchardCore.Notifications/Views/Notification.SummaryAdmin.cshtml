@@ -36,17 +36,10 @@
 
                     <h5 class="mb-0">@notification.Summary</h5>
 
-                    @if (!String.IsNullOrWhiteSpace(bodyInfo.Body))
+                    @if (!String.IsNullOrWhiteSpace(bodyInfo.TextBody))
                     {
                         <p class="mb-0 mt-2">
-                            @if (bodyInfo.IsHtmlBody)
-                            {
-                                @Html.Raw(bodyInfo.Body)
-                            }
-                            else
-                            {
-                                @bodyInfo.Body
-                            }
+                            @bodyInfo.TextBody
                         </p>
                     }
 
