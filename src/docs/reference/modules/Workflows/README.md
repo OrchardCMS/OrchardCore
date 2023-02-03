@@ -271,7 +271,7 @@ var input = new Dictionary<string, object>()
 await workflowManager.TriggerEventAsync("CustomTaskActivity", input);
 ```
 
-You may passing an instance of a custom object to the workflow's input by adding it to the input collection. If you are looking to use liquid to access the member of the custom object, you must register a member access strategy. The following example for definitng a custom type
+You may passing an instance of a custom object to the workflow's input by adding it to the input collection. If you are looking to use liquid to access the member of the custom object, you must register a member access strategy. The following example for defining a custom type.
 
 ```csharp
 services.Configure<TemplateOptions>(o =>
