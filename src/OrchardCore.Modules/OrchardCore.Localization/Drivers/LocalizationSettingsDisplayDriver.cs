@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -25,12 +24,6 @@ namespace OrchardCore.Localization.Drivers
     public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, LocalizationSettings>
     {
         public const string GroupId = "localization";
-
-        private static readonly CultureInfo[] _chineseAliasCultures = new[]
-        {
-            CultureInfo.GetCultureInfo("zh-CN"),
-            CultureInfo.GetCultureInfo("zh-TW")
-        };
 
         private readonly INotifier _notifier;
         private readonly IShellHost _shellHost;
@@ -74,11 +67,7 @@ namespace OrchardCore.Localization.Drivers
 
             return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
             {
-                // Add zh-CN and zh-TW cultures for backward compatibility
-                // For more info: https://github.com/OrchardCMS/OrchardCore/issues/11672
-                model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                    .Union(_chineseAliasCultures)
-                    .OrderBy(c => c.Name)
+                model.Cultures = ILocalizationService.GetAllCulturesAndAliases()
                     .Select(cultureInfo =>
                     {
                         return new CultureEntry

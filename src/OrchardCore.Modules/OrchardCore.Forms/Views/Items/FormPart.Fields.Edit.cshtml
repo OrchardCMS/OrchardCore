@@ -2,7 +2,7 @@
 @using OrchardCore
 @model FormPartEditViewModel
 
-<div class="row mb-3">
+<div class="@Orchard.GetWrapperCssClasses()">
     <label asp-for="Action" class="@Orchard.GetLabelCssClasses()">@T["Action"]</label>
     <div class="@Orchard.GetEndCssClasses()">
         <input type="text" asp-for="Action" class="form-control content-preview-text" />
@@ -10,7 +10,7 @@
     </div>
 </div>
 
-<div class="row mb-3">
+<div class="@Orchard.GetWrapperCssClasses()">
     <label asp-for="Method" class="@Orchard.GetLabelCssClasses()">@T["Method"]</label>
     <div class="@Orchard.GetEndCssClasses()">
         <select asp-for="Method" class="form-select content-preview-select">
@@ -21,7 +21,7 @@
     </div>
 </div>
 
-<div class="row mb-3">
+<div class="@Orchard.GetWrapperCssClasses()">
     <label asp-for="EncType" class="@Orchard.GetLabelCssClasses()">@T["EncType"]</label>
     <div class="@Orchard.GetEndCssClasses()">
         <select asp-for="EncType" class="form-select content-preview-select">
@@ -33,7 +33,7 @@
     </div>
 </div>
 
-<div class="row mb-3">
+<div class="@Orchard.GetWrapperCssClasses()">
     <div class="@Orchard.GetEndCssClasses(true)">
         <div class="form-check">
             <input asp-for="EnableAntiForgeryToken" class="form-check-input" />

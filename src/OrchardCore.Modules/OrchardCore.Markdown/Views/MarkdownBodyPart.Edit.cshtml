@@ -9,7 +9,7 @@
     var culture = await Orchard.GetContentCultureAsync(Model.MarkdownBodyPart.ContentItem);
 }
 
-<div class="row mb-3">
+<div class="@Orchard.GetWrapperCssClasses()">
     <label asp-for="Markdown" class="@Orchard.GetLabelCssClasses()">@Model.TypePartDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         @await DisplayAsync(await New.ShortcodeModal())

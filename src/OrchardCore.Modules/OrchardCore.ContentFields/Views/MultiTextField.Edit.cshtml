@@ -13,7 +13,7 @@
     var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="row mb-3 field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Values)_FieldWrapper">
+<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Values)_FieldWrapper">
     <label asp-for="Values" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         <select class="form-select content-preview-select" asp-for="Values" asp-items="options" multiple></select>
