@@ -11,7 +11,7 @@ public class LocalizationService
         var cultures = ILocalizationService.GetAllCulturesAndAliases();
 
         // Assert
-        Assert.Contains(cultures, c => c.Name == "zh-CN");
-        Assert.Contains(cultures, c => c.Name == "zh-TW");
+        Assert.Single(cultures, c => c.Name == "zh-CN");
+        Assert.Single(cultures, c => c.Name == "zh-TW");
     }
 }

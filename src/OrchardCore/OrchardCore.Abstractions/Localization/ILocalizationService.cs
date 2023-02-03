@@ -26,7 +26,7 @@ namespace OrchardCore.Localization
         Task<string[]> GetSupportedCulturesAsync();
 
         /// <summary>
-        /// Gets a list of supported cultures by operating system.
+        /// Gets all cultures recognized by .NET, including culture aliases.
         /// </summary>
         static CultureInfo[] GetAllCulturesAndAliases()
         {

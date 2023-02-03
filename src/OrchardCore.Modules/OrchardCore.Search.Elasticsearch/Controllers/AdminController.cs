@@ -369,7 +369,7 @@ namespace OrchardCore.Search.Elasticsearch
             }
 
             await _elasticIndexingService.SyncSettings();
-            
+
             return RedirectToAction("index");
         }
 

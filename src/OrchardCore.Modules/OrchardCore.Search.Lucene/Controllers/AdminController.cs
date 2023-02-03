@@ -28,7 +28,6 @@ using OrchardCore.Routing;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Services;
 using OrchardCore.Search.Lucene.ViewModels;
-using OrchardCore.Settings;
 using YesSql;
 
 namespace OrchardCore.Search.Lucene.Controllers
