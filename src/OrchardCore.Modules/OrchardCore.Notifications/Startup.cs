@@ -77,13 +77,11 @@ public class Startup : StartupBase
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        var adminControllerName = typeof(AdminController).ControllerName();
-
         routes.MapAreaControllerRoute(
             name: "ListNotifications",
             areaName: "OrchardCore.Notifications",
             pattern: _adminOptions.AdminUrlPrefix + "/notifications",
-            defaults: new { controller = adminControllerName, action = nameof(AdminController.List) }
+            defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.List) }
         );
     }
 }
@@ -107,7 +105,7 @@ public class UsersWorkflowStartup : StartupBase
 }
 
 [Feature("OrchardCore.Notifications.Email")]
-public class EmailNotificationStartup : StartupBase
+public class EmailNotificationsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
