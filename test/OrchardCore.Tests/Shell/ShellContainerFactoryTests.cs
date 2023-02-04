@@ -45,13 +45,13 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
-        public async Task CanRegisterDefaultServiceWithFeatureInfoAsync()
+        public void CanRegisterDefaultServiceWithFeatureInfo()
         {
             var shellBlueprint = CreateBlueprint();
 
             var expectedFeatureInfo = AddStartup(shellBlueprint, typeof(RegisterServiceStartup));
 
-            var container = (await _shellContainerFactory.CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint)).CreateScope().ServiceProvider;
+            var container = _shellContainerFactory.CreateContainer(_uninitializedDefaultShell, shellBlueprint).CreateScope().ServiceProvider;
             var typeFeatureProvider = _applicationServiceProvider.GetService<ITypeFeatureProvider>();
 
             Assert.IsType<TestService>(container.GetRequiredService(typeof(ITestService)));
@@ -59,14 +59,14 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
-        public async Task CanReplaceDefaultServiceWithCustomServiceAsync()
+        public void CanReplaceDefaultServiceWithCustomService()
         {
             var shellBlueprint = CreateBlueprint();
 
             var expectedFeatureInfo = AddStartup(shellBlueprint, typeof(ReplaceServiceStartup));
             AddStartup(shellBlueprint, typeof(RegisterServiceStartup));
 
-            var container = (await _shellContainerFactory.CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint)).CreateScope().ServiceProvider;
+            var container = _shellContainerFactory.CreateContainer(_uninitializedDefaultShell, shellBlueprint).CreateScope().ServiceProvider;
             var typeFeatureProvider = _applicationServiceProvider.GetService<ITypeFeatureProvider>();
 
             // Check that the default service has been replaced with the custom service and that the feature info is correct.
@@ -75,10 +75,10 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
-        public async Task HostServiceLifeTimesShouldBePreservedAsync()
+        public void HostServiceLifeTimesShouldBePreserved()
         {
             var shellBlueprint = CreateBlueprint();
-            var container = (await _shellContainerFactory.CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint)).CreateScope().ServiceProvider;
+            var container = _shellContainerFactory.CreateContainer(_uninitializedDefaultShell, shellBlueprint).CreateScope().ServiceProvider;
 
             var singleton1 = container.GetRequiredService<ITestSingleton>();
             var singleton2 = container.GetRequiredService<ITestSingleton>();
@@ -108,11 +108,11 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
-        public async Task WhenTwoHostSingletons_GetServices_Returns_HostAndShellServicesAsync()
+        public void WhenTwoHostSingletons_GetServices_Returns_HostAndShellServices()
         {
             var shellBlueprint = CreateBlueprint();
             AddStartup(shellBlueprint, typeof(ServicesOfTheSameTypeStartup));
-            var container = (await _shellContainerFactory.CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint)).CreateScope().ServiceProvider;
+            var container = _shellContainerFactory.CreateContainer(_uninitializedDefaultShell, shellBlueprint).CreateScope().ServiceProvider;
 
             var services = container.GetServices<ITwoHostSingletonsOfTheSameType>();
 
@@ -120,10 +120,10 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
-        public async Task WhenHostSingletonAndScoped_GetServices_Returns_CorrectImplementationsAsync()
+        public void WhenHostSingletonAndScoped_GetServices_Returns_CorrectImplementations()
         {
             var shellBlueprint = CreateBlueprint();
-            var container = (await _shellContainerFactory.CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint)).CreateScope().ServiceProvider;
+            var container = _shellContainerFactory.CreateContainer(_uninitializedDefaultShell, shellBlueprint).CreateScope().ServiceProvider;
 
             var services = container.GetServices<IHostSingletonAndScopedOfTheSameType>();
 

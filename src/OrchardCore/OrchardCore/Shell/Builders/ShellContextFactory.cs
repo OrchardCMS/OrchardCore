@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
@@ -33,7 +35,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 _logger.LogInformation("Creating shell context for tenant '{TenantName}'", settings.Name);
             }
 
-            var describedContext = await CreateDescribedContextAsync(settings, MinimumShellDescriptor());
+            var describedContext = await CreateDescribedContextAsync(settings, new ShellDescriptor());
 
             ShellDescriptor currentDescriptor = null;
             await describedContext.CreateScope().UsingServiceScopeAsync(async scope =>
@@ -73,7 +75,13 @@ namespace OrchardCore.Environment.Shell.Builders
             await settings.EnsureConfigurationAsync();
 
             var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
-            var provider = await _shellContainerFactory.CreateContainerAsync(settings, blueprint);
+            var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
+
+            var startups = provider.GetServices<IStartup>().OrderBy(s => s.InitializeOrder);
+            foreach (var startup in startups)
+            {
+                await startup.InitializeServicesAsync(provider);
+            }
 
             return new ShellContext
             {
