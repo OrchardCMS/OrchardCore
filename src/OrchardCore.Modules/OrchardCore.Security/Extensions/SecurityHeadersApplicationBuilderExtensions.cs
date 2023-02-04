@@ -1,6 +1,6 @@
 using System;
-using OrchardCore.Security.Services;
 using OrchardCore.Security.Options;
+using OrchardCore.Security.Services;
 
 namespace Microsoft.AspNetCore.Builder
 {
