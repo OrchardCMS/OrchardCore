@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
 using YesSql;
+
 namespace OrchardCore.Demo.Pages
 {
     [Feature("OrchardCore.Demo.Foo")]

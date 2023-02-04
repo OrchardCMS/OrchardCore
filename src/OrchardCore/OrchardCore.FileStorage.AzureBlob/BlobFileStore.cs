@@ -71,7 +71,7 @@ namespace OrchardCore.FileStorage.AzureBlob
             }
             catch (RequestFailedException ex) when (ex.ErrorCode == BlobErrorCode.BlobNotFound)
             {
-                // Instead of ExistsAsync() check which is 'slow' if we're expecting to find the blob we rely on the exception
+                // Instead of ExistsAsync() check which is 'slow' if we're expecting to find the blob we rely on the exception.
                 return null;
             }
             catch (Exception ex)

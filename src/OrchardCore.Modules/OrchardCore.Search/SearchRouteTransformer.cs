@@ -38,8 +38,7 @@ namespace OrchardCore.Search.Routing
                     Area = searchProviders.FirstOrDefault().AreaName,
                     Action = "Search",
                     Controller = "Search"
-                }
-                );
+                });
             }
             else
             {

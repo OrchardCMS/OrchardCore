@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Fluid;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,7 +14,7 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
-    // Local instance since it can be discarded once the startup is over
+    // Local instance since it can be discarded once the startup is over.
     private readonly FluidParser _fluidParser = new();
 
     public AwsStorageOptionsConfiguration(
