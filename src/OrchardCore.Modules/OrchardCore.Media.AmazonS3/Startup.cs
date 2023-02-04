@@ -100,8 +100,10 @@ public class Startup : Modules.StartupBase
                 var clock = serviceProvider.GetRequiredService<IClock>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
                 var amazonS3Client = serviceProvider.GetService<IAmazonS3>();
+                
+                var options = serviceProvider.GetRequiredService<IOptions<AwsStorageOptions>>();
+                var fileStore = new AwsFileStore(clock, options.Value, amazonS3Client);
 
-                var fileStore = new AwsFileStore(clock, storeOptions, amazonS3Client);
                 var mediaUrlBase = $"/{fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath)}";
 
                 var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
