@@ -466,7 +466,7 @@ namespace OrchardCore.Tenants.Controllers
             var host = shellSettings.RequestUrlHosts.FirstOrDefault();
             var hostString = host != null ? new HostString(host) : Request.Host;
 
-            var pathString = HttpContext.Features.Get<ShellContextFeature>().OriginalPathBase;
+            var pathString = HttpContext.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
             if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
             {
                 pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
