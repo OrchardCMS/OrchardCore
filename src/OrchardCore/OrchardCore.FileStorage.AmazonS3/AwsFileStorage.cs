@@ -164,7 +164,7 @@ public class AwsFileStore : IFileStore
         {
             BucketName = _options.BucketName,
             Objects = listObjectsResponse.S3Objects
-                .Select(response => new KeyVersion { Key = response.Key }).ToList()
+                .Select(metadata => new KeyVersion { Key = metadata.Key }).ToList()
         };
 
         var response = await _amazonS3Client.DeleteObjectsAsync(deleteObjectsRequest);
