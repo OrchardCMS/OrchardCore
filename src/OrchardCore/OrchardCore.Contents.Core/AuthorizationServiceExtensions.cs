@@ -109,6 +109,11 @@ namespace Microsoft.AspNetCore.Authorization
                 return CommonPermissions.CloneOwnContent;
             }
 
+            if (permission.Name == CommonPermissions.ListContent.Name)
+            {
+                return CommonPermissions.ListOwnContent;
+            }
+
             return null;
         }
     }

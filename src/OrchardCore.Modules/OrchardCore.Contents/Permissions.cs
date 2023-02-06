@@ -25,6 +25,7 @@ namespace OrchardCore.Contents
         public static readonly Permission CloneContent = CommonPermissions.CloneContent;
         public static readonly Permission CloneOwnContent = CommonPermissions.CloneOwnContent;
         public static readonly Permission ListContent = CommonPermissions.ListContent;
+        public static readonly Permission ListOwnContent = CommonPermissions.ListOwnContent;
         public static readonly Permission AccessContentApi = new Permission("AccessContentApi", "Access content via the api");
 
         //public static readonly Permission MetaListContent = new Permission { ImpliedBy = new[] { EditOwnContent, PublishOwnContent, DeleteOwnContent } };
@@ -46,7 +47,8 @@ namespace OrchardCore.Contents
                 CloneContent,
                 CloneOwnContent,
                 AccessContentApi,
-                ListContent
+                ListContent,
+                ListOwnContent,
             }
             .AsEnumerable());
         }
@@ -67,11 +69,11 @@ namespace OrchardCore.Contents
                 },
                 new PermissionStereotype {
                     Name = "Author",
-                    Permissions = new[] { PublishOwnContent, EditOwnContent, DeleteOwnContent, PreviewOwnContent, CloneOwnContent }
+                    Permissions = new[] { PublishOwnContent, EditOwnContent, DeleteOwnContent, PreviewOwnContent, CloneOwnContent, ListOwnContent, ViewOwnContent }
                 },
                 new PermissionStereotype {
                     Name = "Contributor",
-                    Permissions = new[] { EditOwnContent, PreviewOwnContent, CloneOwnContent }
+                    Permissions = new[] { EditOwnContent, PreviewOwnContent, CloneOwnContent, ListOwnContent, ViewOwnContent }
                 },
                 new PermissionStereotype {
                     Name = "Authenticated",

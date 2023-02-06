@@ -25,8 +25,9 @@ namespace OrchardCore.Contents.Security
         private static readonly Permission CloneContent = new("Clone_{0}", "Clone {0} by others", new[] { EditContent, CommonPermissions.CloneContent });
         private static readonly Permission CloneOwnContent = new("CloneOwn_{0}", "Clone own {0}", new[] { CloneContent, CommonPermissions.CloneOwnContent });
         private static readonly Permission ListContent = new("ListContent_{0}", "List {0} content item(s) owned by all users", new[] { CommonPermissions.ListContent });
+        private static readonly Permission ListOwnContent = new("ListOwnContent_{0}", "List own {0} content item(s)", new[] { CommonPermissions.ListContent });
 
-        public static readonly Dictionary<string, Permission> PermissionTemplates = new Dictionary<string, Permission>
+        public static readonly Dictionary<string, Permission> PermissionTemplates = new()
         {
             { CommonPermissions.PublishContent.Name, PublishContent },
             { CommonPermissions.PublishOwnContent.Name, PublishOwnContent },
@@ -40,7 +41,8 @@ namespace OrchardCore.Contents.Security
             { CommonPermissions.PreviewOwnContent.Name, PreviewOwnContent },
             { CommonPermissions.CloneContent.Name, CloneContent },
             { CommonPermissions.CloneOwnContent.Name, CloneOwnContent },
-            { CommonPermissions.ListContent.Name, ListContent }
+            { CommonPermissions.ListContent.Name, ListContent },
+            { CommonPermissions.ListOwnContent.Name, ListOwnContent },
         };
 
         public static Dictionary<ValueTuple<string, string>, Permission> PermissionsByType = new Dictionary<ValueTuple<string, string>, Permission>();
@@ -101,8 +103,10 @@ namespace OrchardCore.Contents.Security
                 (template.ImpliedBy ?? Array.Empty<Permission>()).Select(t => CreateDynamicPermission(t, contentType))
             );
 
-            var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(PermissionsByType);
-            localPermissions[key] = permission;
+            var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(PermissionsByType)
+            {
+                [key] = permission
+            };
             PermissionsByType = localPermissions;
 
             return permission;
