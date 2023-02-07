@@ -1,0 +1,41 @@
+@model OrchardCore.Contents.ViewModels.RoleCommonPartSettingsViewModel
+@{
+    var roleWrapperId = Html.IdFor(m => m.RoleItems) + "_Wrapper";
+}
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="SiteOwnerOnly" checked="@Model.SiteOwnerOnly">
+        <label class="form-check-label" asp-for="SiteOwnerOnly">@T["Only site owners"]</label>
+        <span class="hint dashed">@T["When selected, only users with <code>SiteOwner</code> permission can edit the content's owner."]</span>
+    </div>
+</div>
+
+<div class="mb-3 d-none" id="@roleWrapperId">
+    <h6>@T["Allowed roles"] <span class="hint dashed">@T["Any user with the selected role will be able to change the content's owner."]</span></h6>
+    @for (var i = 0; i < Model.RoleItems.Count; i++)
+    {
+        <div class="form-check">
+            <input asp-for="RoleItems[i].IsSelected" type="checkbox" class="form-check-input">
+            <input type="hidden" asp-for="RoleItems[i].RoleName" />
+            <label class="form-check-label cursor-pointer" asp-for="RoleItems[i].IsSelected">@Model.RoleItems[i].RoleName</label>
+        </div>
+    }
+</div>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', () => {
+
+        let siteOwnerOnly = document.getElementById('@Html.IdFor(m => m.SiteOwnerOnly)');
+        let rolesWrapper = document.getElementById('@roleWrapperId');
+
+        siteOwnerOnly.addEventListener('click', (e) => {
+            if (e.target.checked) {
+                rolesWrapper.classList.add('d-none');
+            } else {
+                rolesWrapper.classList.remove('d-none');
+            }
+        });
+
+        siteOwnerOnly.dispatchEvent(new Event('click'));
+    });
+</script>
