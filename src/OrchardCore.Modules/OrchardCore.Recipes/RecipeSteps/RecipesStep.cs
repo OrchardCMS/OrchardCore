@@ -27,23 +27,16 @@ namespace OrchardCore.Recipes.RecipeSteps
             }
 
             var step = context.Step.ToObject<InternalStep>();
-            var recipesDictionary = new Dictionary<string, IDictionary<string, RecipeDescriptor>>();
-            IList<RecipeDescriptor> innerRecipes = new List<RecipeDescriptor>();
 
+            var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(harvester => harvester.HarvestRecipesAsync()));
+            var recipes = recipeCollections.SelectMany(recipe => recipe).ToDictionary(recipe => recipe.Name);
+
+            var innerRecipes = new List<RecipeDescriptor>();
             foreach (var recipe in step.Values)
             {
-                IDictionary<string, RecipeDescriptor> recipes;
-
-                if (!recipesDictionary.TryGetValue(recipe.ExecutionId, out recipes))
-                {
-                    var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
-                    recipes = recipeCollections.SelectMany(x => x).ToDictionary(x => x.Name);
-                    recipesDictionary[recipe.ExecutionId] = recipes;
-                }
-
                 if (!recipes.ContainsKey(recipe.Name))
                 {
-                    throw new ArgumentException($"No recipe named '{recipe.Name}' was found in extension '{recipe.ExecutionId}'.");
+                    throw new ArgumentException($"No recipe named '{recipe.Name}' was found.");
                 }
 
                 innerRecipes.Add(recipes[recipe.Name]);

@@ -1,8 +1,5 @@
 @model UsersIndexViewModel
-@{
-    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
-    int endIndex = startIndex + Model.Users.Count - 1;
-}
+
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Users"])</h1></zone>

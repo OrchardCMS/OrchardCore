@@ -1,0 +1,20 @@
+@using OrchardCore.Security.Services
+@model SummaryAdminUserViewModel
+
+@inject IRoleService RoleService
+
+@{
+    var roles = (await RoleService.GetRolesAsync()).ToDictionary(x => x.RoleName, x => x, StringComparer.OrdinalIgnoreCase);
+}
+
+<div data-bs-toggle="tooltip" title="@T["The roles this user has"]">
+    @foreach (var roleName in Model.User.RoleNames)
+    {
+        if (!roles.TryGetValue(roleName, out var role))
+        {
+            continue;
+        }
+
+        <span class="badge ta-badge">@role.RoleName</span>
+    }
+</div>

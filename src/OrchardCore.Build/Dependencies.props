@@ -14,9 +14,9 @@
     <PackageManagement Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.2" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.3" />
-    <PackageManagement Include="Azure.Identity" Version="1.8.0" />
+    <PackageManagement Include="Azure.Identity" Version="1.8.1" />
     <PackageManagement Include="Azure.Storage.Blobs" Version="12.14.1" />
-    <PackageManagement Include="BenchmarkDotNet" Version="0.13.3" />
+    <PackageManagement Include="BenchmarkDotNet" Version="0.13.4" />
     <PackageManagement Include="Castle.Core" Version="5.1.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
     <PackageManagement Include="Fluid.Core" Version="2.3.1" />
@@ -25,19 +25,19 @@
     <PackageManagement Include="GraphQL.MicrosoftDI" Version="4.8.0" />
     <PackageManagement Include="GraphQL.SystemTextJson" Version="4.8.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-2043" />
-    <PackageManagement Include="HtmlSanitizer" Version="8.0.601" />
+    <PackageManagement Include="HtmlSanitizer" Version="8.0.645" />
     <PackageManagement Include="Lorem.Universal.NET" Version="4.0.80" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.Spatial" Version="4.8.0-beta00016" />
-    <PackageManagement Include="MailKit" Version="3.4.3" />
+    <PackageManagement Include="MailKit" Version="3.5.0" />
     <PackageManagement Include="Markdig" Version="0.30.4" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
     <PackageManagement Include="Microsoft.Identity.Web" Version="2.0.8-preview" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
-    <PackageManagement Include="MimeKit" Version="3.4.3" />
+    <PackageManagement Include="MimeKit" Version="3.5.0" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.22" />
     <PackageManagement Include="Moq" Version="4.18.4" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />

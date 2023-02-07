@@ -5,18 +5,21 @@ using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using OrchardCore.Microsoft.Authentication.Services;
 using MicrosoftIdentityDefaults = Microsoft.Identity.Web.Constants;
+using OrchardCore.Microsoft.Authentication.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
     internal class OpenIdConnectOptionsConfiguration : IConfigureNamedOptions<OpenIdConnectOptions>
     {
-        private readonly IOptionsMonitor<MicrosoftIdentityOptions> _azureADOptions;
-        private readonly IAzureADService _azureADService;
+        private readonly IOptionsMonitor<AzureADOptions> _azureADOptions;
+        private readonly AzureADSettings _azureADSettings;
 
-        public OpenIdConnectOptionsConfiguration(IOptionsMonitor<MicrosoftIdentityOptions> azureADOptions, IAzureADService azureADService)
+        public OpenIdConnectOptionsConfiguration(
+            IOptionsMonitor<AzureADOptions> azureADOptions,
+            IOptions<AzureADSettings> azureADSettings)
         {
             _azureADOptions = azureADOptions;
-            _azureADService = azureADService;
+            _azureADSettings = azureADSettings.Value;
         }
 
         public void Configure(string name, OpenIdConnectOptions options)
@@ -35,9 +38,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             options.SignedOutCallbackPath = azureADOptions.SignedOutCallbackPath.HasValue ? azureADOptions.SignedOutCallbackPath : options.SignedOutCallbackPath;
             options.SignInScheme = "Identity.External";
             options.UseTokenLifetime = true;
-
-            var settings = _azureADService.GetSettingsAsync().GetAwaiter().GetResult();
-            options.SaveTokens = settings.SaveTokens;
+            options.SaveTokens = _azureADSettings.SaveTokens;
 
         }
 
