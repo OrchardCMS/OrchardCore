@@ -1,10 +1,6 @@
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Shortcodes.Providers;
 using OrchardCore.Shortcodes.Services;
 using Shortcodes;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Shortcodes
 {

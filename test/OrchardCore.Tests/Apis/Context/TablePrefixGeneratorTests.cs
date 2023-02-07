@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace OrchardCore.Tests.Apis.Context
 {
     public class TablePrefixGeneratorTests

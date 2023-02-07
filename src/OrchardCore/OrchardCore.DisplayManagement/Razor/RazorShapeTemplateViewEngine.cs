@@ -135,7 +135,7 @@ namespace OrchardCore.DisplayManagement.Razor
             var searchedLocations = getViewResult.SearchedLocations.Concat(findViewResult.SearchedLocations);
             var errorMessage = string.Join(
                 System.Environment.NewLine,
-                new[] { $"Unable to find view '{viewName}'. The following locations were searched:" }.Concat(searchedLocations)); ;
+                new[] { $"Unable to find view '{viewName}'. The following locations were searched:" }.Concat(searchedLocations));
 
             throw new InvalidOperationException(errorMessage);
         }

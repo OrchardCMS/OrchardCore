@@ -1,6 +1,6 @@
-@using OrchardCore.Flows.Models;
-@using OrchardCore.Flows.ViewModels;
-@using OrchardCore.Mvc.Utilities;
+@using OrchardCore.Flows.Models
+@using OrchardCore.Flows.ViewModels
+@using OrchardCore.Mvc.Utilities
 
 @model FlowPartEditViewModel
 
@@ -16,7 +16,7 @@
 }
 
 <script asp-name="jQuery-ui" at="Foot"></script>
-<div class="mb-3">
+<div>
     <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart flowpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{
             var index = 0;

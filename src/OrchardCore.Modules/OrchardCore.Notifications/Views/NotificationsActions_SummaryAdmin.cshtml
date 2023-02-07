@@ -1,0 +1,12 @@
+@model NotificationViewModel
+@using OrchardCore.Entities
+@{
+    var readInfo = Model.Notification.As<NotificationReadInfo>();
+}
+
+@if (!readInfo.IsRead)
+{
+    <a asp-action="Toggle" asp-controller="Admin" asp-route-area="OrchardCore.Notifications" asp-route-markAsRead="true" asp-route-notificationId="@Model.Notification.NotificationId" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-primary">
+        @T["Mark as read"]
+    </a>
+}

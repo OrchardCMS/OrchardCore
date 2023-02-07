@@ -43,6 +43,8 @@ namespace OrchardCore.Google
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<GoogleOptions>, OAuthPostConfigureOptions<GoogleOptions,GoogleHandler>>()
             });
+
+            services.AddTransient<IConfigureOptions<GoogleAuthenticationSettings>, GoogleAuthenticationSettingsConfiguration>();
         }
     }
 

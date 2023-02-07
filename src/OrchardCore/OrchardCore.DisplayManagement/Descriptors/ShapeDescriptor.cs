@@ -130,7 +130,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
     {
         public ShapeDescriptor()
         {
-            if (!(this is ShapeDescriptorIndex))
+            if (this is not ShapeDescriptorIndex)
             {
                 CreatingAsync = Enumerable.Empty<Func<ShapeCreatingContext, Task>>();
                 CreatedAsync = Enumerable.Empty<Func<ShapeCreatedContext, Task>>();
