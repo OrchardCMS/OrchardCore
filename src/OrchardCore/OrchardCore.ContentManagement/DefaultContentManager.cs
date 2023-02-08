@@ -19,8 +19,8 @@ namespace OrchardCore.ContentManagement
 {
     public class DefaultContentManager : IContentManager
     {
-        private const int ImportBatchSize = 500;
-        private static readonly JsonMergeSettings UpdateJsonMergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace };
+        private const int _importBatchSize = 500;
+        private static readonly JsonMergeSettings UpdateJsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace };
 
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
@@ -59,14 +59,14 @@ namespace OrchardCore.ContentManagement
                 contentTypeDefinition = new ContentTypeDefinitionBuilder().Named(contentType).Build();
             }
 
-            // create a new kernel for the model instance
+            // Create a new kernel for the model instance.
             var context = new ActivatingContentContext(new ContentItem() { ContentType = contentTypeDefinition.Name })
             {
                 ContentType = contentTypeDefinition.Name,
                 Definition = contentTypeDefinition,
             };
 
-            // invoke handlers to weld aspects onto kernel
+            // Invoke handlers to weld aspects onto kernel.
             await Handlers.InvokeAsync((handler, context) => handler.ActivatingAsync(context), context, _logger);
 
             var context2 = new ActivatedContentContext(context.ContentItem);
@@ -80,7 +80,7 @@ namespace OrchardCore.ContentManagement
             await Handlers.InvokeAsync((handler, context3) => handler.InitializingAsync(context3), context3, _logger);
             await ReversedHandlers.InvokeAsync((handler, context3) => handler.InitializedAsync(context3), context3, _logger);
 
-            // composite result is returned
+            // Composite result is returned.
             return context3.ContentItem;
         }
 
@@ -113,10 +113,7 @@ namespace OrchardCore.ContentManagement
                     // If the published version is already stored, we can return it.
                     if (_contentManagerSession.RecallPublishedItemId(contentItemId, out var contentItem))
                     {
-                        if (storedItems == null)
-                        {
-                            storedItems = new List<ContentItem>();
-                        }
+                        storedItems ??= new List<ContentItem>();
 
                         storedItems.Add(contentItem);
                     }
@@ -213,6 +210,7 @@ namespace OrchardCore.ContentManagement
             }
 
             var needVersions = new List<ContentItem>();
+            var finalItems = new List<ContentItem>();
 
             foreach (var contentItem in contentItems)
             {
@@ -220,28 +218,34 @@ namespace OrchardCore.ContentManagement
 
                 if (options.IsDraftRequired)
                 {
-                    // When draft is required and latest is published a new version is added
+                    // When draft is required and latest is published a new version is added.
                     if (item.Published)
                     {
-                        // We save the previous version further because this call might do a session query.
                         var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(item.ContentType);
 
-                        // Check if not versionable, meaning we use only one version
+                        // Check if not versionable, meaning we use only one version.
                         if (contentTypeDefinition != null && !contentTypeDefinition.IsVersionable())
                         {
                             item.Published = false;
+
+                            // Save the previous version.
+                            _session.Save(item, checkConcurrency: true);
+
+                            finalItems.Add(item);
                         }
                         else
                         {
                             needVersions.Add(item);
-
-                            continue;
                         }
                     }
-
-                    // Save the new version
-                    _session.Save(item, checkConcurrency: true);
                 }
+                else
+                {
+                    finalItems.Add(item);
+                }
+
+                // We save the previous version further because this call might do a session query.
+                _session.Save(item, checkConcurrency: true);
             }
 
             if (needVersions.Count > 0)
@@ -250,13 +254,14 @@ namespace OrchardCore.ContentManagement
 
                 foreach (var item in items)
                 {
+                    // Save the new version.
                     _session.Save(item, checkConcurrency: true);
 
-                    contentItems.Add(item);
+                    finalItems.Add(item);
                 }
             }
 
-            return contentItems;
+            return finalItems;
         }
 
         public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
@@ -399,7 +404,6 @@ namespace OrchardCore.ContentManagement
             await ReversedHandlers.InvokeAsync((handler, context) => handler.UnpublishedAsync(context), context, _logger);
         }
 
-
         protected async Task<IEnumerable<ContentItem>> BuildNewVersionsAsync(IEnumerable<ContentItem> existingContentItems)
         {
             var latestVersions = new List<ContentItem>();
@@ -434,6 +438,7 @@ namespace OrchardCore.ContentManagement
             {
                 existingContentItem.Latest = false;
 
+                // Save previous version.
                 _session.Save(existingContentItem);
 
                 // We are not invoking NewAsync as we are cloning an existing item
@@ -513,7 +518,7 @@ namespace OrchardCore.ContentManagement
 
             var importedVersionIds = new HashSet<string>();
 
-            var batchedContentItems = contentItems.Take(ImportBatchSize);
+            var batchedContentItems = contentItems.Take(_importBatchSize);
 
             while (batchedContentItems.Any())
             {
@@ -632,8 +637,8 @@ namespace OrchardCore.ContentManagement
                     }
                 }
 
-                skip += ImportBatchSize;
-                batchedContentItems = contentItems.Skip(skip).Take(ImportBatchSize);
+                skip += _importBatchSize;
+                batchedContentItems = contentItems.Skip(skip).Take(_importBatchSize);
             }
         }
 
