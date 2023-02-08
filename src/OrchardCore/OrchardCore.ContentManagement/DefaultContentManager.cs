@@ -20,7 +20,7 @@ namespace OrchardCore.ContentManagement
     public class DefaultContentManager : IContentManager
     {
         private const int _importBatchSize = 500;
-        private static readonly JsonMergeSettings UpdateJsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace };
+        private static readonly JsonMergeSettings _updateJsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace };
 
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
@@ -155,7 +155,18 @@ namespace OrchardCore.ContentManagement
             }
 
             var contentItemIdsArray = contentItemIds.ToImmutableArray();
+
             return contentItems.OrderBy(c => contentItemIdsArray.IndexOf(c.ContentItemId));
+        }
+
+        public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
+        {
+            if (String.IsNullOrEmpty(contentItemId))
+            {
+                return null;
+            }
+
+            return (await GetAsync(new[] { contentItemId }, options)).FirstOrDefault();
         }
 
         public async Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, VersionOptions options)
@@ -262,16 +273,6 @@ namespace OrchardCore.ContentManagement
             }
 
             return finalItems;
-        }
-
-        public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
-        {
-            if (String.IsNullOrEmpty(contentItemId))
-            {
-                return null;
-            }
-
-            return (await GetAsync(new[] { contentItemId }, options)).FirstOrDefault();
         }
 
         public async Task<ContentItem> LoadAsync(ContentItem contentItem)
@@ -932,7 +933,7 @@ namespace OrchardCore.ContentManagement
                 await RemovePublishedVersionAsync(updatingVersion, evictionVersions);
             }
 
-            updatingVersion.Merge(updatedVersion, UpdateJsonMergeSettings);
+            updatingVersion.Merge(updatedVersion, _updateJsonMergeSettings);
             updatingVersion.Latest = importingLatest;
             updatingVersion.Published = importingPublished;
 
