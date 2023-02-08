@@ -18,16 +18,12 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: "15"
-    - name: Setup .NET 7.0
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 7.0.x
     - name: Build
       run: |
-        dotnet build --configuration Release --framework net7.0
+        dotnet build -c Release
     - name: Unit Tests
       run: |
-        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
+        dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     - name: Functional Tests
       if: matrix.os == 'ubuntu-latest'
       run: |
