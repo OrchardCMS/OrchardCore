@@ -11,11 +11,11 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 {
     internal class OpenIdConnectOptionsConfiguration : IConfigureNamedOptions<OpenIdConnectOptions>
     {
-        private readonly IOptionsMonitor<AzureADOptions> _azureADOptions;
+        private readonly IOptionsMonitor<MicrosoftIdentityOptions> _azureADOptions;
         private readonly AzureADSettings _azureADSettings;
 
         public OpenIdConnectOptionsConfiguration(
-            IOptionsMonitor<AzureADOptions> azureADOptions,
+            IOptionsMonitor<MicrosoftIdentityOptions> azureADOptions,
             IOptions<AzureADSettings> azureADSettings)
         {
             _azureADOptions = azureADOptions;
