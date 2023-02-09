@@ -607,6 +607,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             // Check if a new place holder was registered.
             if (defaultContext is ShellContext.PlaceHolder placeHolder)
             {
+                // Check if still the one pre-created on loading.
                 if (placeHolder.PreCreated)
                 {
                     return false;
@@ -623,6 +624,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             if (_defaultContext != null)
             {
+                // Check if the shell context was released.
                 if (_defaultContext is not ShellContext.PlaceHolder && _defaultContext.Released)
                 {
                     return true;
