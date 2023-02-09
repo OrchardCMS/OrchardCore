@@ -624,8 +624,8 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             if (_defaultContext != null)
             {
-                // Check if the shell context was released.
-                if (_defaultContext is not ShellContext.PlaceHolder && _defaultContext.Released)
+                // Check if a new shell context was registered.
+                if (_defaultContext is not ShellContext.PlaceHolder)
                 {
                     return true;
                 }
