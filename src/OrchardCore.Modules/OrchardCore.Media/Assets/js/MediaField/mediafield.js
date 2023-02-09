@@ -1,11 +1,20 @@
 function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple, allowMediaText, allowAnchors) {
-
+    //BagPart create a script section without other DOM elements
+    if(el === null)
+        return;
+    
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
 
     var mediaFieldEditor = $(el);
     var idprefix = mediaFieldEditor.attr("id");
     var mediaFieldApp;
+
+    //when hide modal detach media app to avoid issue on BagPart
+    modalBodyElement.addEventListener('hidden.bs.modal', function (event) {
+        $("#mediaApp").appendTo('body');
+        $("#mediaApp").hide();
+    });
 
     mediaFieldApps.push(mediaFieldApp = new Vue({
         el: mediaFieldEditor.get(0),
@@ -131,7 +140,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
             showModal: function (event) {
                 var self = this;
                 if (self.canAddMedia) {
-                    $("#mediaApp").detach().appendTo($(modalBodyElement).find('.modal-body'));
+                    $("#mediaApp").appendTo($(modalBodyElement).find('.modal-body'));
                     $("#mediaApp").show();
 
                     var modal = new bootstrap.Modal(modalBodyElement);
