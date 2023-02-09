@@ -616,27 +616,22 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return true;
             }
 
-            // Check if the shell descriptor was updated.
-            if (_context.Context.Blueprint.Descriptor.SerialNumber != defaultContext.Blueprint.Descriptor.SerialNumber)
+            // Check if a new shell context was registered.
+            if (_defaultContext != null && _defaultContext is not ShellContext.PlaceHolder)
             {
                 return true;
             }
 
-            if (_defaultContext != null)
+            // Check if the shell settings was updated or reloaded.
+            if (_defaultContext != null && _defaultContext.Settings != defaultContext.Settings)
             {
-                // Check if a new shell context was registered.
-                if (_defaultContext is not ShellContext.PlaceHolder)
-                {
-                    return true;
-                }
+                return true;
+            }
 
-                // Check if the shell settings was updated or reloaded.
-                if (_defaultContext.Settings != defaultContext.Settings)
-                {
-                    return true;
-                }
-
-                return false;
+            // Check if the shell descriptor was updated.
+            if (_context.Context.Blueprint.Descriptor.SerialNumber != defaultContext.Blueprint.Descriptor.SerialNumber)
+            {
+                return true;
             }
 
             // Check if the shell settings was updated.
