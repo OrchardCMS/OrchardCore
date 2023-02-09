@@ -1,49 +1,32 @@
-@using System.Globalization
 @model LocalizationPartViewModel
 
-<style asp-src="~/OrchardCore.ContentLocalization/Styles/contentLocalization.min.css" debug-src="~/OrchardCore.ContentLocalization/Styles/contentLocalization.css"></style>
-
-<input asp-for="LocalizationSet" type="hidden" />
-<input asp-for="Culture" type="hidden" />
-<div class="accordion mb-3 content-localization" id="localizationPartEdit">
-    <div class="accordion-item">
-        <div class="accordion-header" id="contentLocalizationToggle">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#contentLocalizationCard" aria-expanded="true" aria-controls="collapseOne">
-                @T["Current Culture: {1} | {0}", Model.CultureInfo.Name, Model.CultureInfo.DisplayName]
-                <i class="fa fa-angle-down" aria-hidden="true"></i>
-            </button>
-        </div>
-        <div id="contentLocalizationCard" class="collapse" aria-labelledby="contentLocalizationToggle" data-bs-parent="#localizationPartEdit">
-            <div class="accordion-body">
-                @if (!Model.ContentItemCultures.Any())
+@if (Model.ContentItemCultures.Any())
+{
+    <div class="dropdown mt-2 mb-2">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            @Model.CultureInfo.DisplayName
+        </button>
+        @if (!string.IsNullOrEmpty(Model.LocalizationSet))
+        {
+            <ul class="dropdown-menu">
+                @foreach (var culture in Model.ContentItemCultures)
                 {
-                    <p>@T["Your site does not have any cultures. Current System culture is {1} | {0}", CultureInfo.InstalledUICulture.Name, CultureInfo.InstalledUICulture.DisplayName]</p>
-                    <p><a asp-route-area="OrchardCore.Settings" asp-controller="Admin" asp-action="Index" asp-route-groupId = "localization">@T["Add or remove supported cultures for the site"]</a></p>
-                }
-                else
-                {
-                    @if (!string.IsNullOrEmpty(Model.LocalizationSet))
+                    if (!string.IsNullOrEmpty(culture.ContentItemId))
                     {
-                        <div class="list-group">
-                            @foreach (var culture in Model.ContentItemCultures)
-                            {
-                                @if (!string.IsNullOrEmpty(culture.ContentItemId))
-                                {
-                                    <a class="list-group-item list-group-item-action" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItemId" title=@T["Edit {0}", culture.Culture.DisplayName]><i class="fa fa-edit" aria-hidden="true"></i> @culture.Culture.DisplayName | @culture.Culture.Name </a>
-                                }
-                                else
-                                {
-                                    <a class="list-group-item list-group-item-action" data-url-af="UnsafeUrl" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" title=@T["Create {0}", culture.Culture.DisplayName]><i class="fa fa-plus" aria-hidden="true"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
-                                }
-                            }
-                        </div>
+                        <a class="dropdown-item" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItemId" asp-route-returnUrl="@Context.Request.Query["returnUrl"]">@culture.Culture.DisplayName</a>
                     }
                     else
                     {
-                        @T["Please save your content item before creating localizations"]
+                        <a class="dropdown-item" data-url-af="UnsafeUrl" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" asp-route-returnUrl="@Context.Request.Query["returnUrl"]">@culture.Culture.DisplayName</a>
                     }
                 }
-            </div>
-        </div>
+            </ul>
+        }
     </div>
-</div>
+}
+else
+{
+    <div class="alert alert-warning" role="alert">
+        @T["Your site does not have any cultures, "] <a class="alert-link" asp-route-area="OrchardCore.Settings" asp-controller="Admin" asp-action="Index" asp-route-groupId="localization">@T["add supported cultures for the site"]</a>
+    </div>
+}
