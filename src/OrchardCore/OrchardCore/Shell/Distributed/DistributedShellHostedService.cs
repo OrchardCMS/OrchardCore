@@ -316,7 +316,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // Create a local distributed context because it is not yet initialized.
-            using var context = await CreateDistributedContextAsync(defautSettings);
+            var context = _context = await CreateDistributedContextAsync(defautSettings);
 
             // If the required distributed features are not enabled, nothing to do.
             var distributedCache = context?.DistributedCache;
@@ -571,23 +571,79 @@ namespace OrchardCore.Environment.Shell.Distributed
         private async Task<DistributedContext> GetOrCreateDistributedContextAsync(ShellContext defaultContext)
         {
             // Check if the default tenant has changed.
-            if (_defaultContext != defaultContext)
+            if (ContextHasChanged(defaultContext))
             {
                 var previousContext = _context;
 
                 // Create a new distributed context based on the default tenant.
                 _context = await CreateDistributedContextAsync(defaultContext);
 
-                if (_context != null)
-                {
-                    _defaultContext = defaultContext;
-                }
-
                 // Release the previous one.
                 previousContext?.Release();
             }
 
+            if (_context != null)
+            {
+                _defaultContext = defaultContext;
+            }
+
             return _context;
+        }
+
+        private bool ContextHasChanged(ShellContext defaultContext)
+        {
+            // Check if no context.
+            if (_context == null)
+            {
+                return true;
+            }
+
+            // Check if equal by reference.
+            if (_defaultContext == defaultContext)
+            {
+                return false;
+            }
+
+            // Check if a new place holder was registered.
+            if (defaultContext is ShellContext.PlaceHolder placeHolder)
+            {
+                if (placeHolder.PreCreated)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            // Check if the shell descriptor was updated.
+            if (_context.Context.Blueprint.Descriptor.SerialNumber != defaultContext.Blueprint.Descriptor.SerialNumber)
+            {
+                return true;
+            }
+
+            if (_defaultContext != null)
+            {
+                if (_defaultContext is not ShellContext.PlaceHolder && _defaultContext.Released)
+                {
+                    return true;
+                }
+
+                // Check if the shell settings was updated or reloaded.
+                if (_defaultContext.Settings != defaultContext.Settings)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            // Check if the shell settings was updated.
+            if (_context.Context.Settings.VersionId != defaultContext.Settings.VersionId)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
