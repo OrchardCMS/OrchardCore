@@ -60,7 +60,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// This async method gets called for each tenant. Use this method to initialize container services.
         /// </summary>
-        /// <param name="initializeAsync">The async task to execute when initializing the services for a tenant..</param>
+        /// <param name="initializeAsync">The async task to execute when initializing the services for a tenant.</param>
         /// <param name="order">The order of the task to execute. Lower values will be executed first.</param>
         public OrchardCoreBuilder InitializeServices(Func<IServiceProvider, Task> initializeAsync, int order = 0)
         {
