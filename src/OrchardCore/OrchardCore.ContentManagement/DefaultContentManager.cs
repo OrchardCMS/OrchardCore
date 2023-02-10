@@ -246,13 +246,20 @@ namespace OrchardCore.ContentManagement
 
         public async Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, VersionOptions options)
         {
+            if (contentItemIds == null || !contentItemIds.Any())
+            {
+                return Enumerable.Empty<ContentItem>();
+            }
+
+            var ids = new List<string>(contentItemIds);
+
             var contentItems = new List<ContentItem>();
 
             if (options.IsLatest)
             {
                 contentItems = (await _session
                     .Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Latest)
+                    .Where(x => x.ContentItemId.IsIn(ids) && x.Latest)
                     .ListAsync()
                     ).ToList();
             }
@@ -260,7 +267,7 @@ namespace OrchardCore.ContentManagement
             {
                 contentItems = (await _session
                     .Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemId.IsIn(contentItemIds) && !x.Published && x.Latest).ListAsync()
+                    .Where(x => x.ContentItemId.IsIn(ids) && !x.Published && x.Latest).ListAsync()
                     ).ToList();
             }
             else if (options.IsDraft || options.IsDraftRequired)
@@ -268,22 +275,22 @@ namespace OrchardCore.ContentManagement
                 // Loaded whatever is the latest as it will be cloned
                 contentItems = (await _session
                     .Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Latest)
+                    .Where(x => x.ContentItemId.IsIn(ids) && x.Latest)
                     .ListAsync()).ToList();
             }
             else if (options.IsPublished)
             {
                 var missingIds = new List<string>();
 
-                foreach (var contentItemId in contentItemIds)
+                foreach (var id in ids)
                 {
-                    if (_contentManagerSession.RecallPublishedItemId(contentItemId, out var contentItem))
+                    if (_contentManagerSession.RecallPublishedItemId(id, out var contentItem))
                     {
                         contentItems.Add(contentItem);
                     }
                     else
                     {
-                        missingIds.Add(contentItemId);
+                        missingIds.Add(id);
                     }
                 }
 
