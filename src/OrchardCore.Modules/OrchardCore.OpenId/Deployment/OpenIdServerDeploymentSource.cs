@@ -60,7 +60,7 @@ namespace OrchardCore.OpenId.Deployment
                 DisableAccessTokenEncryption = settings.DisableAccessTokenEncryption,
                 DisableRollingRefreshTokens = settings.DisableRollingRefreshTokens,
                 UseReferenceAccessTokens = settings.UseReferenceAccessTokens,
-                RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange,                
+                RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange,
             };
 
             // Use nameof(OpenIdServerSettings) as name,

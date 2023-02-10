@@ -56,7 +56,7 @@ namespace OrchardCore.Search.Elasticsearch
             var elasticConfiguration = configuration.Get<ElasticConnectionOptions>();
 
             if (CheckOptions(elasticConfiguration, _logger))
-            {    
+            {
                 services.Configure<ElasticConnectionOptions>(o => o.ConfigurationExists = true);
 
                 IConnectionPool pool = null;
@@ -120,7 +120,7 @@ namespace OrchardCore.Search.Elasticsearch
                 try
                 {
                     var response = client.Ping();
-                    
+
                     services.Configure<TemplateOptions>(o =>
                     {
                         o.MemberAccessStrategy.Register<SearchIndexViewModel>();
@@ -256,7 +256,7 @@ namespace OrchardCore.Search.Elasticsearch
         public override void ConfigureServices(IServiceCollection services)
         {
             if (services.Any(d => d.ImplementationType == typeof(ElasticSearchProvider)))
-            { 
+            {
                 services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
             }
         }
