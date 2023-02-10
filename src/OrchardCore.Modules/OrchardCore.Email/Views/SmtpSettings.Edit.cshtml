@@ -83,10 +83,10 @@
                         <option value="@SmtpEncryptionMethod.None" selected="@(SmtpEncryptionMethod.None == Model.EncryptionMethod ? true : false)">
                             @T["None"] - @T["Connect to server using insecure connection."]
                         </option>
-                        <option value="@SmtpEncryptionMethod.SSLTLS" selected="@(SmtpEncryptionMethod.SSLTLS == Model.EncryptionMethod ? true : false)">
+                        <option value="@SmtpEncryptionMethod.SslTls" selected="@(SmtpEncryptionMethod.SslTls == Model.EncryptionMethod ? true : false)">
                             @T["SSL/TLS"] - @T["Connect to server using SSL/TSL secure connection"]
                         </option>
-                        <option value="@SmtpEncryptionMethod.STARTTLS" selected="@(SmtpEncryptionMethod.STARTTLS == Model.EncryptionMethod ? true : false)">
+                        <option value="@SmtpEncryptionMethod.StartTls" selected="@(SmtpEncryptionMethod.StartTls == Model.EncryptionMethod ? true : false)">
                             @T["STARTTLS"] - @T["Connect to server using insecure connection and upgrade to secure using SSL/TLS"]
                         </option>
                     </select>
