@@ -7,12 +7,12 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Configuration;
 using OrchardCore.Search.Deployment;
 using OrchardCore.Search.Drivers;
 using OrchardCore.Search.Model;
-using OrchardCore.Search.Routing;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -31,12 +31,16 @@ namespace OrchardCore.Search
             services.AddScoped<IDisplayDriver<ISite>, SearchSettingsDisplayDriver>();
             services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
             services.AddShapeAttributes<SearchShapes>();
-            services.AddSingleton<SearchRouteTransformer>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapDynamicControllerRoute<SearchRouteTransformer>("/search");
+            routes.MapAreaControllerRoute(
+                name: "Search",
+                areaName: "OrchardCore.Search",
+                pattern: "search",
+                defaults: new { controller = typeof(SearchController).ControllerName(), action = nameof(SearchController.Search) }
+            );
         }
     }
 

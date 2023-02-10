@@ -29,6 +29,7 @@ using OrchardCore.Search.Elasticsearch.Core.Providers;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
 using OrchardCore.Search.Elasticsearch.Providers;
+using OrchardCore.Search.Elasticsearch.Services;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -136,6 +137,7 @@ namespace OrchardCore.Search.Elasticsearch
                     services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
                     services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
                     services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
+                    services.AddScoped<ISearchService, ElasticSearchService>();
                 }
                 catch (Exception ex)
                 {
