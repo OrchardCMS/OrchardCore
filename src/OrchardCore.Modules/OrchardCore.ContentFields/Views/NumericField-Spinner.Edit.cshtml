@@ -27,8 +27,8 @@
                         <span class="input-group-text">@min</span>
                     }
                     <input asp-for="Value" typeof="text" class="form-control content-preview-select" placeholder="@settings.Placeholder" required="@settings.Required" />
-                    <button class="btn btn-outline-secondary" type="button" onclick="numericFieldSpinner('@(id)', @(scale), -@(step), @(min), @(max))"><i class="fa fa-minus" aria-hidden="true"></i></button>
-                    <button class="btn btn-outline-secondary" type="button" onclick="numericFieldSpinner('@(id)', @(scale), +@(step), @(min), @(max))"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="numericFieldSpinner('@(id)', @(scale), -@(step), @(min), @(max))"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="numericFieldSpinner('@(id)', @(scale), +@(step), @(min), @(max))"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
                     @if (settings.Maximum.HasValue)
                     {
                         <span class="input-group-text">@max</span>

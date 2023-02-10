@@ -46,18 +46,18 @@
                         <a id="btn-darkmode" class="me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
                             @if (darkMode)
                             {
-                                <i class="fas fa-sun" aria-hidden="true"></i>
+                                <i class="fa-solid fa-sun" aria-hidden="true"></i>
                                 <span class="d-none">@T["Light mode"]</span>
                             }
                             else
                             {
-                                <i class="fas fa-moon" aria-hidden="true"></i>
+                                <i class="fa-solid fa-moon" aria-hidden="true"></i>
                                 <span class="d-none">@T["Dark mode"]</span>
                             }
                         </a>
                     }
                     <a href="@Url.Content("~/")" class="me-3" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Visit Site"]" role="button">
-                        <i class="fa fa-fw fa-external-link" aria-hidden="true"></i>
+                        <i class="fa-solid fa-fw fa-external-link" aria-hidden="true"></i>
                     </a>
                     @await DisplayAsync(await New.UserMenu())
                 </div>

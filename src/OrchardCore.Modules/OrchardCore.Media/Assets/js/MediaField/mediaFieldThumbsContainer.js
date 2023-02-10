@@ -21,24 +21,24 @@ Vue.component('mediaFieldThumbsContainer', {
                             :src="buildMediaUrl(media.url, thumbSize)" \
                             :data-mime="media.mime"\
                             :style="{maxHeight: thumbSize + \'px\' , maxWidth: thumbSize + \'px\'}"/>\
-                            <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i>\
+                            <i v-else class="fa-solid fa-file-o fa-lg" :data-mime="media.mime"></i>\
                          </div>\
                          <div class="media-container-main-item-title card-body">\
                                 <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"\
-                                    v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash" aria-hidden="true"></i></a>\
-                                <a :href="media.url" target="_blank" class="btn btn-light btn-sm float-end inline-media-button view-button""><i class="fa fa-download" aria-hidden="true"></i></a> \
+                                    v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>\
+                                <a :href="media.url" target="_blank" class="btn btn-light btn-sm float-end inline-media-button view-button""><i class="fa-solid fa-download" aria-hidden="true"></i></a> \
                                 <span class="media-filename card-text small" :title="media.mediaPath">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\
                          </div>\
                     </div>\
                     <div v-else>\
                         <div class="thumb-container flex-column" :style="{height: thumbSize + \'px\'}">\
-                            <i class="fa fa-ban text-danger d-block" aria-hidden="true"></i>\
+                            <i class="fa-solid fa-ban text-danger d-block" aria-hidden="true"></i>\
                             <span class="text-danger small d-block">{{ T.mediaNotFound }}</span>\
                             <span class="text-danger small d-block text-center">{{ T.discardWarning }}</span>\
                         </div>\
                         <div class="media-container-main-item-title card-body">\
                             <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"\
-                                v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash" aria-hidden="true"></i></a>\
+                                v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>\
                             <span class="media-filename card-text small text-danger" :title="media.name">{{ media.name }}</span>\
                         </div>\
                    </div>\
