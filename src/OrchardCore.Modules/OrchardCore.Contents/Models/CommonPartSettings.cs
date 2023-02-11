@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Contents.Models
 {
     public class CommonPartSettings
@@ -7,7 +5,5 @@ namespace OrchardCore.Contents.Models
         public bool DisplayDateEditor { get; set; }
 
         public bool DisplayOwnerEditor { get; set; }
-
-        public string[] Roles { get; set; } = Array.Empty<string>();
     }
 }
