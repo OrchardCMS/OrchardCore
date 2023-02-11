@@ -373,13 +373,4 @@ namespace OrchardCore.Contents
             services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
         }
     }
-
-    [RequireFeatures("OrchardCore.Roles")]
-    public class RolesStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, RoleCommonPartSettingsDisplayDriver>();
-        }
-    }
 }
