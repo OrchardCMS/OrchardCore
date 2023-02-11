@@ -116,6 +116,7 @@ public class SearchController : Controller
                 model.SearchForm = new SearchFormViewModel("Search__Form")
                 {
                     Placeholder = searchSettings.Placeholder,
+                    Index = viewModel.Index,
                 };
             });
 
@@ -151,6 +152,7 @@ public class SearchController : Controller
                 {
                     Terms = viewModel.Terms,
                     Placeholder = searchSettings.Placeholder,
+                    Index = viewModel.Index,
                 };
             });
 
@@ -200,6 +202,7 @@ public class SearchController : Controller
             {
                 Terms = viewModel.Terms,
                 Placeholder = searchSettings.Placeholder,
+                Index = viewModel.Index,
             };
             model.SearchResults = new SearchResultsViewModel("Search__Results")
             {
@@ -209,7 +212,8 @@ public class SearchController : Controller
             };
             model.Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, string>()
             {
-                { "Terms", viewModel.Terms }
+                { "Terms", viewModel.Terms },
+                { "Index", viewModel.Index },
             });
         });
 
