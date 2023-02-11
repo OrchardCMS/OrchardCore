@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace OrchardCore.Search.Abstractions;
 
@@ -9,5 +9,6 @@ public class SearchResult
     public bool Latest { get; set; }
 
     public bool Success { get; set; }
+
     public string Error { get; set; }
 }
