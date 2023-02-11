@@ -26,12 +26,7 @@ namespace OrchardCore.Lists.Settings
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                // CommonPartSettings could be set by another driver. Get existing settings first, then update it.
-                var settings = contentTypePartDefinition.GetSettings<CommonPartSettings>();
-                settings.DisplayOwnerEditor = model.DisplayOwnerEditor;
-                settings.DisplayDateEditor = model.DisplayDateEditor;
-
-                context.Builder.WithSettings(settings);
+                context.Builder.WithSettings(new CommonPartSettings { DisplayDateEditor = model.DisplayDateEditor, DisplayOwnerEditor = model.DisplayOwnerEditor });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);
