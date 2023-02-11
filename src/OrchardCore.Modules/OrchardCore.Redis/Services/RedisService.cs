@@ -25,7 +25,7 @@ namespace OrchardCore.Redis.Services
 
         public IConnectionMultiplexer Connection { get; private set; }
 
-        public string InstancePrefix { init; get; }
+        public string InstancePrefix { get; }
 
         public IDatabase Database { get; private set; }
 
