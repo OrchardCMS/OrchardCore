@@ -35,7 +35,6 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Liquid;
@@ -372,6 +371,15 @@ namespace OrchardCore.Contents
         {
             // Feeds
             services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Roles")]
+    public class RolesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, RoleCommonPartSettingsDisplayDriver>();
         }
     }
 }

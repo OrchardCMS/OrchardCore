@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -33,7 +34,7 @@ namespace OrchardCore.Contents.Drivers
             S = stringLocalizer;
         }
 
-        public override async Task<IDisplayResult> EditAsync(CommonPart part, BuildPartEditorContext context)
+        public override IDisplayResult Edit(CommonPart part, BuildPartEditorContext context)
         {
             var currentUser = _httpContextAccessor.HttpContext?.User;
 
@@ -45,26 +46,21 @@ namespace OrchardCore.Contents.Drivers
 
             var settings = context.TypePartDefinition.GetSettings<CommonPartSettings>();
 
-            if (settings.DisplayOwnerEditor)
+            return Initialize<OwnerEditorViewModel>("CommonPart_Edit__Owner", async model =>
             {
-                return Initialize<OwnerEditorViewModel>("CommonPart_Edit__Owner", async model =>
+                if (!String.IsNullOrEmpty(part.ContentItem.Owner))
                 {
-                    if (!String.IsNullOrEmpty(part.ContentItem.Owner))
-                    {
-                        // TODO Move this editor to a user picker.
-                        var user = await _userManager.FindByIdAsync(part.ContentItem.Owner);
+                    // TODO Move this editor to a user picker.
+                    var user = await _userManager.FindByIdAsync(part.ContentItem.Owner);
 
-                        model.OwnerName = user?.UserName;
-                    }
-                });
-            }
-
-            return null;
+                    model.OwnerName = user?.UserName;
+                }
+            }).RenderWhen(() => HasAccessToEditorAsync(part, settings));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(CommonPart part, UpdatePartEditorContext context)
         {
-            var currentUser = _httpContextAccessor.HttpContext?.User;
+            var settings = context.TypePartDefinition.GetSettings<CommonPartSettings>();
 
             if (!await _authorizationService.AuthorizeAsync(currentUser, StandardPermissions.SiteOwner)
                 && !await _authorizationService.AuthorizeAsync(currentUser, CommonPermissions.EditContentOwner, part.ContentItem))
@@ -72,34 +68,50 @@ namespace OrchardCore.Contents.Drivers
                 return null;
             }
 
-            var settings = context.TypePartDefinition.GetSettings<CommonPartSettings>();
+            var model = new OwnerEditorViewModel();
 
-            if (settings.DisplayOwnerEditor)
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            if (String.IsNullOrWhiteSpace(model.OwnerName))
             {
-                var model = new OwnerEditorViewModel();
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.OwnerName), S["A value is required for Owner."]);
+            }
+            else
+            {
+                var newOwner = await _userManager.FindByNameAsync(model.OwnerName);
 
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                if (String.IsNullOrWhiteSpace(model.OwnerName))
+                if (newOwner == null)
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.OwnerName), S["A value is required for Owner."]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.OwnerName), S["Invalid username provided for Owner."]);
                 }
                 else
                 {
-                    var newOwner = await _userManager.FindByNameAsync(model.OwnerName);
-
-                    if (newOwner == null)
-                    {
-                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.OwnerName), S["Invalid username provided for Owner."]);
-                    }
-                    else
-                    {
-                        part.ContentItem.Owner = await _userManager.GetUserIdAsync(newOwner);
-                    }
+                    part.ContentItem.Owner = await _userManager.GetUserIdAsync(newOwner);
                 }
             }
 
-            return await EditAsync(part, context);
+            return Edit(part, context);
+        }
+
+        private async Task<bool> HasAccessToEditorAsync(CommonPart part, CommonPartSettings settings)
+        {
+            if (!settings.DisplayOwnerEditor)
+            {
+                return false;
+            }
+
+            var currentUser = _httpContextAccessor.HttpContext?.User;
+
+            if (await _authorizationService.AuthorizeAsync(currentUser, StandardPermissions.SiteOwner, part))
+            {
+                return true;
+            }
+
+            var user = await _userManager.FindByNameAsync(currentUser.Identity.Name);
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            return userRoles.Any(userRole => settings.Roles.Contains(userRole));
         }
     }
 }
