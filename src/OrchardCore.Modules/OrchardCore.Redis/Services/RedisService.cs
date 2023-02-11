@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using StackExchange.Redis;
 
@@ -12,14 +13,18 @@ namespace OrchardCore.Redis.Services
     {
         private readonly IOptions<RedisOptions> _options;
         private readonly ILogger _logger;
+        private readonly ShellDescriptor _shellDescriptor;
 
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
-        public RedisService(IOptions<RedisOptions> options, ILogger<RedisService> logger)
+        public RedisService(
+            IOptions<RedisOptions> options,
+            ILogger<RedisService> logger,
+            ShellDescriptor shellDescriptor)
         {
             _options = options;
             _logger = logger;
-
+            _shellDescriptor = shellDescriptor;
             InstancePrefix = options.Value.InstancePrefix;
         }
 
@@ -43,7 +48,7 @@ namespace OrchardCore.Redis.Services
                 if (Database == null)
                 {
                     Connection = await ConnectionMultiplexer.ConnectAsync(_options.Value.ConfigurationOptions);
-                    Database = Connection.GetDatabase();
+                    Database = Connection.GetDatabase(_shellDescriptor.SerialNumber);
                 }
             }
             catch (Exception e)
