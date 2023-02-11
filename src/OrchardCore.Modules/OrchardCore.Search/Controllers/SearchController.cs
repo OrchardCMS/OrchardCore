@@ -56,9 +56,13 @@ public class SearchController : Controller
         _logger = logger;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Search(SearchIndexViewModel viewModel, PagerSlimParameters pagerParameters)
+    public async Task<IActionResult> Search(string index, SearchIndexViewModel viewModel, PagerSlimParameters pagerParameters)
     {
+        if (!String.IsNullOrEmpty(index))
+        {
+            viewModel.Index = index;
+        }
+
         var searchServices = _serviceProvider.GetServices<ISearchService>();
 
         var totalServices = searchServices.Count();
@@ -70,7 +74,11 @@ public class SearchController : Controller
             return BadRequest("Missing search provider service.");
         }
 
-        var searchService = await GetSearchServiceAsync(searchServices, totalServices);
+        var site = await _siteService.GetSiteSettingsAsync();
+
+        var searchSettings = site.As<SearchSettings>();
+
+        var searchService = GetSearchService(searchServices, searchSettings, totalServices);
 
         var indexName = !String.IsNullOrWhiteSpace(viewModel.Index) ? viewModel.Index : await searchService.DefaultIndexAsync();
 
@@ -97,18 +105,22 @@ public class SearchController : Controller
             return BadRequest("Search provider is not configured.");
         }
 
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
+
         if (String.IsNullOrWhiteSpace(viewModel.Terms))
         {
-            var shape = await _shapeFactory.CreateAsync<SearchIndexViewModel>("SearchList", viewModel =>
+            var shape = await _shapeFactory.CreateAsync<SearchIndexViewModel>("SearchList", model =>
             {
-                viewModel.Index = viewModel.Index;
-                viewModel.SearchForm = new SearchFormViewModel("Search__Form");
+                model.PageTitle = searchSettings.PageTitle;
+                model.Index = viewModel.Index;
+                model.SearchForm = new SearchFormViewModel("Search__Form")
+                {
+                    Placeholder = searchSettings.Placeholder,
+                };
             });
 
             return View(shape);
         }
-
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
 
         var pager = new PagerSlim(pagerParameters, siteSettings.PageSize);
 
@@ -131,12 +143,14 @@ public class SearchController : Controller
 
         if (!searchResult.Success || !searchResult.ContentItemIds.Any())
         {
-            var shape = await _shapeFactory.CreateAsync<SearchIndexViewModel>("SearchList", viewModel =>
+            var shape = await _shapeFactory.CreateAsync<SearchIndexViewModel>("SearchList", model =>
             {
-                viewModel.Index = viewModel.Index;
-                viewModel.SearchForm = new SearchFormViewModel("Search__Form")
+                model.PageTitle = searchSettings.PageTitle;
+                model.Index = viewModel.Index;
+                model.SearchForm = new SearchFormViewModel("Search__Form")
                 {
-                    Terms = viewModel.Terms
+                    Terms = viewModel.Terms,
+                    Placeholder = searchSettings.Placeholder,
                 };
             });
 
@@ -144,21 +158,21 @@ public class SearchController : Controller
         }
 
         // We Query database to retrieve content items.
-        IQuery<ContentItem> queryDb;
+        IQuery<ContentItem> query;
 
         if (searchResult.Latest)
         {
-            queryDb = _session.Query<ContentItem, ContentItemIndex>()
+            query = _session.Query<ContentItem, ContentItemIndex>()
                 .Where(x => x.ContentItemId.IsIn(searchResult.ContentItemIds) && x.Latest);
         }
         else
         {
-            queryDb = _session.Query<ContentItem, ContentItemIndex>()
+            query = _session.Query<ContentItem, ContentItemIndex>()
                 .Where(x => x.ContentItemId.IsIn(searchResult.ContentItemIds) && x.Published);
         }
 
         // Sort the content items by their rank in the search results returned by Elasticsearch.
-        var containedItems = await queryDb.Take(pager.PageSize + 1).ListAsync();
+        var containedItems = await query.Take(pager.PageSize + 1).ListAsync();
 
         // We set the PagerSlim before and after links
         if (pagerParameters.After != null || pagerParameters.Before != null)
@@ -178,17 +192,22 @@ public class SearchController : Controller
             pager.After = (size - 1).ToString();
         }
 
-        var shapeViewModel = await _shapeFactory.CreateAsync<SearchIndexViewModel>("SearchList", async viewModel =>
+        var shapeViewModel = await _shapeFactory.CreateAsync<SearchIndexViewModel>("SearchList", async model =>
         {
-            viewModel.Terms = viewModel.Terms;
-            viewModel.SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms };
-            viewModel.SearchResults = new SearchResultsViewModel("Search__Results")
+            model.PageTitle = searchSettings.PageTitle;
+            model.Terms = viewModel.Terms;
+            model.SearchForm = new SearchFormViewModel("Search__Form")
+            {
+                Terms = viewModel.Terms,
+                Placeholder = searchSettings.Placeholder,
+            };
+            model.SearchResults = new SearchResultsViewModel("Search__Results")
             {
                 ContentItems = containedItems.OrderBy(x => searchResult.ContentItemIds.IndexOf(x.ContentItemId))
                 .Take(pager.PageSize)
                 .ToList(),
             };
-            viewModel.Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, string>()
+            model.Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, string>()
             {
                 { "Terms", viewModel.Terms }
             });
@@ -197,16 +216,12 @@ public class SearchController : Controller
         return View(shapeViewModel);
     }
 
-    private async Task<ISearchService> GetSearchServiceAsync(IEnumerable<ISearchService> searchServices, int totalServices)
+    private ISearchService GetSearchService(IEnumerable<ISearchService> searchServices, SearchSettings searchSettings, int totalServices)
     {
         ISearchService searchService = null;
 
         if (totalServices > 1)
         {
-            var site = await _siteService.GetSiteSettingsAsync();
-
-            var searchSettings = site.As<SearchSettings>();
-
             if (!String.IsNullOrEmpty(searchSettings.SearchProviderAreaName))
             {
                 var searchProvider = _serviceProvider.GetServices<SearchProvider>()

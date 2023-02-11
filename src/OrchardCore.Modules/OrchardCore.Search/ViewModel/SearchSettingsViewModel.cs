@@ -9,6 +9,10 @@ namespace OrchardCore.Search.ViewModels
     {
         public string SearchProviderAreaName { get; set; }
 
+        public string Placeholder { get; set; }
+
+        public string PageTitle { get; set; }
+
         [BindNever]
         public IEnumerable<SearchProvider> SearchProviders { get; set; } = Enumerable.Empty<SearchProvider>();
     }

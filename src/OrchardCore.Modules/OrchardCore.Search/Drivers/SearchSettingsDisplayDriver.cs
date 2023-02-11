@@ -48,6 +48,8 @@ namespace OrchardCore.Search.Drivers
                 if (searchProviders.Any())
                 {
                     model.SearchProviders = searchProviders;
+                    model.Placeholder = settings.Placeholder;
+                    model.PageTitle = settings.PageTitle;
                 }
 
                 model.SearchProviderAreaName = settings.SearchProviderAreaName;
@@ -70,6 +72,8 @@ namespace OrchardCore.Search.Drivers
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 section.SearchProviderAreaName = model.SearchProviderAreaName;
+                section.Placeholder = model.Placeholder;
+                section.PageTitle = model.PageTitle;
             }
 
             return await EditAsync(section, context);

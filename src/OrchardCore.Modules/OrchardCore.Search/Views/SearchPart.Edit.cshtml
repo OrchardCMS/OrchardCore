@@ -1,0 +1,14 @@
+@using OrchardCore.Search.ViewModel
+@model SearchPartViewModel
+
+<div class="mb-3" asp-validation-class-for="Placeholder">
+    <label asp-for="Placeholder">@T["Placeholder"]</label>
+    <input type="text" class="form-control" asp-for="Placeholder" required />
+    <span class="hint">@T["The placeholder text to user in the search bar."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="IndexName">
+    <label asp-for="IndexName">@T["Index Name"]</label>
+    <input type="text" class="form-control" asp-for="IndexName" />
+    <span class="hint">@T["Leave it empty to use the default index."]</span>
+</div>
