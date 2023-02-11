@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Nest;
 using OrchardCore.Entities;
 using OrchardCore.Search.Abstractions;
@@ -22,6 +23,7 @@ public class ElasticSearchService : ISearchService
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
     private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
     private readonly IElasticSearchQueryService _elasticSearchQueryService;
+    private readonly ILogger _logger;
     private readonly SearchProvider _searchProvider = new ElasticSearchProvider();
 
     public ElasticSearchService(
@@ -31,7 +33,8 @@ public class ElasticSearchService : ISearchService
         ElasticIndexingService elasticIndexingService,
         ElasticIndexSettingsService elasticIndexSettingsService,
         ElasticAnalyzerManager elasticAnalyzerManager,
-        IElasticSearchQueryService elasticSearchQueryService
+        IElasticSearchQueryService elasticSearchQueryService,
+        ILogger<ElasticSearchService> logger
         )
     {
         _permissionProviders = permissionProviders;
@@ -41,6 +44,7 @@ public class ElasticSearchService : ISearchService
         _elasticIndexSettingsService = elasticIndexSettingsService;
         _elasticAnalyzerManager = elasticAnalyzerManager;
         _elasticSearchQueryService = elasticSearchQueryService;
+        _logger = logger;
     }
 
     public bool CanHandle(SearchProvider provider)
@@ -113,6 +117,8 @@ public class ElasticSearchService : ISearchService
         }
         catch (Exception e)
         {
+            _logger.LogError(e, "Incorrect Elasticsearch search query syntax provided in search.");
+
             result.Success = false;
             result.Error = e.Message;
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Lucene.Net.QueryParsers.Classic;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Entities;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Lucene.Model;
@@ -20,6 +21,7 @@ public class LuceneSearchService : ISearchService
     private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
     private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
     private readonly ILuceneSearchQueryService _luceneSearchQueryService;
+    private readonly ILogger _logger;
     private readonly SearchProvider _searchProvider = new LuceneSearchProvider();
 
     public LuceneSearchService(
@@ -29,7 +31,8 @@ public class LuceneSearchService : ISearchService
         LuceneIndexingService luceneIndexingService,
         LuceneAnalyzerManager luceneAnalyzerManager,
         LuceneIndexSettingsService luceneIndexSettingsService,
-        ILuceneSearchQueryService luceneSearchQueryService)
+        ILuceneSearchQueryService luceneSearchQueryService,
+        ILogger<LuceneSearchService> logger)
     {
         _siteService = siteService;
         _permissionProviders = permissionProviders;
@@ -38,6 +41,7 @@ public class LuceneSearchService : ISearchService
         _luceneAnalyzerManager = luceneAnalyzerManager;
         _luceneIndexSettingsService = luceneIndexSettingsService;
         _luceneSearchQueryService = luceneSearchQueryService;
+        _logger = logger;
     }
 
     public bool CanHandle(SearchProvider provider)
@@ -74,6 +78,7 @@ public class LuceneSearchService : ISearchService
         var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(indexName));
         var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, defaultSearchFields, analyzer);
         var result = new SearchResult();
+
         try
         {
             var query = queryParser.Parse(term);
@@ -82,6 +87,8 @@ public class LuceneSearchService : ISearchService
         }
         catch (ParseException e)
         {
+            _logger.LogError(e, "Incorrect Lucene search query syntax provided in search.");
+
             result.Success = false;
             result.Error = e.Message;
         }
