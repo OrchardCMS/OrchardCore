@@ -53,6 +53,7 @@ namespace OrchardCore.Search.Elasticsearch
         private readonly ILogger _logger;
         private readonly IOptions<TemplateOptions> _templateOptions;
         private readonly string _indexPrefix;
+        private readonly ICultureProvider _cultureProvider;
 
         public AdminController(
             ISession session,
@@ -72,8 +73,8 @@ namespace OrchardCore.Search.Elasticsearch
             INotifier notifier,
             ILogger<AdminController> logger,
             IOptions<TemplateOptions> templateOptions,
-            ShellSettings shellSettings
-            )
+            ShellSettings shellSettings,
+            ICultureProvider cultureProvider)
         {
             _session = session;
             _siteService = siteService;
@@ -93,6 +94,7 @@ namespace OrchardCore.Search.Elasticsearch
             _logger = logger;
             _templateOptions = templateOptions;
             _indexPrefix = shellSettings.Name.ToLowerInvariant() + "_";
+            _cultureProvider = cultureProvider;
         }
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
@@ -174,7 +176,7 @@ namespace OrchardCore.Search.Elasticsearch
                 AnalyzerName = IsCreate ? "standardanalyzer" : settings.AnalyzerName,
                 IndexLatest = settings.IndexLatest,
                 Culture = settings.Culture,
-                Cultures = ILocalizationService.GetAllCulturesAndAliases()
+                Cultures = _cultureProvider.GetAllCulturesAndAliases()
                     .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
                 Analyzers = _elasticAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),

@@ -117,6 +117,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<ICalendarSelector, DefaultCalendarSelector>();
 
             services.AddSingleton<ICultureAliasProvider, DefaultCultureAliasProvider>();
+            services.AddSingleton<ICultureProvider, DefaultCultureProvider>();
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();

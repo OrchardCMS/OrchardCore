@@ -33,6 +33,7 @@ namespace OrchardCore.Localization.Drivers
         private readonly CultureOptions _cultureOptions;
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
+        private readonly ICultureProvider _cultureProvider;
 
         public LocalizationSettingsDisplayDriver(
             INotifier notifier,
@@ -42,8 +43,8 @@ namespace OrchardCore.Localization.Drivers
             IAuthorizationService authorizationService,
             IOptions<CultureOptions> cultureOptions,
             IHtmlLocalizer<LocalizationSettingsDisplayDriver> h,
-            IStringLocalizer<LocalizationSettingsDisplayDriver> s
-        )
+            IStringLocalizer<LocalizationSettingsDisplayDriver> s,
+            ICultureProvider cultureProvider)
         {
             _notifier = notifier;
             _shellHost = shellHost;
@@ -53,6 +54,7 @@ namespace OrchardCore.Localization.Drivers
             _cultureOptions = cultureOptions.Value;
             H = h;
             S = s;
+            _cultureProvider = cultureProvider;
         }
 
         /// <inheritdocs />
@@ -67,7 +69,7 @@ namespace OrchardCore.Localization.Drivers
 
             return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
             {
-                model.Cultures = ILocalizationService.GetAllCulturesAndAliases()
+                model.Cultures = _cultureProvider.GetAllCulturesAndAliases()
                     .Select(cultureInfo =>
                     {
                         return new CultureEntry

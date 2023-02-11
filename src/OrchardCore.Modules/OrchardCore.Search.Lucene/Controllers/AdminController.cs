@@ -51,6 +51,7 @@ namespace OrchardCore.Search.Lucene.Controllers
         private readonly IHtmlLocalizer H;
         private readonly ILogger _logger;
         private readonly IOptions<TemplateOptions> _templateOptions;
+        private readonly ICultureProvider _cultureProvider;
 
         public AdminController(
             ISession session,
@@ -69,7 +70,8 @@ namespace OrchardCore.Search.Lucene.Controllers
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             ILogger<AdminController> logger,
-            IOptions<TemplateOptions> templateOptions)
+            IOptions<TemplateOptions> templateOptions,
+            ICultureProvider cultureProvider)
         {
             _session = session;
             _luceneIndexManager = luceneIndexManager;
@@ -89,6 +91,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             H = htmlLocalizer;
             _logger = logger;
             _templateOptions = templateOptions;
+            _cultureProvider = cultureProvider;
         }
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
@@ -169,7 +172,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                 AnalyzerName = IsCreate ? "standardanalyzer" : settings.AnalyzerName,
                 IndexLatest = settings.IndexLatest,
                 Culture = settings.Culture,
-                Cultures = ILocalizationService.GetAllCulturesAndAliases()
+                Cultures = _cultureProvider.GetAllCulturesAndAliases()
                     .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
                 Analyzers = _luceneAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),

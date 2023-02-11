@@ -1,8 +1,12 @@
-using System.Globalization;
-
 namespace OrchardCore.Localization;
 
+/// <summary>
+/// Contract for provding a culture aliases.
+/// </summary>
 public interface ICultureAliasProvider
 {
-    bool TryGetCulture(CultureInfo cultureAlias, out CultureInfo culture);
+    /// <summary>
+    /// Gets a culture alias(es).
+    /// </summary>
+    string[] GetAliases();
 }
