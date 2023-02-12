@@ -18,14 +18,14 @@ namespace OrchardCore.Environment.Shell.Distributed
     /// </summary>
     internal class DistributedShellHostedService : BackgroundService
     {
-        private const string ShellChangedIdKey = "SHELL_CHANGED_ID";
-        private const string ShellCountChangedIdKey = "SHELL_COUNT_CHANGED_ID";
-        private const string ReleaseIdKeySuffix = "_RELEASE_ID";
-        private const string ReloadIdKeySuffix = "_RELOAD_ID";
+        private const string _shellChangedIdKey = "SHELL_CHANGED_ID";
+        private const string _shellCountChangedIdKey = "SHELL_COUNT_CHANGED_ID";
+        private const string _releaseIdKeySuffix = "_RELEASE_ID";
+        private const string _reloadIdKeySuffix = "_RELOAD_ID";
 
-        private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(1);
-        private static readonly TimeSpan MaxRetryTime = TimeSpan.FromMinutes(1);
-        private static readonly TimeSpan MaxBusyTime = TimeSpan.FromSeconds(2);
+        private static readonly TimeSpan _minIdleTime = TimeSpan.FromSeconds(1);
+        private static readonly TimeSpan _maxRetryTime = TimeSpan.FromMinutes(1);
+        private static readonly TimeSpan _maxBusyTime = TimeSpan.FromSeconds(2);
 
         private readonly IShellHost _shellHost;
         private readonly IShellContextFactory _shellContextFactory;
@@ -33,8 +33,8 @@ namespace OrchardCore.Environment.Shell.Distributed
         private readonly IShellRemovalManager _shellRemovingManager;
         private readonly ILogger _logger;
 
-        private readonly ConcurrentDictionary<string, ShellIdentifier> _identifiers = new ConcurrentDictionary<string, ShellIdentifier>();
-        private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
+        private readonly ConcurrentDictionary<string, ShellIdentifier> _identifiers = new();
+        private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new();
 
         private string _shellChangedId;
         private string _shellCountChangedId;
@@ -78,7 +78,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             });
 
             // Init the idle time.
-            var idleTime = MinIdleTime;
+            var idleTime = _minIdleTime;
 
             // Init the second counter used to sync the default tenant while it is 'Uninitialized'.
             var defaultTenantSyncingSeconds = 0;
@@ -140,7 +140,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     string shellChangedId;
                     try
                     {
-                        shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey);
+                        shellChangedId = await distributedCache.GetStringAsync(_shellChangedIdKey);
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
@@ -150,7 +150,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     }
 
                     // Reset the idle time.
-                    idleTime = MinIdleTime;
+                    idleTime = _minIdleTime;
 
                     // Check if at least one tenant has changed.
                     if (shellChangedId == null || _shellChangedId == shellChangedId)
@@ -162,7 +162,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     string shellCountChangedId;
                     try
                     {
-                        shellCountChangedId = await distributedCache.GetStringAsync(ShellCountChangedIdKey);
+                        shellCountChangedId = await distributedCache.GetStringAsync(_shellCountChangedIdKey);
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
@@ -309,14 +309,14 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // If there is no default tenant or it is not running, nothing to do.
-            var defautSettings = await _shellSettingsManager.LoadSettingsAsync(ShellHelper.DefaultShellName);
-            if (defautSettings?.State != TenantState.Running)
+            var defaultSettings = await _shellSettingsManager.LoadSettingsAsync(ShellHelper.DefaultShellName);
+            if (defaultSettings?.State != TenantState.Running)
             {
                 return;
             }
 
             // Create a local distributed context because it is not yet initialized.
-            var context = _context = await CreateDistributedContextAsync(defautSettings);
+            var context = _context = await CreateDistributedContextAsync(defaultSettings);
 
             // If the required distributed features are not enabled, nothing to do.
             var distributedCache = context?.DistributedCache;
@@ -328,8 +328,8 @@ namespace OrchardCore.Environment.Shell.Distributed
             try
             {
                 // Retrieve the tenant global identifiers from the distributed cache.
-                var shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey);
-                var shellCountChangedId = await distributedCache.GetStringAsync(ShellCountChangedIdKey);
+                var shellChangedId = await distributedCache.GetStringAsync(_shellChangedIdKey);
+                var shellCountChangedId = await distributedCache.GetStringAsync(_shellCountChangedIdKey);
 
                 // Retrieve the names of all the tenants.
                 var names = await _shellSettingsManager.LoadSettingsNamesAsync();
@@ -403,7 +403,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                 await distributedCache.SetStringAsync(ReleaseIdKey(name), identifier.ReleaseId);
 
                 // Also update the global identifier specifying that a tenant has changed.
-                await distributedCache.SetStringAsync(ShellChangedIdKey, identifier.ReleaseId);
+                await distributedCache.SetStringAsync(_shellChangedIdKey, identifier.ReleaseId);
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
@@ -457,11 +457,11 @@ namespace OrchardCore.Environment.Shell.Distributed
                 if (name != ShellHelper.DefaultShellName && !_shellHost.TryGetSettings(name, out _))
                 {
                     // Also update the global identifier specifying that a tenant has been created.
-                    await distributedCache.SetStringAsync(ShellCountChangedIdKey, identifier.ReloadId);
+                    await distributedCache.SetStringAsync(_shellCountChangedIdKey, identifier.ReloadId);
                 }
 
                 // Also update the global identifier specifying that a tenant has changed.
-                await distributedCache.SetStringAsync(ShellChangedIdKey, identifier.ReloadId);
+                await distributedCache.SetStringAsync(_shellChangedIdKey, identifier.ReloadId);
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
@@ -508,10 +508,10 @@ namespace OrchardCore.Environment.Shell.Distributed
                 var removedId = IdGenerator.GenerateId();
 
                 // Also update the global identifier specifying that a tenant has been removed.
-                await distributedCache.SetStringAsync(ShellCountChangedIdKey, removedId);
+                await distributedCache.SetStringAsync(_shellCountChangedIdKey, removedId);
 
                 // Also update the global identifier specifying that a tenant has changed.
-                await distributedCache.SetStringAsync(ShellChangedIdKey, removedId);
+                await distributedCache.SetStringAsync(_shellChangedIdKey, removedId);
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
@@ -523,8 +523,8 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
         }
 
-        private static string ReleaseIdKey(string name) => name + ReleaseIdKeySuffix;
-        private static string ReloadIdKey(string name) => name + ReloadIdKeySuffix;
+        private static string ReleaseIdKey(string name) => name + _releaseIdKeySuffix;
+        private static string ReloadIdKey(string name) => name + _reloadIdKeySuffix;
 
         /// <summary>
         /// Creates a distributed context based on the default tenant settings and descriptor.
@@ -616,12 +616,6 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return true;
             }
 
-            // Check if a new shell context was registered.
-            if (_defaultContext != null && _defaultContext is not ShellContext.PlaceHolder)
-            {
-                return true;
-            }
-
             // Check if the shell settings was updated or reloaded.
             if (_defaultContext != null && _defaultContext.Settings != defaultContext.Settings)
             {
@@ -630,12 +624,6 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             // Check if the shell descriptor was updated.
             if (_context.Context.Blueprint.Descriptor.SerialNumber != defaultContext.Blueprint.Descriptor.SerialNumber)
-            {
-                return true;
-            }
-
-            // Check if the shell settings was updated.
-            if (_context.Context.Settings.VersionId != defaultContext.Settings.VersionId)
             {
                 return true;
             }
@@ -662,15 +650,15 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// </summary>
         private TimeSpan NextIdleTimeBeforeRetry(TimeSpan idleTime, Exception ex)
         {
-            if (idleTime < MaxRetryTime)
+            if (idleTime < _maxRetryTime)
             {
                 // Log an error on each retry, but only before reaching the 'MaxRetryTime', to not fill out the log.
                 _logger.LogError(ex, "Unable to read the distributed cache before checking if a tenant has changed.");
 
                 idleTime *= 2;
-                if (idleTime > MaxRetryTime)
+                if (idleTime > _maxRetryTime)
                 {
-                    idleTime = MaxRetryTime;
+                    idleTime = _maxRetryTime;
                 }
             }
 
@@ -682,9 +670,9 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// </summary>
         private async Task<bool> TryWaitAfterBusyTime(CancellationToken stoppingToken)
         {
-            if (DateTime.UtcNow - _busyStartTime > MaxBusyTime)
+            if (DateTime.UtcNow - _busyStartTime > _maxBusyTime)
             {
-                if (!await TryWaitAsync(MinIdleTime, stoppingToken))
+                if (!await TryWaitAsync(_minIdleTime, stoppingToken))
                 {
                     return false;
                 }

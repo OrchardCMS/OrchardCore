@@ -45,7 +45,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 _disposed = true;
             }
 
-            public bool PreCreated { get; set; }
+            public bool PreCreated { get; init; }
         }
 
         /// <summary>
