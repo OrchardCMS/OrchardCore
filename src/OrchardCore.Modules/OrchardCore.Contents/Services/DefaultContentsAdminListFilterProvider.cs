@@ -127,7 +127,6 @@ namespace OrchardCore.Contents.Services
                         var context = (ContentQueryContext)ctx;
                         var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
                         var authorizationService = context.ServiceProvider.GetRequiredService<IAuthorizationService>();
-                        var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
                         var contentDefinitionManager = context.ServiceProvider.GetRequiredService<IContentDefinitionManager>();
                         var user = httpContextAccessor.HttpContext.User;
                         var userNameIdentifier = user?.FindFirstValue(ClaimTypes.NameIdentifier);
