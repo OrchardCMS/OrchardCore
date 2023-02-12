@@ -144,20 +144,15 @@ namespace OrchardCore.Contents.Services
                                 if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.EditContent, contentTypeDefinition.Name, owner: null)
                                 || await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, contentTypeDefinition.Name, owner: null))
                                 {
-                                    query.With<ContentItemIndex>(x => x.ContentType == contentType);
-                                }
-                                else
-                                {
-                                    query.With<ContentItemIndex>(x => x.ContentType == contentType && x.Owner == userNameIdentifier);
+                                    return query.With<ContentItemIndex>(x => x.ContentType == contentType);
                                 }
 
-                                return query;
+                                return query.With<ContentItemIndex>(x => x.ContentType == contentType && x.Owner == userNameIdentifier);
                             }
-
                             // At this point the given contentType is invalid. Ignore it.
                         }
 
-                        var ListAnyContentTypes = new List<string>();
+                        var listAnyContentTypes = new List<string>();
                         var listOwnContentTypes = new List<string>();
 
                         foreach (var ctd in contentDefinitionManager.ListTypeDefinitions())
@@ -171,7 +166,7 @@ namespace OrchardCore.Contents.Services
                             if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.EditContent, ctd.Name, owner: null)
                             || await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, ctd.Name, owner: null))
                             {
-                                ListAnyContentTypes.Add(ctd.Name);
+                                listAnyContentTypes.Add(ctd.Name);
 
                                 continue;
                             }
@@ -186,7 +181,7 @@ namespace OrchardCore.Contents.Services
                             }
                         }
 
-                        return query.With<ContentItemIndex>().Where(x => x.ContentType.IsIn(ListAnyContentTypes) || (x.ContentType.IsIn(listOwnContentTypes) && x.Owner == userNameIdentifier));
+                        return query.With<ContentItemIndex>().Where(x => x.ContentType.IsIn(listAnyContentTypes) || (x.ContentType.IsIn(listOwnContentTypes) && x.Owner == userNameIdentifier));
                     })
                     .MapTo<ContentOptionsViewModel>((val, model) =>
                     {
