@@ -151,9 +151,11 @@ namespace OrchardCore.Contents.Services
                                 {
                                     query.With<ContentItemIndex>(x => x.ContentType == contentType && x.Owner == userNameIdentifier);
                                 }
+
+                                return query;
                             }
 
-                            return query;
+                            // At this point the given contentType is invalid. Ignore it.
                         }
 
                         var ListAnyContentTypes = new List<string>();
