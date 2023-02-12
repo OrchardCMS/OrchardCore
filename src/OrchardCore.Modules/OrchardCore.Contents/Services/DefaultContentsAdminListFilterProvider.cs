@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +9,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Contents.Security;
 using OrchardCore.Contents.ViewModels;
 using YesSql;
 using YesSql.Filters.Query;
@@ -134,8 +132,6 @@ namespace OrchardCore.Contents.Services
                         var user = httpContextAccessor.HttpContext.User;
                         var userNameIdentifier = user?.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                        var canListAllContent = await authorizationService.AuthorizeAsync(user, Permissions.ListContent);
-
                         // Filter for a specific type.
                         if (!String.IsNullOrEmpty(contentType))
                         {
@@ -144,11 +140,10 @@ namespace OrchardCore.Contents.Services
                             {
                                 // We display a specific type even if it's not listable so that admin pages
                                 // can reuse the Content list page for specific types.
-                                var contentItem = await contentManager.NewAsync(contentTypeDefinition.Name);
-                                contentItem.Owner = userNameIdentifier;
-                                var listPermissionToType = ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ListContent.Name], contentTypeDefinition);
-                                var hasContentListPermission = await authorizationService.AuthorizeAsync(user, listPermissionToType, contentItem);
-                                if (hasContentListPermission)
+
+                                // It is important to pass null to the owner parameter. This will check if the user can edit or view content that belongs to others.
+                                if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.EditContent, contentTypeDefinition.Name, owner: null)
+                                || await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, contentTypeDefinition.Name, owner: null))
                                 {
                                     query.With<ContentItemIndex>(x => x.ContentType == contentType);
                                 }
@@ -161,9 +156,8 @@ namespace OrchardCore.Contents.Services
                             return query;
                         }
 
-                        //var listableTypes = new List<ContentTypeDefinition>();
-                        var editableContentTypes = new List<ContentTypeDefinition>();
-                        var viewableContentTypes = new List<ContentTypeDefinition>();
+                        var ListAnyContentTypes = new List<string>();
+                        var listOwnContentTypes = new List<string>();
 
                         foreach (var ctd in contentDefinitionManager.ListTypeDefinitions())
                         {
@@ -172,60 +166,26 @@ namespace OrchardCore.Contents.Services
                                 continue;
                             }
 
-                            if (canListAllContent)
+                            // It is important to pass null to the owner parameter. This will check if the user can edit or view content that belongs to others.
+                            if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.EditContent, ctd.Name, owner: null)
+                            || await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, ctd.Name, owner: null))
                             {
-                                //listableTypes.Add(ctd);
-                                viewableContentTypes.Add(ctd);
-
-                                // since the content is listable, no need to do any addition checks
-                                continue;
-                            }
-
-                            // We want to list the content item if the user can edit their own items at least.
-                            // It might display content items the user won't be able to edit though.
-                            var contentItem = await contentManager.NewAsync(ctd.Name);
-                            contentItem.Owner = userNameIdentifier;
-
-                            var editPermissionToType = ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditContent.Name], ctd);
-                            var hasEditPermission = await authorizationService.AuthorizeAsync(user, editPermissionToType, contentItem);
-
-                            if (hasEditPermission)
-                            {
-                                editableContentTypes.Add(ctd);
+                                ListAnyContentTypes.Add(ctd.Name);
 
                                 continue;
                             }
 
-                            var viewPermissionToType = ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ViewContent.Name], ctd);
-                            var hasViewPermission = await authorizationService.AuthorizeAsync(user, viewPermissionToType, contentItem);
-
-                            if (hasViewPermission)
+                            // It is important to pass the current user ID to the owner parameter. This will check if the user can edit or view their own content.
+                            if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.EditContent, ctd.Name, userNameIdentifier)
+                                || await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, ctd.Name, userNameIdentifier))
                             {
-                                viewableContentTypes.Add(ctd);
+                                listOwnContentTypes.Add(ctd.Name);
 
                                 continue;
                             }
                         }
 
-                        if (!canListAllContent && editableContentTypes.Any())
-                        {
-                            query.With<ContentItemIndex>().Where(x => x.ContentType.IsIn(editableContentTypes.Select(t => t.Name).ToArray())
-                                        || (x.ContentType.IsIn(viewableContentTypes.Select(t => t.Name).ToArray()) && x.Owner == userNameIdentifier));
-                        }
-                        else
-                        {
-                            query.With<ContentItemIndex>(x => x.ContentType.IsIn(viewableContentTypes.Select(t => t.Name).ToArray()));
-
-                            // If we set the ListContent permission
-                            // to false we can only view our own content and
-                            // we bypass and force the corresponding ContentsStatus by owned content filtering
-                            if (!canListAllContent)
-                            {
-                                query.With<ContentItemIndex>(x => x.Owner == userNameIdentifier);
-                            }
-                        }
-
-                        return query;
+                        return query.With<ContentItemIndex>().Where(x => x.ContentType.IsIn(ListAnyContentTypes) || (x.ContentType.IsIn(listOwnContentTypes) && x.Owner == userNameIdentifier));
                     })
                     .MapTo<ContentOptionsViewModel>((val, model) =>
                     {
