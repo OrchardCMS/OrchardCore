@@ -590,6 +590,9 @@ namespace OrchardCore.Environment.Shell.Distributed
             return _context;
         }
 
+        /// <summary>
+        /// Checks if the distributed context based on the default tenant needs to be rebuilt.
+        /// </summary>
         private bool ContextHasChanged(ShellContext defaultContext)
         {
             // Check if no context.
