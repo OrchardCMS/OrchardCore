@@ -7,7 +7,9 @@ namespace OrchardCore.Search
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageSearchSettings = new Permission("ManageSearchSettings", "Manage Search Settings");
+        public static readonly Permission QuerySearchIndex = new("QuerySearchIndex", "Query any index");
+
+        public static readonly Permission ManageSearchSettings = new("ManageSearchSettings", "Manage Search Settings");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {

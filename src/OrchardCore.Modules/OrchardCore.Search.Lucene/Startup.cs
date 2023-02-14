@@ -1,6 +1,7 @@
 using System;
 using Fluid;
 using Lucene.Net.Analysis.Standard;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +25,7 @@ using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Search.Lucene.Controllers;
 using OrchardCore.Search.Lucene.Deployment;
 using OrchardCore.Search.Lucene.Drivers;
+using OrchardCore.Search.Lucene.Handler;
 using OrchardCore.Search.Lucene.Handlers;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Recipes;
@@ -53,7 +55,8 @@ namespace OrchardCore.Search.Lucene
             });
 
             services.AddScoped<IDataMigration, Migrations>();
-            services.AddSingleton<SearchProvider, LuceneSearchProvider>();
+            services.AddSingleton<LuceneSearchProvider>();
+            services.AddSingleton<SearchProvider>(sp => sp.GetRequiredService<LuceneSearchProvider>());
             services.AddSingleton<LuceneIndexingState>();
             services.AddSingleton<LuceneIndexSettingsService>();
             services.AddSingleton<LuceneIndexManager>();
@@ -83,6 +86,7 @@ namespace OrchardCore.Search.Lucene
             services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
             services.AddRecipeExecutionStep<LuceneIndexResetStep>();
             services.AddScoped<ISearchService, LuceneSearchService>();
+            services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

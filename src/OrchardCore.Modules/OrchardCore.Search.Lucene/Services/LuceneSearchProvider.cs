@@ -5,7 +5,7 @@ namespace OrchardCore.Search.Lucene.Services
     /// <summary>
     /// Creates a Lucene SearchProvider.
     /// </summary>
-    internal class LuceneSearchProvider : SearchProvider
+    public class LuceneSearchProvider : SearchProvider
     {
         public LuceneSearchProvider() : base("Lucene")
         {

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Elasticsearch.Net;
 using Fluid;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,7 @@ using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
 using OrchardCore.Search.Elasticsearch.Providers;
 using OrchardCore.Search.Elasticsearch.Services;
+using OrchardCore.Search.Lucene.Handler;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -130,14 +132,16 @@ namespace OrchardCore.Search.Elasticsearch
                     });
 
                     services.AddElasticServices();
-                    services.AddSingleton<SearchProvider, ElasticSearchProvider>();
+                    services.AddSingleton<ElasticSearchProvider>();
+                    services.AddSingleton<SearchProvider>(sp => sp.GetRequiredService<ElasticSearchProvider>());
                     services.AddScoped<IPermissionProvider, Permissions>();
                     services.AddScoped<INavigationProvider, AdminMenu>();
                     services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
                     services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
                     services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
                     services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
-                    services.AddScoped<ISearchService, ElasticSearchService>();
+                    services.AddScoped<ISearchService, ElasticsearchService>();
+                    services.AddScoped<IAuthorizationHandler, ElasticsearchAuthorizationHandler>();
                 }
                 catch (Exception ex)
                 {

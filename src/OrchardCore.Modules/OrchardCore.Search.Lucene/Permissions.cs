@@ -8,8 +8,9 @@ namespace OrchardCore.Search.Lucene
     {
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
-        public static readonly Permission ManageLuceneIndexes = new Permission("ManageLuceneIndexes", "Manage Lucene Indexes");
-        public static readonly Permission QueryLuceneApi = new Permission("QueryLuceneApi", "Query Lucene Api", new[] { ManageLuceneIndexes });
+        public static readonly Permission ManageLuceneIndexes = LuceneIndexPermissionHelper.ManageLuceneIndexes;
+
+        public static readonly Permission QueryLuceneApi = new("QueryLuceneApi", "Query Lucene Api", new[] { ManageLuceneIndexes });
 
         public Permissions(LuceneIndexSettingsService luceneIndexSettingsService)
         {
@@ -20,10 +21,10 @@ namespace OrchardCore.Search.Lucene
         {
             var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
             var result = new List<Permission>();
+
             foreach (var index in luceneIndexSettings)
             {
-                var permission = new Permission("QueryLucene" + index.IndexName + "Index", "Query Lucene " + index.IndexName + " Index", new[] { ManageLuceneIndexes });
-                result.Add(permission);
+                result.Add(LuceneIndexPermissionHelper.GetLuceneIndexPermission(index.IndexName));
             }
 
             result.Add(ManageLuceneIndexes);
