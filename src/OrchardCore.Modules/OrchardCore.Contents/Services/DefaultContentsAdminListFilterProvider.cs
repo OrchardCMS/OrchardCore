@@ -140,9 +140,8 @@ namespace OrchardCore.Contents.Services
                                 // We display a specific type even if it's not listable so that admin pages
                                 // can reuse the Content list page for specific types.
 
-                                // It is important to pass null to the owner parameter. This will check if the user can edit or view content that belongs to others.
-                                if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.EditContent, contentTypeDefinition.Name, owner: null)
-                                || await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, contentTypeDefinition.Name, owner: null))
+                                // It is important to pass null to the owner parameter. This will check if the user can view content that belongs to others.
+                                if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, contentTypeDefinition.Name, owner: null))
                                 {
                                     return query.With<ContentItemIndex>(x => x.ContentType == contentType);
                                 }
@@ -162,18 +161,16 @@ namespace OrchardCore.Contents.Services
                                 continue;
                             }
 
-                            // It is important to pass null to the owner parameter. This will check if the user can edit or view content that belongs to others.
-                            if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.EditContent, ctd.Name, owner: null)
-                            || await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, ctd.Name, owner: null))
+                            // It is important to pass null to the owner parameter. This will check if the user can view content that belongs to others.
+                            if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, ctd.Name, owner: null))
                             {
                                 listAnyContentTypes.Add(ctd.Name);
 
                                 continue;
                             }
 
-                            // It is important to pass the current user ID to the owner parameter. This will check if the user can edit or view their own content.
-                            if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.EditContent, ctd.Name, userNameIdentifier)
-                                || await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, ctd.Name, userNameIdentifier))
+                            // It is important to pass the current user ID to the owner parameter. This will check if the user can view their own content.
+                            if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, ctd.Name, userNameIdentifier))
                             {
                                 listOwnContentTypes.Add(ctd.Name);
 
