@@ -35,7 +35,7 @@ namespace OrchardCore.Markdown.GraphQL
                 .ResolveLockedAsync(ToHtml);
         }
 
-        private static async Task<object> ToHtml(IResolveFieldContext<MarkdownBodyPart> ctx)
+        private static async ValueTask<object> ToHtml(IResolveFieldContext<MarkdownBodyPart> ctx)
         {
             if (string.IsNullOrEmpty(ctx.Source.Markdown))
             {

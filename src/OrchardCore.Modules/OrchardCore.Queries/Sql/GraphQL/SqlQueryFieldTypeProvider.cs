@@ -140,22 +140,25 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
                 ResolvedType = new ListGraphType(typetype),
-                Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
-                {
-                    var queryManager = context.RequestServices.GetService<IQueryManager>();
-                    var iquery = await queryManager.GetQueryAsync(query.Name);
-
-                    var parameters = context.GetArgument<string>("parameters");
-
-                    var queryParameters = parameters != null ?
-                        JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : new Dictionary<string, object>();
-
-                    var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
-                    return result.Items;
-                }),
+                Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
                 Type = typeof(ListGraphType<ObjectGraphType<JObject>>)
             };
+
+        async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
+        {
+            var queryManager = context.RequestServices.GetService<IQueryManager>();
+            var iquery = await queryManager.GetQueryAsync(query.Name);
+
+            var parameters = context.GetArgument<string>("parameters");
+
+            var queryParameters = parameters != null ?
+                JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                : new Dictionary<string, object>();
+
+            var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+
+            return result.Items;
+        }
 
             return fieldType;
         }
@@ -177,22 +180,24 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
                 ResolvedType = typetype.ResolvedType,
-                Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
-                {
-                    var queryManager = context.RequestServices.GetService<IQueryManager>();
-                    var iquery = await queryManager.GetQueryAsync(query.Name);
-
-                    var parameters = context.GetArgument<string>("parameters");
-
-                    var queryParameters = parameters != null ?
-                        JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : new Dictionary<string, object>();
-
-                    var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
-                    return result.Items;
-                }),
+                Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
                 Type = typetype.Type
             };
+
+            async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
+            {
+                var queryManager = context.RequestServices.GetService<IQueryManager>();
+                var iquery = await queryManager.GetQueryAsync(query.Name);
+
+                var parameters = context.GetArgument<string>("parameters");
+
+                var queryParameters = parameters != null ?
+                    JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                    : new Dictionary<string, object>();
+
+                var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                return result.Items;
+            }
 
             return fieldType;
         }

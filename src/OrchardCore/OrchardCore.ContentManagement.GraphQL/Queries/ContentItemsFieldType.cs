@@ -55,7 +55,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 new QueryArgument<PublicationStatusGraphType> { Name = "status", Description = "publication status of the content item", ResolvedType = new PublicationStatusGraphType(), DefaultValue = PublicationStatusEnum.Published }
             );
 
-            Resolver = new LockedAsyncFieldResolver<IEnumerable<ContentItem>>(Resolve);
+            Resolver = new LockedAsyncFieldResolver(Resolve);
 
             schema.RegisterType(whereInput);
             schema.RegisterType(orderByInput);
@@ -64,7 +64,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             _defaultNumberOfItems = settingsAccessor.Value.DefaultNumberOfResults;
         }
 
-        private async Task<IEnumerable<ContentItem>> Resolve(IResolveFieldContext context)
+        private async Task<object> Resolve(IResolveFieldContext context)
         {
             var versionOption = VersionOptions.Published;
 

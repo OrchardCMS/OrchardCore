@@ -9,10 +9,10 @@ namespace OrchardCore.Flows.GraphQL
             Name = "FlowAlignment";
 
             Description = "The widget alignment.";
-            AddValue("Left", "Left alignment.", 0);
-            AddValue("Center", "Center alignment.", 1);
-            AddValue("Right", "Right alignment.", 2);
-            AddValue("Justify", "Justify alignment.", 3);
+            Add("Left", 0, "Left alignment.");
+            Add("Center", 1, "Center alignment.");
+            Add("Right", 2, "Right alignment.");
+            Add("Justify", 3, "Justify alignment.");
         }
     }
 }

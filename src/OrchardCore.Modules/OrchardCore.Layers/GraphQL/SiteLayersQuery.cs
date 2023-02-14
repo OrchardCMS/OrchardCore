@@ -41,7 +41,7 @@ namespace OrchardCore.Layers.GraphQL
                 Name = "SiteLayers",
                 Description = S["Site layers define the rules and zone placement for widgets."],
                 Type = typeof(ListGraphType<LayerQueryObjectType>),
-                Resolver = new LockedAsyncFieldResolver<IEnumerable<Layer>>(ResolveAsync)
+                Resolver = new LockedAsyncFieldResolver(ResolveAsync)
             };
 
             schema.Query.AddField(field);
@@ -49,10 +49,11 @@ namespace OrchardCore.Layers.GraphQL
             return Task.CompletedTask;
         }
 
-        private async Task<IEnumerable<Layer>> ResolveAsync(IResolveFieldContext resolveContext)
+        private async Task<object> ResolveAsync(IResolveFieldContext resolveContext)
         {
             var layerService = resolveContext.RequestServices.GetService<ILayerService>();
             var allLayers = await layerService.GetLayersAsync();
+
             return allLayers.Layers;
         }
     }

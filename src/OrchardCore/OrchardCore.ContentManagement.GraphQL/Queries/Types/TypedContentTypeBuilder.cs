@@ -73,7 +73,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                     var nameToResolve = partName;
                                     var resolvedPart = context.Source.Get(activator.Type, nameToResolve);
 
-                                    return field.Resolver.Resolve(new ResolveFieldContext
+                                    return field.Resolver.ResolveAsync(new ResolveFieldContext
                                     {
                                         Arguments = context.Arguments,
                                         Source = resolvedPart,
