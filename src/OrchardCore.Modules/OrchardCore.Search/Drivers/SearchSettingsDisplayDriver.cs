@@ -60,17 +60,15 @@ namespace OrchardCore.Search.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
+            if (context.GroupId != GroupId || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
             {
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            var model = new SearchSettingsViewModel();
+
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                var model = new SearchSettingsViewModel();
-
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
                 section.SearchProviderAreaName = model.SearchProviderAreaName;
                 section.Placeholder = model.Placeholder;
                 section.PageTitle = model.PageTitle;

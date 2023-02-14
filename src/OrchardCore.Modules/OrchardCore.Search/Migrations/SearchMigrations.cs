@@ -9,21 +9,19 @@ public class SearchMigrations : DataMigration
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
     public SearchMigrations(IContentDefinitionManager contentDefinitionManager)
-    {
-        _contentDefinitionManager = contentDefinitionManager;
-    }
+        => _contentDefinitionManager = contentDefinitionManager;
 
     public int Create()
     {
-        _contentDefinitionManager.AlterPartDefinition("SearchPart", part => part
-            .WithDisplayName("Search Part")
+        _contentDefinitionManager.AlterPartDefinition("SearchFormPart", part => part
+            .WithDisplayName("Search Form Part")
         );
 
-        _contentDefinitionManager.AlterTypeDefinition("SearchWidget", type => type
+        _contentDefinitionManager.AlterTypeDefinition("SearchForm", type => type
             .Stereotype("Widget")
-            .DisplayedAs("Search")
+            .DisplayedAs("Search Form")
             .WithDescription("Provides a search form")
-            .WithPart("SearchPart")
+            .WithPart("SearchFormPart")
         );
 
         return 1;
