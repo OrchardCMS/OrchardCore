@@ -55,12 +55,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
                 finally
                 {
                     // This disposes the final outputStream.
-                    outputStream?.Dispose();
+                    if (outputStream != null)
+                    {
+                        await outputStream.DisposeAsync();
+                    }
                 }
             }
             finally
             {
-                inputStream?.Dispose();
+                if (inputStream != null)
+                {
+                    await inputStream.DisposeAsync();
+                }
             }
 
             foreach (var stream in streams)
