@@ -21,7 +21,7 @@ namespace OrchardCore.Setup
 
         private string[] _supportedCultures = new string[]
         {
-            "ar", "cs", "de", "el", "en", "es", "fa", "fr", "it", "ja", "pl", "pt-BR", "ru", "sv", "tr", "vi", "zh-Hans-CN", "zh-Hant-TW"
+            "ar", "cs", "de", "el", "en", "es", "fa", "fr", "it", "ja", "pl", "pt-BR", "ru", "sv", "tr", "vi", "zh-CN", "zh-TW", "zh-Hans-CN", "zh-Hant-TW"
         };
 
         public Startup(IShellConfiguration shellConfiguration)
