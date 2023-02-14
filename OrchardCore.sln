@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31710.8
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -489,6 +489,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Notifications.Core", "src\OrchardCore\OrchardCore.Notifications.Core\OrchardCore.Notifications.Core.csproj", "{2A6E7DF9-E417-42F8-94F7-0060E252E4D6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Notifications", "src\OrchardCore.Modules\OrchardCore.Notifications\OrchardCore.Notifications.csproj", "{19594A96-A033-4820-820B-C6186D00D507}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bootstrap5.OrchardCore", "src\OrchardCore.Themes\Bootstrap5.OrchardCore\Bootstrap5.OrchardCore.csproj", "{4797A1BE-5901-496A-885B-8C1DC66E2006}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1306,6 +1308,10 @@ Global
 		{19594A96-A033-4820-820B-C6186D00D507}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19594A96-A033-4820-820B-C6186D00D507}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19594A96-A033-4820-820B-C6186D00D507}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4797A1BE-5901-496A-885B-8C1DC66E2006}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4797A1BE-5901-496A-885B-8C1DC66E2006}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4797A1BE-5901-496A-885B-8C1DC66E2006}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4797A1BE-5901-496A-885B-8C1DC66E2006}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1533,6 +1539,7 @@ Global
 		{307AA9CB-D62E-4E30-B715-53E3BF535D94} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{2A6E7DF9-E417-42F8-94F7-0060E252E4D6} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{19594A96-A033-4820-820B-C6186D00D507} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
+		{4797A1BE-5901-496A-885B-8C1DC66E2006} = {AF3BADEA-CC93-4116-B3C1-F8D074EBEE4F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
