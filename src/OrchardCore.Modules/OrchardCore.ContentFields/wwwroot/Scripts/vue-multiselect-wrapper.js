@@ -7,22 +7,18 @@ function debounce(func, wait, immediate) {
   var timeout;
   return function () {
     var context = this,
-        args = arguments;
-
+      args = arguments;
     var later = function later() {
       timeout = null;
       if (!immediate) func.apply(context, args);
     };
-
     var callNow = immediate && !timeout;
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
     if (callNow) func.apply(context, args);
   };
 }
-
 ;
-
 function initVueMultiselect(element) {
   // only run script if element exists
   if (element) {
@@ -33,11 +29,9 @@ function initVueMultiselect(element) {
     var debouncedSearch = debounce(function (vm, query) {
       vm.isLoading = true;
       var searchFullUrl = searchUrl;
-
       if (query) {
         searchFullUrl += '&query=' + query;
       }
-
       fetch(searchFullUrl).then(function (res) {
         res.json().then(function (json) {
           vm.options = json;
@@ -97,14 +91,14 @@ function initVueMultiselect(element) {
         },
         onSelect: function onSelect(selectedOption, id) {
           var self = this;
-
           for (i = 0; i < self.arrayOfItems.length; i++) {
             if (self.arrayOfItems[i].id === selectedOption.id) {
               return;
             }
           }
 
-          self.arrayOfItems.push(selectedOption); // We don't want to show the search box if we are only allowing a single content 
+        self.arrayOfItems.push(selectedOption); 
+          // We don't want to show the search box if we are only allowing a single content 
           // item and a content item has already been selected. We don't need that search 
           // box again unless and until we delete the currently selected content item. 
           // So here we set the display mode accordingly. We always show the select list 
@@ -124,8 +118,8 @@ function initVueMultiselect(element) {
         }
       }
     });
-    /*Hook for other scripts that might want to have access to the view model*/
 
+    /*Hook for other scripts that might want to have access to the view model*/
     var event = new CustomEvent("vue-multiselect-created", {
       detail: {
         vm: vm

@@ -1,5 +1,4 @@
 using OrchardCore.Email;
-using Xunit;
 
 namespace OrchardCore.Tests.Email
 {

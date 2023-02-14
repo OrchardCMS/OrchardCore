@@ -2616,6 +2616,61 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "MikeAlhayek",
+      "name": "Mike Alhayek",
+      "avatar_url": "https://avatars.githubusercontent.com/u/24724371?v=4",
+      "profile": "https://www.crestapps.com/",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "vengi83644",
+      "name": "Venkatesan R",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5276778?v=4",
+      "profile": "https://bicloud.io/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "DavidStania",
+      "name": "David Stania",
+      "avatar_url": "https://avatars.githubusercontent.com/u/27513913?v=4",
+      "profile": "https://www.powerhouse-solutions.de/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "stoyandimov",
+      "name": "Stoyan Dimov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1770309?v=4",
+      "profile": "https://github.com/stoyandimov",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "DotCat1985",
+      "name": "DotCat",
+      "avatar_url": "https://avatars.githubusercontent.com/u/61869142?v=4",
+      "profile": "https://github.com/DotCat1985",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "kylgarmor",
+      "name": "kylgarmor",
+      "avatar_url": "https://avatars.githubusercontent.com/u/63015960?v=4",
+      "profile": "https://github.com/kylgarmor",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

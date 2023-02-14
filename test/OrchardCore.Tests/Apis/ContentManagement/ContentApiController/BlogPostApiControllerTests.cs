@@ -1,17 +1,12 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Lists.Models;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Tests.Apis.Context;
-using Xunit;
 using YesSql;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
 {

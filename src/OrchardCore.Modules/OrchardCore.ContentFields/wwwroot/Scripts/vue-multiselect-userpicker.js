@@ -7,22 +7,18 @@ function debounceUserPicker(func, wait, immediate) {
   var timeout;
   return function () {
     var context = this,
-        args = arguments;
-
+      args = arguments;
     var later = function later() {
       timeout = null;
       if (!immediate) func.apply(context, args);
     };
-
     var callNow = immediate && !timeout;
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
     if (callNow) func.apply(context, args);
   };
 }
-
 ;
-
 function initVueMultiselectUserPicker(element) {
   // only run script if element exists
   if (element) {
@@ -33,11 +29,9 @@ function initVueMultiselectUserPicker(element) {
     var debouncedSearch = debounceUserPicker(function (vm, query) {
       vm.isLoading = true;
       var searchFullUrl = searchUrl;
-
       if (query) {
         searchFullUrl += '&query=' + query;
       }
-
       fetch(searchFullUrl).then(function (res) {
         res.json().then(function (json) {
           vm.options = json;
@@ -97,14 +91,13 @@ function initVueMultiselectUserPicker(element) {
         },
         onSelect: function onSelect(selectedOption, id) {
           var self = this;
-
           for (i = 0; i < self.arrayOfUsers.length; i++) {
             if (self.arrayOfUsers[i].id === selectedOption.id) {
               return;
             }
           }
-
-          self.arrayOfUsers.push(selectedOption); // We don't want to show the search box if we are only allowing a single user 
+          self.arrayOfUsers.push(selectedOption); 
+          // We don't want to show the search box if we are only allowing a single user 
           // and a user has already been selected. We don't need that search box again 
           // unless and until we delete the currently selected user. So here we 
           // set the display mode accordingly. We always show the select list if allowing 
@@ -124,8 +117,8 @@ function initVueMultiselectUserPicker(element) {
         }
       }
     });
-    /*Hook for other scripts that might want to have access to the view model*/
 
+    /*Hook for other scripts that might want to have access to the view model*/
     var event = new CustomEvent("vue-multiselect-userpicker-created", {
       detail: {
         vm: vm

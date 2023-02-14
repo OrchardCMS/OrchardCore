@@ -156,6 +156,35 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             return false;
         }
 
+        public bool IsHiddenByDefault(string contentType)
+        {
+            if (String.IsNullOrEmpty(contentType))
+            {
+                throw new ArgumentNullException(nameof(contentType));
+            }
+
+            var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => ctp.ContentType == contentType);
+
+            return contentTypeOption?.Hidden ?? false;
+        }
+
+        public bool ShouldHide(ContentTypeDefinition definition)
+        {
+            if (definition == null)
+            {
+                throw new ArgumentNullException(nameof(definition));
+            }
+
+            var settings = definition.GetSettings<GraphQLContentTypeSettings>();
+
+            if (settings.Hidden)
+            {
+                return true;
+            }
+
+            return IsHiddenByDefault(definition.Name);
+        }
+
         internal bool ShouldSkip(Type fieldType, string fieldName)
         {
             return HiddenFields

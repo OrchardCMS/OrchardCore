@@ -8,6 +8,20 @@
 <script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="AllowChangingUsername" type="checkbox" class="form-check-input">
+        <label class="form-check-label" asp-for="AllowChangingUsername">@T["Allow user to change their username"]</label>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="AllowChangingEmail" type="checkbox" class="form-check-input">
+        <label class="form-check-label" asp-for="AllowChangingEmail">@T["Allow user to change their email address"]</label>
+    </div>
+</div>
+
 <div class="mb-3" asp-validation-class-for="UseSiteTheme">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="UseSiteTheme" />
@@ -102,7 +116,7 @@
                 '        });\n' +
                 '    default:\n' +
                 '        log("Warning", "Provider " + loginProvider + " was not handled");\n' +
-    	        '        break;\n' +
+                '        break;\n' +
                 '}\n' +
                 '*/\n'
             );
@@ -117,23 +131,23 @@
             editor.options.readOnly = "nocursor";
         }
     }
-$(function () {
-    var textArea = document.getElementById('@Html.IdFor(x => x.SyncRolesScript)');
-    var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncRoles)');
-    if (textArea == null) {
-        return;
-    }
-    var editor = CodeMirror.fromTextArea(textArea, {
-        autoRefresh: true,
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        autoCloseTags: true,
-        mode: "javascript"
+    $(function () {
+        var textArea = document.getElementById('@Html.IdFor(x => x.SyncRolesScript)');
+        var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncRoles)');
+        if (textArea == null) {
+            return;
+        }
+        var editor = CodeMirror.fromTextArea(textArea, {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            autoCloseTags: true,
+            mode: "javascript"
+        });
+        $('#@Html.IdFor(x => x.SyncRolesScript)').data('editor', editor);
+        resetScript(editor.doc.getValue() != '');
+        syncRolesCheckbox.addEventListener("change", toggleEditorState);
+        toggleEditorState();
     });
-    $('#@Html.IdFor(x => x.SyncRolesScript)').data('editor', editor);
-    resetScript(editor.doc.getValue() != '');
-    syncRolesCheckbox.addEventListener("change", toggleEditorState);
-    toggleEditorState();
-});
 </script>

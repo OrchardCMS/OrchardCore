@@ -1,20 +1,12 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Conversion;
 using GraphQL.SystemTextJson;
 using GraphQL.Types;
 using GraphQL.Validation;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Tests.Apis.Context;
-using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
 {
@@ -51,7 +43,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
         [InlineData("permissionTwo", "Fantastic Fox Loves Permission Two")]
         public async Task FieldsWithRequirePermissionsShouldResolveWhenUserHasPermissions(string fieldName, string expectedFieldValue)
         {
-            var options = BuildExecutionOptions($"query {{ test {{{ fieldName }}} }}",
+            var options = BuildExecutionOptions($"query {{ test {{{fieldName}}} }}",
                             new PermissionsContext
                             {
                                 UsePermissionsContext = true,

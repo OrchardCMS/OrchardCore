@@ -26,7 +26,7 @@ namespace OrchardCore.ContentManagement.GraphQL
             services.AddScoped<IContentTypeBuilder, DynamicContentTypeBuilder>();
 
             services.AddOptions<GraphQLContentOptions>();
-
+            services.AddGraphQLFilterType<ContentItem, ContentItemFilters>();
             services.AddWhereInputIndexPropertyProvider<ContentItemIndex>();
 
             return services;

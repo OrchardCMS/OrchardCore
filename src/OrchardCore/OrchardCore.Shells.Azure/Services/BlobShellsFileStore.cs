@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Threading.Tasks;
 using OrchardCore.FileStorage;
 
@@ -27,5 +27,7 @@ namespace OrchardCore.Shells.Azure.Services
         {
             return _fileStore.GetFileStreamAsync(path);
         }
+
+        public Task RemoveFileAsync(string path) => _fileStore.TryDeleteFileAsync(path);
     }
 }

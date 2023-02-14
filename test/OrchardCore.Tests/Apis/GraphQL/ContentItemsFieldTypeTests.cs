@@ -1,14 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Execution;
 using GraphQL.Types;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Resolvers;
@@ -16,12 +8,13 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
-using Xunit;
 using YesSql;
 using YesSql.Indexes;
 using YesSql.Provider.Sqlite;
 using YesSql.Sql;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Tests.Apis.GraphQL
 {
@@ -203,7 +196,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Populate(new ServiceCollection());
                 services.Services.AddScoped(x => _store.CreateSession());
                 services.Services.AddScoped(x => new ShellSettings());
-                services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
+                services.Services.AddIndexProvider<AnimalIndexProvider>();
                 services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
                 services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
                 services.Build();
@@ -237,8 +230,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Populate(new ServiceCollection());
                 services.Services.AddScoped(x => new ShellSettings());
                 services.Services.AddScoped(x => _store.CreateSession());
-                services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
-                services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
+                services.Services.AddIndexProvider<ContentItemIndexProvider>();
+                services.Services.AddIndexProvider<AnimalIndexProvider>();
                 services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
                 services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
 
@@ -279,9 +272,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Populate(new ServiceCollection());
                 services.Services.AddScoped(x => new ShellSettings());
                 services.Services.AddScoped(x => _store.CreateSession());
-                services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
-                services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
-                services.Services.AddScoped<IIndexProvider, AnimalTraitsIndexProvider>();
+                services.Services.AddIndexProvider<ContentItemIndexProvider>();
+                services.Services.AddIndexProvider<AnimalIndexProvider>();
+                services.Services.AddIndexProvider<AnimalTraitsIndexProvider>();
                 services.Services.AddScoped<IIndexAliasProvider, MultipleIndexesIndexProvider>();
 
                 services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
@@ -327,8 +320,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Populate(new ServiceCollection());
                 services.Services.AddScoped(x => _store.CreateSession());
                 services.Services.AddScoped(x => new ShellSettings());
-                services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
-                services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
+                services.Services.AddIndexProvider<ContentItemIndexProvider>();
+                services.Services.AddIndexProvider<AnimalIndexProvider>();
                 services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
                 services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
                 services.Build();
@@ -362,8 +355,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Populate(new ServiceCollection());
                 services.Services.AddScoped(x => new ShellSettings());
                 services.Services.AddScoped(x => _store.CreateSession());
-                services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
-                services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
+                services.Services.AddIndexProvider<ContentItemIndexProvider>();
+                services.Services.AddIndexProvider<AnimalIndexProvider>();
                 services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
                 services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
                 services.Build();

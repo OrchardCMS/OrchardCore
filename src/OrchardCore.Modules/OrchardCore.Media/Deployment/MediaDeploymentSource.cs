@@ -18,7 +18,7 @@ namespace OrchardCore.Media.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            if (!(step is MediaDeploymentStep mediaStep))
+            if (step is not MediaDeploymentStep mediaStep)
             {
                 return;
             }
