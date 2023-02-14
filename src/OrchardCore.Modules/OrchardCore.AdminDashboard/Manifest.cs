@@ -8,8 +8,9 @@ using OrchardCore.Modules.Manifest;
     Description = "Allows to organize widgets in an Admin Dashboard.",
     Dependencies = new[]
     {
-        "OrchardCore.ContentTypes",
         "OrchardCore.Admin",
+        "OrchardCore.Html",
+        "OrchardCore.Title",
         "OrchardCore.Recipes.Core",
     },
     Category = "Content Management"
