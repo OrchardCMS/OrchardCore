@@ -23,7 +23,7 @@ namespace OrchardCore.Admin
             }
 
             builder
-                .Add(S["Configuration"], design => design
+                .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
                         .Add(S["Admin"], S["Admin"].PrefixPosition(), admin => admin
                         .AddClass("admin").Id("admin")
