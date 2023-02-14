@@ -51,7 +51,8 @@ public class LuceneSearchService : ISearchService
             throw new ArgumentNullException(nameof(provider));
         }
 
-        return String.Equals(provider.AreaName, _searchProvider.AreaName);
+        return String.Equals(provider.AreaName, _searchProvider.AreaName)
+            && String.Equals(provider.Name, _searchProvider.Name);
     }
 
     public async Task<string> DefaultIndexAsync()
@@ -74,7 +75,6 @@ public class LuceneSearchService : ISearchService
             throw new ArgumentException($"{nameof(indexName)} cannot be null or empty.");
         }
 
-        // We Query Lucene index
         var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(indexName));
         var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, defaultSearchFields, analyzer);
         var result = new SearchResult();
@@ -89,7 +89,6 @@ public class LuceneSearchService : ISearchService
         {
             _logger.LogError(e, "Incorrect Lucene search query syntax provided in search.");
 
-            result.Success = false;
             result.Error = e.Message;
         }
 

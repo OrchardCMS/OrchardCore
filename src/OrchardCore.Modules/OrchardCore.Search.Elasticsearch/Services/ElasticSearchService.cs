@@ -54,7 +54,8 @@ public class ElasticSearchService : ISearchService
             throw new ArgumentNullException(nameof(provider));
         }
 
-        return String.Equals(provider.AreaName, _searchProvider.AreaName);
+        return String.Equals(provider.AreaName, _searchProvider.AreaName)
+            && String.Equals(provider.Name, _searchProvider.Name);
     }
 
     public async Task<string> DefaultIndexAsync()
@@ -119,7 +120,6 @@ public class ElasticSearchService : ISearchService
         {
             _logger.LogError(e, "Incorrect Elasticsearch search query syntax provided in search.");
 
-            result.Success = false;
             result.Error = e.Message;
         }
 

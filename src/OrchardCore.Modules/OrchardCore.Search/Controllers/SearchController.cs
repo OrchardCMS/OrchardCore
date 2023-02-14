@@ -28,7 +28,6 @@ public class SearchController : Controller
     private readonly ISiteService _siteService;
     private readonly ISession _session;
     private readonly IStringLocalizer S;
-    private readonly IEnumerable<IPermissionProvider> _permissionProviders;
     private readonly IServiceProvider _serviceProvider;
     private readonly IShapeFactory _shapeFactory;
     private readonly dynamic New;
@@ -49,7 +48,6 @@ public class SearchController : Controller
         _siteService = siteService;
         _session = session;
         S = stringLocalizer;
-        _permissionProviders = permissionProviders;
         _serviceProvider = serviceProvider;
         _shapeFactory = shapeFactory;
         New = shapeFactory;
@@ -65,9 +63,7 @@ public class SearchController : Controller
 
         var searchServices = _serviceProvider.GetServices<ISearchService>();
 
-        var totalServices = searchServices.Count();
-
-        if (totalServices == 0)
+        if (!searchServices.Any())
         {
             _logger.LogInformation("No search provider feature is enabled.");
 
@@ -78,9 +74,9 @@ public class SearchController : Controller
 
         var searchSettings = site.As<SearchSettings>();
 
-        var searchService = GetSearchService(searchServices, searchSettings, totalServices);
+        var searchService = GetSearchService(searchServices, searchSettings?.SearchProviderAreaName);
 
-        var indexName = !String.IsNullOrWhiteSpace(viewModel.Index) ? viewModel.Index : await searchService.DefaultIndexAsync();
+        var indexName = !String.IsNullOrWhiteSpace(viewModel.Index) ? viewModel.Index.Trim() : await searchService.DefaultIndexAsync();
 
         if (indexName == null || !await searchService.ExistsAsync(indexName))
         {
@@ -105,27 +101,16 @@ public class SearchController : Controller
             return BadRequest("Search provider is not configured.");
         }
 
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-
         if (String.IsNullOrWhiteSpace(viewModel.Terms))
         {
-            var shape = await _shapeFactory.CreateAsync<SearchIndexViewModel>("SearchList", model =>
-            {
-                model.PageTitle = searchSettings.PageTitle;
-                model.Index = viewModel.Index;
-                model.SearchForm = new SearchFormViewModel("Search__Form")
-                {
-                    Placeholder = searchSettings.Placeholder,
-                    Index = viewModel.Index,
-                };
-            });
-
-            return View(shape);
+            return View(await GetEmptyShape(viewModel, searchSettings));
         }
+
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
 
         var pager = new PagerSlim(pagerParameters, siteSettings.PageSize);
 
-        // Fetch one more result than PageSize to generate "More" links
+        // Fetch one more result than PageSize to generate "More" links.
         var from = 0;
         var size = pager.PageSize + 1;
 
@@ -144,22 +129,10 @@ public class SearchController : Controller
 
         if (!searchResult.Success || !searchResult.ContentItemIds.Any())
         {
-            var shape = await _shapeFactory.CreateAsync<SearchIndexViewModel>("SearchList", model =>
-            {
-                model.PageTitle = searchSettings.PageTitle;
-                model.Index = viewModel.Index;
-                model.SearchForm = new SearchFormViewModel("Search__Form")
-                {
-                    Terms = viewModel.Terms,
-                    Placeholder = searchSettings.Placeholder,
-                    Index = viewModel.Index,
-                };
-            });
-
-            return View(shape);
+            return View(await GetEmptyShape(viewModel, searchSettings));
         }
 
-        // We Query database to retrieve content items.
+        // Query database to retrieve content items.
         IQuery<ContentItem> query;
 
         if (searchResult.Latest)
@@ -173,10 +146,10 @@ public class SearchController : Controller
                 .Where(x => x.ContentItemId.IsIn(searchResult.ContentItemIds) && x.Published);
         }
 
-        // Sort the content items by their rank in the search results returned by Elasticsearch.
+        // Sort the content items by their position in the search results returned by search service.
         var containedItems = await query.Take(pager.PageSize + 1).ListAsync();
 
-        // We set the PagerSlim before and after links
+        // Set the PagerSlim before and after links.
         if (pagerParameters.After != null || pagerParameters.Before != null)
         {
             pager.Before = null;
@@ -194,7 +167,7 @@ public class SearchController : Controller
             pager.After = (size - 1).ToString();
         }
 
-        var shapeViewModel = await _shapeFactory.CreateAsync<SearchIndexViewModel>("SearchList", async model =>
+        var shape = await _shapeFactory.CreateAsync<SearchIndexViewModel>("SearchList", async model =>
         {
             model.PageTitle = searchSettings.PageTitle;
             model.Terms = viewModel.Terms;
@@ -217,24 +190,36 @@ public class SearchController : Controller
             });
         });
 
-        return View(shapeViewModel);
+        return View(shape);
     }
 
-    private ISearchService GetSearchService(IEnumerable<ISearchService> searchServices, SearchSettings searchSettings, int totalServices)
+    private async Task<IShape> GetEmptyShape(SearchIndexViewModel viewModel, SearchSettings searchSettings)
+    {
+        return await _shapeFactory.CreateAsync<SearchIndexViewModel>("SearchList", model =>
+        {
+            model.PageTitle = searchSettings.PageTitle;
+            model.Index = viewModel.Index;
+            model.SearchForm = new SearchFormViewModel("Search__Form")
+            {
+                Terms = viewModel.Terms,
+                Placeholder = searchSettings.Placeholder,
+                Index = viewModel.Index,
+            };
+        });
+    }
+
+    private ISearchService GetSearchService(IEnumerable<ISearchService> searchServices, string providerName)
     {
         ISearchService searchService = null;
 
-        if (totalServices > 1)
+        if (!String.IsNullOrEmpty(providerName))
         {
-            if (!String.IsNullOrEmpty(searchSettings.SearchProviderAreaName))
-            {
-                var searchProvider = _serviceProvider.GetServices<SearchProvider>()
-                    .FirstOrDefault(x => x.AreaName == searchSettings.SearchProviderAreaName);
+            var searchProvider = _serviceProvider.GetServices<SearchProvider>()
+                .FirstOrDefault(x => x.AreaName == providerName);
 
-                if (searchProvider != null)
-                {
-                    searchService = searchServices.FirstOrDefault(service => service.CanHandle(searchProvider));
-                }
+            if (searchProvider != null)
+            {
+                searchService = searchServices.FirstOrDefault(service => service.CanHandle(searchProvider));
             }
         }
 
