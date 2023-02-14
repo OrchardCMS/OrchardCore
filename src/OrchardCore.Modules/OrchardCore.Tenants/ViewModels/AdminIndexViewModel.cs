@@ -24,7 +24,8 @@ namespace OrchardCore.Tenants.ViewModels
     public enum BulkAction
     {
         Disable,
-        Enable
+        Enable,
+        Remove
     }
 
     public class ShellSettingsEntry
@@ -36,8 +37,6 @@ namespace OrchardCore.Tenants.ViewModels
         public bool Selected { get; set; }
 
         public string Name { get; set; }
-
-        public bool IsDefaultTenant { get; set; }
 
         public string Token { get; set; }
 
@@ -81,7 +80,8 @@ namespace OrchardCore.Tenants.ViewModels
     {
         None,
         Disable,
-        Enable
+        Enable,
+        Remove
     }
 
     public enum TenantsOrder

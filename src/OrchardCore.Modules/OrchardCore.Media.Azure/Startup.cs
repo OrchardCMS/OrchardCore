@@ -69,7 +69,7 @@ namespace OrchardCore.Media.Azure
 
                     if (String.IsNullOrWhiteSpace(hostingEnvironment.WebRootPath))
                     {
-                        throw new Exception("The wwwroot folder for serving cache media files is missing.");
+                        throw new MediaConfigurationException("The wwwroot folder for serving cache media files is missing.");
                     }
 
                     var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
@@ -77,7 +77,8 @@ namespace OrchardCore.Media.Azure
                     var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                     var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStoreCacheFileProvider>>();
 
-                    var mediaCachePath = GetMediaCachePath(hostingEnvironment, DefaultMediaFileStoreCacheFileProvider.AssetsCachePath, shellSettings);
+                    var mediaCachePath = GetMediaCachePath(
+                        hostingEnvironment, shellSettings, DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
 
                     if (!Directory.Exists(mediaCachePath))
                     {
@@ -109,13 +110,11 @@ namespace OrchardCore.Media.Azure
                     var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
                     var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
-
-                    var mediaPath = GetMediaPath(shellOptions.Value, shellSettings, mediaOptions.AssetsPath);
-
                     var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 
-                    var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
-                        .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
+                    var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
+                        ?.Features.Get<ShellContextFeature>()
+                        ?.OriginalPathBase ?? PathString.Empty;
 
                     if (originalPathBase.HasValue)
                     {
@@ -127,19 +126,12 @@ namespace OrchardCore.Media.Azure
 
                 services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
 
-                services.AddScoped<IModularTenantEvents, CreateMediaBlobContainerEvent>();
+                services.AddScoped<IModularTenantEvents, MediaBlobContainerTenantEvents>();
             }
         }
 
-        private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
-        {
-            return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
-        }
-
-        private string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, string assetsPath, ShellSettings shellSettings)
-        {
-            return PathExtensions.Combine(hostingEnvironment.WebRootPath, assetsPath, shellSettings.Name);
-        }
+        private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
+            => PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
 
         private static bool CheckOptions(string connectionString, string containerName, ILogger logger)
         {

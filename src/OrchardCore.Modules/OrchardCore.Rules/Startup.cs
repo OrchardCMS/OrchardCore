@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Rules.Drivers;
@@ -17,8 +16,7 @@ namespace OrchardCore.Rules
             services.AddOptions<ConditionOptions>();
 
             // Rule services.
-            services.AddScoped<IDisplayManager<Condition>, DisplayManager<Condition>>()
-                .AddScoped<IDisplayManager<Rule>, DisplayManager<Rule>>()
+            services
                 .AddScoped<IDisplayDriver<Rule>, RuleDisplayDriver>()
                 .AddSingleton<IConditionIdGenerator, ConditionIdGenerator>()
                 .AddTransient<IConfigureOptions<ConditionOperatorOptions>, ConditionOperatorConfigureOptions>()

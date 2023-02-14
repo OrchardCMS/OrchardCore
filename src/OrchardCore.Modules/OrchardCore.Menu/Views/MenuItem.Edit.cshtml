@@ -1,3 +1,4 @@
+@using OrchardCore
 <style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
 
 <div class="edit-container">
@@ -17,22 +18,22 @@
             }
         </div>
 
-        <div class="edit-item-secondary group">
+        <div class="@Orchard.GetWrapperCssClasses("edit-item-secondary","group")">
             @if (Model.Actions != null)
             {
-                <div class="edit-item-actions form-group">
+                <div class="@Orchard.GetEndCssClasses(true, "edit-item-actions")">
                     @await DisplayAsync(Model.Actions)
                 </div>
             }
         </div>
     </div>
-@if (Model.Sidebar != null)
-{
-    <div class="edit-sidebar-handler"></div>
-    <div class="edit-sidebar group">
-        @await DisplayAsync(Model.Sidebar)
-    </div>
-}
+    @if (Model.Sidebar != null)
+    {
+        <div class="edit-sidebar-handler"></div>
+        <div class="edit-sidebar group">
+            @await DisplayAsync(Model.Sidebar)
+        </div>
+    }
 </div>
 
 @if (!String.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))

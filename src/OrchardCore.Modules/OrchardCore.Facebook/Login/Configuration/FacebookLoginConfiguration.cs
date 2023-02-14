@@ -9,10 +9,8 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Facebook.Login.Settings;
-using OrchardCore.Facebook.Services;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Modules;
 
@@ -23,20 +21,20 @@ namespace OrchardCore.Facebook.Login.Configuration
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<FacebookOptions>
     {
-        private readonly IFacebookService _coreService;
+        private readonly FacebookSettings _facebookSettings;
         private readonly IFacebookLoginService _loginService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public FacebookLoginConfiguration(
-            IFacebookService coreService,
+            IOptions<FacebookSettings> facebookSettings,
             IFacebookLoginService loginService,
             IDataProtectionProvider dataProtectionProvider,
             ShellSettings shellSettings,
             ILogger<FacebookLoginConfiguration> logger)
         {
-            _coreService = coreService;
+            _facebookSettings = facebookSettings.Value;
             _loginService = loginService;
             _dataProtectionProvider = dataProtectionProvider;
             _shellSettings = shellSettings;
@@ -45,8 +43,7 @@ namespace OrchardCore.Facebook.Login.Configuration
 
         public void Configure(AuthenticationOptions options)
         {
-            var coreSettings = GetFacebookCoreSettingsAsync().GetAwaiter().GetResult();
-            if (coreSettings == null)
+            if (_facebookSettings == null)
             {
                 return;
             }
@@ -73,8 +70,7 @@ namespace OrchardCore.Facebook.Login.Configuration
                 return;
             }
 
-            var coreSettings = GetFacebookCoreSettingsAsync().GetAwaiter().GetResult();
-            if (coreSettings == null)
+            if (_facebookSettings == null)
             {
                 return;
             }
@@ -85,11 +81,11 @@ namespace OrchardCore.Facebook.Login.Configuration
                 return;
             }
 
-            options.AppId = coreSettings.AppId;
+            options.AppId = _facebookSettings.AppId;
 
             try
             {
-                options.AppSecret = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core).Unprotect(coreSettings.AppSecret);
+                options.AppSecret = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core).Unprotect(_facebookSettings.AppSecret);
             }
             catch
             {
@@ -112,22 +108,6 @@ namespace OrchardCore.Facebook.Login.Configuration
             if ((await _loginService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
             {
                 _logger.LogWarning("The Facebook Login module is not correctly configured.");
-
-                return null;
-            }
-
-            return settings;
-        }
-
-        private async Task<FacebookSettings> GetFacebookCoreSettingsAsync()
-        {
-            var settings = await _coreService.GetSettingsAsync();
-            if ((await _coreService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
-            {
-                if (_shellSettings.State == TenantState.Running)
-                {
-                    _logger.LogWarning("The Facebook Core module is not correctly configured.");
-                }
 
                 return null;
             }

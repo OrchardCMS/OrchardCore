@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Liquid.Filters;
@@ -57,10 +56,11 @@ namespace Microsoft.Extensions.DependencyInjection
                         {
                             return new ObjectValue(s);
                         }
-                        if (!(o is IShape) && o is IHtmlContent c)
+                        else if (x is IHtmlContent c)
                         {
                             return new HtmlContentValue(c);
                         }
+
                         return null;
                     });
 

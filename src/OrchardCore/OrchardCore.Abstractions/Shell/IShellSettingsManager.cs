@@ -33,5 +33,11 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         /// <param name="settings">The shell settings to store.</param>
         Task SaveSettingsAsync(ShellSettings settings);
+
+        /// <summary>
+        /// Removes shell settings from the storage.
+        /// </summary>
+        /// <param name="settings">The shell settings to remove.</param>
+        Task RemoveSettingsAsync(ShellSettings settings);
     }
 }

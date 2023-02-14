@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.ContentManagement.GraphQL.Queries;
-using OrchardCore.ContentManagement.Records;
 
 namespace OrchardCore.Autoroute.GraphQL
 {

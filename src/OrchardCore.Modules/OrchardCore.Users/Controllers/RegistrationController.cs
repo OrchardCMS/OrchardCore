@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -23,7 +22,6 @@ namespace OrchardCore.Users.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
-        private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly ILogger _logger;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
@@ -33,7 +31,6 @@ namespace OrchardCore.Users.Controllers
             IAuthorizationService authorizationService,
             ISiteService siteService,
             INotifier notifier,
-            IEmailAddressValidator emailAddressValidator,
             ILogger<RegistrationController> logger,
             IHtmlLocalizer<RegistrationController> htmlLocalizer,
             IStringLocalizer<RegistrationController> stringLocalizer)
@@ -42,7 +39,6 @@ namespace OrchardCore.Users.Controllers
             _authorizationService = authorizationService;
             _siteService = siteService;
             _notifier = notifier;
-            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
             _logger = logger;
             H = htmlLocalizer;
             S = stringLocalizer;
@@ -74,12 +70,12 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (string.IsNullOrEmpty(model.Email))
+            if (String.IsNullOrEmpty(model.Email))
             {
                 ModelState.AddModelError("Email", S["Email is required."]);
             }
 
-            if (_emailAddressValidator.Validate(model.Email))
+            if (ModelState.IsValid)
             {
                 // Check if user with same email already exists
                 var userWithEmail = await _userManager.FindByEmailAsync(model.Email);
@@ -89,14 +85,10 @@ namespace OrchardCore.Users.Controllers
                     ModelState.AddModelError("Email", S["A user with the same email already exists."]);
                 }
             }
-            else
-            {
-                ModelState.AddModelError("Email", S["Invalid email."]);
-            }
 
             ViewData["ReturnUrl"] = returnUrl;
 
-            if (TryValidateModel(model) && ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var iUser = await this.RegisterUser(model, S["Confirm your account"], _logger);
                 // If we get a user, redirect to returnUrl
@@ -160,7 +152,7 @@ namespace OrchardCore.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendVerificationEmail(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageUsers))
             {
                 return Forbid();
             }

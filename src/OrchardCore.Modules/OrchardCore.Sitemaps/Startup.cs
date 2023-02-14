@@ -9,7 +9,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -41,7 +40,7 @@ namespace OrchardCore.Sitemaps
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
@@ -66,9 +65,7 @@ namespace OrchardCore.Sitemaps
             services.AddSingleton<SitemapRouteTransformer>();
 
             services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
-            services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<ISitemapHelperService, SitemapHelperService>();
-            services.AddScoped<IDisplayManager<SitemapSource>, DisplayManager<SitemapSource>>();
             services.AddScoped<ISitemapBuilder, DefaultSitemapBuilder>();
             services.AddScoped<ISitemapTypeBuilder, SitemapTypeBuilder>();
             services.AddScoped<ISitemapCacheProvider, DefaultSitemapCacheProvider>();

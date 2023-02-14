@@ -11,5 +11,9 @@ namespace OrchardCore.Users.Models
         public bool UseScriptToSyncRoles { get; set; }
 
         public string SyncRolesScript { get; set; }
+
+        public bool AllowChangingUsername { get; set; }
+
+        public bool AllowChangingEmail { get; set; }
     }
 }

@@ -11277,6 +11277,18 @@ ul.pager {
   margin-top: 1rem;
 }
 
+.term-badge > a {
+  text-decoration: none;
+}
+.term-badge .bg-secondary:hover {
+  background-color: #0d6efd;
+}
+
+.taxonomy-tag ul {
+  padding-left: 0;
+  list-style: none;
+}
+
 #togglePassword {
   width: 44px;
   padding: 0;

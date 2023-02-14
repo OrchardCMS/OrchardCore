@@ -24,7 +24,7 @@ namespace OrchardCore.Scripting.Files
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            if (!(scope is FilesScriptScope fileScope))
+            if (scope is not FilesScriptScope fileScope)
             {
                 throw new ArgumentException($"Expected a scope of type {nameof(FilesScriptScope)}", nameof(scope));
             }

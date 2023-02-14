@@ -1,13 +1,6 @@
 {
   "steps": [
     {
-      "name": "Feature",
-      "enable": [
-        "OrchardCore.Html",
-        "OrchardCore.Title"
-      ]
-    },
-    {
       "name": "ContentDefinition",
       "ContentTypes": [
         {
@@ -50,8 +43,7 @@
                   "Editor": "Wysiwyg"
                 },
                 "GraphQLContentTypePartSettings": {},
-                "HtmlBodyPartSettings": {},
-                "ContentIndexSettings": {}
+                "HtmlBodyPartSettings": {}
               }
             },
             {

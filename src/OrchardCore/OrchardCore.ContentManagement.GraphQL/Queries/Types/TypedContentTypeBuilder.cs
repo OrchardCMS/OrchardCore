@@ -1,4 +1,5 @@
 using System.Linq;
+using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
@@ -26,14 +27,25 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
             var typeActivator = serviceProvider.GetService<ITypeActivatorFactory<ContentPart>>();
 
+            if (_contentOptions.ShouldHide(contentTypeDefinition))
+            {
+                return;
+            }
+
             foreach (var part in contentTypeDefinition.Parts)
             {
-                if (_contentOptions.ShouldSkip(part)) continue;
+                if (_contentOptions.ShouldSkip(part))
+                {
+                    continue;
+                }
 
                 var partName = part.Name;
 
                 // Check if another builder has already added a field for this part.
-                if (contentItemType.HasField(partName)) continue;
+                if (contentItemType.HasField(partName))
+                {
+                    continue;
+                }
 
                 var activator = typeActivator.GetTypeActivator(part.PartDefinition.Name);
 
@@ -66,7 +78,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                         Arguments = context.Arguments,
                                         Source = resolvedPart,
                                         FieldDefinition = field,
-                                        UserContext = context.UserContext
+                                        UserContext = context.UserContext,
+                                        RequestServices = context.RequestServices
                                     });
                                 })
                             };
@@ -83,7 +96,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                             resolve: context =>
                             {
                                 var nameToResolve = partName;
-                                var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
+                                var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
 
                                 return context.Source.Get(typeToResolve, nameToResolve);
                             });

@@ -10,7 +10,6 @@ using OrchardCore.AdminMenu.Deployment;
 using OrchardCore.AdminMenu.Recipes;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -36,9 +35,7 @@ namespace OrchardCore.AdminMenu
             services.AddScoped<IAdminMenuPermissionService, AdminMenuPermissionService>();
 
             services.AddScoped<IAdminMenuService, AdminMenuService>();
-            services.AddScoped<AdminMenuNavigationProvidersCoordinator, AdminMenuNavigationProvidersCoordinator>();
-
-            services.AddScoped<IDisplayManager<MenuItem>, DisplayManager<MenuItem>>();
+            services.AddScoped<AdminMenuNavigationProvidersCoordinator>();
 
             services.AddRecipeExecutionStep<AdminMenuStep>();
 

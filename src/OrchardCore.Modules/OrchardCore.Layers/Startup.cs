@@ -9,6 +9,7 @@ using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -28,7 +29,6 @@ using OrchardCore.Recipes;
 using OrchardCore.Scripting;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using YesSql.Indexes;
 
 namespace OrchardCore.Layers
 {
@@ -59,8 +59,8 @@ namespace OrchardCore.Layers
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<ILayerService, LayerService>();
             services.AddScoped<IContentHandler, LayerMetadataHandler>();
-            services.AddSingleton<IIndexProvider, LayerMetadataIndexProvider>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddIndexProvider<LayerMetadataIndexProvider>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddRecipeExecutionStep<LayerStep>();
 

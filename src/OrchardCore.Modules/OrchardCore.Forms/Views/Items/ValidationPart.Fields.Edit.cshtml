@@ -1,8 +1,11 @@
-@using OrchardCore.Forms.ViewModels;
+@using OrchardCore
+@using OrchardCore.Forms.ViewModels
 @model ValidationPartEditViewModel
 
-<div class="form-group">
-    <label asp-for="For">@T["For"]</label>
-    <input asp-for="For" type="text" class="form-control content-preview-text" />
-    <span class="hint">@T["The field name that this validation is for."]</span>
+<div class="@Orchard.GetWrapperCssClasses()">
+    <label asp-for="For" class="@Orchard.GetLabelCssClasses()">@T["For"]</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        <input asp-for="For" type="text" class="form-control content-preview-text" />
+        <span class="hint">@T["The field name that this validation is for."]</span>
+    </div>
 </div>

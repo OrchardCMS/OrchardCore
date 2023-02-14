@@ -26,7 +26,7 @@ namespace OrchardCore.Setup.Controllers
         private readonly ISetupService _setupService;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
-        private IdentityOptions _identityOptions;
+        private readonly IdentityOptions _identityOptions;
         private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly ILogger _logger;
@@ -59,13 +59,9 @@ namespace OrchardCore.Setup.Controllers
             var recipes = await _setupService.GetSetupRecipesAsync();
             var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
 
-            if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
+            if (!await ShouldProceedWithTokenAsync(token))
             {
-                if (string.IsNullOrEmpty(token) || !await IsTokenValid(token))
-                {
-                    _logger.LogWarning("An attempt to access '{TenantName}' without providing a secret was made", _shellSettings.Name);
-                    return StatusCode(404);
-                }
+                return NotFound();
             }
 
             var model = new SetupViewModel
@@ -73,7 +69,7 @@ namespace OrchardCore.Setup.Controllers
                 DatabaseProviders = _databaseProviders,
                 Recipes = recipes,
                 RecipeName = defaultRecipe?.Name,
-                Secret = token
+                Secret = token,
             };
 
             CopyShellSettingsValues(model);
@@ -84,33 +80,25 @@ namespace OrchardCore.Setup.Controllers
                 model.TablePrefix = _shellSettings["TablePrefix"];
             }
 
+            if (!String.IsNullOrEmpty(_shellSettings["Schema"]))
+            {
+                model.DatabaseConfigurationPreset = true;
+                model.Schema = _shellSettings["Schema"];
+            }
+
             return View(model);
         }
 
         [HttpPost, ActionName("Index")]
         public async Task<ActionResult> IndexPOST(SetupViewModel model)
         {
-            if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
+            if (!await ShouldProceedWithTokenAsync(model.Secret))
             {
-                if (string.IsNullOrEmpty(model.Secret) || !await IsTokenValid(model.Secret))
-                {
-                    _logger.LogWarning("An attempt to access '{TenantName}' without providing a valid secret was made", _shellSettings.Name);
-                    return StatusCode(404);
-                }
+                return StatusCode(404);
             }
 
             model.DatabaseProviders = _databaseProviders;
             model.Recipes = await _setupService.GetSetupRecipesAsync();
-
-            var selectedProvider = model.DatabaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
-
-            if (!model.DatabaseConfigurationPreset)
-            {
-                if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(model.ConnectionString))
-                {
-                    ModelState.AddModelError(nameof(model.ConnectionString), S["The connection string is mandatory for this provider."]);
-                }
-            }
 
             if (String.IsNullOrEmpty(model.Password))
             {
@@ -123,7 +111,7 @@ namespace OrchardCore.Setup.Controllers
             }
 
             RecipeDescriptor selectedRecipe = null;
-            if (!string.IsNullOrEmpty(_shellSettings["RecipeName"]))
+            if (!String.IsNullOrEmpty(_shellSettings["RecipeName"]))
             {
                 selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings["RecipeName"]);
                 if (selectedRecipe == null)
@@ -169,22 +157,25 @@ namespace OrchardCore.Setup.Controllers
                 }
             };
 
-            if (!string.IsNullOrEmpty(_shellSettings["ConnectionString"]))
+            if (!String.IsNullOrEmpty(_shellSettings["ConnectionString"]))
             {
+                model.DatabaseConfigurationPreset = true;
                 setupContext.Properties[SetupConstants.DatabaseProvider] = _shellSettings["DatabaseProvider"];
                 setupContext.Properties[SetupConstants.DatabaseConnectionString] = _shellSettings["ConnectionString"];
                 setupContext.Properties[SetupConstants.DatabaseTablePrefix] = _shellSettings["TablePrefix"];
+                setupContext.Properties[SetupConstants.DatabaseSchema] = _shellSettings["Schema"];
             }
             else
             {
                 setupContext.Properties[SetupConstants.DatabaseProvider] = model.DatabaseProvider;
                 setupContext.Properties[SetupConstants.DatabaseConnectionString] = model.ConnectionString;
                 setupContext.Properties[SetupConstants.DatabaseTablePrefix] = model.TablePrefix;
+                setupContext.Properties[SetupConstants.DatabaseSchema] = model.Schema;
             }
 
             var executionId = await _setupService.SetupAsync(setupContext);
 
-            // Check if a component in the Setup failed
+            // Check if any Setup component failed (e.g., database connection validation)
             if (setupContext.Errors.Any())
             {
                 foreach (var error in setupContext.Errors)
@@ -221,19 +212,28 @@ namespace OrchardCore.Setup.Controllers
             {
                 model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
             }
+        }
 
-            if (!String.IsNullOrEmpty(_shellSettings["Description"]))
+        private async Task<bool> ShouldProceedWithTokenAsync(string token)
+        {
+            if (!String.IsNullOrWhiteSpace(_shellSettings["Secret"]))
             {
-                model.Description = _shellSettings["Description"];
+                if (String.IsNullOrEmpty(token) || !await IsTokenValid(token))
+                {
+                    _logger.LogWarning("An attempt to access '{TenantName}' without providing a secret was made", _shellSettings.Name);
+
+                    return false;
+                }
             }
+
+            return true;
         }
 
         private async Task<bool> IsTokenValid(string token)
         {
+            var result = false;
             try
             {
-                var result = false;
-
                 var shellScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
 
                 await shellScope.UsingAsync(scope =>
@@ -253,15 +253,13 @@ namespace OrchardCore.Setup.Controllers
 
                     return Task.CompletedTask;
                 });
-
-                return result;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in decrypting the token");
             }
 
-            return false;
+            return result;
         }
     }
 }

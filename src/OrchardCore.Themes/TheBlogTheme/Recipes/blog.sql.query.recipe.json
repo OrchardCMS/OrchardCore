@@ -1,0 +1,34 @@
+{
+  "name": "Blog.SQL.Query",
+  "displayName": "Blog - SQL Query",
+  "description": "Runs the SQL Search recipe and replaces the RecentBlogPosts Query with a SQL Query.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "default" ],
+  "tags": [ "blog", "sql" ],
+
+  "steps": [
+    {
+      "name": "recipes",
+      "Values": [
+        {
+          "name": "Blog.SQL.Search"
+        }
+      ]
+    },
+    {
+      "name": "queries",
+      "Queries": [
+        {
+          "Source": "Sql",
+          "Name": "RecentBlogPosts",
+          "Template": "SELECT * FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC LIMIT 3",
+          "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
+          "ReturnContentItems": true
+        }
+      ]
+    }
+  ]
+}

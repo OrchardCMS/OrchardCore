@@ -1,7 +1,3 @@
-using System;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 #if (UseNLog)
 using OrchardCore.Logging;
 #endif
@@ -9,31 +5,44 @@ using OrchardCore.Logging;
 using Serilog;
 #endif
 
-namespace OrchardCore.Templates.Cms.Web
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+var builder = WebApplication.CreateBuilder(args);
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(logging => logging.ClearProviders())
-#if (UseSerilog)
-                .UseSerilog((hostingContext, configBuilder) =>
-                    {
-                        configBuilder.ReadFrom.Configuration(hostingContext.Configuration)
-                        .Enrich.FromLogContext();
-                    })
-#endif
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
 #if (UseNLog)
-                    webBuilder.UseNLogWeb();
+builder.Host.UseNLogHost();
 #endif
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+#if (UseSerilog)
+builder.Host.UseSerilog((hostingContext, configBuilder) =>
+    {
+        configBuilder.ReadFrom.Configuration(hostingContext.Configuration)
+        .Enrich.FromLogContext();
+    });
+#endif
+
+builder.Services
+    .AddOrchardCms()
+    // // Orchard Specific Pipeline
+    // .ConfigureServices( services => {
+    // })
+    // .Configure( (app, routes, services) => {
+    // })
+;
+
+var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+#if (UseSerilog)
+app.UseOrchardCore(c => c.UseSerilogTenantNameLogging());
+#else
+app.UseOrchardCore();
+#endif
+
+app.Run();

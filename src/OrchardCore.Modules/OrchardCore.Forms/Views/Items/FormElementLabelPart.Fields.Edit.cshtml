@@ -1,0 +1,39 @@
+@using OrchardCore
+@using OrchardCore.Forms.ViewModels
+@using OrchardCore.Forms.Models
+@model FormElementLabelPartViewModel
+@{
+    var wrapperId = Html.IdFor(m => m);
+}
+<div class="properties-wrapper show-for-input" id="@wrapperId">
+
+    <div class="@Orchard.GetWrapperCssClasses("show-for-input-label")">
+        <label asp-for="LabelOption" class="@Orchard.GetLabelCssClasses()">@T["Label option"]</label>
+        <div class="@Orchard.GetEndCssClasses()">
+            <select asp-for="LabelOption" class="form-select content-preview-select field-label-option-select-menu">
+                <option value="@LabelOptions.None">@T["None"]</option>
+                <option value="@LabelOptions.Standard">@T["Standard"]</option>
+                <option value="@LabelOptions.ScreenReaders">@T["Screen Readers"]</option>
+            </select>
+            <span class="hint">@T["The type of label to create for this field."]</span>
+        </div>
+    </div>
+
+    <div class="@Orchard.GetWrapperCssClasses("d-none","label-text-container")">
+        <label asp-for="Label" class="@Orchard.GetLabelCssClasses()">@T["Label Text"]</label>
+        <div class="@Orchard.GetEndCssClasses()">
+            <input asp-for="Label" type="text" class="form-control content-preview-text" />
+            <span class="hint">@T["The text to display in the label."]</span>
+        </div>
+    </div>
+</div>
+
+<script asp-src="~/OrchardCore.Forms/Scripts/formElementLabelManager.min.js" debug-src="~/OrchardCore.Forms/Scripts/formElementLabelManager.js" asp-name="formElementLabelManager" at="Foot"></script>
+
+<script at="Foot" depends-on="formElementLabelManager">
+    var wrapper = document.getElementById('@wrapperId');
+
+    if (wrapper != null) {
+        formElementLabelManager.initilize(wrapper);
+    }
+</script>

@@ -4,6 +4,7 @@
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
  * Author : Sven Dunemann [dunemann@forelabs.eu]
+ * Mod : Uros Gaber [uros@powercom.si] - Added Slovenian (sl) translations
  */
 
 (function ($) {
@@ -28,6 +29,17 @@
                 tableDeleteColumn: 'Delete column',
                 tableDestroy: 'Delete table',
                 error: 'Error'
+            },
+            sl: {
+                table: 'Dodaj tabelo',
+                tableAddRow: 'Dodaj vrstico',
+                tableAddRowAbove: 'Vrini vrstico',
+                tableAddColumnLeft: 'Vrini stolpec',
+                tableAddColumn: 'Dodaj stolpec',
+                tableDeleteRow: 'Izbriši vrstico',
+                tableDeleteColumn: 'Izbriši stolpec',
+                tableDestroy: 'Izbriši tabelo',
+                error: 'Napaka'
             },
             cs: {
                 table: 'Vytvořit příkaz Table',
@@ -301,9 +313,9 @@
                             if(table.length > 0) {
                                 var row = $('<tr/>');
                                 // add columns according to current columns count
-                                for (var i = 0; i < table.find('tr')[0].childElementCount; i += 1) {
-                                    $('<td/>').appendTo(row);
-                                }
+                                $('td,th', focusedRow).each(function(){
+                                    $(this).clone().appendTo(row).text('');
+                                });
                                 // add row to table
                                 focusedRow.after(row);
                             }
@@ -327,9 +339,9 @@
                             if(table.length > 0) {
                                 var row = $('<tr/>');
                                 // add columns according to current columns count
-                                for (var i = 0; i < table.find('tr')[0].childElementCount; i += 1) {
-                                    $('<td/>').appendTo(row);
-                                }
+                                $('td,th', focusedRow).each(function(){
+                                    $(this).clone().appendTo(row).text('');
+                                });
                                 // add row to table
                                 focusedRow.before(row);
                             }

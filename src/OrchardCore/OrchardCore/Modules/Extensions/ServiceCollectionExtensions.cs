@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -27,12 +26,12 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Localization;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
+using OrchardCore.Modules.Services;
 using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -117,16 +116,23 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<ICalendarManager, DefaultCalendarManager>();
             services.AddScoped<ICalendarSelector, DefaultCalendarSelector>();
 
+            services.AddSingleton<ICultureAliasProvider, DefaultCultureAliasProvider>();
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
 
-            builder.ConfigureServices(s =>
+            builder.ConfigureServices((services, serviceProvider) =>
             {
-                s.AddSingleton<LocalLock>();
-                s.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
-                s.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
+                services.AddSingleton<LocalLock>();
+                services.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
+                services.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
+
+                var configuration = serviceProvider.GetService<IShellConfiguration>();
+
+                services.Configure<CultureOptions>(configuration.GetSection("OrchardCore_Localization_CultureOptions"));
             });
+
+            services.AddSingleton<ISlugService, SlugService>();
         }
 
         private static void AddShellServices(OrchardCoreBuilder builder)
@@ -310,32 +316,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices((services, serviceProvider) =>
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
-                var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
-
-                var cookieName = "orchantiforgery_" + HttpUtility.UrlEncode(settings.Name + environment.ContentRootPath);
-
-                // If uninitialized, we use the host services.
-                if (settings.State == TenantState.Uninitialized)
-                {
-                    // And delete a cookie that may have been created by another instance.
-                    var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
-
-                    // Use case when creating a container without ambient context.
-                    if (httpContextAccessor.HttpContext == null)
-                    {
-                        return;
-                    }
-
-                    // Use case when creating a container in a deferred task.
-                    if (httpContextAccessor.HttpContext.Response.HasStarted)
-                    {
-                        return;
-                    }
-
-                    httpContextAccessor.HttpContext.Response.Cookies.Delete(cookieName);
-
-                    return;
-                }
+                var cookieName = "__orchantiforgery_" + settings.VersionId;
 
                 // Re-register the antiforgery services to be tenant-aware.
                 var collection = new ServiceCollection()
@@ -464,7 +445,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddDataProtection()
                     .PersistKeysToFileSystem(directory)
                     .SetApplicationName(settings.Name)
-                    .AddKeyManagementOptions(o => o.XmlEncryptor = o.XmlEncryptor ?? new NullXmlEncryptor())
+                    .AddKeyManagementOptions(o => o.XmlEncryptor ??= new NullXmlEncryptor())
                     .Services;
 
                 // Remove any previously registered options setups.

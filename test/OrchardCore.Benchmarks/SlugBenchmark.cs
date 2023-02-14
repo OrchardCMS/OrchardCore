@@ -1,6 +1,5 @@
 using BenchmarkDotNet.Attributes;
-using OrchardCore.Liquid;
-using OrchardCore.Liquid.Services;
+using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Benchmark
 {
@@ -38,7 +37,7 @@ namespace OrchardCore.Benchmark
             _slugService.Slugify("Je veux aller à Saint-Étienne");
         }
 
-	    [Benchmark]
+        [Benchmark]
         public void EvaluateSlugifyWithLongSlug()
         {
             _slugService.Slugify("Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne");

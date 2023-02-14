@@ -23,6 +23,8 @@ namespace OrchardCore.Environment.Shell.Configuration
             return Task.CompletedTask;
         }
 
+        public Task AddSourcesAsync(string tenant, IConfigurationBuilder builder) => AddSourcesAsync(builder);
+
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
             JObject tenantsSettings;
@@ -61,6 +63,27 @@ namespace OrchardCore.Environment.Shell.Configuration
             {
                 using (var writer = new JsonTextWriter(file) { Formatting = Formatting.Indented })
                 {
+                    await tenantsSettings.WriteToAsync(writer);
+                }
+            }
+        }
+
+        public async Task RemoveAsync(string tenant)
+        {
+            if (File.Exists(_tenants))
+            {
+                JObject tenantsSettings;
+                using (var file = File.OpenText(_tenants))
+                {
+                    using var reader = new JsonTextReader(file);
+                    tenantsSettings = await JObject.LoadAsync(reader);
+                }
+
+                tenantsSettings.Remove(tenant);
+
+                using (var file = File.CreateText(_tenants))
+                {
+                    using var writer = new JsonTextWriter(file) { Formatting = Formatting.Indented };
                     await tenantsSettings.WriteToAsync(writer);
                 }
             }

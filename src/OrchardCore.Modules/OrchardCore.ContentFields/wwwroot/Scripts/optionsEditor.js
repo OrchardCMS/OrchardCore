@@ -15,7 +15,6 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
       if (this.debug) {
         console.log('add option triggered');
       }
-
       ;
       this.state.options.push({
         name: '',
@@ -26,7 +25,6 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
       if (this.debug) {
         console.log('remove option triggered with', index);
       }
-
       ;
       this.state.options.splice(index, 1);
     },
@@ -34,7 +32,6 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
       if (this.debug) {
         console.log('getOptionsFormattedList triggered');
       }
-
       ;
       return JSON.stringify(this.state.options.filter(function (x) {
         return !IsNullOrWhiteSpace(x.name);
@@ -75,11 +72,11 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
         return store.getOptionsFormattedList();
       },
       showModal: function showModal() {
-        $(modalBodyElement).modal();
+        optionsModal.props.data.modal = new bootstrap.Modal(modalBodyElement[0]);
+        optionsModal.props.data.modal.show();
       },
       closeModal: function closeModal() {
-        var modal = $(modalBodyElement).modal();
-        modal.modal('hide');
+        optionsModal.props.data.modal.hide();
       }
     }
   };
@@ -89,7 +86,8 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
       optionsModal: optionsModal
     },
     data: {
-      sharedState: store.state
+      sharedState: store.state,
+      modal: null
     },
     el: elem,
     methods: {
@@ -99,7 +97,6 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
     }
   });
 }
-
 function IsNullOrWhiteSpace(str) {
   return str === null || str.match(/^ *$/) !== null;
 }

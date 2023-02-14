@@ -18,6 +18,8 @@ namespace OrchardCore.Seo
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddDataMigration<Migrations>();
+
             services.AddContentPart<SeoMetaPart>()
                 .UseDisplayDriver<SeoMetaPartDisplayDriver>()
                 .AddHandler<SeoMetaPartHandler>();
@@ -27,7 +29,6 @@ namespace OrchardCore.Seo
 
             // This must be last, and the module dependant on Contents so this runs after the part handlers.
             services.AddScoped<IContentHandler, SeoMetaSettingsHandler>();
-            services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentItemIndexHandler, SeoMetaPartContentIndexHandler>();
         }
     }

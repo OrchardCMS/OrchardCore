@@ -1,0 +1,35 @@
+{
+  "name": "Blog.Elasticsearch.Query",
+  "displayName": "Blog - Elasticsearch Query",
+  "description": "Runs the Elasticsearch Search recipe and replaces the RecentBlogPosts Query with an Elasticsearch Query.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "default" ],
+  "tags": [ "blog", "Elasticsearch" ],
+
+  "steps": [
+    {
+      "name": "recipes",
+      "Values": [
+        {
+          "name": "Blog.Elasticsearch.Search"
+        }
+      ]
+    },
+    {
+      "name": "queries",
+      "Queries": [
+        {
+          "Source": "Elasticsearch",
+          "Name": "RecentBlogPosts",
+          "Index": "search",
+          "Template": "[file:text('Snippets/recentBlogPosts.ElasticSearch.json')]",
+          "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
+          "ReturnContentItems": true
+        }
+      ]
+    }
+  ]
+}

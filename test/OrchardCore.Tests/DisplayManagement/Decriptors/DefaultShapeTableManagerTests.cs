@@ -1,12 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Memory;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Implementation;
@@ -17,13 +8,12 @@ using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Tests.Stubs;
-using Xunit;
 
 namespace OrchardCore.Tests.DisplayManagement.Decriptors
 {
     public class DefaultShapeTableManagerTests : IDisposable
     {
-        private IServiceProvider _serviceProvider;
+        private readonly IServiceProvider _serviceProvider;
 
         private class TestModuleExtensionInfo : IExtensionInfo
         {
@@ -45,7 +35,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false) }
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false, false) }
                     };
 
                 Features = features;
@@ -79,7 +69,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false) }
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false, false) }
                     };
 
                 Features = features;
@@ -106,7 +96,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 Features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, new string[] { baseTheme.Id }, false, false) }
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, new string[] { baseTheme.Id }, false, false, false) }
                     };
 
                 Id = name;
@@ -213,7 +203,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
         public class TestExtensionManager : IExtensionManager
         {
-            private IEnumerable<IFeatureInfo> _features;
+            private readonly IEnumerable<IFeatureInfo> _features;
             public TestExtensionManager(IEnumerable<IFeatureInfo> features)
             {
                 _features = features;
@@ -314,7 +304,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
         {
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var shapeTable1 = manager.GetShapeTable(null);
-            var shapeTable2 = manager.GetShapeTable(string.Empty);
+            var shapeTable2 = manager.GetShapeTable(String.Empty);
             Assert.NotNull(shapeTable1.Descriptors["Hello"]);
             Assert.NotNull(shapeTable2.Descriptors["Hello"]);
         }

@@ -1,11 +1,4 @@
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.TestHost;
-using Xunit;
 
 namespace OrchardCore.Tests
 {

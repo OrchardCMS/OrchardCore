@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Mvc.Core.Utilities;
@@ -95,7 +94,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                     using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
                     {
                         // Async read of the request body is mandatory.
-                        return sr.ReadToEndAsync().GetAwaiter().GetResult(); ;
+                        return sr.ReadToEndAsync().GetAwaiter().GetResult();
                     }
                 })
             };
@@ -180,7 +179,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                                 using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
                                 {
                                     // Async read of the request body is mandatory.
-                                    json = sr.ReadToEndAsync().GetAwaiter().GetResult(); ;
+                                    json = sr.ReadToEndAsync().GetAwaiter().GetResult();
                                 }
 
                                 try

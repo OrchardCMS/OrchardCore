@@ -1,0 +1,35 @@
+{
+  "name": "Blog.Lucene.Query",
+  "displayName": "Blog - Lucene Query",
+  "description": "Runs the Lucene Search recipe and replaces the RecentBlogPosts Query with a Lucene Query.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "default" ],
+  "tags": [ "blog", "lucene" ],
+
+  "steps": [
+    {
+      "name": "recipes",
+      "Values": [
+        {
+          "name": "Blog.Lucene.Search"
+        }
+      ]
+    },
+    {
+      "name": "queries",
+      "Queries": [
+        {
+          "Source": "Lucene",
+          "Name": "RecentBlogPosts",
+          "Index": "Search",
+          "Template": "[file:text('Snippets/recentBlogPosts.Lucene.json')]",
+          "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
+          "ReturnContentItems": true
+        }
+      ]
+    }
+  ]
+}

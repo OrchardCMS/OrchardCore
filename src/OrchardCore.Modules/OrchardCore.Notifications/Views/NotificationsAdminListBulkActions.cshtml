@@ -1,0 +1,6 @@
+@model ListNotificationOptions
+
+@foreach (var item in Model.BulkActions)
+{
+    <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a>
+}

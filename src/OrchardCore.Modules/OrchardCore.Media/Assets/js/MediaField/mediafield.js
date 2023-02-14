@@ -1,11 +1,20 @@
 function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple, allowMediaText, allowAnchors) {
-
+    //BagPart create a script section without other DOM elements
+    if(el === null)
+        return;
+    
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
 
     var mediaFieldEditor = $(el);
     var idprefix = mediaFieldEditor.attr("id");
     var mediaFieldApp;
+
+    //when hide modal detach media app to avoid issue on BagPart
+    modalBodyElement.addEventListener('hidden.bs.modal', function (event) {
+        $("#mediaApp").appendTo('body');
+        $("#mediaApp").hide();
+    });
 
     mediaFieldApps.push(mediaFieldApp = new Vue({
         el: mediaFieldEditor.get(0),
@@ -18,7 +27,9 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
             allowMediaText: allowMediaText,
             backupMediaText: '',
             allowAnchors: allowAnchors,
-            backupAnchor: null
+            backupAnchor: null,
+            mediaTextModal: null,
+            anchoringModal: null
         },
         created: function () {
             var self = this;
@@ -129,30 +140,35 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
             showModal: function (event) {
                 var self = this;
                 if (self.canAddMedia) {
-                    $("#mediaApp").detach().appendTo($(modalBodyElement).find('.modal-body'));
+                    $("#mediaApp").appendTo($(modalBodyElement).find('.modal-body'));
                     $("#mediaApp").show();
-                    var modal = $(modalBodyElement).modal();
+
+                    var modal = new bootstrap.Modal(modalBodyElement);
+                    modal.show();
+
                     $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
                         self.addMediaFiles(mediaApp.selectedMedias);
 
                         // we don't want the included medias to be still selected the next time we open the modal.
                         mediaApp.selectedMedias = [];
 
-                        modal.modal('hide');
+                        modal.hide();
                         return true;
                     });
                 }
             },
             showMediaTextModal: function (event) {
-                $(this.$refs.mediaTextModal).modal();
+                this.mediaTextModal = new bootstrap.Modal(this.$refs.mediaTextModal);
+                this.mediaTextModal.show();
                 this.backupMediaText = this.selectedMedia.mediaText;
             },
             cancelMediaTextModal: function (event) {
-                $(this.$refs.mediaTextModal).modal('hide');
+                this.mediaTextModal.hide();
                 this.selectedMedia.mediaText = this.backupMediaText;
             },
             showAnchorModal: function (event) {
-                $(this.$refs.anchoringModal).modal();
+                this.anchoringModal = new bootstrap.Modal(this.$refs.anchoringModal);
+                this.anchoringModal.show();
                 // Cause a refresh to recalc heights.
                 this.selectedMedia.anchor = {
                   x: this.selectedMedia.anchor.x,
@@ -161,7 +177,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                 this.backupAnchor = this.selectedMedia.anchor;
             },            
             cancelAnchoringModal: function (event) {
-                $(this.$refs.anchoringModal).modal('hide');
+                this.anchoringModal.hide();
                 this.selectedMedia.anchor = this.backupAnchor;
             },            
             resetAnchor: function (event) {
