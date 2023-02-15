@@ -19,17 +19,20 @@ namespace OrchardCore.Search.Elasticsearch
 
         public async Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
+            var permissions = new List<Permission>()
+            {
+                ManageElasticIndexes,
+                QueryElasticApi
+            };
+
             var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
-            var result = new List<Permission>();
+
             foreach (var index in elasticIndexSettings)
             {
-                result.Add(ElasticsearchIndexPermissionHelper.GetElasticIndexPermission(index.IndexName));
+                permissions.Add(ElasticsearchIndexPermissionHelper.GetElasticIndexPermission(index.IndexName));
             }
 
-            result.Add(ManageElasticIndexes);
-            result.Add(QueryElasticApi);
-
-            return result;
+            return permissions;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

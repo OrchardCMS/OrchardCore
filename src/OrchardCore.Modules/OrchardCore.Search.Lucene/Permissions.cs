@@ -19,18 +19,20 @@ namespace OrchardCore.Search.Lucene
 
         public async Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
+            var permissions = new List<Permission>()
+            {
+                ManageLuceneIndexes,
+                QueryLuceneApi
+            };
+
             var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
-            var result = new List<Permission>();
 
             foreach (var index in luceneIndexSettings)
             {
-                result.Add(LuceneIndexPermissionHelper.GetLuceneIndexPermission(index.IndexName));
+                permissions.Add(LuceneIndexPermissionHelper.GetLuceneIndexPermission(index.IndexName));
             }
 
-            result.Add(ManageLuceneIndexes);
-            result.Add(QueryLuceneApi);
-
-            return result;
+            return permissions;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
