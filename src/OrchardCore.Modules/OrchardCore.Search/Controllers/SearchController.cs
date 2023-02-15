@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement;
@@ -28,11 +26,9 @@ public class SearchController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly ISiteService _siteService;
     private readonly ISession _session;
-    private readonly IStringLocalizer S;
     private readonly IServiceProvider _serviceProvider;
     private readonly IShapeFactory _shapeFactory;
     private readonly dynamic New;
-    private readonly ILogger _logger;
     private readonly INotifier _notifier;
     private readonly IHtmlLocalizer H;
 
@@ -40,23 +36,20 @@ public class SearchController : Controller
         IAuthorizationService authorizationService,
         ISiteService siteService,
         ISession session,
-        IStringLocalizer<SearchController> stringLocalizer,
         IServiceProvider serviceProvider,
-        IShapeFactory shapeFactory,
-        ILogger<SearchController> logger,
         INotifier notifier,
+        IShapeFactory shapeFactory,
         IHtmlLocalizer<SearchController> htmlLocalizer
         )
     {
         _authorizationService = authorizationService;
         _siteService = siteService;
         _session = session;
-        S = stringLocalizer;
         _serviceProvider = serviceProvider;
         _shapeFactory = shapeFactory;
-        New = shapeFactory;
-        _logger = logger;
         _notifier = notifier;
+
+        New = shapeFactory;
         H = htmlLocalizer;
     }
 
