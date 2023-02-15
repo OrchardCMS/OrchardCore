@@ -532,13 +532,16 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// </summary>
         private Task<DistributedContext> CreateDistributedContextAsync(ShellContext defaultContext)
         {
-            // Capture the descriptor as the blueprint may be set to null right after.
+            // The descriptor is null if the default context is a placeholder without blueprint,
+            // otherwise capture the descriptor as the blueprint may be set to null right after.
             var descriptor = defaultContext.Blueprint?.Descriptor;
             if (descriptor != null)
             {
+                // Creates a new context based on the default settings and descriptor.
                 return CreateDistributedContextAsync(defaultContext.Settings, descriptor);
             }
 
+            // Creates a new context based on the default settings.
             return CreateDistributedContextAsync(defaultContext.Settings);
         }
 
@@ -584,7 +587,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             {
                 var previousContext = _context;
 
-                // Reuse or create a new distributed context based on the default context.
+                // Reuse or create a new context based on the default context.
                 _context = await ReuseOrCreateDistributedContextAsync(defaultContext);
                 if (_context != null)
                 {
@@ -607,21 +610,22 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// </summary>
         private async Task<DistributedContext> ReuseOrCreateDistributedContextAsync(ShellContext defaultContext)
         {
-            // If no distributed context.
+            // If no context.
             if (_context == null)
             {
-                // Create a new distributed context.
+                // Create a new context based on the default context.
                 return await CreateDistributedContextAsync(defaultContext);
             }
 
             // If the default context is still the placeholder pre-created on loading.
             if (defaultContext is ShellContext.PlaceHolder placeholder && placeholder.PreCreated)
             {
-                // Reuse the distributed context.
+                // Reuse the current context.
                 return _context;
             }
 
-            // The descriptor may be null, e.g. if the default context is a placeholder.
+            // The descriptor is null if the default context is a placeholder without blueprint,
+            // otherwise capture the descriptor as the blueprint may be set to null right after.
             var descriptor = defaultContext.Blueprint?.Descriptor;
             if (descriptor == null)
             {
@@ -636,6 +640,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                 }
             }
 
+            // Reuse or create a new context based on the default tenant settings and descriptor.
             return await ReuseOrCreateDistributedContextAsync(defaultContext.Settings, descriptor);
         }
 
@@ -647,10 +652,11 @@ namespace OrchardCore.Environment.Shell.Distributed
             // Check if the default tenant descriptor was updated.
             if (_context.Context.Blueprint.Descriptor.SerialNumber != descriptor.SerialNumber)
             {
+                // Creates a new context based on the default settings and descriptor.
                 return CreateDistributedContextAsync(defaultSettings, descriptor);
             }
 
-            // Reuse the distributed context.
+            // Reuse the current context.
             return Task.FromResult(_context);
         }
 
@@ -659,9 +665,11 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// </summary>
         private Task<DistributedContext> AcquireOrCreateDistributedContextAsync(ShellContext defaultContext)
         {
+            // Acquire the current context.
             var distributedContext = _context?.Acquire();
             if (distributedContext == null)
             {
+                // Create a new context based on the default context.
                 return CreateDistributedContextAsync(defaultContext);
             }
 
