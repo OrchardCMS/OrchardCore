@@ -644,12 +644,13 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// </summary>
         private Task<DistributedContext> ReuseOrCreateDistributedContextAsync(ShellSettings defaultSettings, ShellDescriptor defaultDescriptor)
         {
-            // Check if the tenant desciptor was updated.
+            // Check if the default tenant descriptor was updated.
             if (_context.Context.Blueprint.Descriptor.SerialNumber != defaultDescriptor.SerialNumber)
             {
                 return CreateDistributedContextAsync(defaultSettings, defaultDescriptor);
             }
 
+            // Reuse the distributed context.
             return Task.FromResult(_context);
         }
 
