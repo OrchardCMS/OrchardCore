@@ -32,12 +32,13 @@ namespace OrchardCore.Search.Routing
 
             if (searchProviders.Count() == 1)
             {
-                routeValue = new RouteValueDictionary(new {
+                routeValue = new RouteValueDictionary(new
+                {
                     Name = "Search",
                     Area = searchProviders.FirstOrDefault().AreaName,
                     Action = "Search",
-                    Controller = "Search" }
-                );
+                    Controller = "Search"
+                });
             }
             else
             {

@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Search.Lucene.Drivers;
 using OrchardCore.Navigation;
+using OrchardCore.Search.Lucene.Drivers;
 
 namespace OrchardCore.Search.Lucene
 {
