@@ -533,10 +533,10 @@ namespace OrchardCore.Environment.Shell.Distributed
         private Task<DistributedContext> CreateDistributedContextAsync(ShellContext defaultContext)
         {
             // Capture the descriptor as the blueprint may be set to null right after.
-            var defaultDescriptor = defaultContext.Blueprint?.Descriptor;
-            if (defaultDescriptor != null)
+            var descriptor = defaultContext.Blueprint?.Descriptor;
+            if (descriptor != null)
             {
-                return CreateDistributedContextAsync(defaultContext.Settings, defaultDescriptor);
+                return CreateDistributedContextAsync(defaultContext.Settings, descriptor);
             }
 
             return CreateDistributedContextAsync(defaultContext.Settings);
@@ -545,13 +545,13 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// <summary>
         /// Creates a distributed context based on the default tenant settings and descriptor.
         /// </summary>
-        private async Task<DistributedContext> CreateDistributedContextAsync(ShellSettings defaultSettings, ShellDescriptor defaultDescriptor)
+        private async Task<DistributedContext> CreateDistributedContextAsync(ShellSettings defaultSettings, ShellDescriptor descriptor)
         {
             // Using the current shell descriptor prevents a database access, and a race condition
             // when resolving `IStore` while the default tenant is activating and does migrations.
             try
             {
-                return new DistributedContext(await _shellContextFactory.CreateDescribedContextAsync(defaultSettings, defaultDescriptor));
+                return new DistributedContext(await _shellContextFactory.CreateDescribedContextAsync(defaultSettings, descriptor));
             }
             catch
             {
@@ -622,13 +622,13 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // The descriptor may be null, e.g. if the default context is a placeholder.
-            var defaultDescriptor = defaultContext.Blueprint?.Descriptor;
-            if (defaultDescriptor == null)
+            var descriptor = defaultContext.Blueprint?.Descriptor;
+            if (descriptor == null)
             {
                 try
                 {
                     // Get the default tenant descriptor from the database.
-                    defaultDescriptor = await _shellContextFactory.GetShellDescriptorAsync(defaultContext.Settings);
+                    descriptor = await _shellContextFactory.GetShellDescriptorAsync(defaultContext.Settings);
                 }
                 catch
                 {
@@ -636,18 +636,18 @@ namespace OrchardCore.Environment.Shell.Distributed
                 }
             }
 
-            return await ReuseOrCreateDistributedContextAsync(defaultContext.Settings, defaultDescriptor);
+            return await ReuseOrCreateDistributedContextAsync(defaultContext.Settings, descriptor);
         }
 
         /// <summary>
         /// Reuses or creates a new distributed context based on the default tenant settings and descriptor.
         /// </summary>
-        private Task<DistributedContext> ReuseOrCreateDistributedContextAsync(ShellSettings defaultSettings, ShellDescriptor defaultDescriptor)
+        private Task<DistributedContext> ReuseOrCreateDistributedContextAsync(ShellSettings defaultSettings, ShellDescriptor descriptor)
         {
             // Check if the default tenant descriptor was updated.
-            if (_context.Context.Blueprint.Descriptor.SerialNumber != defaultDescriptor.SerialNumber)
+            if (_context.Context.Blueprint.Descriptor.SerialNumber != descriptor.SerialNumber)
             {
-                return CreateDistributedContextAsync(defaultSettings, defaultDescriptor);
+                return CreateDistributedContextAsync(defaultSettings, descriptor);
             }
 
             // Reuse the distributed context.
