@@ -49,6 +49,7 @@ namespace OrchardCore.ContentManagement
         }
 
         public IEnumerable<IContentHandler> Handlers { get; private set; }
+
         public IEnumerable<IContentHandler> ReversedHandlers { get; private set; }
 
         public async Task<ContentItem> NewAsync(string contentType)
