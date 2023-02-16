@@ -170,7 +170,7 @@ namespace OrchardCore.Documents
                     await DocumentStore.CancelAsync();
 
                     _logger.LogError("Can't update the '{DocumentName}' if not able to access the distributed cache", typeof(TDocument).Name);
-                    
+
                     throw;
                 }
             }

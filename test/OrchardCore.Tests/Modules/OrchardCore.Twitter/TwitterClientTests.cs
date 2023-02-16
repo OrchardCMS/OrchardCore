@@ -1,5 +1,4 @@
 using OrchardCore.Modules;
-using OrchardCore.Settings;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.Signin.Settings;

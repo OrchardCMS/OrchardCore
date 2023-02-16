@@ -1,12 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.GitHub.Services;
 using OrchardCore.GitHub.Settings;
-using Microsoft.Extensions.Logging;
-using System.Linq;
-using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.GitHub.Configuration;
 
