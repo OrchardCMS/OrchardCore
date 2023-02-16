@@ -190,7 +190,7 @@ public class ApiControllerTests
 
         httpContext.Features.Set(new ShellContextFeature
         {
-            OriginalPathBase = new PathString()
+            OriginalPathBase = PathString.Empty
         });
 
         httpContext.User.AddIdentity(new ClaimsIdentity());

@@ -38,7 +38,7 @@ namespace OrchardCore.Search.Lucene
 
             string sortField = null;
             string sortOrder = null;
-            
+
             var sortFields = new List<SortField>();
 
             if (sortProperty != null)

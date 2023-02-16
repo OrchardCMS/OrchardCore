@@ -53,13 +53,13 @@ namespace OrchardCore.Environment.Shell.Builders
             return describedContext;
         }
 
-        // TODO: This should be provided by a ISetupService that returns a set of ShellFeature instances.
         Task<ShellContext> IShellContextFactory.CreateSetupContextAsync(ShellSettings settings)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
                 _logger.LogDebug("No shell settings available. Creating shell context for setup");
             }
+
             var descriptor = MinimumShellDescriptor();
 
             return CreateDescribedContextAsync(settings, descriptor);
